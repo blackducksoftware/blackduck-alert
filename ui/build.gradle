@@ -1,10 +1,6 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
-//plugins {
-//    id 'com.moowork.node' version '1.3.1'
-//}
-
 ext.moduleName = 'com.synopsys.integration.alert.ui'
 
 task cleanBundles(type: Delete) {
@@ -28,25 +24,22 @@ task updateNpmVersion(type: Task) {
         packageJsonFile << JsonOutput.prettyPrint(updatedPackageJson)
     }
 }
-//npm_run() {
-//    args = ['build']
-//}
 
-task webInstall(type: Exec) {
-    commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm-cache"
+task npmInstall(type: Exec) {
+    inputs.file('package.json')
+    inputs.file('package-lock.json')
+    outputs.dir('node_modules')
+    commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
 }
 
-task webBuild(type: Exec, dependsOn: [webInstall]) {
-    commandLine 'npm', 'run', 'build', '--cache', "${project.buildDir}/npm-cache"
+task npmBuild(type: Exec, dependsOn: [npmInstall]) {
+    inputs.file('package-lock.json')
+    inputs.dir('src/main/js')
+    inputs.dir('src/main/css')
+    inputs.dir('src/main/img')
+    outputs.dir("${project.buildDir}/resources/main/static")
+    commandLine 'npm', 'run', 'build', '--cache', "${project.buildDir}/npm_cache"
 }
-
-//task webpack(type: Exec) {
-//    inputs.file("${project.projectDir}/package-lock.json")
-//    inputs.file("${project.projectDir}/webpack.config.js")
-//    inputs.dir("${project.projectDir}/src/main")
-//
-//    commandLine "${project.projectDir}/node_modules/.bin/webpack"
-//}
 
 task copyStaticWebContent(type: Copy) {
     from("${project.projectDir}/src/main/css") {
@@ -57,7 +50,7 @@ task copyStaticWebContent(type: Copy) {
     }
     into "${project.buildDir}/resources/main/static"
 }
-tasks.copyStaticWebContent.finalizedBy(webBuild)
-tasks.webBuild.mustRunAfter(updateNpmVersion)
-tasks.webBuild.mustRunAfter(copyStaticWebContent)
+tasks.copyStaticWebContent.finalizedBy(npmBuild)
+tasks.npmBuild.mustRunAfter(updateNpmVersion)
+tasks.npmBuild.mustRunAfter(copyStaticWebContent)
 tasks.clean.finalizedBy(cleanBundles)
