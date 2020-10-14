@@ -4,7 +4,7 @@ import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 
-public class SlackPerformanceProperties {
+public class SlackPerformanceProperties extends TestProperties {
     private final String slackChannelKey;
     private final String slackChannelWebhook;
     private final String slackChannelName;
@@ -13,10 +13,9 @@ public class SlackPerformanceProperties {
     public SlackPerformanceProperties() {
         this.slackChannelKey = new SlackChannelKey().getUniversalKey();
 
-        TestProperties testProperties = new TestProperties();
-        this.slackChannelWebhook = testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
-        this.slackChannelName = testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
-        this.slackChannelUsername = testProperties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
+        this.slackChannelWebhook = getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
+        this.slackChannelName = getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
+        this.slackChannelUsername = getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
 
     }
 

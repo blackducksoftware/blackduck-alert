@@ -6,7 +6,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 
-public class BlackDuckPerformanceProperties {
+public class BlackDuckPerformanceProperties extends TestProperties {
     private String blackDuckProviderKey;
     private String blackDuckProviderUrl;
     private String blackDuckApiToken;
@@ -18,13 +18,12 @@ public class BlackDuckPerformanceProperties {
     public BlackDuckPerformanceProperties() {
         this.blackDuckProviderKey = new BlackDuckProviderKey().getUniversalKey();
 
-        TestProperties testProperties = new TestProperties();
-        this.blackDuckProviderUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
-        this.blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
-        this.blackDuckTimeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
+        this.blackDuckProviderUrl = getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
+        this.blackDuckApiToken = getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        this.blackDuckTimeout = getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
         this.blackDuckProviderUniqueName = blackDuckProviderUrl + UUID.randomUUID();
-        this.blackDuckProjectName = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_NAME);
-        this.blackDuckProjectVersion = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_VERSION);
+        this.blackDuckProjectName = getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_NAME);
+        this.blackDuckProjectVersion = getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_VERSION);
 
     }
 
