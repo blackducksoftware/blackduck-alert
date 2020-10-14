@@ -89,6 +89,7 @@ dependencies {
     implementation project(':channel')
     implementation project(':component')
     implementation project(':provider')
+    implementation project(':ui')
     implementation project(':workflow')
     implementation project(':web')
 

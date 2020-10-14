@@ -10,6 +10,7 @@ import org.springframework.security.saml.metadata.MetadataManager;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
+import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 import com.synopsys.integration.alert.workflow.startup.component.SAMLStartupComponent;
@@ -27,18 +28,15 @@ public class SAMLStartupComponentTest {
         FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
         Mockito.when(context.getCurrentConfiguration()).thenReturn(currentConfiguration);
         Mockito.when(context.isSAMLEnabled(Mockito.any(ConfigurationModel.class))).thenReturn(Boolean.TRUE.booleanValue());
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("metadataURL");
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("entityId");
-        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.anyString())).thenReturn("baseURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_METADATA_URL))).thenReturn("metadataURL");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_ID))).thenReturn("entityId");
+        Mockito.when(context.getFieldValueOrEmpty(Mockito.any(ConfigurationModel.class), Mockito.eq(AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL))).thenReturn("baseURL");
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
-        SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
+        SAMLStartupComponent startupComponent = new SAMLStartupComponent(samlManager);
         startupComponent.initializeComponent();
 
-        Mockito.verify(metadataGenerator).setEntityId(Mockito.anyString());
-        Mockito.verify(metadataGenerator).setEntityBaseURL(Mockito.anyString());
-        Mockito.verify(metadataManager, Mockito.times(2)).setProviders(Mockito.anyList());
-        Mockito.verify(metadataManager, Mockito.times(2)).afterPropertiesSet();
+        Mockito.verify(context).disableSAML();
     }
 
     @Test
@@ -52,7 +50,7 @@ public class SAMLStartupComponentTest {
         Mockito.when(context.getCurrentConfiguration()).thenThrow(new AlertDatabaseConstraintException("Test exception"));
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
-        SAMLStartupComponent startupComponent = new SAMLStartupComponent(context, samlManager);
+        SAMLStartupComponent startupComponent = new SAMLStartupComponent(samlManager);
         startupComponent.initializeComponent();
 
         Mockito.verify(metadataGenerator, Mockito.times(0)).setEntityId(Mockito.anyString());

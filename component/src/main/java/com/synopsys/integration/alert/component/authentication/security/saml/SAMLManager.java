@@ -77,6 +77,11 @@ public class SAMLManager {
             String metadataURL = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_METADATA_URL);
             String entityId = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_ID);
             String entityBaseUrl = samlContext.getFieldValueOrEmpty(currentConfiguration, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL);
+
+            if (samlEnabled) {
+                // validate the metadata providers.  If they are still valid enable SAML.
+                samlEnabled = checkMetadataProvidersValid(metadataURL, entityId);
+            }
             updateSAMLConfiguration(samlEnabled, metadataURL, entityId, entityBaseUrl);
         } catch (AlertConfigurationException e) {
             logger.warn(String.format("Cannot initialize the SAML identity provider. %s", e.getMessage()));
@@ -99,6 +104,8 @@ public class SAMLManager {
             logger.debug("SAML cleared configuration.");
             if (samlEnabled) {
                 setupMetadataManager(metadataURL, entityId, entityBaseUrl);
+            } else {
+                samlContext.disableSAML();
             }
         } catch (Exception e) {
             logger.error("Error updating the SAML identity provider.", e);
@@ -165,5 +172,34 @@ public class SAMLManager {
 
     private HttpClient httpClient() {
         return new HttpClient(new MultiThreadedHttpConnectionManager());
+    }
+
+    private boolean checkMetadataProvidersValid(String metaDataUrl, String entityId) {
+        boolean httpProviderValid = false;
+        boolean fileProviderValid = false;
+        boolean entityIdValid = StringUtils.isNotBlank(entityId);
+        if (!entityIdValid) {
+            logger.error("Validated SAML entity id missing.");
+        }
+        try {
+            Optional<ExtendedMetadataDelegate> provider = createHttpProvider(metaDataUrl);
+            if (provider.isPresent()) {
+                provider.get().initialize();
+                httpProviderValid = true;
+            }
+        } catch (Exception ex) {
+            logger.error("Validating SAML Metadata URL error: ", ex);
+        }
+
+        try {
+            Optional<ExtendedMetadataDelegate> provider = createFileProvider();
+            if (provider.isPresent()) {
+                provider.get().initialize();
+                fileProviderValid = true;
+            }
+        } catch (Exception ex) {
+            logger.error("Validating SAML Metadata File error: ", ex);
+        }
+        return entityIdValid && (httpProviderValid || fileProviderValid);
     }
 }

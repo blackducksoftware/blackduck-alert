@@ -1,3 +1,5 @@
+import HeaderUtilities from 'util/HeaderUtilities';
+
 export const ALERT_API_URL = '/alert/api';
 export const CONFIG_API_URL = `${ALERT_API_URL}/configuration`;
 export const JOB_API_URL = `${ALERT_API_URL}/configuration/job`;
@@ -20,11 +22,11 @@ export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName)
         });
     const queryString = parameters.join('&');
     const url = `${apiUrl}?${queryString}`;
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addXCsrfToken(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
@@ -37,52 +39,46 @@ export function createReadRequest(apiUrl, csrfToken, configurationId = null) {
     if (configurationId) {
         url = url.concat(`/${configurationId}`);
     }
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addXCsrfToken(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
 export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addDefaultHeaders(csrfToken);
     return fetch(apiUrl, {
         credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(fieldModel),
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
 export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldModel) {
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addDefaultHeaders(csrfToken);
     const url = `${apiUrl}/${configurationId}`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'PUT',
         body: JSON.stringify(fieldModel),
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
 export function createUpdateWithoutIdRequest(apiUrl, csrfToken, model) {
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addDefaultHeaders(csrfToken);
     const url = `${apiUrl}`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'PUT',
         body: JSON.stringify(model),
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
@@ -92,40 +88,36 @@ export function createDeleteRequest(apiUrl, csrfToken, configurationId = null) {
         url = url.concat(`/${configurationId}`);
     }
 
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addXCsrfToken(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
         method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
 export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
     const url = `${apiUrl}/validate`;
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addDefaultHeaders(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(fieldModel),
-        headers: {
-            accept: 'application/json;charset=UTF-8',
-            'content-type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
 export function createTestRequest(apiUrl, csrfToken, fieldModel) {
     const url = `${apiUrl}/test`;
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addDefaultHeaders(csrfToken);
     return fetch(url, {
         credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(fieldModel),
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }
 
@@ -136,12 +128,12 @@ export function createFileUploadRequest(apiUrl, csrfToken, fieldName, files) {
             fileData.append(`${fieldName}`, file);
         }
     }
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addXCsrfToken(csrfToken);
     return fetch(apiUrl, {
         credentials: 'same-origin',
         method: 'POST',
         body: fileData,
-        headers: {
-            'X-CSRF-TOKEN': csrfToken
-        }
+        headers: headersUtil.getHeaders()
     });
 }

@@ -17,6 +17,7 @@ import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import HeaderUtilities from 'util/HeaderUtilities';
 
 function updateJobWithAuditInfo(job) {
     return {
@@ -114,12 +115,12 @@ function fetchAuditInfoForJob(jobConfig) {
         let currentStatus = 'Unknown';
 
         if (jobConfig) {
+            const headersUtil = new HeaderUtilities();
+            headersUtil.addApplicationJsonContentType();
+            headersUtil.addXCsrfToken(csrfToken);
             fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
                 credentials: 'same-origin',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Content-Type': 'application/json'
-                }
+                headers: headersUtil.getHeaders()
             }).then((response) => {
                 if (response.ok) {
                     response.json().then((auditInfo) => {
@@ -178,12 +179,12 @@ export function fetchDistributionJobs() {
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
         errorHandlers.push(HTTPErrorUtils.createNotFoundHandler(fetchingAllJobsNoneFound));
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch(ConfigRequestBuilder.JOB_API_URL, {
             credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json'
-            }
+            headers: headersUtil.getHeaders()
         })
             .then((response) => {
                 response.json()
@@ -222,12 +223,12 @@ export function fetchJobsValidationResults() {
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
+        const headersUtil = new HeaderUtilities();
+        headersUtil.addApplicationJsonContentType();
+        headersUtil.addXCsrfToken(csrfToken);
         fetch(`${ConfigRequestBuilder.JOB_API_URL}/validate`, {
             credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json'
-            }
+            headers: headersUtil.getHeaders()
         })
             .then((response) => {
                 response.json()

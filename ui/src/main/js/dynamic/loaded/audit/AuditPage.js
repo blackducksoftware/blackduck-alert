@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
-import { getAuditData, resendNotification } from 'store/actions/audit';
+import {
+    BootstrapTable,
+    ButtonGroup,
+    TableHeaderColumn
+} from 'react-bootstrap-table';
+import {
+    getAuditData,
+    resendNotification
+} from 'store/actions/audit';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
@@ -281,18 +288,29 @@ class AuditPage extends Component {
     }
 
     handleCloseDetails() {
+        const { message, errorMessage } = this.props;
+        if (message || errorMessage) {
+            this.reloadAuditEntries();
+        }
         this.setState({ showDetailModal: false });
     }
 
     render() {
+        const {
+            showDetailModal, onlyShowSentNotifications, sortField, searchTerm, currentRowSelected, entries, currentPage, currentPageSize, sortOrder
+        } = this.state;
+        const {
+            errorMessage, resendNotification: resendNotificationAction, inProgress, message, totalPageCount, autoRefresh
+        } = this.props;
+
         const auditTableOptions = {
             defaultSortName: 'lastSent',
             defaultSortOrder: 'desc',
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No events',
             clearSearch: true,
-            sizePerPage: this.state.currentPageSize,
-            page: this.state.currentPage,
+            sizePerPage: currentPageSize,
+            page: currentPage,
             // We need all of these onChange methods because the table is using the remote option
             onPageChange: this.onPageChange,
             onSizePerPageList: this.onSizePerPageListChange,
@@ -302,17 +320,17 @@ class AuditPage extends Component {
         };
 
         const auditFetchInfo = {
-            dataTotalSize: this.props.totalPageCount * this.state.currentPageSize
+            dataTotalSize: totalPageCount * currentPageSize
         };
         const { label, description } = this.props;
 
-        const shouldRefresh = !this.state.showDetailModal;
+        const shouldRefresh = !showDetailModal;
 
         return (
             <div>
                 <ConfigurationLabel configurationName={label} description={description} />
                 <div className="pull-right">
-                    <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={this.props.autoRefresh} isEnabled={shouldRefresh} />
+                    <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={autoRefresh} isEnabled={shouldRefresh} />
                 </div>
                 <div className="pull-right">
                     <CheckboxInput
@@ -321,37 +339,41 @@ class AuditPage extends Component {
                         name="onlyShowSentNotifications"
                         showDescriptionPlaceHolder={false}
                         labelClass="tableCheckbox"
-                        isChecked={this.state.onlyShowSentNotifications}
+                        isChecked={onlyShowSentNotifications}
                         onChange={this.onOnlyShowSentNotificationsChange}
                     />
                 </div>
                 <div>
                     <AuditDetails
                         handleClose={this.handleCloseDetails}
-                        show={this.state.showDetailModal}
-                        currentEntry={this.state.currentRowSelected}
-                        resendNotification={this.props.resendNotification}
+                        show={showDetailModal}
+                        currentEntry={currentRowSelected}
+                        resendNotification={resendNotificationAction}
                         providerNameFormat={this.providerColumnDataFormat}
                         notificationTypeFormat={this.notificationTypeDataFormat}
                         statusFormat={this.statusColumnDataFormat}
-                        currentPage={this.state.currentPage}
-                        currentPageSize={this.state.currentPageSize}
-                        searchTerm={this.state.searchTerm}
-                        sortField={this.state.sortField}
-                        sortOrder={this.state.sortOrder}
-                        errorMessage={this.props.errorMessage}
-                        onlyShowSentNotifications={this.state.onlyShowSentNotifications}
+                        currentPage={currentPage}
+                        currentPageSize={currentPageSize}
+                        searchTerm={searchTerm}
+                        sortField={sortField}
+                        sortOrder={sortOrder}
+                        actionMessage={message}
+                        errorMessage={errorMessage}
+                        onlyShowSentNotifications={onlyShowSentNotifications}
                     />
-                    <StatusMessage
-                        id="audit-status-message"
-                        actionMessage={this.props.message}
-                        errorMessage={this.props.errorMessage}
-                    />
+                    {!showDetailModal && !inProgress
+                    && (
+                        <StatusMessage
+                            id="audit-status-message"
+                            actionMessage={message}
+                            errorMessage={errorMessage}
+                        />
+                    )}
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}
                         condensed
-                        data={this.state.entries}
+                        data={entries}
                         containerClass="table"
                         fetchInfo={auditFetchInfo}
                         options={auditTableOptions}
@@ -405,7 +427,7 @@ class AuditPage extends Component {
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
 
-                    {this.props.inProgress && (
+                    {inProgress && (
                         <div className="progressIcon">
                             <span className="fa-layers fa-fw">
                                 <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
@@ -436,6 +458,7 @@ AuditPage.propTypes = {
     message: PropTypes.string,
     errorMessage: PropTypes.string,
     autoRefresh: PropTypes.bool,
+    fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
     totalPageCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,

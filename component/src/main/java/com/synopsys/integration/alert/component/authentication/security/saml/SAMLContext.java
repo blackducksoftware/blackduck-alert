@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.component.authentication.security.saml;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -67,6 +68,22 @@ public class SAMLContext implements Serializable {
         }
 
         return false;
+    }
+
+    public void disableSAML() {
+        try {
+            ConfigurationModel configurationModel = getCurrentConfiguration();
+            Map<String, ConfigurationFieldModel> fields = configurationModel.getCopyOfKeyToFieldMap();
+            ConfigurationFieldModel enabledField = fields.get(AuthenticationDescriptor.KEY_SAML_ENABLED);
+            if (null == enabledField) {
+                enabledField = ConfigurationFieldModel.create(AuthenticationDescriptor.KEY_SAML_ENABLED);
+                fields.put(AuthenticationDescriptor.KEY_SAML_ENABLED, enabledField);
+            }
+            enabledField.setFieldValue(String.valueOf(false));
+            configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fields.values());
+        } catch (AlertException ex) {
+            logger.error("Error disabling SAML configuration.");
+        }
     }
 
     public boolean isSAMLEnabled(ConfigurationModel configurationModel) {

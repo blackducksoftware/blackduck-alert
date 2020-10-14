@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import CheckboxInput from 'field/input/CheckboxInput';
+import StatusMessage from 'field/StatusMessage';
 
 export const PERMISSIONS_TABLE = {
     DESCRIPTOR_NAME: 'descriptorName',
@@ -305,10 +306,7 @@ class PermissionTable extends Component {
                 {uploadInputs}
                 {errorMessage
                 && (
-                    <p id="permissions-table-error-message">
-                        <br />
-                        {errorMessage}
-                    </p>
+                    <StatusMessage id="permission-table-status-message" errorMessage={errorMessage} />
                 )}
             </div>
         );
