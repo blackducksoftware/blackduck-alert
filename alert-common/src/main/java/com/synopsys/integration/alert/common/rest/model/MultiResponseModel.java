@@ -20,10 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.common.rest.model;
 
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import java.util.List;
 
-public interface ValidateAction<T> {
-    ValidationActionResponse validate(T resource);
+public class MultiResponseModel<T extends AlertSerializableModel> extends AlertSerializableModel {
+    private final List<T> models;
+
+    MultiResponseModel() {
+        // For serialization
+        this(List.of());
+    }
+
+    public MultiResponseModel(List<T> models) {
+        this.models = models;
+    }
+
+    public List<T> getModels() {
+        return models;
+    }
+
 }

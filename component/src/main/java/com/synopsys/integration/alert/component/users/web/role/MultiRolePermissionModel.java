@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.component.users.web.role;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.action.api.MultiResponseModel;
+import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 
 public class MultiRolePermissionModel extends MultiResponseModel<RolePermissionModel> {
     public MultiRolePermissionModel(final List<RolePermissionModel> models) {

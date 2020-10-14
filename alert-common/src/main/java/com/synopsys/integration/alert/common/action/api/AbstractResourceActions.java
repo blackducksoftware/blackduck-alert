@@ -33,10 +33,12 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.Config;
+import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T extends AlertSerializableModel> implements CompositeResourceActions<T, Long> {
+public abstract class AbstractResourceActions<T extends Config, M extends MultiResponseModel<T>> implements CompositeResourceActions<T, Long> {
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
@@ -56,7 +58,7 @@ public abstract class AbstractResourceActions<T extends AlertSerializableModel> 
 
     protected abstract ActionResponse<T> deleteWithoutChecks(Long id);
 
-    protected abstract ActionResponse<MultiResponseModel<T>> readAllWithoutChecks();
+    protected abstract ActionResponse<M> readAllWithoutChecks();
 
     protected abstract ActionResponse<T> readWithoutChecks(Long id);
 
@@ -82,7 +84,7 @@ public abstract class AbstractResourceActions<T extends AlertSerializableModel> 
     }
 
     @Override
-    public final ActionResponse<MultiResponseModel<T>> getAll() {
+    public final ActionResponse<M> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();

@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.action.api.MultiResponseModel;
-
 public class MultiJobFieldModel extends MultiResponseModel<JobFieldModel> {
     public MultiJobFieldModel(final List models) {
         super(models);
