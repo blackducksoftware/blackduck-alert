@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class MultiResponseModel<T extends AlertSerializableModel> extends AlertSerializableModel {
     private final List<T> models;
 
@@ -36,7 +38,8 @@ public class MultiResponseModel<T extends AlertSerializableModel> extends AlertS
         this.models = models;
     }
 
-    public List<T> getModels() {
+    @JsonIgnore
+    protected List<T> getModels() {
         return models;
     }
 
