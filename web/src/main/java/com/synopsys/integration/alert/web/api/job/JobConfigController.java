@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
+import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
@@ -66,15 +67,17 @@ public class JobConfigController implements BaseJobResourceController, TestContr
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.checkGlobalConfigExists(descriptorName));
     }
 
+    @Deprecated
     public MultiJobFieldModel getAll() {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
     }
 
-    public MultiJobFieldModel getPage(
+    // TODO uncomment: @GetMapping
+    public JobPagedModel getPage(
         @RequestParam(value = "pageNumber", defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
         @RequestParam(value = "pageSize", defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize
     ) {
-        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
+        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getPage(pageNumber, pageSize));
     }
 
     @Override

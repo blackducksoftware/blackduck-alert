@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
@@ -61,18 +62,25 @@ public class AuditEntryActions {
     private final AuditDescriptorKey descriptorKey;
     private final NotificationAccessor notificationAccessor;
     private final AuditAccessor auditAccessor;
-    private final ConfigurationAccessor jobConfigReader;
+    private final JobAccessor jobAccessor;
     private final ChannelEventManager eventManager;
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public AuditEntryActions(AuthorizationManager authorizationManager, AuditDescriptorKey descriptorKey, AuditAccessor auditAccessor, NotificationAccessor notificationAccessor, ConfigurationAccessor jobConfigReader,
-        ChannelEventManager eventManager, NotificationProcessor notificationProcessor) {
+    public AuditEntryActions(
+        AuthorizationManager authorizationManager,
+        AuditDescriptorKey descriptorKey,
+        AuditAccessor auditAccessor,
+        NotificationAccessor notificationAccessor,
+        JobAccessor jobAccessor,
+        ChannelEventManager eventManager,
+        NotificationProcessor notificationProcessor
+    ) {
         this.authorizationManager = authorizationManager;
         this.descriptorKey = descriptorKey;
         this.auditAccessor = auditAccessor;
         this.notificationAccessor = notificationAccessor;
-        this.jobConfigReader = jobConfigReader;
+        this.jobAccessor = jobAccessor;
         this.eventManager = eventManager;
         this.notificationProcessor = notificationProcessor;
     }
@@ -127,7 +135,7 @@ public class AuditEntryActions {
 
             List<DistributionEvent> distributionEvents;
             if (null != commonConfigId) {
-                Optional<ConfigurationJobModel> commonDistributionConfig = jobConfigReader.getJobById(commonConfigId);
+                Optional<ConfigurationJobModel> commonDistributionConfig = jobAccessor.getJobById(commonConfigId);
                 if (commonDistributionConfig.isEmpty()) {
                     String message = String.format("The Distribution Job with this id could not be found. %s", commonConfigId.toString());
                     return new ActionResponse<>(HttpStatus.GONE, message);

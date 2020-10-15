@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -65,6 +66,9 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private JobAccessor jobAccessor;
+    @Autowired
+    // FIXME why is this class autowired twice?
     private ConfigurationAccessor configurationAccessor;
     private ConfigurationModel providerConfigModel = null;
 
@@ -185,7 +189,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
         SlackChannelKey slackChannelKey = new SlackChannelKey();
         ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
-        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(List.of(slackChannelKey.getUniversalKey()), configurationModel.getCopyOfFieldList());
+        ConfigurationJobModel configurationJobModel = jobAccessor.createJob(List.of(slackChannelKey.getUniversalKey()), configurationModel.getCopyOfFieldList());
 
         NotificationEntity notificationEntity = mockNotificationContent.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);

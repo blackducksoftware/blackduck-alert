@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -62,12 +63,12 @@ import com.synopsys.integration.rest.HttpUrl;
 public class BlackDuckDataSyncTask extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);
     private final ProviderDataAccessor blackDuckDataAccessor;
-    private final ConfigurationAccessor configurationAccessor;
+    private final JobAccessor jobAccessor;
 
-    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ConfigurationAccessor configurationAccessor, ProviderProperties providerProperties) {
+    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ProviderProperties providerProperties, JobAccessor jobAccessor) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
-        this.configurationAccessor = configurationAccessor;
+        this.jobAccessor = jobAccessor;
     }
 
     @Override
@@ -153,7 +154,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
 
     private Set<String> retrieveAllProjectsInJobs(Collection<ProviderProject> foundProjects) {
         Set<String> configuredProjectNames = new HashSet<>();
-        for (ConfigurationJobModel configurationJobModel : configurationAccessor.getAllJobs()) {
+        for (ConfigurationJobModel configurationJobModel : jobAccessor.getAllJobs()) {
             FieldUtility fieldUtility = configurationJobModel.getFieldUtility();
             String projectNamePattern = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             if (StringUtils.isNotBlank(projectNamePattern)) {

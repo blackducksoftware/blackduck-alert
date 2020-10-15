@@ -43,8 +43,10 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
+import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -81,6 +83,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     public AuditNotificationRepository auditNotificationRepository;
     @Autowired
     private NotificationContentRepository notificationContentRepository;
+    @Autowired
+    private JobAccessor jobAccessor;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
     @Autowired
@@ -148,7 +152,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     private AuditEntryActions createAuditActions(AuthorizationManager authorizationManager) {
-        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditAccessor, notificationAccessor, configurationAccessor,
+        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditAccessor, notificationAccessor, jobAccessor,
             channelEventManager, notificationProcessor);
     }
 
@@ -160,7 +164,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
             .save(new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{}", 234L, providerConfigModel.getConfigurationId()).createEntity());
 
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
+        ConfigurationJobModel configurationJobModel = jobAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
             new AuditEntryEntity(configurationJobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null));
@@ -171,13 +175,13 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
 
         AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
-        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.get(null, null, null, null, null, true).getContent().orElse(null);
-        assertEquals(1, auditEntries.getModels().size());
+        AuditEntryPageModel auditEntries = auditEntryActions.get(null, null, null, null, null, true).getContent().orElse(null);
+        assertEquals(1, auditEntries.getContent().size());
 
         AuditEntryModel auditEntryResponse = auditEntryActions.get(savedNotificationEntity.getId()).getContent().orElse(null);
         assertNotNull(auditEntryResponse);
 
-        AuditEntryModel auditEntry = auditEntries.getModels().get(0);
+        AuditEntryModel auditEntry = auditEntries.getContent().get(0);
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
@@ -192,7 +196,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertNotNull(notification.getContent());
 
         auditEntries = auditEntryActions.get(null, null, null, null, null, false).getContent().orElse(null);
-        assertEquals(2, auditEntries.getModels().size());
+        assertEquals(2, auditEntries.getContent().size());
     }
 
     @Test
@@ -225,7 +229,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
         slackFieldsList.add(providerConfigName);
 
-        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFieldsList);
+        ConfigurationJobModel configurationJobModel = jobAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFieldsList);
 
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 

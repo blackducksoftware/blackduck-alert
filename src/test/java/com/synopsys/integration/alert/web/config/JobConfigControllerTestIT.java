@@ -140,7 +140,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         descriptorConfigRepository.flush();
 
         UUID id = UUID.fromString(jobId);
-        Optional<ConfigurationJobModel> configuration = getConfigurationAccessor().getJobById(id);
+        Optional<ConfigurationJobModel> configuration = getJobAccessor().getJobById(id);
 
         assertTrue(configuration.isEmpty(), "Expected the job to have been deleted");
     }
@@ -271,7 +271,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         String stringId = responseEntity.getJobId();
         UUID id = UUID.fromString(stringId);
 
-        Optional<ConfigurationJobModel> configurationModelOptional = getConfigurationAccessor().getJobById(id);
+        Optional<ConfigurationJobModel> configurationModelOptional = getJobAccessor().getJobById(id);
         assertTrue(configurationModelOptional.isPresent());
 
         Optional<ConfigurationFieldModel> slackChannelNameField = Optional.empty();

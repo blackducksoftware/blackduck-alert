@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
@@ -56,25 +57,28 @@ public class NotificationProcessor {
     private final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
 
     private final ConfigurationAccessor configurationAccessor;
+    private final JobAccessor jobAccessor;
     private final Map<String, Provider> providerKeyToProvider;
     private final NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(ConfigurationAccessor configurationAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
+    public NotificationProcessor(ConfigurationAccessor configurationAccessor, JobAccessor jobAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
         this.configurationAccessor = configurationAccessor;
+        this.jobAccessor = jobAccessor;
         this.providerKeyToProvider = DataStructureUtils.mapToValues(providers, provider -> provider.getKey().getUniversalKey());
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
         logger.info("Notifications to Process: {}", notifications.size());
-        List<ConfigurationJobModel> jobsForFrequency = configurationAccessor.getJobsByFrequency(frequency);
+        List<ConfigurationJobModel> jobsForFrequency = jobAccessor.getJobsByFrequency(frequency);
         return processNotificationsForJobs(jobsForFrequency, notifications);
     }
 
     public List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications) {
         // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
-        List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
+        // FIXME consider paging
+        List<ConfigurationJobModel> allJobs = jobAccessor.getAllJobs();
         return processNotificationsForJobs(allJobs, notifications);
     }
 
