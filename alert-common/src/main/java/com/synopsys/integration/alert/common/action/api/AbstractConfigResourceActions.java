@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractConfigResourceActions implements LongIdResourceActions<FieldModel>, ReadAllAction<MultiFieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
+public abstract class AbstractConfigResourceActions implements CompositeResourceActions<FieldModel, Long> {
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
 

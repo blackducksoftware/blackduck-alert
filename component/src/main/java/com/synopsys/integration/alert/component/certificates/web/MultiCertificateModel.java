@@ -24,16 +24,15 @@ package com.synopsys.integration.alert.component.certificates.web;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 
-public class MultiCertificateModel extends AlertSerializableModel {
-    private List<CertificateModel> certificates;
-
-    public MultiCertificateModel(List<CertificateModel> certificates) {
-        this.certificates = certificates;
+public class MultiCertificateModel extends MultiResponseModel<CertificateModel> {
+    public MultiCertificateModel(final List<CertificateModel> models) {
+        super(models);
     }
 
     public List<CertificateModel> getCertificates() {
-        return certificates;
+        return getModels();
     }
+
 }

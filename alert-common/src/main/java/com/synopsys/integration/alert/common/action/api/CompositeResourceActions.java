@@ -22,8 +22,24 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
+import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 
-public interface ValidateAction<T> {
+public interface CompositeResourceActions<T extends AlertSerializableModel, I> {
+    ActionResponse<T> create(T resource);
+
+    ActionResponse<T> getOne(I id);
+
+    ActionResponse<? extends MultiResponseModel<T>> getAll();
+
+    ActionResponse<T> update(I id, T resource);
+
+    ActionResponse<T> delete(I id);
+
+    ValidationActionResponse test(T resource);
+
     ValidationActionResponse validate(T resource);
+
 }
