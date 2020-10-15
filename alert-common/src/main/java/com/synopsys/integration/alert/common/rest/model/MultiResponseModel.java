@@ -20,7 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.common.rest.model;
 
-public interface LongIdResourceActions<T> extends ResourceActions<T, Long> {
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class MultiResponseModel<T extends AlertSerializableModel> extends AlertSerializableModel {
+    private final List<T> models;
+
+    MultiResponseModel() {
+        // For serialization
+        this(List.of());
+    }
+
+    public MultiResponseModel(List<T> models) {
+        this.models = models;
+    }
+
+    @JsonIgnore
+    protected List<T> getModels() {
+        return models;
+    }
+
 }

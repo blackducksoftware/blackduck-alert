@@ -31,11 +31,14 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.Config;
+import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T, M> implements LongIdResourceActions<T>, ReadAllAction<M>, ValidateAction<T>, TestAction<T> {
+public abstract class AbstractResourceActions<T extends Config, M extends MultiResponseModel<T>> implements CompositeResourceActions<T, Long> {
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
@@ -49,7 +52,6 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         this.context = context;
         // to do change the authorization manager to use the context enum and the descriptor key
         this.authorizationManager = authorizationManager;
-
     }
 
     protected abstract ActionResponse<T> createWithoutChecks(T resource);

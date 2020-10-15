@@ -112,6 +112,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
+
     @Override
     protected ActionResponse<MultiRolePermissionModel> readAllWithoutChecks() {
         List<RolePermissionModel> roles = roleAccessor.getRoles().stream()
