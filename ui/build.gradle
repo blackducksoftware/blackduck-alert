@@ -1,0 +1,56 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+ext.moduleName = 'com.synopsys.integration.alert.ui'
+
+task cleanBundles(type: Delete) {
+    File staticResourcesDirectory = new File('src/main/static')
+    if (staticResourcesDirectory.exists()) {
+        println "Deleting ${staticResourcesDirectory.canonicalPath}"
+        staticResourcesDirectory.deleteDir()
+    }
+}
+
+task updateNpmVersion(type: Task) {
+    final def packageJsonFile = new File("${project.projectDir}/package.json")
+    def packageSlurper = new JsonSlurper()
+    def packageJson = packageSlurper.parse file("${project.projectDir}/package.json")
+    if (packageJson.version != version) {
+        packageJson.version = version
+
+        final def updatedPackageJson = JsonOutput.toJson(packageJson)
+
+        packageJsonFile.delete()
+        packageJsonFile << JsonOutput.prettyPrint(updatedPackageJson)
+    }
+}
+
+task npmInstall(type: Exec) {
+    inputs.file('package.json')
+    inputs.file('package-lock.json')
+    outputs.dir('node_modules')
+    commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
+}
+
+task npmBuild(type: Exec, dependsOn: [npmInstall]) {
+    inputs.file('package-lock.json')
+    inputs.dir('src/main/js')
+    inputs.dir('src/main/css')
+    inputs.dir('src/main/img')
+    outputs.dir("${project.buildDir}/resources/main/static")
+    commandLine 'npm', 'run', 'build', '--cache', "${project.buildDir}/npm_cache"
+}
+
+task copyStaticWebContent(type: Copy) {
+    from("${project.projectDir}/src/main/css") {
+        into 'css'
+    }
+    from("${project.projectDir}/src/main/img") {
+        into 'img'
+    }
+    into "${project.buildDir}/resources/main/static"
+}
+tasks.copyStaticWebContent.finalizedBy(npmBuild)
+tasks.npmBuild.mustRunAfter(updateNpmVersion)
+tasks.npmBuild.mustRunAfter(copyStaticWebContent)
+tasks.clean.finalizedBy(cleanBundles)
