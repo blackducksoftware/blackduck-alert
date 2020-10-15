@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <appender name="ALERT_AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+		</encoder>
+		<file>log/alertAudit.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<cleanHistoryOnStart>${LOG_FILE_CLEAN_HISTORY_ON_START:-false}</cleanHistoryOnStart>
+			<fileNamePattern>${ROLLING_FILE_NAME_PATTERN:-log/alertAudit.log.%d{yyyy-MM-dd}.%i.gz}</fileNamePattern>
+			<maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
+			<maxHistory>${LOG_FILE_MAX_HISTORY:-7}</maxHistory>
+			<totalSizeCap>${LOG_FILE_TOTAL_SIZE_CAP:-0}</totalSizeCap>
+		</rollingPolicy>
+    </appender>
+
+	<logger name="alertAudit" level="trace" additivity="false">
+        <appender-ref ref="ALERT_AUDIT"/>
+    </logger>
+
+</configuration>

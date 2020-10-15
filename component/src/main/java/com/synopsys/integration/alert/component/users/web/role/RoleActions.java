@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -48,6 +47,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -64,7 +64,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
 
-    private final Logger logger = LoggerFactory.getLogger(RoleActions.class);
+    private final Logger logger = AlertLoggerFactory.getLogger(RoleActions.class);
     private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
 
     @Autowired
