@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -49,6 +51,12 @@ public class DefaultJobAccessor implements JobAccessor {
                    .stream()
                    .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest) {
+        // FIXME implement
+        return Page.empty();
     }
 
     @Override

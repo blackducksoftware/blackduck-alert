@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.api.job;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -120,13 +121,25 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize) {
+        // TODO validate access
+
         // TODO validate paging params
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-        // TODO query for page
-        Page<JobFieldModel> pageOfJobs = Page.empty();
-        JobPagedModel jobPagedModel = new JobPagedModel(pageOfJobs, pageOfJobs.getContent());
-        return new ActionResponse<>(HttpStatus.OK, jobPagedModel);
+        try {
+            PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+            Page<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest);
+            List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobs.getSize());
+            for (ConfigurationJobModel configJobModel : pageOfJobs) {
+                JobFieldModel jobFieldModel = convertToJobFieldModel(configJobModel);
+                jobFieldModels.add(jobFieldModel);
+            }
+
+            JobPagedModel jobPagedModel = new JobPagedModel(pageOfJobs, jobFieldModels);
+            return new ActionResponse<>(HttpStatus.OK, jobPagedModel);
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("Failed to get a page of jobs", e);
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "There was a problem retrieving the jobs from the database");
+        }
     }
 
     @Override

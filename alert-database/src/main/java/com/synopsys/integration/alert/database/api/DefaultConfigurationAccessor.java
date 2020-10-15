@@ -296,7 +296,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         descriptorConfigsRepository.deleteById(descriptorConfigId);
     }
 
-    /* package private */ ConfigurationModel createConfigForRelevantFields(String descriptorName, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+    public ConfigurationModel createConfigForRelevantFields(String descriptorName, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
         Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.DISTRIBUTION);
         Set<String> descriptorFields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)

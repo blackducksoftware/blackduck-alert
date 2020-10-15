@@ -21,6 +21,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -190,7 +191,8 @@ public class DefaultConfigurationAccessorTest {
 
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, null, definedFieldRepository, descriptorConfigRepository, configContextRepository,
             fieldValueRepository, null);
-        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(descriptorNames, configuredFields);
+        DefaultJobAccessor jobAccessor = new DefaultJobAccessor(configGroupRepository, configurationAccessor);
+        ConfigurationJobModel configurationJobModel = jobAccessor.createJob(descriptorNames, configuredFields);
 
         assertEquals(fieldValue, configurationJobModel.getName());
     }
@@ -218,7 +220,8 @@ public class DefaultConfigurationAccessorTest {
 
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, null, definedFieldRepository, descriptorConfigRepository, configContextRepository,
             fieldValueRepository, null);
-        ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(uuid, descriptorNames, configuredFields);
+        JobAccessor jobAccessor = new DefaultJobAccessor(configGroupRepository, configurationAccessor);
+        ConfigurationJobModel configurationJobModel = jobAccessor.updateJob(uuid, descriptorNames, configuredFields);
 
         Mockito.verify(descriptorConfigRepository).deleteById(Mockito.any());
         assertEquals(uuid, configurationJobModel.getJobId());
@@ -228,8 +231,10 @@ public class DefaultConfigurationAccessorTest {
     @Test
     public void updateJobNullIdTest() throws Exception {
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
+        JobAccessor jobAccessor = new DefaultJobAccessor(configGroupRepository, configurationAccessor);
+
         try {
-            configurationAccessor.updateJob(null, null, null);
+            jobAccessor.updateJob(null, null, null);
             fail("Null jobId did not throw expected AlertDatabaseConstraintException.");
         } catch (AlertDatabaseConstraintException e) {
             assertNotNull(e);
@@ -239,8 +244,10 @@ public class DefaultConfigurationAccessorTest {
     @Test
     public void deleteJobNullIdTest() throws Exception {
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
+        JobAccessor jobAccessor = new DefaultJobAccessor(configGroupRepository, configurationAccessor);
+
         try {
-            configurationAccessor.deleteJob(null);
+            jobAccessor.deleteJob(null);
             fail("Null jobId did not throw expected AlertDatabaseConstraintException.");
         } catch (AlertDatabaseConstraintException e) {
             assertNotNull(e);
@@ -702,4 +709,5 @@ public class DefaultConfigurationAccessorTest {
         };
         return testDescriptorKey;
     }
+
 }
