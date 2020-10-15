@@ -27,11 +27,11 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -43,6 +43,7 @@ import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
+import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCloudIssueHandler extends JiraIssueHandler {
@@ -60,7 +61,8 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
 
     @Override
     public IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException {
-        return issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, Collections.emptyList()));
+        IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder, Collections.emptyList()));
+        return issueService.getIssue(issueCreationResponseModel.getKey());
     }
 
     @Override
