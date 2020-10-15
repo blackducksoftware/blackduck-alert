@@ -22,7 +22,9 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T extends Config, M extends MultiResponseModel<T>> implements CompositeResourceActions<T, Long> {
+public abstract class AbstractResourceActions<T extends Config, D extends AlertSerializableModel, M extends MultiResponseModel<T>> implements CompositeResourceActions<T, Long> {
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
@@ -58,9 +60,11 @@ public abstract class AbstractResourceActions<T extends Config, M extends MultiR
 
     protected abstract ActionResponse<T> deleteWithoutChecks(Long id);
 
-    protected abstract ActionResponse<M> readAllWithoutChecks();
+    protected abstract List<D> getDatabaseModels();
 
-    protected abstract ActionResponse<T> readWithoutChecks(Long id);
+    protected abstract T convertDatabaseModel(D databaseModel);
+
+    protected abstract M createMultiResponseModel(List<T> resources);
 
     protected abstract ValidationActionResponse testWithoutChecks(T resource);
 
@@ -89,7 +93,10 @@ public abstract class AbstractResourceActions<T extends Config, M extends MultiR
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();
         }
-        return readAllWithoutChecks();
+        List<T> resources = getDatabaseModels().stream()
+                                .map(this::convertDatabaseModel)
+                                .collect(Collectors.toList());
+        return new ActionResponse<>(HttpStatus.OK, createMultiResponseModel(resources));
     }
 
     @Override
@@ -104,7 +111,7 @@ public abstract class AbstractResourceActions<T extends Config, M extends MultiR
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
-        return readWithoutChecks(id);
+        return new ActionResponse<>(HttpStatus.OK, existingItem.get());
     }
 
     @Override

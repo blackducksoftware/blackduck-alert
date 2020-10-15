@@ -59,7 +59,7 @@ import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
 @Transactional
-public class UserActions extends AbstractResourceActions<UserConfig, MultiUserConfigResponseModel> {
+public class UserActions extends AbstractResourceActions<UserConfig, UserModel, MultiUserConfigResponseModel> {
     public static final String FIELD_KEY_USER_MGMT_USERNAME = "username";
     public static final String FIELD_KEY_USER_MGMT_PASSWORD = "password";
     public static final String FIELD_KEY_USER_MGMT_EMAILADDRESS = "emailAddress";
@@ -88,24 +88,40 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
     @Override
     protected Optional<UserConfig> findExisting(Long id) {
         return userAccessor.getUser(id)
-                   .map(this::convertToCustomUserRoleModel);
+                   .map(this::convertDatabaseModel);
     }
 
     @Override
-    protected ActionResponse<MultiUserConfigResponseModel> readAllWithoutChecks() {
-        List<UserConfig> users = userAccessor.getUsers().stream()
-                                     .map(this::convertToCustomUserRoleModel)
-                                     .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, new MultiUserConfigResponseModel(users));
+    protected List<UserModel> getDatabaseModels() {
+        return userAccessor.getUsers();
     }
 
     @Override
-    protected ActionResponse<UserConfig> readWithoutChecks(Long id) {
-        Optional<UserConfig> user = findExisting(id);
-        if (user.isPresent()) {
-            return new ActionResponse<>(HttpStatus.OK, user.get());
-        }
-        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("The user with id: %d not found.", id));
+    protected MultiUserConfigResponseModel createMultiResponseModel(final List<UserConfig> users) {
+        return new MultiUserConfigResponseModel(users);
+    }
+
+    @Override
+    protected UserConfig convertDatabaseModel(UserModel userModel) {
+        // converting to an object to return to the client; remove the password field.
+        // also if the user is external the password is set
+        boolean external = userModel.isExternal();
+        boolean passwordSet = StringUtils.isNotBlank(userModel.getPassword()) || external;
+        Optional<AuthenticationTypeDetails> authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(userModel.getAuthenticationType());
+        String authTypeName = authenticationType.map(AuthenticationTypeDetails::getName).orElse("UNKNOWN");
+        return new UserConfig(
+            userModel.getId().toString(),
+            userModel.getName(),
+            null,
+            userModel.getEmailAddress(),
+            userModel.getRoleNames(),
+            userModel.isExpired(),
+            userModel.isLocked(),
+            userModel.isPasswordExpired(),
+            userModel.isEnabled(),
+            passwordSet,
+            authTypeName,
+            external);
     }
 
     @Override
@@ -148,7 +164,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
             logger.debug(actionMessageCreator.createSuccessMessage("User", userName));
-            return new ActionResponse<>(HttpStatus.CREATED, convertToCustomUserRoleModel(userModel));
+            return new ActionResponse<>(HttpStatus.CREATED, convertDatabaseModel(userModel));
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.createErrorMessage("user", resource.getUsername()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the user. %s", ex.getMessage()));
@@ -178,7 +194,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
                 }
                 userSystemValidator.validateDefaultAdminUser(id);
                 UserConfig user = userAccessor.getUser(id)
-                                      .map(this::convertToCustomUserRoleModel)
+                                      .map(this::convertDatabaseModel)
                                       .orElse(resource);
                 logger.debug(actionMessageCreator.updateSuccessMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);
@@ -208,28 +224,6 @@ public class UserActions extends AbstractResourceActions<UserConfig, MultiUserCo
         }
         logger.warn(actionMessageCreator.deleteNotFoundMessage("User", id));
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
-    }
-
-    private UserConfig convertToCustomUserRoleModel(UserModel userModel) {
-        // converting to an object to return to the client; remove the password field.
-        // also if the user is external the password is set
-        boolean external = userModel.isExternal();
-        boolean passwordSet = StringUtils.isNotBlank(userModel.getPassword()) || external;
-        Optional<AuthenticationTypeDetails> authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(userModel.getAuthenticationType());
-        String authTypeName = authenticationType.map(AuthenticationTypeDetails::getName).orElse("UNKNOWN");
-        return new UserConfig(
-            userModel.getId().toString(),
-            userModel.getName(),
-            null,
-            userModel.getEmailAddress(),
-            userModel.getRoleNames(),
-            userModel.isExpired(),
-            userModel.isLocked(),
-            userModel.isPasswordExpired(),
-            userModel.isEnabled(),
-            passwordSet,
-            authTypeName,
-            external);
     }
 
     private List<AlertFieldStatus> validateCreationRequiredFields(UserConfig userConfig) {
