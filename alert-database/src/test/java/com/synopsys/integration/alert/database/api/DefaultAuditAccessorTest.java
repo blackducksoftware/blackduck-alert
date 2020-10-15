@@ -170,11 +170,11 @@ public class DefaultAuditAccessorTest {
         assertEquals(1, alertPagedModel.getTotalPages());
         assertEquals(pageNumber.intValue(), alertPagedModel.getCurrentPage());
         assertEquals(pageSize, alertPagedModel.getPageSize());
-        assertEquals(2, alertPagedModel.getContent().size());
-        assertEquals(lastSent, alertPagedModel.getContent().get(0).getLastSent());
-        assertEquals(lastSent, alertPagedModel.getContent().get(1).getLastSent());
+        assertEquals(2, alertPagedModel.getModels().size());
+        assertEquals(lastSent, alertPagedModel.getModels().get(0).getLastSent());
+        assertEquals(lastSent, alertPagedModel.getModels().get(1).getLastSent());
 
-        AuditEntryModel auditContentTest = alertPagedModel.getContent().stream().findFirst().orElse(null);
+        AuditEntryModel auditContentTest = alertPagedModel.getModels().stream().findFirst().orElse(null);
 
         assertEquals(auditEntryModel.getId(), auditContentTest.getId());
         assertEquals(notificationConfig, auditContentTest.getNotification());

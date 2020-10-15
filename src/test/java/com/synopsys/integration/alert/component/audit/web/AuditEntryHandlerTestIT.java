@@ -172,12 +172,12 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
         AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.get(null, null, null, null, null, true).getContent().orElse(null);
-        assertEquals(1, auditEntries.getContent().size());
+        assertEquals(1, auditEntries.getModels().size());
 
         AuditEntryModel auditEntryResponse = auditEntryActions.get(savedNotificationEntity.getId()).getContent().orElse(null);
         assertNotNull(auditEntryResponse);
 
-        AuditEntryModel auditEntry = auditEntries.getContent().get(0);
+        AuditEntryModel auditEntry = auditEntries.getModels().get(0);
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
@@ -192,7 +192,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertNotNull(notification.getContent());
 
         auditEntries = auditEntryActions.get(null, null, null, null, null, false).getContent().orElse(null);
-        assertEquals(2, auditEntries.getContent().size());
+        assertEquals(2, auditEntries.getModels().size());
     }
 
     @Test

@@ -30,14 +30,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseJobResourceController;
-import com.synopsys.integration.alert.common.rest.api.ReadAllController;
 import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
@@ -45,7 +46,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)
-public class JobConfigController implements BaseJobResourceController, ReadAllController, TestController<JobFieldModel>, ValidateController<JobFieldModel> {
+public class JobConfigController implements BaseJobResourceController, TestController<JobFieldModel>, ValidateController<JobFieldModel> {
     public static final String JOB_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/job";
     private final JobConfigActions jobConfigActions;
 
@@ -65,8 +66,14 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.checkGlobalConfigExists(descriptorName));
     }
 
-    @Override
     public MultiJobFieldModel getAll() {
+        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
+    }
+
+    public MultiJobFieldModel getPage(
+        @RequestParam(value = "pageNumber", defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
+        @RequestParam(value = "pageSize", defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize
+    ) {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
     }
 

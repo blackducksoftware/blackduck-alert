@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -167,7 +169,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         notificationContentRepository.deleteById(notification.getId());
     }
 
-    public PageRequest getPageRequestForNotifications(Integer pageNumber, Integer pageSize, String sortField, String sortOrder) {
+    public PageRequest getPageRequestForNotifications(@Nullable Integer pageNumber, @Nullable Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
         Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
         Integer size = ObjectUtils.defaultIfNull(pageSize, Integer.MAX_VALUE);
         boolean sortQuery = false;

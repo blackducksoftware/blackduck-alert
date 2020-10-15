@@ -174,7 +174,7 @@ public class AuditEntryActionsTest {
 
         for (int index = 0; index < pageSize; index++) {
             AlertNotificationModel entity = pageResponse.getContent().get(index);
-            AuditEntryModel entryRestModel = restModel.getContent().get(index);
+            AuditEntryModel entryRestModel = restModel.getModels().get(index);
             assertEquals(String.valueOf(entity.getId()), entryRestModel.getId());
         }
     }
@@ -226,6 +226,6 @@ public class AuditEntryActionsTest {
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         //Assert 0 because there aren't any entries in the pageResponse content
         assertEquals(0, restModel.getPageSize());
-        assertTrue(restModel.getContent().isEmpty());
+        assertTrue(restModel.getModels().isEmpty());
     }
 }

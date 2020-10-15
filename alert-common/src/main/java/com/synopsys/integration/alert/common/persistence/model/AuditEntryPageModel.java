@@ -30,4 +30,9 @@ public class AuditEntryPageModel extends AlertPagedModel<AuditEntryModel> {
     public AuditEntryPageModel(int totalPages, int currentPage, int pageSize, List<AuditEntryModel> content) {
         super(totalPages, currentPage, pageSize, content);
     }
+
+    public List<AuditEntryModel> getContent() {
+        return getModels();
+    }
+
 }
