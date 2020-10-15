@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
@@ -48,7 +49,7 @@ import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractJobResourceActions implements JobResourceActions, ValidateAction<JobFieldModel>, TestAction<JobFieldModel> {
+public abstract class AbstractJobResourceActions implements CompositeResourceActions<JobFieldModel, UUID> {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
@@ -100,6 +101,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return createWithoutChecks(resource);
     }
 
+    @Override
     @Deprecated
     public final ActionResponse<MultiJobFieldModel> getAll() {
         Set<String> descriptorNames = getDescriptorNames();
