@@ -39,7 +39,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -81,7 +80,6 @@ import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -123,6 +121,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
+    // FIXME include accessible context and descriptors in query
     public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize) {
         try {
             PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);

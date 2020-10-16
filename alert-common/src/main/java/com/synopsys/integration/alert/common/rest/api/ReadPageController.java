@@ -20,22 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.rest.api;
 
-import java.util.List;
+import java.util.Map;
 
-import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
-public class JobPagedModel extends AlertPagedModel<JobFieldModel> {
-    public JobPagedModel(int totalPages, int currentPage, int pageSize, List<JobFieldModel> models) {
-        super(totalPages, currentPage, pageSize, models);
-    }
-
-    public List<JobFieldModel> getJobs() {
-        return getModels();
-    }
+public interface ReadPageController<P extends AlertPagedModel<?>> {
+    @GetMapping
+    P getPage(
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize,
+        // TODO determine if this actually works as a catch-all for all other query params
+        @RequestParam(defaultValue = "{}") Map<String, String> queryParams
+    );
 
 }

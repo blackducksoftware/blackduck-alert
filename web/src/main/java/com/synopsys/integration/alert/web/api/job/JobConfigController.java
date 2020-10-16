@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.web.api.job;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +31,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseJobResourceController;
+import com.synopsys.integration.alert.common.rest.api.ReadPageController;
 import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
-import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)
-public class JobConfigController implements BaseJobResourceController, TestController<JobFieldModel>, ValidateController<JobFieldModel> {
+public class JobConfigController implements BaseJobResourceController, ReadPageController<JobPagedModel>, TestController<JobFieldModel>, ValidateController<JobFieldModel> {
     public static final String JOB_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/job";
     private final JobConfigActions jobConfigActions;
 
@@ -67,16 +66,8 @@ public class JobConfigController implements BaseJobResourceController, TestContr
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.checkGlobalConfigExists(descriptorName));
     }
 
-    @Deprecated
-    public MultiJobFieldModel getAll() {
-        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
-    }
-
-    // TODO uncomment: @GetMapping
-    public JobPagedModel getPage(
-        @RequestParam(value = "pageNumber", defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
-        @RequestParam(value = "pageSize", defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize
-    ) {
+    @Override
+    public JobPagedModel getPage(Integer pageNumber, Integer pageSize, Map<String, String> queryParams) {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.getPage(pageNumber, pageSize));
     }
 
