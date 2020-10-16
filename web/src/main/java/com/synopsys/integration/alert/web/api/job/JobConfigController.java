@@ -57,6 +57,7 @@ public class JobConfigController implements BaseJobResourceController, ReadPageC
 
     @GetMapping("/validate")
     public List<JobFieldStatuses> getValidationResultsForJobs() {
+        // FIXME this should validate a list of jobs by id
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.validateAllJobs());
     }
 

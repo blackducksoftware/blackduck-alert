@@ -335,6 +335,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
     }
 
+    // FIXME replace this with a method that takes in a collections of jobIds to validate
     public ActionResponse<List<JobFieldStatuses>> validateAllJobs() {
         List<PermissionKey> keys = new LinkedList<>();
         for (Descriptor descriptor : descriptorMap.getDescriptorMap().values()) {
