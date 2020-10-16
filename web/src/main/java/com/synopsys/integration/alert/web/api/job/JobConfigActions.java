@@ -72,6 +72,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
@@ -121,20 +122,22 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize) {
+
         // TODO validate access
 
         // TODO validate paging params
 
         try {
             PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-            Page<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest);
-            List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobs.getSize());
-            for (ConfigurationJobModel configJobModel : pageOfJobs) {
+            AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest);
+            List<ConfigurationJobModel> pageOfJobsModels = pageOfJobs.getModels();
+            List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobsModels.size());
+            for (ConfigurationJobModel configJobModel : pageOfJobsModels) {
                 JobFieldModel jobFieldModel = convertToJobFieldModel(configJobModel);
                 jobFieldModels.add(jobFieldModel);
             }
 
-            JobPagedModel jobPagedModel = new JobPagedModel(pageOfJobs, jobFieldModels);
+            JobPagedModel jobPagedModel = new JobPagedModel(pageOfJobs.getTotalPages(), pageOfJobs.getCurrentPage(), pageOfJobs.getPageSize(), jobFieldModels);
             return new ActionResponse<>(HttpStatus.OK, jobPagedModel);
         } catch (AlertDatabaseConstraintException e) {
             logger.error("Failed to get a page of jobs", e);

@@ -12,11 +12,12 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface JobAccessor {
     List<ConfigurationJobModel> getAllJobs();
 
-    Page<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest);
+    AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest);
 
     Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException;
 

@@ -25,7 +25,10 @@ package com.synopsys.integration.alert.database.configuration.repository;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
@@ -33,4 +36,14 @@ import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 @Component
 public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
     List<ConfigGroupEntity> findByJobId(UUID jobId);
+
+    @Query("SELECT job"
+               + " FROM ConfigGroupEntity job"
+               + " WHERE job.jobId IN ("
+               + "   SELECT DISTINCT distinctJob.jobId"
+               + "   FROM ConfigGroupEntity distinctJob"
+               + " )"
+    )
+    Page<ConfigGroupEntity> findJobsWithDistinctIds(Pageable pageable);
+
 }

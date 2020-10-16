@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -21,6 +22,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
 import com.synopsys.integration.datastructure.SetMap;
@@ -41,22 +43,14 @@ public class DefaultJobAccessor implements JobAccessor {
     @Override
     public List<ConfigurationJobModel> getAllJobs() {
         List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
-        SetMap<UUID, ConfigGroupEntity> jobMap = SetMap.createDefault();
-        for (ConfigGroupEntity entity : jobEntities) {
-            UUID entityJobId = entity.getJobId();
-            jobMap.add(entityJobId, entity);
-        }
-
-        return jobMap.entrySet()
-                   .stream()
-                   .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
-                   .collect(Collectors.toList());
+        return convertToJobModels(jobEntities);
     }
 
     @Override
-    public Page<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest) {
-        // FIXME implement
-        return Page.empty();
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest) {
+        Page<ConfigGroupEntity> jobsWithDistinctIds = configGroupRepository.findJobsWithDistinctIds(pageRequest);
+        List<ConfigurationJobModel> jobModels = convertToJobModels(jobsWithDistinctIds);
+        return new AlertPagedModel<>(jobsWithDistinctIds, jobModels);
     }
 
     @Override
@@ -108,6 +102,19 @@ public class DefaultJobAccessor implements JobAccessor {
         for (Long configId : configIdsForJob) {
             configurationAccessor.deleteConfiguration(configId);
         }
+    }
+
+    private List<ConfigurationJobModel> convertToJobModels(Iterable<ConfigGroupEntity> jobEntities) {
+        SetMap<UUID, ConfigGroupEntity> jobMap = SetMap.createDefault();
+        for (ConfigGroupEntity entity : jobEntities) {
+            UUID entityJobId = entity.getJobId();
+            jobMap.add(entityJobId, entity);
+        }
+
+        return jobMap.entrySet()
+                   .stream()
+                   .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
+                   .collect(Collectors.toList());
     }
 
     private ConfigurationJobModel createJob(UUID oldJobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {

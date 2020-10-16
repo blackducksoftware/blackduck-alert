@@ -32,6 +32,7 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSeri
     public static final String DEFAULT_PAGE_NUMBER = "0";
     public static final String DEFAULT_PAGE_SIZE = "10";
 
+    // FIXME we should use terminology based on "offset" and "limit" which are standard REST API paging terms
     private final int totalPages;
     private final int currentPage;
     private final int pageSize;
@@ -61,7 +62,7 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSeri
     }
 
     @JsonIgnore
-    protected List<M> getModels() {
+    public List<M> getModels() {
         return models;
     }
 

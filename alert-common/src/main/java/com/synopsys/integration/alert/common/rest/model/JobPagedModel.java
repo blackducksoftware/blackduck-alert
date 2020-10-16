@@ -8,8 +8,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
 public class JobPagedModel extends AlertPagedModel<JobFieldModel> {
-    public JobPagedModel(Page<?> page, List<JobFieldModel> jobs) {
-        super(page, jobs);
+    public JobPagedModel(int totalPages, int currentPage, int pageSize, List<JobFieldModel> models) {
+        super(totalPages, currentPage, pageSize, models);
     }
 
     public List<JobFieldModel> getJobs() {
