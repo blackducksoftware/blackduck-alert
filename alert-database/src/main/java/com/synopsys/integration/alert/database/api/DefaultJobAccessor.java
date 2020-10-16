@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -41,6 +40,7 @@ public class DefaultJobAccessor implements JobAccessor {
     }
 
     @Override
+    @Deprecated
     public List<ConfigurationJobModel> getAllJobs() {
         List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
         return convertToJobModels(jobEntities);
@@ -48,7 +48,7 @@ public class DefaultJobAccessor implements JobAccessor {
 
     @Override
     public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest) {
-        Page<ConfigGroupEntity> jobsWithDistinctIds = configGroupRepository.findJobsWithDistinctIds(pageRequest);
+        Page<ConfigGroupEntity> jobsWithDistinctIds = configGroupRepository.findJobsWithDistinctJobIds(pageRequest);
         List<ConfigurationJobModel> jobModels = convertToJobModels(jobsWithDistinctIds);
         return new AlertPagedModel<>(jobsWithDistinctIds, jobModels);
     }
@@ -66,6 +66,7 @@ public class DefaultJobAccessor implements JobAccessor {
     }
 
     @Override
+    // FIXME not only does this check frequency in memory rather than in the query, but it is also unpaged
     public List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency) {
         return getAllJobs()
                    .stream()

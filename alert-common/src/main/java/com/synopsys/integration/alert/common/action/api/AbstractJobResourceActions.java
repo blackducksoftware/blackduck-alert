@@ -48,6 +48,7 @@ import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 
 public abstract class AbstractJobResourceActions implements CompositeResourceActions<JobFieldModel, UUID> {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
@@ -64,6 +65,8 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
     protected abstract ActionResponse<JobFieldModel> createWithoutChecks(JobFieldModel resource);
 
     protected abstract ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id);
+
+    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize);
 
     protected abstract ActionResponse<MultiJobFieldModel> readAllWithoutChecks();
 
@@ -99,6 +102,19 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
         return createWithoutChecks(resource);
+    }
+
+    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize) {
+        Optional<ActionResponse<JobPagedModel>> pagingErrorResponse = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
+        if (pagingErrorResponse.isPresent()) {
+            return pagingErrorResponse.get();
+        }
+
+        Set<String> descriptorNames = getDescriptorNames();
+        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
+            return ActionResponse.createForbiddenResponse();
+        }
+        return readPageWithoutChecks(pageNumber, pageSize);
     }
 
     @Override

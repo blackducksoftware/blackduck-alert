@@ -81,6 +81,7 @@ import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -121,12 +122,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize) {
-
-        // TODO validate access
-
-        // TODO validate paging params
-
+    @Override
+    public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize) {
         try {
             PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
             AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest);

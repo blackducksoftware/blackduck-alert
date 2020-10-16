@@ -44,6 +44,6 @@ public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, 
                + "   FROM ConfigGroupEntity distinctJob"
                + " )"
     )
-    Page<ConfigGroupEntity> findJobsWithDistinctIds(Pageable pageable);
+    Page<ConfigGroupEntity> findJobsWithDistinctJobIds(Pageable pageable);
 
 }
