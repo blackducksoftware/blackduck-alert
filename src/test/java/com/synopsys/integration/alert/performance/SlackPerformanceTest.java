@@ -13,6 +13,10 @@ import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -40,7 +44,7 @@ public class SlackPerformanceTest extends IntegrationPerformanceTest {
 
         // Create the Black Duck Global provider configuration
         blackDuckProviderID = setupBlackDuck();
-        
+
         logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalDateTime.now());
         startingTime = LocalDateTime.now();
 
@@ -61,23 +65,23 @@ public class SlackPerformanceTest extends IntegrationPerformanceTest {
 
     private String createSlackJob() throws Exception {
         Map<String, FieldValueModel> providerKeyToValues = new HashMap<>();
-        providerKeyToValues.put("provider.common.config.id", new FieldValueModel(List.of(blackDuckProviderID), true));
-        providerKeyToValues.put("provider.distribution.notification.types", new FieldValueModel(List.of("BOM_EDIT", "POLICY_OVERRIDE", "RULE_VIOLATION", "RULE_VIOLATION_CLEARED", "VULNERABILITY"), true));
-        providerKeyToValues.put("provider.distribution.processing.type", new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
-        providerKeyToValues.put("channel.common.filter.by.project", new FieldValueModel(List.of("true"), true));
-        providerKeyToValues.put("channel.common.configured.project", new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProjectName()), true));
+        providerKeyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(List.of(blackDuckProviderID), true));
+        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, new FieldValueModel(List.of("BOM_EDIT", "POLICY_OVERRIDE", "RULE_VIOLATION", "RULE_VIOLATION_CLEARED", "VULNERABILITY"), true));
+        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
+        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, new FieldValueModel(List.of("true"), true));
+        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProjectName()), true));
         FieldModel jobProviderConfiguration = new FieldModel(getBlackDuckProperties().getBlackDuckProviderKey(), ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
 
         Map<String, FieldValueModel> slackKeyToValues = new HashMap<>();
-        slackKeyToValues.put("channel.common.enabled", new FieldValueModel(List.of("true"), true));
-        slackKeyToValues.put("channel.common.channel.name", new FieldValueModel(List.of(slackProperties.getSlackChannelKey()), true));
-        slackKeyToValues.put("channel.common.name", new FieldValueModel(List.of(SLACK_PERFORMANCE_JOB_NAME), true));
-        slackKeyToValues.put("channel.common.frequency", new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        slackKeyToValues.put("channel.common.provider.name", new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProviderKey()), true));
+        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
+        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(slackProperties.getSlackChannelKey()), true));
+        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(SLACK_PERFORMANCE_JOB_NAME), true));
+        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
+        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProviderKey()), true));
 
-        slackKeyToValues.put("channel.slack.webhook", new FieldValueModel(List.of(slackProperties.getSlackChannelWebhook()), true));
-        slackKeyToValues.put("channel.slack.channel.name", new FieldValueModel(List.of(slackProperties.getSlackChannelName()), true));
-        slackKeyToValues.put("channel.slack.channel.username", new FieldValueModel(List.of(slackProperties.getSlackChannelUsername()), true));
+        slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(slackProperties.getSlackChannelWebhook()), true));
+        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(slackProperties.getSlackChannelName()), true));
+        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(slackProperties.getSlackChannelUsername()), true));
 
         FieldModel jobSlackConfiguration = new FieldModel(slackProperties.getSlackChannelKey(), ConfigContextEnum.DISTRIBUTION.name(), slackKeyToValues);
 

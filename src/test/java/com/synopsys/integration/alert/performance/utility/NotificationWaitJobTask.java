@@ -57,7 +57,7 @@ public class NotificationWaitJobTask implements WaitJobTask {
                                                            .findFirst();
         if (matchingAuditEntry.isPresent()) {
             AuditEntryModel auditEntryModel = matchingAuditEntry.get();
-            intLogger.info(String.format("The notification has been processed by %s jobs.", auditEntryModel.getJobs().size()));
+            intLogger.info(String.format("The notification has been received by %s jobs.", auditEntryModel.getJobs().size()));
             return haveAllJobsSuccessfullyProcessed(auditEntryModel.getJobs());
         }
         return false;
@@ -77,19 +77,30 @@ public class NotificationWaitJobTask implements WaitJobTask {
         return notification.getNewVulnerabilityCount() > 0;
     }
 
-    private boolean haveAllJobsSuccessfullyProcessed(List<JobAuditModel> auditJobs) {
+    private boolean haveAllJobsSuccessfullyProcessed(List<JobAuditModel> auditJobs) throws IntegrationException {
         if (auditJobs.size() != jobIdsToMatch.size()) {
             return false;
         }
         boolean allJobsSuccessful = auditJobs.stream()
-                                        .allMatch(jobAuditModel -> AuditEntryStatus.SUCCESS.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()));
+                                        .allMatch(this::jobFinished);
         List<String> remainingJobs = new ArrayList<>(jobIdsToMatch);
         auditJobs.stream()
             .forEach(jobAuditModel -> remainingJobs.remove(jobAuditModel.getConfigId()));
 
+        intLogger.info(String.format("%s Jobs still processing the notification.", remainingJobs.size()));
         if (allJobsSuccessful && remainingJobs.isEmpty()) {
+            boolean foundFailedJobs = auditJobs.stream()
+                                          .anyMatch(jobAuditModel -> AuditEntryStatus.FAILURE.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()));
+            if (foundFailedJobs) {
+                throw new IntegrationException("Some of the jobs failed to process the notification.");
+            }
             return true;
         }
         return false;
+    }
+
+    private boolean jobFinished(JobAuditModel jobAuditModel) {
+        return AuditEntryStatus.SUCCESS.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()) ||
+                   AuditEntryStatus.FAILURE.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus());
     }
 }

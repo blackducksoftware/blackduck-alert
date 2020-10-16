@@ -22,7 +22,6 @@ public class ExternalAlertRequestUtility implements AlertRequestUtility {
     }
 
     public void loginToExternalAlert() throws IntegrationException {
-        //String loginBody = "{\"blackDuckUsername\":\"sysadmin\",\"blackDuckPassword\":\"blackduck\"}";
         String loginBody = "{\"alertUsername\":\"sysadmin\",\"alertPassword\":\"blackduck\"}";
         BodyContent requestBody = new StringBodyContent(loginBody);
         Request.Builder requestBuilder = createRequestBuilder("/api/login");

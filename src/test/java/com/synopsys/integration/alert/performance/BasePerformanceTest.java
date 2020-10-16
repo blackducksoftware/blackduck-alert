@@ -149,6 +149,7 @@ public abstract class BasePerformanceTest {
     }
 
     public void logTimeElapsedWithMessage(String messageFormat, LocalDateTime start, LocalDateTime end) {
+        //TODO log timing to a file
         Duration duration = Duration.between(start, end);
         String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
         intLogger.info(String.format(messageFormat, durationFormatted));
