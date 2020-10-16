@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.action.api;
 
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -65,7 +65,7 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
 
     protected abstract ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id);
 
-    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize);
+    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession);
 
     protected abstract ActionResponse<MultiJobFieldModel> readAllWithoutChecks();
 
@@ -109,30 +109,25 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
             return pagingErrorResponse.get();
         }
 
+        String relevantContextName = ConfigContextEnum.DISTRIBUTION.name();
         Set<String> descriptorNames = getDescriptorNames();
-        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
+        Set<String> permittedDescriptorsForSession = new HashSet<>();
+        for (String descriptorName : descriptorNames) {
+            if (authorizationManager.hasReadPermission(relevantContextName, descriptorName)) {
+                permittedDescriptorsForSession.add(descriptorName);
+            }
+        }
+
+        if (permittedDescriptorsForSession.isEmpty()) {
             return ActionResponse.createForbiddenResponse();
         }
-        return readPageWithoutChecks(pageNumber, pageSize);
+        return readPageWithoutChecks(pageNumber, pageSize, permittedDescriptorsForSession);
     }
 
     @Override
     @Deprecated
     public final ActionResponse<MultiJobFieldModel> getAll() {
-        Set<String> descriptorNames = getDescriptorNames();
-        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
-            return ActionResponse.createForbiddenResponse();
-        }
-        List<JobFieldModel> models = new LinkedList<>();
-        ActionResponse<MultiJobFieldModel> response = readAllWithoutChecks();
-        List<JobFieldModel> allModels = response.getContent().map(MultiJobFieldModel::getJobs).orElse(List.of());
-        for (JobFieldModel jobModel : allModels) {
-            boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
-            if (includeJob) {
-                models.add(jobModel);
-            }
-        }
-        return new ActionResponse<>(HttpStatus.OK, new MultiJobFieldModel(models));
+        return new ActionResponse<>(HttpStatus.GONE);
     }
 
     @Override

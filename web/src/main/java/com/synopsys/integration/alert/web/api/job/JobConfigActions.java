@@ -121,11 +121,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    // FIXME include accessible context and descriptors in query
-    public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize) {
+    // FIXME include accessible descriptors in query
+    public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession) {
         try {
             PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-            AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest);
+            AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest, permittedDescriptorsForSession);
             List<ConfigurationJobModel> pageOfJobsModels = pageOfJobs.getModels();
             List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobsModels.size());
             for (ConfigurationJobModel configJobModel : pageOfJobsModels) {

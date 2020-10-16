@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.database.configuration.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
@@ -37,13 +39,18 @@ import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
     List<ConfigGroupEntity> findByJobId(UUID jobId);
 
-    @Query("SELECT job"
+    List<ConfigGroupEntity> findAllByJobIdIn(Collection<UUID> jobIds);
+
+    @Query("SELECT DISTINCT job.jobId"
                + " FROM ConfigGroupEntity job"
-               + " WHERE job.jobId IN ("
-               + "   SELECT DISTINCT distinctJob.jobId"
-               + "   FROM ConfigGroupEntity distinctJob"
+               + " WHERE job.jobId NOT IN ("
+               + "   SELECT excludedJob.jobId"
+               + "   FROM ConfigGroupEntity excludedJob"
+               + "   JOIN excludedJob.descriptorConfigEntity descConf ON excludedJob.configId = descConf.id"
+               + "   JOIN descConf.registeredDescriptorEntity regDesc ON descConf.descriptorId = regDesc.id"
+               + "   WHERE regDesc.name NOT IN :descriptors"
                + " )"
     )
-    Page<ConfigGroupEntity> findJobsWithDistinctJobIds(Pageable pageable);
+    Page<UUID> findDistinctJobIdsOnlyIncludingProvidedDescriptors(@Param("descriptors") Collection<String> descriptors, Pageable pageable);
 
 }

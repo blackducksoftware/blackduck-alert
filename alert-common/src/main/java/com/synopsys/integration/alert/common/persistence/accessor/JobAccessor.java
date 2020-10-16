@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 public interface JobAccessor {
     List<ConfigurationJobModel> getAllJobs();
 
-    AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest);
+    AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest, Collection<String> descriptorsNamesToInclude);
 
     Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException;
 
