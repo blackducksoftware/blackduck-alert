@@ -120,7 +120,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    // FIXME include accessible descriptors in query
     public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession) {
         try {
             PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
