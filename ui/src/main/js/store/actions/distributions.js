@@ -17,6 +17,7 @@ import { unauthorized } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as RequestUtilities from 'util/RequestUtilities'
 import HeaderUtilities from 'util/HeaderUtilities';
 
 function updateJobWithAuditInfo(job) {
@@ -221,19 +222,23 @@ export function fetchDistributionJobs(pageOffset, pageLimit) {
     };
 }
 
-export function fetchJobsValidationResults() {
+export function validateCurrentJobs() {
     return (dispatch, getState) => {
         dispatch(jobsValidationFetching());
-        const { csrfToken } = getState().session;
+        const { session, distributions } = getState();
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
-        headersUtil.addXCsrfToken(csrfToken);
-        fetch(`${ConfigRequestBuilder.JOB_API_URL}/validate`, {
-            credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
+        headersUtil.addXCsrfToken(session.csrfToken);
+
+        const jobIdsToValidate = [];
+        distributions.jobs.forEach(job => {
+            jobIdsToValidate.push(job.jobId);
+        });
+        RequestUtilities.createPostRequest(`${ConfigRequestBuilder.JOB_API_URL}/validateJobsById`, session.csrfToken, {
+            jobIds: jobIdsToValidate
         })
             .then((response) => {
                 response.json()

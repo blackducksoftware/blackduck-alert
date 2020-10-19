@@ -13,8 +13,8 @@ import DescriptorLabel from 'component/common/DescriptorLabel';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import {
     fetchDistributionJobs,
-    fetchJobsValidationResults,
-    openJobDeleteModal
+    openJobDeleteModal,
+    validateCurrentJobs
 } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
@@ -183,7 +183,7 @@ class Index extends Component {
     reloadJobs() {
         const { currentPage, currentPageSize } = this.state;
         this.props.fetchDistributionJobs(currentPage, currentPageSize);
-        this.props.fetchJobsValidationResults();
+        this.props.validateCurrentJobsAction();
     }
 
     cancelRowSelect() {
@@ -616,7 +616,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     openJobDeleteModal: () => dispatch(openJobDeleteModal()),
     fetchDistributionJobs: (pageOffset, pageLimit) => dispatch(fetchDistributionJobs(pageOffset, pageLimit)),
-    fetchJobsValidationResults: () => dispatch(fetchJobsValidationResults())
+    validateCurrentJobsAction: () => dispatch(validateCurrentJobs())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

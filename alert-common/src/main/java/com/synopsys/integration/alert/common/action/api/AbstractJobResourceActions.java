@@ -67,8 +67,6 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
 
     protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession);
 
-    protected abstract ActionResponse<MultiJobFieldModel> readAllWithoutChecks();
-
     protected abstract ValidationActionResponse testWithoutChecks(JobFieldModel resource);
 
     protected abstract ActionResponse<JobFieldModel> updateWithoutChecks(UUID id, JobFieldModel resource);

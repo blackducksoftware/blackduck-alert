@@ -39,6 +39,8 @@ public interface JobAccessor {
     @Deprecated(forRemoval = true)
     List<ConfigurationJobModel> getAllJobs();
 
+    List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds);
+
     AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest, Collection<String> descriptorsNamesToInclude);
 
     Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException;
