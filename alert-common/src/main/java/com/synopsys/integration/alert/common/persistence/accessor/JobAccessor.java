@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface JobAccessor {
+    @Deprecated(forRemoval = true)
     List<ConfigurationJobModel> getAllJobs();
 
     AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest, Collection<String> descriptorsNamesToInclude);

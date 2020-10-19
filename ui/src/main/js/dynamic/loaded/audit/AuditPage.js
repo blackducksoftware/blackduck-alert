@@ -27,6 +27,7 @@ class AuditPage extends Component {
         super(props);
         this.state = {
             entries: [],
+            // FIXME currentPage should start at 0
             currentPage: 1,
             currentPageSize: 10,
             searchTerm: '',

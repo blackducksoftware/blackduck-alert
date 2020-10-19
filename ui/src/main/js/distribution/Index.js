@@ -2,19 +2,30 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+    BootstrapTable,
+    DeleteButton,
+    InsertButton,
+    TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
-import { fetchDistributionJobs, fetchJobsValidationResults, openJobDeleteModal } from 'store/actions/distributions';
+import {
+    fetchDistributionJobs,
+    fetchJobsValidationResults,
+    openJobDeleteModal
+} from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import DistributionConfiguration, {
-    KEY_CHANNEL_NAME, KEY_ENABLED, KEY_FREQUENCY, KEY_NAME, KEY_PROVIDER_NAME
+    KEY_CHANNEL_NAME,
+    KEY_ENABLED,
+    KEY_FREQUENCY,
+    KEY_NAME,
+    KEY_PROVIDER_NAME
 } from 'dynamic/DistributionConfiguration';
 import StatusMessage from 'field/StatusMessage';
 
@@ -85,19 +96,35 @@ class Index extends Component {
         this.onJobDeleteSubmit = this.onJobDeleteSubmit.bind(this);
         this.descriptorDataFormat = this.descriptorDataFormat.bind(this);
         this.nameDataFormat = this.nameDataFormat.bind(this);
+        this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
+        // Paging
+        this.onPageChange = this.onPageChange.bind(this);
+        this.onSizePerPageListChange = this.onSizePerPageListChange.bind(this);
+        this.onSearchChange = this.onSearchChange.bind(this);
+        this.onSortChange = this.onSortChange.bind(this);
+        this.onSortChange = this.onSortChange.bind(this);
+        this.onRowClick = this.onRowClick.bind(this);
 
         this.state = {
+            currentPage: 1,
+            currentPageSize: 10,
             currentRowSelected: null,
             jobsToDelete: [],
             showDeleteModal: false,
             nextDelete: null,
             modificationState: jobModificationState.EDIT
         };
-        this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
     }
 
     componentDidMount() {
         this.reloadJobs();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { currentPage, currentPageSize } = this.state;
+        if (prevState.currentPage !== currentPage || prevState.currentPageSize !== currentPageSize) {
+            this.reloadJobs();
+        }
     }
 
     onJobDeleteSubmit() {
@@ -114,7 +141,7 @@ class Index extends Component {
     }
 
     getCurrentJobConfig() {
-        const { currentRowSelected, modificationState } = this.state;
+        const { currentPage, currentPageSize, currentRowSelected, modificationState } = this.state;
         if (currentRowSelected != null) {
             const { id } = currentRowSelected;
             return (
@@ -123,7 +150,7 @@ class Index extends Component {
                     onSave={this.saveBtn}
                     jobId={id}
                     onModalClose={() => {
-                        this.props.fetchDistributionJobs();
+                        this.props.fetchDistributionJobs(currentPage, currentPageSize);
                         this.cancelRowSelect();
                     }}
                     isUpdatingJob={modificationState === jobModificationState.EDIT}
@@ -134,12 +161,13 @@ class Index extends Component {
     }
 
     createCustomModal(onModalClose) {
+        const { currentPage, currentPageSize } = this.state;
         return (
             <DistributionConfiguration
                 projects={this.state.projects}
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
-                    this.props.fetchDistributionJobs();
+                    this.props.fetchDistributionJobs(currentPage, currentPageSize);
                     this.cancelRowSelect();
                     onModalClose();
                 }}
@@ -154,7 +182,8 @@ class Index extends Component {
     }
 
     reloadJobs() {
-        this.props.fetchDistributionJobs();
+        const { currentPage, currentPageSize } = this.state;
+        this.props.fetchDistributionJobs(currentPage, currentPageSize);
         this.props.fetchJobsValidationResults();
     }
 
@@ -336,17 +365,62 @@ class Index extends Component {
         return false;
     }
 
+    onPageChange(page, sizePerPage) {
+        this.setState({
+            currentPage: page,
+            sizePerPage: sizePerPage
+        });
+    }
+
+    onSizePerPageListChange(sizePerPage) {
+        this.setState({
+            currentPageSize: sizePerPage
+        });
+    }
+
+    onSearchChange(searchText, colInfos, multiColumnSearch) {
+        // Not currently supported
+    }
+
+    onSortChange(sortName, sortOrder) {
+        // Not currently supported
+    }
+
+    onRowClick(row) {
+        // Do nothing
+    }
+
     render() {
+        const { currentPage, currentPageSize, currentRowSelected, showDeleteModal } = this.state;
+        const { totalPageCount } = this.props;
+
         const tableData = this.createTableData(this.props.jobs);
+
         const jobTableOptions = {
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No jobs configured',
             clearSearch: true,
             insertModal: this.createCustomModal,
             handleConfirmDeleteRow: this.customJobConfigDeletionConfirm,
-            defaultSortName: 'name',
-            defaultSortOrder: 'asc',
-            onRowDoubleClick: this.editButtonClicked
+            // defaultSortName: 'name',
+            // defaultSortOrder: 'asc',
+            onRowDoubleClick: this.editButtonClicked,
+
+            // Page Variables
+            sizePerPage: currentPageSize,
+            page: currentPage,
+
+            // Page Functions
+            onPageChange: this.onPageChange,
+            onSizePerPageList: this.onSizePerPageListChange,
+            onSearchChange: this.onSearchChange,
+            onSortChange: this.onSortChange,
+            onRowClick: this.onRowClick
+        };
+
+        // Displays the # of pages for the table
+        const tableFetchInfo = {
+            dataTotalSize: totalPageCount * currentPageSize
         };
 
         const jobsSelectRowProp = {
@@ -365,7 +439,7 @@ class Index extends Component {
 
         // TODO: Refresh is enabled on insert, but disabled on edit and delete modals
         // TODO: Convert to TableDisplay to resolve autoRefresh issues
-        const shouldRefresh = !this.state.currentRowSelected && !this.state.showDeleteModal;
+        const shouldRefresh = !currentRowSelected && !showDeleteModal;
 
         const content = (
             <div>
@@ -385,11 +459,15 @@ class Index extends Component {
                     deleteRow={canDelete}
                     selectRow={jobsSelectRowProp}
                     options={jobTableOptions}
-                    search
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
                     ref="table"
+
+                    search
+                    pagination
+                    remote
+                    fetchInfo={tableFetchInfo}
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
                     <TableHeaderColumn
@@ -511,6 +589,7 @@ Index.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object),
     inProgress: PropTypes.bool.isRequired,
     jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    totalPageCount: PropTypes.number,
     jobConfigTableMessage: PropTypes.string,
     jobsValidationResults: PropTypes.arrayOf(PropTypes.object),
     errorMessage: PropTypes.string
@@ -529,6 +608,7 @@ const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
     inProgress: state.distributions.inProgress,
     jobs: state.distributions.jobs,
+    totalPageCount: state.distributions.totalPages,
     jobConfigTableMessage: state.distributions.jobConfigTableMessage,
     jobsValidationResults: state.distributions.jobsValidationResult,
     errorMessage: state.distributions.error.message
@@ -536,7 +616,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     openJobDeleteModal: () => dispatch(openJobDeleteModal()),
-    fetchDistributionJobs: () => dispatch(fetchDistributionJobs()),
+    fetchDistributionJobs: (pageOffset, pageLimit) => dispatch(fetchDistributionJobs(pageOffset, pageLimit)),
     fetchJobsValidationResults: () => dispatch(fetchJobsValidationResults())
 });
 

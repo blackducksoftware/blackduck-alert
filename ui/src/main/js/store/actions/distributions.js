@@ -32,9 +32,10 @@ function fetchingAllJobs() {
     };
 }
 
-function allJobsFetched() {
+function allJobsFetched(totalPages) {
     return {
-        type: DISTRIBUTION_JOB_FETCHED_ALL
+        type: DISTRIBUTION_JOB_FETCHED_ALL,
+        totalPages
     };
 }
 
@@ -171,7 +172,7 @@ export function deleteDistributionJob(job) {
     };
 }
 
-export function fetchDistributionJobs() {
+export function fetchDistributionJobs(pageOffset, pageLimit) {
     return (dispatch, getState) => {
         dispatch(fetchingAllJobs());
         const { csrfToken } = getState().session;
@@ -182,7 +183,11 @@ export function fetchDistributionJobs() {
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
-        fetch(ConfigRequestBuilder.JOB_API_URL, {
+
+        pageOffset = pageOffset ? pageOffset - 1 : 0;
+        pageLimit = pageLimit ? pageLimit : 10;
+        const requestUrl = `${ConfigRequestBuilder.JOB_API_URL}?pageNumber=${pageOffset}&pageSize=${pageLimit}`;
+        fetch(requestUrl, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()
         })
@@ -194,7 +199,7 @@ export function fetchDistributionJobs() {
                             jobs.forEach((jobConfig) => {
                                 dispatch(fetchAuditInfoForJob(jobConfig));
                             });
-                            dispatch(allJobsFetched());
+                            dispatch(allJobsFetched(responseData.totalPages));
                         } else {
                             errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
                                 let message = '';
