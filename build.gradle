@@ -77,7 +77,7 @@ repositories {
 }
 
 dependencies {
-    api platform(project(':alert-platform'))
+    implementation platform(project(':alert-platform'))
 
     implementation project(':alert-common')
     implementation project(':alert-database')
