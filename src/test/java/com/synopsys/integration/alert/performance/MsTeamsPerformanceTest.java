@@ -9,7 +9,7 @@ import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -19,16 +19,16 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.performance.model.SlackPerformanceProperties;
+import com.synopsys.integration.alert.performance.model.MsTeamsPerformanceProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
-public class SlackPerformanceTest extends IntegrationPerformanceTest {
-    private final static String SLACK_PERFORMANCE_JOB_NAME = "Slack Performance Job";
-    private final SlackPerformanceProperties slackProperties = new SlackPerformanceProperties();
+public class MsTeamsPerformanceTest extends IntegrationPerformanceTest {
+    private final static String MS_TEAMS_PERFORMANCE_JOB_NAME = "MsTeams Performance Job";
+    private final MsTeamsPerformanceProperties msTeamsProperties = new MsTeamsPerformanceProperties();
 
     @Test
     @Ignore
-    public void testSlackJob() throws Exception {
+    public void testMsTeamsJob() throws Exception {
         runTest();
     }
 
@@ -42,18 +42,16 @@ public class SlackPerformanceTest extends IntegrationPerformanceTest {
         providerKeyToValues.put(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProjectName()), true));
         FieldModel jobProviderConfiguration = new FieldModel(getBlackDuckProperties().getBlackDuckProviderKey(), ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
 
-        Map<String, FieldValueModel> slackKeyToValues = new HashMap<>();
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(slackProperties.getSlackChannelKey()), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(getJobName()), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProviderKey()), true));
+        Map<String, FieldValueModel> msTeamsKeyToValues = new HashMap<>();
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(msTeamsProperties.getMsTeamsChannelKey()), true));
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(getJobName()), true));
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProviderKey()), true));
 
-        slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(slackProperties.getSlackChannelWebhook()), true));
-        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(slackProperties.getSlackChannelName()), true));
-        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(slackProperties.getSlackChannelUsername()), true));
+        msTeamsKeyToValues.put(MsTeamsDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(msTeamsProperties.getMsTeamsWebhook()), true));
 
-        FieldModel jobSlackConfiguration = new FieldModel(slackProperties.getSlackChannelKey(), ConfigContextEnum.DISTRIBUTION.name(), slackKeyToValues);
+        FieldModel jobSlackConfiguration = new FieldModel(msTeamsProperties.getMsTeamsChannelKey(), ConfigContextEnum.DISTRIBUTION.name(), msTeamsKeyToValues);
 
         JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobSlackConfiguration, jobProviderConfiguration));
 
@@ -69,7 +67,7 @@ public class SlackPerformanceTest extends IntegrationPerformanceTest {
 
     @Override
     public String getJobName() {
-        return SLACK_PERFORMANCE_JOB_NAME;
+        return MS_TEAMS_PERFORMANCE_JOB_NAME;
     }
 
 }

@@ -83,6 +83,7 @@ public class ScalingPerformanceTest extends BasePerformanceTest {
         LocalDateTime startingNotificationWaitForTenJobs = LocalDateTime.now();
         // check that all jobs have processed the notification successfully, log how long it took
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, getDateTimeFormatter(), getGson(), getAlertRequestUtility(), startingNotificationSearchDateTime, jobIds);
+        notificationWaitJobTask.setFailOnJobFailure(false);
         WaitJob waitForNotificationToBeProcessed = WaitJob.create(intLogger, 900, startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 30, notificationWaitJobTask);
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
         logTimeElapsedWithMessage("Waiting for " + numberOfJobsToCreate + " jobs to process the notification took %s", startingNotificationWaitForTenJobs, LocalDateTime.now());

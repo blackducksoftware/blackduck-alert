@@ -29,6 +29,8 @@ public class NotificationWaitJobTask implements WaitJobTask {
     private final LocalDateTime startSearchTime;
     private final List<String> jobIdsToMatch;
 
+    private boolean failOnJobFailure = true;
+
     public NotificationWaitJobTask(IntLogger intLogger, DateTimeFormatter dateTimeFormatter, Gson gson, AlertRequestUtility alertRequestUtility, LocalDateTime startSearchTime, String jobIdToMatch) {
         this(intLogger, dateTimeFormatter, gson, alertRequestUtility, startSearchTime, List.of(jobIdToMatch));
     }
@@ -89,10 +91,12 @@ public class NotificationWaitJobTask implements WaitJobTask {
 
         intLogger.info(String.format("%s Jobs still processing the notification.", remainingJobs.size()));
         if (allJobsSuccessful && remainingJobs.isEmpty()) {
-            boolean foundFailedJobs = auditJobs.stream()
-                                          .anyMatch(jobAuditModel -> AuditEntryStatus.FAILURE.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()));
-            if (foundFailedJobs) {
-                throw new IntegrationException("Some of the jobs failed to process the notification.");
+            if (failOnJobFailure) {
+                boolean foundFailedJobs = auditJobs.stream()
+                                              .anyMatch(jobAuditModel -> AuditEntryStatus.FAILURE.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()));
+                if (foundFailedJobs) {
+                    throw new IntegrationException("Some of the jobs failed to process the notification.");
+                }
             }
             return true;
         }
@@ -102,5 +106,9 @@ public class NotificationWaitJobTask implements WaitJobTask {
     private boolean jobFinished(JobAuditModel jobAuditModel) {
         return AuditEntryStatus.SUCCESS.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus()) ||
                    AuditEntryStatus.FAILURE.getDisplayName().equals(jobAuditModel.getAuditJobStatusModel().getStatus());
+    }
+
+    public void setFailOnJobFailure(boolean failOnJobFailure) {
+        this.failOnJobFailure = failOnJobFailure;
     }
 }
