@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.service;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.springframework.stereotype.Component;
 

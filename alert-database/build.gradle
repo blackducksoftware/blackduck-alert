@@ -13,13 +13,13 @@ buildscript {
 
 def alertDatabaseDockerImageVersion = '1.0.3-SNAPSHOT'
 
-ext {
-    moduleName = 'com.synopsys.integration.alert.database'
-}
+ext.moduleName = 'com.synopsys.integration.alert.database'
 
 apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
+    implementation project(':alert-common')
+
     runtimeOnly 'org.postgresql:postgresql:42.2.8'
     runtimeOnly 'org.liquibase:liquibase-core:3.8.9'
 
@@ -28,10 +28,19 @@ dependencies {
     // https://www.codejava.net/frameworks/hibernate/solved-jdbcconnectionexception-unable-to-acquire-jdbc-connection-with-hibernate-and-mysql
     runtimeClasspath 'org.hibernate:hibernate-c3p0:5.4.2.Final'
 
-    implementation project(':alert-common')
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.data:spring-data-jpa'
+    implementation 'jakarta.persistence:jakarta.persistence-api'
+    implementation 'org.hibernate:hibernate-core'
+    implementation 'com.zaxxer:HikariCP'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation 'org.springframework.security:spring-security-core'
 
     // Deprecated for removal in 8.0.0. We still need the h2 jar bundled for use in the docker-entrypoint to upgrade a pre 6.0.0 database.
     runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.mockito:mockito-core'
 }
 
 task dockerLogin(type: Exec) {
