@@ -263,19 +263,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private ValidationResponseModel validateJobNameUnique(@Nullable UUID currentJobId, FieldModel fieldModel) {
-        Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME);
+        Optional<String> optionalJobName = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME)
+                                               .flatMap(FieldValueModel::getValue);
         String error = "";
-        if (jobNameFieldOptional.isPresent()) {
-            String jobName = jobNameFieldOptional.get().getValue().orElse(null);
+        if (optionalJobName.isPresent()) {
+            String jobName = optionalJobName.get();
             if (StringUtils.isNotBlank(jobName)) {
-                List<ConfigurationJobModel> jobs = jobAccessor.getAllJobs();
-
-                boolean foundDuplicateName = jobs.stream()
-                                                 .filter(job -> filterOutMatchingJobs(currentJobId, job))
-                                                 .flatMap(job -> job.getCopyOfConfigurations().stream())
-                                                 .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
-                                                 .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                 .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
+                // Find an existing job with the name that does not have the same id as currentJobId.
+                boolean foundDuplicateName = jobAccessor.getJobByName(jobName)
+                                                 .filter(job -> !job.getJobId().equals(currentJobId))
+                                                 .isPresent();
                 if (foundDuplicateName) {
                     error = "A distribution configuration with this name already exists.";
                 }

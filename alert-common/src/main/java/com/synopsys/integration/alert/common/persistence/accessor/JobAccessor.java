@@ -43,7 +43,9 @@ public interface JobAccessor {
 
     AlertPagedModel<ConfigurationJobModel> getPageOfJobs(PageRequest pageRequest, Collection<String> descriptorsNamesToInclude);
 
-    Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException;
+    Optional<ConfigurationJobModel> getJobById(UUID jobId);
+
+    Optional<ConfigurationJobModel> getJobByName(String jobName);
 
     List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency);
 

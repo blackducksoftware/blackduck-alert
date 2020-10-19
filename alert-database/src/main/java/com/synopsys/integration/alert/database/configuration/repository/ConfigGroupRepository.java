@@ -33,11 +33,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 
 @Component
 public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
     List<ConfigGroupEntity> findByJobId(UUID jobId);
+
+    @Query("SELECT job"
+               + " FROM ConfigGroupEntity job"
+               + "   INNER JOIN job.descriptorConfigEntity descConf ON job.configId = descConf.id"
+               + "   LEFT JOIN descConf.fieldValueEntities fieldValues ON descConf.id = fieldValues.configId"
+               + "   WHERE fieldValues.fieldId = GET_FIELD_ID('" + ChannelDistributionUIConfig.KEY_NAME + "')"
+               + "   AND fieldValues.value = :jobName"
+    )
+    List<ConfigGroupEntity> findByJobName(@Param("jobName") String jobName);
 
     List<ConfigGroupEntity> findAllByJobIdIn(Collection<UUID> jobIds);
 

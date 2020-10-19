@@ -245,12 +245,7 @@ public class DefaultAuditAccessor implements AuditAccessor {
             String errorMessage = auditEntryEntity.getErrorMessage();
             String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-            Optional<ConfigurationJobModel> commonConfig = Optional.empty();
-            try {
-                commonConfig = jobAccessor.getJobById(commonConfigId);
-            } catch (AlertDatabaseConstraintException e) {
-                logger.error("There was an issue accessing the job.");
-            }
+            Optional<ConfigurationJobModel> commonConfig = jobAccessor.getJobById(commonConfigId);
             String distributionConfigName = null;
             String eventType = null;
             if (commonConfig.isPresent()) {

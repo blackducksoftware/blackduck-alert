@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -51,7 +50,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 @Transactional
@@ -125,49 +123,46 @@ public class AuditEntryActions {
         if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
-        try {
-            Optional<AlertNotificationModel> notification = notificationAccessor
-                                                                .findById(notificationId);
-            if (notification.isEmpty()) {
-                return new ActionResponse<>(HttpStatus.GONE, "No notification with this id exists.");
-            }
-            AlertNotificationModel notificationContent = notification.get();
 
-            List<DistributionEvent> distributionEvents;
-            if (null != commonConfigId) {
-                Optional<ConfigurationJobModel> commonDistributionConfig = jobAccessor.getJobById(commonConfigId);
-                if (commonDistributionConfig.isEmpty()) {
-                    String message = String.format("The Distribution Job with this id could not be found. %s", commonConfigId.toString());
-                    return new ActionResponse<>(HttpStatus.GONE, message);
-                }
-                ConfigurationJobModel commonConfig = commonDistributionConfig.get();
-                if (commonConfig.isEnabled()) {
-                    distributionEvents = notificationProcessor.processNotifications(commonConfig, List.of(notificationContent));
-                } else {
-                    UUID jobConfigId = commonConfig.getJobId();
-                    logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", jobConfigId);
-                    String message = String.format("The Distribution Job is currently disabled. %s", jobConfigId.toString());
-                    return new ActionResponse<>(HttpStatus.BAD_REQUEST, message);
-                }
-            } else {
-                distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
-            }
-            if (distributionEvents.isEmpty()) {
-                logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
-            }
-
-            for (DistributionEvent event : distributionEvents) {
-                UUID commonDistributionId = UUID.fromString(event.getConfigId());
-                Long auditId = auditAccessor.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
-                Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-                notificationIdToAuditId.put(notificationContent.getId(), auditId);
-                event.setNotificationIdToAuditId(notificationIdToAuditId);
-                eventManager.sendEvent(event);
-            }
-            return get();
-        } catch (IntegrationException e) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        Optional<AlertNotificationModel> notification = notificationAccessor
+                                                            .findById(notificationId);
+        if (notification.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.GONE, "No notification with this id exists.");
         }
+        AlertNotificationModel notificationContent = notification.get();
+
+        List<DistributionEvent> distributionEvents;
+        if (null != commonConfigId) {
+            Optional<ConfigurationJobModel> commonDistributionConfig = jobAccessor.getJobById(commonConfigId);
+            if (commonDistributionConfig.isEmpty()) {
+                String message = String.format("The Distribution Job with this id could not be found. %s", commonConfigId.toString());
+                return new ActionResponse<>(HttpStatus.GONE, message);
+            }
+            ConfigurationJobModel commonConfig = commonDistributionConfig.get();
+            if (commonConfig.isEnabled()) {
+                distributionEvents = notificationProcessor.processNotifications(commonConfig, List.of(notificationContent));
+            } else {
+                UUID jobConfigId = commonConfig.getJobId();
+                logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", jobConfigId);
+                String message = String.format("The Distribution Job is currently disabled. %s", jobConfigId.toString());
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, message);
+            }
+        } else {
+            distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
+        }
+        if (distributionEvents.isEmpty()) {
+            logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
+        }
+
+        for (DistributionEvent event : distributionEvents) {
+            UUID commonDistributionId = UUID.fromString(event.getConfigId());
+            Long auditId = auditAccessor.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
+            Map<Long, Long> notificationIdToAuditId = new HashMap<>();
+            notificationIdToAuditId.put(notificationContent.getId(), auditId);
+            event.setNotificationIdToAuditId(notificationIdToAuditId);
+            eventManager.sendEvent(event);
+        }
+        return get();
     }
 
 }

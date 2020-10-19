@@ -29,8 +29,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -83,15 +85,19 @@ public class DefaultJobAccessor implements JobAccessor {
     }
 
     @Override
-    public Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException {
-        if (jobId == null) {
-            throw new AlertDatabaseConstraintException(NULL_JOB_ID);
+    public Optional<ConfigurationJobModel> getJobById(UUID jobId) {
+        if (null == jobId) {
+            return Optional.empty();
         }
-        List<ConfigGroupEntity> jobConfigEntities = configGroupRepository.findByJobId(jobId);
-        return jobConfigEntities
-                   .stream()
-                   .findAny()
-                   .map(configGroupEntity -> createJobModelFromExistingConfigs(configGroupEntity.getJobId(), jobConfigEntities));
+        return executeQueryAndConvertToJobModel(() -> configGroupRepository.findByJobId(jobId));
+    }
+
+    @Override
+    public Optional<ConfigurationJobModel> getJobByName(String jobName) {
+        if (StringUtils.isBlank(jobName)) {
+            return Optional.empty();
+        }
+        return executeQueryAndConvertToJobModel(() -> configGroupRepository.findByJobName(jobName));
     }
 
     @Override
@@ -132,6 +138,13 @@ public class DefaultJobAccessor implements JobAccessor {
         for (Long configId : configIdsForJob) {
             configurationAccessor.deleteConfiguration(configId);
         }
+    }
+
+    private Optional<ConfigurationJobModel> executeQueryAndConvertToJobModel(Supplier<List<ConfigGroupEntity>> query) {
+        List<ConfigGroupEntity> jobConfigEntities = query.get();
+        return jobConfigEntities.stream()
+                   .findAny()
+                   .map(configGroupEntity -> createJobModelFromExistingConfigs(configGroupEntity.getJobId(), jobConfigEntities));
     }
 
     private List<ConfigurationJobModel> convertToJobModels(Iterable<ConfigGroupEntity> jobEntities) {
