@@ -23,4 +23,6 @@ dependencies {
     // XML
     api 'com.fasterxml.jackson.core:jackson-databind'
     api 'com.fasterxml.jackson.core:jackson-annotations'
+
+    testImplementation 'org.mockito:mockito-core'
 }

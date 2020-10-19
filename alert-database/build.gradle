@@ -32,6 +32,8 @@ dependencies {
 
     // Deprecated for removal in 8.0.0. We still need the h2 jar bundled for use in the docker-entrypoint to upgrade a pre 6.0.0 database.
     runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.mockito:mockito-core'
 }
 
 task dockerLogin(type: Exec) {

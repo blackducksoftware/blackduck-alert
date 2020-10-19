@@ -3,4 +3,6 @@ ext.moduleName = 'com.synopsys.integration.alert.provider'
 dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
+
+    testImplementation 'org.mockito:mockito-core'
 }

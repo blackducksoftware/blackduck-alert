@@ -20,4 +20,8 @@ dependencies {
     // Documentation
     implementation 'io.springfox:springfox-swagger2:2.8.0'
     implementation 'io.springfox:springfox-swagger-ui:2.8.0'
+
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.springframework:spring-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
 }
