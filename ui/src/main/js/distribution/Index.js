@@ -102,7 +102,6 @@ class Index extends Component {
         this.onSizePerPageListChange = this.onSizePerPageListChange.bind(this);
         this.onSearchChange = this.onSearchChange.bind(this);
         this.onSortChange = this.onSortChange.bind(this);
-        this.onSortChange = this.onSortChange.bind(this);
         this.onRowClick = this.onRowClick.bind(this);
 
         this.state = {
@@ -387,7 +386,7 @@ class Index extends Component {
     }
 
     onRowClick(row) {
-        // Do nothing
+        // Do nothing for single-click (this will allow rows to be "checked" on single-click for bulk operations)
     }
 
     render() {

@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.web.api.job;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class JobConfigController implements BaseJobResourceController, ReadPageC
     }
 
     @Override
-    public JobPagedModel getPage(Integer pageNumber, Integer pageSize, Map<String, String> queryParams) {
+    public JobPagedModel getPage(Integer pageNumber, Integer pageSize) {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.getPage(pageNumber, pageSize));
     }
 
@@ -101,4 +100,5 @@ public class JobConfigController implements BaseJobResourceController, ReadPageC
     public ValidationResponseModel test(JobFieldModel resource) {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.test(resource));
     }
+
 }

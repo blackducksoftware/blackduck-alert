@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.common.rest.api;
 
-import java.util.Map;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -33,9 +31,7 @@ public interface ReadPageController<P extends AlertPagedModel<?>> {
     @GetMapping
     P getPage(
         @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
-        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize,
-        // TODO determine if this actually works as a catch-all for all other query params
-        @RequestParam(defaultValue = "{}") Map<String, String> queryParams
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize
     );
 
 }
