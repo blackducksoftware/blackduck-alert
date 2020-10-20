@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.web.config;
+package com.synopsys.integration.alert.web.api.job;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -55,7 +55,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
-import com.synopsys.integration.alert.web.api.job.JobConfigController;
 
 @Transactional
 public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
