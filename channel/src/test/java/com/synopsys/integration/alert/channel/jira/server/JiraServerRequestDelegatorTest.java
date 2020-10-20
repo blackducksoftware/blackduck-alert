@@ -237,7 +237,7 @@ public class JiraServerRequestDelegatorTest {
 
     private JiraIssueSearchProperties createSearchProperties() {
         return new JiraIssueSearchProperties("provider",
-            "providerUrl",
+            "providerURL",
             "topicName",
             "topicValue",
             "subTopicName",

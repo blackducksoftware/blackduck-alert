@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class JiraServerGlobalUIConfig extends UIConfig {
-    public static final String LABEL_SERVER_URL = "Url";
+    public static final String LABEL_SERVER_URL = "URL";
     public static final String LABEL_SERVER_USER_NAME = "User Name";
     public static final String LABEL_SERVER_PASSWORD = "Password";
     public static final String LABEL_SERVER_DISABLE_PLUGIN_CHECK = "Disable Plugin Check";

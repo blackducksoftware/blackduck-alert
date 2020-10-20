@@ -110,7 +110,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
-        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Url: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
+        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider URL: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
             request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getProviderUrl(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(),
             issueProperties.getComponentValue(),
             arbitraryItemSubComponent);
