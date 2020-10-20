@@ -1,8 +1,16 @@
 ext.moduleName = 'com.synopsys.integration.alert.provider'
 
 dependencies {
+    implementation platform(project(':alert-platform'))
+
     implementation project(':alert-common')
     implementation project(':alert-database')
+
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-web'
+    implementation 'jakarta.jms:jakarta.jms-api'
+
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
     testImplementation 'org.mockito:mockito-core'
 }

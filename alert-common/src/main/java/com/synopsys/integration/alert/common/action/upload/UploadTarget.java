@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.action.upload;
 
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.UploadValidationFunction;

@@ -25,7 +25,7 @@ package com.synopsys.integration.azure.boards.common.service.project;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 

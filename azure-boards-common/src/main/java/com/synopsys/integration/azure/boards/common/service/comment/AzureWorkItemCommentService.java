@@ -24,7 +24,7 @@ package com.synopsys.integration.azure.boards.common.service.comment;
 
 import java.io.IOException;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 

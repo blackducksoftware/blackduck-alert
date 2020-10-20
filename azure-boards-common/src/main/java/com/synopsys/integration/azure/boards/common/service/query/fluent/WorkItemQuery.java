@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Based on the documentation found here: https://docs.microsoft.com/en-us/azure/devops/boards/queries/wiql-syntax

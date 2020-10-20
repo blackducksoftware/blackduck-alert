@@ -20,13 +20,23 @@ ext {
 apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
-    runtimeOnly 'org.postgresql:postgresql:42.2.8'
-    runtimeOnly 'org.liquibase:liquibase-core:3.8.9'
+    implementation platform(project(':alert-platform'))
+
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'org.springframework.data:spring-data-jpa'
+    implementation 'jakarta.persistence:jakarta.persistence-api'
+    implementation 'com.zaxxer:HikariCP'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation 'org.springframework.security:spring-security-core'
+    implementation 'org.hibernate:hibernate-core'
+
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.liquibase:liquibase-core'
 
     // Connection Pool
     // https://www.baeldung.com/hibernate-c3p0
     // https://www.codejava.net/frameworks/hibernate/solved-jdbcconnectionexception-unable-to-acquire-jdbc-connection-with-hibernate-and-mysql
-    runtimeClasspath 'org.hibernate:hibernate-c3p0:5.4.2.Final'
+    runtimeClasspath 'org.hibernate:hibernate-c3p0'
 
     implementation project(':alert-common')
 
