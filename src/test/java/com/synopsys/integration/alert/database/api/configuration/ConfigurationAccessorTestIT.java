@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -195,12 +194,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void getJobByIdWithNullTest() {
-        try {
-            jobAccessor.getJobById(null);
-            fail("Expected exception to be thrown");
-        } catch (AlertDatabaseConstraintException e) {
-            assertEquals("The job id cannot be null", e.getMessage());
-        }
+        Optional<ConfigurationJobModel> jobById = jobAccessor.getJobById(null);
+        assertTrue(jobById.isEmpty(), "Expected no job with a null id to be found");
     }
 
     @Test

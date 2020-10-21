@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
+import com.synopsys.integration.alert.common.rest.model.JobIdsValidationRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
@@ -54,7 +55,7 @@ public class JobConfigController implements BaseJobResourceController, ReadPageC
     }
 
     @PostMapping("/validateJobsById")
-    public List<JobFieldStatuses> getValidationResultsForJobs(@RequestBody JobIdsValidationModel validationModel) {
+    public List<JobFieldStatuses> getValidationResultsForJobs(@RequestBody JobIdsValidationRequestModel validationModel) {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.validateJobsById(validationModel));
     }
 

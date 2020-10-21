@@ -160,15 +160,11 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getJobByIdNullTest() throws Exception {
+    public void getJobByIdNullTest() {
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
         DefaultJobAccessor jobAccessor = new DefaultJobAccessor(configGroupRepository, configurationAccessor);
-        try {
-            jobAccessor.getJobById(null);
-            fail("Null jobId did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
+        Optional<ConfigurationJobModel> jobById = jobAccessor.getJobById(null);
+        assertTrue(jobById.isEmpty(), "Expected no job with a null id to be found");
     }
 
     @Test
