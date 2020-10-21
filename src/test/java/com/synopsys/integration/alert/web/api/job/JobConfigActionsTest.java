@@ -66,7 +66,8 @@ public class JobConfigActionsTest {
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.any(), Mockito.any())).thenReturn(true);
-
+        Mockito.when(authorizationManager.hasDeletePermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(), Mockito.any())).thenReturn(true);
     }
 
     @Test
@@ -229,6 +230,55 @@ public class JobConfigActionsTest {
         JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, globalConfigExistsValidator,
             pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.update(jobId, jobFieldModel);
+
+        assertTrue(jobFieldModelActionResponse.isError());
+        assertFalse(jobFieldModelActionResponse.hasContent());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, jobFieldModelActionResponse.getHttpStatus());
+    }
+
+    @Test
+    public void deleteTest() throws Exception {
+        UUID jobId = UUID.randomUUID();
+        FieldModel fieldModel = createFieldModel();
+        //JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
+        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
+
+        //TODO may be able to group these 3 mocks for findJobFieldModel
+        Mockito.when(configurationAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
+        Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
+        Mockito.when(fieldModelProcessor.performAfterReadAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
+
+        Mockito.when(fieldModelProcessor.performBeforeDeleteAction(Mockito.any())).thenReturn(fieldModel);
+
+        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, globalConfigExistsValidator,
+            pkixErrorResponseFactory, descriptorMap);
+        ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.delete(jobId);
+
+        Mockito.verify(configurationAccessor).deleteJob(Mockito.any());
+        Mockito.verify(fieldModelProcessor).performAfterDeleteAction(Mockito.any());
+
+        assertTrue(jobFieldModelActionResponse.isSuccessful());
+        assertFalse(jobFieldModelActionResponse.hasContent());
+        assertEquals(HttpStatus.NO_CONTENT, jobFieldModelActionResponse.getHttpStatus());
+    }
+
+    @Test
+    public void deleteServerErrorTest() throws Exception {
+        UUID jobId = UUID.randomUUID();
+        FieldModel fieldModel = createFieldModel();
+        //JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
+        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
+
+        //TODO may be able to group these 3 mocks for findJobFieldModel
+        Mockito.when(configurationAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
+        Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
+        Mockito.when(fieldModelProcessor.performAfterReadAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
+
+        Mockito.doThrow(new AlertException("Exception for Alert test")).when(fieldModelProcessor).performBeforeDeleteAction(Mockito.any());
+
+        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, globalConfigExistsValidator,
+            pkixErrorResponseFactory, descriptorMap);
+        ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.delete(jobId);
 
         assertTrue(jobFieldModelActionResponse.isError());
         assertFalse(jobFieldModelActionResponse.hasContent());
