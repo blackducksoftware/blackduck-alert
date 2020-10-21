@@ -90,6 +90,18 @@ dependencies {
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
 
+    // Logging
+    implementation 'ch.qos.logback:logback-classic'
+    implementation 'ch.qos.logback:logback-core'
+    // Tomcat messages use these loggers.
+    implementation 'org.slf4j:jcl-over-slf4j'
+    implementation 'org.slf4j:jul-to-slf4j'
+
+    // ThymeLeaf
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
+    implementation 'org.thymeleaf:thymeleaf-spring5'
+    implementation 'org.thymeleaf:thymeleaf'
+
     // Spring
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.springframework:spring-jms'
