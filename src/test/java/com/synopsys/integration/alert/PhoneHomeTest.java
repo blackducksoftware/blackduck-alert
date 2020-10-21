@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
@@ -43,6 +44,9 @@ public class PhoneHomeTest {
         AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn(TEST_VERSION);
 
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        // FIXME implement mocks
+
         DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         ConfigurationModel config = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.any(DescriptorKey.class))).thenReturn(List.of(config));
@@ -54,7 +58,7 @@ public class PhoneHomeTest {
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
         List<ProviderPhoneHomeHandler> providerHandlers = List.of();
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, configurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers);
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, jobAccessor, configurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers);
 
         try {
             phoneHomeTask.run();

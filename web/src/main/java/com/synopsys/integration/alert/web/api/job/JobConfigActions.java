@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.api.job;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -62,17 +64,20 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
-import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsValidationRequestModel;
+import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
@@ -83,6 +88,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JobConfigActions extends AbstractJobResourceActions {
     private final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
     private final ConfigurationAccessor configurationAccessor;
+    private final JobAccessor jobAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
@@ -91,10 +97,21 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public JobConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationAccessor configurationAccessor, FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor,
-        ConfigurationFieldModelConverter modelConverter, GlobalConfigExistsValidator globalConfigExistsValidator, PKIXErrorResponseFactory pkixErrorResponseFactory, DescriptorMap descriptorMap) {
+    public JobConfigActions(
+        AuthorizationManager authorizationManager,
+        DescriptorAccessor descriptorAccessor,
+        ConfigurationAccessor configurationAccessor,
+        JobAccessor jobAccessor,
+        FieldModelProcessor fieldModelProcessor,
+        DescriptorProcessor descriptorProcessor,
+        ConfigurationFieldModelConverter modelConverter,
+        GlobalConfigExistsValidator globalConfigExistsValidator,
+        PKIXErrorResponseFactory pkixErrorResponseFactory,
+        DescriptorMap descriptorMap
+    ) {
         super(authorizationManager, descriptorAccessor);
         this.configurationAccessor = configurationAccessor;
+        this.jobAccessor = jobAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
         this.descriptorProcessor = descriptorProcessor;
         this.modelConverter = modelConverter;
@@ -104,11 +121,31 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
+    public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession) {
+        try {
+            PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+            AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest, permittedDescriptorsForSession);
+            List<ConfigurationJobModel> pageOfJobsModels = pageOfJobs.getModels();
+            List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobsModels.size());
+            for (ConfigurationJobModel configJobModel : pageOfJobsModels) {
+                JobFieldModel jobFieldModel = convertToJobFieldModel(configJobModel);
+                jobFieldModels.add(jobFieldModel);
+            }
+
+            JobPagedModel jobPagedModel = new JobPagedModel(pageOfJobs.getTotalPages(), pageOfJobs.getCurrentPage(), pageOfJobs.getPageSize(), jobFieldModels);
+            return new ActionResponse<>(HttpStatus.OK, jobPagedModel);
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("Failed to get a page of jobs", e);
+            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "There was a problem retrieving the jobs from the database");
+        }
+    }
+
+    @Override
     protected Optional<JobFieldModel> findJobFieldModel(UUID id) {
         try {
-            Optional<ConfigurationJobModel> jobConfiguration = configurationAccessor.getJobById(id);
+            Optional<ConfigurationJobModel> jobConfiguration = jobAccessor.getJobById(id);
             if (jobConfiguration.isPresent()) {
-                JobFieldModel jobFieldModel = readJobConfiguration(jobConfiguration.get());
+                JobFieldModel jobFieldModel = convertJobDatabaseModelToRestModel(jobConfiguration.get());
                 return Optional.of(jobFieldModel);
             }
         } catch (AlertException ex) {
@@ -118,25 +155,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     @Override
-    protected ActionResponse<MultiJobFieldModel> readAllWithoutChecks() {
-        try {
-            List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
-            List<JobFieldModel> jobFieldModels = new LinkedList<>();
-            for (ConfigurationJobModel configurationJobModel : allJobs) {
-                JobFieldModel jobFieldModel = readJobConfiguration(configurationJobModel);
-                jobFieldModels.add(jobFieldModel);
-            }
-            return new ActionResponse<>(HttpStatus.OK, new MultiJobFieldModel(jobFieldModels));
-        } catch (AlertException ex) {
-            logger.error("Error reading all jobs", ex);
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-        }
-    }
-
-    @Override
     protected ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id) {
         try {
-            Optional<ConfigurationJobModel> jobs = configurationAccessor.getJobById(id);
+            Optional<ConfigurationJobModel> jobs = jobAccessor.getJobById(id);
             if (jobs.isEmpty()) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND);
             } else {
@@ -147,7 +168,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
                     processedFieldModels.add(fieldModel);
                 }
-                configurationAccessor.deleteJob(configurationJobModel.getJobId());
+                jobAccessor.deleteJob(configurationJobModel.getJobId());
                 for (FieldModel fieldModel : processedFieldModels) {
                     fieldModelProcessor.performAfterDeleteAction(fieldModel);
                 }
@@ -171,7 +192,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(beforeSaveEventFieldModel).values();
                 configurationFieldModels.addAll(savedFieldsModels);
             }
-            ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
+            ConfigurationJobModel savedJob = jobAccessor.createJob(descriptorNames, configurationFieldModels);
             JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
 
             Set<FieldModel> updatedFieldModels = new HashSet<>();
@@ -190,7 +211,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     @Override
     protected ActionResponse<JobFieldModel> updateWithoutChecks(UUID id, JobFieldModel resource) {
         try {
-            Optional<ConfigurationJobModel> jobModel = configurationAccessor.getJobById(id);
+            Optional<ConfigurationJobModel> jobModel = jobAccessor.getJobById(id);
             if (jobModel.isEmpty()) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND);
             } else {
@@ -213,7 +234,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     configurationFieldModels.addAll(updatedFieldModels);
                 }
 
-                ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, descriptorNames, configurationFieldModels);
+                ConfigurationJobModel configurationJobModel = jobAccessor.updateJob(id, descriptorNames, configurationFieldModels);
                 JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
                 Set<FieldModel> updatedFieldModels = new HashSet<>();
                 for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
@@ -242,19 +263,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private ValidationResponseModel validateJobNameUnique(@Nullable UUID currentJobId, FieldModel fieldModel) {
-        Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME);
+        Optional<String> optionalJobName = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME)
+                                               .flatMap(FieldValueModel::getValue);
         String error = "";
-        if (jobNameFieldOptional.isPresent()) {
-            String jobName = jobNameFieldOptional.get().getValue().orElse(null);
+        if (optionalJobName.isPresent()) {
+            String jobName = optionalJobName.get();
             if (StringUtils.isNotBlank(jobName)) {
-                List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
-
-                boolean foundDuplicateName = jobs.stream()
-                                                 .filter(job -> filterOutMatchingJobs(currentJobId, job))
-                                                 .flatMap(job -> job.getCopyOfConfigurations().stream())
-                                                 .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
-                                                 .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                 .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
+                // Find an existing job with the name that does not have the same id as currentJobId.
+                boolean foundDuplicateName = jobAccessor.getJobByName(jobName)
+                                                 .filter(job -> !job.getJobId().equals(currentJobId))
+                                                 .isPresent();
                 if (foundDuplicateName) {
                     error = "A distribution configuration with this name already exists.";
                 }
@@ -297,7 +315,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
     }
 
-    public ActionResponse<List<JobFieldStatuses>> validateAllJobs() {
+    public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsValidationRequestModel jobIdsValidationModel) {
         List<PermissionKey> keys = new LinkedList<>();
         for (Descriptor descriptor : descriptorMap.getDescriptorMap().values()) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();
@@ -312,9 +330,23 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         List<JobFieldStatuses> errorsList = new LinkedList<>();
-        List<JobFieldModel> jobFieldModels = readAllWithoutChecks().getContent()
-                                                 .map(MultiJobFieldModel::getJobs)
-                                                 .orElse(List.of());
+        List<UUID> jobIdsToValidate = jobIdsValidationModel.getJobIds();
+        if (null == jobIdsToValidate || jobIdsToValidate.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.OK, errorsList);
+        }
+
+        List<ConfigurationJobModel> configJobModels = jobAccessor.getJobsById(jobIdsToValidate);
+        List<JobFieldModel> jobFieldModels = new LinkedList<>();
+        for (ConfigurationJobModel configurationJobModel : configJobModels) {
+            try {
+                JobFieldModel jobFieldModel = convertJobDatabaseModelToRestModel(configurationJobModel);
+                jobFieldModels.add(jobFieldModel);
+            } catch (AlertException e) {
+                logger.error("Error reading all jobs", e);
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+        }
+
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
             if (!fieldErrors.isEmpty()) {
@@ -398,6 +430,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
+    private JobFieldModel convertJobDatabaseModelToRestModel(ConfigurationJobModel groupedConfiguration) throws AlertException {
+        Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
+        Set<FieldModel> constructedFieldModels = new HashSet<>();
+        for (ConfigurationModel configurationModel : configurations) {
+            FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
+            constructedFieldModels.add(fieldModelProcessor.performAfterReadAction(fieldModel));
+        }
+        return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
+    }
+
     private FieldModel getChannelFieldModelAndPopulateOtherJobModels(JobFieldModel jobFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
         FieldModel channelFieldModel = null;
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -433,16 +475,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
             return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
         }
         return new MessageResult("Provider Config Valid");
-    }
-
-    private JobFieldModel readJobConfiguration(ConfigurationJobModel groupedConfiguration) throws AlertException {
-        Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
-        Set<FieldModel> constructedFieldModels = new HashSet<>();
-        for (ConfigurationModel configurationModel : configurations) {
-            FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
-            constructedFieldModels.add(fieldModelProcessor.performAfterReadAction(fieldModel));
-        }
-        return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
     }
 
     private JobFieldModel convertToJobFieldModel(ConfigurationJobModel configurationJobModel) throws AlertDatabaseConstraintException {

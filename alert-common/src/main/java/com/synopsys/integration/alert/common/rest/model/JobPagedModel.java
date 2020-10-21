@@ -20,18 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.model;
+package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import org.springframework.data.domain.Page;
 
-public class AuditEntryPageModel extends AlertPagedModel<AuditEntryModel> {
-    public AuditEntryPageModel(int totalPages, int currentPage, int pageSize, List<AuditEntryModel> content) {
-        super(totalPages, currentPage, pageSize, content);
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+
+public class JobPagedModel extends AlertPagedModel<JobFieldModel> {
+    public JobPagedModel(int totalPages, int currentPage, int pageSize, List<JobFieldModel> models) {
+        super(totalPages, currentPage, pageSize, models);
     }
 
-    public List<AuditEntryModel> getContent() {
+    public List<JobFieldModel> getJobs() {
         return getModels();
     }
 

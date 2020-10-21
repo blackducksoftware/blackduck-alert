@@ -41,6 +41,6 @@ public class AlertPagedModelTest {
 
     @Test
     public void getContentTest() {
-        assertEquals(testContent, testAlertPagedModel.getContent());
+        assertEquals(testContent, testAlertPagedModel.getModels());
     }
 }

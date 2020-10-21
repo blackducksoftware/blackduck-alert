@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -30,6 +31,8 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     private DescriptorAccessor descriptorAccessor;
     @Autowired
     private DescriptorMocker descriptorMocker;
+    @Autowired
+    private JobAccessor jobAccessor;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
 
@@ -59,7 +62,7 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
                                                        .stream()
                                                        .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
                                                        .collect(Collectors.toSet());
-        ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(descriptorName, providerName), fieldModels);
+        ConfigurationJobModel configurationJobModel = jobAccessor.createJob(Set.of(descriptorName, providerName), fieldModels);
         return configurationJobModel;
     }
 
@@ -77,6 +80,10 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
         configurationFieldModel.setFieldValues(values);
         return configurationFieldModel;
+    }
+
+    protected JobAccessor getJobAccessor() {
+        return jobAccessor;
     }
 
     public ConfigurationAccessor getConfigurationAccessor() {
