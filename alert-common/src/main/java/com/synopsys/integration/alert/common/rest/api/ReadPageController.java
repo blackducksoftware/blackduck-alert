@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,3 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.synopsys.integration.alert.common.rest.api;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+
+public interface ReadPageController<P extends AlertPagedModel<?>> {
+    @GetMapping
+    P getPage(
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize
+    );
+
+}
