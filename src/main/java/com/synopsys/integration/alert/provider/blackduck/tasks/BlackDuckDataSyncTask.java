@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
@@ -183,6 +184,11 @@ public class BlackDuckDataSyncTask extends ProviderTask {
             logger.debug("Adding user to Project {}", projectView.getName());
             projectUsersService.addUserToProject(projectView, currentUser);
         }
+    }
+
+    @Override
+    public String scheduleCronExpression() {
+        return ScheduledTask.EVERY_FOUR_HOUR_CRON_EXPRESSION;
     }
 
 }

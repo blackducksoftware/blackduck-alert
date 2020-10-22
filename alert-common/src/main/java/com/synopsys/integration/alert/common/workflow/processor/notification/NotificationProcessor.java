@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.workflow.processor.notification;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,12 +70,14 @@ public class NotificationProcessor {
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
         logger.info("Notifications to Process: {}", notifications.size());
         List<ConfigurationJobModel> jobsForFrequency = configurationAccessor.getJobsByFrequency(frequency);
+        // FIXME, we should not be getting all jobs, we should create a filter for retrieving the jobs that match the notifications. This is the problem with the Honeywell performance
         return processNotificationsForJobs(jobsForFrequency, notifications);
     }
 
     public List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications) {
         // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
         List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
+        // FIXME, we should not be getting all jobs, we should create a filter for retrieving the jobs that match the notifications. This is the problem with the Honeywell performance
         return processNotificationsForJobs(allJobs, notifications);
     }
 
@@ -97,12 +100,35 @@ public class NotificationProcessor {
             List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notificationsByProviderConfig);
             List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
 
+            logIgnoredNotifications(notifications, filteredNotifications);
+
             if (!filteredNotifications.isEmpty()) {
+                logNotificationsThatMatchedJobs(filteredNotifications);
+
                 ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
                 return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
             }
         }
         return List.of();
+    }
+
+    private void logIgnoredNotifications(List<AlertNotificationModel> allNotifications, List<AlertNotificationModel> filteredNotifications) {
+        if (logger.isDebugEnabled()) {
+            List<AlertNotificationModel> ignoredNotifications = new ArrayList<>(allNotifications);
+            ignoredNotifications.removeAll(filteredNotifications);
+            if (!ignoredNotifications.isEmpty()) {
+                logger.debug("Ignored {} notifications because they did not match any configured distribution job.", ignoredNotifications.size());
+            }
+        }
+    }
+
+    private void logNotificationsThatMatchedJobs(List<AlertNotificationModel> filteredNotifications) {
+        if (logger.isDebugEnabled()) {
+            List<Long> notificationIds = filteredNotifications.stream()
+                                             .map(AlertNotificationModel::getId)
+                                             .collect(Collectors.toList());
+            logger.debug("These notificationIds matched distribution jobs: {}", notificationIds);
+        }
     }
 
     private List<DistributionEvent> processNotificationsForJobs(Collection<ConfigurationJobModel> jobs, List<AlertNotificationModel> notifications) {

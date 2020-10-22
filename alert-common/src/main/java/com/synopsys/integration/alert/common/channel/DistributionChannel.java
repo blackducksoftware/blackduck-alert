@@ -36,7 +36,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class DistributionChannel extends MessageReceiver<DistributionEvent> implements AlertEventListener {
-    private final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AuditUtility auditUtility;
 
     public DistributionChannel(Gson gson, AuditUtility auditUtility) {
@@ -47,6 +47,7 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
     @Override
     public void handleEvent(DistributionEvent event) {
         if (event.getDestination().equals(getDestinationName())) {
+            logger.debug("Received an event for channel '{}''.", event.getDestination());
             try {
                 sendAuditedMessage(event);
             } catch (IntegrationException ex) {

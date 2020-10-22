@@ -43,6 +43,7 @@ public abstract class ScheduledTask implements Runnable {
     public static final String FORMAT_PATTERN = "MM/dd/yyy hh:mm a";
     public static final String STOP_SCHEDULE_EXPRESSION = "";
     public static final String EVERY_MINUTE_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
+    public static final String EVERY_FOUR_HOUR_CRON_EXPRESSION = "0 0 */4 * * *";
     public static final Long EVERY_MINUTE_SECONDS = 60L;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -84,6 +85,8 @@ public abstract class ScheduledTask implements Runnable {
     }
 
     public abstract void runTask();
+
+    public abstract String scheduleCronExpression();
 
     public void scheduleExecution(String cron) {
         if (StringUtils.isNotBlank(cron)) {

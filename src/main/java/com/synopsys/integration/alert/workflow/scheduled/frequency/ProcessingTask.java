@@ -72,7 +72,9 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     public void runTask() {
         DateRange dateRange = getDateRange();
         List<AlertNotificationModel> notificationList = read(dateRange);
+        logger.info("Processing {} notifications.", notificationList.size());
         List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
+        logger.info("Sending {} events for notifications.", distributionEvents.size());
         eventManager.sendEvents(distributionEvents);
         lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
