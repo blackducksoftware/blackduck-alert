@@ -1,9 +1,28 @@
 ext.moduleName = 'com.synopsys.integration.alert.channel'
 
 dependencies {
+    implementation platform(project(':alert-platform'))
+
     implementation project(':alert-common')
     implementation project(':azure-boards-common')
+<<<<<<< HEAD
     implementation 'com.synopsys.integration:int-jira-common:1.1.0'
     implementation 'com.synopsys.integration:int-jira-common:2.0.0'
     api 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+=======
+
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-web'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    implementation 'jakarta.jms:jakarta.jms-api'
+    implementation 'com.synopsys.integration:int-jira-common'
+    implementation 'com.google.http-client:google-http-client-apache-v2'
+    implementation 'com.google.http-client:google-http-client-jackson2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+    implementation 'javax.mail:javax.mail-api'
+    implementation 'org.freemarker:freemarker'
+
+    testImplementation 'org.mockito:mockito-core'
+>>>>>>> ek-revise-builds
 }

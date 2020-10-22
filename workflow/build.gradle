@@ -1,15 +1,24 @@
 ext.moduleName = 'com.synopsys.integration.alert.component'
 
 dependencies {
+    implementation platform(project(':alert-platform'))
+
     implementation project(':alert-common')
     implementation project(':alert-database')
 
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-tx'
+<<<<<<< HEAD
 
     implementation 'com.synopsys.integration:integration-common'
     implementation 'com.synopsys.integration:integration-rest'
 
     implementation 'jakarta.jms:jakarta.jms-api'
     implementation 'jakarta.annotation:jakarta.annotation-api'
+=======
+    implementation 'jakarta.annotation:jakarta.annotation-api'
+    implementation 'jakarta.jms:jakarta.jms-api'
+    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.synopsys.integration:integration-common'
+>>>>>>> ek-revise-builds
 }
