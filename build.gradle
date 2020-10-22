@@ -123,7 +123,12 @@ dependencies {
     testImplementation 'org.javassist:javassist'
     testImplementation 'javax.mail:javax.mail-api'
 
-    testRuntime 'ch.qos.logback:logback-classic'
+    runtime 'ch.qos.logback:logback-classic'
+    runtime 'ch.qos.logback:logback-core'
+
+    // Tomcat messages use these loggers.
+    runtime 'org.slf4j:jcl-over-slf4j'
+    runtime 'org.slf4j:jul-to-slf4j'
 }
 
 bootJar {

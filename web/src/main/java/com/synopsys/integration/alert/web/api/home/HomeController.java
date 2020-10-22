@@ -50,7 +50,7 @@ public class HomeController {
            This is using Thymeleaf templating therefore we cannot return just a string from an ActionResponse otherwise the templating will not be setup correctly.
            Alert will return a 404 on the main page because index.html will not be served up by this method.
         */
-        return "index";
+        return "index.html";
     }
 
     @GetMapping("/api/verify")
