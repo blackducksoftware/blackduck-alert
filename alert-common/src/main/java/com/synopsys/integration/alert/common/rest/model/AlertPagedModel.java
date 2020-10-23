@@ -24,17 +24,29 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
+import net.minidev.json.annotate.JsonIgnore;
+
 public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSerializableModel {
+    public static final String DEFAULT_PAGE_NUMBER = "0";
+    public static final String DEFAULT_PAGE_SIZE = "10";
+
+    // FIXME we should use terminology based on "offset" and "limit" which are standard REST API paging terms
     private final int totalPages;
     private final int currentPage;
     private final int pageSize;
-    private final List<M> content;
+    private final List<M> models;
 
-    public AlertPagedModel(int totalPages, int currentPage, int pageSize, List<M> content) {
+    public AlertPagedModel(Page<?> page, List<M> models) {
+        this(page.getTotalPages(), page.getNumber(), page.getSize(), models);
+    }
+
+    public AlertPagedModel(int totalPages, int currentPage, int pageSize, List<M> models) {
         this.totalPages = totalPages;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
-        this.content = content;
+        this.models = models;
     }
 
     public int getTotalPages() {
@@ -49,8 +61,9 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSeri
         return pageSize;
     }
 
-    public List<M> getContent() {
-        return content;
+    @JsonIgnore
+    public List<M> getModels() {
+        return models;
     }
 
 }

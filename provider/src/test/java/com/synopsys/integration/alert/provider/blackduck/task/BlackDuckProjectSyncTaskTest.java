@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
@@ -36,7 +37,7 @@ import com.synopsys.integration.rest.HttpUrl;
 public class BlackDuckProjectSyncTaskTest {
     @Test
     public void testRun() throws Exception {
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
 
         Long providerConfigId = 1000L;
@@ -45,7 +46,7 @@ public class BlackDuckProjectSyncTaskTest {
         ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
         configurationModel.put(configurationFieldModel);
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
-        Mockito.when(configurationAccessor.getAllJobs()).thenReturn(List.of(configurationJobModel));
+        Mockito.when(jobAccessor.getAllJobs()).thenReturn(List.of(configurationJobModel));
 
         BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
         ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
@@ -82,7 +83,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(List.of(user1, user2, user3)));
         Mockito.doNothing().when(projectUsersService).addUserToProject(Mockito.any(), Mockito.any(UserView.class));
 
-        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(new BlackDuckProviderKey(), null, providerDataAccessor, configurationAccessor, blackDuckProperties);
+        BlackDuckDataSyncTask projectSyncTask = new BlackDuckDataSyncTask(new BlackDuckProviderKey(), null, providerDataAccessor, blackDuckProperties, jobAccessor);
         projectSyncTask.run();
 
         assertEquals(3, providerDataAccessor.getProjectsByProviderConfigId(providerConfigId).size());
@@ -92,7 +93,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(projectUsersService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(List.of(user3)));
 
         Mockito.when(blackDuckService.getAllResponses(ArgumentMatchers.same(projectView2), ArgumentMatchers.same(ProjectView.USERS_LINK_RESPONSE))).thenReturn(List.of());
-        projectSyncTask = new BlackDuckDataSyncTask(new BlackDuckProviderKey(), null, providerDataAccessor, configurationAccessor, blackDuckProperties);
+        projectSyncTask = new BlackDuckDataSyncTask(new BlackDuckProviderKey(), null, providerDataAccessor, blackDuckProperties, jobAccessor);
         projectSyncTask.run();
 
         assertEquals(2, providerDataAccessor.getProjectsByProviderConfigId(providerConfigId).size());

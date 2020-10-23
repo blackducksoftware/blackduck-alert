@@ -64,6 +64,10 @@ public class DescriptorConfigEntity extends BaseEntity implements DatabaseEntity
     @JoinColumn(name = "id", referencedColumnName = "config_id", insertable = false, updatable = false)
     private ConfigGroupEntity configGroupEntity;
 
+    @OneToOne
+    @JoinColumn(name = "descriptor_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private RegisteredDescriptorEntity registeredDescriptorEntity;
+
     public DescriptorConfigEntity() {
         // JPA requires default constructor definitions
     }

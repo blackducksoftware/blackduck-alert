@@ -20,19 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.model;
+package com.synopsys.integration.alert.common.rest.api;
 
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public class AuditEntryPageModel extends AlertPagedModel<AuditEntryModel> {
-    public AuditEntryPageModel(int totalPages, int currentPage, int pageSize, List<AuditEntryModel> content) {
-        super(totalPages, currentPage, pageSize, content);
-    }
-
-    public List<AuditEntryModel> getContent() {
-        return getModels();
-    }
+public interface ReadPageController<P extends AlertPagedModel<?>> {
+    @GetMapping
+    P getPage(
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize
+    );
 
 }

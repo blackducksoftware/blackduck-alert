@@ -24,7 +24,7 @@ public class AlertPagedRestModelTest {
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());
         assertEquals(pageSize, restModel.getPageSize());
-        assertNull(restModel.getContent());
+        assertNull(restModel.getModels());
     }
 
     @Test
@@ -42,6 +42,6 @@ public class AlertPagedRestModelTest {
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());
         assertEquals(pageSize, restModel.getPageSize());
-        assertEquals(contentList, restModel.getContent());
+        assertEquals(contentList, restModel.getModels());
     }
 }
