@@ -114,7 +114,7 @@ public class SAMLManager {
 
     public void setupMetadataManager(String metadataURL, String entityId, String entityBaseUrl) throws MetadataProviderException {
         logger.debug("SAML Setup MetaData Manager");
-        logger.debug("SAML - MetadataUrl: {}, EntityID: {}, EntityBaseUrl: {}", metadataURL, entityId, entityBaseUrl);
+        logger.debug("SAML - MetadataURL: {}, EntityID: {}, EntityBaseURL: {}", metadataURL, entityId, entityBaseUrl);
         metadataGenerator.setEntityId(entityId);
         metadataGenerator.setEntityBaseURL(entityBaseUrl);
 
