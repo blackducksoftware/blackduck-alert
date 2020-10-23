@@ -11,6 +11,7 @@ Helm Charts for Synopsys Alert
 - [Uninstalling the Chart](#uninstalling-the-chart)
 - [Configuration](#configuration)
   - [Configuration Parameters](#configuration-parameters)
+  - [Custom Certificates](#custom-certificates)
   - [Persistent Storage](#persistent-storage)
   - [External Postgres Database](#external-postgres-database)
   - [Installing with Black Duck](#installing-with-black-duck)
@@ -191,6 +192,44 @@ Alternatively, a YAML file that specifies the values for the above parameters ca
 ```bash
 $ helm install . --name <name> --namespace <namespace> --set enableStandalone=true
 ```
+
+### Custom Certificates
+This section describes how to configure the Alert webserver with a custom certificate.
+
+#### Create Certificate Secret
+- Execute the command
+  ```bash 
+   $ kubectl create secret generic <SECRET_NAME> -n <ALERT_NAMESPACE> \
+   --from-file=WEBSERVER_CUSTOM_CERT_FILE=<PATH_TO_CERTIFICATE_FILE> \
+   --from-file=WEBSERVER_CUSTOM_KEY_FILE=<PATH_TO_CERTIFICATE_KEY_FILE>
+  ```
+  - Replace `<SECRET_NAME>` with the desired name for the secret.
+  - Replace `<ALERT_NAMESPACE>` with the namespace being used for Alert.
+  - Replace `<PATH_TO_CERTIFICATE_FILE>` to the path on the current file system to your `.crt` file.
+  - Replace `<PATH_TO_CERTIFICATE_KEY_FILE>` to the path on the current file system to the `.key` file corresponding to your `.crt` file.
+  - Note: The keys `WEBSERVER_CUSTOM_CERT_FILE` and `WEBSERVER_CUSTOM_KEY_FILE` must be included 
+    in the `--from-file=[key=]<FILE_NAME>` arguments in order for Alert to correctly consume the certificate.
+
+For more information about managing secrets, please see: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl
+
+#### Configure Certificate Secret
+Once you have created the certificate secret with the correct keys, you must then tell alert the name of the 
+secret the certificate corresponds to.
+- In the 'values.yaml' file, set
+  ```yaml
+  webserverCustomCertificatesSecretName: "<SECRET_NAME>"
+  ```
+  - Replace `<SECRET_NAME>` with the name of the secret created in the step [Create Certificate Secret](#create-certificate-secret).
+  - Note: This will not automatically enable the use of the custom certificate. 
+    To do that, follow the instructions in [Enable Custom Certificate](#enable-custom-certificate).
+
+#### Enable Custom Certificate
+- In the 'values.yaml' file, set
+  ```yaml
+  enableCertificateSecret: true
+  ```
+  - This will instruct Alert to use the secret specified by the `webserverCustomCertificatesSecretName` 
+    configuration parameter as the custom certificate.
 
 ### Persistent Storage
 The section will describe the changes needed to configure persistent storage.  
