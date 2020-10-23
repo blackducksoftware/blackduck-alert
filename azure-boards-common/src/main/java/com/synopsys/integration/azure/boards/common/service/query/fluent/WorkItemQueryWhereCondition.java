@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.azure.boards.common.service.query.fluent;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class WorkItemQueryWhereCondition {
     private final String lhs;
