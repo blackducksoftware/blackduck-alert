@@ -1,15 +1,6 @@
 ext.moduleName = 'com.synopsys.integration.azure.boards.common'
 
 dependencies {
-<<<<<<< HEAD
-    api platform(project(':alert-platform'))
-
-    implementation 'com.google.oauth-client:google-oauth-client'
-    implementation 'com.google.api-client:google-api-client:1.30.9'
-    implementation 'com.google.http-client:google-http-client-apache-v2'
-
-    implementation 'com.google.cloud:libraries-bom:2.2.0'
-=======
     implementation platform(project(':alert-platform'))
 
     implementation 'com.google.cloud:libraries-bom'
@@ -18,6 +9,5 @@ dependencies {
     implementation 'com.google.http-client:google-http-client-apache-v2'
 
     implementation 'org.springframework:spring-core'
->>>>>>> ek-revise-builds
     implementation 'com.synopsys.integration:integration-common'
 }

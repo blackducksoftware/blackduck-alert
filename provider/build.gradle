@@ -6,19 +6,11 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
 
-<<<<<<< HEAD
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
-
-=======
->>>>>>> ek-revise-builds
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-web'
     implementation 'jakarta.jms:jakarta.jms-api'
 
-<<<<<<< HEAD
-=======
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
->>>>>>> ek-revise-builds
     testImplementation 'org.mockito:mockito-core'
 }

@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T extends Config, D extends AlertSerializableModel, M extends MultiResponseModel<T>> implements CompositeResourceActions<T, Long> {
+public abstract class AbstractResourceActions<T extends Config, D extends AlertSerializableModel, M extends MultiResponseModel<T>> {
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
@@ -62,7 +62,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
 
     protected abstract List<D> getDatabaseModels();
 
-    protected abstract T convertDatabaseModel(D databaseModel);
+    protected abstract T convertDatabaseModelToRestModel(D databaseModel);
 
     protected abstract M createMultiResponseModel(List<T> resources);
 
@@ -74,7 +74,6 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
 
     protected abstract Optional<T> findExisting(Long id);
 
-    @Override
     public final ActionResponse<T> create(T resource) {
         if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Create"));
@@ -87,19 +86,17 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         return createWithoutChecks(resource);
     }
 
-    @Override
     public final ActionResponse<M> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();
         }
         List<T> resources = getDatabaseModels().stream()
-                                .map(this::convertDatabaseModel)
+                                .map(this::convertDatabaseModelToRestModel)
                                 .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, createMultiResponseModel(resources));
     }
 
-    @Override
     public final ActionResponse<T> getOne(Long id) {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get one"));
@@ -114,7 +111,6 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         return new ActionResponse<>(HttpStatus.OK, existingItem.get());
     }
 
-    @Override
     public final ActionResponse<T> update(Long id, T resource) {
         if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Update"));
@@ -133,7 +129,6 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         return updateWithoutChecks(id, resource);
     }
 
-    @Override
     public final ActionResponse<T> delete(Long id) {
         if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Delete"));
@@ -148,7 +143,6 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         return deleteWithoutChecks(id);
     }
 
-    @Override
     public final ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Test"));
@@ -163,7 +157,6 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
-    @Override
     public final ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Validate"));
@@ -173,4 +166,5 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         ValidationActionResponse response = validateWithoutChecks(resource);
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
+
 }

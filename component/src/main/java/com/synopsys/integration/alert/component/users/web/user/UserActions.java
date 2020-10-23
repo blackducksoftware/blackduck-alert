@@ -87,7 +87,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     @Override
     protected Optional<UserConfig> findExisting(Long id) {
         return userAccessor.getUser(id)
-                   .map(this::convertDatabaseModel);
+                   .map(this::convertDatabaseModelToRestModel);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     }
 
     @Override
-    protected UserConfig convertDatabaseModel(UserModel userModel) {
+    protected UserConfig convertDatabaseModelToRestModel(UserModel userModel) {
         // converting to an object to return to the client; remove the password field.
         // also if the user is external the password is set
         boolean external = userModel.isExternal();
@@ -163,7 +163,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
             }
             userModel = userAccessor.getUser(userId).orElse(userModel);
             logger.debug(actionMessageCreator.createSuccessMessage("User", userName));
-            return new ActionResponse<>(HttpStatus.CREATED, convertDatabaseModel(userModel));
+            return new ActionResponse<>(HttpStatus.CREATED, convertDatabaseModelToRestModel(userModel));
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.createErrorMessage("user", resource.getUsername()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the user. %s", ex.getMessage()));
@@ -193,7 +193,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
                 }
                 userSystemValidator.validateDefaultAdminUser(id);
                 UserConfig user = userAccessor.getUser(id)
-                                      .map(this::convertDatabaseModel)
+                                      .map(this::convertDatabaseModelToRestModel)
                                       .orElse(resource);
                 logger.debug(actionMessageCreator.updateSuccessMessage("User", userName));
                 return new ActionResponse<>(HttpStatus.NO_CONTENT);

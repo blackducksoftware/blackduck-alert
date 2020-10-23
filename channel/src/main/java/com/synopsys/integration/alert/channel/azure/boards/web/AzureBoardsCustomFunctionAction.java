@@ -76,7 +76,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
     // TODO create and use intermediate class for this
-    private final CompositeResourceActions<FieldModel, Long> configActions;
+    private final AbstractConfigResourceActions configActions;
 
     @Autowired
     public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,

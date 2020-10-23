@@ -83,7 +83,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
             logger.debug(actionMessageCreator.createStartMessage("role", roleName));
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
             logger.debug(actionMessageCreator.createSuccessMessage("Role", roleName));
-            return new ActionResponse<>(HttpStatus.OK, convertDatabaseModel(userRoleModel));
+            return new ActionResponse<>(HttpStatus.OK, convertDatabaseModelToRestModel(userRoleModel));
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.createErrorMessage("role", resource.getRoleName()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
@@ -122,7 +122,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     }
 
     @Override
-    protected RolePermissionModel convertDatabaseModel(UserRoleModel userRoleModel) {
+    protected RolePermissionModel convertDatabaseModelToRestModel(UserRoleModel userRoleModel) {
         String roleName = userRoleModel.getName();
         PermissionMatrixModel permissionModel = userRoleModel.getPermissions();
         Set<PermissionModel> permissionKeyToAccess = convertPermissionMatrixModel(permissionModel);
@@ -177,7 +177,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
         return roleAccessor.getRoles(List.of(id))
                    .stream()
                    .findFirst()
-                   .map(this::convertDatabaseModel);
+                   .map(this::convertDatabaseModelToRestModel);
     }
 
     private Set<PermissionModel> convertPermissionMatrixModel(PermissionMatrixModel permissionMatrixModel) {

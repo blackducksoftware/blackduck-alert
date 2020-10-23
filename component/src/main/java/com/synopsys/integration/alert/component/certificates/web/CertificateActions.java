@@ -69,7 +69,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     @Override
     protected Optional<CertificateModel> findExisting(Long id) {
         return certificateAccessor.getCertificate(id)
-                   .map(this::convertDatabaseModel);
+                   .map(this::convertDatabaseModelToRestModel);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    protected CertificateModel convertDatabaseModel(CustomCertificateModel databaseCertificateModel) {
+    protected CertificateModel convertDatabaseModelToRestModel(CustomCertificateModel databaseCertificateModel) {
         String id = databaseCertificateModel.getNullableId() != null ? Long.toString(databaseCertificateModel.getNullableId()) : null;
         return new CertificateModel(id, databaseCertificateModel.getAlias(), databaseCertificateModel.getCertificateContent(), databaseCertificateModel.getLastUpdated());
     }
@@ -148,7 +148,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         try {
             CustomCertificateModel storedCertificate = certificateAccessor.storeCertificate(certificateToStore);
             certificateUtility.importCertificate(storedCertificate);
-            return convertDatabaseModel(storedCertificate);
+            return convertDatabaseModelToRestModel(storedCertificate);
         } catch (AlertException importException) {
             deleteByAlias(certificateToStore);
             throw importException;

@@ -15,30 +15,18 @@ dependencies {
     implementation project(':channel')
     implementation project(":workflow")
 
-<<<<<<< HEAD
-    implementation 'com.synopsys.integration:integration-common'
-
-=======
->>>>>>> ek-revise-builds
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'org.apache.activemq:activemq-broker'
 
     // Spring Security
     implementation 'org.springframework.security:spring-security-config'
-<<<<<<< HEAD
-=======
     implementation 'com.synopsys.integration:integration-common'
 
->>>>>>> ek-revise-builds
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.security:spring-security-web'
 
-<<<<<<< HEAD
-    implementation 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
-=======
     implementation 'org.springframework.security.extensions:spring-security-saml2-core'
->>>>>>> ek-revise-builds
 
     testImplementation 'org.mockito:mockito-core'
 }
