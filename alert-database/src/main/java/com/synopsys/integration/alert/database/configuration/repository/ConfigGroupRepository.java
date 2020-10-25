@@ -33,4 +33,42 @@ import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 @Component
 public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
     List<ConfigGroupEntity> findByJobId(UUID jobId);
+
+    //TODO Gavin can help turn this into a valid query
+    //    @Query("SELECT job"
+    //               + " FROM ConfigGroupEntity job"
+    //               + "   INNER JOIN job.descriptorConfigEntity descConf ON job.configId = descConf.id"
+    //               + "   LEFT JOIN descConf.fieldValueEntities fieldValue ON descConf.id = fieldValues.configId"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ChannelDistributionUIConfig.KEY_FREQUENCY + "')"
+    //               + "   AND fieldValue.value = :frequency"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME + "')"
+    //               + "   AND fieldValue.value = :providerConfigName"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES + "')"
+    //               + "   AND fieldValue.value = :notificationType"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT + "')"
+    //               + "   AND fieldValue.value = :filterByProject"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT + "')"
+    //               + "   AND fieldValue.value = :projectName"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN + "')"
+    //               + "   AND fieldValue.value REGEXP :projectNamePattern"
+    //    )
+    //    List<ConfigGroupEntity> findMatchingJobs(@Param("frequency") String frequency, @Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
+
+    //    @Query("SELECT job"
+    //               + " FROM ConfigGroupEntity job"
+    //               + "   INNER JOIN job.descriptorConfigEntity descConf ON job.configId = descConf.id"
+    //               + "   LEFT JOIN descConf.fieldValueEntities fieldValue ON descConf.id = fieldValues.configId"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME + "')"
+    //               + "   AND fieldValue.value = :providerConfigName"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES + "')"
+    //               + "   AND fieldValue.value = :notificationType"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT + "')"
+    //               + "   AND fieldValue.value = :filterByProject"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT + "')"
+    //               + "   AND fieldValue.value = :projectName"
+    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN + "')"
+    //               + "   AND fieldValue.value REGEXP :projectNamePattern"
+    //    )
+    //    List<ConfigGroupEntity> findMatchingJobs(@Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
 }
+

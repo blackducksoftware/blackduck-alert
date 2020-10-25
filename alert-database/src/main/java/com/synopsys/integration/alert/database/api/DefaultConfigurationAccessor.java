@@ -101,16 +101,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Override
     public List<ConfigurationJobModel> getAllJobs() {
         List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
-        SetMap<UUID, ConfigGroupEntity> jobMap = SetMap.createDefault();
-        for (ConfigGroupEntity entity : jobEntities) {
-            UUID entityJobId = entity.getJobId();
-            jobMap.add(entityJobId, entity);
-        }
-
-        return jobMap.entrySet()
-                   .stream()
-                   .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
-                   .collect(Collectors.toList());
+        return convertJobListToModels(jobEntities);
     }
 
     @Override
@@ -130,6 +121,31 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return getAllJobs()
                    .stream()
                    .filter(job -> frequency == job.getFrequencyType())
+                   .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingJobs(String frequency, String providerConfigName, String notificationType) {
+        //FIXME implement the query for getting the jobs that match the parameters.
+        //        List<ConfigGroupEntity> jobEntities = configGroupRepository.findMatchingJobs(frequency, providerConfigName, notificationType, projectNames);
+        //        return convertJobListToModels(jobEntities);
+        return getAllJobs()
+                   .stream()
+                   .filter(job -> job.getFrequencyType().name().equals(frequency))
+                   .filter(job -> job.getProviderConfigName().equals(providerConfigName))
+                   .filter(job -> job.getNotificationTypes().contains(notificationType))
+                   .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingJobs(String providerConfigName, String notificationType) {
+        //FIXME implement the query for getting the jobs that match the parameters.
+        //        List<ConfigGroupEntity> jobEntities = configGroupRepository.findMatchingJobs(providerConfigName, notificationType, projectNames);
+        //        return convertJobListToModels(jobEntities);
+        return getAllJobs()
+                   .stream()
+                   .filter(job -> job.getProviderConfigName().equals(providerConfigName))
+                   .filter(job -> job.getNotificationTypes().contains(notificationType))
                    .collect(Collectors.toList());
     }
 
@@ -364,6 +380,17 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
             throw new AlertDatabaseConstraintException(NULL_CONFIG_ID);
         }
         descriptorConfigsRepository.deleteById(descriptorConfigId);
+    }
+
+    private List<ConfigurationJobModel> convertJobListToModels(List<ConfigGroupEntity> jobEntities) {
+        SetMap<UUID, ConfigGroupEntity> jobMap = SetMap.createDefault();
+        jobEntities.stream()
+            .forEach(configGroupEntity -> jobMap.add(configGroupEntity.getJobId(), configGroupEntity));
+
+        return jobMap.entrySet()
+                   .stream()
+                   .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
+                   .collect(Collectors.toList());
     }
 
     private ConfigurationJobModel createJob(UUID oldJobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {

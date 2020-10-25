@@ -54,11 +54,11 @@ public class BlackDuckResponseCache {
     }
 
     public <T extends BlackDuckResponse> Optional<T> getItem(Class<T> responseClass, String url) {
-        if (null == responseClass || StringUtils.isBlank(url)) {
+        if (null == responseClass || StringUtils.isBlank(url) || null == blackDuckBucketService) {
             return Optional.empty();
         }
         try {
-            Future<Optional<T>> optionalProjectVersionFuture = blackDuckBucketService.addToTheBucket(bucket, url, responseClass);
+            Future<Optional<T>> optionalItemFuture = blackDuckBucketService.addToTheBucket(bucket, url, responseClass);
             if (BooleanUtils.isTrue(bucket.hasAnyErrors())) {
                 Optional<Exception> error = bucket.getError(url);
                 error.ifPresent(exception -> {
@@ -66,8 +66,8 @@ public class BlackDuckResponseCache {
                     logger.trace(exception.getMessage(), exception);
                 });
             }
-            if (null != optionalProjectVersionFuture) {
-                return optionalProjectVersionFuture
+            if (null != optionalItemFuture) {
+                return optionalItemFuture
                            .get(timeout, TimeUnit.SECONDS);
             }
         } catch (InterruptedException interruptedException) {

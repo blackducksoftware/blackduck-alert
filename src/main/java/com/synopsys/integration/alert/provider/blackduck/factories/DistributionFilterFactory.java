@@ -22,6 +22,10 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.factories;
 
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +35,13 @@ import com.synopsys.integration.alert.common.provider.notification.ProviderNotif
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
 import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckProjectNameExtractor;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 
 @Component
 public class DistributionFilterFactory {
+    private final Logger logger = LoggerFactory.getLogger(DistributionFilterFactory.class);
     private final Gson gson;
 
     @Autowired
@@ -42,7 +50,15 @@ public class DistributionFilterFactory {
     }
 
     public ProviderDistributionFilter createFilter(BlackDuckProperties providerProperties, ProviderNotificationClassMap providerNotificationClassMap) {
-        BlackDuckProjectNameExtractor nameExtractor = new BlackDuckProjectNameExtractor(providerProperties);
+        BlackDuckBucketService blackDuckBucketService = null;
+        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = providerProperties.createBlackDuckHttpClientAndLogErrors(logger);
+        if (optionalBlackDuckHttpClient.isPresent()) {
+            BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
+            BlackDuckServicesFactory blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
+            blackDuckBucketService = blackDuckServicesFactory.createBlackDuckBucketService();
+        }
+
+        BlackDuckProjectNameExtractor nameExtractor = new BlackDuckProjectNameExtractor(blackDuckBucketService, providerProperties.getBlackDuckTimeout());
         return new BlackDuckDistributionFilter(gson, providerNotificationClassMap, nameExtractor);
     }
 }

@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
+import com.synopsys.integration.datastructure.SetMap;
 
 @Component
 public class NotificationProcessor {
@@ -69,16 +71,49 @@ public class NotificationProcessor {
 
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
         logger.info("Notifications to Process: {}", notifications.size());
-        List<ConfigurationJobModel> jobsForFrequency = configurationAccessor.getJobsByFrequency(frequency);
-        // FIXME, we should not be getting all jobs, we should create a filter for retrieving the jobs that match the notifications. This is the problem with the Honeywell performance
-        return processNotificationsForJobs(jobsForFrequency, notifications);
+        SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = extractNotificationInformation(notifications);
+
+        List<DistributionEvent> events = new ArrayList<>();
+        for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
+            NotificationFilterModel notificationFilterModel = entry.getKey();
+            List<ConfigurationJobModel> matchingJobs = configurationAccessor.getMatchingJobs(frequency.name(), notificationFilterModel.getProviderConfigName(), notificationFilterModel.getNotificationType());
+
+            List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
+            events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
+        }
+        return events;
     }
 
     public List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications) {
         // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
-        List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
-        // FIXME, we should not be getting all jobs, we should create a filter for retrieving the jobs that match the notifications. This is the problem with the Honeywell performance
-        return processNotificationsForJobs(allJobs, notifications);
+        SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = extractNotificationInformation(notifications);
+
+        List<DistributionEvent> events = new ArrayList<>();
+        for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
+            NotificationFilterModel notificationFilterModel = entry.getKey();
+            List<ConfigurationJobModel> matchingJobs = configurationAccessor.getMatchingJobs(notificationFilterModel.getProviderConfigName(), notificationFilterModel.getNotificationType());
+
+            List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
+            events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
+        }
+        return events;
+    }
+
+    private List<DistributionEvent> processNotificationsThatMatchFilter(NotificationFilterModel notificationFilterModel, List<ConfigurationJobModel> matchingJobs, List<AlertNotificationModel> notifications) {
+        Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(notificationFilterModel.getProviderConfigName());
+        if (optionalProviderConfig.isPresent()) {
+            Provider provider = providerKeyToProvider.get(notificationFilterModel.getProvider());
+
+            ConfigurationModel providerConfiguration = optionalProviderConfig.get();
+            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfiguration);
+
+            ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
+
+            return processNotificationsForJobs(statefulProvider, distributionFilter, matchingJobs, notifications);
+        } else {
+            logger.warn("Could not find the provider config by the name {}. Skipping {} notifications.", notificationFilterModel.getProviderConfigName(), notifications.size());
+        }
+        return List.of();
     }
 
     public List<DistributionEvent> processNotifications(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
@@ -90,10 +125,12 @@ public class NotificationProcessor {
             return List.of();
         }
 
-        Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(job);
+        Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(job.getProviderConfigName());
         if (optionalProviderConfig.isPresent()) {
             Provider provider = providerKeyToProvider.get(job.getProviderName());
-            StatefulProvider statefulProvider = provider.createStatefulProvider(optionalProviderConfig.get());
+
+            ConfigurationModel providerConfiguration = optionalProviderConfig.get();
+            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfiguration);
 
             ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
             List<AlertNotificationModel> notificationsByProviderConfig = filterNotificationsByProviderConfigId(statefulProvider, notifications);
@@ -110,6 +147,46 @@ public class NotificationProcessor {
             }
         }
         return List.of();
+    }
+
+    private List<DistributionEvent> processNotifications(StatefulProvider statefulProvider, ProviderDistributionFilter distributionFilter, ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
+        if (!job.isEnabled()) {
+            logger.debug("Skipping disabled distribution job: {}", job.getName());
+            return List.of();
+        }
+        if (notifications.isEmpty()) {
+            return List.of();
+        }
+
+        List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notifications);
+
+        logIgnoredNotifications(notifications, filteredNotifications);
+
+        if (!filteredNotifications.isEmpty()) {
+            logNotificationsThatMatchedJobs(filteredNotifications);
+
+            ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
+            return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
+        }
+
+        return List.of();
+    }
+
+    private SetMap<NotificationFilterModel, AlertNotificationModel> extractNotificationInformation(List<AlertNotificationModel> notifications) {
+        SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = SetMap.createDefault();
+        for (AlertNotificationModel alertNotificationModel : notifications) {
+            NotificationFilterModel notificationFilterModel = extractNotificationInformation(alertNotificationModel);
+            notificationFilterMap.add(notificationFilterModel, alertNotificationModel);
+        }
+        return notificationFilterMap;
+    }
+
+    private NotificationFilterModel extractNotificationInformation(AlertNotificationModel alertNotificationModel) {
+        String provider = alertNotificationModel.getProvider();
+        String providerConfigName = alertNotificationModel.getProviderConfigName();
+        String notificationType = alertNotificationModel.getNotificationType();
+
+        return new NotificationFilterModel(provider, providerConfigName, notificationType);
     }
 
     private void logIgnoredNotifications(List<AlertNotificationModel> allNotifications, List<AlertNotificationModel> filteredNotifications) {
@@ -131,10 +208,10 @@ public class NotificationProcessor {
         }
     }
 
-    private List<DistributionEvent> processNotificationsForJobs(Collection<ConfigurationJobModel> jobs, List<AlertNotificationModel> notifications) {
+    private List<DistributionEvent> processNotificationsForJobs(StatefulProvider statefulProvider, ProviderDistributionFilter providerDistributionFilter, Collection<ConfigurationJobModel> jobs, List<AlertNotificationModel> notifications) {
         List<DistributionEvent> distributionEvents = new LinkedList<>();
         for (ConfigurationJobModel job : jobs) {
-            List<DistributionEvent> distributionEventsForJob = processNotifications(job, notifications);
+            List<DistributionEvent> distributionEventsForJob = processNotifications(statefulProvider, providerDistributionFilter, job, notifications);
             distributionEvents.addAll(distributionEventsForJob);
         }
         return distributionEvents;
@@ -174,11 +251,11 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private Optional<ConfigurationModel> retrieveProviderConfig(ConfigurationJobModel job) {
+    private Optional<ConfigurationModel> retrieveProviderConfig(String providerConfigName) {
         try {
-            return configurationAccessor.getProviderConfigurationByName(job.getProviderConfigName());
+            return configurationAccessor.getProviderConfigurationByName(providerConfigName);
         } catch (AlertDatabaseConstraintException e) {
-            logger.error("Could not retrieve the provider config for job: {}", job.getName(), e);
+            logger.error("Could not retrieve the provider config for provider: {}", providerConfigName, e);
             return Optional.empty();
         }
     }

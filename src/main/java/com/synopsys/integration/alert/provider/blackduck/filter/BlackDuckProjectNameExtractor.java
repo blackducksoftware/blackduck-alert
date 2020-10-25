@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
@@ -48,20 +48,18 @@ import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotifica
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 
 public class BlackDuckProjectNameExtractor {
     private static final BiFunction<NotificationDeserializationCache, AlertNotificationModel, Collection<String>> DEFAULT_EXTRACTOR = (x, y) -> List.of();
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckProjectNameExtractor.class);
     private Map<String, BiFunction<NotificationDeserializationCache, AlertNotificationModel, Collection<String>>> extractorMap = new HashMap<>();
-    private BlackDuckProperties blackDuckProperties;
+    private BlackDuckResponseCache blackDuckResponseCache;
 
-    public BlackDuckProjectNameExtractor(BlackDuckProperties blackDuckProperties) {
-        this.blackDuckProperties = blackDuckProperties;
+    public BlackDuckProjectNameExtractor(BlackDuckBucketService blackDuckBucketService, int timeout) {
+        this.blackDuckResponseCache = new BlackDuckResponseCache(blackDuckBucketService, new BlackDuckBucket(), timeout);
         initializeExtractorMap();
     }
 
@@ -72,22 +70,13 @@ public class BlackDuckProjectNameExtractor {
     }
 
     private Collection<String> getBomEditProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
-        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
-        if (optionalBlackDuckHttpClient.isPresent()) {
-            BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
-            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
-            BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
-
-            BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
-            String bomComponentUri = notificationView.getContent().getBomComponent();
-            try {
-                ProjectVersionComponentView bomComponentView = blackDuckService.getResponse(bomComponentUri, ProjectVersionComponentView.class);
-                return getProjectName(blackDuckService, bomComponentView)
-                           .stream()
-                           .collect(Collectors.toSet());
-            } catch (IntegrationException e) {
-                logger.error("An exception occurred while trying to get the Bom Component View", e);
-            }
+        BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
+        String bomComponentUri = notificationView.getContent().getBomComponent();
+        Optional<ProjectVersionComponentView> bomComponentView = blackDuckResponseCache.getItem(ProjectVersionComponentView.class, bomComponentUri);
+        if (bomComponentView.isPresent()) {
+            return getProjectName(blackDuckResponseCache, bomComponentView.get())
+                       .stream()
+                       .collect(Collectors.toSet());
         }
         logger.warn("Could not get project name for Bom Edit notification");
         return Set.of();
@@ -126,21 +115,16 @@ public class BlackDuckProjectNameExtractor {
                    .collect(Collectors.toSet());
     }
 
-    private Optional<String> getProjectName(BlackDuckService blackDuckService, ProjectVersionComponentView versionBomComponent) {
-        try {
-            Optional<String> versionBomComponentHref = versionBomComponent.getHref();
-            if (versionBomComponentHref.isPresent()) {
-                String versionHref = versionBomComponentHref.get();
-                int projectVersionIndex = versionHref.indexOf(ProjectView.VERSIONS_LINK);
-                String projectUri = versionHref.substring(0, projectVersionIndex - 1);
+    private Optional<String> getProjectName(BlackDuckResponseCache blackDuckResponseCache, ProjectVersionComponentView versionBomComponent) {
+        Optional<String> versionBomComponentHref = versionBomComponent.getHref();
+        if (versionBomComponentHref.isPresent()) {
+            String versionHref = versionBomComponentHref.get();
+            int projectVersionIndex = versionHref.indexOf(ProjectView.VERSIONS_LINK);
+            String projectUri = versionHref.substring(0, projectVersionIndex - 1);
 
-                ProjectView projectView = blackDuckService.getResponse(projectUri, ProjectView.class);
-                return Optional.of(projectView.getName());
-            }
-        } catch (IntegrationException ie) {
-            logger.error("Error getting project version for Bom Component. ", ie);
+            Optional<ProjectView> projectView = blackDuckResponseCache.getItem(ProjectView.class, projectUri);
+            return projectView.map(ProjectView::getName);
         }
-
         return Optional.empty();
     }
 
