@@ -58,7 +58,7 @@ public class JiraCloudIssueHandlerTest {
         issueConfig.setIssueCreator(email);
         issueConfig.setIssueType(taskType);
 
-        JiraIssueSearchProperties jiraIssueSearchProperties = new JiraIssueSearchProperties("Provider", "Provider Url", "Topic", "Topic Value",
+        JiraIssueSearchProperties jiraIssueSearchProperties = new JiraIssueSearchProperties("Provider", "Provider URL", "Topic", "Topic Value",
             "Sub Topic", "Sub Topic Value", "Category", "Component Name", "Component Value", "Sub Component", "Sub Component Value", "");
         IssueContentModel issueContentModel = IssueContentModel.of("Test issue", "Attempting to create an issue to reproduce a bug", new ArrayList<>());
         AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
