@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 
-public abstract class AbstractJobResourceActions implements CompositeResourceActions<JobFieldModel, UUID> {
+public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
@@ -88,7 +88,6 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
         return descriptorNames;
     }
 
-    @Override
     public final ActionResponse<JobFieldModel> create(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasCreatePermission);
         if (!hasPermissions) {
@@ -122,13 +121,11 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
         return readPageWithoutChecks(pageNumber, pageSize, permittedDescriptorsForSession);
     }
 
-    @Override
     @Deprecated
     public final ActionResponse<MultiJobFieldModel> getAll() {
         return new ActionResponse<>(HttpStatus.GONE);
     }
 
-    @Override
     public final ActionResponse<JobFieldModel> getOne(UUID id) {
         Set<String> descriptorNames = getDescriptorNames();
         if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
@@ -148,7 +145,6 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
-    @Override
     public final ActionResponse<JobFieldModel> update(UUID id, JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasWritePermission);
         if (!hasPermissions) {
@@ -167,7 +163,6 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
         return updateWithoutChecks(id, resource);
     }
 
-    @Override
     public final ActionResponse<JobFieldModel> delete(UUID id) {
         Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
 
@@ -183,7 +178,6 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
         return deleteWithoutChecks(id);
     }
 
-    @Override
     public final ValidationActionResponse test(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasExecutePermission);
         if (!hasPermissions) {
@@ -198,7 +192,6 @@ public abstract class AbstractJobResourceActions implements CompositeResourceAct
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
-    @Override
     public final ValidationActionResponse validate(JobFieldModel resource) {
         boolean hasPermissions = resource.getFieldModels()
                                      .stream()
