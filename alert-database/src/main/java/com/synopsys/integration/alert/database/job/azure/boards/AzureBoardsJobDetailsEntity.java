@@ -14,7 +14,8 @@ public class AzureBoardsJobDetailsEntity {
     @Column(name = "job_id")
     private UUID jobId;
 
-    // FIXME addComments flag
+    @Column(name = "add_comments")
+    private Boolean addComments;
 
     @Column(name = "project_name_or_id")
     private String projectNameOrId;
@@ -31,8 +32,9 @@ public class AzureBoardsJobDetailsEntity {
     public AzureBoardsJobDetailsEntity() {
     }
 
-    public AzureBoardsJobDetailsEntity(UUID jobId, String projectNameOrId, String workItemType, String workItemCompletedState, String workItemReopenState) {
+    public AzureBoardsJobDetailsEntity(UUID jobId, Boolean addComments, String projectNameOrId, String workItemType, String workItemCompletedState, String workItemReopenState) {
         this.jobId = jobId;
+        this.addComments = addComments;
         this.projectNameOrId = projectNameOrId;
         this.workItemType = workItemType;
         this.workItemCompletedState = workItemCompletedState;
@@ -45,6 +47,14 @@ public class AzureBoardsJobDetailsEntity {
 
     public void setJobId(UUID jobId) {
         this.jobId = jobId;
+    }
+
+    public Boolean getAddComments() {
+        return addComments;
+    }
+
+    public void setAddComments(Boolean addComments) {
+        this.addComments = addComments;
     }
 
     public String getProjectNameOrId() {

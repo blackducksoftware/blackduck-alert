@@ -161,6 +161,9 @@
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="add_comments" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
             <column name="project_name_or_id" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
