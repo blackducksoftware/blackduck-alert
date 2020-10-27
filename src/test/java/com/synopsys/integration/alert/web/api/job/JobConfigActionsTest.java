@@ -149,7 +149,7 @@ public class JobConfigActionsTest {
         AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
 
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
-        Mockito.when(jobAccessor.getPageOfJobs(Mockito.any(), Mockito.anyCollection())).thenReturn(pageOfJobs);
+        Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
@@ -174,7 +174,7 @@ public class JobConfigActionsTest {
         AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
 
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
-        Mockito.when(jobAccessor.getPageOfJobs(Mockito.any(), Mockito.anyCollection())).thenReturn(pageOfJobs);
+        Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert tests")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
 
         JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
