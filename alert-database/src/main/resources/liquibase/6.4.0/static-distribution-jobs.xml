@@ -61,16 +61,6 @@
                 onUpdate="CASCADE"
         />
     </changeSet>
-    <changeSet author="gavink" id="create-blackduck-notification-types-table">
-        <createTable schemaName="alert" tableName="blackduck_notification_types">
-            <column name="notification_type_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="name" type="VARCHAR">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-notification-types-table">
         <createTable schemaName="alert" tableName="blackduck_job_notification_types">
             <column name="job_id" type="UUID">
@@ -129,7 +119,7 @@
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table-fk">
         <addForeignKeyConstraint
-                constraintName="blackduck_job_vulnerability_severity_filters_job_id_fk"
+                constraintName="blackduck_job_vuln_severity_filters_job_id_fk"
                 baseTableSchemaName="alert"
                 baseTableName="blackduck_job_vulnerability_severity_filters"
                 baseColumnNames="job_id"

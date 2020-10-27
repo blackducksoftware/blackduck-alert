@@ -7,7 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 
 @Entity
 @Table(schema = "alert", name = "distribution_jobs")
@@ -31,8 +35,11 @@ public class DistributionJobEntity {
 
     @Column(name = "channel_descriptor_name")
     private String channelDescriptorName;
+    @OneToOne
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
+    private BlackDuckJobDetailsEntity blackDuckJobDetails;
 
-    // TODO add @OneToOne and @OneToMany mappings here
+    // TODO add all @OneToOne and @OneToMany mappings here
 
     public DistributionJobEntity() {
     }
