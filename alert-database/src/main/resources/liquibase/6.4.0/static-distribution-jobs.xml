@@ -28,8 +28,8 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-details-table">
-        <createTable schemaName="alert" tableName="black_duck_job_details">
+    <changeSet author="gavink" id="create-blackduck-job-details-table">
+        <createTable schemaName="alert" tableName="blackduck_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
@@ -45,11 +45,11 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-details-table-fk">
+    <changeSet author="gavink" id="create-blackduck-job-details-table-fk">
         <addForeignKeyConstraint
-                constraintName="black_duck_job_details_job_id_fk"
+                constraintName="blackduck_job_details_job_id_fk"
                 baseTableSchemaName="alert"
-                baseTableName="black_duck_job_details"
+                baseTableName="blackduck_job_details"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
                 referencedTableName="distribution_jobs"
@@ -58,8 +58,8 @@
                 onUpdate="CASCADE"
         />
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-notification-types-table">
-        <createTable schemaName="alert" tableName="black_duck_notification_types">
+    <changeSet author="gavink" id="create-blackduck-notification-types-table">
+        <createTable schemaName="alert" tableName="blackduck_notification_types">
             <column name="notification_type_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
             </column>
@@ -68,37 +68,37 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="gavink" id="insert-supported-black-duck-notification-types">
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+    <changeSet author="gavink" id="insert-supported-blackduck-notification-types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="BOM_EDIT"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="LICENSE_LIMIT"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="POLICY_OVERRIDE"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="PROJECT"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="PROJECT_VERSION"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="RULE_VIOLATION"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="RULE_VIOLATION_CLEARED"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="RULE_VIOLATION_CLEARED"/>
         </insert>
-        <insert schemaName="alert" tableName="black_duck_notification_types">
+        <insert schemaName="alert" tableName="blackduck_notification_types">
             <column name="name" value="VULNERABILITY"/>
         </insert>
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-notification-types-table">
-        <createTable schemaName="alert" tableName="black_duck_job_notification_types">
+    <changeSet author="gavink" id="create-blackduck-job-notification-types-table">
+        <createTable schemaName="alert" tableName="blackduck_job_notification_types">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
@@ -107,11 +107,11 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-notification-types-table-fks">
+    <changeSet author="gavink" id="create-blackduck-job-notification-types-table-fks">
         <addForeignKeyConstraint
-                constraintName="black_duck_job_notification_types_job_id_fk"
+                constraintName="blackduck_job_notification_types_job_id_fk"
                 baseTableSchemaName="alert"
-                baseTableName="black_duck_job_notification_types"
+                baseTableName="blackduck_job_notification_types"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
                 referencedTableName="distribution_jobs"
@@ -120,19 +120,19 @@
                 onUpdate="CASCADE"
         />
         <addForeignKeyConstraint
-                constraintName="black_duck_job_notif_types_notif_type_id_fk"
+                constraintName="blackduck_job_notif_types_notif_type_id_fk"
                 baseTableSchemaName="alert"
-                baseTableName="black_duck_job_notification_types"
+                baseTableName="blackduck_job_notification_types"
                 baseColumnNames="notification_type_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="black_duck_notification_types"
+                referencedTableName="blackduck_notification_types"
                 referencedColumnNames="notification_type_id"
                 onDelete="CASCADE"
                 onUpdate="CASCADE"
         />
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-policy-filters-table">
-        <createTable schemaName="alert" tableName="black_duck_job_policy_filters">
+    <changeSet author="gavink" id="create-blackduck-job-policy-filters-table">
+        <createTable schemaName="alert" tableName="blackduck_job_policy_filters">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
@@ -141,11 +141,11 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-policy-filters-table-fks">
+    <changeSet author="gavink" id="create-blackduck-job-policy-filters-table-fks">
         <addForeignKeyConstraint
-                constraintName="black_duck_job_policy_filters_job_id_fk"
+                constraintName="blackduck_job_policy_filters_job_id_fk"
                 baseTableSchemaName="alert"
-                baseTableName="black_duck_job_policy_filters"
+                baseTableName="blackduck_job_policy_filters"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
                 referencedTableName="distribution_jobs"
@@ -154,8 +154,8 @@
                 onUpdate="CASCADE"
         />
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-vulnerability-severity-filters-table">
-        <createTable schemaName="alert" tableName="black_duck_job_vulnerability_severity_filters">
+    <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table">
+        <createTable schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
@@ -164,11 +164,11 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-vulnerability-severity-filters-table-fks">
+    <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table-fks">
         <addForeignKeyConstraint
-                constraintName="black_duck_job_vulnerability_severity_filters_job_id_fk"
+                constraintName="blackduck_job_vulnerability_severity_filters_job_id_fk"
                 baseTableSchemaName="alert"
-                baseTableName="black_duck_job_vulnerability_severity_filters"
+                baseTableName="blackduck_job_vulnerability_severity_filters"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
                 referencedTableName="distribution_jobs"
@@ -177,8 +177,8 @@
                 onUpdate="CASCADE"
         />
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-projects-table">
-        <createTable schemaName="alert" tableName="black_duck_job_projects">
+    <changeSet author="gavink" id="create-blackduck-job-projects-table">
+        <createTable schemaName="alert" tableName="blackduck_job_projects">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
@@ -187,11 +187,11 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="gavink" id="create-black-duck-job-projects-table-fks">
+    <changeSet author="gavink" id="create-blackduck-job-projects-table-fks">
         <addForeignKeyConstraint
-                constraintName="black_duck_job_projects_job_id_fk"
+                constraintName="blackduck_job_projects_job_id_fk"
                 baseTableSchemaName="alert"
-                baseTableName="black_duck_job_projects"
+                baseTableName="blackduck_job_projects"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
                 referencedTableName="distribution_jobs"
