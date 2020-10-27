@@ -205,7 +205,7 @@
             <column name="additional_email_addresses_only" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="attachement_file_type" type="VARCHAR">
+            <column name="attachment_file_type" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
         </createTable>

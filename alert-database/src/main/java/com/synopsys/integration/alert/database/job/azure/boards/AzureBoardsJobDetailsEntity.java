@@ -14,6 +14,8 @@ public class AzureBoardsJobDetailsEntity {
     @Column(name = "job_id")
     private UUID jobId;
 
+    // FIXME addComments flag
+
     @Column(name = "project_name_or_id")
     private String projectNameOrId;
 
