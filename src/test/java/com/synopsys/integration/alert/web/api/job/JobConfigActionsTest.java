@@ -71,6 +71,8 @@ public class JobConfigActionsTest {
     private PKIXErrorResponseFactory pkixErrorResponseFactory;
     private DescriptorMap descriptorMap;
 
+    private JobConfigActions jobConfigActions;
+
     @BeforeEach
     public void init() {
         authorizationManager = Mockito.mock(AuthorizationManager.class);
@@ -83,6 +85,9 @@ public class JobConfigActionsTest {
         globalConfigExistsValidator = Mockito.mock(GlobalConfigExistsValidator.class);
         pkixErrorResponseFactory = Mockito.mock(PKIXErrorResponseFactory.class);
         descriptorMap = Mockito.mock(DescriptorMap.class);
+
+        jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, globalConfigExistsValidator,
+            pkixErrorResponseFactory, descriptorMap);
 
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
@@ -106,10 +111,6 @@ public class JobConfigActionsTest {
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.performAfterSaveAction(Mockito.any())).thenReturn(fieldModel);
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
-
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.create(jobFieldModel);
 
         assertTrue(jobFieldModelActionResponse.isSuccessful());
@@ -124,10 +125,6 @@ public class JobConfigActionsTest {
         JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
 
         Mockito.doThrow(new AlertException("Exception for test")).when(fieldModelProcessor).performBeforeSaveAction(Mockito.any());
-
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.create(jobFieldModel);
 
@@ -152,9 +149,6 @@ public class JobConfigActionsTest {
         Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobPagedModel> jobPagedModelActionResponse = jobConfigActions.getPage(pageNumber, pageSize);
 
         assertTrue(jobPagedModelActionResponse.isSuccessful());
@@ -177,9 +171,6 @@ public class JobConfigActionsTest {
         Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert tests")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobPagedModel> jobPagedModelActionResponse = jobConfigActions.getPage(pageNumber, pageSize);
 
         assertTrue(jobPagedModelActionResponse.isError());
@@ -195,9 +186,6 @@ public class JobConfigActionsTest {
 
         mockFindJobFieldModel(configurationJobModel, fieldModel);
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.getOne(jobId);
 
         assertTrue(jobFieldModelActionResponse.isSuccessful());
@@ -213,9 +201,6 @@ public class JobConfigActionsTest {
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.getOne(jobId);
 
         assertTrue(jobFieldModelActionResponse.isError());
@@ -241,9 +226,6 @@ public class JobConfigActionsTest {
         Mockito.when(jobAccessor.updateJob(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(configurationJobModel);
         Mockito.when(fieldModelProcessor.performAfterUpdateAction(Mockito.any(), Mockito.any())).thenReturn(fieldModel);
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.update(jobId, jobFieldModel);
 
         assertTrue(jobFieldModelActionResponse.isSuccessful());
@@ -262,9 +244,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert test")).when(fieldModelProcessor).performBeforeUpdateAction(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.update(jobId, jobFieldModel);
 
         assertTrue(jobFieldModelActionResponse.isError());
@@ -281,9 +260,6 @@ public class JobConfigActionsTest {
         mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.when(fieldModelProcessor.performBeforeDeleteAction(Mockito.any())).thenReturn(fieldModel);
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.delete(jobId);
 
         Mockito.verify(jobAccessor).deleteJob(Mockito.any());
@@ -303,9 +279,6 @@ public class JobConfigActionsTest {
         mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.doThrow(new AlertException("Exception for Alert test")).when(fieldModelProcessor).performBeforeDeleteAction(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.delete(jobId);
 
         assertTrue(jobFieldModelActionResponse.isError());
@@ -334,9 +307,6 @@ public class JobConfigActionsTest {
         configurationFieldModel.setFieldValue(fieldValue);
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("testKey", configurationFieldModel));
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -368,9 +338,6 @@ public class JobConfigActionsTest {
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -397,9 +364,6 @@ public class JobConfigActionsTest {
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.empty());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -418,9 +382,6 @@ public class JobConfigActionsTest {
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -444,9 +405,6 @@ public class JobConfigActionsTest {
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
         Mockito.doThrow(new AlertFieldException("AlertFieldException for Alert test", List.of(alertFieldStatus))).when(fieldModelProcessor).createCustomMessageFieldModel(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -469,9 +427,6 @@ public class JobConfigActionsTest {
 
         Mockito.doThrow(new AlertMethodNotAllowedException("AlertMethodNotAllowedException for Alert test")).when(fieldModelProcessor).createCustomMessageFieldModel(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -494,9 +449,6 @@ public class JobConfigActionsTest {
 
         Mockito.doThrow(new AlertException("IntegrationException for Alert test")).when(fieldModelProcessor).createCustomMessageFieldModel(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -528,9 +480,6 @@ public class JobConfigActionsTest {
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithIntegrationRestException()));
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -553,9 +502,6 @@ public class JobConfigActionsTest {
 
         Mockito.doThrow(new NullPointerException("RuntimeException for Alert test")).when(fieldModelProcessor).createCustomMessageFieldModel(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -573,9 +519,6 @@ public class JobConfigActionsTest {
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.validate(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -596,9 +539,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(jobAccessor.getJobByName(Mockito.anyString())).thenReturn(Optional.of(configurationJobModel));
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.validate(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -617,9 +557,6 @@ public class JobConfigActionsTest {
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ValidationActionResponse validationActionResponse = jobConfigActions.validate(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful());
@@ -647,9 +584,6 @@ public class JobConfigActionsTest {
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -667,9 +601,6 @@ public class JobConfigActionsTest {
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(false);
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
 
         assertTrue(actionResponse.isError());
@@ -689,9 +620,6 @@ public class JobConfigActionsTest {
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -713,9 +641,6 @@ public class JobConfigActionsTest {
 
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert test")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
 
         assertTrue(actionResponse.isError());
@@ -729,9 +654,6 @@ public class JobConfigActionsTest {
 
         Mockito.when(globalConfigExistsValidator.validate(Mockito.any())).thenReturn(Optional.empty());
 
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
         ActionResponse<String> actionResponse = jobConfigActions.checkGlobalConfigExists(descriptorName);
 
         assertTrue(actionResponse.isSuccessful());
@@ -745,10 +667,7 @@ public class JobConfigActionsTest {
         String configMissingMessage = "configMissingMessageTest";
 
         Mockito.when(globalConfigExistsValidator.validate(Mockito.any())).thenReturn(Optional.of(configMissingMessage));
-
-        JobConfigActions jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
-            globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
+        
         ActionResponse<String> actionResponse = jobConfigActions.checkGlobalConfigExists(descriptorName);
 
         assertTrue(actionResponse.isError());

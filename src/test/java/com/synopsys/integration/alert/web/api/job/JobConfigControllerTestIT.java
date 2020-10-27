@@ -72,7 +72,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetPage() throws Exception {
-        int pageNumber = 1;
+        int pageNumber = 0;
         int pageSize = 10;
         addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
 
