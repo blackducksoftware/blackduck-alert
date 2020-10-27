@@ -60,6 +60,15 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JobConfigActionsTest {
+    private final String descriptorName = "descriptorName";
+    private final String fieldValue = "fieldValue";
+    private final DescriptorType descriptorType = DescriptorType.CHANNEL;
+    private UUID jobId;
+    private FieldModel fieldModel;
+    private JobFieldModel jobFieldModel;
+    private ConfigurationJobModel configurationJobModel;
+    private ConfigurationFieldModel configurationFieldModel;
+
     private AuthorizationManager authorizationManager;
     private DescriptorAccessor descriptorAccessor;
     private ConfigurationAccessor configurationAccessor;
@@ -75,6 +84,13 @@ public class JobConfigActionsTest {
 
     @BeforeEach
     public void init() {
+        this.jobId = UUID.randomUUID();
+        this.fieldModel = createFieldModel();
+        this.jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
+        this.configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        this.configurationFieldModel.setFieldValue(fieldValue);
+        this.configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
+
         authorizationManager = Mockito.mock(AuthorizationManager.class);
         descriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
@@ -99,12 +115,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void createTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
-
         Mockito.when(fieldModelProcessor.performBeforeSaveAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("Key", configurationFieldModel));
         Mockito.when(jobAccessor.createJob(Mockito.anyCollection(), Mockito.anyCollection())).thenReturn(configurationJobModel);
@@ -120,10 +130,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void createServerErrorTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Mockito.doThrow(new AlertException("Exception for test")).when(fieldModelProcessor).performBeforeSaveAction(Mockito.any());
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.create(jobFieldModel);
@@ -138,11 +144,7 @@ public class JobConfigActionsTest {
         int totalPages = 1;
         int pageNumber = 0;
         int pageSize = 10;
-        DescriptorType descriptorType = DescriptorType.CHANNEL;
         RegisteredDescriptorModel registeredDescriptorModel = new RegisteredDescriptorModel(1L, "descriptorName", descriptorType.name());
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
         AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
 
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
@@ -161,10 +163,7 @@ public class JobConfigActionsTest {
         int totalPages = 1;
         int pageNumber = 0;
         int pageSize = 10;
-        final DescriptorType descriptorType = DescriptorType.CHANNEL;
         RegisteredDescriptorModel registeredDescriptorModel = new RegisteredDescriptorModel(1L, "descriptorName", descriptorType.name());
-        UUID jobId = UUID.randomUUID();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
         AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
 
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
@@ -180,10 +179,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void getOneTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
-
         mockFindJobFieldModel(configurationJobModel, fieldModel);
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.getOne(jobId);
@@ -195,9 +190,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void getOneErrorTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
-
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
 
@@ -210,15 +202,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void updateTest() throws Exception {
-        String fieldValue = "fieldValue";
-
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        configurationFieldModel.setFieldValue(fieldValue);
-
         mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(fieldModelProcessor.performBeforeUpdateAction(Mockito.any())).thenReturn(fieldModel);
@@ -235,11 +218,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void updateServerErrorTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
-
         mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert test")).when(fieldModelProcessor).performBeforeUpdateAction(Mockito.any());
@@ -253,10 +231,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void deleteTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
-
         mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.when(fieldModelProcessor.performBeforeDeleteAction(Mockito.any())).thenReturn(fieldModel);
 
@@ -272,10 +246,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void deleteServerErrorTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
-
         mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.doThrow(new AlertException("Exception for Alert test")).when(fieldModelProcessor).performBeforeDeleteAction(Mockito.any());
 
@@ -288,13 +258,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testTest() throws Exception {
-        String fieldValue = "fieldValue";
-        DescriptorType descriptorType = DescriptorType.CHANNEL;
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
         fieldModel.setId("testID");
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -303,8 +267,6 @@ public class JobConfigActionsTest {
         Mockito.when(descriptor.getType()).thenReturn(descriptorType);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestAction()));
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        configurationFieldModel.setFieldValue(fieldValue);
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("testKey", configurationFieldModel));
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
@@ -318,13 +280,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testWithProviderErrorsTest() throws Exception {
-        String fieldValue = "fieldValue";
-        DescriptorType descriptorType = DescriptorType.CHANNEL;
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
         fieldModel.setId("testID");
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -333,8 +289,6 @@ public class JobConfigActionsTest {
         Mockito.when(descriptor.getType()).thenReturn(descriptorType);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        configurationFieldModel.setFieldValue(fieldValue);
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
 
@@ -349,12 +303,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testMethodNotAllowedTest() throws Exception {
-        DescriptorType descriptorType = DescriptorType.CHANNEL;
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
         fieldModel.setId("testID");
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -375,11 +324,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testBadRequestTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
         fieldModel.setId("testID");
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
@@ -393,10 +338,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void testAlertFieldExceptionTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -416,10 +357,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void testAlertMethodNotAllowedTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -438,10 +375,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void testIntegrationExceptionTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -460,13 +393,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testIntegrationRestExceptionTest() throws Exception {
-        String fieldValue = "fieldValue";
-        DescriptorType descriptorType = DescriptorType.CHANNEL;
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
         fieldModel.setId("testID");
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -475,8 +402,6 @@ public class JobConfigActionsTest {
         Mockito.when(descriptor.getType()).thenReturn(descriptorType);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        configurationFieldModel.setFieldValue(fieldValue);
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithIntegrationRestException()));
 
@@ -491,10 +416,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void testExceptionTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Descriptor descriptor = Mockito.mock(Descriptor.class);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
@@ -513,10 +434,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateTest() {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
 
         ValidationActionResponse validationActionResponse = jobConfigActions.validate(jobFieldModel);
@@ -530,14 +447,11 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateBadRequestTest() {
-        UUID jobId = UUID.randomUUID();
         UUID newJobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModelWithValue("testValue");
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(newJobId, Set.of(createConfigurationModel()));
+        ConfigurationJobModel newConfigurationJobModel = new ConfigurationJobModel(newJobId, Set.of(createConfigurationModel()));
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
-        Mockito.when(jobAccessor.getJobByName(Mockito.anyString())).thenReturn(Optional.of(configurationJobModel));
+        Mockito.when(jobAccessor.getJobByName(Mockito.anyString())).thenReturn(Optional.of(newConfigurationJobModel));
 
         ValidationActionResponse validationActionResponse = jobConfigActions.validate(jobFieldModel);
 
@@ -550,10 +464,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateBadRequestWithFieldStatusTest() {
-        UUID jobId = UUID.randomUUID();
-        FieldModel fieldModel = createFieldModel();
-        JobFieldModel jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
-
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
 
@@ -568,12 +478,9 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateJobsByIdTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
         JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
         Descriptor descriptor = createDescriptor();
-        FieldModel fieldModel = createFieldModel();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
@@ -593,7 +500,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateJobsByIdForbiddenTest() {
-        UUID jobId = UUID.randomUUID();
         JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
         Descriptor descriptor = createDescriptor();
@@ -629,11 +535,9 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateJobsByIdInternalServerErrorTest() throws Exception {
-        UUID jobId = UUID.randomUUID();
         JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
         Descriptor descriptor = createDescriptor();
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
@@ -650,8 +554,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void checkGlobalConfigExistsTest() {
-        String descriptorName = "descriptorName";
-
         Mockito.when(globalConfigExistsValidator.validate(Mockito.any())).thenReturn(Optional.empty());
 
         ActionResponse<String> actionResponse = jobConfigActions.checkGlobalConfigExists(descriptorName);
@@ -663,11 +565,10 @@ public class JobConfigActionsTest {
 
     @Test
     public void checkGlobalConfigExistsBadRequestTest() {
-        String descriptorName = "descriptorName";
         String configMissingMessage = "configMissingMessageTest";
 
         Mockito.when(globalConfigExistsValidator.validate(Mockito.any())).thenReturn(Optional.of(configMissingMessage));
-        
+
         ActionResponse<String> actionResponse = jobConfigActions.checkGlobalConfigExists(descriptorName);
 
         assertTrue(actionResponse.isError());
@@ -676,10 +577,7 @@ public class JobConfigActionsTest {
     }
 
     private FieldModel createFieldModel() {
-        return createFieldModelWithValue("testValue");
-    }
-
-    private FieldModel createFieldModelWithValue(String value) {
+        String value = "testValue";
         DescriptorKey descriptorKey = createDescriptorKey();
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(TestAction.KEY_CUSTOM_TOPIC, new FieldValueModel(List.of(value), false));
@@ -694,10 +592,6 @@ public class JobConfigActionsTest {
         String lastUpdated = "lastUpdated-test";
         ConfigContextEnum configContextEnum = ConfigContextEnum.GLOBAL;
         String fieldKey = "fieldKey";
-        String fieldValue = "fieldValue";
-
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        configurationFieldModel.setFieldValue(fieldValue);
 
         Map<String, ConfigurationFieldModel> configuredFields = Map.of(fieldKey, configurationFieldModel);
         return new ConfigurationModel(descriptorId, configurationId, createdAt, lastUpdated, configContextEnum, configuredFields);
