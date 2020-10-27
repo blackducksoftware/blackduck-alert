@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 
 @Entity
 @Table(schema = "alert", name = "distribution_jobs")
@@ -54,6 +55,10 @@ public class DistributionJobEntity {
     @OneToOne
     @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private JiraCloudJobDetailsEntity jiraCloudJobDetails;
+
+    @OneToOne
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
+    private JiraServerJobDetailsEntity jiraServerJobDetailsEntity;
 
     // TODO add all @OneToOne mappings here
 
