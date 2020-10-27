@@ -61,16 +61,6 @@
                 onUpdate="CASCADE"
         />
     </changeSet>
-    <changeSet author="gavink" id="create-blackduck-notification-types-table">
-        <createTable schemaName="alert" tableName="blackduck_notification_types">
-            <column name="notification_type_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="name" type="VARCHAR">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-notification-types-table">
         <createTable schemaName="alert" tableName="blackduck_job_notification_types">
             <column name="job_id" type="UUID">
@@ -88,7 +78,7 @@
                 baseTableName="blackduck_job_notification_types"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="distribution_jobs"
+                referencedTableName="blackduck_job_details"
                 referencedColumnNames="job_id"
                 onDelete="CASCADE"
                 onUpdate="CASCADE"
@@ -111,7 +101,7 @@
                 baseTableName="blackduck_job_policy_filters"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="distribution_jobs"
+                referencedTableName="blackduck_job_details"
                 referencedColumnNames="job_id"
                 onDelete="CASCADE"
                 onUpdate="CASCADE"
@@ -129,12 +119,12 @@
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table-fk">
         <addForeignKeyConstraint
-                constraintName="blackduck_job_vulnerability_severity_filters_job_id_fk"
+                constraintName="blackduck_job_vuln_severity_filters_job_id_fk"
                 baseTableSchemaName="alert"
                 baseTableName="blackduck_job_vulnerability_severity_filters"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="distribution_jobs"
+                referencedTableName="blackduck_job_details"
                 referencedColumnNames="job_id"
                 onDelete="CASCADE"
                 onUpdate="CASCADE"
@@ -157,7 +147,7 @@
                 baseTableName="blackduck_job_projects"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="distribution_jobs"
+                referencedTableName="blackduck_job_details"
                 referencedColumnNames="job_id"
                 onDelete="CASCADE"
                 onUpdate="CASCADE"
@@ -170,6 +160,9 @@
         <createTable schemaName="alert" tableName="azure_boards_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
+            </column>
+            <column name="add_comments" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
             </column>
             <column name="project_name_or_id" type="VARCHAR">
                 <constraints nullable="false"/>
@@ -215,7 +208,7 @@
             <column name="additional_email_addresses_only" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="attachement_file_type" type="VARCHAR">
+            <column name="attachment_file_type" type="VARCHAR">
                 <constraints nullable="true"/>
             </column>
         </createTable>
@@ -250,7 +243,7 @@
                 baseTableName="email_job_additional_email_addresses"
                 baseColumnNames="job_id"
                 referencedTableSchemaName="alert"
-                referencedTableName="distribution_jobs"
+                referencedTableName="email_job_details"
                 referencedColumnNames="job_id"
                 onDelete="CASCADE"
                 onUpdate="CASCADE"
