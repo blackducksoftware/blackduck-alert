@@ -44,4 +44,5 @@ public class AlertPagedRestModelTest {
         assertEquals(pageSize, restModel.getPageSize());
         assertEquals(contentList, restModel.getModels());
     }
+
 }

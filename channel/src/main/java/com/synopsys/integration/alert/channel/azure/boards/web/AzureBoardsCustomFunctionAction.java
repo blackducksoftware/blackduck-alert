@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceActions;
-import com.synopsys.integration.alert.common.action.api.CompositeResourceActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -59,7 +58,6 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
@@ -76,7 +74,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
     // TODO create and use intermediate class for this
-    private final CompositeResourceActions<FieldModel, Long> configActions;
+    private final AbstractConfigResourceActions configActions;
 
     @Autowired
     public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,

@@ -37,4 +37,5 @@ public class Configuration extends AlertSerializableModel {
     public FieldUtility getFieldUtility() {
         return fieldUtility;
     }
+
 }
