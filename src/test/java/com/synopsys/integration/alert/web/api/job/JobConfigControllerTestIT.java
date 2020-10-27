@@ -1,16 +1,10 @@
 package com.synopsys.integration.alert.web.api.job;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,7 +19,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -34,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -43,14 +35,11 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -94,16 +83,21 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
-        String response = mvcResult.getResponse().getContentAsString();
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
 
-        TypeToken fieldModelListType = new TypeToken<MultiJobFieldModel>() {};
-        MultiJobFieldModel fieldModels = gson.fromJson(response, fieldModelListType.getType());
+    @Test
+    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    public void testGetPage() throws Exception {
+        int pageNumber = 1;
+        int pageSize = 10;
+        addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
 
-        assertNotNull(fieldModels);
-        assertFalse(fieldModels.getJobs().isEmpty());
-        assertTrue(fieldModels.getJobs().stream()
-                       .anyMatch(fieldModel -> fieldModel.getJobId().equals(configId)));
+        String urlPath = url + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
@@ -117,12 +111,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
-        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
-        String response = mvcResult.getResponse().getContentAsString();
-
-        ConfigurationJobModel fieldModel = gson.fromJson(response, ConfigurationJobModel.class);
-        assertNotNull(fieldModel);
-        assertEquals(configId, fieldModel.getJobId().toString());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
@@ -139,12 +128,6 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
-        descriptorConfigRepository.flush();
-
-        UUID id = UUID.fromString(jobId);
-        Optional<ConfigurationJobModel> configuration = getJobAccessor().getJobById(id);
-
-        assertTrue(configuration.isEmpty(), "Expected the job to have been deleted");
     }
 
     @Test
@@ -173,7 +156,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
 
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent()).andReturn();
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
@@ -192,10 +175,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         request.content(gson.toJson(fieldModel));
         request.contentType(contentType);
 
-        MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
-        String response = mvcResult.getResponse().getContentAsString();
-
-        checkResponse(response);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
@@ -265,42 +245,4 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
         return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
     }
-
-    private void checkResponse(String response) throws AlertDatabaseConstraintException {
-        assertNotNull(response);
-
-        JobFieldModel responseEntity = gson.fromJson(response, JobFieldModel.class);
-        String stringId = responseEntity.getJobId();
-        UUID id = UUID.fromString(stringId);
-
-        Optional<ConfigurationJobModel> configurationModelOptional = getJobAccessor().getJobById(id);
-        assertTrue(configurationModelOptional.isPresent());
-
-        Optional<ConfigurationFieldModel> slackChannelNameField = Optional.empty();
-        Optional<ConfigurationFieldModel> frequencyField = Optional.empty();
-        Optional<ConfigurationFieldModel> filterByProjectField = Optional.empty();
-
-        ConfigurationJobModel configurationJobModel = configurationModelOptional.get();
-
-        for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-            if (slackChannelNameField.isEmpty()) {
-                slackChannelNameField = configurationModel.getField(SlackDescriptor.KEY_CHANNEL_NAME);
-            }
-            if (frequencyField.isEmpty()) {
-                frequencyField = configurationModel.getField(ChannelDistributionUIConfig.KEY_FREQUENCY);
-            }
-            if (filterByProjectField.isEmpty()) {
-                filterByProjectField = configurationModel.getField(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-            }
-        }
-
-        assertTrue(slackChannelNameField.isPresent());
-        assertTrue(frequencyField.isPresent());
-        assertTrue(filterByProjectField.isPresent());
-
-        assertEquals("channelName", slackChannelNameField.get().getFieldValue().orElse(""));
-        assertEquals(FrequencyType.DAILY.name(), frequencyField.get().getFieldValue().orElse(""));
-        assertEquals("false", filterByProjectField.get().getFieldValue().orElse(""));
-    }
-
 }
