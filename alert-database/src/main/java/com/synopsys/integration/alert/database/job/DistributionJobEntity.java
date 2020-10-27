@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 
 @Entity
@@ -35,9 +36,14 @@ public class DistributionJobEntity {
 
     @Column(name = "channel_descriptor_name")
     private String channelDescriptorName;
+
     @OneToOne
     @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private BlackDuckJobDetailsEntity blackDuckJobDetails;
+
+    @OneToOne
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
+    private AzureBoardsJobDetailsEntity azureBoardsJobDetails;
 
     // TODO add all @OneToOne and @OneToMany mappings here
 
