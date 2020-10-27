@@ -91,7 +91,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     }
 
     @Override
-    protected List<UserModel> getDatabaseModels() {
+    protected List<UserModel> retrieveDatabaseModels() {
         return userAccessor.getUsers();
     }
 

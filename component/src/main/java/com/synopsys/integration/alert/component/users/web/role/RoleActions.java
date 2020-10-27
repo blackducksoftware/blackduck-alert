@@ -112,7 +112,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     }
 
     @Override
-    protected List<UserRoleModel> getDatabaseModels() {
+    protected List<UserRoleModel> retrieveDatabaseModels() {
         return new ArrayList<>(roleAccessor.getRoles());
     }
 

@@ -73,7 +73,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    protected List<CustomCertificateModel> getDatabaseModels() {
+    protected List<CustomCertificateModel> retrieveDatabaseModels() {
         return certificateAccessor.getCertificates();
     }
 

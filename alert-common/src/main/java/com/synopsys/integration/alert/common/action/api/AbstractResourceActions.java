@@ -60,7 +60,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
 
     protected abstract ActionResponse<T> deleteWithoutChecks(Long id);
 
-    protected abstract List<D> getDatabaseModels();
+    protected abstract List<D> retrieveDatabaseModels();
 
     protected abstract T convertDatabaseModelToRestModel(D databaseModel);
 
@@ -91,7 +91,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();
         }
-        List<T> resources = getDatabaseModels().stream()
+        List<T> resources = retrieveDatabaseModels().stream()
                                 .map(this::convertDatabaseModelToRestModel)
                                 .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, createMultiResponseModel(resources));
