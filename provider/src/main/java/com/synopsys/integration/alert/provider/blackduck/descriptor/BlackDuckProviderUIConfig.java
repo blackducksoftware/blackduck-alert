@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 
 @Component
 public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
-    private static final String LABEL_URL = "Url";
+    private static final String LABEL_URL = "URL";
     private static final String LABEL_API_TOKEN = "API Token";
     private static final String LABEL_TIMEOUT = "Timeout";
 

@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.channel.azure.boards;
 
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;

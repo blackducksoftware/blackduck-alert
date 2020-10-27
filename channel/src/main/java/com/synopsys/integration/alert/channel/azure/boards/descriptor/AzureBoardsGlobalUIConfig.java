@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class AzureBoardsGlobalUIConfig extends UIConfig {
-    public static final String LABEL_AZURE_BOARDS_URL = "Url";
+    public static final String LABEL_AZURE_BOARDS_URL = "URL";
     public static final String LABEL_ORGANIZATION_NAME = "Organization Name";
     public static final String LABEL_CLIENT_ID = "Client Id";
     public static final String LABEL_CLIENT_SECRET = "Client Secret";

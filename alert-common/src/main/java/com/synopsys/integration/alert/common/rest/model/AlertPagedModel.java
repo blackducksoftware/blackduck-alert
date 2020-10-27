@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-
 import net.minidev.json.annotate.JsonIgnore;
 
 public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSerializableModel {
@@ -37,10 +35,6 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSeri
     private final int currentPage;
     private final int pageSize;
     private final List<M> models;
-
-    public AlertPagedModel(Page<?> page, List<M> models) {
-        this(page.getTotalPages(), page.getNumber(), page.getSize(), models);
-    }
 
     public AlertPagedModel(int totalPages, int currentPage, int pageSize, List<M> models) {
         this.totalPages = totalPages;

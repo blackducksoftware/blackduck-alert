@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.action;
 
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.springframework.http.HttpStatus;
 

@@ -33,13 +33,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -123,8 +121,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     @Override
     public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession) {
         try {
-            PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-            AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageRequest, permittedDescriptorsForSession);
+            AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, pageSize, permittedDescriptorsForSession);
             List<ConfigurationJobModel> pageOfJobsModels = pageOfJobs.getModels();
             List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobsModels.size());
             for (ConfigurationJobModel configJobModel : pageOfJobsModels) {
