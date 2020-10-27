@@ -16,6 +16,8 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
 @Entity
 @Table(schema = "alert", name = "distribution_jobs")
@@ -58,9 +60,15 @@ public class DistributionJobEntity {
 
     @OneToOne
     @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
-    private JiraServerJobDetailsEntity jiraServerJobDetailsEntity;
+    private JiraServerJobDetailsEntity jiraServerJobDetails;
 
-    // TODO add all @OneToOne mappings here
+    @OneToOne
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
+    private MSTeamsJobDetailsEntity msTeamsJobDetails;
+
+    @OneToOne
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
+    private SlackJobDetailsEntity slackJobDetails;
 
     public DistributionJobEntity() {
     }
@@ -120,6 +128,62 @@ public class DistributionJobEntity {
 
     public void setChannelDescriptorName(String channelDescriptorName) {
         this.channelDescriptorName = channelDescriptorName;
+    }
+
+    public BlackDuckJobDetailsEntity getBlackDuckJobDetails() {
+        return blackDuckJobDetails;
+    }
+
+    public void setBlackDuckJobDetails(BlackDuckJobDetailsEntity blackDuckJobDetails) {
+        this.blackDuckJobDetails = blackDuckJobDetails;
+    }
+
+    public AzureBoardsJobDetailsEntity getAzureBoardsJobDetails() {
+        return azureBoardsJobDetails;
+    }
+
+    public void setAzureBoardsJobDetails(AzureBoardsJobDetailsEntity azureBoardsJobDetails) {
+        this.azureBoardsJobDetails = azureBoardsJobDetails;
+    }
+
+    public EmailJobDetailsEntity getEmailJobDetails() {
+        return emailJobDetails;
+    }
+
+    public void setEmailJobDetails(EmailJobDetailsEntity emailJobDetails) {
+        this.emailJobDetails = emailJobDetails;
+    }
+
+    public JiraCloudJobDetailsEntity getJiraCloudJobDetails() {
+        return jiraCloudJobDetails;
+    }
+
+    public void setJiraCloudJobDetails(JiraCloudJobDetailsEntity jiraCloudJobDetails) {
+        this.jiraCloudJobDetails = jiraCloudJobDetails;
+    }
+
+    public JiraServerJobDetailsEntity getJiraServerJobDetails() {
+        return jiraServerJobDetails;
+    }
+
+    public void setJiraServerJobDetails(JiraServerJobDetailsEntity jiraServerJobDetails) {
+        this.jiraServerJobDetails = jiraServerJobDetails;
+    }
+
+    public MSTeamsJobDetailsEntity getMsTeamsJobDetails() {
+        return msTeamsJobDetails;
+    }
+
+    public void setMsTeamsJobDetails(MSTeamsJobDetailsEntity msTeamsJobDetails) {
+        this.msTeamsJobDetails = msTeamsJobDetails;
+    }
+
+    public SlackJobDetailsEntity getSlackJobDetails() {
+        return slackJobDetails;
+    }
+
+    public void setSlackJobDetails(SlackJobDetailsEntity slackJobDetails) {
+        this.slackJobDetails = slackJobDetails;
     }
 
 }
