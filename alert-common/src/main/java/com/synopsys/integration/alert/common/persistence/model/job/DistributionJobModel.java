@@ -24,6 +24,7 @@ public class DistributionJobModel extends AlertSerializableModel {
     private final boolean filterByProject;
     private final String projectNamePattern;
     private final List<String> notificationTypes;
+    private final List<String> projectFilterProjectNames;
     private final List<String> policyFilterPolicyNames;
     private final List<String> vulnerabilityFilterSeverityNames;
 
@@ -44,7 +45,7 @@ public class DistributionJobModel extends AlertSerializableModel {
         boolean filterByProject,
         String projectNamePattern,
         List<String> notificationTypes,
-        List<String> policyFilterPolicyNames,
+        List<String> projectFilterProjectNames, List<String> policyFilterPolicyNames,
         List<String> vulnerabilityFilterSeverityNames
     ) {
         this.jobId = jobId;
@@ -59,6 +60,7 @@ public class DistributionJobModel extends AlertSerializableModel {
         this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
         this.notificationTypes = notificationTypes;
+        this.projectFilterProjectNames = projectFilterProjectNames;
         this.policyFilterPolicyNames = policyFilterPolicyNames;
         this.vulnerabilityFilterSeverityNames = vulnerabilityFilterSeverityNames;
     }
@@ -111,6 +113,10 @@ public class DistributionJobModel extends AlertSerializableModel {
 
     public List<String> getNotificationTypes() {
         return notificationTypes;
+    }
+
+    public List<String> getProjectFilterProjectNames() {
+        return projectFilterProjectNames;
     }
 
     public List<String> getPolicyFilterPolicyNames() {

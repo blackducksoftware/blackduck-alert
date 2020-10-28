@@ -18,6 +18,7 @@ public class DistributionJobModelBuilder {
     private boolean filterByProject = false;
     private String projectNamePattern;
     private List<String> notificationTypes;
+    private List<String> projectFilterProjectNames;
     private List<String> policyFilterPolicyNames;
     private List<String> vulnerabilityFilterSeverityNames;
 
@@ -38,6 +39,7 @@ public class DistributionJobModelBuilder {
             filterByProject,
             projectNamePattern,
             notificationTypes,
+            projectFilterProjectNames,
             policyFilterPolicyNames,
             vulnerabilityFilterSeverityNames
         );
@@ -100,6 +102,11 @@ public class DistributionJobModelBuilder {
 
     public DistributionJobModelBuilder notificationTypes(List<String> notificationTypes) {
         this.notificationTypes = notificationTypes;
+        return this;
+    }
+
+    public DistributionJobModelBuilder projectFilterProjectNames(List<String> projectFilterProjectNames) {
+        this.projectFilterProjectNames = projectFilterProjectNames;
         return this;
     }
 
