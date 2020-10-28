@@ -13,7 +13,7 @@
 			<fileNamePattern>${ROLLING_FILE_NAME_PATTERN:-log/alertAudit.log.%d{yyyy-MM-dd}.%i.gz}</fileNamePattern>
 			<maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
 			<maxHistory>${LOG_FILE_MAX_HISTORY:-7}</maxHistory>
-			<totalSizeCap>${LOG_FILE_TOTAL_SIZE_CAP:-0}</totalSizeCap>
+			<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
     </appender>
 
