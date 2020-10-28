@@ -265,16 +265,13 @@ public class JobConfigActions extends AbstractJobResourceActions {
         String error = "";
         if (optionalJobName.isPresent()) {
             String jobName = optionalJobName.get();
-            if (StringUtils.isNotBlank(jobName)) {
-                // Find an existing job with the name that does not have the same id as currentJobId.
-                boolean foundDuplicateName = jobAccessor.getJobByName(jobName)
-                                                 .filter(job -> !job.getJobId().equals(currentJobId))
-                                                 .isPresent();
-                if (foundDuplicateName) {
-                    error = "A distribution configuration with this name already exists.";
-                }
-            } else {
-                error = "Name cannot be blank.";
+            // Because of FieldValueModel empty values aren't saved, therefore we don't need to check for empty values
+            // Find an existing job with the name that does not have the same id as currentJobId.
+            boolean foundDuplicateName = jobAccessor.getJobByName(jobName)
+                                             .filter(job -> !job.getJobId().equals(currentJobId))
+                                             .isPresent();
+            if (foundDuplicateName) {
+                error = "A distribution configuration with this name already exists.";
             }
         }
         if (StringUtils.isNotBlank(error)) {
