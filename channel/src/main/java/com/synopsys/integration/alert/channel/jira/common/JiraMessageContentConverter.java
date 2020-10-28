@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.common;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

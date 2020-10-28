@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.provider.blackduck.filter;
 
 import java.util.Collection;
 
-import org.springframework.lang.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;

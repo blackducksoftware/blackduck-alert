@@ -20,26 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.common.rest.api;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-public interface CompositeResourceActions<T extends AlertSerializableModel, I> {
-    ActionResponse<T> create(T resource);
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-    ActionResponse<T> getOne(I id);
-
-    ActionResponse<? extends MultiResponseModel<T>> getAll();
-
-    ActionResponse<T> update(I id, T resource);
-
-    ActionResponse<T> delete(I id);
-
-    ValidationActionResponse test(T resource);
-
-    ValidationActionResponse validate(T resource);
+public interface ReadPageController<P extends AlertPagedModel<?>> {
+    @GetMapping
+    P getPage(
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize
+    );
 
 }

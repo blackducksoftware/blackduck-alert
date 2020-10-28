@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class JiraCloudGlobalUIConfig extends UIConfig {
-    public static final String LABEL_URL = "Url";
+    public static final String LABEL_URL = "URL";
     public static final String LABEL_EMAIL_ADDRESS = "Email Address";
     public static final String LABEL_API_TOKEN = "API Token";
     public static final String LABEL_DISABLE_PLUGIN_CHECK = "Disable Plugin Check";

@@ -37,18 +37,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 
 public interface ConfigurationAccessor {
-    List<ConfigurationJobModel> getAllJobs();
-
-    Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException;
-
-    List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency);
-
-    ConfigurationJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
-
-    ConfigurationJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
-
-    void deleteJob(UUID jobId) throws AlertDatabaseConstraintException;
-
     List<ConfigurationModel> getChannelConfigurationsByFrequency(FrequencyType frequencyType) throws AlertDatabaseConstraintException;
 
     Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName) throws AlertDatabaseConstraintException;

@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -76,20 +77,22 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AboutReader aboutReader;
+    private final JobAccessor jobAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final Gson gson;
     private final AuditAccessor auditAccessor;
-    private List<ProviderPhoneHomeHandler> providerHandlers;
+    private final List<ProviderPhoneHomeHandler> providerHandlers;
 
     @Value("${" + PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE + ":FALSE}")
     private Boolean skipPhoneHome;
 
     @Autowired
-    public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, ConfigurationAccessor configurationAccessor,
+    public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, JobAccessor jobAccessor, ConfigurationAccessor configurationAccessor,
         TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditAccessor auditAccessor, List<ProviderPhoneHomeHandler> providerHandlers) {
         super(taskScheduler, taskManager);
         this.aboutReader = aboutReader;
+        this.jobAccessor = jobAccessor;
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
         this.gson = gson;
@@ -155,7 +158,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private Set<String> getChannelMetaData() {
         Map<String, Integer> createdDistributions = new HashMap<>();
         String successKeyPart = "::Successes";
-        List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
+        List<ConfigurationJobModel> allJobs = jobAccessor.getAllJobs();
         for (ConfigurationJobModel job : allJobs) {
             for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
                 String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");

@@ -22,14 +22,12 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import javax.validation.constraints.NotNull;
-
 import com.synopsys.integration.util.Stringable;
 
 public class ProviderNotificationType extends Stringable {
     private final String notificationType;
 
-    public ProviderNotificationType(@NotNull String notificationType) {
+    public ProviderNotificationType(String notificationType) {
         this.notificationType = notificationType;
     }
 

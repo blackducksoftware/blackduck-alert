@@ -1,26 +1,30 @@
 ext.moduleName = 'com.synopsys.integration.alert.common'
 
 dependencies {
-    api 'com.synopsys.integration:blackduck-common:49.2.0'
+    implementation platform(project(':alert-platform'))
 
-    api 'org.springframework.boot:spring-boot-starter-activemq'
-    api 'org.springframework.security:spring-security-config'
-    api 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+
+    implementation 'org.springframework:spring-web'
+    implementation 'jakarta.jms:jakarta.jms-api'
+    implementation 'org.springframework:spring-jms'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core'
+    implementation 'org.springframework.data:spring-data-commons'
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'jakarta.activation:jakarta.activation-api'
 
     // Templates
-    api 'org.jsoup:jsoup:1.9.2'
-    api 'com.jayway.jsonpath:json-path:2.3.0'
-    api 'org.freemarker:freemarker:2.3.25-incubating'
+    implementation 'org.jsoup:jsoup'
+    implementation 'com.jayway.jsonpath:json-path'
+    implementation 'org.freemarker:freemarker'
 
     // Email
-    runtimeOnly 'com.sun.mail:javax.mail:1.6.2'
-    api 'javax.mail:javax.mail-api:1.6.2'
-
-    // This needs to be declared as api in order to annotate
-    // the Application.java with the datasource
-    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.sun.mail:javax.mail'
+    implementation 'javax.mail:javax.mail-api'
 
     // XML
-    api 'com.fasterxml.jackson.core:jackson-databind'
-    api 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+
+    testImplementation 'org.mockito:mockito-core'
 }
