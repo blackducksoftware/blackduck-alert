@@ -51,7 +51,10 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     public List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds) {
-        return null;
+        return distributionJobRepository.findAllById(jobIds)
+                   .stream()
+                   .map(this::convertToConfigurationJobModel)
+                   .collect(Collectors.toList());
     }
 
     @Override
@@ -61,7 +64,7 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     public Optional<ConfigurationJobModel> getJobById(UUID jobId) {
-        return Optional.empty();
+        return distributionJobRepository.findById(jobId).map(this::convertToConfigurationJobModel);
     }
 
     @Override
@@ -85,8 +88,8 @@ public class StaticJobAccessor implements JobAccessor {
     }
 
     @Override
-    public void deleteJob(UUID jobId) throws AlertDatabaseConstraintException {
-
+    public void deleteJob(UUID jobId) {
+        distributionJobRepository.deleteById(jobId);
     }
 
     private ConfigurationJobModel convertToConfigurationJobModel(DistributionJobEntity jobEntity) {
