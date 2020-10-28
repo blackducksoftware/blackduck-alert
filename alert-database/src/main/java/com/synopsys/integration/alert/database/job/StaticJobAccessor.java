@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -25,11 +24,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
-import com.synopsys.integration.alert.database.job.blackduck.policy.BlackDuckJobPolicyFilterEntity;
-import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
-import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterEntity;
 
 // @Component
 public class StaticJobAccessor implements JobAccessor {
@@ -100,87 +94,27 @@ public class StaticJobAccessor implements JobAccessor {
 
         String createdAtDateTime = DateUtils.formatDate(jobEntity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
         String updatedAtDateTime = DateUtils.formatDate(jobEntity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        Long blackDuckDescriptorId = getDescriptorId(blackDuckProviderKey.getUniversalKey());
+
+        String providerUniversalKey = blackDuckProviderKey.getUniversalKey();
+        Long blackDuckDescriptorId = getDescriptorId(providerUniversalKey);
+
         ConfigurationModelMutable blackDuckConfigurationModel = new ConfigurationModelMutable(blackDuckDescriptorId, -1L, createdAtDateTime, updatedAtDateTime, ConfigContextEnum.DISTRIBUTION);
-        populateBlackDuckConfigurationModel(jobEntity, blackDuckConfigurationModel);
+        JobConfigurationModelFieldPopulationUtils.populateBlackDuckConfigurationModelFields(jobEntity, blackDuckConfigurationModel);
         configurationModels.add(blackDuckConfigurationModel);
 
         Long channelDescriptorId = getDescriptorId(jobEntity.getChannelDescriptorName());
         ConfigurationModelMutable channelConfigurationModel = new ConfigurationModelMutable(channelDescriptorId, -1L, createdAtDateTime, updatedAtDateTime, ConfigContextEnum.DISTRIBUTION);
+        channelConfigurationModel.put(JobConfigurationModelFieldPopulationUtils.createConfigFieldModel("channel.common.provider.name", providerUniversalKey));
+        JobConfigurationModelFieldPopulationUtils.populateChannelConfigurationModelFields(jobEntity, channelConfigurationModel);
         configurationModels.add(channelConfigurationModel);
 
         return new ConfigurationJobModel(jobEntity.getJobId(), configurationModels);
-    }
-
-    private void populateBlackDuckConfigurationModel(DistributionJobEntity jobEntity, ConfigurationModelMutable blackDuckConfigurationModel) {
-        BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
-
-        blackDuckConfigurationModel.put(createConfigFieldModel("provider.common.config.id", false, blackDuckJobDetails.getGlobalConfigId().toString()));
-        blackDuckConfigurationModel.put(createConfigFieldModel("provider.distribution.processing.type", false, jobEntity.getProcessingType()));
-
-        Boolean filterByProject = blackDuckJobDetails.getFilterByProject();
-        blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.filter.by.project", false, filterByProject.toString()));
-        if (filterByProject) {
-            String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
-            if (StringUtils.isNotBlank(projectNamePattern)) {
-                blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.project.name.pattern", false, projectNamePattern));
-            }
-
-            List<BlackDuckJobProjectEntity> blackDuckJobProjects = blackDuckJobDetails.getBlackDuckJobProjects();
-            if (null != blackDuckJobProjects && !blackDuckJobProjects.isEmpty()) {
-                List<String> blackDuckProjectNames = blackDuckJobProjects
-                                                         .stream()
-                                                         .map(BlackDuckJobProjectEntity::getProjectName)
-                                                         .collect(Collectors.toList());
-                blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.configured.project", false, blackDuckProjectNames));
-            }
-        }
-
-        // These are required so they will not be null/empty
-        List<String> blackDuckJobNotificationTypeNames = blackDuckJobDetails.getBlackDuckJobNotificationTypes()
-                                                             .stream()
-                                                             .map(BlackDuckJobNotificationTypeEntity::getNotificationType)
-                                                             .collect(Collectors.toList());
-        blackDuckConfigurationModel.put(createConfigFieldModel("provider.distribution.notification.types", false, blackDuckJobNotificationTypeNames));
-
-        List<BlackDuckJobPolicyFilterEntity> blackDuckJobPolicyFilters = blackDuckJobDetails.getBlackDuckJobPolicyFilters();
-        if (null != blackDuckJobPolicyFilters && !blackDuckJobPolicyFilters.isEmpty()) {
-            List<String> blackDuckPolicyNames = blackDuckJobPolicyFilters
-                                                    .stream()
-                                                    .map(BlackDuckJobPolicyFilterEntity::getPolicyName)
-                                                    .collect(Collectors.toList());
-            blackDuckConfigurationModel.put(createConfigFieldModel("blackduck.policy.notification.filter", false, blackDuckPolicyNames));
-        }
-
-        List<BlackDuckJobVulnerabilitySeverityFilterEntity> blackDuckJobVulnerabilitySeverityFilters = blackDuckJobDetails.getBlackDuckJobVulnerabilitySeverityFilters();
-        if (null != blackDuckJobVulnerabilitySeverityFilters && !blackDuckJobVulnerabilitySeverityFilters.isEmpty()) {
-            List<String> blackDuckJobVulnerabilitySeverityNames = blackDuckJobVulnerabilitySeverityFilters
-                                                                      .stream()
-                                                                      .map(BlackDuckJobVulnerabilitySeverityFilterEntity::getSeverityName)
-                                                                      .collect(Collectors.toList());
-            blackDuckConfigurationModel.put(createConfigFieldModel("blackduck.vulnerability.notification.filter", false, blackDuckJobVulnerabilitySeverityNames));
-        }
     }
 
     private Long getDescriptorId(String descriptorUniversalKey) {
         return registeredDescriptorRepository.findFirstByName(descriptorUniversalKey)
                    .map(RegisteredDescriptorEntity::getId)
                    .orElseThrow(() -> new AlertRuntimeException("FATAL: A descriptor is missing from the database"));
-    }
-
-    private ConfigurationFieldModel createConfigFieldModel(String fieldKey, boolean isSensitive, String value) {
-        return createConfigFieldModel(fieldKey, isSensitive, List.of(value));
-    }
-
-    private ConfigurationFieldModel createConfigFieldModel(String fieldKey, boolean isSensitive, Collection<String> values) {
-        ConfigurationFieldModel fieldModel;
-        if (isSensitive) {
-            fieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
-        } else {
-            fieldModel = ConfigurationFieldModel.create(fieldKey);
-        }
-        fieldModel.setFieldValues(values);
-        return fieldModel;
     }
 
 }
