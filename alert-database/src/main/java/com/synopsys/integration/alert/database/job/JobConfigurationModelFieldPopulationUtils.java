@@ -2,17 +2,25 @@ package com.synopsys.integration.alert.database.job;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
+import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
 import com.synopsys.integration.alert.database.job.blackduck.policy.BlackDuckJobPolicyFilterEntity;
 import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterEntity;
+import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
+import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
 public class JobConfigurationModelFieldPopulationUtils {
     public static void populateBlackDuckConfigurationModelFields(DistributionJobEntity jobEntity, ConfigurationModelMutable blackDuckConfigurationModel) {
@@ -82,7 +90,7 @@ public class JobConfigurationModelFieldPopulationUtils {
         } else if ("channel_jira_server".equals(channelDescriptorName)) {
             populateJiraServerFields(jobEntity, channelConfigurationModel);
         } else if ("msteamskey".equals(channelDescriptorName)) {
-            populateMSTeamsFields(jobEntity, channelConfigurationModel);
+            populateMSTeamsField(jobEntity, channelConfigurationModel);
         } else if ("channel_slack".equals(channelDescriptorName)) {
             populateSlackFields(jobEntity, channelConfigurationModel);
         }
@@ -99,27 +107,73 @@ public class JobConfigurationModelFieldPopulationUtils {
     }
 
     private static void populateAzureBoardsFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
-        // FIXME implement
+        AzureBoardsJobDetailsEntity azureBoardsJobDetails = jobEntity.getAzureBoardsJobDetails();
+        if (null != azureBoardsJobDetails) {
+            channelConfigurationModel.put(createConfigFieldModel("channel.azure.boards.work.item.comment", azureBoardsJobDetails.getAddComments().toString()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.azure.boards.project", azureBoardsJobDetails.getProjectNameOrId()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.azure.boards.work.item.type", azureBoardsJobDetails.getWorkItemType()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.azure.boards.work.item.completed.state", azureBoardsJobDetails.getWorkItemCompletedState()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.azure.boards.work.item.reopen.state", azureBoardsJobDetails.getWorkItemReopenState()));
+        }
     }
 
     private static void populateEmailFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
-        // FIXME implement
+        EmailJobDetailsEntity emailJobDetails = jobEntity.getEmailJobDetails();
+        if (null != emailJobDetails) {
+            channelConfigurationModel.put(createConfigFieldModel("email.subject.line", emailJobDetails.getSubjectLine()));
+            channelConfigurationModel.put(createConfigFieldModel("email.attachment.format", emailJobDetails.getAttachmentFileType()));
+            channelConfigurationModel.put(createConfigFieldModel("project.owner.only", emailJobDetails.getProjectOwnerOnly().toString()));
+            channelConfigurationModel.put(createConfigFieldModel("email.additional.addresses.only", emailJobDetails.getAdditionalEmailAddressesOnly().toString()));
+
+            List<EmailJobAdditionalEmailAddressEntity> emailJobAdditionalEmailAddresses = emailJobDetails.getEmailJobAdditionalEmailAddresses();
+            if (null != emailJobAdditionalEmailAddresses) {
+                List<String> emailAddresses = emailJobAdditionalEmailAddresses
+                                                  .stream()
+                                                  .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
+                                                  .collect(Collectors.toList());
+                channelConfigurationModel.put(createConfigFieldModel("email.additional.addresses", emailAddresses));
+            }
+        }
     }
 
     private static void populateJiraCloudFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
-        // FIXME implement
+        JiraCloudJobDetailsEntity jiraCloudJobDetails = jobEntity.getJiraCloudJobDetails();
+        if (null != jiraCloudJobDetails) {
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.cloud.add.comments", jiraCloudJobDetails.getAddComments().toString()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.cloud.issue.creator", jiraCloudJobDetails.getIssueCreatorEmail()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.cloud.project.name", jiraCloudJobDetails.getProjectNameOrKey()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.cloud.issue.type", jiraCloudJobDetails.getIssueType()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.cloud.resolve.workflow", jiraCloudJobDetails.getResolveTransition()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.cloud.reopen.workflow", jiraCloudJobDetails.getReopenTransition()));
+        }
     }
 
     private static void populateJiraServerFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
-        // FIXME implement
+        JiraServerJobDetailsEntity jiraServerJobDetails = jobEntity.getJiraServerJobDetails();
+        if (null != jiraServerJobDetails) {
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.server.add.comments", jiraServerJobDetails.getAddComments().toString()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.server.issue.creator", jiraServerJobDetails.getIssueCreatorUsername()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.server.project.name", jiraServerJobDetails.getProjectNameOrKey()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.server.issue.type", jiraServerJobDetails.getIssueType()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.server.resolve.workflow", jiraServerJobDetails.getResolveTransition()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.jira.server.reopen.workflow", jiraServerJobDetails.getReopenTransition()));
+        }
     }
 
-    private static void populateMSTeamsFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
-        // FIXME implement
+    private static void populateMSTeamsField(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+        Optional.ofNullable(jobEntity.getMsTeamsJobDetails())
+            .map(MSTeamsJobDetailsEntity::getWebhook)
+            .map(webhook -> createConfigFieldModel("channel.msteams.webhook", webhook))
+            .ifPresent(channelConfigurationModel::put);
     }
 
     private static void populateSlackFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
-        // FIXME implement
+        SlackJobDetailsEntity slackJobDetails = jobEntity.getSlackJobDetails();
+        if (null != slackJobDetails) {
+            channelConfigurationModel.put(createConfigFieldModel("channel.slack.webhook", slackJobDetails.getWebhook()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.slack.channel.name", slackJobDetails.getChannelName()));
+            channelConfigurationModel.put(createConfigFieldModel("channel.slack.channel.username", slackJobDetails.getChannelUsername()));
+        }
     }
 
 }
