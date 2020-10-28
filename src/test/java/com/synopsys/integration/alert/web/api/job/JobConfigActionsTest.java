@@ -259,12 +259,11 @@ public class JobConfigActionsTest {
     @Test
     public void testTest() throws Exception {
         fieldModel.setId("testID");
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(descriptor.getType()).thenReturn(descriptorType);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestAction()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("testKey", configurationFieldModel));
@@ -281,12 +280,11 @@ public class JobConfigActionsTest {
     @Test
     public void testWithProviderErrorsTest() throws Exception {
         fieldModel.setId("testID");
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(descriptor.getType()).thenReturn(descriptorType);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
@@ -304,12 +302,11 @@ public class JobConfigActionsTest {
     @Test
     public void testMethodNotAllowedTest() throws Exception {
         fieldModel.setId("testID");
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(descriptor.getType()).thenReturn(descriptorType);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.empty());
 
@@ -338,7 +335,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testAlertFieldExceptionTest() throws Exception {
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
@@ -357,7 +354,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testAlertMethodNotAllowedTest() throws Exception {
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
@@ -375,7 +372,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testIntegrationExceptionTest() throws Exception {
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
@@ -394,12 +391,11 @@ public class JobConfigActionsTest {
     @Test
     public void testIntegrationRestExceptionTest() throws Exception {
         fieldModel.setId("testID");
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(descriptor.getType()).thenReturn(descriptorType);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
@@ -416,7 +412,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void testExceptionTest() throws Exception {
-        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
@@ -480,7 +476,7 @@ public class JobConfigActionsTest {
     public void validateJobsByIdTest() throws Exception {
         JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
-        Descriptor descriptor = createDescriptor();
+        Descriptor descriptor = createDescriptor(descriptorType);
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
@@ -502,7 +498,7 @@ public class JobConfigActionsTest {
     public void validateJobsByIdForbiddenTest() {
         JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
-        Descriptor descriptor = createDescriptor();
+        Descriptor descriptor = createDescriptor(descriptorType);
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(false);
@@ -518,7 +514,7 @@ public class JobConfigActionsTest {
     public void validateJobsByIdEmptyListTest() {
         JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of());
         DescriptorKey descriptorKey = createDescriptorKey();
-        Descriptor descriptor = createDescriptor();
+        Descriptor descriptor = createDescriptor(descriptorType);
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
@@ -537,7 +533,7 @@ public class JobConfigActionsTest {
     public void validateJobsByIdInternalServerErrorTest() throws Exception {
         JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
-        Descriptor descriptor = createDescriptor();
+        Descriptor descriptor = createDescriptor(descriptorType);
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
@@ -643,9 +639,9 @@ public class JobConfigActionsTest {
         };
     }
 
-    private Descriptor createDescriptor() {
+    private Descriptor createDescriptor(DescriptorType descriptorType) {
         DescriptorKey descriptorKey = createDescriptorKey();
-        Descriptor descriptor = new Descriptor(descriptorKey, DescriptorType.PROVIDER) {
+        Descriptor descriptor = new Descriptor(descriptorKey, descriptorType) {
             @Override
             public DescriptorKey getDescriptorKey() {
                 return descriptorKey;
