@@ -126,27 +126,22 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
 
     @Override
     public List<ConfigurationJobModel> getMatchingJobs(String frequency, String providerConfigName, String notificationType) {
-        //FIXME implement the query for getting the jobs that match the parameters.
-        //        List<ConfigGroupEntity> jobEntities = configGroupRepository.findMatchingJobs(frequency, providerConfigName, notificationType, projectNames);
-        //        return convertJobListToModels(jobEntities);
-        return getAllJobs()
-                   .stream()
-                   .filter(job -> job.getFrequencyType().name().equals(frequency))
-                   .filter(job -> job.getProviderConfigName().equals(providerConfigName))
-                   .filter(job -> job.getNotificationTypes().contains(notificationType))
-                   .collect(Collectors.toList());
+        List<UUID> matchingJobIds = configGroupRepository.findMatchingJobIds(frequency, providerConfigName, notificationType);
+        if (matchingJobIds.isEmpty()) {
+            return List.of();
+        }
+        List<ConfigGroupEntity> jobEntities = configGroupRepository.findByJobIds(matchingJobIds);
+        return convertJobListToModels(jobEntities);
     }
 
     @Override
     public List<ConfigurationJobModel> getMatchingJobs(String providerConfigName, String notificationType) {
-        //FIXME implement the query for getting the jobs that match the parameters.
-        //        List<ConfigGroupEntity> jobEntities = configGroupRepository.findMatchingJobs(providerConfigName, notificationType, projectNames);
-        //        return convertJobListToModels(jobEntities);
-        return getAllJobs()
-                   .stream()
-                   .filter(job -> job.getProviderConfigName().equals(providerConfigName))
-                   .filter(job -> job.getNotificationTypes().contains(notificationType))
-                   .collect(Collectors.toList());
+        List<UUID> matchingJobIds = configGroupRepository.findMatchingJobIds(providerConfigName, notificationType);
+        if (matchingJobIds.isEmpty()) {
+            return List.of();
+        }
+        List<ConfigGroupEntity> jobEntities = configGroupRepository.findByJobIds(matchingJobIds);
+        return convertJobListToModels(jobEntities);
     }
 
     @Override

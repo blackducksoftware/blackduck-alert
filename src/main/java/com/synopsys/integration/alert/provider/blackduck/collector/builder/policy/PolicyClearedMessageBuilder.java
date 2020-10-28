@@ -43,6 +43,7 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -68,20 +69,21 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationClearedNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationClearedNotificationView notificationView, BlackDuckBucket blackDuckBucket,
+        AlertMultipleBucket alertMultipleBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         RuleViolationClearedNotificationContent violationContent = notificationView.getContent();
 
-        String projectName = violationContent.getProjectName();
-        String projectUrl = retrieveNullableProjectUrlAndLog(projectName, blackDuckServicesFactory.createProjectService(), logger::warn);
+        String projectVersionUrl = violationContent.getProjectVersion();
+        String projectUrl = parseProjectUrlFromProjectVersion(projectVersionUrl);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectName, projectUrl)
-                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion());
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName(), projectUrl)
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), projectVersionUrl);
             Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
             FieldAccessor fieldAccessor = commonMessageData.getJob().getFieldAccessor();
@@ -90,7 +92,7 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
                 Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
-                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, componentVersionStatus, policies, commonMessageData.getNotificationId(), violationContent.getProjectVersion(), policyFilter);
+                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, componentVersionStatus, policies, commonMessageData.getNotificationId(), projectVersionUrl, policyFilter);
                 items.addAll(componentItems);
             }
             messageContentBuilder.applyAllComponentItems(items);

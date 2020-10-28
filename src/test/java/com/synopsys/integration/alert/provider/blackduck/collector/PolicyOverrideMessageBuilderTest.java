@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Black
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyOverrideMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -57,13 +58,14 @@ public class PolicyOverrideMessageBuilderTest {
 
     private void test(PolicyOverrideMessageBuilder policyOverrideMessageBuilder, PolicyOverrideNotificationView notification) {
         BlackDuckBucket blackDuckBucket = new BlackDuckBucket();
+        AlertMultipleBucket alertMultipleBucket = new AlertMultipleBucket();
         BlackDuckServicesFactory blackDuckServicesFactory = BlackDuckMessageBuilderTestHelper.mockServicesFactory();
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(BlackDuckMessageBuilderTestHelper.mockHttpClient());
 
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
         CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), job);
-        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(commonMessageData, notification, blackDuckBucket, blackDuckServicesFactory);
+        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(commonMessageData, notification, blackDuckBucket, alertMultipleBucket, blackDuckServicesFactory);
         assertFalse(messageContentGroups.isEmpty());
         Set<String> categories = new HashSet<>();
         for (ProviderMessageContent messageContent : messageContentGroups) {

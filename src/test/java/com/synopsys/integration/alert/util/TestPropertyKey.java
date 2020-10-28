@@ -10,6 +10,8 @@ public enum TestPropertyKey {
     TEST_BLACKDUCK_PROVIDER_TIMEOUT("blackduck.provider.timeout"),
     TEST_BLACKDUCK_PROVIDER_ACTIVE_USER("blackduck.provider.active.user"),
     TEST_BLACKDUCK_PROVIDER_INACTIVE_USER("blackduck.provider.inactive.user"),
+    TEST_BLACKDUCK_PROVIDER_PROJECT_NAME("blackduck.provider.project.name"),
+    TEST_BLACKDUCK_PROVIDER_PROJECT_VERSION("blackduck.provider.project.version"),
 
     TEST_CRON("alert.tasks.cron"),
     TEST_DAILY_DIGEST("alert.digest.daily.cron"),

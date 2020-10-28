@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Black
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyClearedMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyViolationMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
@@ -71,6 +72,7 @@ public class PolicyViolationMessageBuilderTest {
 
     private void test(BlackDuckMessageBuilder messageBuilder, NotificationView notificationView) {
         BlackDuckBucket blackDuckBucket = new BlackDuckBucket();
+        AlertMultipleBucket alertMultipleBucket = new AlertMultipleBucket();
         BlackDuckServicesFactory blackDuckServicesFactory = BlackDuckMessageBuilderTestHelper.mockServicesFactory();
 
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(BlackDuckMessageBuilderTestHelper.mockHttpClient());
@@ -78,7 +80,7 @@ public class PolicyViolationMessageBuilderTest {
         ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
         Mockito.when(job.getFieldAccessor()).thenReturn(new FieldAccessor(Map.of()));
         CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), job);
-        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckBucket, blackDuckServicesFactory);
+        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckBucket, alertMultipleBucket, blackDuckServicesFactory);
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 

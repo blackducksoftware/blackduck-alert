@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageC
 import com.synopsys.integration.alert.common.workflow.processor.message.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -51,12 +52,14 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     private final BlackDuckProperties blackDuckProperties;
     private final Map<String, BlackDuckMessageBuilder> messageBuilderMap;
     private final BlackDuckBucket blackDuckBucket;
+    private final AlertMultipleBucket alertMultipleBucket;
 
     public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckProperties = blackDuckProperties;
         this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, builder -> builder.getNotificationType().name());
         this.blackDuckBucket = new BlackDuckBucket();
+        this.alertMultipleBucket = new AlertMultipleBucket();
     }
 
     @Override
@@ -74,7 +77,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
                 CommonMessageData commonMessageData = new CommonMessageData(
                     notification.getId(), notification.getProviderConfigId(), blackDuckMessageBuilder.getProviderName(), notification.getProviderConfigName(), url, notification.getProviderCreationTime(), job);
                 List<ProviderMessageContent> providerMessageContentsForNotification =
-                    blackDuckMessageBuilder.buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
+                    blackDuckMessageBuilder.buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckBucket, alertMultipleBucket, blackDuckServicesFactory);
                 providerMessageContents.addAll(providerMessageContentsForNotification);
             }
         }

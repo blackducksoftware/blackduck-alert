@@ -32,14 +32,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.blackduck.api.core.BlackDuckResponse;
+import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionRemediatingView;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
+import com.synopsys.integration.blackduck.service.ComponentService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckResponseCache {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckResponseCache.class);
@@ -122,6 +126,15 @@ public class BlackDuckResponseCache {
         projectVersion.flatMap(version -> getItem(ProjectView.class, version.getFirstLink(ProjectVersionView.PROJECT_LINK).orElse("")))
             .ifPresent(wrapper::setProjectView);
         return Optional.of(wrapper);
+    }
+
+    public Optional<ComponentVersionRemediatingView> getRemediationInformation(ComponentVersionView componentVersionView) throws IntegrationException {
+        if (!componentVersionView.getHref().isPresent()) {
+            return Optional.empty();
+        }
+
+        String remediatingUrl = componentVersionView.getHref().get() + "/" + ComponentService.REMEDIATING_LINK;
+        return getItem(ComponentVersionRemediatingView.class, remediatingUrl);
     }
 
 }

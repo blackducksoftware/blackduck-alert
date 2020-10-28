@@ -180,7 +180,7 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     protected void write(List<AlertNotificationModel> contentList) {
-        logger.info("Writing Notifications...");
+        logger.info("Writing {} Notifications...", contentList.size());
         notificationManager.saveAllNotifications(contentList);
     }
 

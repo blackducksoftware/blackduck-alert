@@ -25,8 +25,13 @@ package com.synopsys.integration.alert.provider.blackduck.collector.builder;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -35,6 +40,7 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class BlackDuckMessageBuilder<T> {
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageBuilder.class);
     private final String providerName = "Black Duck";
     private final NotificationType notificationType;
 
@@ -50,7 +56,12 @@ public abstract class BlackDuckMessageBuilder<T> {
         return notificationType;
     }
 
-    public abstract List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
+    public abstract List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket,
+        AlertMultipleBucket alertMultipleBucket, BlackDuckServicesFactory blackDuckServicesFactory);
+
+    protected String parseProjectUrlFromProjectVersion(String projectVersionURL) {
+        return StringUtils.removeEnd(projectVersionURL, "/" + ProjectView.VERSIONS_LINK);
+    }
 
     protected String retrieveNullableProjectUrlAndLog(String projectName, ProjectService projectService, Consumer<String> logMethod) {
         try {

@@ -29,7 +29,7 @@ public class LicenseLimitMessageBuilderTest {
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(blackDuckHttpClient);
         CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), null);
-        List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(commonMessageData, licenseLimitNotificationView, null, blackDuckServicesFactory);
+        List<ProviderMessageContent> providerMessageContents = licenseLimitMessageBuilder.buildMessageContents(commonMessageData, licenseLimitNotificationView, null, null, blackDuckServicesFactory);
 
         assertEquals(1, providerMessageContents.size());
     }

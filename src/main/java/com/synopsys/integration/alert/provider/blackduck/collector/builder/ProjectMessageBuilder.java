@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.OperationUtil;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -52,7 +53,8 @@ public class ProjectMessageBuilder extends BlackDuckMessageBuilder<ProjectNotifi
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, ProjectNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, ProjectNotificationView notificationView, BlackDuckBucket blackDuckBucket,
+        AlertMultipleBucket alertMultipleBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         ProjectNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
 

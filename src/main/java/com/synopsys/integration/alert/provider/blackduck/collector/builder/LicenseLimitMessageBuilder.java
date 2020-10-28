@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
@@ -50,7 +51,7 @@ public class LicenseLimitMessageBuilder extends BlackDuckMessageBuilder<LicenseL
 
     @Override
     public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, LicenseLimitNotificationView notificationView, BlackDuckBucket blackDuckBucket,
-        BlackDuckServicesFactory blackDuckServicesFactory) {
+        AlertMultipleBucket alertMultipleBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         LicenseLimitNotificationContent notificationContent = notificationView.getContent();
         try {
             String usageMessage = createUsageMessage(notificationContent);

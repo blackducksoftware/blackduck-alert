@@ -85,6 +85,7 @@ public class NotificationProcessor {
     }
 
     public List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications) {
+        // used in AuditEntryActions
         // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
         SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = extractNotificationInformation(notifications);
 
@@ -100,6 +101,9 @@ public class NotificationProcessor {
     }
 
     private List<DistributionEvent> processNotificationsThatMatchFilter(NotificationFilterModel notificationFilterModel, List<ConfigurationJobModel> matchingJobs, List<AlertNotificationModel> notifications) {
+        if (matchingJobs.isEmpty()) {
+            return List.of();
+        }
         Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(notificationFilterModel.getProviderConfigName());
         if (optionalProviderConfig.isPresent()) {
             Provider provider = providerKeyToProvider.get(notificationFilterModel.getProvider());
@@ -117,6 +121,7 @@ public class NotificationProcessor {
     }
 
     public List<DistributionEvent> processNotifications(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
+        // used in AuditEntryActions
         if (!job.isEnabled()) {
             logger.debug("Skipping disabled distribution job: {}", job.getName());
             return List.of();

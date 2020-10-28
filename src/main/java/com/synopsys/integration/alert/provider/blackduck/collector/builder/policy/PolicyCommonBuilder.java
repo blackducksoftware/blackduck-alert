@@ -51,6 +51,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.model
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleResponseCache;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
@@ -61,7 +62,6 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.enumeration.VulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
@@ -144,8 +144,8 @@ public class PolicyCommonBuilder {
     }
 
     public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
-        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
-        Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckService, vulnerableComponentViews);
+        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckResponseCache blackDuckResponseCache, AlertMultipleResponseCache alertMultipleResponseCache) {
+        Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, alertMultipleResponseCache, vulnerableComponentViews);
         List<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                  .map(VulnerableComponentView::getVulnerabilityWithRemediation)
                                                                                  .sorted(Comparator.comparing(VulnerabilityWithRemediationView::getSeverity))

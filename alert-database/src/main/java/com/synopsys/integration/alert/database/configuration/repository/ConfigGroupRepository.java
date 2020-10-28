@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
@@ -34,41 +36,31 @@ import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
     List<ConfigGroupEntity> findByJobId(UUID jobId);
 
-    //TODO Gavin can help turn this into a valid query
-    //    @Query("SELECT job"
-    //               + " FROM ConfigGroupEntity job"
-    //               + "   INNER JOIN job.descriptorConfigEntity descConf ON job.configId = descConf.id"
-    //               + "   LEFT JOIN descConf.fieldValueEntities fieldValue ON descConf.id = fieldValues.configId"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ChannelDistributionUIConfig.KEY_FREQUENCY + "')"
-    //               + "   AND fieldValue.value = :frequency"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME + "')"
-    //               + "   AND fieldValue.value = :providerConfigName"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES + "')"
-    //               + "   AND fieldValue.value = :notificationType"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT + "')"
-    //               + "   AND fieldValue.value = :filterByProject"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT + "')"
-    //               + "   AND fieldValue.value = :projectName"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN + "')"
-    //               + "   AND fieldValue.value REGEXP :projectNamePattern"
-    //    )
-    //    List<ConfigGroupEntity> findMatchingJobs(@Param("frequency") String frequency, @Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
+    @Query(value = "SELECT job FROM ConfigGroupEntity job WHERE job.jobId IN :jobIds")
+    List<ConfigGroupEntity> findByJobIds(@Param("jobIds") List<UUID> jobIds);
 
-    //    @Query("SELECT job"
-    //               + " FROM ConfigGroupEntity job"
-    //               + "   INNER JOIN job.descriptorConfigEntity descConf ON job.configId = descConf.id"
-    //               + "   LEFT JOIN descConf.fieldValueEntities fieldValue ON descConf.id = fieldValues.configId"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME + "')"
-    //               + "   AND fieldValue.value = :providerConfigName"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES + "')"
-    //               + "   AND fieldValue.value = :notificationType"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT + "')"
-    //               + "   AND fieldValue.value = :filterByProject"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT + "')"
-    //               + "   AND fieldValue.value = :projectName"
-    //               + "   WHERE fieldValue.fieldId = GET_FIELD_ID('" + ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN + "')"
-    //               + "   AND fieldValue.value REGEXP :projectNamePattern"
-    //    )
-    //    List<ConfigGroupEntity> findMatchingJobs(@Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
+    @Query(value = "SELECT cast(job_with_field_count.job_id as varchar) as job_id FROM (SELECT job.job_id, COUNT(fieldValues.id) AS matching_field_count"
+                       + "    FROM alert.config_groups job"
+                       + "    LEFT JOIN alert.descriptor_configs descConf ON job.config_id = descConf.id"
+                       + "    LEFT JOIN alert.field_values fieldValues ON descConf.id = fieldValues.config_id"
+                       + "    WHERE (fieldValues.field_id = GET_FIELD_ID('channel.common.frequency') AND fieldValues.field_value = :frequency)"
+                       + "    OR (fieldValues.field_id = GET_FIELD_ID('provider.common.config.name') AND fieldValues.field_value = :providerConfigName)"
+                       + "    OR (fieldValues.field_id = GET_FIELD_ID('provider.distribution.notification.types') AND fieldValues.field_value = :notificationType)"
+                       + "    GROUP BY job.job_id) AS job_with_field_count"
+                       + "    WHERE job_with_field_count.matching_field_count = 3;", nativeQuery = true
+    )
+    List<UUID> findMatchingJobIds(@Param("frequency") String frequency, @Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
+
+    @Query(value = "SELECT cast(job_with_field_count.job_id as varchar) as job_id FROM (SELECT job.job_id, COUNT(fieldValues.id) AS matching_field_count"
+                       + "    FROM alert.config_groups job"
+                       + "    LEFT JOIN alert.descriptor_configs descConf ON job.config_id = descConf.id"
+                       + "    LEFT JOIN alert.field_values fieldValues ON descConf.id = fieldValues.config_id"
+                       + "    WHERE (fieldValues.field_id = GET_FIELD_ID('provider.common.config.name') AND fieldValues.field_value = :providerConfigName)"
+                       + "    OR (fieldValues.field_id = GET_FIELD_ID('provider.distribution.notification.types') AND fieldValues.field_value = :notificationType)"
+                       + "    GROUP BY job.job_id) AS job_with_field_count"
+                       + "    WHERE job_with_field_count.matching_field_count = 3;", nativeQuery = true
+    )
+    List<UUID> findMatchingJobIds(@Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
+
 }
 

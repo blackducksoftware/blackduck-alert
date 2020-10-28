@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -63,25 +64,26 @@ public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<Policy
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, PolicyOverrideNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, PolicyOverrideNotificationView notificationView, BlackDuckBucket blackDuckBucket,
+        AlertMultipleBucket alertMultipleBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         PolicyOverrideNotificationContent overrideContent = notificationView.getContent();
 
-        String projectName = overrideContent.getProjectName();
-        String projectUrl = retrieveNullableProjectUrlAndLog(projectName, blackDuckServicesFactory.createProjectService(), logger::warn);
+        String projectVersionUrl = overrideContent.getProjectVersion();
+        String projectUrl = parseProjectUrlFromProjectVersion(projectVersionUrl);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
                 .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, overrideContent.getProjectName(), projectUrl)
-                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), overrideContent.getProjectVersion());
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), projectVersionUrl);
 
             List<PolicyInfo> policies = overrideContent.getPolicyInfos();
             FieldAccessor fieldAccessor = commonMessageData.getJob().getFieldAccessor();
             Collection<String> policyFilter = fieldAccessor.getAllStrings(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER);
-            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, commonMessageData.getNotificationId(), overrideContent.getProjectVersion(), policyFilter);
+            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, commonMessageData.getNotificationId(), projectVersionUrl, policyFilter);
             messageContentBuilder.applyAllComponentItems(items);
             return List.of(messageContentBuilder.build());
         } catch (AlertException ex) {
