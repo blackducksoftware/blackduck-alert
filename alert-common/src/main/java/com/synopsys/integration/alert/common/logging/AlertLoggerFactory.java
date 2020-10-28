@@ -26,8 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AlertLoggerFactory {
-
-    public static final String ALERT_AUDIT_LOGGER = "alertAudit";
+    public static final String ALERT_AUDIT_LOGGER = "Alert Audit";
 
     public static Logger getLogger(Class<?> clazz) {
         Logger logger = LoggerFactory.getLogger(clazz);

@@ -17,7 +17,7 @@
 		</rollingPolicy>
     </appender>
 
-	<logger name="alertAudit" level="trace" additivity="false">
+	<logger name="Alert Audit" level="trace" additivity="false">
         <appender-ref ref="ALERT_AUDIT"/>
     </logger>
 
