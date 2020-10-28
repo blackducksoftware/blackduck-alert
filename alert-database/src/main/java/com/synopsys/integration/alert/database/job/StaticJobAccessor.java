@@ -9,6 +9,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -59,7 +61,14 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude) {
-        return null;
+        if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
+            return new AlertPagedModel<>(0, pageOffset, pageLimit, List.of());
+        }
+
+        PageRequest pageRequest = PageRequest.of(pageOffset, pageLimit);
+        Page<ConfigurationJobModel> pageOfJobsWithDescriptorNames = distributionJobRepository.findByChannelDescriptorNameIn(descriptorsNamesToInclude, pageRequest)
+                                                                        .map(this::convertToConfigurationJobModel);
+        return new AlertPagedModel<>(pageOfJobsWithDescriptorNames.getTotalPages(), pageOffset, pageLimit, pageOfJobsWithDescriptorNames.getContent());
     }
 
     @Override
@@ -69,12 +78,16 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     public Optional<ConfigurationJobModel> getJobByName(String jobName) {
-        return Optional.empty();
+        return distributionJobRepository.findByName(jobName)
+                   .map(this::convertToConfigurationJobModel);
     }
 
     @Override
     public List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency) {
-        return null;
+        return distributionJobRepository.findByDistributionFrequency(frequency.name())
+                   .stream()
+                   .map(this::convertToConfigurationJobModel)
+                   .collect(Collectors.toList());
     }
 
     @Override
