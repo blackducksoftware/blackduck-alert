@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.component.certificates.CertificatesDescrip
 import com.synopsys.integration.util.IntegrationEscapeUtil;
 
 @Component
-public class CertificateActions extends AbstractResourceActions<CertificateModel, MultiCertificateModel> {
+public class CertificateActions extends AbstractResourceActions<CertificateModel, CustomCertificateModel, MultiCertificateModel> {
     private final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
     private final CertificateUtility certificateUtility;
@@ -69,25 +69,23 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     @Override
     protected Optional<CertificateModel> findExisting(Long id) {
         return certificateAccessor.getCertificate(id)
-                   .map(this::convertFromDatabaseModel);
+                   .map(this::convertDatabaseModelToRestModel);
     }
 
     @Override
-    public ActionResponse<MultiCertificateModel> readAllWithoutChecks() {
-        List<CertificateModel> certificates = certificateAccessor.getCertificates().stream()
-                                                  .map(this::convertFromDatabaseModel)
-                                                  .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, new MultiCertificateModel(certificates));
+    protected List<CustomCertificateModel> retrieveDatabaseModels() {
+        return certificateAccessor.getCertificates();
     }
 
     @Override
-    protected ActionResponse<CertificateModel> readWithoutChecks(Long id) {
-        Optional<CertificateModel> model = findExisting(id);
-        if (model.isPresent()) {
-            return new ActionResponse<>(HttpStatus.OK, model.get());
-        }
+    protected MultiCertificateModel createMultiResponseModel(final List<CertificateModel> certificates) {
+        return new MultiCertificateModel(certificates);
+    }
 
-        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Certificate with id:%d not found.", id));
+    @Override
+    protected CertificateModel convertDatabaseModelToRestModel(CustomCertificateModel databaseCertificateModel) {
+        String id = databaseCertificateModel.getNullableId() != null ? Long.toString(databaseCertificateModel.getNullableId()) : null;
+        return new CertificateModel(id, databaseCertificateModel.getAlias(), databaseCertificateModel.getCertificateContent(), databaseCertificateModel.getLastUpdated());
     }
 
     @Override
@@ -150,7 +148,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         try {
             CustomCertificateModel storedCertificate = certificateAccessor.storeCertificate(certificateToStore);
             certificateUtility.importCertificate(storedCertificate);
-            return convertFromDatabaseModel(storedCertificate);
+            return convertDatabaseModelToRestModel(storedCertificate);
         } catch (AlertException importException) {
             deleteByAlias(certificateToStore);
             throw importException;
@@ -183,11 +181,6 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             logger.error("Error deleting certificate with alias {}. Error: {}", certificateModel.getAlias(), deleteEx.getMessage());
             logger.debug("Caused by: ", deleteEx);
         }
-    }
-
-    private CertificateModel convertFromDatabaseModel(CustomCertificateModel databaseCertificateModel) {
-        String id = databaseCertificateModel.getNullableId() != null ? Long.toString(databaseCertificateModel.getNullableId()) : null;
-        return new CertificateModel(id, databaseCertificateModel.getAlias(), databaseCertificateModel.getCertificateContent(), databaseCertificateModel.getLastUpdated());
     }
 
     private CustomCertificateModel convertToDatabaseModel(CertificateModel certificateModel) {
