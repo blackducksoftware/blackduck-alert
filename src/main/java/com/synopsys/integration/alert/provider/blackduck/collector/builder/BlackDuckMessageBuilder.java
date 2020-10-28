@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -40,7 +38,6 @@ import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class BlackDuckMessageBuilder<T> {
-    private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageBuilder.class);
     private final String providerName = "Black Duck";
     private final NotificationType notificationType;
 
