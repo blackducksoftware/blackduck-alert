@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
 import com.synopsys.integration.datastructure.SetMap;
 
+// TODO remove this class once its replacement StaticJobAccessor is available
 @Component
 public class DefaultJobAccessor implements JobAccessor {
     public static final String NULL_JOB_ID = "The job id cannot be null";

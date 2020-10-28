@@ -1,0 +1,186 @@
+package com.synopsys.integration.alert.database.job;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
+import com.synopsys.integration.alert.common.provider.ProviderKey;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
+import com.synopsys.integration.alert.database.job.blackduck.policy.BlackDuckJobPolicyFilterEntity;
+import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
+import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterEntity;
+
+// @Component
+public class StaticJobAccessor implements JobAccessor {
+    private final DistributionJobRepository distributionJobRepository;
+
+    // Temporary until all three tiers of the application have been updated to new Job models
+    private final RegisteredDescriptorRepository registeredDescriptorRepository;
+    // BlackDuck is currently the only provider, so this is safe in the short-term while we transition to new models
+    private final ProviderKey blackDuckProviderKey;
+
+    @Autowired
+    public StaticJobAccessor(DistributionJobRepository distributionJobRepository, RegisteredDescriptorRepository registeredDescriptorRepository, ProviderKey blackDuckProviderKey) {
+        this.distributionJobRepository = distributionJobRepository;
+        this.registeredDescriptorRepository = registeredDescriptorRepository;
+        this.blackDuckProviderKey = blackDuckProviderKey;
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getAllJobs() {
+        return distributionJobRepository.findAll()
+                   .stream()
+                   .map(this::convertToConfigurationJobModel)
+                   .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds) {
+        return null;
+    }
+
+    @Override
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude) {
+        return null;
+    }
+
+    @Override
+    public Optional<ConfigurationJobModel> getJobById(UUID jobId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ConfigurationJobModel> getJobByName(String jobName) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency) {
+        return null;
+    }
+
+    @Override
+    public ConfigurationJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        return null;
+    }
+
+    @Override
+    public ConfigurationJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        return null;
+    }
+
+    @Override
+    public void deleteJob(UUID jobId) throws AlertDatabaseConstraintException {
+
+    }
+
+    private ConfigurationJobModel convertToConfigurationJobModel(DistributionJobEntity jobEntity) {
+        Set<ConfigurationModel> configurationModels = new LinkedHashSet<>();
+
+        String createdAtDateTime = DateUtils.formatDate(jobEntity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        String updatedAtDateTime = DateUtils.formatDate(jobEntity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        Long blackDuckDescriptorId = getDescriptorId(blackDuckProviderKey.getUniversalKey());
+        ConfigurationModelMutable blackDuckConfigurationModel = new ConfigurationModelMutable(blackDuckDescriptorId, -1L, createdAtDateTime, updatedAtDateTime, ConfigContextEnum.DISTRIBUTION);
+        populateBlackDuckConfigurationModel(jobEntity, blackDuckConfigurationModel);
+        configurationModels.add(blackDuckConfigurationModel);
+
+        Long channelDescriptorId = getDescriptorId(jobEntity.getChannelDescriptorName());
+        ConfigurationModelMutable channelConfigurationModel = new ConfigurationModelMutable(channelDescriptorId, -1L, createdAtDateTime, updatedAtDateTime, ConfigContextEnum.DISTRIBUTION);
+        configurationModels.add(channelConfigurationModel);
+
+        return new ConfigurationJobModel(jobEntity.getJobId(), configurationModels);
+    }
+
+    private void populateBlackDuckConfigurationModel(DistributionJobEntity jobEntity, ConfigurationModelMutable blackDuckConfigurationModel) {
+        BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
+
+        blackDuckConfigurationModel.put(createConfigFieldModel("provider.common.config.id", false, blackDuckJobDetails.getGlobalConfigId().toString()));
+        blackDuckConfigurationModel.put(createConfigFieldModel("provider.distribution.processing.type", false, jobEntity.getProcessingType()));
+
+        Boolean filterByProject = blackDuckJobDetails.getFilterByProject();
+        blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.filter.by.project", false, filterByProject.toString()));
+        if (filterByProject) {
+            String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
+            if (StringUtils.isNotBlank(projectNamePattern)) {
+                blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.project.name.pattern", false, projectNamePattern));
+            }
+
+            List<BlackDuckJobProjectEntity> blackDuckJobProjects = blackDuckJobDetails.getBlackDuckJobProjects();
+            if (null != blackDuckJobProjects && !blackDuckJobProjects.isEmpty()) {
+                List<String> blackDuckProjectNames = blackDuckJobProjects
+                                                         .stream()
+                                                         .map(BlackDuckJobProjectEntity::getProjectName)
+                                                         .collect(Collectors.toList());
+                blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.configured.project", false, blackDuckProjectNames));
+            }
+        }
+
+        // These are required so they will not be null/empty
+        List<String> blackDuckJobNotificationTypeNames = blackDuckJobDetails.getBlackDuckJobNotificationTypes()
+                                                             .stream()
+                                                             .map(BlackDuckJobNotificationTypeEntity::getNotificationType)
+                                                             .collect(Collectors.toList());
+        blackDuckConfigurationModel.put(createConfigFieldModel("provider.distribution.notification.types", false, blackDuckJobNotificationTypeNames));
+
+        List<BlackDuckJobPolicyFilterEntity> blackDuckJobPolicyFilters = blackDuckJobDetails.getBlackDuckJobPolicyFilters();
+        if (null != blackDuckJobPolicyFilters && !blackDuckJobPolicyFilters.isEmpty()) {
+            List<String> blackDuckPolicyNames = blackDuckJobPolicyFilters
+                                                    .stream()
+                                                    .map(BlackDuckJobPolicyFilterEntity::getPolicyName)
+                                                    .collect(Collectors.toList());
+            blackDuckConfigurationModel.put(createConfigFieldModel("blackduck.policy.notification.filter", false, blackDuckPolicyNames));
+        }
+
+        List<BlackDuckJobVulnerabilitySeverityFilterEntity> blackDuckJobVulnerabilitySeverityFilters = blackDuckJobDetails.getBlackDuckJobVulnerabilitySeverityFilters();
+        if (null != blackDuckJobVulnerabilitySeverityFilters && !blackDuckJobVulnerabilitySeverityFilters.isEmpty()) {
+            List<String> blackDuckJobVulnerabilitySeverityNames = blackDuckJobVulnerabilitySeverityFilters
+                                                                      .stream()
+                                                                      .map(BlackDuckJobVulnerabilitySeverityFilterEntity::getSeverityName)
+                                                                      .collect(Collectors.toList());
+            blackDuckConfigurationModel.put(createConfigFieldModel("blackduck.vulnerability.notification.filter", false, blackDuckJobVulnerabilitySeverityNames));
+        }
+    }
+
+    private Long getDescriptorId(String descriptorUniversalKey) {
+        return registeredDescriptorRepository.findFirstByName(descriptorUniversalKey)
+                   .map(RegisteredDescriptorEntity::getId)
+                   .orElseThrow(() -> new AlertRuntimeException("FATAL: A descriptor is missing from the database"));
+    }
+
+    private ConfigurationFieldModel createConfigFieldModel(String fieldKey, boolean isSensitive, String value) {
+        return createConfigFieldModel(fieldKey, isSensitive, List.of(value));
+    }
+
+    private ConfigurationFieldModel createConfigFieldModel(String fieldKey, boolean isSensitive, Collection<String> values) {
+        ConfigurationFieldModel fieldModel;
+        if (isSensitive) {
+            fieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
+        } else {
+            fieldModel = ConfigurationFieldModel.create(fieldKey);
+        }
+        fieldModel.setFieldValues(values);
+        return fieldModel;
+    }
+
+}
