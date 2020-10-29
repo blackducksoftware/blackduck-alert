@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.database.job;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -23,31 +25,20 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsRepository;
-import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
-import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeRepository;
-import com.synopsys.integration.alert.database.job.blackduck.policy.BlackDuckJobPolicyFilterEntity;
-import com.synopsys.integration.alert.database.job.blackduck.policy.BlackDuckJobPolicyFilterRepository;
-import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
-import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectRepository;
-import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterEntity;
-import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterRepository;
 
 // @Component
 public class StaticJobAccessor implements JobAccessor {
     private final DistributionJobRepository distributionJobRepository;
-    private final BlackDuckJobDetailsRepository blackDuckJobDetailsRepository;
-    private final BlackDuckJobNotificationTypeRepository blackDuckJobNotificationTypeRepository;
-    private final BlackDuckJobProjectRepository blackDuckJobProjectRepository;
-    private final BlackDuckJobPolicyFilterRepository blackDuckJobPolicyFilterRepository;
-    private final BlackDuckJobVulnerabilitySeverityFilterRepository blackDuckJobVulnerabilitySeverityFilterRepository;
+    private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
@@ -57,21 +48,13 @@ public class StaticJobAccessor implements JobAccessor {
     @Autowired
     public StaticJobAccessor(
         DistributionJobRepository distributionJobRepository,
-        BlackDuckJobDetailsRepository blackDuckJobDetailsRepository,
-        BlackDuckJobNotificationTypeRepository blackDuckJobNotificationTypeRepository,
-        BlackDuckJobProjectRepository blackDuckJobProjectRepository,
-        BlackDuckJobPolicyFilterRepository blackDuckJobPolicyFilterRepository,
-        BlackDuckJobVulnerabilitySeverityFilterRepository blackDuckJobVulnerabilitySeverityFilterRepository,
+        BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
 
         RegisteredDescriptorRepository registeredDescriptorRepository,
         ProviderKey blackDuckProviderKey
     ) {
         this.distributionJobRepository = distributionJobRepository;
-        this.blackDuckJobDetailsRepository = blackDuckJobDetailsRepository;
-        this.blackDuckJobNotificationTypeRepository = blackDuckJobNotificationTypeRepository;
-        this.blackDuckJobProjectRepository = blackDuckJobProjectRepository;
-        this.blackDuckJobPolicyFilterRepository = blackDuckJobPolicyFilterRepository;
-        this.blackDuckJobVulnerabilitySeverityFilterRepository = blackDuckJobVulnerabilitySeverityFilterRepository;
+        this.blackDuckJobDetailsAccessor = blackDuckJobDetailsAccessor;
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.blackDuckProviderKey = blackDuckProviderKey;
     }
@@ -124,42 +107,24 @@ public class StaticJobAccessor implements JobAccessor {
     }
 
     @Override
+    @Transactional
     public ConfigurationJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        Map<String, ConfigurationFieldModel> configuredFieldsMap = configuredFields
-                                                                       .stream()
-                                                                       .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
-
-        DistributionJobModel distributionJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(configuredFieldsMap);
-        DistributionJobEntity jobToSave = new DistributionJobEntity(
-            null,
-            distributionJobModel.getName(),
-            distributionJobModel.isEnabled(),
-            distributionJobModel.getDistributionFrequency(),
-            distributionJobModel.getProcessingType(),
-            distributionJobModel.getChannelDescriptorName(),
-            DateUtils.createCurrentDateTimestamp(),
-            null
-        );
-        DistributionJobEntity savedJobEntity = distributionJobRepository.save(jobToSave);
-        UUID savedJobId = savedJobEntity.getJobId();
-
-        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = saveBlackDuckJobDetails(savedJobId, distributionJobModel);
-        savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
-
-        // FIXME save channel details
-
-        return convertToConfigurationJobModel(savedJobEntity);
+        return createJobWithId(null, configuredFields, DateUtils.createCurrentDateTimestamp(), null);
     }
 
     @Override
+    @Transactional
     public ConfigurationJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        DistributionJobEntity existingJob = distributionJobRepository.findById(jobId)
-                                                .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No job exists with the id [%s]", jobId.toString())));
-        // FIXME implement
-        return null;
+        DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
+                                              .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No job exists with the id [%s]", jobId.toString())));
+        OffsetDateTime createdAt = jobEntity.getCreatedAt();
+
+        deleteJob(jobId);
+        return createJobWithId(jobId, configuredFields, createdAt, DateUtils.createCurrentDateTimestamp());
     }
 
     @Override
+    @Transactional
     public void deleteJob(UUID jobId) {
         distributionJobRepository.deleteById(jobId);
     }
@@ -192,44 +157,50 @@ public class StaticJobAccessor implements JobAccessor {
                    .orElseThrow(() -> new AlertRuntimeException("A descriptor is missing from the database"));
     }
 
-    private BlackDuckJobDetailsEntity saveBlackDuckJobDetails(UUID jobId, DistributionJobModel distributionJobModel) {
-        BlackDuckJobDetailsEntity blackDuckJobDetailsToSave = new BlackDuckJobDetailsEntity(
-            jobId,
-            distributionJobModel.getBlackDuckGlobalConfigId(),
-            distributionJobModel.isFilterByProject(),
-            distributionJobModel.getProjectNamePattern().orElse(null)
-        );
-        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsRepository.save(blackDuckJobDetailsToSave);
-
-        List<BlackDuckJobNotificationTypeEntity> notificationTypesToSave = distributionJobModel.getNotificationTypes()
-                                                                               .stream()
-                                                                               .map(notificationType -> new BlackDuckJobNotificationTypeEntity(jobId, notificationType))
-                                                                               .collect(Collectors.toList());
-        List<BlackDuckJobNotificationTypeEntity> savedNotificationTypes = blackDuckJobNotificationTypeRepository.saveAll(notificationTypesToSave);
-        savedBlackDuckJobDetails.setBlackDuckJobNotificationTypes(savedNotificationTypes);
-
-        List<BlackDuckJobProjectEntity> ProjectFiltersToSave = distributionJobModel.getProjectFilterProjectNames()
-                                                                   .stream()
-                                                                   .map(projectName -> new BlackDuckJobProjectEntity(jobId, projectName))
-                                                                   .collect(Collectors.toList());
-        List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(ProjectFiltersToSave);
-        savedBlackDuckJobDetails.setBlackDuckJobProjects(savedProjectFilters);
-
-        List<BlackDuckJobPolicyFilterEntity> policyFiltersToSave = distributionJobModel.getPolicyFilterPolicyNames()
+    private ConfigurationJobModel createJobWithId(UUID jobId, Collection<ConfigurationFieldModel> configuredFields, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
+        Map<String, ConfigurationFieldModel> configuredFieldsMap = configuredFields
                                                                        .stream()
-                                                                       .map(policyName -> new BlackDuckJobPolicyFilterEntity(jobId, policyName))
-                                                                       .collect(Collectors.toList());
-        List<BlackDuckJobPolicyFilterEntity> savedPolicyFilters = blackDuckJobPolicyFilterRepository.saveAll(policyFiltersToSave);
-        savedBlackDuckJobDetails.setBlackDuckJobPolicyFilters(savedPolicyFilters);
+                                                                       .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
 
-        List<BlackDuckJobVulnerabilitySeverityFilterEntity> vulnerabilitySeverityFiltersToSave = distributionJobModel.getVulnerabilityFilterSeverityNames()
-                                                                                                     .stream()
-                                                                                                     .map(severityName -> new BlackDuckJobVulnerabilitySeverityFilterEntity(jobId, severityName))
-                                                                                                     .collect(Collectors.toList());
-        List<BlackDuckJobVulnerabilitySeverityFilterEntity> savedVulnerabilitySeverityFilters = blackDuckJobVulnerabilitySeverityFilterRepository.saveAll(vulnerabilitySeverityFiltersToSave);
-        savedBlackDuckJobDetails.setBlackDuckJobVulnerabilitySeverityFilters(savedVulnerabilitySeverityFilters);
+        DistributionJobModel distributionJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, configuredFieldsMap, createdAt, lastUpdated);
+        return createJob(distributionJobModel);
+    }
 
-        return savedBlackDuckJobDetails;
+    private ConfigurationJobModel createJob(DistributionJobModel distributionJobModel) {
+        String channelDescriptorName = distributionJobModel.getChannelDescriptorName();
+        DistributionJobEntity jobToSave = new DistributionJobEntity(
+            distributionJobModel.getJobId(),
+            distributionJobModel.getName(),
+            distributionJobModel.isEnabled(),
+            distributionJobModel.getDistributionFrequency(),
+            distributionJobModel.getProcessingType(),
+            channelDescriptorName,
+            distributionJobModel.getCreatedAt(),
+            distributionJobModel.getLastUpdated()
+        );
+        DistributionJobEntity savedJobEntity = distributionJobRepository.save(jobToSave);
+        UUID savedJobId = savedJobEntity.getJobId();
+
+        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(savedJobId, distributionJobModel);
+        savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
+
+        // FIXME save channel details
+        DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
+        if (distributionJobDetails.isAzureBoardsDetails()) {
+            // FIXME implement
+        } else if (distributionJobDetails.isEmailDetails()) {
+            // FIXME implement
+        } else if (distributionJobDetails.isJiraCloudDetails()) {
+            // FIXME implement
+        } else if (distributionJobDetails.isJiraServerDetails()) {
+            // FIXME implement
+        } else if (distributionJobDetails.isMSTeamsDetails()) {
+            // FIXME implement
+        } else if (distributionJobDetails.isSlackDetails()) {
+            // FIXME implement
+        }
+
+        return convertToConfigurationJobModel(savedJobEntity);
     }
 
 }

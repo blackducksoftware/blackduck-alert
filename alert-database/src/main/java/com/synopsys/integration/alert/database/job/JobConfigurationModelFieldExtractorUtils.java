@@ -1,9 +1,11 @@
 package com.synopsys.integration.alert.database.job;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -17,20 +19,25 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.MSTea
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 public class JobConfigurationModelFieldExtractorUtils {
-    public static DistributionJobModel convertToDistributionJobModel(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    public static DistributionJobModel convertToDistributionJobModel(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
         String channelDescriptorName = extractFieldValueOrEmptyString("channel.common.channel.name", configuredFieldsMap);
         DistributionJobModelBuilder builder = DistributionJobModel.builder()
+                                                  .jobId(jobId)
                                                   .enabled(extractFieldValue("channel.common.enabled", configuredFieldsMap).map(Boolean::valueOf).orElse(true))
                                                   .name(extractFieldValueOrEmptyString("channel.common.name", configuredFieldsMap))
                                                   .distributionFrequency(extractFieldValueOrEmptyString("channel.common.frequency", configuredFieldsMap))
                                                   .processingType(extractFieldValueOrEmptyString("provider.distribution.processing.type", configuredFieldsMap))
                                                   .channelDescriptorName(channelDescriptorName)
+                                                  .createdAt(createdAt)
+                                                  .lastUpdated(lastUpdated)
+
                                                   .blackDuckGlobalConfigId(extractFieldValue("provider.common.config.id", configuredFieldsMap).map(Long::valueOf).orElse(-1L))
                                                   .filterByProject(extractFieldValue("channel.common.filter.by.project", configuredFieldsMap).map(Boolean::valueOf).orElse(false))
                                                   .projectNamePattern(extractFieldValue("channel.common.project.name.pattern", configuredFieldsMap).orElse(null))
                                                   .notificationTypes(extractFieldValues("provider.distribution.notification.types", configuredFieldsMap))
                                                   .policyFilterPolicyNames(extractFieldValues("blackduck.policy.notification.filter", configuredFieldsMap))
-                                                  .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap));
+                                                  .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap))
+                                                  .projectFilterProjectNames(extractFieldValues("channel.common.configured.project", configuredFieldsMap));
 
         DistributionJobDetailsModel jobDetails = null;
         if ("channel_azure_boards".equals(channelDescriptorName)) {
