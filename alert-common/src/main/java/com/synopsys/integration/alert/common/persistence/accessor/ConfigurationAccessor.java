@@ -39,9 +39,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 public interface ConfigurationAccessor {
     List<ConfigurationJobModel> getAllJobs();
 
-    List<ConfigurationJobModel> getMatchingJobs(String frequency, String providerConfigName, String notificationType);
+    List<ConfigurationJobModel> getMatchingEnabledJobs(String frequency, String providerConfigName, String notificationType);
 
-    List<ConfigurationJobModel> getMatchingJobs(String providerConfigName, String notificationType);
+    List<ConfigurationJobModel> getMatchingEnabledJobs(String providerConfigName, String notificationType);
 
     Optional<ConfigurationJobModel> getJobById(UUID jobId) throws AlertDatabaseConstraintException;
 

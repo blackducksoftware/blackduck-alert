@@ -76,10 +76,12 @@ public class NotificationProcessor {
         List<DistributionEvent> events = new ArrayList<>();
         for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
             NotificationFilterModel notificationFilterModel = entry.getKey();
-            List<ConfigurationJobModel> matchingJobs = configurationAccessor.getMatchingJobs(frequency.name(), notificationFilterModel.getProviderConfigName(), notificationFilterModel.getNotificationType());
+            List<ConfigurationJobModel> matchingJobs = configurationAccessor.getMatchingEnabledJobs(frequency.name(), notificationFilterModel.getProviderConfigName(), notificationFilterModel.getNotificationType());
 
             List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
-            events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
+            if (!matchingNotifications.isEmpty() && !matchingJobs.isEmpty()) {
+                events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
+            }
         }
         return events;
     }
@@ -92,18 +94,17 @@ public class NotificationProcessor {
         List<DistributionEvent> events = new ArrayList<>();
         for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
             NotificationFilterModel notificationFilterModel = entry.getKey();
-            List<ConfigurationJobModel> matchingJobs = configurationAccessor.getMatchingJobs(notificationFilterModel.getProviderConfigName(), notificationFilterModel.getNotificationType());
+            List<ConfigurationJobModel> matchingJobs = configurationAccessor.getMatchingEnabledJobs(notificationFilterModel.getProviderConfigName(), notificationFilterModel.getNotificationType());
 
             List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
-            events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
+            if (!matchingNotifications.isEmpty() && !matchingJobs.isEmpty()) {
+                events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
+            }
         }
         return events;
     }
 
     private List<DistributionEvent> processNotificationsThatMatchFilter(NotificationFilterModel notificationFilterModel, List<ConfigurationJobModel> matchingJobs, List<AlertNotificationModel> notifications) {
-        if (matchingJobs.isEmpty()) {
-            return List.of();
-        }
         Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(notificationFilterModel.getProviderConfigName());
         if (optionalProviderConfig.isPresent()) {
             Provider provider = providerKeyToProvider.get(notificationFilterModel.getProvider());
@@ -155,14 +156,6 @@ public class NotificationProcessor {
     }
 
     private List<DistributionEvent> processNotifications(StatefulProvider statefulProvider, ProviderDistributionFilter distributionFilter, ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
-        if (!job.isEnabled()) {
-            logger.debug("Skipping disabled distribution job: {}", job.getName());
-            return List.of();
-        }
-        if (notifications.isEmpty()) {
-            return List.of();
-        }
-
         List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notifications);
 
         logIgnoredNotifications(notifications, filteredNotifications);

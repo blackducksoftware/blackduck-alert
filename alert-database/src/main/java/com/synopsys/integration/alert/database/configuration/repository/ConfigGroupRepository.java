@@ -44,23 +44,25 @@ public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, 
                        + "    LEFT JOIN alert.descriptor_configs descConf ON job.config_id = descConf.id"
                        + "    LEFT JOIN alert.field_values fieldValues ON descConf.id = fieldValues.config_id"
                        + "    WHERE (fieldValues.field_id = GET_FIELD_ID('channel.common.frequency') AND fieldValues.field_value = :frequency)"
+                       + "    OR (fieldValues.field_id = GET_FIELD_ID('channel.common.enabled') AND fieldValues.field_value = 'true')"
                        + "    OR (fieldValues.field_id = GET_FIELD_ID('provider.common.config.name') AND fieldValues.field_value = :providerConfigName)"
                        + "    OR (fieldValues.field_id = GET_FIELD_ID('provider.distribution.notification.types') AND fieldValues.field_value = :notificationType)"
                        + "    GROUP BY job.job_id) AS job_with_field_count"
-                       + "    WHERE job_with_field_count.matching_field_count = 3;", nativeQuery = true
+                       + "    WHERE job_with_field_count.matching_field_count = 4;", nativeQuery = true
     )
-    List<UUID> findMatchingJobIds(@Param("frequency") String frequency, @Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
+    List<UUID> findMatchingEnabledJobIds(@Param("frequency") String frequency, @Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
 
     @Query(value = "SELECT cast(job_with_field_count.job_id as varchar) as job_id FROM (SELECT job.job_id, COUNT(fieldValues.id) AS matching_field_count"
                        + "    FROM alert.config_groups job"
                        + "    LEFT JOIN alert.descriptor_configs descConf ON job.config_id = descConf.id"
                        + "    LEFT JOIN alert.field_values fieldValues ON descConf.id = fieldValues.config_id"
                        + "    WHERE (fieldValues.field_id = GET_FIELD_ID('provider.common.config.name') AND fieldValues.field_value = :providerConfigName)"
+                       + "    OR (fieldValues.field_id = GET_FIELD_ID('channel.common.enabled') AND fieldValues.field_value = 'true')"
                        + "    OR (fieldValues.field_id = GET_FIELD_ID('provider.distribution.notification.types') AND fieldValues.field_value = :notificationType)"
                        + "    GROUP BY job.job_id) AS job_with_field_count"
                        + "    WHERE job_with_field_count.matching_field_count = 3;", nativeQuery = true
     )
-    List<UUID> findMatchingJobIds(@Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
+    List<UUID> findMatchingEnabledJobIds(@Param("providerConfigName") String providerConfigName, @Param("notificationType") String notificationType);
 
 }
 
