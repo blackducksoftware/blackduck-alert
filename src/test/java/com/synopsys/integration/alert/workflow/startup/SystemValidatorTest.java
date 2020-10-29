@@ -113,6 +113,9 @@ public class SystemValidatorTest {
         Mockito.when(blackDuckProperties.getConfigName()).thenReturn(DEFAULT_CONFIG_NAME);
         Mockito.when(blackDuckProperties.getConfigId()).thenReturn(configId);
 
+        BlackDuckServerConfig blackDuckServerConfig = Mockito.mock(BlackDuckServerConfig.class);
+        Mockito.when(blackDuckProperties.createBlackDuckServerConfig(Mockito.any(IntLogger.class))).thenReturn(blackDuckServerConfig);
+
         StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
         BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(provider.createStatefulProvider(Mockito.any())).thenReturn(statefulProvider);
