@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -46,6 +45,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
@@ -69,7 +69,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     private final AuthenticationTypeAccessor authenticationTypeAccessor;
     private final UserSystemValidator userSystemValidator;
 
-    private final Logger logger = LoggerFactory.getLogger(UserActions.class);
+    private final Logger logger = AlertLoggerFactory.getLogger(UserActions.class);
     private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
 
     @Autowired
