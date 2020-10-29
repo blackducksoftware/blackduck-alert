@@ -58,7 +58,7 @@ public class BlackDuckResponseCache {
     }
 
     public <T extends BlackDuckResponse> Optional<T> getItem(Class<T> responseClass, String url) {
-        if (null == responseClass || StringUtils.isBlank(url) || null == blackDuckBucketService) {
+        if (null == responseClass || StringUtils.isBlank(url)) {
             return Optional.empty();
         }
         try {

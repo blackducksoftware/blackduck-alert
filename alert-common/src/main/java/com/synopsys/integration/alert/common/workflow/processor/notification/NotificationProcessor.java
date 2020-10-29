@@ -110,7 +110,14 @@ public class NotificationProcessor {
             Provider provider = providerKeyToProvider.get(notificationFilterModel.getProvider());
 
             ConfigurationModel providerConfiguration = optionalProviderConfig.get();
-            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfiguration);
+            StatefulProvider statefulProvider;
+            try {
+                statefulProvider = provider.createStatefulProvider(providerConfiguration);
+            } catch (AlertException e) {
+                logger.error("Cannot create connection to Black Duck. {}", e.getMessage());
+                logger.debug(e.getMessage(), e);
+                return List.of();
+            }
             ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
 
             ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
@@ -137,7 +144,14 @@ public class NotificationProcessor {
             Provider provider = providerKeyToProvider.get(job.getProviderName());
 
             ConfigurationModel providerConfiguration = optionalProviderConfig.get();
-            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfiguration);
+            StatefulProvider statefulProvider;
+            try {
+                statefulProvider = provider.createStatefulProvider(providerConfiguration);
+            } catch (AlertException e) {
+                logger.error("Cannot create connection to Black Duck. {}", e.getMessage());
+                logger.debug(e.getMessage(), e);
+                return List.of();
+            }
 
             ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
             List<AlertNotificationModel> notificationsByProviderConfig = filterNotificationsByProviderConfigId(statefulProvider, notifications);

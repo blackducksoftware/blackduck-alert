@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +39,9 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -53,7 +53,6 @@ public class BlackDuckDistributionTestAction extends TestAction {
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationAccessor configurationAccessor;
-    private final Logger logger = LoggerFactory.getLogger(BlackDuckDistributionTestAction.class);
 
     @Autowired
     public BlackDuckDistributionTestAction(ProviderDataAccessor blackDuckDataAccessor, BlackDuckProvider blackDuckProvider, ConfigurationAccessor configurationAccessor) {
@@ -72,12 +71,16 @@ public class BlackDuckDistributionTestAction extends TestAction {
                 .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigName, projectNamePattern))
                 .ifPresent(fieldStatuses::add);
 
-            Optional<BlackDuckProperties> optionalBlackDuckProperties = configurationAccessor.getProviderConfigurationByName(providerConfigName)
-                                                                            .map(blackDuckProvider::createStatefulProvider)
-                                                                            .map(statefulProvider -> (BlackDuckProperties) statefulProvider.getProperties());
-            if (optionalBlackDuckProperties.isPresent()) {
-                BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
+            BlackDuckProperties blackDuckProperties = null;
+            Optional<ConfigurationModel> providerConfigurationByNameOptional = configurationAccessor.getProviderConfigurationByName(providerConfigName);
+            if (providerConfigurationByNameOptional.isPresent()) {
+                ConfigurationModel providerConfiguration = providerConfigurationByNameOptional.get();
+                StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(providerConfiguration);
+                blackDuckProperties = (BlackDuckProperties) statefulProvider.getProperties();
 
+            }
+
+            if (null != blackDuckProperties) {
                 BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
                 if (!blackDuckAPITokenValidator.isApiTokenValid()) {
                     fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "User permission failed, cannot read notifications from Black Duck."));

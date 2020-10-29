@@ -86,21 +86,21 @@ public class BlackDuckValidator extends BaseSystemValidator {
                     logger.warn("  -> {}", String.format(BLACKDUCK_LOCALHOST_ERROR_FORMAT, configName));
                 }
                 IntLogger intLogger = new Slf4jIntLogger(logger);
-                Optional<BlackDuckServerConfig> blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
-                if (blackDuckServerConfig.isPresent()) {
-                    boolean canConnect = blackDuckServerConfig.get().canConnect(intLogger);
-                    if (canConnect) {
-                        logger.info("  -> Black Duck configuration '{}' is Valid!", configName);
-                    } else {
-                        String message = String.format("Can not connect to the Black Duck server with the configuration '%s'.", configName);
-                        connectivityWarning(blackDuckProperties, message);
-                        valid = false;
-                    }
+                BlackDuckServerConfig blackDuckServerConfig = blackDuckProperties.createBlackDuckServerConfig(intLogger);
+
+                boolean canConnect = blackDuckServerConfig.canConnect(intLogger);
+                if (canConnect) {
+                    logger.info("  -> Black Duck configuration '{}' is Valid!", configName);
                 } else {
-                    String message = String.format("The Black Duck configuration '%s' is not valid.", configName);
+                    String message = String.format("Can not connect to the Black Duck server with the configuration '%s'.", configName);
                     connectivityWarning(blackDuckProperties, message);
                     valid = false;
                 }
+            } else {
+                String message = String.format("The Black Duck configuration '%s' is not valid.", configName);
+                connectivityWarning(blackDuckProperties, message);
+                valid = false;
+
             }
 
             BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);

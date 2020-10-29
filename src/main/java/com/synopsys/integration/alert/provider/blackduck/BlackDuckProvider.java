@@ -26,9 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
@@ -52,9 +55,12 @@ import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNo
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.VersionBomCodeLocationBomComputedNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class BlackDuckProvider extends Provider {
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
     private final DistributionFilterFactory distributionFilterFactory;
     private final MessageContentCollectorFactory messageContentCollectorFactory;
     private final BlackDuckPropertiesFactory propertiesFactory;
@@ -79,13 +85,19 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
-    public StatefulProvider createStatefulProvider(ConfigurationModel configurationModel) {
+    public StatefulProvider createStatefulProvider(ConfigurationModel configurationModel) throws AlertException {
         BlackDuckProperties blackDuckProperties = propertiesFactory.createProperties(configurationModel);
         List<ProviderTask> tasks = taskFactory.createTasks(blackDuckProperties);
-        ProviderDistributionFilter distributionFilter = distributionFilterFactory.createFilter(blackDuckProperties, getNotificationClassMap());
-        BlackDuckMessageContentCollector messageContentCollector = messageContentCollectorFactory.createCollector(blackDuckProperties);
+        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckProperties);
+        ProviderDistributionFilter distributionFilter = distributionFilterFactory.createFilter(blackDuckServicesFactory, blackDuckProperties.getBlackDuckTimeout(), getNotificationClassMap());
+        BlackDuckMessageContentCollector messageContentCollector = messageContentCollectorFactory.createCollector(blackDuckServicesFactory);
 
         return StatefulProvider.create(getKey(), configurationModel, tasks, blackDuckProperties, distributionFilter, messageContentCollector);
+    }
+
+    private BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckProperties blackDuckProperties) throws AlertException {
+        BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
+        return blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
     }
 
     @Override

@@ -27,8 +27,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.workflow.processor.message.MessageContentProcessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class MessageContentCollectorFactory {
@@ -40,7 +40,7 @@ public class MessageContentCollectorFactory {
         this.messageBuilders = messageBuilders;
     }
 
-    public BlackDuckMessageContentCollector createCollector(BlackDuckProperties properties) {
-        return new BlackDuckMessageContentCollector(properties, messageContentProcessors, messageBuilders);
+    public BlackDuckMessageContentCollector createCollector(BlackDuckServicesFactory blackDuckServicesFactory) {
+        return new BlackDuckMessageContentCollector(blackDuckServicesFactory, messageContentProcessors, messageBuilders);
     }
 }

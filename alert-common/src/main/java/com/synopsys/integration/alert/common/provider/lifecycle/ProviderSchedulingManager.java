@@ -111,8 +111,8 @@ public class ProviderSchedulingManager {
     private List<ProviderTask> initializeConfiguredProviders(Provider provider, List<ConfigurationModel> providerConfigurations) {
         List<ProviderTask> initializedTasks = new ArrayList<>();
         for (ConfigurationModel providerConfig : providerConfigurations) {
-            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
             try {
+                StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
                 if (statefulProvider.isConfigEnabled()) {
                     List<ProviderTask> initializedTasksForConfig = scheduleTasksForProviderConfig(provider, providerConfig);
                     initializedTasks.addAll(initializedTasksForConfig);

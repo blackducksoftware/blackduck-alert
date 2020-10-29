@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,24 +38,22 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.processor.message.MessageContentProcessor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
-import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 public class BlackDuckMessageContentCollector extends ProviderMessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageContentCollector.class);
 
-    private final BlackDuckProperties blackDuckProperties;
+    private final BlackDuckServicesFactory blackDuckServicesFactory;
     private final Map<String, BlackDuckMessageBuilder> messageBuilderMap;
     private final BlackDuckBucket blackDuckBucket;
     private final AlertMultipleBucket alertMultipleBucket;
 
-    public BlackDuckMessageContentCollector(BlackDuckProperties blackDuckProperties, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
+    public BlackDuckMessageContentCollector(BlackDuckServicesFactory blackDuckServicesFactory, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
-        this.blackDuckProperties = blackDuckProperties;
+        this.blackDuckServicesFactory = blackDuckServicesFactory;
         this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, builder -> builder.getNotificationType().name());
         this.blackDuckBucket = new BlackDuckBucket();
         this.alertMultipleBucket = new AlertMultipleBucket();
@@ -64,7 +61,6 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
 
     @Override
     protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) throws AlertException {
-        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory();
 
         List<ProviderMessageContent> providerMessageContents = new LinkedList<>();
         for (AlertNotificationModel notification : notifications) {
@@ -82,15 +78,6 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
             }
         }
         return providerMessageContents;
-    }
-
-    private BlackDuckServicesFactory createBlackDuckServicesFactory() throws AlertException {
-        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
-        if (optionalBlackDuckHttpClient.isPresent()) {
-            BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
-            return blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
-        }
-        throw new AlertException("Cannot create message content with no connection to Black Duck");
     }
 
 }
