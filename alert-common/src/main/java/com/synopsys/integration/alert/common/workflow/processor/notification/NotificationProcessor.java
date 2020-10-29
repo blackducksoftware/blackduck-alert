@@ -111,10 +111,11 @@ public class NotificationProcessor {
 
             ConfigurationModel providerConfiguration = optionalProviderConfig.get();
             StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfiguration);
+            ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
 
             ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
 
-            return processNotificationsForJobs(statefulProvider, distributionFilter, matchingJobs, notifications);
+            return processNotificationsForJobs(messageContentCollector, distributionFilter, matchingJobs, notifications);
         } else {
             logger.warn("Could not find the provider config by the name {}. Skipping {} notifications.", notificationFilterModel.getProviderConfigName(), notifications.size());
         }
@@ -155,15 +156,13 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private List<DistributionEvent> processNotifications(StatefulProvider statefulProvider, ProviderDistributionFilter distributionFilter, ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
+    private List<DistributionEvent> processNotifications(ProviderMessageContentCollector messageContentCollector, ProviderDistributionFilter distributionFilter, ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
         List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notifications);
 
         logIgnoredNotifications(notifications, filteredNotifications);
 
         if (!filteredNotifications.isEmpty()) {
             logNotificationsThatMatchedJobs(filteredNotifications);
-
-            ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
             return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
         }
 
@@ -206,10 +205,11 @@ public class NotificationProcessor {
         }
     }
 
-    private List<DistributionEvent> processNotificationsForJobs(StatefulProvider statefulProvider, ProviderDistributionFilter providerDistributionFilter, Collection<ConfigurationJobModel> jobs, List<AlertNotificationModel> notifications) {
+    private List<DistributionEvent> processNotificationsForJobs(ProviderMessageContentCollector messageContentCollector, ProviderDistributionFilter providerDistributionFilter, Collection<ConfigurationJobModel> jobs,
+        List<AlertNotificationModel> notifications) {
         List<DistributionEvent> distributionEvents = new LinkedList<>();
         for (ConfigurationJobModel job : jobs) {
-            List<DistributionEvent> distributionEventsForJob = processNotifications(statefulProvider, providerDistributionFilter, job, notifications);
+            List<DistributionEvent> distributionEventsForJob = processNotifications(messageContentCollector, providerDistributionFilter, job, notifications);
             distributionEvents.addAll(distributionEventsForJob);
         }
         return distributionEvents;
