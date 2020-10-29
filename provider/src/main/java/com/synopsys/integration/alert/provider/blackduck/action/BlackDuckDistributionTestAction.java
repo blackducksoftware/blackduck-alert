@@ -41,7 +41,9 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -72,12 +74,15 @@ public class BlackDuckDistributionTestAction extends TestAction {
                 .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
                 .ifPresent(fieldStatuses::add);
 
-            Optional<BlackDuckProperties> optionalBlackDuckProperties = configurationAccessor.getConfigurationById(providerConfigId)
-                                                                            .map(blackDuckProvider::createStatefulProvider)
-                                                                            .map(statefulProvider -> (BlackDuckProperties) statefulProvider.getProperties());
-            if (optionalBlackDuckProperties.isPresent()) {
-                BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
+            BlackDuckProperties blackDuckProperties = null;
+            Optional<ConfigurationModel> providerConfigurationOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            if (providerConfigurationOptional.isPresent()) {
+                ConfigurationModel providerConfiguration = providerConfigurationOptional.get();
+                StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(providerConfiguration);
+                blackDuckProperties = (BlackDuckProperties) statefulProvider.getProperties();
 
+            }
+            if (null != blackDuckProperties) {
                 BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
                 if (!blackDuckAPITokenValidator.isApiTokenValid()) {
                     fieldStatuses.add(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, "User permission failed, cannot read notifications from Black Duck."));

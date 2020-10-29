@@ -80,7 +80,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testvalidateBlackDuckProviderNullURL() {
+    public void testvalidateBlackDuckProviderNullURL() throws Exception {
         long configId = 1L;
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.empty());
@@ -103,7 +103,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testvalidateBlackDuckProviderLocalhostURL() {
+    public void testvalidateBlackDuckProviderLocalhostURL() throws Exception {
         long configId = 1L;
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
@@ -140,7 +140,7 @@ public class SystemValidatorTest {
 
         BlackDuckServerConfig serverConfig = Mockito.mock(BlackDuckServerConfig.class);
         Mockito.when(serverConfig.canConnect(Mockito.any(IntLogger.class))).thenReturn(false);
-        Mockito.when(blackDuckProperties.createBlackDuckServerConfig(Mockito.any(IntLogger.class))).thenReturn(Optional.of(serverConfig));
+        Mockito.when(blackDuckProperties.createBlackDuckServerConfig(Mockito.any(IntLogger.class))).thenReturn(serverConfig);
         DefaultSystemMessageAccessor defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageAccessor.class);
 
         StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
@@ -171,7 +171,7 @@ public class SystemValidatorTest {
 
         BlackDuckServerConfig serverConfig = Mockito.mock(BlackDuckServerConfig.class);
         Mockito.when(serverConfig.canConnect(Mockito.any(IntLogger.class))).thenReturn(true);
-        Mockito.when(blackDuckProperties.createBlackDuckServerConfig(Mockito.any(IntLogger.class))).thenReturn(Optional.of(serverConfig));
+        Mockito.when(blackDuckProperties.createBlackDuckServerConfig(Mockito.any(IntLogger.class))).thenReturn(serverConfig);
         DefaultSystemMessageAccessor defaultSystemMessageUtility = Mockito.mock(DefaultSystemMessageAccessor.class);
 
         StatefulProvider statefulProvider = Mockito.mock(StatefulProvider.class);
@@ -185,7 +185,7 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testValidateHubValidProviderWithProxy() {
+    public void testValidateHubValidProviderWithProxy() throws Exception {
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
 
         CredentialsBuilder builder = Credentials.newBuilder();

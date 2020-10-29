@@ -69,19 +69,19 @@ public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<Policy
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         PolicyOverrideNotificationContent overrideContent = notificationView.getContent();
 
-        String projectName = overrideContent.getProjectName();
-        String projectUrl = retrieveNullableProjectUrlAndLog(projectName, blackDuckServicesFactory.createProjectService(), logger::warn);
+        String projectVersionUrl = overrideContent.getProjectVersion();
+        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, blackDuckServicesFactory.getBlackDuckService(), logger::warn);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
                 .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, overrideContent.getProjectName(), projectUrl)
-                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), overrideContent.getProjectVersion());
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), projectVersionUrl);
 
             List<PolicyInfo> policies = overrideContent.getPolicyInfos();
             FieldUtility fieldUtility = commonMessageData.getJob().getFieldUtility();
             Collection<String> policyFilter = fieldUtility.getAllStrings(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER);
-            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, commonMessageData.getNotificationId(), overrideContent.getProjectVersion(), policyFilter);
+            List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, commonMessageData.getNotificationId(), projectVersionUrl, policyFilter);
             messageContentBuilder.applyAllComponentItems(items);
             return List.of(messageContentBuilder.build());
         } catch (AlertException ex) {

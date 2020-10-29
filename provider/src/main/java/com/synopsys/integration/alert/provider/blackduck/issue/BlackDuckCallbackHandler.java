@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.issue;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,7 @@ import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.workflow.ProviderCallbackHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
@@ -57,17 +56,13 @@ public class BlackDuckCallbackHandler extends ProviderCallbackHandler {
     protected void performProviderCallback(ProviderCallbackEvent event, StatefulProvider statefulProvider) throws IntegrationException {
         BlackDuckProperties blackDuckProperties = (BlackDuckProperties) statefulProvider.getProperties();
         IntLogger intLogger = new Slf4jIntLogger(logger);
-        Optional<BlackDuckServicesFactory> optionalBlackDuckServicesFactory = blackDuckProperties.createBlackDuckHttpClient(intLogger)
-                                                                                  .map(httpClient -> blackDuckProperties.createBlackDuckServicesFactory(httpClient, intLogger));
-        if (optionalBlackDuckServicesFactory.isPresent()) {
-            BlackDuckServicesFactory blackDuckServicesFactory = optionalBlackDuckServicesFactory.get();
-            BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckServicesFactory.getBlackDuckService(), blackDuckServicesFactory.getRequestFactory());
+        BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
+        BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
 
-            BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
-            blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(event.getCallbackUrl(), issueModel);
-        } else {
-            logger.error("Cannot instantiate the BlackDuck services from a seemingly valid properties object. Config: id='{}', name='{}'", statefulProvider.getConfigId(), statefulProvider.getConfigName());
-        }
+        BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckServicesFactory.getBlackDuckService(), blackDuckServicesFactory.getRequestFactory());
+
+        BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
+        blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(event.getCallbackUrl(), issueModel);
     }
 
     private BlackDuckProviderIssueModel createBlackDuckIssueModel(ProviderCallbackEvent event) {
