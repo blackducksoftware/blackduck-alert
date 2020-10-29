@@ -98,7 +98,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
         RuleViolationNotificationContent violationContent = notificationView.getContent();
 
         String projectVersionUrl = violationContent.getProjectVersion();
-        String projectUrl = parseProjectUrlFromProjectVersion(projectVersionUrl);
+        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, responseCache);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder

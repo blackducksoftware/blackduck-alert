@@ -72,7 +72,7 @@ public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<Policy
         PolicyOverrideNotificationContent overrideContent = notificationView.getContent();
 
         String projectVersionUrl = overrideContent.getProjectVersion();
-        String projectUrl = parseProjectUrlFromProjectVersion(projectVersionUrl);
+        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, responseCache);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder

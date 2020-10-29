@@ -23,19 +23,16 @@
 package com.synopsys.integration.alert.provider.blackduck.collector.builder;
 
 import java.util.List;
-import java.util.function.Consumer;
-
-import org.apache.commons.lang.StringUtils;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertMultipleBucket;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
-import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class BlackDuckMessageBuilder<T> {
     private final String providerName = "Black Duck";
@@ -56,18 +53,17 @@ public abstract class BlackDuckMessageBuilder<T> {
     public abstract List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket,
         AlertMultipleBucket alertMultipleBucket, BlackDuckServicesFactory blackDuckServicesFactory);
 
-    protected String parseProjectUrlFromProjectVersion(String projectVersionURL) {
-        return StringUtils.removeEnd(projectVersionURL, "/" + ProjectView.VERSIONS_LINK);
+    protected String getNullableProjectUrlFromProjectVersion(String projectVersionURL, BlackDuckResponseCache blackDuckResponseCache) {
+        String projectURL = null;
+        Optional<ProjectVersionView> projectVersionViewOptional = blackDuckResponseCache.getItem(ProjectVersionView.class, projectVersionURL);
+        if (projectVersionViewOptional.isPresent()) {
+            ProjectVersionView projectVersionView = projectVersionViewOptional.get();
+            Optional<String> linkOptional = projectVersionView.getFirstLink(ProjectVersionView.PROJECT_LINK);
+            if (linkOptional.isPresent()) {
+                projectURL = linkOptional.get();
+            }
+        }
+        return projectURL;
     }
 
-    protected String retrieveNullableProjectUrlAndLog(String projectName, ProjectService projectService, Consumer<String> logMethod) {
-        try {
-            return projectService.getProjectByName(projectName)
-                       .flatMap(ProjectView::getHref)
-                       .orElse(null);
-        } catch (IntegrationException e) {
-            logMethod.accept(String.format("Could not get the href for '%s': %s", projectName, e.getMessage()));
-        }
-        return null;
-    }
 }
