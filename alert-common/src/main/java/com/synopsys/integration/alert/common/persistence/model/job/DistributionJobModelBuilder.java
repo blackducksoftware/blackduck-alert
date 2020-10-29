@@ -4,6 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+
 public class DistributionJobModelBuilder {
     private UUID jobId;
     private boolean enabled = true;
@@ -21,6 +23,8 @@ public class DistributionJobModelBuilder {
     private List<String> projectFilterProjectNames;
     private List<String> policyFilterPolicyNames;
     private List<String> vulnerabilityFilterSeverityNames;
+
+    private DistributionJobDetailsModel distributionJobDetails;
 
     public DistributionJobModelBuilder() {
     }
@@ -41,7 +45,8 @@ public class DistributionJobModelBuilder {
             notificationTypes,
             projectFilterProjectNames,
             policyFilterPolicyNames,
-            vulnerabilityFilterSeverityNames
+            vulnerabilityFilterSeverityNames,
+            distributionJobDetails
         );
     }
 
@@ -117,6 +122,15 @@ public class DistributionJobModelBuilder {
 
     public DistributionJobModelBuilder vulnerabilityFilterSeverityNames(List<String> vulnerabilityFilterSeverityNames) {
         this.vulnerabilityFilterSeverityNames = vulnerabilityFilterSeverityNames;
+        return this;
+    }
+
+    public DistributionJobDetailsModel getDistributionJobDetails() {
+        return distributionJobDetails;
+    }
+
+    public DistributionJobModelBuilder distributionJobDetails(DistributionJobDetailsModel distributionJobDetails) {
+        this.distributionJobDetails = distributionJobDetails;
         return this;
     }
 

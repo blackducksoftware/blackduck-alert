@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class DistributionJobModel extends AlertSerializableModel {
@@ -28,6 +29,8 @@ public class DistributionJobModel extends AlertSerializableModel {
     private final List<String> policyFilterPolicyNames;
     private final List<String> vulnerabilityFilterSeverityNames;
 
+    private final DistributionJobDetailsModel distributionJobDetails;
+
     public static DistributionJobModelBuilder builder() {
         return new DistributionJobModelBuilder();
     }
@@ -45,8 +48,10 @@ public class DistributionJobModel extends AlertSerializableModel {
         boolean filterByProject,
         String projectNamePattern,
         List<String> notificationTypes,
-        List<String> projectFilterProjectNames, List<String> policyFilterPolicyNames,
-        List<String> vulnerabilityFilterSeverityNames
+        List<String> projectFilterProjectNames,
+        List<String> policyFilterPolicyNames,
+        List<String> vulnerabilityFilterSeverityNames,
+        DistributionJobDetailsModel distributionJobDetails
     ) {
         this.jobId = jobId;
         this.enabled = enabled;
@@ -63,6 +68,7 @@ public class DistributionJobModel extends AlertSerializableModel {
         this.projectFilterProjectNames = projectFilterProjectNames;
         this.policyFilterPolicyNames = policyFilterPolicyNames;
         this.vulnerabilityFilterSeverityNames = vulnerabilityFilterSeverityNames;
+        this.distributionJobDetails = distributionJobDetails;
     }
 
     @Nullable
@@ -125,6 +131,10 @@ public class DistributionJobModel extends AlertSerializableModel {
 
     public List<String> getVulnerabilityFilterSeverityNames() {
         return vulnerabilityFilterSeverityNames;
+    }
+
+    public DistributionJobDetailsModel getDistributionJobDetails() {
+        return distributionJobDetails;
     }
 
 }
