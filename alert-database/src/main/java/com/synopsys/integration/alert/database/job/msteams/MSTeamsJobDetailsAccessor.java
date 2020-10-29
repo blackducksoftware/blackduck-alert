@@ -20,37 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job.blackduck.projects;
+package com.synopsys.integration.alert.database.job.msteams;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-public class BlackDuckJobProjectPK implements Serializable {
-    private UUID jobId;
-    private String projectName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    public BlackDuckJobProjectPK() {
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+
+@Component
+public class MSTeamsJobDetailsAccessor {
+    private final MSTeamsJobDetailsRepository msTeamsJobDetailsRepository;
+
+    @Autowired
+    public MSTeamsJobDetailsAccessor(MSTeamsJobDetailsRepository msTeamsJobDetailsRepository) {
+        this.msTeamsJobDetailsRepository = msTeamsJobDetailsRepository;
     }
 
-    public BlackDuckJobProjectPK(UUID jobId, String projectName) {
-        this.jobId = jobId;
-        this.projectName = projectName;
-    }
-
-    public UUID getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(UUID jobId) {
-        this.jobId = jobId;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public MSTeamsJobDetailsEntity saveMSTeamsJobDetails(UUID jobId, MSTeamsJobDetailsModel msTeamsJobDetails) {
+        MSTeamsJobDetailsEntity jobDetailsToSave = new MSTeamsJobDetailsEntity(jobId, msTeamsJobDetails.getWebhook());
+        return msTeamsJobDetailsRepository.save(jobDetailsToSave);
     }
 
 }

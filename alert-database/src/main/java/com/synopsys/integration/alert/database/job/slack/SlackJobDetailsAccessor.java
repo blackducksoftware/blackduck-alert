@@ -24,7 +24,23 @@ package com.synopsys.integration.alert.database.job.slack;
 
 import java.util.UUID;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public interface SlackJobDetailsRepository extends JpaRepository<SlackJobDetailsEntity, UUID> {
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+
+@Component
+public class SlackJobDetailsAccessor {
+    private final SlackJobDetailsRepository slackJobDetailsRepository;
+
+    @Autowired
+    public SlackJobDetailsAccessor(SlackJobDetailsRepository slackJobDetailsRepository) {
+        this.slackJobDetailsRepository = slackJobDetailsRepository;
+    }
+
+    public SlackJobDetailsEntity saveSlackJobDetails(UUID jobId, SlackJobDetailsModel slackJobDetails) {
+        SlackJobDetailsEntity jobDetailsToSave = new SlackJobDetailsEntity(jobId, slackJobDetails.getWebhook(), slackJobDetails.getChannelName(), slackJobDetails.getChannelUsername());
+        return slackJobDetailsRepository.save(jobDetailsToSave);
+    }
+
 }

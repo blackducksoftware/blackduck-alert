@@ -1,3 +1,25 @@
+/**
+ * alert-database
+ *
+ * Copyright (c) 2020 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.database.job;
 
 import java.time.OffsetDateTime;
@@ -32,13 +54,31 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
 // @Component
 public class StaticJobAccessor implements JobAccessor {
     private final DistributionJobRepository distributionJobRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
+    private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
+    private final EmailJobDetailsAccessor emailJobDetailsAccessor;
+    private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
+    private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
+    private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
+    private final SlackJobDetailsAccessor slackJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
@@ -49,12 +89,24 @@ public class StaticJobAccessor implements JobAccessor {
     public StaticJobAccessor(
         DistributionJobRepository distributionJobRepository,
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
+        AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
+        EmailJobDetailsAccessor emailJobDetailsAccessor,
+        JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
+        JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
+        MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
+        SlackJobDetailsAccessor slackJobDetailsAccessor,
 
         RegisteredDescriptorRepository registeredDescriptorRepository,
         ProviderKey blackDuckProviderKey
     ) {
         this.distributionJobRepository = distributionJobRepository;
         this.blackDuckJobDetailsAccessor = blackDuckJobDetailsAccessor;
+        this.azureBoardsJobDetailsAccessor = azureBoardsJobDetailsAccessor;
+        this.emailJobDetailsAccessor = emailJobDetailsAccessor;
+        this.jiraCloudJobDetailsAccessor = jiraCloudJobDetailsAccessor;
+        this.jiraServerJobDetailsAccessor = jiraServerJobDetailsAccessor;
+        this.msTeamsJobDetailsAccessor = msTeamsJobDetailsAccessor;
+        this.slackJobDetailsAccessor = slackJobDetailsAccessor;
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.blackDuckProviderKey = blackDuckProviderKey;
     }
@@ -184,20 +236,25 @@ public class StaticJobAccessor implements JobAccessor {
         BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(savedJobId, distributionJobModel);
         savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
 
-        // FIXME save channel details
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
         if (distributionJobDetails.isAzureBoardsDetails()) {
-            // FIXME implement
+            AzureBoardsJobDetailsEntity savedAzureBoardsJobDetails = azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(savedJobId, distributionJobDetails.getAsAzureBoardsJobDetails());
+            savedJobEntity.setAzureBoardsJobDetails(savedAzureBoardsJobDetails);
         } else if (distributionJobDetails.isEmailDetails()) {
-            // FIXME implement
+            EmailJobDetailsEntity savedEmailJobDetails = emailJobDetailsAccessor.saveEmailJobDetails(savedJobId, distributionJobDetails.getAsEmailJobDetails());
+            savedJobEntity.setEmailJobDetails(savedEmailJobDetails);
         } else if (distributionJobDetails.isJiraCloudDetails()) {
-            // FIXME implement
+            JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAsJiraCouldJobDetails());
+            savedJobEntity.setJiraCloudJobDetails(savedJiraCloudJobDetails);
         } else if (distributionJobDetails.isJiraServerDetails()) {
-            // FIXME implement
+            JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAsJiraServerJobDetails());
+            savedJobEntity.setJiraServerJobDetails(savedJiraServerJobDetails);
         } else if (distributionJobDetails.isMSTeamsDetails()) {
-            // FIXME implement
+            MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAsMSTeamsJobDetails());
+            savedJobEntity.setMsTeamsJobDetails(savedMSTeamsJobDetails);
         } else if (distributionJobDetails.isSlackDetails()) {
-            // FIXME implement
+            SlackJobDetailsEntity savedSlackJobDetails = slackJobDetailsAccessor.saveSlackJobDetails(savedJobId, distributionJobDetails.getAsSlackJobDetails());
+            savedJobEntity.setSlackJobDetails(savedSlackJobDetails);
         }
 
         return convertToConfigurationJobModel(savedJobEntity);
