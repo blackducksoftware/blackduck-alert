@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
@@ -41,7 +42,7 @@ public abstract class Provider {
 
     public abstract boolean validate(ConfigurationModel configurationModel);
 
-    public abstract StatefulProvider createStatefulProvider(ConfigurationModel configurationModel);
+    public abstract StatefulProvider createStatefulProvider(ConfigurationModel configurationModel) throws AlertException;
 
     public abstract ProviderNotificationClassMap getNotificationClassMap();
 

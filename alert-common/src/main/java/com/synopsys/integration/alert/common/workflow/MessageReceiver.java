@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 public abstract class MessageReceiver<T> implements MessageListener {
-    private final Logger logger = LoggerFactory.getLogger(MessageReceiver.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final Class<T> eventClass;
 
@@ -52,7 +52,7 @@ public abstract class MessageReceiver<T> implements MessageListener {
                 logger.debug("Event message: {}", message);
                 TextMessage textMessage = (TextMessage) message;
                 T event = gson.fromJson(textMessage.getText(), eventClass);
-                logger.debug("{} event {}", receiverClassName, event);
+                logger.trace("{} event {}", receiverClassName, event);
                 handleEvent(event);
             }
         } catch (Exception e) {

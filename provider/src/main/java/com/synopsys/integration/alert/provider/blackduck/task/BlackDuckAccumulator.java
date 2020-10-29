@@ -43,6 +43,7 @@ import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
@@ -221,6 +222,11 @@ public class BlackDuckAccumulator extends ProviderTask {
             logger.info("No notifications found; using current search time");
         }
         return newStartDate;
+    }
+
+    @Override
+    public String scheduleCronExpression() {
+        return ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION;
     }
 
 }

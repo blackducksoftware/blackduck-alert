@@ -37,6 +37,10 @@ public interface JobAccessor {
     @Deprecated(forRemoval = true)
     List<ConfigurationJobModel> getAllJobs();
 
+    List<ConfigurationJobModel> getMatchingEnabledJobs(String frequency, Long providerConfigId, String notificationType);
+
+    List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, String notificationType);
+
     List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds);
 
     AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude);

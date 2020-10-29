@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,9 +20,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job.blackduck.vulnerability;
+package com.synopsys.integration.alert.common.workflow.processor.notification;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public interface BlackDuckJobVulnerabilitySeverityFilterRepository extends JpaRepository<BlackDuckJobVulnerabilitySeverityFilterEntity, BlackDuckJobVulnerabilitySeverityFilterPK> {
+public class NotificationFilterModel extends AlertSerializableModel {
+    private final String provider;
+    private final Long providerConfigId;
+    private final String notificationType;
+
+    public NotificationFilterModel(String provider, Long providerConfigId, String notificationType) {
+        this.provider = provider;
+        this.providerConfigId = providerConfigId;
+        this.notificationType = notificationType;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
 }
