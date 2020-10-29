@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job;
+package com.synopsys.integration.alert.database.api;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -54,6 +55,10 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.job.DistributionJobEntity;
+import com.synopsys.integration.alert.database.job.DistributionJobRepository;
+import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldExtractorUtils;
+import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldPopulationUtils;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
@@ -69,7 +74,7 @@ import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEnti
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
-// @Component
+@Component
 public class StaticJobAccessor implements JobAccessor {
     private final DistributionJobRepository distributionJobRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
@@ -160,7 +165,7 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     @Transactional
-    public ConfigurationJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+    public ConfigurationJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) {
         return createJobWithId(null, configuredFields, DateUtils.createCurrentDateTimestamp(), null);
     }
 
@@ -185,7 +190,9 @@ public class StaticJobAccessor implements JobAccessor {
         Set<ConfigurationModel> configurationModels = new LinkedHashSet<>();
 
         String createdAtDateTime = DateUtils.formatDate(jobEntity.getCreatedAt(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
-        String updatedAtDateTime = DateUtils.formatDate(jobEntity.getLastUpdated(), DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
+        String updatedAtDateTime = Optional.ofNullable(jobEntity.getLastUpdated())
+                                       .map(date -> DateUtils.formatDate(date, DateUtils.UTC_DATE_FORMAT_TO_MINUTE))
+                                       .orElse(null);
 
         String providerUniversalKey = blackDuckProviderKey.getUniversalKey();
         Long blackDuckDescriptorId = getDescriptorId(providerUniversalKey);
