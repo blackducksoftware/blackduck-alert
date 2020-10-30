@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Create initial job entries with default data -->
+    <changeSet author="gavink" id="create-initial-job-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.distribution_jobs (job_id, name, enabled, distribution_frequency, processing_type, channel_descriptor_name, created_at, last_updated)
+                SELECT DISTINCT job.job_id, job.job_id::text, true, 'DAILY', 'DEFAULT', 'channel_email', config.created_at, config.last_updated
+                FROM alert.config_groups job
+                INNER JOIN alert.descriptor_configs config ON config.id = job.config_id
+                WHERE config.descriptor_id = GET_DESCRIPTOR_ID('provider_blackduck');
+        </sql>
+    </changeSet>
+    <!-- Create functions for repeated queries -->
+    <changeSet author="gavink" id="create-migration-helper-functions">
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE()
+                RETURNS table (job_id UUID, source_key VARCHAR, field_value VARCHAR) AS $$
+                    BEGIN
+                     RETURN QUERY
+                      SELECT job.job_id, field.source_key, fv.field_value
+                            FROM alert.config_groups job
+                            INNER JOIN alert.descriptor_configs config ON config.id = job.config_id
+                            LEFT JOIN alert.field_values fv ON fv.config_id = config.id
+                            INNER JOIN alert.defined_fields field on field.id = fv.field_id;
+                    END;
+                $$ LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+    <!-- Update common job fields one at a time -->
+    <changeSet author="gavink" id="update-initial-job-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET name = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET enabled = jobFields.field_value::boolean
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.enabled';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET distribution_frequency = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.frequency';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET processing_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'provider.distribution.processing.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET channel_descriptor_name = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.channel.name';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
