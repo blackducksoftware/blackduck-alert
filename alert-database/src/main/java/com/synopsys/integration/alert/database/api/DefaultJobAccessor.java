@@ -73,7 +73,7 @@ public class DefaultJobAccessor implements JobAccessor {
     @Override
     public List<ConfigurationJobModel> getMatchingEnabledJobs(String frequency, Long providerConfigId, String notificationType) {
         //TODO change this to return a page of results
-        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(frequency, providerConfigId, notificationType);
+        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(frequency, String.valueOf(providerConfigId), notificationType);
         if (matchingJobIds.isEmpty()) {
             return List.of();
         }
@@ -84,7 +84,7 @@ public class DefaultJobAccessor implements JobAccessor {
     @Override
     public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, String notificationType) {
         //TODO change this to return a page of results
-        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(providerConfigId, notificationType);
+        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(String.valueOf(providerConfigId), notificationType);
         if (matchingJobIds.isEmpty()) {
             return List.of();
         }
