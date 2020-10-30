@@ -26,6 +26,12 @@
             <column name="channel_descriptor_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
     </changeSet>
 

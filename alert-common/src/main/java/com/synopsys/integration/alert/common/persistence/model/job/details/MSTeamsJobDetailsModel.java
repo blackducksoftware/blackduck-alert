@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,22 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job;
+package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+public class MSTeamsJobDetailsModel extends DistributionJobDetailsModel {
+    private final String webhook;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+    public MSTeamsJobDetailsModel(String webhook) {
+        super("msteamskey");
+        this.webhook = webhook;
+    }
 
-public interface DistributionJobRepository extends JpaRepository<DistributionJobEntity, UUID> {
-    Optional<DistributionJobEntity> findByName(String name);
-
-    List<DistributionJobEntity> findByDistributionFrequency(String distributionFrequency);
-
-    Page<DistributionJobEntity> findByChannelDescriptorNameIn(Collection<String> channelDescriptorName, Pageable pageable);
+    public String getWebhook() {
+        return webhook;
+    }
 
 }

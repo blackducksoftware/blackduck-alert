@@ -28,6 +28,7 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -52,7 +53,8 @@ public class EmailJobDetailsEntity {
     @Column(name = "attachment_file_type")
     private String attachmentFileType;
 
-    @OneToMany(mappedBy = "emailJobDetails")
+    @OneToMany
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private List<EmailJobAdditionalEmailAddressEntity> emailJobAdditionalEmailAddresses;
 
     public EmailJobDetailsEntity() {

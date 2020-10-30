@@ -28,11 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 
 @Entity
 @IdClass(EmailJobAdditionalEmailAddressPK.class)
@@ -44,10 +40,6 @@ public class EmailJobAdditionalEmailAddressEntity {
 
     @Column(name = "email_address")
     private String emailAddress;
-
-    @ManyToOne
-    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
-    private EmailJobDetailsEntity emailJobDetails;
 
     public EmailJobAdditionalEmailAddressEntity() {
     }
@@ -71,14 +63,6 @@ public class EmailJobAdditionalEmailAddressEntity {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public EmailJobDetailsEntity getEmailJobDetails() {
-        return emailJobDetails;
-    }
-
-    public void setEmailJobDetails(EmailJobDetailsEntity emailJobDetails) {
-        this.emailJobDetails = emailJobDetails;
     }
 
 }

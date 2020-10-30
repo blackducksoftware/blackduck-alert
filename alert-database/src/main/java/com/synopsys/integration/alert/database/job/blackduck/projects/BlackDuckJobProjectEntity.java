@@ -28,11 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 
 @Entity
 @IdClass(BlackDuckJobProjectPK.class)
@@ -45,10 +41,6 @@ public class BlackDuckJobProjectEntity {
     @Id
     @Column(name = "project_name")
     private String projectName;
-
-    @ManyToOne
-    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
-    private BlackDuckJobDetailsEntity blackDuckJobDetails;
 
     public BlackDuckJobProjectEntity() {
     }
@@ -72,14 +64,6 @@ public class BlackDuckJobProjectEntity {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
-    }
-
-    public BlackDuckJobDetailsEntity getBlackDuckJobDetails() {
-        return blackDuckJobDetails;
-    }
-
-    public void setBlackDuckJobDetails(BlackDuckJobDetailsEntity blackDuckJobDetails) {
-        this.blackDuckJobDetails = blackDuckJobDetails;
     }
 
 }
