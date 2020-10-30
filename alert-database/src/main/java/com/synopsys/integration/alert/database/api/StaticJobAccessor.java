@@ -100,7 +100,6 @@ public class StaticJobAccessor implements JobAccessor {
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
         SlackJobDetailsAccessor slackJobDetailsAccessor,
-
         RegisteredDescriptorRepository registeredDescriptorRepository,
         ProviderKey blackDuckProviderKey
     ) {
@@ -241,7 +240,7 @@ public class StaticJobAccessor implements JobAccessor {
             distributionJobModel.getProcessingType().name(),
             channelDescriptorName,
             distributionJobModel.getCreatedAt(),
-            distributionJobModel.getLastUpdated()
+            distributionJobModel.getLastUpdated().orElse(null)
         );
         DistributionJobEntity savedJobEntity = distributionJobRepository.save(jobToSave);
         UUID savedJobId = savedJobEntity.getJobId();

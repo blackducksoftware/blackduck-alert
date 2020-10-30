@@ -124,9 +124,8 @@ public class DistributionJobModel extends AlertSerializableModel {
         return createdAt;
     }
 
-    @Nullable
-    public OffsetDateTime getLastUpdated() {
-        return lastUpdated;
+    public Optional<OffsetDateTime> getLastUpdated() {
+        return Optional.ofNullable(lastUpdated);
     }
 
     public Long getBlackDuckGlobalConfigId() {
