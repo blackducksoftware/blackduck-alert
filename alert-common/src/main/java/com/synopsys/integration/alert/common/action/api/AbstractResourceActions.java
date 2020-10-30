@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -37,6 +36,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
@@ -45,7 +45,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = AlertLoggerFactory.getLogger(getClass());
 
     public static final String FORBIDDEN_ACTION_FORMAT = "%s action is forbidden. This user is not authorized to perform this action.";
 
