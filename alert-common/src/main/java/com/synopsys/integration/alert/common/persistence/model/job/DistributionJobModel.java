@@ -29,6 +29,8 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
@@ -36,8 +38,8 @@ public class DistributionJobModel extends AlertSerializableModel {
     private final UUID jobId;
     private final boolean enabled;
     private final String name;
-    private final String distributionFrequency;
-    private final String processingType;
+    private final FrequencyType distributionFrequency;
+    private final ProcessingType processingType;
     private final String channelDescriptorName;
     private final OffsetDateTime createdAt;
     private final OffsetDateTime lastUpdated;
@@ -61,8 +63,8 @@ public class DistributionJobModel extends AlertSerializableModel {
         UUID jobId,
         boolean enabled,
         String name,
-        String distributionFrequency,
-        String processingType,
+        FrequencyType distributionFrequency,
+        ProcessingType processingType,
         String channelDescriptorName,
         OffsetDateTime createdAt,
         OffsetDateTime lastUpdated,
@@ -106,11 +108,11 @@ public class DistributionJobModel extends AlertSerializableModel {
         return name;
     }
 
-    public String getDistributionFrequency() {
+    public FrequencyType getDistributionFrequency() {
         return distributionFrequency;
     }
 
-    public String getProcessingType() {
+    public ProcessingType getProcessingType() {
         return processingType;
     }
 

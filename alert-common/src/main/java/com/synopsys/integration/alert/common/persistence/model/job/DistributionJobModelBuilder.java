@@ -26,14 +26,18 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.EnumUtils;
+
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public class DistributionJobModelBuilder {
     private UUID jobId;
     private boolean enabled = true;
     private String name;
-    private String distributionFrequency;
-    private String processingType;
+    private FrequencyType distributionFrequency;
+    private ProcessingType processingType;
     private String channelDescriptorName;
     private OffsetDateTime createdAt;
     private OffsetDateTime lastUpdated;
@@ -88,11 +92,21 @@ public class DistributionJobModelBuilder {
     }
 
     public DistributionJobModelBuilder distributionFrequency(String distributionFrequency) {
+        this.distributionFrequency = EnumUtils.getEnum(FrequencyType.class, distributionFrequency);
+        return this;
+    }
+
+    public DistributionJobModelBuilder distributionFrequency(FrequencyType distributionFrequency) {
         this.distributionFrequency = distributionFrequency;
         return this;
     }
 
     public DistributionJobModelBuilder processingType(String processingType) {
+        this.processingType = EnumUtils.getEnum(ProcessingType.class, processingType);
+        return this;
+    }
+
+    public DistributionJobModelBuilder processingType(ProcessingType processingType) {
         this.processingType = processingType;
         return this;
     }

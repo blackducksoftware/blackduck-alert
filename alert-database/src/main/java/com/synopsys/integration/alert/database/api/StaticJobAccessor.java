@@ -237,8 +237,8 @@ public class StaticJobAccessor implements JobAccessor {
             distributionJobModel.getJobId(),
             distributionJobModel.getName(),
             distributionJobModel.isEnabled(),
-            distributionJobModel.getDistributionFrequency(),
-            distributionJobModel.getProcessingType(),
+            distributionJobModel.getDistributionFrequency().name(),
+            distributionJobModel.getProcessingType().name(),
             channelDescriptorName,
             distributionJobModel.getCreatedAt(),
             distributionJobModel.getLastUpdated()
