@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,22 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job;
+package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+public class SlackJobDetailsModel extends DistributionJobDetailsModel {
+    private final String webhook;
+    private final String channelName;
+    private final String channelUsername;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+    public SlackJobDetailsModel(String webhook, String channelName, String channelUsername) {
+        super("channel_slack");
+        this.webhook = webhook;
+        this.channelName = channelName;
+        this.channelUsername = channelUsername;
+    }
 
-public interface DistributionJobRepository extends JpaRepository<DistributionJobEntity, UUID> {
-    Optional<DistributionJobEntity> findByName(String name);
+    public String getWebhook() {
+        return webhook;
+    }
 
-    List<DistributionJobEntity> findByDistributionFrequency(String distributionFrequency);
+    public String getChannelName() {
+        return channelName;
+    }
 
-    Page<DistributionJobEntity> findByChannelDescriptorNameIn(Collection<String> channelDescriptorName, Pageable pageable);
+    public String getChannelUsername() {
+        return channelUsername;
+    }
 
 }
