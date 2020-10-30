@@ -77,7 +77,7 @@ public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, 
                        + "    GROUP BY job.job_id) AS job_with_field_count"
                        + "    WHERE job_with_field_count.matching_field_count = 4;", nativeQuery = true
     )
-    List<UUID> findMatchingEnabledJobIds(@Param("frequency") String frequency, @Param("providerConfigName") Long providerConfigId, @Param("notificationType") String notificationType);
+    List<UUID> findMatchingEnabledJobIds(@Param("frequency") String frequency, @Param("providerConfigId") Long providerConfigId, @Param("notificationType") String notificationType);
 
     @Query(value = "SELECT cast(job_with_field_count.job_id as varchar) as job_id FROM (SELECT job.job_id, COUNT(fieldValues.id) AS matching_field_count"
                        + "    FROM alert.config_groups job"
@@ -89,5 +89,5 @@ public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, 
                        + "    GROUP BY job.job_id) AS job_with_field_count"
                        + "    WHERE job_with_field_count.matching_field_count = 3;", nativeQuery = true
     )
-    List<UUID> findMatchingEnabledJobIds(@Param("providerConfigName") Long providerConfigId, @Param("notificationType") String notificationType);
+    List<UUID> findMatchingEnabledJobIds(@Param("providerConfigId") Long providerConfigId, @Param("notificationType") String notificationType);
 }
