@@ -28,11 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 
 @Entity
 @IdClass(BlackDuckJobNotificationTypePK.class)
@@ -45,10 +41,6 @@ public class BlackDuckJobNotificationTypeEntity {
     @Id
     @Column(name = "notification_type")
     private String notificationType;
-
-    @ManyToOne
-    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
-    private BlackDuckJobDetailsEntity blackDuckJobDetails;
 
     public BlackDuckJobNotificationTypeEntity() {
     }
@@ -72,14 +64,6 @@ public class BlackDuckJobNotificationTypeEntity {
 
     public void setNotificationType(String notificationType) {
         this.notificationType = notificationType;
-    }
-
-    public BlackDuckJobDetailsEntity getBlackDuckJobDetails() {
-        return blackDuckJobDetails;
-    }
-
-    public void setBlackDuckJobDetails(BlackDuckJobDetailsEntity blackDuckJobDetails) {
-        this.blackDuckJobDetails = blackDuckJobDetails;
     }
 
 }

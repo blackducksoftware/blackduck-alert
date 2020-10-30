@@ -117,6 +117,7 @@ public class StaticJobAccessor implements JobAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ConfigurationJobModel> getAllJobs() {
         return distributionJobRepository.findAll()
                    .stream()
@@ -125,6 +126,7 @@ public class StaticJobAccessor implements JobAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds) {
         return distributionJobRepository.findAllById(jobIds)
                    .stream()
@@ -133,6 +135,7 @@ public class StaticJobAccessor implements JobAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude) {
         if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
             return new AlertPagedModel<>(0, pageOffset, pageLimit, List.of());
@@ -145,17 +148,20 @@ public class StaticJobAccessor implements JobAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<ConfigurationJobModel> getJobById(UUID jobId) {
         return distributionJobRepository.findById(jobId).map(this::convertToConfigurationJobModel);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<ConfigurationJobModel> getJobByName(String jobName) {
         return distributionJobRepository.findByName(jobName)
                    .map(this::convertToConfigurationJobModel);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency) {
         return distributionJobRepository.findByDistributionFrequency(frequency.name())
                    .stream()
