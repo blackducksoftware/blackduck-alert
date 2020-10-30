@@ -73,6 +73,7 @@ import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAcce
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class StaticJobAccessor implements JobAccessor {
@@ -166,6 +167,22 @@ public class StaticJobAccessor implements JobAccessor {
                    .stream()
                    .map(this::convertToConfigurationJobModel)
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
+        // FIXME implement query to filter by these parameters
+        // TODO change the frequency and notificationType parameters to objects instead of Strings
+        // TODO change this to return a page of jobs
+        return getAllJobs();
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
+        // FIXME implement query to filter by these parameters
+        // TODO change the frequency and notificationType parameters to objects instead of Strings
+        // TODO change this to return a page of jobs
+        return getAllJobs();
     }
 
     @Override

@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
 // TODO eventually remove this class once tests are created for its replacement
@@ -71,9 +72,9 @@ public class DefaultJobAccessor implements JobAccessor {
     }
 
     @Override
-    public List<ConfigurationJobModel> getMatchingEnabledJobs(String frequency, Long providerConfigId, String notificationType) {
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
         //TODO change this to return a page of results
-        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(frequency, String.valueOf(providerConfigId), notificationType);
+        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(frequency.name(), String.valueOf(providerConfigId), notificationType.name());
         if (matchingJobIds.isEmpty()) {
             return List.of();
         }
@@ -82,9 +83,9 @@ public class DefaultJobAccessor implements JobAccessor {
     }
 
     @Override
-    public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, String notificationType) {
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
         //TODO change this to return a page of results
-        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(String.valueOf(providerConfigId), notificationType);
+        List<UUID> matchingJobIds = configGroupRepository.findMatchingEnabledJobIds(String.valueOf(providerConfigId), notificationType.name());
         if (matchingJobIds.isEmpty()) {
             return List.of();
         }

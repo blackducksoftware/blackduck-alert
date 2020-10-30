@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
@@ -79,7 +81,7 @@ public class NotificationProcessor {
         List<DistributionEvent> events = new ArrayList<>();
         for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
             NotificationFilterModel notificationFilterModel = entry.getKey();
-            List<ConfigurationJobModel> matchingJobs = jobAccessor.getMatchingEnabledJobs(frequency.name(), notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
+            List<ConfigurationJobModel> matchingJobs = jobAccessor.getMatchingEnabledJobs(frequency, notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
 
             List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
             if (!matchingNotifications.isEmpty() && !matchingJobs.isEmpty()) {
@@ -246,8 +248,9 @@ public class NotificationProcessor {
         String provider = alertNotificationModel.getProvider();
         Long providerConfigId = alertNotificationModel.getProviderConfigId();
         String notificationType = alertNotificationModel.getNotificationType();
+        NotificationType notificationTypeEnum = EnumUtils.getEnum(NotificationType.class, notificationType);
 
-        return new NotificationFilterModel(provider, providerConfigId, notificationType);
+        return new NotificationFilterModel(provider, providerConfigId, notificationTypeEnum);
     }
 
 }

@@ -23,13 +23,14 @@
 package com.synopsys.integration.alert.common.workflow.processor.notification;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class NotificationFilterModel extends AlertSerializableModel {
     private final String provider;
     private final Long providerConfigId;
-    private final String notificationType;
+    private final NotificationType notificationType;
 
-    public NotificationFilterModel(String provider, Long providerConfigId, String notificationType) {
+    public NotificationFilterModel(String provider, Long providerConfigId, NotificationType notificationType) {
         this.provider = provider;
         this.providerConfigId = providerConfigId;
         this.notificationType = notificationType;
@@ -43,7 +44,7 @@ public class NotificationFilterModel extends AlertSerializableModel {
         return providerConfigId;
     }
 
-    public String getNotificationType() {
+    public NotificationType getNotificationType() {
         return notificationType;
     }
 
