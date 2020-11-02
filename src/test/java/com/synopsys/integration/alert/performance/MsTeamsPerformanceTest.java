@@ -1,73 +1,78 @@
 package com.synopsys.integration.alert.performance;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.context.WebApplicationContext;
 
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.ApplicationConfiguration;
+import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.performance.model.MsTeamsPerformanceProperties;
-import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
+import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
+import com.synopsys.integration.alert.performance.utility.TestJobCreator;
+import com.synopsys.integration.alert.util.DescriptorMocker;
+import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.util.TestPropertyKey;
 
-public class MsTeamsPerformanceTest extends IntegrationPerformanceTest {
+@SpringBootTest
+@ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class, DatabaseDataSource.class, DescriptorMocker.class })
+@TestPropertySource(locations = "classpath:spring-test.properties")
+@WebAppConfiguration
+public class MsTeamsPerformanceTest {
     private final static String MS_TEAMS_PERFORMANCE_JOB_NAME = "MsTeams Performance Job";
-    private final MsTeamsPerformanceProperties msTeamsProperties = new MsTeamsPerformanceProperties();
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
+
+    private static String MSTEAMS_CHANNEL_KEY;
+    private static String MSTEAMS_CHANNEL_WEBHOOK;
+
+    @BeforeAll
+    public static void initTest() {
+        MSTEAMS_CHANNEL_KEY = new MsTeamsKey().getUniversalKey();
+
+        TestProperties testProperties = new TestProperties();
+        MSTEAMS_CHANNEL_WEBHOOK = testProperties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK);
+    }
 
     @Test
     @Ignore
     public void testMsTeamsJob() throws Exception {
-        runTest();
-    }
-
-    @Override
-    public String createJob() throws IntegrationException {
-        Map<String, FieldValueModel> providerKeyToValues = new HashMap<>();
-        providerKeyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(List.of(getBlackDuckProviderID()), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, new FieldValueModel(List.of("BOM_EDIT", "POLICY_OVERRIDE", "RULE_VIOLATION", "RULE_VIOLATION_CLEARED", "VULNERABILITY"), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, new FieldValueModel(List.of("true"), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProjectName()), true));
-        FieldModel jobProviderConfiguration = new FieldModel(getBlackDuckProperties().getBlackDuckProviderKey(), ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
+        AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
+        BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
+        TestJobCreator testJobCreator = new TestJobCreator(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), MSTEAMS_CHANNEL_KEY);
+        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, testJobCreator);
 
         Map<String, FieldValueModel> msTeamsKeyToValues = new HashMap<>();
         msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(msTeamsProperties.getMsTeamsChannelKey()), true));
-        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(getJobName()), true));
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(MSTEAMS_CHANNEL_KEY), true));
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(MS_TEAMS_PERFORMANCE_JOB_NAME), true));
         msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProviderKey()), true));
+        msTeamsKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
+        msTeamsKeyToValues.put(MsTeamsDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(MSTEAMS_CHANNEL_WEBHOOK), true));
 
-        msTeamsKeyToValues.put(MsTeamsDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(msTeamsProperties.getMsTeamsWebhook()), true));
-
-        FieldModel jobSlackConfiguration = new FieldModel(msTeamsProperties.getMsTeamsChannelKey(), ConfigContextEnum.DISTRIBUTION.name(), msTeamsKeyToValues);
-
-        JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobSlackConfiguration, jobProviderConfiguration));
-
-        String jobConfigBody = getGson().toJson(jobFieldModel);
-
-        getAlertRequestUtility().executePostRequest("/api/configuration/job/validate", jobConfigBody, String.format("Validating the Job %s failed.", getJobName()));
-        getAlertRequestUtility().executePostRequest("/api/configuration/job/test", jobConfigBody, String.format("Testing the Job %s failed.", getJobName()));
-        String creationResponse = getAlertRequestUtility().executePostRequest("/api/configuration/job", jobConfigBody, String.format("Could not create the Job %s.", getJobName()));
-
-        JsonObject jsonObject = getGson().fromJson(creationResponse, JsonObject.class);
-        return jsonObject.get("jobId").getAsString();
-    }
-
-    @Override
-    public String getJobName() {
-        return MS_TEAMS_PERFORMANCE_JOB_NAME;
+        integrationPerformanceTestRunner.runTest(msTeamsKeyToValues, MS_TEAMS_PERFORMANCE_JOB_NAME);
     }
 
 }

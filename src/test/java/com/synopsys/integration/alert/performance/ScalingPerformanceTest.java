@@ -2,87 +2,109 @@ package com.synopsys.integration.alert.performance;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.performance.model.SlackPerformanceProperties;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
+import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
+import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTask;
+import com.synopsys.integration.alert.performance.utility.TestJobCreator;
+import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.wait.WaitJob;
 
-public class ScalingPerformanceTest extends BasePerformanceTest {
+public class ScalingPerformanceTest {
+    private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
     private final static String SLACK_SCALING_PERFORMANCE_JOB_NAME = "Slack Scaling Performance Job";
-    private final SlackPerformanceProperties slackProperties = new SlackPerformanceProperties();
 
     private final IntHttpClient client = new IntHttpClient(intLogger, 60, true, ProxyInfo.NO_PROXY_INFO);
     private final String alertURL = "https://localhost:8443/alert";
 
+    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
+    private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
+
     private String blackDuckProviderID = "-1";
+
+    private static String SLACK_CHANNEL_KEY;
+    private static String SLACK_CHANNEL_WEBHOOK;
+    private static String SLACK_CHANNEL_NAME;
+    private static String SLACK_CHANNEL_USERNAME;
+
+    @BeforeAll
+    public static void initTest() {
+        SLACK_CHANNEL_KEY = new SlackChannelKey().getUniversalKey();
+
+        TestProperties testProperties = new TestProperties();
+        SLACK_CHANNEL_WEBHOOK = testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
+        SLACK_CHANNEL_NAME = testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
+        SLACK_CHANNEL_USERNAME = testProperties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
+    }
 
     @Test
     @Ignore
     public void testAlertPerformance() throws Exception {
-        LocalDateTime startingTime = LocalDateTime.now();
-        intLogger.info(String.format("Starting time %s", getDateTimeFormatter().format(startingTime)));
+        AlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
+        BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
+        TestJobCreator testJobCreator = new TestJobCreator(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
 
-        // Create an authenticated connection to Alert
-        getExternalAlertRequestUtility().loginToExternalAlert();
+        LocalDateTime startingTime = LocalDateTime.now();
+        intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
 
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
         startingTime = LocalDateTime.now();
 
         // Create the Black Duck Global provider configuration
-        blackDuckProviderID = setupBlackDuck();
-        logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalDateTime.now());
+        String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
 
-        // TODO delete existing jobs?
         List<String> jobIds = new ArrayList<>();
         startingTime = LocalDateTime.now();
         // create 10 slack jobs, trigger notification, and wait for all 10 to succeed
-        createAndTestJobs(startingTime, jobIds, 10);
+        createAndTestJobs(alertRequestUtility, blackDuckProviderService, testJobCreator, startingTime, jobIds, 10, blackDuckProviderID);
 
         startingTime = LocalDateTime.now();
         // create 90 more slack jobs, trigger notification, and wait for all 100 to succeed
-        createAndTestJobs(startingTime, jobIds, 90);
+        createAndTestJobs(alertRequestUtility, blackDuckProviderService, testJobCreator, startingTime, jobIds, 90, blackDuckProviderID);
 
         // TODO create 900 more slack jobs for a total of 1000
         // TODO create 1000 more slack jobs for a total of 2000
     }
 
-    private void createAndTestJobs(LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate) throws Exception {
+    private void createAndTestJobs(AlertRequestUtility alertRequestUtility, BlackDuckProviderService blackDuckProviderService, TestJobCreator testJobCreator, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate,
+        String blackDuckProviderID) throws Exception {
         // create slack jobs
-        createSlackJobs(startingTime, jobIds, numberOfJobsToCreate, 10);
+        createSlackJobs(testJobCreator, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey());
 
         LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
         // trigger BD notification
-        triggerBlackDuckNotification();
+        blackDuckProviderService.triggerBlackDuckNotification();
         logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
 
         LocalDateTime startingNotificationWaitForTenJobs = LocalDateTime.now();
         // check that all jobs have processed the notification successfully, log how long it took
-        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, getDateTimeFormatter(), getGson(), getAlertRequestUtility(), startingNotificationSearchDateTime, jobIds);
+        NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingNotificationSearchDateTime, jobIds);
         notificationWaitJobTask.setFailOnJobFailure(false);
         WaitJob waitForNotificationToBeProcessed = WaitJob.create(intLogger, 900, startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 30, notificationWaitJobTask);
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
@@ -92,14 +114,27 @@ public class ScalingPerformanceTest extends BasePerformanceTest {
         assertTrue(isComplete);
     }
 
-    private void createSlackJobs(LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog) throws Exception {
+    private void createSlackJobs(TestJobCreator testJobCreator, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey) throws Exception {
         int startingJobNum = jobIds.size();
 
         while (jobIds.size() < startingJobNum + numberOfJobsToCreate) {
 
             // Create a Slack Job with a unique name using the job number
             Integer jobNumber = jobIds.size();
-            jobIds.add(createSlackJob(jobNumber));
+
+            String jobName = String.format("%s #%s", SLACK_SCALING_PERFORMANCE_JOB_NAME, jobNumber);
+            Map<String, FieldValueModel> slackKeyToValues = new HashMap<>();
+            slackKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
+            slackKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_KEY), true));
+            slackKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(jobName), true));
+            slackKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
+            slackKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderKey), true));
+
+            slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(SLACK_CHANNEL_WEBHOOK), true));
+            slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
+            slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
+            String jobId = testJobCreator.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProviderKey);
+            jobIds.add(jobId);
 
             if (jobIds.size() % intervalToLog == 0) {
                 String message = String.format("Creating %s jobs took", jobIds.size() - startingJobNum);
@@ -109,49 +144,12 @@ public class ScalingPerformanceTest extends BasePerformanceTest {
         intLogger.info(String.format("Finished creating %s jobs. Current Job number %s.", numberOfJobsToCreate, jobIds.size()));
     }
 
-    private String createSlackJob(Integer jobNumber) throws Exception {
-        String jobName = String.format("%s #%s", SLACK_SCALING_PERFORMANCE_JOB_NAME, jobNumber);
-
-        Map<String, FieldValueModel> providerKeyToValues = new HashMap<>();
-        providerKeyToValues.put(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, new FieldValueModel(List.of(blackDuckProviderID), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, new FieldValueModel(List.of("BOM_EDIT", "POLICY_OVERRIDE", "RULE_VIOLATION", "RULE_VIOLATION_CLEARED", "VULNERABILITY"), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, new FieldValueModel(List.of(ProcessingType.DEFAULT.name()), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, new FieldValueModel(List.of("true"), true));
-        providerKeyToValues.put(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProjectName()), true));
-        FieldModel jobProviderConfiguration = new FieldModel(getBlackDuckProperties().getBlackDuckProviderKey(), ConfigContextEnum.DISTRIBUTION.name(), providerKeyToValues);
-
-        Map<String, FieldValueModel> slackKeyToValues = new HashMap<>();
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(slackProperties.getSlackChannelKey()), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(jobName), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(getBlackDuckProperties().getBlackDuckProviderKey()), true));
-
-        slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(slackProperties.getSlackChannelWebhook()), true));
-        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(slackProperties.getSlackChannelName()), true));
-        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(slackProperties.getSlackChannelUsername()), true));
-
-        FieldModel jobSlackConfiguration = new FieldModel(slackProperties.getSlackChannelKey(), ConfigContextEnum.DISTRIBUTION.name(), slackKeyToValues);
-
-        JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobSlackConfiguration, jobProviderConfiguration));
-
-        String jobConfigBody = getGson().toJson(jobFieldModel);
-
-        //TODO from my initial investigation, every job you that is created slows down the validation/job creation of the next job
-        getAlertRequestUtility().executePostRequest("/api/configuration/job/validate", jobConfigBody, String.format("Validating the Job %s failed.", jobName));
-        // executePostRequest("/api/configuration/job/test", requestBody, String.format("Testing the Slack Job #%s failed.", jobNumber));
-        String creationResponse = getAlertRequestUtility().executePostRequest("/api/configuration/job", jobConfigBody, String.format("Could not create the Job %s.", jobName));
-
-        JsonObject jsonObject = getGson().fromJson(creationResponse, JsonObject.class);
-        return jsonObject.get("jobId").getAsString();
+    public void logTimeElapsedWithMessage(String messageFormat, LocalDateTime start, LocalDateTime end) {
+        //TODO log timing to a file
+        Duration duration = Duration.between(start, end);
+        String durationFormatted = String.format("%sH:%sm:%ss", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
+        intLogger.info(String.format(messageFormat, durationFormatted));
+        intLogger.info(String.format("Current time %s.", dateTimeFormatter.format(end)));
     }
 
-    @Override
-    public AlertRequestUtility createAlertRequestUtility() {
-        return new ExternalAlertRequestUtility(intLogger, client, alertURL);
-    }
-
-    public ExternalAlertRequestUtility getExternalAlertRequestUtility() {
-        return (ExternalAlertRequestUtility) getAlertRequestUtility();
-    }
 }
