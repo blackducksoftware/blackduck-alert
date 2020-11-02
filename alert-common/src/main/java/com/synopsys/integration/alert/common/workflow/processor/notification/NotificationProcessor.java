@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -76,32 +77,24 @@ public class NotificationProcessor {
 
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
         logger.info("Notifications to Process: {}", notifications.size());
-        SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = extractNotificationInformation(notifications);
-
-        List<DistributionEvent> events = new ArrayList<>();
-        for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
-            NotificationFilterModel notificationFilterModel = entry.getKey();
-            List<ConfigurationJobModel> matchingJobs = jobAccessor.getMatchingEnabledJobs(frequency, notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
-
-            List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
-            if (!matchingNotifications.isEmpty() && !matchingJobs.isEmpty()) {
-                events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
-            }
-        }
-        return events;
+        return processNotifications(notifications, (id, notificationType) -> jobAccessor.getMatchingEnabledJobs(frequency, id, notificationType));
     }
 
     public List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications) {
         // used in AuditEntryActions
         // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
-        // FIXME consider paging
+        return processNotifications(notifications, jobAccessor::getMatchingEnabledJobs);
+    }
+
+    private List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications, BiFunction<Long, NotificationType, List<ConfigurationJobModel>> getJobs) {
+        logger.info("Notifications to Process: {}", notifications.size());
         SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = extractNotificationInformation(notifications);
 
         List<DistributionEvent> events = new ArrayList<>();
         for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
             NotificationFilterModel notificationFilterModel = entry.getKey();
-            List<ConfigurationJobModel> matchingJobs = jobAccessor.getMatchingEnabledJobs(notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
-
+            // FIXME consider paging the jobs
+            List<ConfigurationJobModel> matchingJobs = getJobs.apply(notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
             List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
             if (!matchingNotifications.isEmpty() && !matchingJobs.isEmpty()) {
                 events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
@@ -110,7 +103,7 @@ public class NotificationProcessor {
         return events;
     }
 
-    public List<DistributionEvent> processNotifications(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
+    public List<DistributionEvent> processNotificationsForJob(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
         // used in AuditEntryActions
         if (!job.isEnabled()) {
             logger.debug("Skipping disabled distribution job: {}", job.getName());
