@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +33,9 @@ import com.synopsys.integration.alert.performance.utility.TestJobCreator;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.util.TestTags;
 
+@Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest
 @ContextConfiguration(classes = { Application.class, ApplicationConfiguration.class, DatabaseDataSource.class, DescriptorMocker.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
@@ -58,6 +62,7 @@ public class MsTeamsPerformanceTest {
 
     @Test
     @Ignore
+    @Disabled
     public void testMsTeamsJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
