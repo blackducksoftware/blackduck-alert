@@ -13,6 +13,8 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +32,14 @@ import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTas
 import com.synopsys.integration.alert.performance.utility.TestJobCreator;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.wait.WaitJob;
 
+@Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
     private final static String SLACK_SCALING_PERFORMANCE_JOB_NAME = "Slack Scaling Performance Job";
@@ -65,6 +69,7 @@ public class ScalingPerformanceTest {
 
     @Test
     @Ignore
+    @Disabled
     public void testAlertPerformance() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
