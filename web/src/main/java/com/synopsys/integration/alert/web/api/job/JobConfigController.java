@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,17 +34,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseJobResourceController;
-import com.synopsys.integration.alert.common.rest.api.ReadAllController;
+import com.synopsys.integration.alert.common.rest.api.ReadPageController;
 import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
-import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsValidationRequestModel;
+import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
 @RequestMapping(JobConfigController.JOB_CONFIGURATION_PATH)
-public class JobConfigController implements BaseJobResourceController, ReadAllController, TestController<JobFieldModel>, ValidateController<JobFieldModel> {
+public class JobConfigController implements BaseJobResourceController, ReadPageController<JobPagedModel>, TestController<JobFieldModel>, ValidateController<JobFieldModel> {
     public static final String JOB_CONFIGURATION_PATH = AlertRestConstants.CONFIGURATION_PATH + "/job";
     private final JobConfigActions jobConfigActions;
 
@@ -54,9 +54,9 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
         this.jobConfigActions = jobConfigActions;
     }
 
-    @GetMapping("/validate")
-    public List<JobFieldStatuses> getValidationResultsForJobs() {
-        return ResponseFactory.createContentResponseFromAction(jobConfigActions.validateAllJobs());
+    @PostMapping("/validateJobsById")
+    public List<JobFieldStatuses> getValidationResultsForJobs(@RequestBody JobIdsValidationRequestModel validationModel) {
+        return ResponseFactory.createContentResponseFromAction(jobConfigActions.validateJobsById(validationModel));
     }
 
     // This will check if the specified descriptor has a global config associated with it
@@ -66,8 +66,8 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     }
 
     @Override
-    public MultiJobFieldModel getAll() {
-        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getAll());
+    public JobPagedModel getPage(Integer pageNumber, Integer pageSize) {
+        return ResponseFactory.createContentResponseFromAction(jobConfigActions.getPage(pageNumber, pageSize));
     }
 
     @Override
@@ -99,4 +99,5 @@ public class JobConfigController implements BaseJobResourceController, ReadAllCo
     public ValidationResponseModel test(JobFieldModel resource) {
         return ResponseFactory.createContentResponseFromAction(jobConfigActions.test(resource));
     }
+
 }

@@ -164,6 +164,7 @@ public class ConfigurationFieldModelConverter {
     private String getDescriptorName(ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         return descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
                    .map(RegisteredDescriptorModel::getName)
+                   // FIXME this is the wrong type of exception to throw here
                    .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
     }
 

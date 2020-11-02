@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractConfigResourceActions implements LongIdResourceActions<FieldModel>, ReadAllAction<MultiFieldModel>, TestAction<FieldModel>, ValidateAction<FieldModel> {
+public abstract class AbstractConfigResourceActions {
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
 
@@ -72,7 +72,6 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         return readAllByContextAndDescriptorWithoutChecks(context, descriptorName);
     }
 
-    @Override
     public final ActionResponse<FieldModel> create(FieldModel resource) {
         if (!authorizationManager.hasCreatePermission(resource.getContext(), resource.getDescriptorName())) {
             return ActionResponse.createForbiddenResponse();
@@ -84,7 +83,6 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         return createWithoutChecks(resource);
     }
 
-    @Override
     public final ActionResponse<MultiFieldModel> getAll() {
         try {
             Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
@@ -100,7 +98,6 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         }
     }
 
-    @Override
     public final ActionResponse<FieldModel> getOne(Long id) {
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
@@ -114,7 +111,6 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
-    @Override
     public final ActionResponse<FieldModel> update(Long id, FieldModel resource) {
         if (!authorizationManager.hasWritePermission(resource.getContext(), resource.getDescriptorName())) {
             return ActionResponse.createForbiddenResponse();
@@ -132,7 +128,6 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         return updateWithoutChecks(id, resource);
     }
 
-    @Override
     public final ActionResponse<FieldModel> delete(Long id) {
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
@@ -149,7 +144,6 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         return deleteWithoutChecks(id);
     }
 
-    @Override
     public final ValidationActionResponse test(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
@@ -163,7 +157,6 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
-    @Override
     public final ValidationActionResponse validate(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);

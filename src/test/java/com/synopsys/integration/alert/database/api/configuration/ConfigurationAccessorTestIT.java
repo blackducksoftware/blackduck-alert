@@ -7,11 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,18 +23,14 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
-import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
@@ -60,8 +54,6 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     @Autowired
     private DescriptorConfigRepository descriptorConfigsRepository;
     @Autowired
-    private ConfigGroupRepository configGroupRepository;
-    @Autowired
     private FieldValueRepository fieldValueRepository;
     @Autowired
     private EncryptionUtility encryptionUtility;
@@ -77,7 +69,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         descriptorConfigsRepository.flush();
         descriptorConfigsRepository.deleteAllInBatch();
         configurationAccessor = new DefaultConfigurationAccessor(
-            registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigsRepository, configGroupRepository, configContextRepository, fieldValueRepository, encryptionUtility);
+            registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigsRepository, configContextRepository, fieldValueRepository, encryptionUtility);
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.PROVIDER);
         descriptorMocker.addFieldToDescriptor(DESCRIPTOR_NAME, FIELD_KEY_INSENSITIVE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION), Boolean.FALSE);
         descriptorMocker.addFieldToDescriptor(DESCRIPTOR_NAME, FIELD_KEY_SENSITIVE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION), Boolean.TRUE);
@@ -103,150 +95,6 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
             }
         };
         return testDescriptorKey;
-    }
-
-    @Test
-    public void getAllJobsTest() throws AlertDatabaseConstraintException {
-        ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
-        ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-        DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
-        ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
-
-        UUID jobId = UUID.randomUUID();
-        ConfigGroupEntity entityToSave1 = new ConfigGroupEntity(configurationModel1.getConfigurationId(), jobId);
-        configGroupRepository.save(entityToSave1);
-        ConfigGroupEntity entityToSave2 = new ConfigGroupEntity(configurationModel2.getConfigurationId(), jobId);
-        configGroupRepository.save(entityToSave2);
-        assertEquals(2, configGroupRepository.findAll().size());
-
-        List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
-        assertEquals(1, allJobs.size());
-        assertEquals(jobId, allJobs.get(0).getJobId());
-    }
-
-    @Test
-    public void getJobByIdTest() throws AlertDatabaseConstraintException {
-        ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
-        ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
-            private static final long serialVersionUID = -6433896789808382044L;
-
-            @Override
-            public String getUniversalKey() {
-                return DESCRIPTOR_NAME;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return DESCRIPTOR_NAME;
-            }
-        };
-
-        ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(testDescriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
-        ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(testDescriptorKey, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
-
-        UUID jobId = UUID.randomUUID();
-        ConfigGroupEntity entityToSave1 = new ConfigGroupEntity(configurationModel1.getConfigurationId(), jobId);
-        configGroupRepository.save(entityToSave1);
-        ConfigGroupEntity entityToSave2 = new ConfigGroupEntity(configurationModel2.getConfigurationId(), UUID.randomUUID());
-        configGroupRepository.save(entityToSave2);
-        assertEquals(2, configGroupRepository.findAll().size());
-
-        ConfigurationJobModel foundJob = configurationAccessor.getJobById(jobId).orElseThrow();
-        assertEquals(jobId, foundJob.getJobId());
-        ConfigurationModel firstModel = foundJob.getCopyOfConfigurations().stream().findFirst().orElseThrow();
-        assertEquals(firstModel.getConfigurationId(), configurationModel1.getConfigurationId());
-        // TODO add this when it is clear that we should return fields with no values: assertEquals(configurationModel1.getCopyOfFieldList().size(), firstModel.getCopyOfFieldList().size());
-    }
-
-    @Test
-    public void createJobWithNoFieldsTest() throws AlertDatabaseConstraintException {
-        ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of());
-        assertEquals(1, configGroupRepository.findByJobId(job.getJobId()).size());
-    }
-
-    @Test
-    public void createJobWithFieldsTest() throws AlertDatabaseConstraintException {
-        final String fieldValue = "example value";
-        ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
-        configField1.setFieldValue(fieldValue);
-
-        ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of(configField1));
-        assertEquals(1, configGroupRepository.findByJobId(job.getJobId()).size());
-
-        ConfigurationModel foundConfig = job.getCopyOfConfigurations().stream().findFirst().orElseThrow();
-        ConfigurationFieldModel foundField = foundConfig.getCopyOfFieldList().stream().findFirst().orElseThrow();
-        assertEquals(configField1.getFieldKey(), foundField.getFieldKey());
-        assertEquals(configField1.getFieldValue().orElseThrow(), foundField.getFieldValue().orElseThrow());
-    }
-
-    @Test
-    public void createJobWithEmptyDescriptorNamesTest() {
-        createJobWithEmptyDescriptorNamesTestHelper(null);
-        createJobWithEmptyDescriptorNamesTestHelper(Set.of());
-    }
-
-    @Test
-    public void getJobByIdWithNullTest() {
-        try {
-            configurationAccessor.getJobById(null);
-            fail("Expected exception to be thrown");
-        } catch (AlertDatabaseConstraintException e) {
-            assertEquals("The job id cannot be null", e.getMessage());
-        }
-    }
-
-    @Test
-    public void updateJobTest() throws AlertDatabaseConstraintException {
-        ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
-        configField1.setFieldValue("example");
-        ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
-        configField2.setFieldValue("other example");
-        Set<String> descriptorNames = Set.of(DESCRIPTOR_NAME);
-        ConfigurationJobModel job = configurationAccessor.createJob(descriptorNames, Set.of(configField1, configField2));
-
-        final String newValue = "newValue";
-        configField1.setFieldValue(newValue);
-        ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), descriptorNames, Set.of(configField1, configField2));
-        assertEquals(job.getJobId(), updatedJob.getJobId());
-
-        FieldUtility originalFieldMap = job.getFieldUtility();
-        FieldUtility newFieldMap = updatedJob.getFieldUtility();
-        assertEquals(newValue, newFieldMap.getString(configField1.getFieldKey()).orElseThrow());
-        assertEquals(originalFieldMap.getString(configField2.getFieldKey()), newFieldMap.getString(configField2.getFieldKey()));
-    }
-
-    @Test
-    public void updateJobWithNullIdTest() {
-        try {
-            configurationAccessor.updateJob(null, Set.of(), Set.of());
-            fail("Expected exception to be thrown");
-        } catch (AlertDatabaseConstraintException e) {
-            assertEquals("The job id cannot be null", e.getMessage());
-        }
-    }
-
-    @Test
-    public void deleteJobTest() throws AlertDatabaseConstraintException {
-        ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of());
-        assertTrue(!configGroupRepository.findByJobId(job.getJobId()).isEmpty());
-
-        configurationAccessor.deleteJob(job.getJobId());
-        configGroupRepository.flush();
-        List<ConfigGroupEntity> remainingEntries = configGroupRepository.findByJobId(job.getJobId());
-        assertEquals(0, remainingEntries.size());
-    }
-
-    @Test
-    public void deleteJobWithNullIdTest() {
-        try {
-            configurationAccessor.deleteJob(null);
-            fail("Expected exception to be thrown");
-        } catch (AlertDatabaseConstraintException e) {
-            assertEquals("The job id cannot be null", e.getMessage());
-        }
     }
 
     @Test
@@ -522,15 +370,6 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         assertNotNull(configurationModel.getCopyOfKeyToFieldMap());
     }
 
-    private void createJobWithEmptyDescriptorNamesTestHelper(Collection<String> descriptorNames) {
-        try {
-            configurationAccessor.createJob(descriptorNames, Set.of());
-            fail("Expected exception to be thrown");
-        } catch (AlertDatabaseConstraintException e) {
-            assertEquals("Descriptor names cannot be empty", e.getMessage());
-        }
-    }
-
     private void createConfigWithEmptyDescriptorNameTestHelper(String descriptorName) {
         try {
             DescriptorKey descriptorKey = createDescriptorKey(descriptorName);
@@ -550,4 +389,5 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
             assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
     }
+
 }

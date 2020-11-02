@@ -45,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.lang.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +58,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -78,15 +79,18 @@ public class DefaultAuditAccessor implements AuditAccessor {
     private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
+    private final JobAccessor jobAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final DefaultNotificationAccessor notificationAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, ConfigurationAccessor configurationAccessor,
+    public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, JobAccessor jobAccessor,
+        ConfigurationAccessor configurationAccessor,
         DefaultNotificationAccessor notificationAccessor, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
+        this.jobAccessor = jobAccessor;
         this.configurationAccessor = configurationAccessor;
         this.notificationAccessor = notificationAccessor;
         this.contentConverter = contentConverter;
@@ -241,12 +245,7 @@ public class DefaultAuditAccessor implements AuditAccessor {
             String errorMessage = auditEntryEntity.getErrorMessage();
             String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-            Optional<ConfigurationJobModel> commonConfig = Optional.empty();
-            try {
-                commonConfig = configurationAccessor.getJobById(commonConfigId);
-            } catch (AlertDatabaseConstraintException e) {
-                logger.error("There was an issue accessing the job.");
-            }
+            Optional<ConfigurationJobModel> commonConfig = jobAccessor.getJobById(commonConfigId);
             String distributionConfigName = null;
             String eventType = null;
             if (commonConfig.isPresent()) {

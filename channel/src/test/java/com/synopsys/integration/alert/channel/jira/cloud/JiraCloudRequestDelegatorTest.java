@@ -40,6 +40,7 @@ import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
+import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
@@ -147,8 +148,10 @@ public class JiraCloudRequestDelegatorTest {
         List<IssueResponseModel> issues = new ArrayList<>();
         searchResponseModel.setIssues(issues);
         Mockito.when(issueSearchService.queryForIssues(Mockito.anyString())).thenReturn(searchResponseModel);
+        IssueCreationResponseModel issueCreationResponseModel = new IssueCreationResponseModel("id", "se;lf", "key");
+        Mockito.when(issueService.createIssue(Mockito.any(IssueCreationRequestModel.class))).thenReturn(issueCreationResponseModel);
         IssueResponseModel issue = createIssueResponse();
-        Mockito.when(issueService.createIssue(Mockito.any(IssueCreationRequestModel.class))).thenReturn(issue);
+        Mockito.when(issueService.getIssue(Mockito.anyString())).thenReturn(issue);
 
         JiraCloudRequestDelegator service = new JiraCloudRequestDelegator(gson, createContext());
         List<IssueTrackerRequest> requests = new ArrayList<>();
@@ -240,7 +243,7 @@ public class JiraCloudRequestDelegatorTest {
 
     private JiraIssueSearchProperties createSearchProperties() {
         return new JiraIssueSearchProperties("provider",
-            "providerUrl",
+            "providerURL",
             "topicName",
             "topicValue",
             "subTopicName",

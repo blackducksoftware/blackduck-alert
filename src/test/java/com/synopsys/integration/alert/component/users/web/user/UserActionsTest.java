@@ -83,12 +83,14 @@ public class UserActionsTest {
     @Test
     public void testReadAllWithoutChecks() {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
-        Mockito.when(userAccessor.getUsers()).thenReturn(List.of(userModel));
         AuthenticationTypeDetails authenticationTypeDetails = new AuthenticationTypeDetails(1L, authenticationType.name());
+
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(userAccessor.getUsers()).thenReturn(List.of(userModel));
         Mockito.when(authenticationTypeAccessor.getAuthenticationTypeDetails(Mockito.any())).thenReturn(Optional.of(authenticationTypeDetails));
 
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
-        ActionResponse<MultiUserConfigResponseModel> actionResponse = userActions.readAllWithoutChecks();
+        ActionResponse<MultiUserConfigResponseModel> actionResponse = userActions.getAll();
 
         assertTrue(actionResponse.hasContent());
         List<UserConfig> userModels = actionResponse.getContent()
@@ -105,12 +107,13 @@ public class UserActionsTest {
     public void testReadWithoutChecks() {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.getUser(2L)).thenReturn(Optional.empty());
 
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
-        ActionResponse<UserConfig> actionResponse = userActions.readWithoutChecks(id);
-        ActionResponse<UserConfig> actionResponseEmpty = userActions.readWithoutChecks(2L);
+        ActionResponse<UserConfig> actionResponse = userActions.getOne(id);
+        ActionResponse<UserConfig> actionResponseEmpty = userActions.getOne(2L);
 
         assertTrue(actionResponse.hasContent());
         assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());

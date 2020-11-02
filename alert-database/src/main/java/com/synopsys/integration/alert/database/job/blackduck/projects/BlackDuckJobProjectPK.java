@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-database
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,10 +20,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.database.job.blackduck.projects;
 
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import java.io.Serializable;
+import java.util.UUID;
 
-public interface TestAction<T> {
-    ValidationActionResponse test(T resource);
+public class BlackDuckJobProjectPK implements Serializable {
+    private UUID jobId;
+    private String projectName;
+
+    public BlackDuckJobProjectPK() {
+    }
+
+    public BlackDuckJobProjectPK(UUID jobId, String projectName) {
+        this.jobId = jobId;
+        this.projectName = projectName;
+    }
+
+    public UUID getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(UUID jobId) {
+        this.jobId = jobId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
 }

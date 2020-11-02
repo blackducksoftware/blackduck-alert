@@ -22,25 +22,30 @@
  */
 package com.synopsys.integration.alert.common.action.api;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.Config;
+import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractResourceActions<T, M> implements LongIdResourceActions<T>, ReadAllAction<M>, ValidateAction<T>, TestAction<T> {
+public abstract class AbstractResourceActions<T extends Config, D extends AlertSerializableModel, M extends MultiResponseModel<T>> {
     private final DescriptorKey descriptorKey;
     private final AuthorizationManager authorizationManager;
     private final ConfigContextEnum context;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = AlertLoggerFactory.getLogger(getClass());
 
     public static final String FORBIDDEN_ACTION_FORMAT = "%s action is forbidden. This user is not authorized to perform this action.";
 
@@ -49,16 +54,17 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         this.context = context;
         // to do change the authorization manager to use the context enum and the descriptor key
         this.authorizationManager = authorizationManager;
-
     }
 
     protected abstract ActionResponse<T> createWithoutChecks(T resource);
 
     protected abstract ActionResponse<T> deleteWithoutChecks(Long id);
 
-    protected abstract ActionResponse<M> readAllWithoutChecks();
+    protected abstract List<D> retrieveDatabaseModels();
 
-    protected abstract ActionResponse<T> readWithoutChecks(Long id);
+    protected abstract T convertDatabaseModelToRestModel(D databaseModel);
+
+    protected abstract M createMultiResponseModel(List<T> resources);
 
     protected abstract ValidationActionResponse testWithoutChecks(T resource);
 
@@ -68,7 +74,6 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
 
     protected abstract Optional<T> findExisting(Long id);
 
-    @Override
     public final ActionResponse<T> create(T resource) {
         if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Create"));
@@ -81,16 +86,17 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         return createWithoutChecks(resource);
     }
 
-    @Override
     public final ActionResponse<M> getAll() {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();
         }
-        return readAllWithoutChecks();
+        List<T> resources = retrieveDatabaseModels().stream()
+                                .map(this::convertDatabaseModelToRestModel)
+                                .collect(Collectors.toList());
+        return new ActionResponse<>(HttpStatus.OK, createMultiResponseModel(resources));
     }
 
-    @Override
     public final ActionResponse<T> getOne(Long id) {
         if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get one"));
@@ -102,10 +108,9 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
-        return readWithoutChecks(id);
+        return new ActionResponse<>(HttpStatus.OK, existingItem.get());
     }
 
-    @Override
     public final ActionResponse<T> update(Long id, T resource) {
         if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Update"));
@@ -124,7 +129,6 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         return updateWithoutChecks(id, resource);
     }
 
-    @Override
     public final ActionResponse<T> delete(Long id) {
         if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Delete"));
@@ -139,7 +143,6 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         return deleteWithoutChecks(id);
     }
 
-    @Override
     public final ValidationActionResponse test(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Test"));
@@ -154,7 +157,6 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
-    @Override
     public final ValidationActionResponse validate(T resource) {
         if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Validate"));
@@ -164,4 +166,5 @@ public abstract class AbstractResourceActions<T, M> implements LongIdResourceAct
         ValidationActionResponse response = validateWithoutChecks(resource);
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
+
 }

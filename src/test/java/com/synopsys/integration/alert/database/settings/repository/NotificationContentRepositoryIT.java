@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -61,6 +62,8 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     private AuditEntryRepository auditEntryRepository;
     @Autowired
     private AuditAccessor auditAccessor;
+    @Autowired
+    private JobAccessor jobAccessor;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
 
@@ -206,7 +209,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
 
         ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         fieldModel.setFieldValue("false");
-        ConfigurationJobModel configJob = configurationAccessor.createJob(Set.of(new BlackDuckProviderKey().getUniversalKey()), Set.of(fieldModel));
+        ConfigurationJobModel configJob = jobAccessor.createJob(Set.of(new BlackDuckProviderKey().getUniversalKey()), Set.of(fieldModel));
 
         for (NotificationEntity notification : savedNotifications) {
             MessageContentGroup messageContentGroup = createMessageGroup(notification.getId());

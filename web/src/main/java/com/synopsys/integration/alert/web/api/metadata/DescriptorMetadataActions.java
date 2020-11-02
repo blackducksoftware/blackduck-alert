@@ -30,8 +30,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class DescriptorMetadataActions {
         this.authorizationManager = authorizationManager;
     }
 
-    public ActionResponse<DescriptorsResponseModel> getDescriptorsByType(@Nonnull String type) {
+    public ActionResponse<DescriptorsResponseModel> getDescriptorsByType(String type) {
         return getDescriptors(null, type, null, this::generateUIComponents);
     }
 

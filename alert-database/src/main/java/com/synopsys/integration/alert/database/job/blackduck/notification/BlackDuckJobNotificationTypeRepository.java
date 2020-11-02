@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-database
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,16 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.database.job.blackduck.notification;
 
-import com.synopsys.integration.alert.common.action.ActionResponse;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ResourceActions<T, I> {
-    ActionResponse<T> create(T resource);
-
-    ActionResponse<T> getOne(I id);
-
-    ActionResponse<T> update(I id, T resource);
-
-    ActionResponse<T> delete(I id);
+public interface BlackDuckJobNotificationTypeRepository extends JpaRepository<BlackDuckJobNotificationTypeEntity, BlackDuckJobNotificationTypePK> {
 }

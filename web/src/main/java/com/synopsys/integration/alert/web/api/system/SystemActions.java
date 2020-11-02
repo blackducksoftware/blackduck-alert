@@ -26,7 +26,7 @@ import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

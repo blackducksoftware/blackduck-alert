@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="create-uuid-ossp-extension">
+        <sql stripComments="true">
+            CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        </sql>
+    </changeSet>
+    <changeSet author="gavink" id="create-distribution-jobs-table">
+        <createTable schemaName="alert" tableName="distribution_jobs">
+            <column name="job_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="distribution_frequency" type="VARCHAR" defaultValue="REAL_TIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processing_type" type="VARCHAR" defaultValue="DEFAULT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_descriptor_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP WITH TIMEZONE">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Black Duck Job Tables -->
+
+    <changeSet author="gavink" id="create-blackduck-job-details-table">
+        <createTable schemaName="alert" tableName="blackduck_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <!-- This might eventually become a UUID -->
+            <column name="global_config_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filter_by_project" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_name_pattern" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-details-table-fk">
+        <addForeignKeyConstraint
+                constraintName="blackduck_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="blackduck_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-notification-types-table">
+        <createTable schemaName="alert" tableName="blackduck_job_notification_types">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="notification_type" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-notification-types-table-fk">
+        <addForeignKeyConstraint
+                constraintName="blackduck_job_notification_types_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="blackduck_job_notification_types"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="blackduck_job_details"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-policy-filters-table">
+        <createTable schemaName="alert" tableName="blackduck_job_policy_filters">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="policy_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-policy-filters-table-fk">
+        <addForeignKeyConstraint
+                constraintName="blackduck_job_policy_filters_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="blackduck_job_policy_filters"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="blackduck_job_details"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table">
+        <createTable schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="severity_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table-fk">
+        <addForeignKeyConstraint
+                constraintName="blackduck_job_vuln_severity_filters_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="blackduck_job_vulnerability_severity_filters"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="blackduck_job_details"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-projects-table">
+        <createTable schemaName="alert" tableName="blackduck_job_projects">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="project_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-blackduck-job-projects-table-fk">
+        <addForeignKeyConstraint
+                constraintName="blackduck_job_projects_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="blackduck_job_projects"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="blackduck_job_details"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Azure Boards Job Table -->
+
+    <changeSet author="gavink" id="create-azure-boards-job-details-table">
+        <createTable schemaName="alert" tableName="azure_boards_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="add_comments" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_name_or_id" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="work_item_type" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="work_item_completed_state" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="work_item_reopen_state" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-azure-boards-job-details-table-fk">
+        <addForeignKeyConstraint
+                constraintName="azure_boards_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="azure_boards_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Email Job Tables -->
+
+    <changeSet author="gavink" id="create-email-job-details-table">
+        <createTable schemaName="alert" tableName="email_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="subject_line" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="project_owner_only" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="additional_email_addresses_only" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attachment_file_type" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-email-job-details-table-fk">
+        <addForeignKeyConstraint
+                constraintName="email_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="email_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gavink" id="create-email-job-additional-email-addresses-table">
+        <createTable schemaName="alert" tableName="email_job_additional_email_addresses">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="email_address" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-email-job-additional-email-addresses-table-fk">
+        <addForeignKeyConstraint
+                constraintName="email_job_additional_email_addresses_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="email_job_additional_email_addresses"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="email_job_details"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Jira Could Job Tables -->
+
+    <changeSet author="gavink" id="create-jira-cloud-job-details-table">
+        <createTable schemaName="alert" tableName="jira_cloud_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="add_comments" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issue_creator_email" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="project_name_or_key" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issue_type" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resolve_transition" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="reopen_transition" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-jira-cloud-job-details-table-fk">
+        <addForeignKeyConstraint
+                constraintName="jira_cloud_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="jira_cloud_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Jira Server Job Tables -->
+
+    <changeSet author="gavink" id="create-jira-server-job-details-table">
+        <createTable schemaName="alert" tableName="jira_server_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="add_comments" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issue_creator_username" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="project_name_or_key" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issue_type" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resolve_transition" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+            <column name="reopen_transition" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-jira-server-job-details-table-fk">
+        <addForeignKeyConstraint
+                constraintName="jira_server_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="jira_server_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <!-- MS Teams Job Tables -->
+
+    <changeSet author="gavink" id="create-ms-teams-job-details-table">
+        <createTable schemaName="alert" tableName="ms_teams_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="webhook" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-ms-teams-job-details-table-fk">
+        <addForeignKeyConstraint
+                constraintName="ms_teams_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="ms_teams_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Slack Job Tables -->
+
+    <changeSet author="gavink" id="create-slack-job-details-table">
+        <createTable schemaName="alert" tableName="slack_job_details">
+            <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="webhook" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_username" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gavink" id="create-slack-job-details-table-fk">
+        <addForeignKeyConstraint
+                constraintName="slack_job_details_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="slack_job_details"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="distribution_jobs"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>

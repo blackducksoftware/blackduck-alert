@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * alert-database
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,9 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.database.job.jira.server;
 
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import java.util.UUID;
 
-public interface JobResourceActions extends UUIDIdResourceActions<JobFieldModel> {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface JiraServerJobDetailsRepository extends JpaRepository<JiraServerJobDetailsEntity, UUID> {
 }

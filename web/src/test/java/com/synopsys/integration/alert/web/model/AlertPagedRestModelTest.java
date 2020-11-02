@@ -6,16 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public class AlertPagedRestModelTest {
-
     @Test
-    public void testRestModelNullContent() throws JSONException {
+    public void testRestModelNullContent() {
         final int totalPages = 0;
         final int currentPage = 0;
         final int pageSize = 0;
@@ -26,7 +24,7 @@ public class AlertPagedRestModelTest {
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());
         assertEquals(pageSize, restModel.getPageSize());
-        assertNull(restModel.getContent());
+        assertNull(restModel.getModels());
     }
 
     @Test
@@ -44,6 +42,7 @@ public class AlertPagedRestModelTest {
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());
         assertEquals(pageSize, restModel.getPageSize());
-        assertEquals(contentList, restModel.getContent());
+        assertEquals(contentList, restModel.getModels());
     }
+
 }

@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceActions;
-import com.synopsys.integration.alert.common.action.api.LongIdResourceActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -75,7 +74,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
     // TODO create and use intermediate class for this
-    private final LongIdResourceActions<FieldModel> configActions;
+    private final AbstractConfigResourceActions configActions;
 
     @Autowired
     public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,

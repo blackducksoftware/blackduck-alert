@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.action.api;
 
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -43,11 +43,13 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 
-public abstract class AbstractJobResourceActions implements JobResourceActions, ReadAllAction<MultiJobFieldModel>, ValidateAction<JobFieldModel>, TestAction<JobFieldModel> {
+public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
@@ -63,7 +65,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
 
     protected abstract ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id);
 
-    protected abstract ActionResponse<MultiJobFieldModel> readAllWithoutChecks();
+    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession);
 
     protected abstract ValidationActionResponse testWithoutChecks(JobFieldModel resource);
 
@@ -86,7 +88,6 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return descriptorNames;
     }
 
-    @Override
     public final ActionResponse<JobFieldModel> create(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasCreatePermission);
         if (!hasPermissions) {
@@ -99,25 +100,32 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return createWithoutChecks(resource);
     }
 
-    @Override
-    public final ActionResponse<MultiJobFieldModel> getAll() {
-        Set<String> descriptorNames = getDescriptorNames();
-        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
-            return ActionResponse.createForbiddenResponse();
+    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize) {
+        Optional<ActionResponse<JobPagedModel>> pagingErrorResponse = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
+        if (pagingErrorResponse.isPresent()) {
+            return pagingErrorResponse.get();
         }
-        List<JobFieldModel> models = new LinkedList<>();
-        ActionResponse<MultiJobFieldModel> response = readAllWithoutChecks();
-        List<JobFieldModel> allModels = response.getContent().map(MultiJobFieldModel::getJobs).orElse(List.of());
-        for (JobFieldModel jobModel : allModels) {
-            boolean includeJob = hasRequiredPermissions(jobModel.getFieldModels(), authorizationManager::hasReadPermission);
-            if (includeJob) {
-                models.add(jobModel);
+
+        String relevantContextName = ConfigContextEnum.DISTRIBUTION.name();
+        Set<String> descriptorNames = getDescriptorNames();
+        Set<String> permittedDescriptorsForSession = new HashSet<>();
+        for (String descriptorName : descriptorNames) {
+            if (authorizationManager.hasReadPermission(relevantContextName, descriptorName)) {
+                permittedDescriptorsForSession.add(descriptorName);
             }
         }
-        return new ActionResponse<>(HttpStatus.OK, new MultiJobFieldModel(models));
+
+        if (permittedDescriptorsForSession.isEmpty()) {
+            return ActionResponse.createForbiddenResponse();
+        }
+        return readPageWithoutChecks(pageNumber, pageSize, permittedDescriptorsForSession);
     }
 
-    @Override
+    @Deprecated
+    public final ActionResponse<MultiJobFieldModel> getAll() {
+        return new ActionResponse<>(HttpStatus.GONE);
+    }
+
     public final ActionResponse<JobFieldModel> getOne(UUID id) {
         Set<String> descriptorNames = getDescriptorNames();
         if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
@@ -137,7 +145,6 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
-    @Override
     public final ActionResponse<JobFieldModel> update(UUID id, JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasWritePermission);
         if (!hasPermissions) {
@@ -156,7 +163,6 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return updateWithoutChecks(id, resource);
     }
 
-    @Override
     public final ActionResponse<JobFieldModel> delete(UUID id) {
         Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
 
@@ -172,7 +178,6 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return deleteWithoutChecks(id);
     }
 
-    @Override
     public final ValidationActionResponse test(JobFieldModel resource) {
         boolean hasPermissions = hasRequiredPermissions(resource.getFieldModels(), authorizationManager::hasExecutePermission);
         if (!hasPermissions) {
@@ -187,7 +192,6 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
-    @Override
     public final ValidationActionResponse validate(JobFieldModel resource) {
         boolean hasPermissions = resource.getFieldModels()
                                      .stream()

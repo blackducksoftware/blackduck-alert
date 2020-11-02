@@ -20,10 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.action.api;
+package com.synopsys.integration.alert.common.rest.model;
 
-import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import java.util.List;
+import java.util.UUID;
 
-public interface ValidateAction<T> {
-    ValidationActionResponse validate(T resource);
+public class JobIdsValidationRequestModel extends AlertSerializableModel {
+    private List<UUID> jobIds;
+
+    public JobIdsValidationRequestModel() {
+        // For serialization
+    }
+
+    public JobIdsValidationRequestModel(List<UUID> jobIds) {
+        this.jobIds = jobIds;
+    }
+
+    public List<UUID> getJobIds() {
+        return jobIds;
+    }
+
 }

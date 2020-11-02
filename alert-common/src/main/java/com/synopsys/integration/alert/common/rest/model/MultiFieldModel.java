@@ -24,14 +24,13 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-public class MultiFieldModel extends AlertSerializableModel {
-    private List<FieldModel> fieldModels;
-
-    public MultiFieldModel(List<FieldModel> fieldModels) {
-        this.fieldModels = fieldModels;
+public class MultiFieldModel extends MultiResponseModel<FieldModel> {
+    public MultiFieldModel(List<FieldModel> models) {
+        super(models);
     }
 
     public List<FieldModel> getFieldModels() {
-        return fieldModels;
+        return getModels();
     }
+
 }

@@ -28,11 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -48,6 +46,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -58,13 +57,13 @@ import com.synopsys.integration.alert.component.users.UserManagementDescriptorKe
 import com.synopsys.integration.alert.component.users.web.role.util.PermissionModelUtil;
 
 @Component
-public class RoleActions extends AbstractResourceActions<RolePermissionModel, MultiRolePermissionModel> {
+public class RoleActions extends AbstractResourceActions<RolePermissionModel, UserRoleModel, MultiRolePermissionModel> {
     private static final String FIELD_KEY_ROLE_NAME = "roleName";
     private final RoleAccessor roleAccessor;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
 
-    private final Logger logger = LoggerFactory.getLogger(RoleActions.class);
+    private final Logger logger = AlertLoggerFactory.getLogger(RoleActions.class);
     private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
 
     @Autowired
@@ -84,7 +83,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
             logger.debug(actionMessageCreator.createStartMessage("role", roleName));
             UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
             logger.debug(actionMessageCreator.createSuccessMessage("Role", roleName));
-            return new ActionResponse<>(HttpStatus.OK, convertUserRoleModel(userRoleModel));
+            return new ActionResponse<>(HttpStatus.OK, convertDatabaseModelToRestModel(userRoleModel));
         } catch (AlertException ex) {
             logger.error(actionMessageCreator.createErrorMessage("role", resource.getRoleName()));
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
@@ -113,21 +112,21 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
     }
 
     @Override
-    protected ActionResponse<MultiRolePermissionModel> readAllWithoutChecks() {
-        List<RolePermissionModel> roles = roleAccessor.getRoles().stream()
-                                              .map(this::convertUserRoleModel)
-                                              .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, new MultiRolePermissionModel(roles));
+    protected List<UserRoleModel> retrieveDatabaseModels() {
+        return new ArrayList<>(roleAccessor.getRoles());
     }
 
     @Override
-    protected ActionResponse<RolePermissionModel> readWithoutChecks(Long id) {
-        Optional<RolePermissionModel> role = findExisting(id);
-        if (role.isPresent()) {
-            return new ActionResponse<>(HttpStatus.OK, role.get());
-        }
-        //This is covered by the findExistingCheck in AbstractResourceActions. TODO for 6.4.0
-        return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Role with id:%d not found.", id));
+    protected MultiRolePermissionModel createMultiResponseModel(final List<RolePermissionModel> roles) {
+        return new MultiRolePermissionModel(roles);
+    }
+
+    @Override
+    protected RolePermissionModel convertDatabaseModelToRestModel(UserRoleModel userRoleModel) {
+        String roleName = userRoleModel.getName();
+        PermissionMatrixModel permissionModel = userRoleModel.getPermissions();
+        Set<PermissionModel> permissionKeyToAccess = convertPermissionMatrixModel(permissionModel);
+        return new RolePermissionModel(String.valueOf(userRoleModel.getId()), roleName, permissionKeyToAccess);
     }
 
     @Override
@@ -178,14 +177,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Mu
         return roleAccessor.getRoles(List.of(id))
                    .stream()
                    .findFirst()
-                   .map(this::convertUserRoleModel);
-    }
-
-    private RolePermissionModel convertUserRoleModel(UserRoleModel userRoleModel) {
-        String roleName = userRoleModel.getName();
-        PermissionMatrixModel permissionModel = userRoleModel.getPermissions();
-        Set<PermissionModel> permissionKeyToAccess = convertPermissionMatrixModel(permissionModel);
-        return new RolePermissionModel(String.valueOf(userRoleModel.getId()), roleName, permissionKeyToAccess);
+                   .map(this::convertDatabaseModelToRestModel);
     }
 
     private Set<PermissionModel> convertPermissionMatrixModel(PermissionMatrixModel permissionMatrixModel) {

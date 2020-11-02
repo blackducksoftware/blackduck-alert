@@ -19,6 +19,7 @@ const initialState = {
     inProgress: false,
     deleteSuccess: false,
     jobs: [],
+    totalPages: 1,
     jobConfigTableMessage: '',
     jobDeleteMessage: '',
     jobsValidationResult: [],
@@ -62,6 +63,7 @@ const config = (state = initialState, action) => {
                 ...state,
                 inProgress: false,
                 deleteSuccess: false,
+                totalPages: action.totalPages,
                 jobConfigTableMessage: action.jobConfigTableMessage,
                 error: HTTPErrorUtil.createEmptyErrorObject()
             };
@@ -98,9 +100,15 @@ const config = (state = initialState, action) => {
                 jobsValidationMessage: ''
             };
         case DISTRIBUTION_JOB_VALIDATE_ALL_FETCHED:
-            return { ...state, jobsValidationResult: action.jobsValidationResult };
+            return {
+                ...state,
+                jobsValidationResult: action.jobsValidationResult
+            };
         case DISTRIBUTION_JOB_VALIDATE_ALL_ERROR:
-            return { ...state, jobsValidationMessage: action.jobsValidationMessage };
+            return {
+                ...state,
+                jobsValidationMessage: action.jobsValidationMessage
+            };
         case SERIALIZE:
             return initialState;
 
