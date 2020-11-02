@@ -171,18 +171,20 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     public List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
-        // FIXME implement query to filter by these parameters
-        // TODO change the frequency and notificationType parameters to objects instead of Strings
         // TODO change this to return a page of jobs
-        return getAllJobs();
+        return distributionJobRepository.findMatchingEnabledJob(frequency.name(), providerConfigId, notificationType.name())
+                   .stream()
+                   .map(this::convertToConfigurationJobModel)
+                   .collect(Collectors.toList());
     }
 
     @Override
     public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
-        // FIXME implement query to filter by these parameters
-        // TODO change the frequency and notificationType parameters to objects instead of Strings
         // TODO change this to return a page of jobs
-        return getAllJobs();
+        return distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name())
+                   .stream()
+                   .map(this::convertToConfigurationJobModel)
+                   .collect(Collectors.toList());
     }
 
     @Override
