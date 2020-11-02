@@ -93,6 +93,9 @@ public class NotificationProcessor {
         List<DistributionEvent> events = new ArrayList<>();
         for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
             NotificationFilterModel notificationFilterModel = entry.getKey();
+            if (null == notificationFilterModel.getNotificationType()) {
+                continue;
+            }
             // FIXME consider paging the jobs
             List<ConfigurationJobModel> matchingJobs = getJobs.apply(notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
             List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
