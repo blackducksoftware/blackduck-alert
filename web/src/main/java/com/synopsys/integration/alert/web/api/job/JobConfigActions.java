@@ -231,15 +231,14 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
     }
 
-    private List<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
-        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
+    private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             Optional<AlertFieldStatus> fieldStatus = validateJobNameUnique(currentJobId, fieldModel);
             if (fieldStatus.isPresent()) {
-                fieldStatuses.add(fieldStatus.get());
+                return fieldStatus;
             }
         }
-        return fieldStatuses;
+        return Optional.empty();
     }
 
     private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, FieldModel fieldModel) {
@@ -285,7 +284,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
             jobId = UUID.fromString(resource.getJobId());
         }
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
-        fieldStatuses.addAll(validateJobNameUnique(jobId, resource));
+
+        validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
         fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
 
         if (!fieldStatuses.isEmpty()) {
