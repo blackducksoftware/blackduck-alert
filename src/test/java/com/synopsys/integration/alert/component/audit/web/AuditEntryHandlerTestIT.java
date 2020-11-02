@@ -28,6 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +53,6 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -75,6 +76,7 @@ import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional
 public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private SlackChannelKey slackChannelKey;
     @Autowired
@@ -126,7 +128,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         blackduckUrl.setFieldValue("https://a-blackduck-server");
-        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.createSensitive(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
         blackduckApiKey.setFieldValue("123456789012345678901234567890123456789012345678901234567890");
         ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
         blackduckTimeout.setFieldValue("300");
@@ -226,8 +228,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         List<ConfigurationFieldModel> slackFieldsList = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
 
-        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
-        slackFieldsList.add(providerConfigName);
+        ConfigurationFieldModel providerConfigId = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+        providerConfigId.setFieldValue(String.valueOf(providerConfigModel.getConfigurationId()));
+        slackFieldsList.add(providerConfigId);
 
         ConfigurationJobModel configurationJobModel = jobAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFieldsList);
 
@@ -249,6 +252,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
             auditEntryActions.resendNotification(savedNotificationEntity.getId(), null);
             auditEntryActions.resendNotification(savedNotificationEntity.getId(), configurationJobModel.getJobId());
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             fail("Expected the Audit POST request(s) not to throw an exception");
         }
 

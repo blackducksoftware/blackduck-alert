@@ -38,8 +38,6 @@ public abstract class StartupScheduledTask extends ScheduledTask {
         this.enabled = true;
     }
 
-    public abstract String scheduleCronExpression();
-
     public void checkTaskEnabled() {
         enabled = true;
     }

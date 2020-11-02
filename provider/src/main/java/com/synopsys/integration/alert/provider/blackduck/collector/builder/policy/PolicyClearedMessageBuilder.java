@@ -74,14 +74,14 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         RuleViolationClearedNotificationContent violationContent = notificationView.getContent();
 
-        String projectName = violationContent.getProjectName();
-        String projectUrl = retrieveNullableProjectUrlAndLog(projectName, blackDuckServicesFactory.createProjectService(), logger::warn);
+        String projectVersionUrl = violationContent.getProjectVersion();
+        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, blackDuckServicesFactory.getBlackDuckService(), logger::warn);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectName, projectUrl)
-                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion());
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName(), projectUrl)
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), projectVersionUrl);
             Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
             FieldUtility fieldUtility = commonMessageData.getJob().getFieldUtility();
@@ -90,7 +90,7 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
                 Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
-                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, componentVersionStatus, policies, commonMessageData.getNotificationId(), violationContent.getProjectVersion(), policyFilter);
+                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, componentVersionStatus, policies, commonMessageData.getNotificationId(), projectVersionUrl, policyFilter);
                 items.addAll(componentItems);
             }
             messageContentBuilder.applyAllComponentItems(items);

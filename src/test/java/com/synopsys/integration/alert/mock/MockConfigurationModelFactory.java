@@ -113,10 +113,15 @@ public class MockConfigurationModelFactory {
         ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new BlackDuckProviderKey().getUniversalKey());
         ConfigurationFieldModel frequencyType = createFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
 
+        ConfigurationFieldModel providerNotificationType = createFieldModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, NotificationType.POLICY_OVERRIDE.name());
+        ConfigurationFieldModel processingType = createFieldModel(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, ProcessingType.DEFAULT.name());
+
         fields.add(name);
         fields.add(channelName);
         fields.add(providerName);
         fields.add(frequencyType);
+        fields.add(providerNotificationType);
+        fields.add(processingType);
 
         return fields;
     }

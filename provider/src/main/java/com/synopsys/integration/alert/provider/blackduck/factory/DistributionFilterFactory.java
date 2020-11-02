@@ -28,9 +28,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckDistributionFilter;
 import com.synopsys.integration.alert.provider.blackduck.filter.BlackDuckProjectNameExtractor;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class DistributionFilterFactory {
@@ -41,8 +41,8 @@ public class DistributionFilterFactory {
         this.gson = gson;
     }
 
-    public ProviderDistributionFilter createFilter(BlackDuckProperties providerProperties, ProviderNotificationClassMap providerNotificationClassMap) {
-        BlackDuckProjectNameExtractor nameExtractor = new BlackDuckProjectNameExtractor(providerProperties);
+    public ProviderDistributionFilter createFilter(BlackDuckServicesFactory blackDuckServicesFactory, ProviderNotificationClassMap providerNotificationClassMap) {
+        BlackDuckProjectNameExtractor nameExtractor = new BlackDuckProjectNameExtractor(blackDuckServicesFactory);
         return new BlackDuckDistributionFilter(gson, providerNotificationClassMap, nameExtractor);
     }
 }

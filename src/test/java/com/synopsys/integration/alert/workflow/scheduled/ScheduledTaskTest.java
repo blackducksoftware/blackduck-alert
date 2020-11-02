@@ -35,6 +35,11 @@ public class ScheduledTaskTest {
             public void runTask() {
 
             }
+
+            @Override
+            public String scheduleCronExpression() {
+                return validCronExpression;
+            }
         };
     }
 

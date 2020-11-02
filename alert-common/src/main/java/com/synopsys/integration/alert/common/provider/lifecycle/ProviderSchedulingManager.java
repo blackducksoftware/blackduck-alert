@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 
 @Component
@@ -112,8 +111,8 @@ public class ProviderSchedulingManager {
     private List<ProviderTask> initializeConfiguredProviders(Provider provider, List<ConfigurationModel> providerConfigurations) {
         List<ProviderTask> initializedTasks = new ArrayList<>();
         for (ConfigurationModel providerConfig : providerConfigurations) {
-            StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
             try {
+                StatefulProvider statefulProvider = provider.createStatefulProvider(providerConfig);
                 if (statefulProvider.isConfigEnabled()) {
                     List<ProviderTask> initializedTasksForConfig = scheduleTasksForProviderConfig(provider, providerConfig);
                     initializedTasks.addAll(initializedTasksForConfig);
@@ -129,7 +128,7 @@ public class ProviderSchedulingManager {
 
     private void scheduleTask(ProviderTask task) {
         taskManager.registerTask(task);
-        taskManager.scheduleCronTask(ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION, task.getTaskName());
+        taskManager.scheduleCronTask(task.scheduleCronExpression(), task.getTaskName());
     }
 
     private void unscheduleTask(ProviderTask task) {

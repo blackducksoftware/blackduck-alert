@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,17 +74,14 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
             StatefulProvider statefulProvider = provider.createStatefulProvider(configurationModel);
             BlackDuckProperties blackDuckProperties = (BlackDuckProperties) statefulProvider.getProperties();
 
-            Optional<BlackDuckHttpClient> blackDuckHttpClientOptional = blackDuckProperties.createBlackDuckHttpClient(logger);
-            if (blackDuckHttpClientOptional.isPresent()) {
-                BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientOptional.get();
-                BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
-                BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
-                BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
-                CurrentVersionView currentVersionView = blackDuckService.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
-                blackDuckVersion = currentVersionView.getVersion();
-                registrationId = blackDuckRegistrationService.getRegistrationId();
-                blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE);
-            }
+            BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
+            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
+            BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
+            BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+            CurrentVersionView currentVersionView = blackDuckService.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
+            blackDuckVersion = currentVersionView.getVersion();
+            registrationId = blackDuckRegistrationService.getRegistrationId();
+            blackDuckUrl = blackDuckProperties.getBlackDuckUrl().orElse(PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE);
         } catch (IntegrationException ignored) {
             // ignoring this exception
         }

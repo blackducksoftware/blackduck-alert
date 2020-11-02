@@ -1,10 +1,12 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.core.ResourceLink;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
@@ -57,18 +59,28 @@ public class BlackDuckMessageBuilderTestHelper {
     public static BlackDuckService mockBlackDuckService() {
         BlackDuckService mockBlackDuckService = Mockito.mock(BlackDuckService.class);
         try {
-            String project1Href = "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24";
+            String projectVersion1Href = "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24";
             ProjectVersionView projectVersionView1 = new ProjectVersionView();
             projectVersionView1.setMeta(new ResourceMetadata());
-            HttpUrl project1HrefHttpUrl = new HttpUrl(project1Href);
+            HttpUrl project1HrefHttpUrl = new HttpUrl(projectVersion1Href);
             projectVersionView1.getMeta().setHref(project1HrefHttpUrl);
+            ResourceLink resourceLink1 = new ResourceLink();
+            String projectUrl1 = "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f";
+            resourceLink1.setHref(new HttpUrl(projectUrl1));
+            resourceLink1.setRel(ProjectVersionView.PROJECT_LINK);
+            projectVersionView1.getMeta().setLinks(List.of(resourceLink1));
             Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(project1HrefHttpUrl), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView1);
 
-            String project2Href = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c";
+            String projectVersion2Href = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c";
             ProjectVersionView projectVersionView2 = new ProjectVersionView();
-            projectVersionView1.setMeta(new ResourceMetadata());
-            HttpUrl project2HrefHttpURl = new HttpUrl(project2Href);
+            projectVersionView2.setMeta(new ResourceMetadata());
+            HttpUrl project2HrefHttpURl = new HttpUrl(projectVersion2Href);
             projectVersionView1.getMeta().setHref(project2HrefHttpURl);
+            ResourceLink resourceLink2 = new ResourceLink();
+            String projectUrl2 = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c";
+            resourceLink2.setHref(new HttpUrl(projectUrl2));
+            resourceLink2.setRel(ProjectVersionView.PROJECT_LINK);
+            projectVersionView2.getMeta().setLinks(List.of(resourceLink2));
             Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(project2HrefHttpURl), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView2);
 
             String bomComponentUri = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96";
