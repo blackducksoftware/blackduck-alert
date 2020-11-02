@@ -91,16 +91,6 @@ public class BlackDuckProviderService {
         projectBomService.addComponentToProjectVersion(commonsFileUploadExternalId, projectVersionView);
     }
 
-    private BlackDuckServicesFactory setupBlackDuckServicesFactory() {
-        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
-        blackDuckServerConfigBuilder.setUrl(blackDuckProviderUrl)
-            .setApiToken(blackDuckApiToken)
-            .setTimeoutInSeconds(blackDuckTimeout)
-            .setTrustCert(true);
-        BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
-        return blackDuckServerConfig.createBlackDuckServicesFactory(intLogger);
-    }
-
     public String setupBlackDuck() throws Exception {
         try {
             return findBlackDuckProvider();
@@ -148,6 +138,16 @@ public class BlackDuckProviderService {
         String blackDuckProviderID = jsonObject.get("id").getAsString();
         intLogger.info(String.format("Configured the Black Duck provider, ID %s.", blackDuckProviderID));
         return blackDuckProviderID;
+    }
+
+    private BlackDuckServicesFactory setupBlackDuckServicesFactory() {
+        BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
+        blackDuckServerConfigBuilder.setUrl(blackDuckProviderUrl)
+            .setApiToken(blackDuckApiToken)
+            .setTimeoutInSeconds(blackDuckTimeout)
+            .setTrustCert(true);
+        BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
+        return blackDuckServerConfig.createBlackDuckServicesFactory(intLogger);
     }
 
     public String getBlackDuckProviderKey() {

@@ -66,18 +66,21 @@ public class ScalingPerformanceTest {
     @Test
     @Ignore
     public void testAlertPerformance() throws Exception {
-        AlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
-        BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        TestJobCreator testJobCreator = new TestJobCreator(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
-
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
 
+        ExternalAlertRequestUtility alertRequestUtility = new ExternalAlertRequestUtility(intLogger, client, alertURL);
+        // Create an authenticated connection to Alert
+        alertRequestUtility.loginToExternalAlert();
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
-        startingTime = LocalDateTime.now();
 
+        BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
+        TestJobCreator testJobCreator = new TestJobCreator(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
+
+        startingTime = LocalDateTime.now();
         // Create the Black Duck Global provider configuration
         String blackDuckProviderID = blackDuckProviderService.setupBlackDuck();
+        logTimeElapsedWithMessage("Configuring the Black Duck provider took %s", startingTime, LocalDateTime.now());
 
         List<String> jobIds = new ArrayList<>();
         startingTime = LocalDateTime.now();
