@@ -232,35 +232,31 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
-        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            Optional<AlertFieldStatus> fieldStatus = validateJobNameUnique(currentJobId, fieldModel);
-            if (fieldStatus.isPresent()) {
-                return fieldStatus;
-            }
-        }
-        return Optional.empty();
+        Optional<AlertFieldStatus> fieldStatus = jobFieldModel.getFieldModels().stream()
+                                                     .filter(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).isPresent())
+                                                     .findFirst()
+                                                     .flatMap(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME))
+                                                     .flatMap(fieldValueModel -> validateJobNameUnique(currentJobId, fieldValueModel));
+        return fieldStatus;
     }
 
-    private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, FieldModel fieldModel) {
-        Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME);
+    private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, FieldValueModel fieldValueModel) {
         String error = "";
-        if (jobNameFieldOptional.isPresent()) {
-            String jobName = jobNameFieldOptional.get().getValue().orElse(null);
-            if (StringUtils.isNotBlank(jobName)) {
-                List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
+        String jobName = fieldValueModel.getValue().orElse(null);
+        if (StringUtils.isNotBlank(jobName)) {
+            List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
 
-                boolean foundDuplicateName = jobs.stream()
-                                                 .filter(job -> filterOutMatchingJobs(currentJobId, job))
-                                                 .flatMap(job -> job.getCopyOfConfigurations().stream())
-                                                 .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
-                                                 .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                 .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
-                if (foundDuplicateName) {
-                    error = "A distribution configuration with this name already exists.";
-                }
-            } else {
-                error = "Name cannot be blank.";
+            boolean foundDuplicateName = jobs.stream()
+                                             .filter(job -> filterOutMatchingJobs(currentJobId, job))
+                                             .flatMap(job -> job.getCopyOfConfigurations().stream())
+                                             .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
+                                             .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
+                                             .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
+            if (foundDuplicateName) {
+                error = "A distribution configuration with this name already exists.";
             }
+        } else {
+            error = "Name cannot be blank.";
         }
         if (StringUtils.isNotBlank(error)) {
 
