@@ -247,4 +247,120 @@
                 WHERE jobFields.source_key = 'email.additional.addresses'
         </sql>
     </changeSet>
+
+    <!-- Create initial jira cloud job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-jira-cloud-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.jira_cloud_job_details (job_id, add_comments, issue_creator_email, project_name_or_key, issue_type, resolve_transition, reopen_transition)
+                SELECT job.job_id, false, null, 'Unknown', 'Task', null, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_jira_cloud';
+        </sql>
+    </changeSet>
+
+    <!-- Update jira cloud job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-jira-cloud-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET add_comments = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.add.comments';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET issue_creator_email = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.issue.creator';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET project_name_or_key = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.project.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET issue_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.issue.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET resolve_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.resolve.workflow';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET reopen_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.reopen.workflow';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial jira server job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-jira-server-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.jira_server_job_details (job_id, add_comments, issue_creator_username, project_name_or_key, issue_type, resolve_transition, reopen_transition)
+                SELECT job.job_id, false, null, 'Unknown', 'Task', null, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_jira_server';
+        </sql>
+    </changeSet>
+
+    <!-- Update jira server job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-jira-server-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET add_comments = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.add.comments';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET issue_creator_username = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.issue.creator';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET project_name_or_key = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.project.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET issue_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.issue.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET resolve_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.resolve.workflow';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET reopen_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.reopen.workflow';
+        </sql>
+    </changeSet>
 </databaseChangeLog>
