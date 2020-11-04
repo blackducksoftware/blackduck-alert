@@ -110,7 +110,7 @@
 
     <!-- Create joined blackduck job detail tables -->
 
-    <changeSet author="gavink" id="join-blackduck-job-notification-detail-entries">
+    <changeSet author="gavink" id="join-blackduck-job-detail-entries">
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_notification_types (job_id, notification_type)
                 SELECT jobFields.job_id, jobFields.field_value
@@ -138,6 +138,113 @@
                 FROM alert.distribution_jobs job
                 LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
                 WHERE jobFields.source_key = 'channel.common.configured.project'
+        </sql>
+    </changeSet>
+
+    <!-- Create initial azure boards job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-azure-boards-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.azure_boards_job_details (job_id, add_comments, project_name_or_id, work_item_type, work_item_completed_state, work_item_reopen_state)
+                SELECT job.job_id, false, 'Unknown', 'Task', null, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_azure_boards';
+        </sql>
+    </changeSet>
+
+    <!-- Update azure boards job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-azure-boards-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET add_comments = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.comment';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET project_name_or_id = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.project';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET work_item_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET work_item_completed_state = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.completed.state';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET work_item_reopen_state = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.reopen.state';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial email job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-email-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.email_job_details (job_id, subject_line, project_owner_only, additional_email_addresses_only, attachment_file_type)
+                SELECT job.job_id, 'Migrated Subject Line', false, false, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_email';
+        </sql>
+    </changeSet>
+
+    <!-- Update email job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-email-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET subject_line = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'email.subject.line';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET project_owner_only = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'project.owner.only';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET additional_email_addresses_only = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'email.additional.addresses.only';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET attachment_file_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'email.attachment.format';
+        </sql>
+    </changeSet>
+
+    <!-- Create joined email job detail table  -->
+
+    <changeSet author="gavink" id="join-email-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.email_job_additional_email_addresses (job_id, email_address)
+                SELECT jobFields.job_id, jobFields.field_value
+                FROM alert.email_job_details job
+                LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
+                WHERE jobFields.source_key = 'email.additional.addresses'
         </sql>
     </changeSet>
 </databaseChangeLog>
