@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
 // @Component
@@ -68,6 +69,28 @@ public class DefaultJobAccessor implements JobAccessor {
     @Deprecated
     public List<ConfigurationJobModel> getAllJobs() {
         List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
+        return convertToJobModels(jobEntities);
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
+        //TODO change this to return a page of results
+        return getMatchingEnabledJobs(() -> configGroupRepository.findMatchingEnabledJobIds(frequency.name(), String.valueOf(providerConfigId), notificationType.name()));
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
+        return getMatchingEnabledJobs(() -> configGroupRepository.findMatchingEnabledJobIds(String.valueOf(providerConfigId), notificationType.name()));
+    }
+
+    private List<ConfigurationJobModel> getMatchingEnabledJobs(Supplier<List<UUID>> getJobs) {
+        //TODO change this to return a page of results
+        List<UUID> matchingJobIds = getJobs.get();
+
+        if (matchingJobIds.isEmpty()) {
+            return List.of();
+        }
+        List<ConfigGroupEntity> jobEntities = configGroupRepository.findByJobIds(matchingJobIds);
         return convertToJobModels(jobEntities);
     }
 

@@ -108,7 +108,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     @Override
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(IntLogger intLogger) throws AlertException {
+    public BlackDuckHttpClient createBlackDuckHttpClient(IntLogger intLogger) throws AlertException {
         testAlertProperties.setAlertTrustCertificate(true);
         return super.createBlackDuckHttpClient(intLogger);
     }

@@ -72,7 +72,9 @@ public abstract class ProcessingTask extends StartupScheduledTask {
     public void runTask() {
         DateRange dateRange = getDateRange();
         List<AlertNotificationModel> notificationList = read(dateRange);
+        logger.info("Processing {} notifications.", notificationList.size());
         List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
+        logger.info("Sending {} events for notifications.", distributionEvents.size());
         eventManager.sendEvents(distributionEvents);
         lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
@@ -85,10 +87,8 @@ public abstract class ProcessingTask extends StartupScheduledTask {
             logger.info("{} Reading Notifications Between {} and {} ", taskName, DateUtils.formatDate(startDate, RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(endDate, RestConstants.JSON_DATE_FORMAT));
             List<AlertNotificationModel> entityList = notificationAccessor.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
-                logger.info("{} Notifications Found: 0", taskName);
                 return List.of();
             } else {
-                logger.info("{} Notifications Found: {}", taskName, entityList.size());
                 return entityList;
             }
         } catch (Exception ex) {

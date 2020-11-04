@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,7 @@ import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAcce
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
 public class StaticJobAccessor implements JobAccessor {
@@ -163,6 +165,27 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional(readOnly = true)
     public List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency) {
         return distributionJobRepository.findByDistributionFrequency(frequency.name())
+                   .stream()
+                   .map(this::convertToConfigurationJobModel)
+                   .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
+        // TODO change this to return a page of jobs
+        return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(frequency.name(), providerConfigId, notificationType.name()));
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
+        // TODO change this to return a page of jobs
+        return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
+    }
+
+    private List<ConfigurationJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
+        // TODO change this to return a page of jobs
+        List<DistributionJobEntity> matchingEnabledJob = getJobs.get();
+        return matchingEnabledJob
                    .stream()
                    .map(this::convertToConfigurationJobModel)
                    .collect(Collectors.toList());

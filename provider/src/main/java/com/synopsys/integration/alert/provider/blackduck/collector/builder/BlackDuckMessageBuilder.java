@@ -27,11 +27,11 @@ import java.util.function.Consumer;
 
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
-import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
@@ -53,16 +53,16 @@ public abstract class BlackDuckMessageBuilder<T> {
 
     public abstract List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
 
-    protected String retrieveNullableProjectUrlAndLog(String projectName, ProjectService projectService, Consumer<String> logMethod) {
+    protected String getNullableProjectUrlFromProjectVersion(String projectVersionURL, BlackDuckService blackDuckService, Consumer<String> logMethod) {
+        String projectURL = null;
         try {
-            return projectService.getProjectByName(projectName)
-                       .map(ProjectView::getHref)
-                       .map(HttpUrl::toString)
-                       .orElse(null);
-        } catch (IntegrationException e) {
-            logMethod.accept(String.format("Could not get the href for '%s': %s", projectName, e.getMessage()));
-        }
-        return null;
-    }
+            ProjectVersionView projectVersionView = blackDuckService.getResponse(new HttpUrl(projectVersionURL), ProjectVersionView.class);
 
+            projectURL = projectVersionView.getFirstLinkSafely(ProjectVersionView.PROJECT_LINK).map(HttpUrl::string).orElse(null);
+        } catch (IntegrationException e) {
+            logMethod.accept(String.format("Could not get the Project Version for '%s': %s", projectVersionURL, e.getMessage()));
+            return projectURL;
+        }
+        return projectURL;
+    }
 }

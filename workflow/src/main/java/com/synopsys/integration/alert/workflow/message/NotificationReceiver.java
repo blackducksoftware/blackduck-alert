@@ -64,9 +64,11 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 logger.warn("Can not process a notification event without notification Id's.");
                 return;
             }
+            logger.debug("Event {}", event);
             logger.info("Processing event for {} notifications.", event.getNotificationIds().size());
             List<AlertNotificationModel> notifications = notificationAccessor.findByIds(event.getNotificationIds());
             List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
+            logger.info("Sending {} events for notifications.", distributionEvents.size());
             eventManager.sendEvents(distributionEvents);
         } else {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationEvent.NOTIFICATION_EVENT_TYPE);
