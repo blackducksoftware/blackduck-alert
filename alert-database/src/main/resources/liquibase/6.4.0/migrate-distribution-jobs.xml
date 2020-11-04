@@ -363,4 +363,64 @@
             AND jobFields.source_key = 'channel.jira.server.reopen.workflow';
         </sql>
     </changeSet>
+
+    <!-- Create initial ms teams job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-ms-teams-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.ms_teams_job_details (job_id, webhook)
+                SELECT job.job_id, 'Unknown'
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'msteamskey';
+        </sql>
+    </changeSet>
+
+    <!-- Update ms teams job detail field -->
+
+    <changeSet author="gavink" id="update-ms-teams-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.ms_teams_job_details job
+            SET webhook = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.msteams.webhook';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial slack job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-slack-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.slack_job_details (job_id, webhook, channel_name, channel_username)
+                SELECT job.job_id, 'Unknown', 'Unknown', null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_slack';
+        </sql>
+    </changeSet>
+
+    <!-- Update slack detail field -->
+
+    <changeSet author="gavink" id="update-slack-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.slack_job_details job
+            SET webhook = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.slack.webhook';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.slack_job_details job
+            SET channel_name = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.slack.channel.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.slack_job_details job
+            SET channel_username = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.slack.channel.username';
+        </sql>
+    </changeSet>
 </databaseChangeLog>
