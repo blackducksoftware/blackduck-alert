@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,6 @@ import com.synopsys.integration.alert.common.persistence.model.mutable.Configura
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
@@ -78,10 +76,7 @@ public class JobConfigurationModelFieldPopulationUtility {
         }
 
         // These are required so they will not be null/empty
-        List<String> blackDuckJobNotificationTypeNames = blackDuckJobDetails.getBlackDuckJobNotificationTypes()
-                                                             .stream()
-                                                             .map(BlackDuckJobNotificationTypeEntity::getNotificationType)
-                                                             .collect(Collectors.toList());
+        List<String> blackDuckJobNotificationTypeNames = blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(jobId);
         blackDuckConfigurationModel.put(createConfigFieldModel("provider.distribution.notification.types", blackDuckJobNotificationTypeNames));
 
         List<String> blackDuckPolicyNames = blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(jobId);
