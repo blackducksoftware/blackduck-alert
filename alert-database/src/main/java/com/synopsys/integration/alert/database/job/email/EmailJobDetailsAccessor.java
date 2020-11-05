@@ -67,4 +67,11 @@ public class EmailJobDetailsAccessor {
         return savedJobDetails;
     }
 
+    public List<String> retrieveAdditionalEmailAddressesForJob(UUID jobId) {
+        return additionalEmailAddressRepository.findByJobId(jobId)
+                   .stream()
+                   .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
+                   .collect(Collectors.toList());
+    }
+
 }

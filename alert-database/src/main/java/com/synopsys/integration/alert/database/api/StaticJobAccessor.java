@@ -59,7 +59,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldExtractorUtils;
-import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldPopulationUtils;
+import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldPopulationUtility;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
@@ -88,6 +88,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final SlackJobDetailsAccessor slackJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
+    private final JobConfigurationModelFieldPopulationUtility jobConfigurationModelFieldPopulationUtility;
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     // BlackDuck is currently the only provider, so this is safe in the short-term while we transition to new models
     private final ProviderKey blackDuckProviderKey;
@@ -102,6 +103,7 @@ public class StaticJobAccessor implements JobAccessor {
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
         SlackJobDetailsAccessor slackJobDetailsAccessor,
+        JobConfigurationModelFieldPopulationUtility jobConfigurationModelFieldPopulationUtility,
         RegisteredDescriptorRepository registeredDescriptorRepository,
         ProviderKey blackDuckProviderKey
     ) {
@@ -113,6 +115,7 @@ public class StaticJobAccessor implements JobAccessor {
         this.jiraServerJobDetailsAccessor = jiraServerJobDetailsAccessor;
         this.msTeamsJobDetailsAccessor = msTeamsJobDetailsAccessor;
         this.slackJobDetailsAccessor = slackJobDetailsAccessor;
+        this.jobConfigurationModelFieldPopulationUtility = jobConfigurationModelFieldPopulationUtility;
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.blackDuckProviderKey = blackDuckProviderKey;
     }
@@ -226,13 +229,13 @@ public class StaticJobAccessor implements JobAccessor {
         Long blackDuckDescriptorId = getDescriptorId(providerUniversalKey);
 
         ConfigurationModelMutable blackDuckConfigurationModel = new ConfigurationModelMutable(blackDuckDescriptorId, -1L, createdAtDateTime, updatedAtDateTime, ConfigContextEnum.DISTRIBUTION);
-        JobConfigurationModelFieldPopulationUtils.populateBlackDuckConfigurationModelFields(jobEntity, blackDuckConfigurationModel);
+        jobConfigurationModelFieldPopulationUtility.populateBlackDuckConfigurationModelFields(jobEntity, blackDuckConfigurationModel);
         configurationModels.add(blackDuckConfigurationModel);
 
         Long channelDescriptorId = getDescriptorId(jobEntity.getChannelDescriptorName());
         ConfigurationModelMutable channelConfigurationModel = new ConfigurationModelMutable(channelDescriptorId, -1L, createdAtDateTime, updatedAtDateTime, ConfigContextEnum.DISTRIBUTION);
-        channelConfigurationModel.put(JobConfigurationModelFieldPopulationUtils.createConfigFieldModel("channel.common.provider.name", providerUniversalKey));
-        JobConfigurationModelFieldPopulationUtils.populateChannelConfigurationModelFields(jobEntity, channelConfigurationModel);
+        channelConfigurationModel.put(jobConfigurationModelFieldPopulationUtility.createConfigFieldModel("channel.common.provider.name", providerUniversalKey));
+        jobConfigurationModelFieldPopulationUtility.populateChannelConfigurationModelFields(jobEntity, channelConfigurationModel);
         configurationModels.add(channelConfigurationModel);
 
         return new ConfigurationJobModel(jobEntity.getJobId(), configurationModels);
