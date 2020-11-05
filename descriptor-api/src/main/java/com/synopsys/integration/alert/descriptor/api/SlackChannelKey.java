@@ -20,11 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
@@ -38,7 +37,7 @@ public final class SlackChannelKey extends ChannelKey {
 
     @Override
     public String getDisplayName() {
-        return SlackDescriptor.SLACK_LABEL;
+        return "Slack";
     }
 
 }

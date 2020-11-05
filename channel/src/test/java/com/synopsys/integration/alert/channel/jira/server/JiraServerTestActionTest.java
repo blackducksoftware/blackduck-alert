@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueS
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
@@ -191,4 +192,5 @@ public class JiraServerTestActionTest {
         issueResponse.getTransitions().addAll(ids);
         return issueResponse;
     }
+
 }

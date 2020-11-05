@@ -20,18 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.descriptor.api.model.ClassNameChannelKey;
 
 @Component
 public final class MsTeamsKey extends ClassNameChannelKey {
     @Override
     public String getDisplayName() {
-        return MsTeamsDescriptor.MSTEAMS_LABEL;
+        return "MS Teams";
     }
 
 }

@@ -20,16 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
-public class AzureBoardsChannelKey extends IssueTrackerChannelKey {
-    private static final String COMPONENT_NAME = "channel_azure_boards";
+public final class EmailChannelKey extends ChannelKey {
+    private static final String COMPONENT_NAME = "channel_email";
 
     @Override
     public String getUniversalKey() {
@@ -38,7 +37,7 @@ public class AzureBoardsChannelKey extends IssueTrackerChannelKey {
 
     @Override
     public String getDisplayName() {
-        return AzureBoardsDescriptor.AZURE_BOARDS_LABEL;
+        return "Email";
     }
 
 }

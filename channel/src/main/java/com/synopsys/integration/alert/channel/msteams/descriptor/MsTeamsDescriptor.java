@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.channel.msteams.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.msteams.MsTeamsKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 
 @Component
 public class MsTeamsDescriptor extends ChannelDescriptor {

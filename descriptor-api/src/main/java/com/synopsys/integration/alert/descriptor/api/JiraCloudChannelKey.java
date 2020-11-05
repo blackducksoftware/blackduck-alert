@@ -20,23 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
 @Component
-public class JiraServerChannelKey extends IssueTrackerChannelKey {
+public final class JiraCloudChannelKey extends IssueTrackerChannelKey {
+    private static final String COMPONENT_NAME = "channel_jira_cloud";
+
     @Override
     public String getUniversalKey() {
-        return "channel_jira_server";
+        return COMPONENT_NAME;
     }
 
     @Override
     public String getDisplayName() {
-        return JiraServerDescriptor.JIRA_LABEL;
+        return "Jira Cloud";
     }
 
 }
