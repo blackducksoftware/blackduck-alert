@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
 
 @Component
@@ -96,4 +96,5 @@ public class LastSearchDataMigration extends StartupComponent {
             logger.info("Last search text file does not exist; no migration necessary.");
         }
     }
+
 }

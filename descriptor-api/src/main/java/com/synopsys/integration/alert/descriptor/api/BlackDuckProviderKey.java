@@ -20,19 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.ProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @Component
 public final class BlackDuckProviderKey extends ProviderKey {
-    private static final String COMPONENT_NAME = "provider_blackduck";
-
     public BlackDuckProviderKey() {
-        super(COMPONENT_NAME, BlackDuckDescriptor.BLACKDUCK_LABEL);
+        super("provider_blackduck", "Black Duck");
     }
 
 }

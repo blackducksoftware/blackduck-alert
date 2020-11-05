@@ -39,8 +39,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobal
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 
 @Component
 public class BlackDuckProviderUIConfig extends ProviderGlobalUIConfig {
