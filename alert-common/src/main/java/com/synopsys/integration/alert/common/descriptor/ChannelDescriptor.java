@@ -22,10 +22,10 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public abstract class ChannelDescriptor extends Descriptor {
     public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig) {

@@ -20,9 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker;
-
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+package com.synopsys.integration.alert.descriptor.api.model;
 
 public abstract class IssueTrackerChannelKey extends ChannelKey {
 }

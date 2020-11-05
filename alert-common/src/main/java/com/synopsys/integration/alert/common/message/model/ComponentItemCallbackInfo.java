@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.common.message.model;
 
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public class ComponentItemCallbackInfo extends AlertSerializableModel {
     private final String callbackUrl;

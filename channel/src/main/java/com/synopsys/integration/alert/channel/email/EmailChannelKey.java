@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.email;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public final class EmailChannelKey extends ChannelKey {

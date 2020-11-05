@@ -39,7 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -53,6 +52,7 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 @Order(10)
@@ -182,4 +182,5 @@ public class AlertStartupInitializer extends StartupComponent {
         String value = fieldModel.isSensitive() ? "**********" : String.valueOf(fieldModel.getFieldValues());
         logger.info("    {} = {}", fieldModel.getFieldKey(), value);
     }
+
 }

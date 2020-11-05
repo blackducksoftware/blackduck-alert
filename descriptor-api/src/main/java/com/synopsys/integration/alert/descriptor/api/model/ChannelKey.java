@@ -20,15 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.descriptor.api.model;
 
-import java.io.Serializable;
-
-import com.synopsys.integration.util.Stringable;
-
-public abstract class DescriptorKey extends Stringable implements Serializable {
-    public abstract String getUniversalKey();
-
-    public abstract String getDisplayName();
-
+public abstract class ChannelKey extends DescriptorKey {
 }

@@ -2,6 +2,7 @@ ext.moduleName = 'com.synopsys.integration.alert.common'
 
 dependencies {
     implementation platform(project(':alert-platform'))
+    implementation project(':descriptor-api')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 

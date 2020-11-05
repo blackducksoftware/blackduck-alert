@@ -34,8 +34,8 @@ import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCallbackEvent> implements AlertEventListener {

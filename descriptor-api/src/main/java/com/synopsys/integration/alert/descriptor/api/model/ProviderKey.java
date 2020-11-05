@@ -20,12 +20,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.key;
+package com.synopsys.integration.alert.descriptor.api.model;
 
-public abstract class ClassNameChannelKey extends ChannelKey {
+public class ProviderKey extends DescriptorKey {
+    private final String universalKey;
+    private final String displayName;
+
+    private ProviderKey() {
+        // For serialization
+        this.universalKey = null;
+        this.displayName = null;
+    }
+
+    public ProviderKey(String universalKey, String displayName) {
+        this.universalKey = universalKey;
+        this.displayName = displayName;
+    }
+
     @Override
     public final String getUniversalKey() {
-        return getClass().getSimpleName().toLowerCase();
+        return universalKey;
+    }
+
+    @Override
+    public final String getDisplayName() {
+        return displayName;
     }
 
 }

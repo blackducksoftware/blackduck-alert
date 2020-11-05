@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.jira.server;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
 @Component
 public class JiraServerChannelKey extends IssueTrackerChannelKey {
@@ -38,4 +38,5 @@ public class JiraServerChannelKey extends IssueTrackerChannelKey {
     public String getDisplayName() {
         return JiraServerDescriptor.JIRA_LABEL;
     }
+
 }

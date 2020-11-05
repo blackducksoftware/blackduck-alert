@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public class ChannelDescriptorTest {
 

@@ -12,7 +12,6 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -29,6 +28,7 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.workflow.startup.component.AlertStartupInitializer;
 import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
 

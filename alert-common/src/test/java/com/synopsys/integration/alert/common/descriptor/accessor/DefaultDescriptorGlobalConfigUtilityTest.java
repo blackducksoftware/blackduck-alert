@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -20,6 +19,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DefaultDescriptorGlobalConfigUtilityTest {
 
@@ -187,4 +187,5 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
         assertEquals(fieldModel, savedModel);
         Mockito.verify(configurationAccessor).updateConfiguration(Mockito.anyLong(), Mockito.anyCollection());
     }
+
 }

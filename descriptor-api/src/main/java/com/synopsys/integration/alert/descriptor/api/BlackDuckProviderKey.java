@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.provider.ProviderKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 @Component
 public final class BlackDuckProviderKey extends ProviderKey {

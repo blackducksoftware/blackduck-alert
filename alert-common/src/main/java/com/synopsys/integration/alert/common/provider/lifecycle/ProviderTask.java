@@ -26,16 +26,16 @@ import java.util.List;
 
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 import com.synopsys.integration.alert.common.workflow.task.TaskMetaDataProperty;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class ProviderTask extends ScheduledTask {
-    private ProviderProperties providerProperties;
-    private ProviderKey providerKey;
-    private String taskName;
+    private final ProviderProperties providerProperties;
+    private final ProviderKey providerKey;
+    private final String taskName;
 
     public ProviderTask(ProviderKey providerKey, TaskScheduler taskScheduler, ProviderProperties providerProperties) {
         super(taskScheduler);

@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.descriptor;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class ComponentDescriptor extends Descriptor {
     public ComponentDescriptor(DescriptorKey descriptorKey, UIConfig componentUIConfig) {

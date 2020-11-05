@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.azure.boards;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
 @Component
 public class AzureBoardsChannelKey extends IssueTrackerChannelKey {

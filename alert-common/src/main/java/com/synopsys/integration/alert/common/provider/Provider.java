@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class Provider {
     private final ProviderKey key;

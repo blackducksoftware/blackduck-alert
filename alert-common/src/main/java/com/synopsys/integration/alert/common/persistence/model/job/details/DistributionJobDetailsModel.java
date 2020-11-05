@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public abstract class DistributionJobDetailsModel {
     private final String channelDescriptorName;

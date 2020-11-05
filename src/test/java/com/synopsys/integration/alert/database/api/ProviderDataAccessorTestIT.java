@@ -16,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
 import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
 import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelationRepository;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class ProviderDataAccessorTestIT extends AlertIntegrationTest {

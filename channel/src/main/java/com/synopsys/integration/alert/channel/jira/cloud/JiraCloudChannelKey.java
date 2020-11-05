@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
 @Component
 public final class JiraCloudChannelKey extends IssueTrackerChannelKey {

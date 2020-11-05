@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.component.users;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class UserManagementDescriptorKey extends DescriptorKey {
@@ -39,4 +39,5 @@ public class UserManagementDescriptorKey extends DescriptorKey {
     public String getDisplayName() {
         return UserManagementDescriptor.USER_MANAGEMENT_LABEL;
     }
+
 }
