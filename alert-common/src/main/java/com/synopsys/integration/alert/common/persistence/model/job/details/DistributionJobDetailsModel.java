@@ -22,12 +22,17 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
+import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public abstract class DistributionJobDetailsModel {
     private final String channelDescriptorName;
 
-    // TODO create a new sub-project for descriptors (or at least descriptor keys)
     /* package private */ DistributionJobDetailsModel(String channelDescriptorName) {
         this.channelDescriptorName = channelDescriptorName;
     }
@@ -37,7 +42,7 @@ public abstract class DistributionJobDetailsModel {
     }
 
     public boolean isAzureBoardsDetails() {
-        return isChannelDetails("channel_azure_boards");
+        return isChannelDetails(new AzureBoardsChannelKey());
     }
 
     public AzureBoardsJobDetailsModel getAsAzureBoardsJobDetails() {
@@ -45,7 +50,7 @@ public abstract class DistributionJobDetailsModel {
     }
 
     public boolean isEmailDetails() {
-        return isChannelDetails("channel_email");
+        return isChannelDetails(new EmailChannelKey());
     }
 
     public EmailJobDetailsModel getAsEmailJobDetails() {
@@ -53,7 +58,7 @@ public abstract class DistributionJobDetailsModel {
     }
 
     public boolean isJiraCloudDetails() {
-        return isChannelDetails("channel_jira_cloud");
+        return isChannelDetails(new JiraCloudChannelKey());
     }
 
     public JiraCloudJobDetailsModel getAsJiraCouldJobDetails() {
@@ -61,7 +66,7 @@ public abstract class DistributionJobDetailsModel {
     }
 
     public boolean isJiraServerDetails() {
-        return isChannelDetails("channel_jira_server");
+        return isChannelDetails(new JiraServerChannelKey());
     }
 
     public JiraServerJobDetailsModel getAsJiraServerJobDetails() {
@@ -69,7 +74,7 @@ public abstract class DistributionJobDetailsModel {
     }
 
     public boolean isMSTeamsDetails() {
-        return isChannelDetails("msteamskey");
+        return isChannelDetails(new MsTeamsKey());
     }
 
     public MSTeamsJobDetailsModel getAsMSTeamsJobDetails() {
@@ -77,15 +82,15 @@ public abstract class DistributionJobDetailsModel {
     }
 
     public boolean isSlackDetails() {
-        return isChannelDetails("channel_slack");
+        return isChannelDetails(new SlackChannelKey());
     }
 
     public SlackJobDetailsModel getAsSlackJobDetails() {
         return (SlackJobDetailsModel) this;
     }
 
-    private boolean isChannelDetails(String channelDescriptorName) {
-        return this.channelDescriptorName.equals(channelDescriptorName);
+    private boolean isChannelDetails(ChannelKey channelKey) {
+        return this.channelDescriptorName.equals(channelKey.getUniversalKey());
     }
 
 }
