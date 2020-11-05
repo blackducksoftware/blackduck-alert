@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- Create initial job entries with default data -->
+
+    <changeSet author="gavink" id="create-initial-job-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.distribution_jobs (job_id, name, enabled, distribution_frequency, processing_type, channel_descriptor_name, created_at, last_updated)
+                SELECT DISTINCT job.job_id, job.job_id::TEXT, true, 'DAILY', 'DEFAULT', 'channel_email', config.created_at, config.last_updated
+                FROM alert.config_groups job
+                INNER JOIN alert.descriptor_configs config ON config.id = job.config_id
+                WHERE config.descriptor_id = GET_DESCRIPTOR_ID('provider_blackduck');
+        </sql>
+    </changeSet>
+
+    <!-- Create functions for repeated queries -->
+
+    <changeSet author="gavink" id="create-migration-helper-functions">
+        <createProcedure schemaName="ALERT" dbms="postgresql">
+            CREATE OR REPLACE FUNCTION GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE()
+                RETURNS table (job_id UUID, source_key VARCHAR, field_value VARCHAR) AS $$
+                    BEGIN
+                     RETURN QUERY
+                      SELECT job.job_id, field.source_key, fv.field_value
+                            FROM alert.config_groups job
+                            INNER JOIN alert.descriptor_configs config ON config.id = job.config_id
+                            LEFT JOIN alert.field_values fv ON fv.config_id = config.id
+                            INNER JOIN alert.defined_fields field on field.id = fv.field_id;
+                    END;
+                $$ LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+
+    <!-- Update common job fields one at a time -->
+
+    <changeSet author="gavink" id="update-initial-job-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET name = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET enabled = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.enabled';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET distribution_frequency = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.frequency';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET processing_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'provider.distribution.processing.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.distribution_jobs job
+            SET channel_descriptor_name = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.channel.name';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial blackduck job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-blackduck-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.blackduck_job_details (job_id, global_config_id, filter_by_project, project_name_pattern)
+                SELECT job.job_id, GET_PROVIDER_CONFIG_ID('provider_blackduck'), false, null
+                FROM alert.distribution_jobs job;
+        </sql>
+    </changeSet>
+
+    <!-- Update blackduck job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-blackduck-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.blackduck_job_details job
+            SET global_config_id = jobFields.field_value::INTEGER
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'provider.common.config.id';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.blackduck_job_details job
+            SET filter_by_project = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.filter.by.project';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.blackduck_job_details job
+            SET project_name_pattern = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.common.project.name.pattern';
+        </sql>
+    </changeSet>
+
+    <!-- Create joined blackduck job detail tables -->
+
+    <changeSet author="gavink" id="join-blackduck-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.blackduck_job_notification_types (job_id, notification_type)
+                SELECT jobFields.job_id, jobFields.field_value
+                FROM alert.distribution_jobs job
+                LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
+                WHERE jobFields.source_key = 'provider.distribution.notification.types'
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.blackduck_job_policy_filters (job_id, policy_name)
+                SELECT jobFields.job_id, jobFields.field_value
+                FROM alert.distribution_jobs job
+                LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
+                WHERE jobFields.source_key = 'blackduck.policy.notification.filter'
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.blackduck_job_vulnerability_severity_filters (job_id, severity_name)
+                SELECT jobFields.job_id, jobFields.field_value
+                FROM alert.distribution_jobs job
+                LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
+                WHERE jobFields.source_key = 'blackduck.vulnerability.notification.filter'
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.blackduck_job_projects (job_id, project_name)
+                SELECT jobFields.job_id, jobFields.field_value
+                FROM alert.distribution_jobs job
+                LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
+                WHERE jobFields.source_key = 'channel.common.configured.project'
+        </sql>
+    </changeSet>
+
+    <!-- Create initial azure boards job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-azure-boards-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.azure_boards_job_details (job_id, add_comments, project_name_or_id, work_item_type, work_item_completed_state, work_item_reopen_state)
+                SELECT job.job_id, false, 'Unknown', 'Task', null, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_azure_boards';
+        </sql>
+    </changeSet>
+
+    <!-- Update azure boards job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-azure-boards-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET add_comments = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.comment';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET project_name_or_id = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.project';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET work_item_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET work_item_completed_state = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.completed.state';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.azure_boards_job_details job
+            SET work_item_reopen_state = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.azure.boards.work.item.reopen.state';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial email job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-email-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.email_job_details (job_id, subject_line, project_owner_only, additional_email_addresses_only, attachment_file_type)
+                SELECT job.job_id, 'Migrated Subject Line', false, false, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_email';
+        </sql>
+    </changeSet>
+
+    <!-- Update email job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-email-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET subject_line = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'email.subject.line';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET project_owner_only = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'project.owner.only';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET additional_email_addresses_only = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'email.additional.addresses.only';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.email_job_details job
+            SET attachment_file_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'email.attachment.format';
+        </sql>
+    </changeSet>
+
+    <!-- Create joined email job detail table  -->
+
+    <changeSet author="gavink" id="join-email-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.email_job_additional_email_addresses (job_id, email_address)
+                SELECT jobFields.job_id, jobFields.field_value
+                FROM alert.email_job_details job
+                LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
+                WHERE jobFields.source_key = 'email.additional.addresses'
+        </sql>
+    </changeSet>
+
+    <!-- Create initial jira cloud job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-jira-cloud-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.jira_cloud_job_details (job_id, add_comments, issue_creator_email, project_name_or_key, issue_type, resolve_transition, reopen_transition)
+                SELECT job.job_id, false, null, 'Unknown', 'Task', null, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_jira_cloud';
+        </sql>
+    </changeSet>
+
+    <!-- Update jira cloud job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-jira-cloud-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET add_comments = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.add.comments';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET issue_creator_email = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.issue.creator';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET project_name_or_key = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.project.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET issue_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.issue.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET resolve_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.resolve.workflow';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_cloud_job_details job
+            SET reopen_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.cloud.reopen.workflow';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial jira server job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-jira-server-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.jira_server_job_details (job_id, add_comments, issue_creator_username, project_name_or_key, issue_type, resolve_transition, reopen_transition)
+                SELECT job.job_id, false, null, 'Unknown', 'Task', null, null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_jira_server';
+        </sql>
+    </changeSet>
+
+    <!-- Update jira server job detail fields one at a time -->
+
+    <changeSet author="gavink" id="update-jira-server-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET add_comments = jobFields.field_value::BOOLEAN
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.add.comments';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET issue_creator_username = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.issue.creator';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET project_name_or_key = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.project.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET issue_type = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.issue.type';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET resolve_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.resolve.workflow';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.jira_server_job_details job
+            SET reopen_transition = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.jira.server.reopen.workflow';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial ms teams job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-ms-teams-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.ms_teams_job_details (job_id, webhook)
+                SELECT job.job_id, 'Unknown'
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'msteamskey';
+        </sql>
+    </changeSet>
+
+    <!-- Update ms teams job detail field -->
+
+    <changeSet author="gavink" id="update-ms-teams-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.ms_teams_job_details job
+            SET webhook = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.msteams.webhook';
+        </sql>
+    </changeSet>
+
+    <!-- Create initial slack job details with default data -->
+
+    <changeSet author="gavink" id="create-initial-slack-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            INSERT INTO alert.slack_job_details (job_id, webhook, channel_name, channel_username)
+                SELECT job.job_id, 'Unknown', 'Unknown', null
+                FROM alert.distribution_jobs job
+                WHERE job.channel_descriptor_name = 'channel_slack';
+        </sql>
+    </changeSet>
+
+    <!-- Update slack detail field -->
+
+    <changeSet author="gavink" id="update-slack-job-detail-entries">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.slack_job_details job
+            SET webhook = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.slack.webhook';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.slack_job_details job
+            SET channel_name = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.slack.channel.name';
+        </sql>
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.slack_job_details job
+            SET channel_username = jobFields.field_value
+            FROM GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields
+            WHERE job.job_id = jobFields.job_id
+            AND jobFields.source_key = 'channel.slack.channel.username';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

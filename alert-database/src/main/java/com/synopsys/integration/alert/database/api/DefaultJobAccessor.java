@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.database.configuration.repository.ConfigGr
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
+// @Component
 // TODO eventually remove this class once tests are created for its replacement
 @Deprecated(forRemoval = true)
 public class DefaultJobAccessor implements JobAccessor {
