@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.api.job;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -230,43 +231,38 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
     }
 
-    private ValidationResponseModel validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
-        ValidationResponseModel responseModel = ValidationResponseModel.success("Valid name");
-        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            responseModel = validateJobNameUnique(currentJobId, fieldModel);
-            if (responseModel.hasErrors()) {
-                return responseModel;
-            }
-        }
-        return responseModel;
+    private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
+        Optional<AlertFieldStatus> fieldStatus = jobFieldModel.getFieldModels().stream()
+                                                     .filter(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).isPresent())
+                                                     .findFirst()
+                                                     .flatMap(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME))
+                                                     .flatMap(fieldValueModel -> validateJobNameUnique(currentJobId, fieldValueModel));
+        return fieldStatus;
     }
 
-    private ValidationResponseModel validateJobNameUnique(@Nullable UUID currentJobId, FieldModel fieldModel) {
-        Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME);
+    private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, FieldValueModel fieldValueModel) {
         String error = "";
-        if (jobNameFieldOptional.isPresent()) {
-            String jobName = jobNameFieldOptional.get().getValue().orElse(null);
-            if (StringUtils.isNotBlank(jobName)) {
-                List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
+        String jobName = fieldValueModel.getValue().orElse(null);
+        if (StringUtils.isNotBlank(jobName)) {
+            List<ConfigurationJobModel> jobs = configurationAccessor.getAllJobs();
 
-                boolean foundDuplicateName = jobs.stream()
-                                                 .filter(job -> filterOutMatchingJobs(currentJobId, job))
-                                                 .flatMap(job -> job.getCopyOfConfigurations().stream())
-                                                 .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
-                                                 .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                 .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
-                if (foundDuplicateName) {
-                    error = "A distribution configuration with this name already exists.";
-                }
-            } else {
-                error = "Name cannot be blank.";
+            boolean foundDuplicateName = jobs.stream()
+                                             .filter(job -> filterOutMatchingJobs(currentJobId, job))
+                                             .flatMap(job -> job.getCopyOfConfigurations().stream())
+                                             .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
+                                             .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
+                                             .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
+            if (foundDuplicateName) {
+                error = "A distribution configuration with this name already exists.";
             }
+        } else {
+            error = "Name cannot be blank.";
         }
         if (StringUtils.isNotBlank(error)) {
-            AlertFieldStatus fieldStatus = AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, error);
-            return ValidationResponseModel.fromStatusCollection("Job name not unique", List.of(fieldStatus));
+
+            return Optional.of(AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, error));
         }
-        return ValidationResponseModel.success("Job Name Valid");
+        return Optional.empty();
     }
 
     private boolean filterOutMatchingJobs(@Nullable UUID currentJobId, ConfigurationJobModel configurationJobModel) {
@@ -283,18 +279,18 @@ public class JobConfigActions extends AbstractJobResourceActions {
         if (StringUtils.isNotBlank(resource.getJobId())) {
             jobId = UUID.fromString(resource.getJobId());
         }
-        ValidationResponseModel responseModel = validateJobNameUnique(jobId, resource);
-        if (responseModel.hasErrors()) {
+        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
+
+        validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
+        fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+
+        if (!fieldStatuses.isEmpty()) {
+            ValidationResponseModel responseModel = ValidationResponseModel.fromStatusCollection("Invalid Configuration", fieldStatuses);
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
 
-        List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateJobFieldModel(resource);
-        if (fieldStatuses.isEmpty()) {
-            responseModel = ValidationResponseModel.success("Valid");
-            return new ValidationActionResponse(HttpStatus.OK, responseModel);
-        }
-        responseModel = ValidationResponseModel.fromStatusCollection("Invalid", fieldStatuses);
-        return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
+        ValidationResponseModel responseModel = ValidationResponseModel.success("Valid");
+        return new ValidationActionResponse(HttpStatus.OK, responseModel);
     }
 
     public ActionResponse<List<JobFieldStatuses>> validateAllJobs() {
