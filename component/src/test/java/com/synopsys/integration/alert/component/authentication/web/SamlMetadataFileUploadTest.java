@@ -20,6 +20,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.ExistenceModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -51,7 +53,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void performUpload() {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(tempFile);
         ActionResponse<Void> response = action.uploadFile(testResource);
         assertTrue(response.isSuccessful());
@@ -63,7 +65,7 @@ public class SamlMetadataFileUploadTest {
     public void performUploadWithValidationFail() throws IOException {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
         tempFile = File.createTempFile("TEST_FILE_NAME_INVALID", ".xml");
-        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(tempFile);
         ActionResponse<Void> response = action.uploadFile(testResource);
         assertTrue(response.isError());
@@ -74,7 +76,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void performUploadIOException() throws Exception {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.doThrow(IOException.class).when(filePersistenceUtil).writeFileToUploadsDirectory(Mockito.anyString(), Mockito.any(InputStream.class));
 
         ActionResponse<Void> response = action.uploadFile(testResource);
@@ -96,7 +98,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void performUploadMissingPermissions() throws Exception {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
+        Mockito.when(authorizationManager.hasUploadWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.FALSE);
 
         ActionResponse<Void> response = action.uploadFile(testResource);
         assertTrue(response.isError());
@@ -107,7 +109,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void deleteUpload() {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
 
         ActionResponse<Void> response = action.deleteFile();
@@ -120,7 +122,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void deleteUploadIOException() throws Exception {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
         Mockito.doThrow(IOException.class).when(filePersistenceUtil).delete(Mockito.any(File.class));
 
@@ -145,7 +147,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void deleteUploadMissingPermissions() {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
+        Mockito.when(authorizationManager.hasUploadDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.FALSE);
         Mockito.when(filePersistenceUtil.createUploadsFile(Mockito.anyString())).thenReturn(Mockito.mock(File.class));
 
         ActionResponse<Void> response = action.deleteFile();
@@ -157,7 +159,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void fileExists() {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
 
         ActionResponse<ExistenceModel> response = action.uploadFileExists();
         assertTrue(response.isSuccessful());
@@ -178,7 +180,7 @@ public class SamlMetadataFileUploadTest {
     @Test
     public void fileExistsMissingPermissions() {
         SamlMetaDataFileUpload action = new SamlMetaDataFileUpload(descriptorKey, authorizationManager, filePersistenceUtil);
-        Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.FALSE);
+        Mockito.when(authorizationManager.hasUploadReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.FALSE);
 
         ActionResponse<ExistenceModel> response = action.uploadFileExists();
         assertTrue(response.isError());

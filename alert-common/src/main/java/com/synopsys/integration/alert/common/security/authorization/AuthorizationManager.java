@@ -40,8 +40,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
@@ -63,8 +65,8 @@ public class AuthorizationManager {
         loadPermissionsIntoCache();
     }
 
-    public final Set<Integer> getOperations(String context, String descriptorName) {
-        PermissionKey permissionKey = new PermissionKey(context, descriptorName);
+    public final Set<Integer> getOperations(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .filter(permissionCache::containsKey)
@@ -73,16 +75,16 @@ public class AuthorizationManager {
                    .collect(Collectors.toSet());
     }
 
-    public final boolean hasPermissions(String context, String descriptorName) {
-        PermissionKey permissionKey = new PermissionKey(context, descriptorName);
+    public final boolean hasPermissions(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .filter(this::isAlertRole)
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey));
     }
 
-    public final boolean isReadOnly(String context, String descriptorName) {
-        PermissionKey permissionKey = new PermissionKey(context, descriptorName);
+    public final boolean isReadOnly(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .filter(this::isAlertRole)
@@ -91,11 +93,11 @@ public class AuthorizationManager {
                    .allMatch(permissions -> permissions.isReadOnly(permissionKey));
     }
 
-    public final boolean anyReadPermission(Collection<String> contexts, Collection<String> descriptorNames) {
+    public final boolean anyReadPermission(Collection<ConfigContextEnum> contexts, Collection<String> descriptorKeys) {
         Set<PermissionKey> permissionKeys = new HashSet<>();
-        for (String context : contexts) {
-            for (String descriptorName : descriptorNames) {
-                permissionKeys.add(new PermissionKey(context, descriptorName));
+        for (ConfigContextEnum context : contexts) {
+            for (String descriptorKey : descriptorKeys) {
+                permissionKeys.add(new PermissionKey(context.name(), descriptorKey));
             }
         }
         return anyReadPermission(permissionKeys);
@@ -105,40 +107,65 @@ public class AuthorizationManager {
         return currentUserAnyPermission(AccessOperation.READ, permissionKeys);
     }
 
-    public final boolean hasCreatePermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.CREATE, context, descriptorName);
+    @Deprecated
+    public final boolean hasCreatePermission(String context, String descriptorKey) {
+        return currentUserHasPermission(AccessOperation.CREATE, context, descriptorKey);
     }
 
-    public final boolean hasDeletePermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.DELETE, context, descriptorName);
+    public final boolean hasCreatePermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.CREATE, context, descriptorKey);
     }
 
-    public final boolean hasReadPermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.READ, context, descriptorName);
+    @Deprecated
+    public final boolean hasDeletePermission(String context, String descriptorKey) {
+        return currentUserHasPermission(AccessOperation.DELETE, context, descriptorKey);
     }
 
-    public final boolean hasWritePermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.WRITE, context, descriptorName);
+    public final boolean hasDeletePermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.DELETE, context, descriptorKey);
     }
 
-    public final boolean hasExecutePermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.EXECUTE, context, descriptorName);
+    @Deprecated
+    public final boolean hasReadPermission(String context, String descriptorKey) {
+        return currentUserHasPermission(AccessOperation.READ, context, descriptorKey);
     }
 
-    public final boolean hasUploadReadPermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_READ, context, descriptorName);
+    public final boolean hasReadPermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.READ, context, descriptorKey);
     }
 
-    public final boolean hasUploadWritePermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_WRITE, context, descriptorName);
+    @Deprecated
+    public final boolean hasWritePermission(String context, String descriptorKey) {
+        return currentUserHasPermission(AccessOperation.WRITE, context, descriptorKey);
     }
 
-    public final boolean hasUploadDeletePermission(String context, String descriptorName) {
-        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_DELETE, context, descriptorName);
+    public final boolean hasWritePermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.WRITE, context, descriptorKey);
     }
 
-    public final boolean hasAllPermissions(String context, String descriptorName, AccessOperation... operations) {
-        PermissionKey permissionKey = new PermissionKey(context, descriptorName);
+    @Deprecated
+    public final boolean hasExecutePermission(String context, String descriptorKey) {
+        return currentUserHasPermission(AccessOperation.EXECUTE, context, descriptorKey);
+    }
+
+    public final boolean hasExecutePermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.EXECUTE, context, descriptorKey);
+    }
+
+    public final boolean hasUploadReadPermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_READ, context, descriptorKey);
+    }
+
+    public final boolean hasUploadWritePermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_WRITE, context, descriptorKey);
+    }
+
+    public final boolean hasUploadDeletePermission(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(AccessOperation.UPLOAD_FILE_DELETE, context, descriptorKey);
+    }
+
+    public final boolean hasAllPermissions(ConfigContextEnum context, DescriptorKey descriptorKey, AccessOperation... operations) {
+        PermissionKey permissionKey = new PermissionKey(context.name(), descriptorKey.getUniversalKey());
         Collection<String> roleNames = getCurrentUserRoleNames();
         return roleNames.stream()
                    .filter(this::isAlertRole)
@@ -183,8 +210,12 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).anyPermissionMatch(operation, permissionKeys));
     }
 
-    private boolean currentUserHasPermission(AccessOperation operation, String context, String descriptorName) {
-        PermissionKey permissionKey = new PermissionKey(context, descriptorName);
+    private boolean currentUserHasPermission(AccessOperation operation, ConfigContextEnum context, DescriptorKey descriptorKey) {
+        return currentUserHasPermission(operation, context.name(), descriptorKey.getUniversalKey());
+    }
+
+    private boolean currentUserHasPermission(AccessOperation operation, String context, String descriptorKey) {
+        PermissionKey permissionKey = new PermissionKey(context, descriptorKey);
         Collection<String> roleNames = getCurrentUserRoleNames();
         boolean hasPermission = roleNames.stream()
                                     .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermission(permissionKey, operation));

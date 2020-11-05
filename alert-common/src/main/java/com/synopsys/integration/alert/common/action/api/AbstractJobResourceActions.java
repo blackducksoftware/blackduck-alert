@@ -128,7 +128,7 @@ public abstract class AbstractJobResourceActions {
 
     public final ActionResponse<JobFieldModel> getOne(UUID id) {
         Set<String> descriptorNames = getDescriptorNames();
-        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name()), descriptorNames)) {
+        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION), descriptorNames)) {
             return ActionResponse.createForbiddenResponse();
         }
         Optional<JobFieldModel> optionalModel = findJobFieldModel(id);

@@ -30,15 +30,15 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.Nullable;
-
 import org.apache.commons.lang3.EnumUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -114,13 +114,12 @@ public class DescriptorMetadataActions {
         ConfigContextEnum[] applicableContexts = (null != context) ? new ConfigContextEnum[] { context } : ConfigContextEnum.values();
         Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (ConfigContextEnum applicableContext : applicableContexts) {
-            String contextName = applicableContext.name();
             for (Descriptor descriptor : filteredDescriptors) {
-                String descriptorKey = descriptor.getDescriptorKey().getUniversalKey();
-                if (authorizationManager.hasPermissions(contextName, descriptorKey)) {
+                DescriptorKey descriptorKey = descriptor.getDescriptorKey();
+                if (authorizationManager.hasPermissions(applicableContext, descriptorKey)) {
                     Optional<DescriptorMetadata> optionalMetaData = descriptor.createMetaData(applicableContext);
                     optionalMetaData
-                        .flatMap((metadata) -> restrictMetaData(metadata, contextName, descriptorKey))
+                        .flatMap((metadata) -> restrictMetaData(metadata, applicableContext, descriptorKey))
                         .ifPresent(descriptorMetadata::add);
                 }
             }
@@ -128,18 +127,18 @@ public class DescriptorMetadataActions {
         return descriptorMetadata;
     }
 
-    private Optional<DescriptorMetadata> restrictMetaData(DescriptorMetadata descriptorMetadata, String context, String descriptorName) {
-        boolean hasReadPermission = authorizationManager.hasReadPermission(context, descriptorName);
+    private Optional<DescriptorMetadata> restrictMetaData(DescriptorMetadata descriptorMetadata, ConfigContextEnum context, DescriptorKey descriptorKey) {
+        boolean hasReadPermission = authorizationManager.hasReadPermission(context, descriptorKey);
         if (!hasReadPermission) {
             return Optional.empty();
         }
 
         Set<AccessOperation> operationSet = new HashSet<>();
-        for (int operations : authorizationManager.getOperations(context, descriptorName)) {
+        for (int operations : authorizationManager.getOperations(context, descriptorKey)) {
             operationSet.addAll(AccessOperation.getAllAccessOperations(operations));
         }
 
-        boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorName);
+        boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorKey);
         descriptorMetadata.setOperations(operationSet);
         descriptorMetadata.setReadOnly(isReadOnly);
 

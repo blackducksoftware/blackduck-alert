@@ -31,8 +31,8 @@ public class DescriptorMetadataActionsTest {
     @Test
     public void getDescriptorsWithoutPermissionTest() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.doReturn(true).when(authorizationManager).hasPermissions(Mockito.anyString(), Mockito.anyString());
-        Mockito.doReturn(false).when(authorizationManager).hasReadPermission(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).hasPermissions(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+        Mockito.doReturn(false).when(authorizationManager).hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
 
         DescriptorMetadataActions actions = new DescriptorMetadataActions(descriptors, authorizationManager);
         ActionResponse<DescriptorsResponseModel> response = actions.getDescriptorsByPermissions(null, null, null);
@@ -246,8 +246,14 @@ public class DescriptorMetadataActionsTest {
 
     private DescriptorMetadataActions createDescriptorController() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.doReturn(true).when(authorizationManager).isReadOnly(Mockito.anyString(), Mockito.anyString());
-        Mockito.doReturn(true).when(authorizationManager).hasPermissions(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(true).when(authorizationManager).isReadOnly(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+        Mockito.doReturn(true).when(authorizationManager).hasPermissions(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+        Mockito.doReturn(true).when(authorizationManager).hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+        Mockito.doReturn(true).when(authorizationManager).hasDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+        Mockito.doReturn(true).when(authorizationManager).hasWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+        Mockito.doReturn(true).when(authorizationManager).hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+        Mockito.doReturn(true).when(authorizationManager).hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class));
+
         Mockito.doReturn(true).when(authorizationManager).hasReadPermission(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasDeletePermission(Mockito.anyString(), Mockito.anyString());
         Mockito.doReturn(true).when(authorizationManager).hasWritePermission(Mockito.anyString(), Mockito.anyString());
