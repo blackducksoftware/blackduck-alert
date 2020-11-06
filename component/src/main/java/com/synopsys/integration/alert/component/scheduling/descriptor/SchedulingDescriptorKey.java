@@ -30,14 +30,8 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 public final class SchedulingDescriptorKey extends DescriptorKey {
     private static final String SCHEDULING_COMPONENT = "component_scheduling";
 
-    @Override
-    public String getUniversalKey() {
-        return SCHEDULING_COMPONENT;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return SchedulingDescriptor.SCHEDULING_LABEL;
+    public SchedulingDescriptorKey() {
+        super(SCHEDULING_COMPONENT, SchedulingDescriptor.SCHEDULING_LABEL);
     }
 
 }

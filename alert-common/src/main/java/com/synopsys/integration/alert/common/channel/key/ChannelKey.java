@@ -25,4 +25,7 @@ package com.synopsys.integration.alert.common.channel.key;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 
 public abstract class ChannelKey extends DescriptorKey {
+    public ChannelKey(String universalKey, String displayName) {
+        super(universalKey, displayName);
+    }
 }

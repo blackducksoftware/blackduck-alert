@@ -31,14 +31,8 @@ import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCh
 public final class JiraCloudChannelKey extends IssueTrackerChannelKey {
     private static final String COMPONENT_NAME = "channel_jira_cloud";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return JiraCloudDescriptor.JIRA_LABEL;
+    public JiraCloudChannelKey() {
+        super(COMPONENT_NAME, JiraCloudDescriptor.JIRA_LABEL);
     }
 
 }

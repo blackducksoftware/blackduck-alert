@@ -626,17 +626,7 @@ public class JobConfigActionsTest {
     }
 
     private DescriptorKey createDescriptorKey() {
-        return new DescriptorKey() {
-            @Override
-            public String getUniversalKey() {
-                return "universal_key";
-            }
-
-            @Override
-            public String getDisplayName() {
-                return "Universal Key";
-            }
-        };
+        return new DescriptorKey("universal_key", "Universal Key") {};
     }
 
     private Descriptor createDescriptor(DescriptorType descriptorType) {

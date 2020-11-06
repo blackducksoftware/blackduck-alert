@@ -25,4 +25,7 @@ package com.synopsys.integration.alert.common.channel.issuetracker;
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
 public abstract class IssueTrackerChannelKey extends ChannelKey {
+    public IssueTrackerChannelKey(String universalKey, String displayName) {
+        super(universalKey, displayName);
+    }
 }

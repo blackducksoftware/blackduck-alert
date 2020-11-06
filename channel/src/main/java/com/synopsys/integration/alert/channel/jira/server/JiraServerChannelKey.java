@@ -29,13 +29,10 @@ import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCh
 
 @Component
 public class JiraServerChannelKey extends IssueTrackerChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return "channel_jira_server";
+    private static final String COMPONENT_NAME = "channel_jira_server";
+
+    public JiraServerChannelKey() {
+        super(COMPONENT_NAME, JiraServerDescriptor.JIRA_LABEL);
     }
 
-    @Override
-    public String getDisplayName() {
-        return JiraServerDescriptor.JIRA_LABEL;
-    }
 }

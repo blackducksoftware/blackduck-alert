@@ -31,14 +31,8 @@ import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 public final class SlackChannelKey extends ChannelKey {
     private static final String COMPONENT_NAME = "channel_slack";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return SlackDescriptor.SLACK_LABEL;
+    public SlackChannelKey() {
+        super(COMPONENT_NAME, SlackDescriptor.SLACK_LABEL);
     }
 
 }

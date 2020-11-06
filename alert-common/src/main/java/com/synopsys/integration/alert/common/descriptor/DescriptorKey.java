@@ -27,8 +27,21 @@ import java.io.Serializable;
 import com.synopsys.integration.util.Stringable;
 
 public abstract class DescriptorKey extends Stringable implements Serializable {
-    public abstract String getUniversalKey();
 
-    public abstract String getDisplayName();
+    private final String universalKey;
+    private final String displayName;
+
+    public DescriptorKey(String universalKey, String displayName) {
+        this.universalKey = universalKey;
+        this.displayName = displayName;
+    }
+
+    public String getUniversalKey() {
+        return universalKey;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 
 }

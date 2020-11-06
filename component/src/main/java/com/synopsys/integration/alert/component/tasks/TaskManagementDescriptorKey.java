@@ -29,15 +29,9 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 @Component
 public class TaskManagementDescriptorKey extends DescriptorKey {
     public static final String TASK_MANAGEMENT_COMPONENT = "component_tasks";
-    private static final long serialVersionUID = -3050457734693781549L;
 
-    @Override
-    public String getUniversalKey() {
-        return TASK_MANAGEMENT_COMPONENT;
+    public TaskManagementDescriptorKey() {
+        super(TASK_MANAGEMENT_COMPONENT, TaskManagementDescriptor.TASK_MANAGEMENT_LABEL);
     }
 
-    @Override
-    public String getDisplayName() {
-        return TaskManagementDescriptor.TASK_MANAGEMENT_LABEL;
-    }
 }

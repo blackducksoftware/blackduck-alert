@@ -25,12 +25,14 @@ package com.synopsys.integration.alert.channel.msteams;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ClassNameChannelKey;
+import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 
 @Component
-public final class MsTeamsKey extends ClassNameChannelKey {
-    @Override
-    public String getDisplayName() {
-        return MsTeamsDescriptor.MSTEAMS_LABEL;
+public final class MsTeamsKey extends ChannelKey {
+    private static final String COMPONENT_NAME = "msteamskey";
+
+    public MsTeamsKey() {
+        super(COMPONENT_NAME, MsTeamsDescriptor.MSTEAMS_LABEL);
     }
+
 }

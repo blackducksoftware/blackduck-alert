@@ -283,17 +283,7 @@ public class DescriptorMetadataActionsTest {
         private final List<ConfigContextEnum> contexts;
 
         public TestDescriptor(String descriptorName, DescriptorType type, ConfigContextEnum... contexts) {
-            super(new DescriptorKey() {
-                @Override
-                public String getUniversalKey() {
-                    return descriptorName;
-                }
-
-                @Override
-                public String getDisplayName() {
-                    return descriptorName;
-                }
-            }, type);
+            super(new DescriptorKey(descriptorName, descriptorName) {}, type);
             if (contexts != null) {
                 this.contexts = Arrays.asList(contexts);
             } else {
