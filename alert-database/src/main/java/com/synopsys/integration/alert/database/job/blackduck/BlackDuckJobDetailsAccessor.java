@@ -105,4 +105,32 @@ public class BlackDuckJobDetailsAccessor {
         return savedBlackDuckJobDetails;
     }
 
+    public List<String> retrieveNotificationTypesForJob(UUID jobId) {
+        return blackDuckJobNotificationTypeRepository.findByJobId(jobId)
+                   .stream()
+                   .map(BlackDuckJobNotificationTypeEntity::getNotificationType)
+                   .collect(Collectors.toList());
+    }
+
+    public List<String> retrieveProjectNamesForJob(UUID jobId) {
+        return blackDuckJobProjectRepository.findByJobId(jobId)
+                   .stream()
+                   .map(BlackDuckJobProjectEntity::getProjectName)
+                   .collect(Collectors.toList());
+    }
+
+    public List<String> retrievePolicyNamesForJob(UUID jobId) {
+        return blackDuckJobPolicyFilterRepository.findByJobId(jobId)
+                   .stream()
+                   .map(BlackDuckJobPolicyFilterEntity::getPolicyName)
+                   .collect(Collectors.toList());
+    }
+
+    public List<String> retrieveVulnerabilitySeverityNamesForJob(UUID jobId) {
+        return blackDuckJobVulnerabilitySeverityFilterRepository.findByJobId(jobId)
+                   .stream()
+                   .map(BlackDuckJobVulnerabilitySeverityFilterEntity::getSeverityName)
+                   .collect(Collectors.toList());
+    }
+
 }

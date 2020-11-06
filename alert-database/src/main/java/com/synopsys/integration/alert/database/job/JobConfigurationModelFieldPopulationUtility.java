@@ -25,27 +25,37 @@ package com.synopsys.integration.alert.database.job;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
-import com.synopsys.integration.alert.database.job.blackduck.policy.BlackDuckJobPolicyFilterEntity;
-import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
-import com.synopsys.integration.alert.database.job.blackduck.vulnerability.BlackDuckJobVulnerabilitySeverityFilterEntity;
+import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
-public class JobConfigurationModelFieldPopulationUtils {
-    public static void populateBlackDuckConfigurationModelFields(DistributionJobEntity jobEntity, ConfigurationModelMutable blackDuckConfigurationModel) {
+@Component
+public class JobConfigurationModelFieldPopulationUtility {
+    private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
+    private final EmailJobDetailsAccessor emailJobDetailsAccessor;
+
+    @Autowired
+    public JobConfigurationModelFieldPopulationUtility(BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor) {
+        this.blackDuckJobDetailsAccessor = blackDuckJobDetailsAccessor;
+        this.emailJobDetailsAccessor = emailJobDetailsAccessor;
+    }
+
+    public final void populateBlackDuckConfigurationModelFields(DistributionJobEntity jobEntity, ConfigurationModelMutable blackDuckConfigurationModel) {
+        UUID jobId = jobEntity.getJobId();
         BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
 
         blackDuckConfigurationModel.put(createConfigFieldModel("provider.common.config.id", blackDuckJobDetails.getGlobalConfigId().toString()));
@@ -59,43 +69,28 @@ public class JobConfigurationModelFieldPopulationUtils {
                 blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.project.name.pattern", projectNamePattern));
             }
 
-            List<BlackDuckJobProjectEntity> blackDuckJobProjects = blackDuckJobDetails.getBlackDuckJobProjects();
-            if (null != blackDuckJobProjects && !blackDuckJobProjects.isEmpty()) {
-                List<String> blackDuckProjectNames = blackDuckJobProjects
-                                                         .stream()
-                                                         .map(BlackDuckJobProjectEntity::getProjectName)
-                                                         .collect(Collectors.toList());
+            List<String> blackDuckProjectNames = blackDuckJobDetailsAccessor.retrieveProjectNamesForJob(jobId);
+            if (!blackDuckProjectNames.isEmpty()) {
                 blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.configured.project", blackDuckProjectNames));
             }
         }
 
         // These are required so they will not be null/empty
-        List<String> blackDuckJobNotificationTypeNames = blackDuckJobDetails.getBlackDuckJobNotificationTypes()
-                                                             .stream()
-                                                             .map(BlackDuckJobNotificationTypeEntity::getNotificationType)
-                                                             .collect(Collectors.toList());
+        List<String> blackDuckJobNotificationTypeNames = blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(jobId);
         blackDuckConfigurationModel.put(createConfigFieldModel("provider.distribution.notification.types", blackDuckJobNotificationTypeNames));
 
-        List<BlackDuckJobPolicyFilterEntity> blackDuckJobPolicyFilters = blackDuckJobDetails.getBlackDuckJobPolicyFilters();
-        if (null != blackDuckJobPolicyFilters && !blackDuckJobPolicyFilters.isEmpty()) {
-            List<String> blackDuckPolicyNames = blackDuckJobPolicyFilters
-                                                    .stream()
-                                                    .map(BlackDuckJobPolicyFilterEntity::getPolicyName)
-                                                    .collect(Collectors.toList());
+        List<String> blackDuckPolicyNames = blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(jobId);
+        if (!blackDuckPolicyNames.isEmpty()) {
             blackDuckConfigurationModel.put(createConfigFieldModel("blackduck.policy.notification.filter", blackDuckPolicyNames));
         }
 
-        List<BlackDuckJobVulnerabilitySeverityFilterEntity> blackDuckJobVulnerabilitySeverityFilters = blackDuckJobDetails.getBlackDuckJobVulnerabilitySeverityFilters();
-        if (null != blackDuckJobVulnerabilitySeverityFilters && !blackDuckJobVulnerabilitySeverityFilters.isEmpty()) {
-            List<String> blackDuckJobVulnerabilitySeverityNames = blackDuckJobVulnerabilitySeverityFilters
-                                                                      .stream()
-                                                                      .map(BlackDuckJobVulnerabilitySeverityFilterEntity::getSeverityName)
-                                                                      .collect(Collectors.toList());
+        List<String> blackDuckJobVulnerabilitySeverityNames = blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(jobId);
+        if (!blackDuckJobVulnerabilitySeverityNames.isEmpty()) {
             blackDuckConfigurationModel.put(createConfigFieldModel("blackduck.vulnerability.notification.filter", blackDuckJobVulnerabilitySeverityNames));
         }
     }
 
-    public static void populateChannelConfigurationModelFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+    public final void populateChannelConfigurationModelFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
         String channelDescriptorName = jobEntity.getChannelDescriptorName();
         channelConfigurationModel.put(createConfigFieldModel("channel.common.enabled", jobEntity.getEnabled().toString()));
         channelConfigurationModel.put(createConfigFieldModel("channel.common.name", jobEntity.getName()));
@@ -118,17 +113,17 @@ public class JobConfigurationModelFieldPopulationUtils {
         }
     }
 
-    public static ConfigurationFieldModel createConfigFieldModel(String fieldKey, String value) {
+    public final ConfigurationFieldModel createConfigFieldModel(String fieldKey, String value) {
         return createConfigFieldModel(fieldKey, List.of(value));
     }
 
-    public static ConfigurationFieldModel createConfigFieldModel(String fieldKey, Collection<String> values) {
+    public final ConfigurationFieldModel createConfigFieldModel(String fieldKey, Collection<String> values) {
         ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(fieldKey);
         fieldModel.setFieldValues(values);
         return fieldModel;
     }
 
-    private static void populateAzureBoardsFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+    private void populateAzureBoardsFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
         AzureBoardsJobDetailsEntity azureBoardsJobDetails = jobEntity.getAzureBoardsJobDetails();
         if (null != azureBoardsJobDetails) {
             channelConfigurationModel.put(createConfigFieldModel("channel.azure.boards.work.item.comment", azureBoardsJobDetails.getAddComments().toString()));
@@ -139,7 +134,7 @@ public class JobConfigurationModelFieldPopulationUtils {
         }
     }
 
-    private static void populateEmailFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+    private void populateEmailFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
         EmailJobDetailsEntity emailJobDetails = jobEntity.getEmailJobDetails();
         if (null != emailJobDetails) {
             channelConfigurationModel.put(createConfigFieldModel("email.subject.line", emailJobDetails.getSubjectLine()));
@@ -147,18 +142,14 @@ public class JobConfigurationModelFieldPopulationUtils {
             channelConfigurationModel.put(createConfigFieldModel("project.owner.only", emailJobDetails.getProjectOwnerOnly().toString()));
             channelConfigurationModel.put(createConfigFieldModel("email.additional.addresses.only", emailJobDetails.getAdditionalEmailAddressesOnly().toString()));
 
-            List<EmailJobAdditionalEmailAddressEntity> emailJobAdditionalEmailAddresses = emailJobDetails.getEmailJobAdditionalEmailAddresses();
-            if (null != emailJobAdditionalEmailAddresses) {
-                List<String> emailAddresses = emailJobAdditionalEmailAddresses
-                                                  .stream()
-                                                  .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
-                                                  .collect(Collectors.toList());
+            List<String> emailAddresses = emailJobDetailsAccessor.retrieveAdditionalEmailAddressesForJob(jobEntity.getJobId());
+            if (!emailAddresses.isEmpty()) {
                 channelConfigurationModel.put(createConfigFieldModel("email.additional.addresses", emailAddresses));
             }
         }
     }
 
-    private static void populateJiraCloudFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+    private void populateJiraCloudFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
         JiraCloudJobDetailsEntity jiraCloudJobDetails = jobEntity.getJiraCloudJobDetails();
         if (null != jiraCloudJobDetails) {
             channelConfigurationModel.put(createConfigFieldModel("channel.jira.cloud.add.comments", jiraCloudJobDetails.getAddComments().toString()));
@@ -170,7 +161,7 @@ public class JobConfigurationModelFieldPopulationUtils {
         }
     }
 
-    private static void populateJiraServerFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+    private void populateJiraServerFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
         JiraServerJobDetailsEntity jiraServerJobDetails = jobEntity.getJiraServerJobDetails();
         if (null != jiraServerJobDetails) {
             channelConfigurationModel.put(createConfigFieldModel("channel.jira.server.add.comments", jiraServerJobDetails.getAddComments().toString()));
@@ -182,14 +173,14 @@ public class JobConfigurationModelFieldPopulationUtils {
         }
     }
 
-    private static void populateMSTeamsField(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+    private void populateMSTeamsField(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
         Optional.ofNullable(jobEntity.getMsTeamsJobDetails())
             .map(MSTeamsJobDetailsEntity::getWebhook)
             .map(webhook -> createConfigFieldModel("channel.msteams.webhook", webhook))
             .ifPresent(channelConfigurationModel::put);
     }
 
-    private static void populateSlackFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
+    private void populateSlackFields(DistributionJobEntity jobEntity, ConfigurationModelMutable channelConfigurationModel) {
         SlackJobDetailsEntity slackJobDetails = jobEntity.getSlackJobDetails();
         if (null != slackJobDetails) {
             channelConfigurationModel.put(createConfigFieldModel("channel.slack.webhook", slackJobDetails.getWebhook()));
