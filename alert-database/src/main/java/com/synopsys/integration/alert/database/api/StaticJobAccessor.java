@@ -140,15 +140,23 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude) {
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageNumber, int pageLimit) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
+        Page<ConfigurationJobModel> pageOfJobsWithDescriptorNames = distributionJobRepository.findAll(pageRequest).map(this::convertToConfigurationJobModel);
+        return new AlertPagedModel<>(pageOfJobsWithDescriptorNames.getTotalPages(), pageNumber, pageLimit, pageOfJobsWithDescriptorNames.getContent());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageNumber, int pageLimit, Collection<String> descriptorsNamesToInclude) {
         if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
-            return new AlertPagedModel<>(0, pageOffset, pageLimit, List.of());
+            return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());
         }
 
-        PageRequest pageRequest = PageRequest.of(pageOffset, pageLimit);
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
         Page<ConfigurationJobModel> pageOfJobsWithDescriptorNames = distributionJobRepository.findByChannelDescriptorNameIn(descriptorsNamesToInclude, pageRequest)
                                                                         .map(this::convertToConfigurationJobModel);
-        return new AlertPagedModel<>(pageOfJobsWithDescriptorNames.getTotalPages(), pageOffset, pageLimit, pageOfJobsWithDescriptorNames.getContent());
+        return new AlertPagedModel<>(pageOfJobsWithDescriptorNames.getTotalPages(), pageNumber, pageLimit, pageOfJobsWithDescriptorNames.getContent());
     }
 
     @Override
