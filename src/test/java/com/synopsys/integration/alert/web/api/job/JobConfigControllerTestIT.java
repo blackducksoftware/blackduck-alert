@@ -86,8 +86,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        String configId = String.valueOf(minimumConfigurationModel.getJobId());
 
         String urlPath = url + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
@@ -100,8 +100,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        String jobId = String.valueOf(emptyConfigurationModel.getJobId());
+        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        String jobId = String.valueOf(minimumConfigurationModel.getJobId());
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
@@ -126,9 +126,9 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
+        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
 
-        String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        String configId = String.valueOf(minimumConfigurationModel.getJobId());
         String urlPath = url + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))

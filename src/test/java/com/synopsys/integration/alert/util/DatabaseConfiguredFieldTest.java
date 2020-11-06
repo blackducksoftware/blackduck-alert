@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -57,7 +62,13 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     }
 
     public ConfigurationJobModel addJob(String descriptorName, String providerName, Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
-        Set<ConfigurationFieldModel> fieldModels = fieldsValues
+        Map<String, Collection<String>> fieldValuesWithDefaults = new HashMap<>();
+        fieldValuesWithDefaults.put(ChannelDistributionUIConfig.KEY_FREQUENCY, List.of(FrequencyType.DAILY.name()));
+        fieldValuesWithDefaults.put(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, List.of(ProcessingType.DEFAULT.name()));
+        fieldValuesWithDefaults.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, List.of(descriptorName));
+        fieldValuesWithDefaults.putAll(fieldsValues);
+
+        Set<ConfigurationFieldModel> fieldModels = fieldValuesWithDefaults
                                                        .entrySet()
                                                        .stream()
                                                        .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
