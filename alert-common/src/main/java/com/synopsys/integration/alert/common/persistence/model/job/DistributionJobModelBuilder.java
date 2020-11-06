@@ -52,9 +52,6 @@ public class DistributionJobModelBuilder {
 
     private DistributionJobDetailsModel distributionJobDetails;
 
-    public DistributionJobModelBuilder() {
-    }
-
     public DistributionJobModel build() {
         return new DistributionJobModel(
             jobId,

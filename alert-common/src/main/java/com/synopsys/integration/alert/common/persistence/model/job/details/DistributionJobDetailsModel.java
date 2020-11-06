@@ -23,8 +23,9 @@
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
 import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public abstract class DistributionJobDetailsModel {
+public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
     private final String channelDescriptorName;
 
     // TODO create a new sub-project for descriptors (or at least descriptor keys)
