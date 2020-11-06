@@ -22,7 +22,12 @@
  */
 package com.synopsys.integration.alert.database.job.email.additional;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EmailJobAdditionalEmailAddressRepository extends JpaRepository<EmailJobAdditionalEmailAddressEntity, EmailJobAdditionalEmailAddressPK> {
+    List<EmailJobAdditionalEmailAddressEntity> findByJobId(UUID jobId);
+
 }

@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -50,6 +51,7 @@ import com.synopsys.integration.alert.database.configuration.repository.ConfigGr
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
+// @Component
 // TODO eventually remove this class once tests are created for its replacement
 @Deprecated(forRemoval = true)
 public class DefaultJobAccessor implements JobAccessor {
@@ -106,6 +108,12 @@ public class DefaultJobAccessor implements JobAccessor {
         List<ConfigGroupEntity> distinctJobs = configGroupRepository.findAllByJobIdIn(distinctJobIds.getContent());
         List<ConfigurationJobModel> jobModels = convertToJobModels(distinctJobs);
         return new AlertPagedModel<>(distinctJobIds.getTotalPages(), pageOffset, pageLimit, jobModels);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

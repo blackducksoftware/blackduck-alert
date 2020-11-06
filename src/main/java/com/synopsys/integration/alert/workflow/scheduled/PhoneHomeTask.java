@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.workflow.scheduled;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +54,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
@@ -88,8 +90,17 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private Boolean skipPhoneHome;
 
     @Autowired
-    public PhoneHomeTask(TaskScheduler taskScheduler, AboutReader aboutReader, JobAccessor jobAccessor, ConfigurationAccessor configurationAccessor,
-        TaskManager taskManager, ProxyManager proxyManager, Gson gson, AuditAccessor auditAccessor, List<ProviderPhoneHomeHandler> providerHandlers) {
+    public PhoneHomeTask(
+        TaskScheduler taskScheduler,
+        AboutReader aboutReader,
+        JobAccessor jobAccessor,
+        ConfigurationAccessor configurationAccessor,
+        TaskManager taskManager,
+        ProxyManager proxyManager,
+        Gson gson,
+        AuditAccessor auditAccessor,
+        List<ProviderPhoneHomeHandler> providerHandlers
+    ) {
         super(taskScheduler, taskManager);
         this.aboutReader = aboutReader;
         this.jobAccessor = jobAccessor;
@@ -119,13 +130,15 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
         ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
         try {
+            String[] channelMetaData = retrieveChannelMetadataForAllJobs();
+
             for (ProviderPhoneHomeHandler handler : providerHandlers) {
                 List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(handler.getProviderKey(), ConfigContextEnum.GLOBAL);
                 for (ConfigurationModel configuration : configurations) {
                     PhoneHomeService phoneHomeService = createPhoneHomeService(phoneHomeExecutor);
                     NameVersion alertArtifactInfo = new NameVersion(ARTIFACT_ID, productVersion);
                     PhoneHomeRequestBodyBuilder requestBodyBuilder = handler.populatePhoneHomeData(configuration, alertArtifactInfo);
-                    requestBodyBuilder.addArtifactModules(getChannelMetaData().toArray(String[]::new));
+                    requestBodyBuilder.addArtifactModules(channelMetaData);
                     PhoneHomeRequestBody requestBody = requestBodyBuilder.build();
                     PhoneHomeResponse phoneHomeResponse = phoneHomeService.phoneHome(requestBody, System.getenv());
                     boolean taskSucceeded = BooleanUtils.isTrue(phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT));
@@ -155,11 +168,24 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return PhoneHomeService.createAsynchronousPhoneHomeService(intLogger, phoneHomeClient, phoneHomeExecutor);
     }
 
-    private Set<String> getChannelMetaData() {
+    private String[] retrieveChannelMetadataForAllJobs() {
+        Set<String> channelMetadata = new HashSet<>();
+
+        int pageNumber = 0;
+        AlertPagedModel<ConfigurationJobModel> pageOfJobs;
+        do {
+            pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, 100);
+            Set<String> channelMetadataBatch = retrieveChannelMetadataForJobs(pageOfJobs.getModels());
+            channelMetadata.addAll(channelMetadataBatch);
+            pageNumber++;
+        } while (pageNumber < pageOfJobs.getTotalPages());
+        return channelMetadata.toArray(String[]::new);
+    }
+
+    private Set<String> retrieveChannelMetadataForJobs(List<ConfigurationJobModel> jobs) {
         Map<String, Integer> createdDistributions = new HashMap<>();
         String successKeyPart = "::Successes";
-        List<ConfigurationJobModel> allJobs = jobAccessor.getAllJobs();
-        for (ConfigurationJobModel job : allJobs) {
+        for (ConfigurationJobModel job : jobs) {
             for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
                 String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
                 String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");

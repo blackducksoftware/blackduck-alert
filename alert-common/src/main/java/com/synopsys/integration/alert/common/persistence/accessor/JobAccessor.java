@@ -44,6 +44,8 @@ public interface JobAccessor {
 
     List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds);
 
+    AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit);
+
     AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude);
 
     Optional<ConfigurationJobModel> getJobById(UUID jobId);
