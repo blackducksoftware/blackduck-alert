@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 
 public class ChannelDistributionUIConfigTest {
     @Test

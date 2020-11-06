@@ -1,5 +1,5 @@
 /**
- * channel
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,19 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email;
+package com.synopsys.integration.alert.descriptor.api.model;
 
-import org.springframework.stereotype.Component;
+import java.io.Serializable;
 
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.util.Stringable;
 
-@Component
-public final class EmailChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_email";
+public abstract class DescriptorKey extends Stringable implements Serializable {
 
-    public EmailChannelKey() {
-        super(COMPONENT_NAME, EmailDescriptor.EMAIL_LABEL);
+    private final String universalKey;
+    private final String displayName;
+
+    public DescriptorKey(String universalKey, String displayName) {
+        this.universalKey = universalKey;
+        this.displayName = displayName;
+    }
+
+    public String getUniversalKey() {
+        return universalKey;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
 }

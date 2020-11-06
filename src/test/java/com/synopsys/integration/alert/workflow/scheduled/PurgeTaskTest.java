@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -16,6 +15,7 @@ import com.synopsys.integration.alert.common.persistence.model.mutable.Configura
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
 import com.synopsys.integration.alert.component.scheduling.workflow.PurgeTask;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class PurgeTaskTest {
 
@@ -34,4 +34,5 @@ public class PurgeTaskTest {
 
         assertEquals(expectedCron, cronWithNotDefault);
     }
+
 }

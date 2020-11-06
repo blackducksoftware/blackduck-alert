@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -47,6 +46,7 @@ import com.synopsys.integration.alert.database.configuration.repository.ConfigCo
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 @Transactional

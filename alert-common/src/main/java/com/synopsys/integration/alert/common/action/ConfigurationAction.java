@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.common.action;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class ConfigurationAction {
     private final DescriptorKey descriptorKey;

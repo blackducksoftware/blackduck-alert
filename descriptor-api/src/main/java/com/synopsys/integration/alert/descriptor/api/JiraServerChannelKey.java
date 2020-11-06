@@ -1,5 +1,5 @@
 /**
- * channel
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,19 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
 @Component
-public class AzureBoardsChannelKey extends IssueTrackerChannelKey {
-    private static final String COMPONENT_NAME = "channel_azure_boards";
+public class JiraServerChannelKey extends IssueTrackerChannelKey {
+    private static final String COMPONENT_NAME = "channel_jira_server";
+    private static final String JIRA_SERVER_DISPLAY_NAME = "Jira Server";
 
-    public AzureBoardsChannelKey() {
-        super(COMPONENT_NAME, AzureBoardsDescriptor.AZURE_BOARDS_LABEL);
+    public JiraServerChannelKey() {
+        super(COMPONENT_NAME, JIRA_SERVER_DISPLAY_NAME);
     }
 
 }

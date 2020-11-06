@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -24,6 +23,7 @@ import com.synopsys.integration.alert.database.configuration.repository.ConfigCo
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
@@ -161,4 +161,5 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
             assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
     }
+
 }

@@ -40,9 +40,9 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class ProviderGlobalUIConfig extends UIConfig {
     private static final String ERROR_DUPLICATE_PROVIDER_NAME = "A provider configuration with this name already exists.";
@@ -104,4 +104,5 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
         }
         return ValidationResult.errors(errorList);
     }
+
 }

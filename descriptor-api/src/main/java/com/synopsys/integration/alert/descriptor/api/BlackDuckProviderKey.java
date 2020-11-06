@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,12 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.key;
+package com.synopsys.integration.alert.descriptor.api;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import org.springframework.stereotype.Component;
 
-public abstract class ChannelKey extends DescriptorKey {
-    public ChannelKey(String universalKey, String displayName) {
-        super(universalKey, displayName);
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+
+@Component
+public final class BlackDuckProviderKey extends ProviderKey {
+    public BlackDuckProviderKey() {
+        super("provider_blackduck", "Black Duck");
     }
+
 }

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
@@ -40,6 +39,7 @@ import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class IssueTrackerChannel extends DistributionChannel implements ProviderCallbackEventProducer {

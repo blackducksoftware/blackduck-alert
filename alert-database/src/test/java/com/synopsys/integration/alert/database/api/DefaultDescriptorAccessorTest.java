@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -28,6 +27,7 @@ import com.synopsys.integration.alert.database.configuration.repository.ConfigCo
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DefaultDescriptorAccessorTest {
     private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
@@ -282,4 +282,5 @@ public class DefaultDescriptorAccessorTest {
         DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
         return testDescriptorKey;
     }
+
 }

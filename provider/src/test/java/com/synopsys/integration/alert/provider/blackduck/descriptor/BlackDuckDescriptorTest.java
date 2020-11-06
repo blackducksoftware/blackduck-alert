@@ -12,7 +12,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validation.
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 
 public class BlackDuckDescriptorTest {
     @Test

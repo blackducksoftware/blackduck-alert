@@ -25,7 +25,7 @@ import org.testcontainers.shaded.com.google.common.reflect.TypeToken;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.database.user.RoleRepository;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 import junit.framework.AssertionFailedError;

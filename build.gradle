@@ -82,6 +82,7 @@ dependencies {
     implementation project(':alert-database')
     implementation project(':channel')
     implementation project(':component')
+    implementation project(':descriptor-api')
     implementation project(':provider')
     implementation project(':ui')
     implementation project(':workflow')

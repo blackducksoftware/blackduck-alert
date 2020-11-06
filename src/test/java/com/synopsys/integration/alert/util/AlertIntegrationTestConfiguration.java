@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @TestConfiguration

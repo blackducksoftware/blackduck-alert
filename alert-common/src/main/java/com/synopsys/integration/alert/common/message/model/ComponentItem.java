@@ -35,8 +35,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.builder.Buildable;
 
 public class ComponentItem extends AlertSerializableModel implements Buildable {

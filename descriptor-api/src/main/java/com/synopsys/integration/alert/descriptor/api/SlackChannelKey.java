@@ -1,5 +1,5 @@
 /**
- * channel
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,19 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
-public final class MsTeamsKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "msteamskey";
+public final class SlackChannelKey extends ChannelKey {
+    private static final String COMPONENT_NAME = "channel_slack";
+    private static final String SLACK_DISPLAY_NAME = "Slack";
 
-    public MsTeamsKey() {
-        super(COMPONENT_NAME, MsTeamsDescriptor.MSTEAMS_LABEL);
+    public SlackChannelKey() {
+        super(COMPONENT_NAME, SLACK_DISPLAY_NAME);
     }
 
 }

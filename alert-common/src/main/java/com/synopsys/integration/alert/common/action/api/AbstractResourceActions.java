@@ -31,14 +31,14 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class AbstractResourceActions<T extends Config, D extends AlertSerializableModel, M extends MultiResponseModel<T>> {
     private final DescriptorKey descriptorKey;

@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.api.client.http.HttpStatusCodes;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
@@ -48,6 +47,7 @@ import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;

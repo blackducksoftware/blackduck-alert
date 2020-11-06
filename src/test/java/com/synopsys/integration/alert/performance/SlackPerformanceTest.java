@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +20,12 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.ApplicationConfiguration;
-import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
@@ -63,8 +65,8 @@ public class SlackPerformanceTest {
     }
 
     @Test
-    //    @Ignore
-    //    @Disabled
+    @Ignore
+    @Disabled
     public void testSlackJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);

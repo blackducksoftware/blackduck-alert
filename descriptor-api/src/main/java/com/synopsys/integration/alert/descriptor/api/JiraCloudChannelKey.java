@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,13 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.descriptor.api;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import org.springframework.stereotype.Component;
 
-public class ProviderKey extends DescriptorKey {
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
-    public ProviderKey(String universalKey, String displayName) {
-        super(universalKey, displayName);
+@Component
+public final class JiraCloudChannelKey extends IssueTrackerChannelKey {
+    private static final String COMPONENT_NAME = "channel_jira_cloud";
+    private static final String JIRA_CLOUD_DISPLAY_NAME = "Jira Cloud";
+
+    public JiraCloudChannelKey() {
+        super(COMPONENT_NAME, JIRA_CLOUD_DISPLAY_NAME);
     }
+
 }

@@ -27,7 +27,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.accessor.DefaultDescriptorGlobalConfigUtility;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -37,10 +36,11 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.settings.actions.SettingsGlobalApiAction;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class DefaultSettingsUtility implements SettingsUtility {
-    private DefaultDescriptorGlobalConfigUtility configUtility;
+    private final DefaultDescriptorGlobalConfigUtility configUtility;
 
     @Autowired
     public DefaultSettingsUtility(SettingsDescriptorKey settingsDescriptorKey, ConfigurationAccessor configurationAccessor, SettingsGlobalApiAction settingsGlobalApiAction,
@@ -77,4 +77,5 @@ public class DefaultSettingsUtility implements SettingsUtility {
     public FieldModel updateSettings(Long id, FieldModel fieldModel) throws AlertException {
         return configUtility.update(id, fieldModel);
     }
+
 }

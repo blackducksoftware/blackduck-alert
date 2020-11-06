@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.component.audit;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public final class AuditDescriptorKey extends DescriptorKey {

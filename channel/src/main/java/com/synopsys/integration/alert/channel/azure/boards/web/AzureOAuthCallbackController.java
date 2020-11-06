@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
@@ -55,6 +54,7 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
