@@ -95,14 +95,14 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
         RuleViolationNotificationContent violationContent = notificationView.getContent();
 
-        String projectName = violationContent.getProjectName();
-        String projectUrl = retrieveNullableProjectUrlAndLog(projectName, blackDuckServicesFactory.createProjectService(), logger::warn);
+        String projectVersionUrl = violationContent.getProjectVersion();
+        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, blackDuckService, logger::warn);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
                 .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName(), projectUrl)
-                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), violationContent.getProjectVersion());
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), projectVersionUrl);
             Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
             FieldUtility fieldUtility = commonMessageData.getJob().getFieldUtility();

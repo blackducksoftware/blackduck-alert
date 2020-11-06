@@ -32,12 +32,19 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public interface JobAccessor {
     @Deprecated(forRemoval = true)
     List<ConfigurationJobModel> getAllJobs();
 
+    List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
+
+    List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);
+
     List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds);
+
+    AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit);
 
     AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude);
 

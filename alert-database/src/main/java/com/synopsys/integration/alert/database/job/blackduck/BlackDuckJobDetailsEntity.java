@@ -28,6 +28,7 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -52,16 +53,20 @@ public class BlackDuckJobDetailsEntity {
     @Column(name = "project_name_pattern")
     private String projectNamePattern;
 
-    @OneToMany(mappedBy = "blackDuckJobDetails")
+    @OneToMany
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private List<BlackDuckJobNotificationTypeEntity> blackDuckJobNotificationTypes;
 
-    @OneToMany(mappedBy = "blackDuckJobDetails")
+    @OneToMany
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private List<BlackDuckJobPolicyFilterEntity> blackDuckJobPolicyFilters;
 
-    @OneToMany(mappedBy = "blackDuckJobDetails")
+    @OneToMany
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private List<BlackDuckJobVulnerabilitySeverityFilterEntity> blackDuckJobVulnerabilitySeverityFilters;
 
-    @OneToMany(mappedBy = "blackDuckJobDetails")
+    @OneToMany
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private List<BlackDuckJobProjectEntity> blackDuckJobProjects;
 
     public BlackDuckJobDetailsEntity() {

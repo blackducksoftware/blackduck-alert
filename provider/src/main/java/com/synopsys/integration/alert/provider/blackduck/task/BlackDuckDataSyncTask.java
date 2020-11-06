@@ -38,7 +38,6 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -46,6 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
@@ -186,6 +186,11 @@ public class BlackDuckDataSyncTask extends ProviderTask {
             logger.debug("Adding user to Project {}", projectView.getName());
             projectUsersService.addUserToProject(projectView, currentUser);
         }
+    }
+
+    @Override
+    public String scheduleCronExpression() {
+        return ScheduledTask.ONCE_DAILY_CRON_EXPRESSION;
     }
 
 }

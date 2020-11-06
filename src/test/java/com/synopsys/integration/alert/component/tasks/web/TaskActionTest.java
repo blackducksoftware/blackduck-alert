@@ -36,6 +36,11 @@ public class TaskActionTest {
             public void runTask() {
 
             }
+
+            @Override
+            public String scheduleCronExpression() {
+                return ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION;
+            }
         };
 
         TaskManagementDescriptorKey descriptorKey = new TaskManagementDescriptorKey();

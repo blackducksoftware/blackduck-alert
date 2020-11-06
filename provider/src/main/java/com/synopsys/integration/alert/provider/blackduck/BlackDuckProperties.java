@@ -99,49 +99,34 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(Logger logger) {
+        BlackDuckHttpClient blackDuckHttpClient = null;
         try {
-            return createBlackDuckHttpClient(logger);
+            blackDuckHttpClient = createBlackDuckHttpClient(logger);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        return Optional.empty();
+        return Optional.ofNullable(blackDuckHttpClient);
     }
 
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(Logger logger) throws AlertException {
+    public BlackDuckHttpClient createBlackDuckHttpClient(Logger logger) throws AlertException {
         IntLogger intLogger = new Slf4jIntLogger(logger);
         return createBlackDuckHttpClient(intLogger);
     }
 
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(IntLogger intLogger) throws AlertException {
-        Optional<BlackDuckServerConfig> blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
-        if (blackDuckServerConfig.isPresent()) {
-            return createBlackDuckHttpClient(intLogger, blackDuckServerConfig.get());
-        }
-        return Optional.empty();
+    public BlackDuckHttpClient createBlackDuckHttpClient(IntLogger intLogger) throws AlertException {
+        BlackDuckServerConfig blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
+        return createBlackDuckHttpClient(intLogger, blackDuckServerConfig);
     }
 
-    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(IntLogger intLogger, BlackDuckServerConfig blackDuckServerConfig) {
-        try {
-            return Optional.of(blackDuckServerConfig.createBlackDuckHttpClient(intLogger));
-        } catch (Exception e) {
-            intLogger.error(e.getMessage(), e);
-        }
-        return Optional.empty();
+    public BlackDuckHttpClient createBlackDuckHttpClient(IntLogger intLogger, BlackDuckServerConfig blackDuckServerConfig) {
+        return blackDuckServerConfig.createBlackDuckHttpClient(intLogger);
     }
 
-    public Optional<BlackDuckServerConfig> createBlackDuckServerConfig(IntLogger logger) throws AlertException {
+    public BlackDuckServerConfig createBlackDuckServerConfig(IntLogger logger) throws AlertException {
         if (apiToken == null) {
             throw new AlertException("Invalid global config settings. API Token is null.");
         }
-        return Optional.of(createBlackDuckServerConfig(logger, timeout, apiToken));
-    }
-
-    public Optional<BlackDuckServerConfig> createBlackDuckServerConfigSafely(IntLogger logger) {
-        try {
-            return createBlackDuckServerConfig(logger);
-        } catch (IllegalArgumentException | AlertException e) {
-            return Optional.empty();
-        }
+        return createBlackDuckServerConfig(logger, timeout, apiToken);
     }
 
     public BlackDuckServerConfig createBlackDuckServerConfig(IntLogger logger, int blackDuckTimeout, String blackDuckApiToken) throws AlertException {

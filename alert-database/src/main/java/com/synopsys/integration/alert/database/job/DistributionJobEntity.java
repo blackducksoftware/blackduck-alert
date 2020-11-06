@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.database.job;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -64,6 +65,12 @@ public class DistributionJobEntity {
     @Column(name = "channel_descriptor_name")
     private String channelDescriptorName;
 
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
+
+    @Column(name = "last_updated")
+    private OffsetDateTime lastUpdated;
+
     @OneToOne
     @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private BlackDuckJobDetailsEntity blackDuckJobDetails;
@@ -95,13 +102,15 @@ public class DistributionJobEntity {
     public DistributionJobEntity() {
     }
 
-    public DistributionJobEntity(UUID jobId, String name, Boolean enabled, String distributionFrequency, String processingType, String channelDescriptorName) {
+    public DistributionJobEntity(UUID jobId, String name, Boolean enabled, String distributionFrequency, String processingType, String channelDescriptorName, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
         this.jobId = jobId;
         this.name = name;
         this.enabled = enabled;
         this.distributionFrequency = distributionFrequency;
         this.processingType = processingType;
         this.channelDescriptorName = channelDescriptorName;
+        this.createdAt = createdAt;
+        this.lastUpdated = lastUpdated;
     }
 
     public UUID getJobId() {
@@ -150,6 +159,22 @@ public class DistributionJobEntity {
 
     public void setChannelDescriptorName(String channelDescriptorName) {
         this.channelDescriptorName = channelDescriptorName;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OffsetDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(OffsetDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public BlackDuckJobDetailsEntity getBlackDuckJobDetails() {

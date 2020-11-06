@@ -22,7 +22,12 @@
  */
 package com.synopsys.integration.alert.database.job.blackduck.policy;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BlackDuckJobPolicyFilterRepository extends JpaRepository<BlackDuckJobPolicyFilterEntity, BlackDuckJobPolicyFilterPK> {
+    List<BlackDuckJobPolicyFilterEntity> findByJobId(UUID jobId);
+
 }

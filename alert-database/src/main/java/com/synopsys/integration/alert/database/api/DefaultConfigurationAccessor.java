@@ -26,11 +26,9 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -45,29 +43,24 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.datastructure.SetMap;
 
 @Component
 @Transactional

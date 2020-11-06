@@ -36,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -48,9 +48,12 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
-@Component
+// @Component
+// TODO eventually remove this class once tests are created for its replacement
+@Deprecated(forRemoval = true)
 public class DefaultJobAccessor implements JobAccessor {
     public static final String NULL_JOB_ID = "The job id cannot be null";
 
@@ -71,6 +74,28 @@ public class DefaultJobAccessor implements JobAccessor {
     }
 
     @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
+        //TODO change this to return a page of results
+        return getMatchingEnabledJobs(() -> configGroupRepository.findMatchingEnabledJobIds(frequency.name(), String.valueOf(providerConfigId), notificationType.name()));
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
+        return getMatchingEnabledJobs(() -> configGroupRepository.findMatchingEnabledJobIds(String.valueOf(providerConfigId), notificationType.name()));
+    }
+
+    private List<ConfigurationJobModel> getMatchingEnabledJobs(Supplier<List<UUID>> getJobs) {
+        //TODO change this to return a page of results
+        List<UUID> matchingJobIds = getJobs.get();
+
+        if (matchingJobIds.isEmpty()) {
+            return List.of();
+        }
+        List<ConfigGroupEntity> jobEntities = configGroupRepository.findByJobIds(matchingJobIds);
+        return convertToJobModels(jobEntities);
+    }
+
+    @Override
     public List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds) {
         List<ConfigGroupEntity> jobEntities = configGroupRepository.findAllByJobIdIn(jobIds);
         return convertToJobModels(jobEntities);
@@ -83,6 +108,12 @@ public class DefaultJobAccessor implements JobAccessor {
         List<ConfigGroupEntity> distinctJobs = configGroupRepository.findAllByJobIdIn(distinctJobIds.getContent());
         List<ConfigurationJobModel> jobModels = convertToJobModels(distinctJobs);
         return new AlertPagedModel<>(distinctJobIds.getTotalPages(), pageOffset, pageLimit, jobModels);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

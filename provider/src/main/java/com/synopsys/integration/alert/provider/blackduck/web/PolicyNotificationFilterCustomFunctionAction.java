@@ -131,12 +131,13 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     }
 
     private Optional<BlackDuckHttpClient> createHttpClient(BlackDuckProperties blackDuckProperties) {
+        BlackDuckHttpClient blackDuckHttpClient = null;
         try {
-            return blackDuckProperties.createBlackDuckHttpClient(logger);
+            blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
         } catch (IntegrationException ex) {
             logger.error("Error creating Black Duck http client", ex);
-            return Optional.empty();
         }
+        return Optional.ofNullable(blackDuckHttpClient);
     }
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) throws IntegrationException {

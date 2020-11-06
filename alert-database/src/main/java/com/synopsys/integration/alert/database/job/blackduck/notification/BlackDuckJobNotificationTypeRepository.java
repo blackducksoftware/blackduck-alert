@@ -22,7 +22,12 @@
  */
 package com.synopsys.integration.alert.database.job.blackduck.notification;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BlackDuckJobNotificationTypeRepository extends JpaRepository<BlackDuckJobNotificationTypeEntity, BlackDuckJobNotificationTypePK> {
+    List<BlackDuckJobNotificationTypeEntity> findByJobId(UUID jobId);
+
 }
