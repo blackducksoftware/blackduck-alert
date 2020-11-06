@@ -29,8 +29,9 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public abstract class DistributionJobDetailsModel {
+public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
     private final String channelDescriptorName;
 
     /* package private */ DistributionJobDetailsModel(String channelDescriptorName) {
