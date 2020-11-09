@@ -46,6 +46,14 @@ export function combineErrorObjects(errorObject1, errorObject2) {
     };
 }
 
+export function hasErrors(errorObject) {
+    if (!errorObject) {
+        return false;
+    }
+    const keys = Object.keys(errorObject);
+    return keys.some((key) => errorObject[key].severity === 'ERROR');
+}
+
 export function createStatusCodeHandler(statusCode, callback) {
     return {
         statusCode,
