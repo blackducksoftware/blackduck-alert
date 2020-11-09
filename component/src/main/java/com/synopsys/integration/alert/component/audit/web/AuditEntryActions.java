@@ -89,11 +89,11 @@ public class AuditEntryActions {
     }
 
     public ActionResponse<AuditEntryPageModel> get(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications) {
-        Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
-        Integer size = ObjectUtils.defaultIfNull(pageSize, 100);
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
+        Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
+        Integer size = ObjectUtils.defaultIfNull(pageSize, 100);
         AuditEntryPageModel pagedRestModel = auditAccessor.getPageOfAuditEntries(page, size, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditAccessor::convertToAuditEntryModelFromNotification);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return new ActionResponse<>(HttpStatus.OK, pagedRestModel);
