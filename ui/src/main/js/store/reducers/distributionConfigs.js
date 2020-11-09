@@ -142,7 +142,7 @@ const config = (state = initialState, action) => {
                 success: true,
                 testingConfig: true,
                 configurationMessage: action.configurationMessage,
-                error: HTTPErrorUtils.createEmptyErrorObject(),
+                error: HTTPErrorUtils.createErrorObject(action),
                 status: 'TESTED'
             };
 
@@ -159,7 +159,7 @@ const config = (state = initialState, action) => {
                 status: 'ERROR'
             };
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR:
-            return { ...state, inProgress: true };
+            return {...state, inProgress: true};
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS:
             return {
                 ...state,

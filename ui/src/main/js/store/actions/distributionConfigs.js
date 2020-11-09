@@ -18,7 +18,7 @@ import {
     DISTRIBUTION_JOB_VALIDATED,
     DISTRIBUTION_JOB_VALIDATING
 } from 'store/actions/types';
-import { unauthorized } from 'store/actions/session';
+import {unauthorized} from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import HeaderUtilities from 'util/HeaderUtilities';
@@ -81,10 +81,11 @@ function testingJobConfig() {
     };
 }
 
-function testJobSuccess(message) {
+function testJobSuccess(responseData) {
     return {
         type: DISTRIBUTION_JOB_TEST_SUCCESS,
-        configurationMessage: message
+        configurationMessage: responseData.message,
+        errors: responseData.errors
     };
 }
 
@@ -115,7 +116,7 @@ function validatedJob() {
     };
 }
 
-function validateJobError({ message, errors }) {
+function validateJobError({message, errors}) {
     return {
         type: DISTRIBUTION_JOB_VALIDATE_ERROR,
         message,
@@ -136,7 +137,7 @@ function checkingDescriptorGlobalConfigFailure(errorFieldName, response) {
     };
 }
 
-function jobError({ type = '', message, errors }) {
+function jobError({type = '', message, errors}) {
     return {
         type,
         message,
@@ -147,7 +148,7 @@ function jobError({ type = '', message, errors }) {
 function createErrorHandler(type, defaultHandler) {
     const errorHandlers = [];
     errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobError({ type, message: HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION })));
+    errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobError({type, message: HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION})));
     errorHandlers.push(HTTPErrorUtils.createBadRequestHandler(defaultHandler));
     errorHandlers.push(HTTPErrorUtils.createPreconditionFailedHandler(defaultHandler));
     errorHandlers.push(HTTPErrorUtils.createDefaultHandler(defaultHandler));
@@ -157,7 +158,7 @@ function createErrorHandler(type, defaultHandler) {
 export function getDistributionJob(jobId) {
     return (dispatch, getState) => {
         dispatch(fetchingJob());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const errorHandlers = [];
         errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
         errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobFetchErrorMessage(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
@@ -188,7 +189,7 @@ export function getDistributionJob(jobId) {
 export function saveDistributionJob(config) {
     return (dispatch, getState) => {
         dispatch(savingJobConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
             response.json()
@@ -211,7 +212,7 @@ export function saveDistributionJob(config) {
 export function updateDistributionJob(config) {
     return (dispatch, getState) => {
         dispatch(updatingJobConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config.jobId, config);
         request.then((response) => {
             if (response.ok) {
@@ -234,7 +235,7 @@ export function updateDistributionJob(config) {
 export function testDistributionJob(config) {
     return (dispatch, getState) => {
         dispatch(testingJobConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
             response.json()
@@ -244,8 +245,9 @@ export function testDistributionJob(config) {
                         ...responseData
                     });
                     const handler = createErrorHandler(DISTRIBUTION_JOB_TEST_FAILURE, defaultHandler);
-                    if (!responseData.hasErrors) {
-                        dispatch(testJobSuccess(responseData.message));
+                    const containsErrors = HTTPErrorUtils.hasErrors(responseData.errors);
+                    if (!containsErrors) {
+                        dispatch(testJobSuccess(responseData));
                     } else if (!response.ok) {
                         dispatch(handler(response.status));
                     } else {
@@ -259,7 +261,7 @@ export function testDistributionJob(config) {
 export function checkDescriptorForGlobalConfig(errorFieldName, descriptorName) {
     return (dispatch, getState) => {
         dispatch(checkingDescriptorGlobalConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const url = `${ConfigRequestBuilder.JOB_API_URL}/descriptorCheck`;
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
@@ -285,7 +287,7 @@ export function checkDescriptorForGlobalConfig(errorFieldName, descriptorName) {
 export function validateDistributionJob(config) {
     return (dispatch, getState) => {
         dispatch(validatingJob());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const request = ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
             response.json()
