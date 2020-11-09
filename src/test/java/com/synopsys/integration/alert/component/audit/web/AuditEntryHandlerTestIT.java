@@ -68,6 +68,7 @@ import com.synopsys.integration.alert.database.notification.NotificationContentR
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -77,6 +78,8 @@ import com.synopsys.integration.util.ResourceUtil;
 @Transactional
 public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private AuditDescriptorKey auditDescriptorKey;
     @Autowired
     private SlackChannelKey slackChannelKey;
     @Autowired
@@ -154,7 +157,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     private AuditEntryActions createAuditActions(AuthorizationManager authorizationManager) {
-        return new AuditEntryActions(authorizationManager, new AuditDescriptorKey(), auditAccessor, notificationAccessor, jobAccessor,
+        return new AuditEntryActions(authorizationManager, auditDescriptorKey, auditAccessor, notificationAccessor, jobAccessor,
             channelEventManager, notificationProcessor);
     }
 
@@ -174,7 +177,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
 
         AuditEntryActions auditEntryActions = createAuditActions(authorizationManager);
         AuditEntryPageModel auditEntries = auditEntryActions.get(null, null, null, null, null, true).getContent().orElse(null);
@@ -212,7 +215,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
             new AuditEntryEntity(configurationJobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(AuditDescriptor.AUDIT_COMPONENT))).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.eq(auditDescriptorKey))).thenReturn(true);
         AuditEntryActions auditEntryController = createAuditActions(authorizationManager);
 
         AuditJobStatusModel jobStatusModel = auditEntryController.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId()).getContent().orElse(null);
