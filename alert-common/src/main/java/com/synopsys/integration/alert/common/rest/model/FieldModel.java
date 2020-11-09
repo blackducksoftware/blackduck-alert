@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class FieldModel extends Config {
     private Map<String, FieldValueModel> keyToValues;
+    // TODO DescriptorKey and a ConfigContextEnum should be available instead of Strings
     private final String descriptorName;
     private final String context;
     private final String createdAt;
@@ -80,42 +81,42 @@ public class FieldModel extends Config {
         return keyToValues;
     }
 
-    public void setKeyToValues(final Map<String, FieldValueModel> keyToValues) {
+    public void setKeyToValues(Map<String, FieldValueModel> keyToValues) {
         this.keyToValues = keyToValues;
     }
 
-    public Optional<FieldValueModel> getFieldValueModel(final String key) {
+    public Optional<FieldValueModel> getFieldValueModel(String key) {
         return Optional.ofNullable(keyToValues.get(key));
     }
 
-    public Optional<String> getFieldValue(final String key) {
+    public Optional<String> getFieldValue(String key) {
         return getFieldValueModel(key).flatMap(FieldValueModel::getValue);
     }
 
-    public void putField(final String key, final FieldValueModel field) {
+    public void putField(String key, FieldValueModel field) {
         keyToValues.put(key, field);
     }
 
-    public void removeField(final String key) {
+    public void removeField(String key) {
         keyToValues.remove(key);
     }
 
-    public FieldModel fill(final FieldModel fieldModel) {
-        final Map<String, FieldValueModel> fieldValueModelMap = new HashMap<>();
+    public FieldModel fill(FieldModel fieldModel) {
+        Map<String, FieldValueModel> fieldValueModelMap = new HashMap<>();
         fieldValueModelMap.putAll(getKeyToValues());
-        final Map<String, FieldValueModel> fieldsToAdd = fieldModel.getKeyToValues();
-        for (final Map.Entry<String, FieldValueModel> entry : fieldsToAdd.entrySet()) {
-            final String key = entry.getKey();
+        Map<String, FieldValueModel> fieldsToAdd = fieldModel.getKeyToValues();
+        for (Map.Entry<String, FieldValueModel> entry : fieldsToAdd.entrySet()) {
+            String key = entry.getKey();
             if (!fieldValueModelMap.containsKey(key) || fieldValueModelMap.get(key).getValue().isEmpty()) {
                 fieldValueModelMap.put(key, entry.getValue());
             }
         }
-        final String modelDescriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
-        final String modelContext = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
-        final String modelCreatedAt = StringUtils.isNotBlank(getCreatedAt()) ? getCreatedAt() : fieldModel.getCreatedAt();
-        final String modelLastUpdated = StringUtils.isNotBlank(getLastUpdated()) ? getLastUpdated() : fieldModel.getLastUpdated();
-        final FieldModel newFieldModel = new FieldModel(modelDescriptorName, modelContext, modelCreatedAt, modelLastUpdated, fieldValueModelMap);
-        final String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
+        String modelDescriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
+        String modelContext = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
+        String modelCreatedAt = StringUtils.isNotBlank(getCreatedAt()) ? getCreatedAt() : fieldModel.getCreatedAt();
+        String modelLastUpdated = StringUtils.isNotBlank(getLastUpdated()) ? getLastUpdated() : fieldModel.getLastUpdated();
+        FieldModel newFieldModel = new FieldModel(modelDescriptorName, modelContext, modelCreatedAt, modelLastUpdated, fieldValueModelMap);
+        String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
         newFieldModel.setId(id);
         return newFieldModel;
     }

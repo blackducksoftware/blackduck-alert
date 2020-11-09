@@ -105,12 +105,18 @@ public class JobConfigActionsTest {
         jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, globalConfigExistsValidator,
             pkixErrorResponseFactory, descriptorMap);
 
-        Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(authorizationManager.hasWritePermission(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(authorizationManager.hasDeletePermission(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(authorizationManager.hasWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
+        Mockito.when(authorizationManager.hasDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
+
+        Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
     }
 
     @Test

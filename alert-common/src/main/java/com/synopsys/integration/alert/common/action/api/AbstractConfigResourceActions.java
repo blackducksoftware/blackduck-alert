@@ -89,7 +89,7 @@ public abstract class AbstractConfigResourceActions {
                                               .stream()
                                               .map(RegisteredDescriptorModel::getName)
                                               .collect(Collectors.toSet());
-            if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION.name(), ConfigContextEnum.GLOBAL.name()), descriptorNames)) {
+            if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION, ConfigContextEnum.GLOBAL), descriptorNames)) {
                 return ActionResponse.createForbiddenResponse();
             }
             return readAllWithoutChecks();
