@@ -302,7 +302,7 @@ public class UserActionsTest {
 
         UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationTypeLDAP, roles, true);
 
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
 
         Set<String> roleNames = roles

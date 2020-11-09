@@ -45,7 +45,7 @@ public class TaskActionTest {
 
         TaskManagementDescriptorKey descriptorKey = new TaskManagementDescriptorKey();
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(descriptorKey.getUniversalKey())))
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.eq(descriptorKey)))
             .thenReturn(Boolean.TRUE);
 
         TaskManager taskManager = new TaskManager();
@@ -68,7 +68,7 @@ public class TaskActionTest {
     public void testReadForbiddenTasks() {
         TaskManagementDescriptorKey descriptorKey = new TaskManagementDescriptorKey();
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL.name()), Mockito.eq(descriptorKey.getUniversalKey())))
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.eq(ConfigContextEnum.GLOBAL), Mockito.eq(descriptorKey)))
             .thenReturn(Boolean.FALSE);
 
         TaskManager taskManager = new TaskManager();
