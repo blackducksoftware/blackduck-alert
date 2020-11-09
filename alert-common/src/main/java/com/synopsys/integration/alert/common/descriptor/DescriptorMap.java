@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class DescriptorMap {
@@ -96,7 +97,7 @@ public class DescriptorMap {
         return componentDescriptorMapping;
     }
 
-    private <D extends Descriptor> Map<DescriptorKey, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
+    private <D extends Descriptor> Map<DescriptorKey, D> initDescriptorMap(List<D> descriptorList) throws AlertException {
         Map<DescriptorKey, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
         for (D descriptor : descriptorList) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();

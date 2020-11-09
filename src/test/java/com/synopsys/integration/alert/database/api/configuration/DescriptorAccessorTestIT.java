@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -24,6 +23,7 @@ import com.synopsys.integration.alert.database.configuration.repository.ConfigCo
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
@@ -55,17 +55,7 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return key;
-            }
-        };
+        DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
         return testDescriptorKey;
     }
 
@@ -83,8 +73,8 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     public void registerAndGetDescriptorTest() throws AlertDatabaseConstraintException {
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
         RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor
-                                                                        .getRegisteredDescriptorByKey(createDescriptorKey(DESCRIPTOR_NAME))
-                                                                        .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
+                                                                  .getRegisteredDescriptorByKey(createDescriptorKey(DESCRIPTOR_NAME))
+                                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         assertNotNull(registeredDescriptorModel.getId());
         assertEquals(DESCRIPTOR_NAME, registeredDescriptorModel.getName());
     }
@@ -116,7 +106,7 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
         DefinedFieldModel field2 = new DefinedFieldModel(field2Key, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL, Arrays.asList(field1, field2));
         RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByKey(createDescriptorKey(DESCRIPTOR_NAME))
-                                                                        .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
+                                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         List<DefinedFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptorById(registeredDescriptorModel.getId(), ConfigContextEnum.DISTRIBUTION);
         assertEquals(2, descriptorFields.size());
         assertTrue(descriptorFields.contains(field1));
@@ -171,4 +161,5 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
             assertTrue(e.getMessage().contains("DescriptorKey is not valid"), e.getMessage());
         }
     }
+
 }

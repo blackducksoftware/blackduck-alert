@@ -27,20 +27,20 @@ import java.util.List;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public class StatefulProvider {
-    private ProviderKey key;
-    private Long configId;
-    private String configName;
-    private boolean configEnabled;
-    private List<ProviderTask> tasks;
-    private ProviderProperties properties;
-    private ProviderDistributionFilter distributionFilter;
-    private ProviderMessageContentCollector messageContentCollector;
+    private final ProviderKey key;
+    private final Long configId;
+    private final String configName;
+    private final boolean configEnabled;
+    private final List<ProviderTask> tasks;
+    private final ProviderProperties properties;
+    private final ProviderDistributionFilter distributionFilter;
+    private final ProviderMessageContentCollector messageContentCollector;
 
     public static StatefulProvider create(ProviderKey providerKey, ConfigurationModel configurationModel,
         List<ProviderTask> tasks, ProviderProperties properties, ProviderDistributionFilter distributionFilter, ProviderMessageContentCollector messageContentCollector) {

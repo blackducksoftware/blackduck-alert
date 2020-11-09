@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
@@ -22,6 +21,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 
 public class DescriptorMetadataActionsTest {
@@ -289,17 +289,7 @@ public class DescriptorMetadataActionsTest {
         private final List<ConfigContextEnum> contexts;
 
         public TestDescriptor(String descriptorName, DescriptorType type, ConfigContextEnum... contexts) {
-            super(new DescriptorKey() {
-                @Override
-                public String getUniversalKey() {
-                    return descriptorName;
-                }
-
-                @Override
-                public String getDisplayName() {
-                    return descriptorName;
-                }
-            }, type);
+            super(new DescriptorKey(descriptorName, descriptorName) {}, type);
             if (contexts != null) {
                 this.contexts = Arrays.asList(contexts);
             } else {

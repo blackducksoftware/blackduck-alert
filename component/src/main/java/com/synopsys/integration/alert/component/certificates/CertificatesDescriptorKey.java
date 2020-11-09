@@ -24,19 +24,14 @@ package com.synopsys.integration.alert.component.certificates;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class CertificatesDescriptorKey extends DescriptorKey {
     private static final String CERTIFICATES_COMPONENT = "component_certificates";
 
-    @Override
-    public String getUniversalKey() {
-        return CERTIFICATES_COMPONENT;
+    public CertificatesDescriptorKey() {
+        super(CERTIFICATES_COMPONENT, CertificatesDescriptor.CERTIFICATES_LABEL);
     }
 
-    @Override
-    public String getDisplayName() {
-        return CertificatesDescriptor.CERTIFICATES_LABEL;
-    }
 }

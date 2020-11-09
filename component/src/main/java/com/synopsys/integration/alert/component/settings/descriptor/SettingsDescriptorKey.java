@@ -24,20 +24,13 @@ package com.synopsys.integration.alert.component.settings.descriptor;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public final class SettingsDescriptorKey extends DescriptorKey {
     private static final String SETTINGS_COMPONENT = "component_settings";
 
-    @Override
-    public String getUniversalKey() {
-        return SETTINGS_COMPONENT;
+    public SettingsDescriptorKey() {
+        super(SETTINGS_COMPONENT, SettingsDescriptor.SETTINGS_LABEL);
     }
-
-    @Override
-    public String getDisplayName() {
-        return SettingsDescriptor.SETTINGS_LABEL;
-    }
-
 }

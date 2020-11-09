@@ -26,9 +26,9 @@ import java.util.function.BiFunction;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @RequestMapping(AlertRestConstants.BASE_PATH)
 // TODO this class is an improper use of abstraction, it should be removed

@@ -24,20 +24,14 @@ package com.synopsys.integration.alert.component.audit;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public final class AuditDescriptorKey extends DescriptorKey {
     private static final String AUDIT_COMPONENT = "component_audit";
 
-    @Override
-    public String getUniversalKey() {
-        return AUDIT_COMPONENT;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return AuditDescriptor.AUDIT_LABEL;
+    public AuditDescriptorKey() {
+        super(AUDIT_COMPONENT, AuditDescriptor.AUDIT_LABEL);
     }
 
 }

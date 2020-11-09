@@ -24,19 +24,14 @@ package com.synopsys.integration.alert.component.authentication.descriptor;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class AuthenticationDescriptorKey extends DescriptorKey {
     public static final String AUTHENTICATION_COMPONENT = "component_authentication";
 
-    @Override
-    public String getUniversalKey() {
-        return AUTHENTICATION_COMPONENT;
+    public AuthenticationDescriptorKey() {
+        super(AUTHENTICATION_COMPONENT, AuthenticationDescriptor.AUTHENTICATION_LABEL);
     }
 
-    @Override
-    public String getDisplayName() {
-        return AuthenticationDescriptor.AUTHENTICATION_LABEL;
-    }
 }

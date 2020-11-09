@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.MessageContentCollectorFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;

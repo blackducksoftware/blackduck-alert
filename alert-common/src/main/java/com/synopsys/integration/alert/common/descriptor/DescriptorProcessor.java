@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -46,6 +45,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class DescriptorProcessor {

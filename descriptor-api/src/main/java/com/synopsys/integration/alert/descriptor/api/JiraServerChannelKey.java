@@ -1,5 +1,5 @@
 /**
- * provider
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,19 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.provider.ProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
 @Component
-public final class BlackDuckProviderKey extends ProviderKey {
-    private static final String COMPONENT_NAME = "provider_blackduck";
+public class JiraServerChannelKey extends IssueTrackerChannelKey {
+    private static final String COMPONENT_NAME = "channel_jira_server";
+    private static final String JIRA_SERVER_DISPLAY_NAME = "Jira Server";
 
-    public BlackDuckProviderKey() {
-        super(COMPONENT_NAME, BlackDuckDescriptor.BLACKDUCK_LABEL);
+    public JiraServerChannelKey() {
+        super(COMPONENT_NAME, JIRA_SERVER_DISPLAY_NAME);
     }
 
 }

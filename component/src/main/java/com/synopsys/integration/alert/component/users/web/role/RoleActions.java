@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.action.api.ActionMessageCreator;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -55,6 +54,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.BitwiseUtil;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.web.role.util.PermissionModelUtil;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class RoleActions extends AbstractResourceActions<RolePermissionModel, UserRoleModel, MultiRolePermissionModel> {
@@ -117,7 +117,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     }
 
     @Override
-    protected MultiRolePermissionModel createMultiResponseModel(final List<RolePermissionModel> roles) {
+    protected MultiRolePermissionModel createMultiResponseModel(List<RolePermissionModel> roles) {
         return new MultiRolePermissionModel(roles);
     }
 
@@ -242,4 +242,5 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
         }
         return Optional.empty();
     }
+
 }

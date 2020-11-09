@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.channel.jira.cloud.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudConfigurationAction extends ConfigurationAction {

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -41,7 +39,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
@@ -71,7 +70,6 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @Disabled("The addJob method from the superclass needs to be updated")
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetPage() throws Exception {
         int pageNumber = 0;
@@ -86,11 +84,10 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @Disabled("The addJob method from the superclass needs to be updated")
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        String configId = String.valueOf(minimumConfigurationModel.getJobId());
 
         String urlPath = url + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
@@ -101,11 +98,10 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     @Test
-    @Disabled("The addJob method from the superclass needs to be updated")
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        String jobId = String.valueOf(emptyConfigurationModel.getJobId());
+        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        String jobId = String.valueOf(minimumConfigurationModel.getJobId());
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
@@ -130,9 +126,9 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        ConfigurationJobModel emptyConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
+        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
 
-        String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        String configId = String.valueOf(minimumConfigurationModel.getJobId());
         String urlPath = url + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))

@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderGlobalUIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class ProviderDescriptor extends Descriptor {
     public static final String KEY_COMMON_PROVIDER_PREFIX = "provider.common.";

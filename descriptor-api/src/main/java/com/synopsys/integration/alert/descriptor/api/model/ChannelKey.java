@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,12 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.key;
+package com.synopsys.integration.alert.descriptor.api.model;
 
-public abstract class ClassNameChannelKey extends ChannelKey {
-    @Override
-    public final String getUniversalKey() {
-        return getClass().getSimpleName().toLowerCase();
+public abstract class ChannelKey extends DescriptorKey {
+    public ChannelKey(String universalKey, String displayName) {
+        super(universalKey, displayName);
     }
-
 }

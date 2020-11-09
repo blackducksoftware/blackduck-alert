@@ -24,19 +24,14 @@ package com.synopsys.integration.alert.component.users;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class UserManagementDescriptorKey extends DescriptorKey {
     public static final String USER_MANAGEMENT_COMPONENT = "component_users";
 
-    @Override
-    public String getUniversalKey() {
-        return USER_MANAGEMENT_COMPONENT;
+    public UserManagementDescriptorKey() {
+        super(USER_MANAGEMENT_COMPONENT, UserManagementDescriptor.USER_MANAGEMENT_LABEL);
     }
 
-    @Override
-    public String getDisplayName() {
-        return UserManagementDescriptor.USER_MANAGEMENT_LABEL;
-    }
 }
