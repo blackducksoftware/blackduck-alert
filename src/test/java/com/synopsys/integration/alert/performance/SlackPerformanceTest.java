@@ -28,8 +28,8 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
-import com.synopsys.integration.alert.performance.utility.TestJobCreator;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
@@ -70,21 +70,21 @@ public class SlackPerformanceTest {
     public void testSlackJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        TestJobCreator testJobCreator = new TestJobCreator(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
-        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, testJobCreator);
+        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
+        IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, configurationManager);
 
-        Map<String, FieldValueModel> slackKeyToValues = new HashMap<>();
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_KEY), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(SLACK_PERFORMANCE_JOB_NAME), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        slackKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
+        Map<String, FieldValueModel> slackJobFields = new HashMap<>();
+        slackJobFields.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
+        slackJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_KEY), true));
+        slackJobFields.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(SLACK_PERFORMANCE_JOB_NAME), true));
+        slackJobFields.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
+        slackJobFields.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
 
-        slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(SLACK_CHANNEL_WEBHOOK), true));
-        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
-        slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
+        slackJobFields.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(SLACK_CHANNEL_WEBHOOK), true));
+        slackJobFields.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
+        slackJobFields.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
 
-        integrationPerformanceTestRunner.runTest(slackKeyToValues, SLACK_PERFORMANCE_JOB_NAME);
+        integrationPerformanceTestRunner.runTest(slackJobFields, SLACK_PERFORMANCE_JOB_NAME);
     }
 
 }
