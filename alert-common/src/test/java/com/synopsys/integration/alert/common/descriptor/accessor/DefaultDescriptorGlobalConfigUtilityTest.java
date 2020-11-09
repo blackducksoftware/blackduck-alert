@@ -24,19 +24,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public class DefaultDescriptorGlobalConfigUtilityTest {
 
     private DescriptorKey createDescriptorKey() {
-        return new DescriptorKey() {
-            private static final long serialVersionUID = 6317053803499005970L;
-
-            @Override
-            public String getUniversalKey() {
-                return "universal_key";
-            }
-
-            @Override
-            public String getDisplayName() {
-                return "Universal Key";
-            }
-        };
+        return new DescriptorKey("universal_key", "Universal Key") {};
     }
 
     @Test

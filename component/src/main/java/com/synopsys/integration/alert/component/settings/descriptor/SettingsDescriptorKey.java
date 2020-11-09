@@ -30,14 +30,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public final class SettingsDescriptorKey extends DescriptorKey {
     private static final String SETTINGS_COMPONENT = "component_settings";
 
-    @Override
-    public String getUniversalKey() {
-        return SETTINGS_COMPONENT;
+    public SettingsDescriptorKey() {
+        super(SETTINGS_COMPONENT, SettingsDescriptor.SETTINGS_LABEL);
     }
-
-    @Override
-    public String getDisplayName() {
-        return SettingsDescriptor.SETTINGS_LABEL;
-    }
-
 }

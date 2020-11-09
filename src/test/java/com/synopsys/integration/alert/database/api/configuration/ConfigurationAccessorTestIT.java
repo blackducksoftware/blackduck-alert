@@ -81,19 +81,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
-            private static final long serialVersionUID = 42094944704702165L;
-
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return key;
-            }
-        };
+        DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
         return testDescriptorKey;
     }
 

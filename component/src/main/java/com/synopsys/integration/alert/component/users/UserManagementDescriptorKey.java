@@ -30,14 +30,8 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public class UserManagementDescriptorKey extends DescriptorKey {
     public static final String USER_MANAGEMENT_COMPONENT = "component_users";
 
-    @Override
-    public String getUniversalKey() {
-        return USER_MANAGEMENT_COMPONENT;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return UserManagementDescriptor.USER_MANAGEMENT_LABEL;
+    public UserManagementDescriptorKey() {
+        super(USER_MANAGEMENT_COMPONENT, UserManagementDescriptor.USER_MANAGEMENT_LABEL);
     }
 
 }

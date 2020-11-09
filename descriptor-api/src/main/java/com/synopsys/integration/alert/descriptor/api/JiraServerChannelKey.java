@@ -28,14 +28,11 @@ import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKe
 
 @Component
 public class JiraServerChannelKey extends IssueTrackerChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return "channel_jira_server";
-    }
+    private static final String COMPONENT_NAME = "channel_jira_server";
+    private static final String JIRA_SERVER_DISPLAY_NAME = "Jira Server";
 
-    @Override
-    public String getDisplayName() {
-        return "Jira Server";
+    public JiraServerChannelKey() {
+        super(COMPONENT_NAME, JIRA_SERVER_DISPLAY_NAME);
     }
 
 }

@@ -336,17 +336,7 @@ public class RoleActionsTest {
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey descriptorKey = new DescriptorKey() {
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return key;
-            }
-        };
+        DescriptorKey descriptorKey = new DescriptorKey(key, key) {};
         return descriptorKey;
     }
 

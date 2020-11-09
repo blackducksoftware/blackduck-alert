@@ -23,4 +23,7 @@
 package com.synopsys.integration.alert.descriptor.api.model;
 
 public abstract class ChannelKey extends DescriptorKey {
+    public ChannelKey(String universalKey, String displayName) {
+        super(universalKey, displayName);
+    }
 }

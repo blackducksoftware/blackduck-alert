@@ -29,15 +29,10 @@ import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKe
 @Component
 public final class JiraCloudChannelKey extends IssueTrackerChannelKey {
     private static final String COMPONENT_NAME = "channel_jira_cloud";
+    private static final String JIRA_CLOUD_DISPLAY_NAME = "Jira Cloud";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return "Jira Cloud";
+    public JiraCloudChannelKey() {
+        super(COMPONENT_NAME, JIRA_CLOUD_DISPLAY_NAME);
     }
 
 }

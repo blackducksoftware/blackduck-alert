@@ -50,20 +50,8 @@ public class ConfigurationFieldModelTest {
     }
 
     private List<DescriptorKey> createDescriptorKeyList() throws AlertException {
-        DescriptorKey descriptorKey = new DescriptorKey() {
-            @Override
-            public String getUniversalKey() {
-                return "descriptor";
-            }
-
-            @Override
-            public String getDisplayName() {
-                return "descriptor";
-            }
-        };
-
+        DescriptorKey descriptorKey = new DescriptorKey("descriptor", "descriptor") {};
         return List.of(descriptorKey);
-
     }
 
     @Test

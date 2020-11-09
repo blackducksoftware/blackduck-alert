@@ -55,17 +55,7 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return key;
-            }
-        };
+        DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
         return testDescriptorKey;
     }
 

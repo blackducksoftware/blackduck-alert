@@ -57,20 +57,9 @@ public class DescriptorMapTest {
     }
 
     private class MockDescriptorKey extends DescriptorKey {
-        private final String key;
 
         public MockDescriptorKey(String key) {
-            this.key = key;
-        }
-
-        @Override
-        public String getUniversalKey() {
-            return key;
-        }
-
-        @Override
-        public String getDisplayName() {
-            return key;
+            super(key, key);
         }
 
     }

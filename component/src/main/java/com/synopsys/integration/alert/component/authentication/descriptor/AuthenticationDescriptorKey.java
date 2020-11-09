@@ -30,14 +30,8 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public class AuthenticationDescriptorKey extends DescriptorKey {
     public static final String AUTHENTICATION_COMPONENT = "component_authentication";
 
-    @Override
-    public String getUniversalKey() {
-        return AUTHENTICATION_COMPONENT;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return AuthenticationDescriptor.AUTHENTICATION_LABEL;
+    public AuthenticationDescriptorKey() {
+        super(AUTHENTICATION_COMPONENT, AuthenticationDescriptor.AUTHENTICATION_LABEL);
     }
 
 }

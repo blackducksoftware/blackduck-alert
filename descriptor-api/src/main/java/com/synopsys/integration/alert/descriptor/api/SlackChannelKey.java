@@ -29,15 +29,10 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 @Component
 public final class SlackChannelKey extends ChannelKey {
     private static final String COMPONENT_NAME = "channel_slack";
+    private static final String SLACK_DISPLAY_NAME = "Slack";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return "Slack";
+    public SlackChannelKey() {
+        super(COMPONENT_NAME, SLACK_DISPLAY_NAME);
     }
 
 }

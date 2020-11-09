@@ -30,14 +30,8 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public class CertificatesDescriptorKey extends DescriptorKey {
     private static final String CERTIFICATES_COMPONENT = "component_certificates";
 
-    @Override
-    public String getUniversalKey() {
-        return CERTIFICATES_COMPONENT;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return CertificatesDescriptor.CERTIFICATES_LABEL;
+    public CertificatesDescriptorKey() {
+        super(CERTIFICATES_COMPONENT, CertificatesDescriptor.CERTIFICATES_LABEL);
     }
 
 }

@@ -29,15 +29,10 @@ import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKe
 @Component
 public class AzureBoardsChannelKey extends IssueTrackerChannelKey {
     private static final String COMPONENT_NAME = "channel_azure_boards";
+    private static final String AZURE_DISPLAY_NAME = "Azure Boards";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return "Azure Boards";
+    public AzureBoardsChannelKey() {
+        super(COMPONENT_NAME, AZURE_DISPLAY_NAME);
     }
 
 }

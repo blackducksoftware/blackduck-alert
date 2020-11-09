@@ -279,19 +279,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
-            private static final long serialVersionUID = 690470018987365698L;
-
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return key;
-            }
-        };
+        DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
         return testDescriptorKey;
     }
 

@@ -29,15 +29,10 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 @Component
 public final class EmailChannelKey extends ChannelKey {
     private static final String COMPONENT_NAME = "channel_email";
+    private static final String EMAIL_DISPLAY_NAME = "Email";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return "Email";
+    public EmailChannelKey() {
+        super(COMPONENT_NAME, EMAIL_DISPLAY_NAME);
     }
 
 }
