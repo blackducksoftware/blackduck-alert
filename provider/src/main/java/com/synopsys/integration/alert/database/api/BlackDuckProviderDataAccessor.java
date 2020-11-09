@@ -57,9 +57,6 @@ import com.synopsys.integration.rest.HttpUrl;
 
 @Component
 public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
-    public static final int MAX_DESCRIPTION_LENGTH = 250;
-    public static final int MAX_PROJECT_NAME_LENGTH = 507;
-
     private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(BlackDuckProviderDataAccessor.class));
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
