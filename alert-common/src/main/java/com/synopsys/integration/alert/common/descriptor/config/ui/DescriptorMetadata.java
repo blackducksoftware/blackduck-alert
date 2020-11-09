@@ -25,12 +25,12 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 import java.util.List;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DescriptorMetadata extends AlertSerializableModel {
     private static final long serialVersionUID = -6213193510077419010L;
@@ -125,4 +125,5 @@ public class DescriptorMetadata extends AlertSerializableModel {
     public void setTestFields(List<ConfigField> testFields) {
         this.testFields = testFields;
     }
+
 }

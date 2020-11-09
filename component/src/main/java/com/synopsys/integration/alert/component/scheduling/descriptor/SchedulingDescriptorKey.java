@@ -24,20 +24,14 @@ package com.synopsys.integration.alert.component.scheduling.descriptor;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public final class SchedulingDescriptorKey extends DescriptorKey {
     private static final String SCHEDULING_COMPONENT = "component_scheduling";
 
-    @Override
-    public String getUniversalKey() {
-        return SCHEDULING_COMPONENT;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return SchedulingDescriptor.SCHEDULING_LABEL;
+    public SchedulingDescriptorKey() {
+        super(SCHEDULING_COMPONENT, SchedulingDescriptor.SCHEDULING_LABEL);
     }
 
 }

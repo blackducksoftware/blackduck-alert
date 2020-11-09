@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
@@ -30,6 +31,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class UserActionsTest {
     private final Long id = 1L;
@@ -85,7 +87,7 @@ public class UserActionsTest {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
         AuthenticationTypeDetails authenticationTypeDetails = new AuthenticationTypeDetails(1L, authenticationType.name());
 
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUsers()).thenReturn(List.of(userModel));
         Mockito.when(authenticationTypeAccessor.getAuthenticationTypeDetails(Mockito.any())).thenReturn(Optional.of(authenticationTypeDetails));
 
@@ -107,7 +109,7 @@ public class UserActionsTest {
     public void testReadWithoutChecks() {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
         Mockito.when(userAccessor.getUser(2L)).thenReturn(Optional.empty());
 
@@ -275,7 +277,7 @@ public class UserActionsTest {
     public void testInternalUserNoEmailValidation() throws Exception {
         UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationType, roles, true);
 
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
 
         Set<String> roleNames = roles
@@ -300,7 +302,7 @@ public class UserActionsTest {
 
         UserModel userModel = UserModel.existingUser(id, name, password, null, authenticationTypeLDAP, roles, true);
 
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(userAccessor.getUser(Mockito.anyLong())).thenReturn(Optional.of(userModel));
 
         Set<String> roleNames = roles

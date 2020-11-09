@@ -1,0 +1,7 @@
+ext.moduleName = 'com.synopsys.integration.alert.descriptor.api'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+    implementation 'org.springframework:spring-context'
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+}

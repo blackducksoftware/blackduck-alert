@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.channel.azure.boards.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsDescriptor extends ChannelDescriptor {

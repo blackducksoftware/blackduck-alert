@@ -31,14 +31,14 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.Config;
 import com.synopsys.integration.alert.common.rest.model.MultiResponseModel;
-import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class AbstractResourceActions<T extends Config, D extends AlertSerializableModel, M extends MultiResponseModel<T>> {
     private final DescriptorKey descriptorKey;
@@ -75,7 +75,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     protected abstract Optional<T> findExisting(Long id);
 
     public final ActionResponse<T> create(T resource) {
-        if (!authorizationManager.hasCreatePermission(context.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasCreatePermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Create"));
             return ActionResponse.createForbiddenResponse();
         }
@@ -87,7 +87,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     }
 
     public final ActionResponse<M> getAll() {
-        if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasReadPermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get all"));
             return ActionResponse.createForbiddenResponse();
         }
@@ -98,7 +98,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     }
 
     public final ActionResponse<T> getOne(Long id) {
-        if (!authorizationManager.hasReadPermission(context.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasReadPermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Get one"));
             return ActionResponse.createForbiddenResponse();
         }
@@ -112,7 +112,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     }
 
     public final ActionResponse<T> update(Long id, T resource) {
-        if (!authorizationManager.hasWritePermission(context.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasWritePermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Update"));
             return ActionResponse.createForbiddenResponse();
         }
@@ -130,7 +130,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     }
 
     public final ActionResponse<T> delete(Long id) {
-        if (!authorizationManager.hasDeletePermission(context.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasDeletePermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Delete"));
             return ActionResponse.createForbiddenResponse();
         }
@@ -144,7 +144,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     }
 
     public final ValidationActionResponse test(T resource) {
-        if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasExecutePermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Test"));
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
@@ -158,7 +158,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
     }
 
     public final ValidationActionResponse validate(T resource) {
-        if (!authorizationManager.hasExecutePermission(context.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasExecutePermission(context, descriptorKey)) {
             logger.debug(String.format(FORBIDDEN_ACTION_FORMAT, "Validate"));
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);

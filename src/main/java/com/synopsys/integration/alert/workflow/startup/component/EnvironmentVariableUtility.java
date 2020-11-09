@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class EnvironmentVariableUtility {
@@ -65,4 +65,5 @@ public class EnvironmentVariableUtility {
         }
         return Optional.ofNullable(value);
     }
+
 }

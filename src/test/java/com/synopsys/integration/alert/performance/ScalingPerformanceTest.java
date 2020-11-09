@@ -19,11 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.slack.SlackChannelKey;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
@@ -50,7 +50,7 @@ public class ScalingPerformanceTest {
     private final Gson gson = IntegrationPerformanceTestRunner.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
-    private String blackDuckProviderID = "-1";
+    private final String blackDuckProviderID = "-1";
 
     private static String SLACK_CHANNEL_KEY;
     private static String SLACK_CHANNEL_WEBHOOK;

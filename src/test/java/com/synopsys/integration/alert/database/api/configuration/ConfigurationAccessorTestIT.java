@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -36,6 +35,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
@@ -81,19 +81,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey() {
-            private static final long serialVersionUID = 42094944704702165L;
-
-            @Override
-            public String getUniversalKey() {
-                return key;
-            }
-
-            @Override
-            public String getDisplayName() {
-                return key;
-            }
-        };
+        DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
         return testDescriptorKey;
     }
 

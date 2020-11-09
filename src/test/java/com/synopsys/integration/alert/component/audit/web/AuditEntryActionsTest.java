@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -43,6 +44,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.OutputLogger;
@@ -63,7 +65,7 @@ public class AuditEntryActionsTest {
     @Test
     public void testGetNull() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any())).thenReturn(Optional.empty());
@@ -82,7 +84,7 @@ public class AuditEntryActionsTest {
     @Test
     public void testGetAuditInfoForJobNull() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any())).thenReturn(Optional.empty());
@@ -98,7 +100,7 @@ public class AuditEntryActionsTest {
     @Test
     public void testResendNotificationException() throws AlertDatabaseConstraintException {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
@@ -139,7 +141,7 @@ public class AuditEntryActionsTest {
         Mockito.when(pageResponse.getSize()).thenReturn(pageSize);
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
 
@@ -194,7 +196,7 @@ public class AuditEntryActionsTest {
         Mockito.when(pageResponse.getSize()).thenReturn(0);
 
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
-        Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
 

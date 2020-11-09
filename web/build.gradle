@@ -14,6 +14,7 @@ dependencies {
     implementation project(':alert-database')
     implementation project(':channel')
     implementation project(':component')
+    implementation project(':descriptor-api')
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'com.synopsys.integration:integration-rest'

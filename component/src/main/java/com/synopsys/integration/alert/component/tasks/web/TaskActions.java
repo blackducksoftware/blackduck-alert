@@ -41,8 +41,8 @@ import com.synopsys.integration.alert.component.tasks.TaskManagementDescriptorKe
 
 @Component
 public class TaskActions {
-    private TaskManagementDescriptorKey descriptorKey;
-    private AuthorizationManager authorizationManager;
+    private final TaskManagementDescriptorKey descriptorKey;
+    private final AuthorizationManager authorizationManager;
     private final TaskManager taskManager;
 
     @Autowired
@@ -53,7 +53,7 @@ public class TaskActions {
     }
 
     public ActionResponse<MultiTaskMetaDataModel> getTasks() {
-        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
 

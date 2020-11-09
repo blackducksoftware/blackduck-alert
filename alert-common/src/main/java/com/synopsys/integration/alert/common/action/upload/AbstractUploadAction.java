@@ -65,7 +65,7 @@ public abstract class AbstractUploadAction {
         if (!isTargetDefined()) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
-        if (!authorizationManager.hasUploadReadPermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+        if (!authorizationManager.hasUploadReadPermission(target.getContext(), target.getDescriptorKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
 
@@ -80,7 +80,7 @@ public abstract class AbstractUploadAction {
         if (!isTargetDefined()) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
-        if (!authorizationManager.hasUploadWritePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+        if (!authorizationManager.hasUploadWritePermission(target.getContext(), target.getDescriptorKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
         return writeFile(fileToUpload);
@@ -90,7 +90,7 @@ public abstract class AbstractUploadAction {
         if (!isTargetDefined()) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
-        if (!authorizationManager.hasUploadDeletePermission(target.getContext().name(), target.getDescriptorKey().getUniversalKey())) {
+        if (!authorizationManager.hasUploadDeletePermission(target.getContext(), target.getDescriptorKey())) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
         try {

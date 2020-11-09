@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,15 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.descriptor.api;
 
-import java.io.Serializable;
+import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.util.Stringable;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
-public abstract class DescriptorKey extends Stringable implements Serializable {
-    public abstract String getUniversalKey();
-
-    public abstract String getDisplayName();
+@Component
+public final class BlackDuckProviderKey extends ProviderKey {
+    public BlackDuckProviderKey() {
+        super("provider_blackduck", "Black Duck");
+    }
 
 }

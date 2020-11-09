@@ -1,5 +1,5 @@
 /**
- * channel
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,25 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
-public final class EmailChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_email";
+public final class MsTeamsKey extends ChannelKey {
+    private static final String COMPONENT_NAME = "msteamskey";
+    private static final String MSTEAMS_DISPLAY_NAME = "MS Teams";
 
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return EmailDescriptor.EMAIL_LABEL;
+    public MsTeamsKey() {
+        super(COMPONENT_NAME, MSTEAMS_DISPLAY_NAME);
     }
 
 }

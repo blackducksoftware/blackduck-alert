@@ -59,18 +59,18 @@ public class ChannelSelectCustomFunctionAction extends CustomFunctionAction<Labe
     @Override
     public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         List<LabelValueSelectOption> options = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL).stream()
-                                                   .filter(this::hasPermission)
-                                                   .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
-                                                   .flatMap(Optional::stream)
-                                                   .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
-                                                   .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
-                                                   .sorted()
-                                                   .collect(Collectors.toList());
+                                                         .filter(this::hasPermission)
+                                                         .map(descriptor -> descriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION))
+                                                         .flatMap(Optional::stream)
+                                                         .map(uiConfig -> (ChannelDistributionUIConfig) uiConfig)
+                                                         .map(channelDistributionUIConfig -> new LabelValueSelectOption(channelDistributionUIConfig.getLabel(), channelDistributionUIConfig.getChannelKey().getUniversalKey()))
+                                                         .sorted()
+                                                         .collect(Collectors.toList());
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
         return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
     private boolean hasPermission(Descriptor descriptor) {
-        return authorizationManager.hasPermissions(ConfigContextEnum.DISTRIBUTION.name(), descriptor.getDescriptorKey().getUniversalKey());
+        return authorizationManager.hasPermissions(ConfigContextEnum.DISTRIBUTION, descriptor.getDescriptorKey());
     }
 }

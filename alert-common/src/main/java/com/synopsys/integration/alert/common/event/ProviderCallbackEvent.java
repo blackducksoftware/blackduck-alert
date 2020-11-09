@@ -27,7 +27,7 @@ import java.util.Optional;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
-import com.synopsys.integration.alert.common.provider.ProviderKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public class ProviderCallbackEvent extends AlertEvent {
     private final String callbackUrl;

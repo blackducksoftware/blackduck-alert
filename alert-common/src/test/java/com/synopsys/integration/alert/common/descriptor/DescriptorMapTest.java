@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DescriptorMapTest {
 
@@ -56,20 +57,11 @@ public class DescriptorMapTest {
     }
 
     private class MockDescriptorKey extends DescriptorKey {
-        private final String key;
 
         public MockDescriptorKey(String key) {
-            this.key = key;
+            super(key, key);
         }
 
-        @Override
-        public String getUniversalKey() {
-            return key;
-        }
-
-        @Override
-        public String getDisplayName() {
-            return key;
-        }
     }
+
 }

@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannelKey;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 
 @Component
 public class EmailDescriptor extends ChannelDescriptor {

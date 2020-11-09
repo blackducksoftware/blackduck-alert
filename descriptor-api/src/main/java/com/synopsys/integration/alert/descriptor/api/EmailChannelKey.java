@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,9 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.channel.issuetracker;
+package com.synopsys.integration.alert.descriptor.api;
 
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import org.springframework.stereotype.Component;
 
-public abstract class IssueTrackerChannelKey extends ChannelKey {
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+
+@Component
+public final class EmailChannelKey extends ChannelKey {
+    private static final String COMPONENT_NAME = "channel_email";
+    private static final String EMAIL_DISPLAY_NAME = "Email";
+
+    public EmailChannelKey() {
+        super(COMPONENT_NAME, EMAIL_DISPLAY_NAME);
+    }
+
 }
