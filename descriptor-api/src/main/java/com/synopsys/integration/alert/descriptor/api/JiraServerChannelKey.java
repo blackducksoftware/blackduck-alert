@@ -1,5 +1,5 @@
 /**
- * channel
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,25 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
 @Component
-public final class EmailChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_email";
-
+public class JiraServerChannelKey extends IssueTrackerChannelKey {
     @Override
     public String getUniversalKey() {
-        return COMPONENT_NAME;
+        return "channel_jira_server";
     }
 
     @Override
     public String getDisplayName() {
-        return EmailDescriptor.EMAIL_LABEL;
+        return "Jira Server";
     }
 
 }

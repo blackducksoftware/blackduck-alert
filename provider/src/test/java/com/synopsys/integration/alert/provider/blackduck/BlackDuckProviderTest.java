@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckTaskFactory;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;

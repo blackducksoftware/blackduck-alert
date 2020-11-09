@@ -1,5 +1,5 @@
 /**
- * channel
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,25 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack;
+package com.synopsys.integration.alert.descriptor.api;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.channel.key.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 @Component
-public final class SlackChannelKey extends ChannelKey {
-    private static final String COMPONENT_NAME = "channel_slack";
-
-    @Override
-    public String getUniversalKey() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return SlackDescriptor.SLACK_LABEL;
+public final class BlackDuckProviderKey extends ProviderKey {
+    public BlackDuckProviderKey() {
+        super("provider_blackduck", "Black Duck");
     }
 
 }

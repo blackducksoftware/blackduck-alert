@@ -9,3 +9,5 @@ include 'provider'
 include 'ui'
 include 'web'
 include 'workflow'
+include 'descriptor-api'
+

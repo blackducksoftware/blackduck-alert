@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -25,6 +24,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.web.role.util.PermissionModelUtil;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class RoleActionsTest {
     private final String roleName = "roleName";
@@ -349,4 +349,5 @@ public class RoleActionsTest {
         };
         return descriptorKey;
     }
+
 }

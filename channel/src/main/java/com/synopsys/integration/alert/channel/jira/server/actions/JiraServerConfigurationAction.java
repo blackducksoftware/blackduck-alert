@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.channel.jira.server.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 @Component
 public class JiraServerConfigurationAction extends ConfigurationAction {
@@ -36,4 +36,5 @@ public class JiraServerConfigurationAction extends ConfigurationAction {
         addDistributionTestAction(jiraServerDistributionTestAction);
         addGlobalTestAction(jiraServerGlobalTestAction);
     }
+
 }

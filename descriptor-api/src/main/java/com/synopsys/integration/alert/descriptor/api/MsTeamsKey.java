@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,33 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.descriptor.api;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
+import org.springframework.stereotype.Component;
 
-public class ProviderKey extends DescriptorKey {
-    private final String universalKey;
-    private final String displayName;
+import com.synopsys.integration.alert.descriptor.api.model.ClassNameChannelKey;
 
-    private ProviderKey() {
-        // For serialization
-        this.universalKey = null;
-        this.displayName = null;
-    }
-
-    public ProviderKey(String universalKey, String displayName) {
-        this.universalKey = universalKey;
-        this.displayName = displayName;
-    }
-
+@Component
+public final class MsTeamsKey extends ClassNameChannelKey {
     @Override
-    public final String getUniversalKey() {
-        return universalKey;
-    }
-
-    @Override
-    public final String getDisplayName() {
-        return displayName;
+    public String getDisplayName() {
+        return "MS Teams";
     }
 
 }

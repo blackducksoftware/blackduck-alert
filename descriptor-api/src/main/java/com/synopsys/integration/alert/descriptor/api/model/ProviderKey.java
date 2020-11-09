@@ -1,5 +1,5 @@
 /**
- * channel
+ * descriptor-api
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,22 +20,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.server;
+package com.synopsys.integration.alert.descriptor.api.model;
 
-import org.springframework.stereotype.Component;
+public class ProviderKey extends DescriptorKey {
+    private final String universalKey;
+    private final String displayName;
 
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerChannelKey;
+    private ProviderKey() {
+        // For serialization
+        this.universalKey = null;
+        this.displayName = null;
+    }
 
-@Component
-public class JiraServerChannelKey extends IssueTrackerChannelKey {
-    @Override
-    public String getUniversalKey() {
-        return "channel_jira_server";
+    public ProviderKey(String universalKey, String displayName) {
+        this.universalKey = universalKey;
+        this.displayName = displayName;
     }
 
     @Override
-    public String getDisplayName() {
-        return JiraServerDescriptor.JIRA_LABEL;
+    public final String getUniversalKey() {
+        return universalKey;
     }
+
+    @Override
+    public final String getDisplayName() {
+        return displayName;
+    }
+
 }

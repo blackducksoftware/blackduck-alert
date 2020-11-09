@@ -32,19 +32,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorKey;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class GlobalConfigExistsValidator {
     public static final String GLOBAL_CONFIG_MISSING = "%s global configuration missing.";
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigExistsValidator.class);
-    private ConfigurationAccessor configurationAccessor;
-    private List<Descriptor> descriptors;
+    private final ConfigurationAccessor configurationAccessor;
+    private final List<Descriptor> descriptors;
 
     @Autowired
     public GlobalConfigExistsValidator(ConfigurationAccessor configurationAccessor, List<Descriptor> descriptors) {
