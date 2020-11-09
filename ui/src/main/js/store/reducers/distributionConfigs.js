@@ -159,7 +159,7 @@ const config = (state = initialState, action) => {
                 status: 'ERROR'
             };
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR:
-            return {...state, inProgress: true};
+            return { ...state, inProgress: true };
         case DISTRIBUTION_JOB_CHECK_DESCRIPTOR_SUCCESS:
             return {
                 ...state,
