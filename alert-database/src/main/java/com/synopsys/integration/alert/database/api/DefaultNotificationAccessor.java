@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -168,12 +167,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         notificationContentRepository.deleteById(notification.getId());
     }
 
-    public PageRequest getPageRequestForNotifications(@Nullable Integer pageNumber, @Nullable Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
-        // FIXME Integer.MAX_VALUE does not seem like an appropriate default
-        //  Because this is an internal API, we should not expect pageNumber and pageSize to be @Nullable
-        //  Default values should be handled at the public API level
-        Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
-        Integer size = ObjectUtils.defaultIfNull(pageSize, Integer.MAX_VALUE);
+    public PageRequest getPageRequestForNotifications(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
         boolean sortQuery = false;
         String sortingField = "createdAt";
         // We can only modify the query for the fields that exist in NotificationContent
@@ -189,7 +183,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         if (StringUtils.isNotBlank(sortOrder) && sortQuery && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
             sortingOrder = Sort.Order.asc(sortingField);
         }
-        return PageRequest.of(page, size, Sort.by(sortingOrder));
+        return PageRequest.of(pageNumber, pageSize, Sort.by(sortingOrder));
     }
 
     private void deleteAuditEntries(Long notificationId) {
