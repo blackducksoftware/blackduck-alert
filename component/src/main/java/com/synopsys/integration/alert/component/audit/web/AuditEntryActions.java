@@ -88,7 +88,7 @@ public class AuditEntryActions {
     }
 
     public ActionResponse<AuditEntryPageModel> get(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications) {
-        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
         AuditEntryPageModel pagedRestModel = auditAccessor.getPageOfAuditEntries(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditAccessor::convertToAuditEntryModelFromNotification);
@@ -97,7 +97,7 @@ public class AuditEntryActions {
     }
 
     public ActionResponse<AuditEntryModel> get(Long id) {
-        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
         Optional<AlertNotificationModel> notificationContent = notificationAccessor.findById(id);
@@ -109,7 +109,7 @@ public class AuditEntryActions {
     }
 
     public ActionResponse<AuditJobStatusModel> getAuditInfoForJob(UUID jobId) {
-        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
         Optional<AuditJobStatusModel> auditJobStatusModel = auditAccessor.findFirstByJobId(jobId);
@@ -120,7 +120,7 @@ public class AuditEntryActions {
     }
 
     public ActionResponse<AuditEntryPageModel> resendNotification(Long notificationId, UUID commonConfigId) {
-        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), descriptorKey.getUniversalKey())) {
+        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
 
