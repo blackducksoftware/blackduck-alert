@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -54,7 +53,8 @@ import com.synopsys.integration.alert.database.provider.user.ProviderUserReposit
 
 @Component
 @Transactional
-public class DefaultProviderDataAccessor implements ProviderDataAccessor {
+public class DefaultProviderDataAccessor {
+    //implements ProviderDataAccessor {
     public static final int MAX_DESCRIPTION_LENGTH = 250;
     public static final int MAX_PROJECT_NAME_LENGTH = 507;
 
@@ -73,7 +73,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         this.configurationAccessor = configurationAccessor;
     }
 
-    @Override
+    //    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
         try {
@@ -91,7 +91,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return List.of();
     }
 
-    @Override
+    //    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
         return providerProjectRepository.findByProviderConfigId(providerConfigId)
@@ -100,12 +100,12 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                    .collect(Collectors.toList());
     }
 
-    @Override
+    //    @Override
     public void deleteProjects(Collection<ProviderProject> providerProjects) {
         providerProjects.forEach(project -> providerProjectRepository.deleteByHref(project.getHref()));
     }
 
-    @Override
+    //    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Set<String> getEmailAddressesForProjectHref(String projectHref) {
         Optional<Long> projectId = providerProjectRepository.findFirstByHref(projectHref).map(ProviderProjectEntity::getId);
@@ -122,7 +122,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return Set.of();
     }
 
-    @Override
+    //    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
         if (null == providerConfigId) {
@@ -134,7 +134,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                    .collect(Collectors.toList());
     }
 
-    @Override
+    //    @Override
     public List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName) {
         if (StringUtils.isBlank(providerConfigName)) {
             return List.of();
@@ -151,7 +151,7 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return List.of();
     }
 
-    @Override
+    //    @Override
     public void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
         updateProjectDB(providerConfigId, projectToUserData.keySet());
         Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
