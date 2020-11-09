@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -148,15 +149,21 @@ public class StaticJobAccessor implements JobAccessor {
 
     @Override
     @Transactional(readOnly = true)
-    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageNumber, int pageLimit, Collection<String> descriptorsNamesToInclude) {
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageNumber, int pageLimit, String searchTerm, Collection<String> descriptorsNamesToInclude) {
         if (!descriptorsNamesToInclude.contains(blackDuckProviderKey.getUniversalKey())) {
             return new AlertPagedModel<>(0, pageNumber, pageLimit, List.of());
         }
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
-        Page<ConfigurationJobModel> pageOfJobsWithDescriptorNames = distributionJobRepository.findByChannelDescriptorNameIn(descriptorsNamesToInclude, pageRequest)
-                                                                        .map(this::convertToConfigurationJobModel);
-        return new AlertPagedModel<>(pageOfJobsWithDescriptorNames.getTotalPages(), pageNumber, pageLimit, pageOfJobsWithDescriptorNames.getContent());
+        Page<DistributionJobEntity> pageOfJobsWithDescriptorNames;
+        if (StringUtils.isBlank(searchTerm)) {
+            pageOfJobsWithDescriptorNames = distributionJobRepository.findByChannelDescriptorNameIn(descriptorsNamesToInclude, pageRequest);
+        } else {
+            pageOfJobsWithDescriptorNames = distributionJobRepository.findByChannelDescriptorNamesAndSearchTerm(descriptorsNamesToInclude, searchTerm, pageRequest);
+        }
+
+        List<ConfigurationJobModel> configurationJobModels = pageOfJobsWithDescriptorNames.map(this::convertToConfigurationJobModel).getContent();
+        return new AlertPagedModel<>(pageOfJobsWithDescriptorNames.getTotalPages(), pageNumber, pageLimit, configurationJobModels);
     }
 
     @Override

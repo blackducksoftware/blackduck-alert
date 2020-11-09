@@ -65,7 +65,7 @@ public abstract class AbstractJobResourceActions {
 
     protected abstract ActionResponse<JobFieldModel> deleteWithoutChecks(UUID id);
 
-    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, Collection<String> permittedDescriptorsForSession);
+    protected abstract ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, String searchTerm, Collection<String> permittedDescriptorsForSession);
 
     protected abstract ValidationActionResponse testWithoutChecks(JobFieldModel resource);
 
@@ -100,7 +100,7 @@ public abstract class AbstractJobResourceActions {
         return createWithoutChecks(resource);
     }
 
-    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize) {
+    public final ActionResponse<JobPagedModel> getPage(Integer pageNumber, Integer pageSize, String searchTerm) {
         Optional<ActionResponse<JobPagedModel>> pagingErrorResponse = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
         if (pagingErrorResponse.isPresent()) {
             return pagingErrorResponse.get();
@@ -118,7 +118,7 @@ public abstract class AbstractJobResourceActions {
         if (permittedDescriptorsForSession.isEmpty()) {
             return ActionResponse.createForbiddenResponse();
         }
-        return readPageWithoutChecks(pageNumber, pageSize, permittedDescriptorsForSession);
+        return readPageWithoutChecks(pageNumber, pageSize, searchTerm, permittedDescriptorsForSession);
     }
 
     @Deprecated
@@ -220,4 +220,5 @@ public abstract class AbstractJobResourceActions {
                    .stream()
                    .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
     }
+
 }
