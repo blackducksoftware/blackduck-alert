@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.database.provider.project.ProviderUserProj
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 
+@Deprecated(since = "6.4.0")
 @Transactional
 public class DefaultProviderDataAccessor {
     //implements ProviderDataAccessor {
