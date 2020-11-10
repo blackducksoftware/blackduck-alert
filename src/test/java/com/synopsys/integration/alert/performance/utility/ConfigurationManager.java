@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -16,17 +18,42 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-public class TestJobCreator {
+public class ConfigurationManager {
     private final AlertRequestUtility alertRequestUtility;
     private final Gson gson;
     private final String blackDuckProviderKey;
     private final String channelKey;
 
-    public TestJobCreator(Gson gson, AlertRequestUtility alertRequestUtility, String blackDuckProviderKey, String channelKey) {
+    public ConfigurationManager(Gson gson, AlertRequestUtility alertRequestUtility, String blackDuckProviderKey, String channelKey) {
         this.gson = gson;
         this.alertRequestUtility = alertRequestUtility;
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.channelKey = channelKey;
+    }
+
+    public void createGlobalConfiguration(FieldModel globalConfig) {
+        String configurationRequestBody = gson.toJson(globalConfig);
+
+        String descriptorName = globalConfig.getDescriptorName();
+        try {
+            String globalConfigSearchResponse = alertRequestUtility.executeGetRequest(
+                String.format("/api/configuration?context=%s&descriptorName=%s", ConfigContextEnum.GLOBAL.name(), descriptorName),
+                String.format("Could not find the existing global configuration for %s.", descriptorName));
+            JsonObject globalConfigSearchJsonObject = gson.fromJson(globalConfigSearchResponse, JsonObject.class);
+            JsonArray fieldModels = globalConfigSearchJsonObject.get("fieldModels").getAsJsonArray();
+            JsonElement firstFieldModel = fieldModels.get(0);
+            FieldModel originalGlobalConfig = gson.fromJson(firstFieldModel, FieldModel.class);
+
+            globalConfig.setId(originalGlobalConfig.getId());
+
+            alertRequestUtility.executePostRequest("/api/configuration/validate", configurationRequestBody, String.format("Validating the global configuration %s failed.", descriptorName));
+            alertRequestUtility.executePostRequest("/api/configuration/test", configurationRequestBody, String.format("Testing the global configuration %s failed.", descriptorName));
+            alertRequestUtility.executePutRequest(
+                String.format("/api/configuration/%s", globalConfig.getId()), configurationRequestBody,
+                String.format("Could not create the global configuration %s.", descriptorName));
+        } catch (IntegrationException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public String createJob(Map<String, FieldValueModel> channelFields, String jobName, String blackDuckProviderId, String blackDuckProjectName) throws IntegrationException {

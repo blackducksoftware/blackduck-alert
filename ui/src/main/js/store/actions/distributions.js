@@ -173,7 +173,7 @@ export function deleteDistributionJob(job) {
     };
 }
 
-export function fetchDistributionJobs(pageOffset, pageLimit) {
+export function fetchDistributionJobs(pageNumber, pageLimit, searchTerm) {
     return (dispatch, getState) => {
         dispatch(fetchingAllJobs());
         const { csrfToken } = getState().session;
@@ -185,9 +185,9 @@ export function fetchDistributionJobs(pageOffset, pageLimit) {
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
 
-        pageOffset = pageOffset ? pageOffset - 1 : 0;
+        pageNumber = pageNumber ? pageNumber - 1 : 0;
         pageLimit = pageLimit ? pageLimit : 10;
-        const requestUrl = `${ConfigRequestBuilder.JOB_API_URL}?pageNumber=${pageOffset}&pageSize=${pageLimit}`;
+        const requestUrl = `${ConfigRequestBuilder.JOB_API_URL}?pageNumber=${pageNumber}&pageSize=${pageLimit}&searchTerm=${searchTerm}`;
         fetch(requestUrl, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()
