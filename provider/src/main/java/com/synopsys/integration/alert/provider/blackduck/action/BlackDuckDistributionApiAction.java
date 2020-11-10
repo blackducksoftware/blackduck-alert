@@ -18,16 +18,19 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.action.delegator.BlackDuckAddProjectUserDelegator;
 
 @Component
 public class BlackDuckDistributionApiAction extends ApiAction {
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckProvider blackDuckProvider;
+    private final BlackDuckAddProjectUserDelegator blackDuckAddProjectUserDelegator;
 
     @Autowired
-    public BlackDuckDistributionApiAction(ConfigurationAccessor configurationAccessor, BlackDuckProvider blackDuckProvider) {
+    public BlackDuckDistributionApiAction(ConfigurationAccessor configurationAccessor, BlackDuckProvider blackDuckProvider, BlackDuckAddProjectUserDelegator blackDuckAddProjectUserDelegator) {
         this.configurationAccessor = configurationAccessor;
         this.blackDuckProvider = blackDuckProvider;
+        this.blackDuckAddProjectUserDelegator = blackDuckAddProjectUserDelegator;
     }
 
     @Override
@@ -49,12 +52,10 @@ public class BlackDuckDistributionApiAction extends ApiAction {
             if (optionalBlackDuckGlobalConfig.isPresent()) {
                 StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(optionalBlackDuckGlobalConfig.get());
                 BlackDuckProperties properties = (BlackDuckProperties) statefulProvider.getProperties();
-
-                // TODO create and execute callable / event
-
                 Collection<String> configuredProjects = currentFieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT)
                                                             .map(FieldValueModel::getValues)
                                                             .orElse(Set.of());
+                blackDuckAddProjectUserDelegator.addProviderUserToBlackDuckProjects(properties, configuredProjects);
             }
         }
     }
