@@ -107,6 +107,7 @@ class Index extends Component {
         this.state = {
             currentPage: 1,
             currentPageSize: 10,
+            currentSearchTerm: '',
             currentRowSelected: null,
             jobsToDelete: [],
             showDeleteModal: false,
@@ -120,8 +121,8 @@ class Index extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const { currentPage, currentPageSize } = this.state;
-        if (prevState.currentPage !== currentPage || prevState.currentPageSize !== currentPageSize) {
+        const { currentPage, currentPageSize, currentSearchTerm } = this.state;
+        if (prevState.currentPage !== currentPage || prevState.currentPageSize !== currentPageSize || prevState.currentSearchTerm !== currentSearchTerm) {
             this.reloadJobs();
         }
     }
@@ -140,7 +141,9 @@ class Index extends Component {
     }
 
     getCurrentJobConfig() {
-        const { currentPage, currentPageSize, currentRowSelected, modificationState } = this.state;
+        const {
+            currentPage, currentPageSize, currentSearchTerm, currentRowSelected, modificationState
+        } = this.state;
         if (currentRowSelected != null) {
             const { id } = currentRowSelected;
             return (
@@ -149,7 +152,7 @@ class Index extends Component {
                     onSave={this.saveBtn}
                     jobId={id}
                     onModalClose={() => {
-                        this.props.fetchDistributionJobs(currentPage, currentPageSize);
+                        this.props.fetchDistributionJobs(currentPage, currentPageSize, currentSearchTerm);
                         this.cancelRowSelect();
                     }}
                     isUpdatingJob={modificationState === jobModificationState.EDIT}
@@ -160,13 +163,13 @@ class Index extends Component {
     }
 
     createCustomModal(onModalClose) {
-        const { currentPage, currentPageSize } = this.state;
+        const { currentPage, currentPageSize, currentSearchTerm } = this.state;
         return (
             <DistributionConfiguration
                 projects={this.state.projects}
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
-                    this.props.fetchDistributionJobs(currentPage, currentPageSize);
+                    this.props.fetchDistributionJobs(currentPage, currentPageSize, currentSearchTerm);
                     this.cancelRowSelect();
                     onModalClose();
                 }}
@@ -181,8 +184,8 @@ class Index extends Component {
     }
 
     reloadJobs() {
-        const { currentPage, currentPageSize } = this.state;
-        this.props.fetchDistributionJobs(currentPage, currentPageSize);
+        const { currentPage, currentPageSize, currentSearchTerm } = this.state;
+        this.props.fetchDistributionJobs(currentPage, currentPageSize, currentSearchTerm);
         this.props.validateCurrentJobsAction();
     }
 
@@ -377,8 +380,11 @@ class Index extends Component {
         });
     }
 
-    onSearchChange(searchText, colInfos, multiColumnSearch) {
-        // Not currently supported
+    onSearchChange(searchTerm, colInfos, multiColumnSearch) {
+        this.setState({
+            currentSearchTerm: searchTerm,
+            currentPage: 1
+        });
     }
 
     onSortChange(sortName, sortOrder) {
@@ -615,7 +621,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     openJobDeleteModal: () => dispatch(openJobDeleteModal()),
-    fetchDistributionJobs: (pageOffset, pageLimit) => dispatch(fetchDistributionJobs(pageOffset, pageLimit)),
+    fetchDistributionJobs: (pageOffset, pageLimit, searchTerm) => dispatch(fetchDistributionJobs(pageOffset, pageLimit, searchTerm)),
     validateCurrentJobsAction: () => dispatch(validateCurrentJobs())
 });
 

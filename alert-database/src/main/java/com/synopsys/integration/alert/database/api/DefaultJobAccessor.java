@@ -102,7 +102,7 @@ public class DefaultJobAccessor implements JobAccessor {
     }
 
     @Override
-    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, Collection<String> descriptorsNamesToInclude) {
+    public AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, String searchTerm, Collection<String> descriptorsNamesToInclude) {
         PageRequest pageRequest = PageRequest.of(pageOffset, pageLimit);
         Page<UUID> distinctJobIds = configGroupRepository.findDistinctJobIdsOnlyIncludingProvidedDescriptors(descriptorsNamesToInclude, pageRequest);
         List<ConfigGroupEntity> distinctJobs = configGroupRepository.findAllByJobIdIn(distinctJobIds.getContent());
