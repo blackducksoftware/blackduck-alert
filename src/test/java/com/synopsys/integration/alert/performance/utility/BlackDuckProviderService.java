@@ -64,7 +64,7 @@ public class BlackDuckProviderService {
         this.blackDuckServicesFactory = setupBlackDuckServicesFactory();
     }
 
-    public void triggerBlackDuckNotification() throws Exception {
+    public void triggerBlackDuckNotification() throws IntegrationException {
         setupBlackDuckServicesFactory();
         BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
@@ -91,7 +91,7 @@ public class BlackDuckProviderService {
         projectBomService.addComponentToProjectVersion(commonsFileUploadExternalId, projectVersionView);
     }
 
-    public String setupBlackDuck() throws Exception {
+    public String setupBlackDuck() {
         try {
             return findBlackDuckProvider();
         } catch (IntegrationException exception) {
@@ -100,7 +100,7 @@ public class BlackDuckProviderService {
         }
     }
 
-    public String findBlackDuckProvider() throws Exception {
+    public String findBlackDuckProvider() throws IntegrationException {
         String blackDuckProviderSearch = String.format("api/configuration?context=%s&descriptorName=%s", ConfigContextEnum.GLOBAL, blackDuckProviderKey);
         String response = alertRequestUtility.executeGetRequest(blackDuckProviderSearch, "Could not find the Black Duck provider.");
 
@@ -119,7 +119,7 @@ public class BlackDuckProviderService {
         return blackDuckProviderID;
     }
 
-    private String createBlackDuckProvider() throws Exception {
+    private String createBlackDuckProvider() {
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put("provider.common.config.enabled", new FieldValueModel(List.of("true"), true));
         keyToValues.put("provider.common.config.name", new FieldValueModel(List.of(blackDuckProviderUniqueName), true));
@@ -129,15 +129,18 @@ public class BlackDuckProviderService {
         FieldModel blackDuckProviderConfiguration = new FieldModel(blackDuckProviderKey, ConfigContextEnum.GLOBAL.name(), keyToValues);
 
         String blackDuckConfigBody = gson.toJson(blackDuckProviderConfiguration);
+        try {
+            alertRequestUtility.executePostRequest("/api/configuration/validate", blackDuckConfigBody, "Validating the Black Duck provider failed.");
+            alertRequestUtility.executePostRequest("/api/configuration/test", blackDuckConfigBody, "Testing the Black Duck provider failed.");
+            String creationResponse = alertRequestUtility.executePostRequest("/api/configuration", blackDuckConfigBody, "Could not create the Black Duck provider.");
 
-        alertRequestUtility.executePostRequest("/api/configuration/validate", blackDuckConfigBody, "Validating the Black Duck provider failed.");
-        alertRequestUtility.executePostRequest("/api/configuration/test", blackDuckConfigBody, "Testing the Black Duck provider failed.");
-        String creationResponse = alertRequestUtility.executePostRequest("/api/configuration", blackDuckConfigBody, "Could not create the Black Duck provider.");
-
-        JsonObject jsonObject = gson.fromJson(creationResponse, JsonObject.class);
-        String blackDuckProviderID = jsonObject.get("id").getAsString();
-        intLogger.info(String.format("Configured the Black Duck provider, ID %s.", blackDuckProviderID));
-        return blackDuckProviderID;
+            JsonObject jsonObject = gson.fromJson(creationResponse, JsonObject.class);
+            String blackDuckProviderID = jsonObject.get("id").getAsString();
+            intLogger.info(String.format("Configured the Black Duck provider, ID %s.", blackDuckProviderID));
+            return blackDuckProviderID;
+        } catch (IntegrationException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     private BlackDuckServicesFactory setupBlackDuckServicesFactory() {

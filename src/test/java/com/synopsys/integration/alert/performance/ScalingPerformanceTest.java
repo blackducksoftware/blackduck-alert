@@ -26,10 +26,10 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
+import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTask;
-import com.synopsys.integration.alert.performance.utility.TestJobCreator;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -80,7 +80,7 @@ public class ScalingPerformanceTest {
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
 
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        TestJobCreator testJobCreator = new TestJobCreator(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
+        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
 
         startingTime = LocalDateTime.now();
         // Create the Black Duck Global provider configuration
@@ -90,20 +90,21 @@ public class ScalingPerformanceTest {
         List<String> jobIds = new ArrayList<>();
         startingTime = LocalDateTime.now();
         // create 10 slack jobs, trigger notification, and wait for all 10 to succeed
-        createAndTestJobs(alertRequestUtility, blackDuckProviderService, testJobCreator, startingTime, jobIds, 10, blackDuckProviderID);
+        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 10, blackDuckProviderID);
 
         startingTime = LocalDateTime.now();
         // create 90 more slack jobs, trigger notification, and wait for all 100 to succeed
-        createAndTestJobs(alertRequestUtility, blackDuckProviderService, testJobCreator, startingTime, jobIds, 90, blackDuckProviderID);
+        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 90, blackDuckProviderID);
 
         // TODO create 900 more slack jobs for a total of 1000
         // TODO create 1000 more slack jobs for a total of 2000
     }
 
-    private void createAndTestJobs(AlertRequestUtility alertRequestUtility, BlackDuckProviderService blackDuckProviderService, TestJobCreator testJobCreator, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate,
+    private void createAndTestJobs(AlertRequestUtility alertRequestUtility, BlackDuckProviderService blackDuckProviderService, ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds,
+        int numberOfJobsToCreate,
         String blackDuckProviderID) throws Exception {
         // create slack jobs
-        createSlackJobs(testJobCreator, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey());
+        createSlackJobs(configurationManager, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey());
 
         LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
         // trigger BD notification
@@ -122,7 +123,8 @@ public class ScalingPerformanceTest {
         assertTrue(isComplete);
     }
 
-    private void createSlackJobs(TestJobCreator testJobCreator, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey) throws Exception {
+    private void createSlackJobs(ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey)
+        throws Exception {
         int startingJobNum = jobIds.size();
 
         while (jobIds.size() < startingJobNum + numberOfJobsToCreate) {
@@ -141,7 +143,7 @@ public class ScalingPerformanceTest {
             slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(SLACK_CHANNEL_WEBHOOK), true));
             slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
             slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
-            String jobId = testJobCreator.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProviderKey);
+            String jobId = configurationManager.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProviderKey);
             jobIds.add(jobId);
 
             if (jobIds.size() % intervalToLog == 0) {

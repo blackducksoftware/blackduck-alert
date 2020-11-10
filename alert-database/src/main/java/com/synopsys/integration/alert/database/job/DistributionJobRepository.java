@@ -40,6 +40,18 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
 
     Page<DistributionJobEntity> findByChannelDescriptorNameIn(Collection<String> channelDescriptorName, Pageable pageable);
 
+    @Query("SELECT jobEntity FROM DistributionJobEntity jobEntity"
+               + " WHERE jobEntity.channelDescriptorName IN (:channelDescriptorNames)"
+               + " AND ("
+               + "   jobEntity.name LIKE %:searchTerm%"
+               + "   OR jobEntity.channelDescriptorName LIKE %:searchTerm%"
+               + "   OR jobEntity.distributionFrequency LIKE %:searchTerm%"
+               + "   OR COALESCE(to_char(jobEntity.createdAt, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%"
+               + "   OR (jobEntity.lastUpdated != NULL AND COALESCE(to_char(jobEntity.lastUpdated, 'MM/DD/YYYY, HH24:MI:SS'), '') LIKE %:searchTerm%)"
+               + " )"
+    )
+    Page<DistributionJobEntity> findByChannelDescriptorNamesAndSearchTerm(@Param("channelDescriptorNames") Collection<String> channelDescriptorNames, @Param("searchTerm") String searchTerm, Pageable pageable);
+
     @Query(value = "SELECT jobEntity FROM DistributionJobEntity jobEntity "
                        + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
@@ -58,4 +70,5 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    AND notificationTypes.notificationType = :notificationType"
     )
     List<DistributionJobEntity> findMatchingEnabledJob(@Param("providerConfigId") Long providerConfigId, @Param("notificationType") String notificationType);
+
 }
