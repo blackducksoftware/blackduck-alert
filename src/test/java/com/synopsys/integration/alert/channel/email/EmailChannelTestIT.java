@@ -26,9 +26,9 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
-import com.synopsys.integration.alert.database.api.DefaultProviderDataAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -46,7 +46,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
     public void sendEmailTest() throws Exception {
         DefaultAuditAccessor auditUtility = Mockito.mock(DefaultAuditAccessor.class);
         TestAlertProperties testAlertProperties = new TestAlertProperties();
-        EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(DefaultProviderDataAccessor.class));
+        EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(ProviderDataAccessor.class));
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();

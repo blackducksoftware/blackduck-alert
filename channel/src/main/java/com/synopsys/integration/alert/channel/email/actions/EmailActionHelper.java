@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -66,7 +66,7 @@ public class EmailActionHelper {
         if (null != providerConfigId && !onlyAdditionalEmails) {
             Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldUtility, filterByProject, providerConfigId);
             if (null != providerProjects) {
-                Set<String> providerEmailAddresses = addEmailAddresses(providerProjects, fieldUtility);
+                Set<String> providerEmailAddresses = addEmailAddresses(providerConfigId, providerProjects, fieldUtility);
                 emailAddresses.addAll(providerEmailAddresses);
             }
         }
@@ -98,13 +98,13 @@ public class EmailActionHelper {
         return new HashSet<>(providerProjects);
     }
 
-    private Set<String> addEmailAddresses(Set<ProviderProject> providerProjects, FieldUtility fieldUtility) throws AlertFieldException {
+    private Set<String> addEmailAddresses(Long providerConfigId, Set<ProviderProject> providerProjects, FieldUtility fieldUtility) throws AlertFieldException {
         boolean projectOwnerOnly = fieldUtility.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
 
         Set<String> emailAddresses = new HashSet<>();
         Set<String> projectsWithoutEmails = new HashSet<>();
         for (ProviderProject project : providerProjects) {
-            Set<String> emailsForProject = emailAddressHandler.getEmailAddressesForProject(project, projectOwnerOnly);
+            Set<String> emailsForProject = emailAddressHandler.getEmailAddressesForProject(providerConfigId, project, projectOwnerOnly);
             if (emailsForProject.isEmpty()) {
                 projectsWithoutEmails.add(project.getName());
             }

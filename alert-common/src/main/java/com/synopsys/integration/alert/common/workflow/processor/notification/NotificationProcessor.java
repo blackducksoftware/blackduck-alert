@@ -221,11 +221,11 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private Optional<ConfigurationModel> retrieveProviderConfig(Long providerConfigID) {
+    private Optional<ConfigurationModel> retrieveProviderConfig(Long providerConfigId) {
         try {
-            return configurationAccessor.getConfigurationById(providerConfigID);
+            return configurationAccessor.getConfigurationById(providerConfigId);
         } catch (AlertDatabaseConstraintException e) {
-            logger.error("Could not retrieve the provider config for ID: {}", providerConfigID);
+            logger.error("Could not retrieve the provider config for Id: {}", providerConfigId);
             logger.debug(e.getMessage(), e);
             return Optional.empty();
         }

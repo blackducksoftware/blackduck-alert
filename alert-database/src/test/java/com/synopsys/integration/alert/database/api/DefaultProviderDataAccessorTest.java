@@ -115,7 +115,7 @@ public class DefaultProviderDataAccessorTest {
         Mockito.when(providerUserRepository.findAllById(Mockito.any())).thenReturn(List.of(providerUserEntity));
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, null);
-        Set<String> emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(href);
+        Set<String> emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(null, href);
 
         assertEquals(1, emailAddresses.size());
         assertTrue(emailAddresses.contains(projectOwnerEmail));
@@ -128,7 +128,7 @@ public class DefaultProviderDataAccessorTest {
         Mockito.when(providerProjectRepository.findFirstByHref(Mockito.any())).thenReturn(Optional.empty());
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, null, null, null);
-        Set<String> emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref("test-href");
+        Set<String> emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(null, "test-href");
 
         assertTrue(emailAddresses.isEmpty());
     }
