@@ -37,7 +37,7 @@ public interface ProviderDataAccessor {
 
     void deleteProjects(Collection<ProviderProject> providerProjects);
 
-    Set<String> getEmailAddressesForProjectHref(String projectHref);
+    Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String projectHref);
 
     List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId);
 
