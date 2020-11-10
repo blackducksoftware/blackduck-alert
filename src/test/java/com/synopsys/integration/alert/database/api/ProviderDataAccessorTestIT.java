@@ -50,6 +50,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         return new ProviderKey(key, key);
     }
 
+    //TODO delete this test
     @Test
     public void deleteAndSaveAllProjectsTest() {
         Long providerConfigId = 10000L;
@@ -90,6 +91,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         assertEquals(2, savedEntities.size());
     }
 
+    //TODO update this test to use the new BlackDuckProviderDataAccessor
     @Test
     public void getEmailAddressesForProjectHrefTest() {
         Long providerConfigId = 10000L;
@@ -116,20 +118,22 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedUser4.getId(), projectId));
 
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
-        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(href);
+        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(null, href);
         assertEquals(3, foundEmailAddresses.size());
         assertTrue(foundEmailAddresses.contains(emailAddress1), "Expected email address was missing: " + emailAddress1);
         assertTrue(foundEmailAddresses.contains(emailAddress2), "Expected email address was missing: " + emailAddress1);
         assertTrue(foundEmailAddresses.contains(emailAddress3), "Expected email address was missing: " + emailAddress1);
     }
 
+    //TODO update this test to use the new BlackDuckProviderDataAccessor
     @Test
     public void getEmailAddressesForNonExistentProjectHrefTest() {
         DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
-        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref("expecting no results");
+        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(null, "expecting no results");
         assertEquals(0, foundEmailAddresses.size());
     }
 
+    //TODO update this test to use the new BlackDuckProviderDataAccessor
     @Test
     public void getAllUsersTest() {
         Long providerConfigId = 10000L;
@@ -148,6 +152,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         assertEquals(3, allProviderUsers.size());
     }
 
+    //TODO update this test to use the new BlackDuckProviderDataAccessor
     @Test
     public void deleteAndSaveAllUsersTest() {
         Long providerConfigId = 10000L;

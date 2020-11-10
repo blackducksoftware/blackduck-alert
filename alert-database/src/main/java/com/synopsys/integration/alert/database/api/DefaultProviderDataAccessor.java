@@ -35,13 +35,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -52,9 +50,10 @@ import com.synopsys.integration.alert.database.provider.project.ProviderUserProj
 import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
 import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
 
-@Component
+@Deprecated(since = "6.4.0")
 @Transactional
-public class DefaultProviderDataAccessor implements ProviderDataAccessor {
+public class DefaultProviderDataAccessor {
+    //implements ProviderDataAccessor {
     public static final int MAX_DESCRIPTION_LENGTH = 250;
     public static final int MAX_PROJECT_NAME_LENGTH = 507;
 
@@ -73,7 +72,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         this.configurationAccessor = configurationAccessor;
     }
 
-    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
         try {
@@ -91,7 +89,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return List.of();
     }
 
-    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
         return providerProjectRepository.findByProviderConfigId(providerConfigId)
@@ -100,14 +97,12 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                    .collect(Collectors.toList());
     }
 
-    @Override
     public void deleteProjects(Collection<ProviderProject> providerProjects) {
         providerProjects.forEach(project -> providerProjectRepository.deleteByHref(project.getHref()));
     }
 
-    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Set<String> getEmailAddressesForProjectHref(String projectHref) {
+    public Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String projectHref) {
         Optional<Long> projectId = providerProjectRepository.findFirstByHref(projectHref).map(ProviderProjectEntity::getId);
         if (projectId.isPresent()) {
             Set<Long> userIds = providerUserProjectRelationRepository.findByProviderProjectId(projectId.get())
@@ -122,7 +117,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return Set.of();
     }
 
-    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId) {
         if (null == providerConfigId) {
@@ -134,7 +128,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
                    .collect(Collectors.toList());
     }
 
-    @Override
     public List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName) {
         if (StringUtils.isBlank(providerConfigName)) {
             return List.of();
@@ -151,7 +144,6 @@ public class DefaultProviderDataAccessor implements ProviderDataAccessor {
         return List.of();
     }
 
-    @Override
     public void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
         updateProjectDB(providerConfigId, projectToUserData.keySet());
         Set<String> userData = projectToUserData.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());

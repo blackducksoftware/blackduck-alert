@@ -68,7 +68,7 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public Set<String> getEmailAddressesForProjectHref(String href) {
+    public Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String href) {
         // This will just be gotten/set by tests
         return expectedEmailAddresses;
     }
