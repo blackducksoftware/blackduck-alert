@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -71,7 +72,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     private static final String EMAIL_TEST_PROVIDER_CONFIG_NAME = "emailTestProviderConfig";
     @Autowired
-    private DefaultProviderDataAccessor providerDataAccessor;
+    private ProviderDataAccessor providerDataAccessor;
     @Autowired
     private ProviderProjectRepository providerProjectRepository;
     @Autowired
