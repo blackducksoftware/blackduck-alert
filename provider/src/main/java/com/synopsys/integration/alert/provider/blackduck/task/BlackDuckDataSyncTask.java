@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.task;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,12 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
@@ -62,12 +56,10 @@ import com.synopsys.integration.rest.HttpUrl;
 public class BlackDuckDataSyncTask extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);
     private final ProviderDataAccessor blackDuckDataAccessor;
-    private final JobAccessor jobAccessor;
 
-    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ProviderProperties providerProperties, JobAccessor jobAccessor) {
+    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ProviderProperties providerProperties) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
-        this.jobAccessor = jobAccessor;
     }
 
     @Override
@@ -144,22 +136,6 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 }
             });
         return projectToEmailAddresses;
-    }
-
-    private Set<String> retrieveAllProjectsInJobs(Collection<ProviderProject> foundProjects) {
-        Set<String> configuredProjectNames = new HashSet<>();
-        for (ConfigurationJobModel configurationJobModel : jobAccessor.getAllJobs()) {
-            FieldUtility fieldUtility = configurationJobModel.getFieldUtility();
-            String projectNamePattern = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
-            if (StringUtils.isNotBlank(projectNamePattern)) {
-                Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(name -> name.matches(projectNamePattern)).collect(Collectors.toSet());
-                configuredProjectNames.addAll(matchedProjectNames);
-            }
-            Collection<String> configuredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-            configuredProjectNames.addAll(configuredProjects);
-        }
-
-        return configuredProjectNames;
     }
 
     private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
