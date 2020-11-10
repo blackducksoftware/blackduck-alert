@@ -30,8 +30,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 public interface ReadPageController<P extends AlertPagedModel<?>> {
     @GetMapping
     P getPage(
-        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER) Integer pageNumber,
-        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE) Integer pageSize,
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_NUMBER_STRING) Integer pageNumber,
+        @RequestParam(defaultValue = AlertPagedModel.DEFAULT_PAGE_SIZE_STRING) Integer pageSize,
         @RequestParam(required = false) String searchTerm
     );
 

@@ -22,6 +22,9 @@
  */
 package com.synopsys.integration.alert.component.audit.web;
 
+import static com.synopsys.integration.alert.common.rest.model.AlertPagedModel.DEFAULT_PAGE_NUMBER;
+import static com.synopsys.integration.alert.common.rest.model.AlertPagedModel.DEFAULT_PAGE_SIZE;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,8 +95,8 @@ public class AuditEntryActions {
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
-        Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
-        Integer size = ObjectUtils.defaultIfNull(pageSize, 100);
+        Integer page = ObjectUtils.defaultIfNull(pageNumber, DEFAULT_PAGE_NUMBER);
+        Integer size = ObjectUtils.defaultIfNull(pageSize, DEFAULT_PAGE_SIZE);
         AuditEntryPageModel pagedRestModel = auditAccessor.getPageOfAuditEntries(page, size, searchTerm, sortField, sortOrder, onlyShowSentNotifications, auditAccessor::convertToAuditEntryModelFromNotification);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return new ActionResponse<>(HttpStatus.OK, pagedRestModel);
