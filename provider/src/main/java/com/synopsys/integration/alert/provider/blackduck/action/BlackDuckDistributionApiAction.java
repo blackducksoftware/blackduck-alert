@@ -69,17 +69,20 @@ public class BlackDuckDistributionApiAction extends ApiAction {
 
     private void afterWrite(FieldModel currentFieldModel) throws AlertException {
         Optional<Long> optionalProviderConfigId = currentFieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).map(Long::valueOf);
-        if (optionalProviderConfigId.isPresent()) {
+        Collection<String> configuredProjects = extractConfiguredProjects(currentFieldModel);
+        if (optionalProviderConfigId.isPresent() && !configuredProjects.isEmpty()) {
             Optional<ConfigurationModel> optionalBlackDuckGlobalConfig = configurationAccessor.getConfigurationById(optionalProviderConfigId.get());
             if (optionalBlackDuckGlobalConfig.isPresent()) {
                 StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(optionalBlackDuckGlobalConfig.get());
-                BlackDuckProperties properties = (BlackDuckProperties) statefulProvider.getProperties();
-                Collection<String> configuredProjects = currentFieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT)
-                                                            .map(FieldValueModel::getValues)
-                                                            .orElse(Set.of());
-                blackDuckProjectUserSyncTaskManager.addAlertGlobalBlackDuckUserToProjects(properties, configuredProjects);
+                blackDuckProjectUserSyncTaskManager.addAlertGlobalBlackDuckUserToProjects((BlackDuckProperties) statefulProvider.getProperties(), configuredProjects);
             }
         }
+    }
+
+    private Collection<String> extractConfiguredProjects(FieldModel currentFieldModel) {
+        return currentFieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT)
+                   .map(FieldValueModel::getValues)
+                   .orElse(Set.of());
     }
 
 }
