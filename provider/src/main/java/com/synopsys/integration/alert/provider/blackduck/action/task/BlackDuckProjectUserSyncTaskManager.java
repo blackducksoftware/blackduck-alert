@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.action.delegator;
+package com.synopsys.integration.alert.provider.blackduck.action.task;
 
 import java.util.Collection;
 import java.util.Queue;
@@ -13,45 +13,49 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 @Component
-public class BlackDuckAddProjectUserDelegator {
+public class BlackDuckProjectUserSyncTaskManager {
     public static final int MAX_TASKS = 10;
 
     private final ExecutorService executorService;
     private final Queue<Future<?>> syncTasks;
     private final AtomicInteger taskCount;
 
-    public BlackDuckAddProjectUserDelegator() {
+    public BlackDuckProjectUserSyncTaskManager() {
         this.executorService = Executors.newCachedThreadPool();
         this.syncTasks = new ConcurrentLinkedQueue<>();
         this.taskCount = new AtomicInteger(0);
     }
 
-    public void addProviderUserToBlackDuckProjects(BlackDuckProperties blackDuckProperties, Collection<String> blackDuckProjectHrefs) {
-        if (blackDuckProjectHrefs.isEmpty()) {
+    public void addAlertGlobalBlackDuckUserToProjects(BlackDuckProperties blackDuckProperties, Collection<String> blackDuckProjectNames) {
+        if (blackDuckProjectNames.isEmpty()) {
             return;
         }
 
-        Runnable syncTask = createTaskToSyncUserWithProjects(blackDuckProperties, blackDuckProjectHrefs);
+        Runnable syncTask = new BlackDuckProjectSyncRunnable(blackDuckProperties, blackDuckProjectNames);
         Future<?> syncTaskFuture = executorService.submit(syncTask);
         scheduleNewSyncTask(syncTaskFuture);
     }
 
+    public void removeCompletedTasks() {
+        while (!syncTasks.isEmpty() && syncTasks.peek().isDone()) {
+            syncTasks.remove();
+            taskCount.decrementAndGet();
+        }
+    }
+
     private void scheduleNewSyncTask(Future<?> syncTaskFuture) {
         if (taskCount.get() >= MAX_TASKS) {
-            Future<?> longestRunningTask = syncTasks.poll();
-            if (null != longestRunningTask) {
-                longestRunningTask.cancel(true);
+            Future<?> oldestTask = syncTasks.poll();
+            if (null != oldestTask) {
+                oldestTask.cancel(true);
                 taskCount.decrementAndGet();
             }
         }
+
+        removeCompletedTasks();
+
         syncTasks.add(syncTaskFuture);
         taskCount.incrementAndGet();
-    }
-
-    private Runnable createTaskToSyncUserWithProjects(BlackDuckProperties blackDuckProperties, Collection<String> blackDuckProjectHrefs) {
-        return () -> {
-            // TODO implement
-        };
     }
 
 }
