@@ -56,7 +56,6 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
@@ -84,15 +83,10 @@ public class BlackDuckDataSyncTask extends ProviderTask {
 
                 List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckService);
-                Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(blackDuckToAlertProjects.values());
 
                 Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(blackDuckToAlertProjects, projectUsersService);
                 Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
                 blackDuckDataAccessor.updateProjectAndUserData(providerProperties.getConfigId(), projectToEmailAddresses, allRelevantBlackDuckUsers);
-
-                blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
-                projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckService);
             } else {
                 logger.error("Missing BlackDuck global configuration.");
             }
@@ -175,17 +169,6 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                    .map(UserView::getEmail)
                    .filter(StringUtils::isNotBlank)
                    .collect(Collectors.toSet());
-    }
-
-    private void updateBlackDuckProjectPermissions(Set<String> configuredProjects, List<ProjectView> projectViews, ProjectUsersService projectUsersService, BlackDuckService blackDuckService) throws IntegrationException {
-        UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
-        Set<ProjectView> matchingProjects = projectViews.parallelStream()
-                                                .filter(projectView -> configuredProjects.contains(projectView.getName()))
-                                                .collect(Collectors.toSet());
-        for (ProjectView projectView : matchingProjects) {
-            logger.debug("Adding user to Project {}", projectView.getName());
-            projectUsersService.addUserToProject(projectView, currentUser);
-        }
     }
 
     @Override
