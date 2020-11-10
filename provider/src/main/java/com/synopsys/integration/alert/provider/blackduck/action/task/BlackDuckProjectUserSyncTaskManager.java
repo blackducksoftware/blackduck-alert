@@ -53,7 +53,7 @@ public class BlackDuckProjectUserSyncTaskManager {
             return;
         }
 
-        Runnable syncTask = new BlackDuckProjectSyncRunnable(blackDuckProperties, blackDuckProjectNames);
+        Runnable syncTask = new AddUserToProjectsRunnable(blackDuckProperties, blackDuckProjectNames);
         Future<?> syncTaskFuture = executorService.submit(syncTask);
         scheduleNewSyncTask(syncTaskFuture);
     }

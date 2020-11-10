@@ -41,12 +41,12 @@ import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersServic
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
-public class BlackDuckProjectSyncRunnable implements Runnable {
+public class AddUserToProjectsRunnable implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
     private final Collection<String> blackDuckProjectNames;
 
-    public BlackDuckProjectSyncRunnable(BlackDuckProperties blackDuckProperties, Collection<String> blackDuckProjectNames) {
+    public AddUserToProjectsRunnable(BlackDuckProperties blackDuckProperties, Collection<String> blackDuckProjectNames) {
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckProjectNames = blackDuckProjectNames;
     }
