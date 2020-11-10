@@ -1,236 +1,211 @@
 package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
-import com.synopsys.integration.alert.database.provider.project.ProviderProjectEntity;
-import com.synopsys.integration.alert.database.provider.project.ProviderProjectRepository;
-import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelation;
-import com.synopsys.integration.alert.database.provider.project.ProviderUserProjectRelationRepository;
-import com.synopsys.integration.alert.database.provider.user.ProviderUserEntity;
-import com.synopsys.integration.alert.database.provider.user.ProviderUserRepository;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderDataAccessor;
+import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathMultipleResponses;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
+import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
     @Autowired
-    private ProviderProjectRepository providerProjectRepository;
-    @Autowired
-    private ProviderUserProjectRelationRepository providerUserProjectRelationRepository;
-    @Autowired
-    private ProviderUserRepository providerUserRepository;
-    @Autowired
     private ConfigurationAccessor configurationAccessor;
+    @Autowired
+    private BlackDuckProviderKey blackDuckProviderKey;
+
+    private BlackDuckPropertiesFactory blackDuckPropertiesFactory;
+    private ProjectService projectService;
+    private BlackDuckService blackDuckService;
+    private ProjectUsersService projectUsersService;
+
+    private ConfigurationModel providerConfiguration;
+    private String providerConfigurationName = "Test Black Duck configuration";
 
     @BeforeEach
-    public void init() {
-        providerProjectRepository.flush();
-        providerUserProjectRelationRepository.flush();
-        providerUserRepository.flush();
+    public void init() throws Exception {
+        blackDuckPropertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
+        BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+        Mockito.when(blackDuckPropertiesFactory.createProperties(Mockito.any(ConfigurationModel.class))).thenReturn(blackDuckProperties);
+        BlackDuckHttpClient blackDuckHttpClient = Mockito.mock(BlackDuckHttpClient.class);
+        Mockito.when(blackDuckProperties.createBlackDuckHttpClient(Mockito.any(IntLogger.class))).thenReturn(blackDuckHttpClient);
+        BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
+        Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(BlackDuckHttpClient.class), Mockito.any(IntLogger.class))).thenReturn(blackDuckServicesFactory);
+        projectService = Mockito.mock(ProjectService.class);
+        Mockito.when(blackDuckServicesFactory.createProjectService()).thenReturn(projectService);
+        blackDuckService = Mockito.mock(BlackDuckService.class);
+        Mockito.when(blackDuckServicesFactory.getBlackDuckService()).thenReturn(blackDuckService);
+        projectUsersService = Mockito.mock(ProjectUsersService.class);
+        Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
-        providerProjectRepository.deleteAllInBatch();
-        providerUserProjectRelationRepository.deleteAllInBatch();
-        providerUserRepository.deleteAllInBatch();
+        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        configurationFieldModel.setFieldValue(providerConfigurationName);
+        providerConfiguration = configurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(configurationFieldModel));
+    }
+
+    @AfterEach
+    public void cleanup() throws Exception {
+        configurationAccessor.deleteConfiguration(providerConfiguration);
     }
 
     private ProviderKey createProviderKey(String key) {
         return new ProviderKey(key, key);
     }
 
-    //TODO delete this test
     @Test
-    public void deleteAndSaveAllProjectsTest() {
-        Long providerConfigId = 10000L;
-        String oldProjectHref1 = "href1";
-        String oldProjectHref2 = "href2";
-        String oldProjectHref3 = "href3";
+    public void getEmailAddressesForProjectHrefTest() throws Exception {
+        Long providerConfigId = providerConfiguration.getConfigurationId();
 
-        ProviderProjectEntity oldEntity1 = new ProviderProjectEntity(null, null, oldProjectHref1, null, providerConfigId);
-        ProviderProjectEntity oldEntity2 = new ProviderProjectEntity(null, null, oldProjectHref2, null, providerConfigId);
-        ProviderProjectEntity oldEntity3 = new ProviderProjectEntity(null, null, oldProjectHref3, null, providerConfigId);
-        providerProjectRepository.save(oldEntity1);
-        providerProjectRepository.save(oldEntity2);
-        providerProjectRepository.save(oldEntity3);
-        List<ProviderProjectEntity> savedEntities = providerProjectRepository.findAll();
-        assertEquals(3, savedEntities.size());
+        String href = "http://localhost";
 
-        String newProjectHref1 = "newHref1";
-        String newProjectHref2 = "newHref2";
-        ProviderProject newProject1 = new ProviderProject(null, null, newProjectHref1, null);
-        ProviderProject newProject2 = new ProviderProject(null, null, newProjectHref2, null);
-        List<ProviderProject> newProjects = List.of(newProject1, newProject2);
+        ProjectView projectView = new ProjectView();
+        ResourceMetadata resourceMetadata = new ResourceMetadata();
+        resourceMetadata.setHref(new HttpUrl(href));
+        projectView.setMeta(resourceMetadata);
+        Mockito.when(blackDuckService.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenReturn(projectView);
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
+        Set<UserView> userViews = createUserViews();
+        Mockito.when(projectUsersService.getAllActiveUsersForProject(Mockito.any(ProjectView.class))).thenReturn(userViews);
 
-        List<ProviderProject> projectsToDelete = savedEntities
-                                                     .stream()
-                                                     .map(this::convertToProjectModel)
-                                                     .collect(Collectors.toList());
-
-        providerDataAccessor.deleteProjects(projectsToDelete);
-        savedEntities = providerProjectRepository.findAll();
-        assertEquals(0, savedEntities.size());
-
-        List<ProviderProject> savedProjects = saveProjects(providerConfigId, newProjects);
-
-        assertEquals(2, savedProjects.size());
-        savedEntities = providerProjectRepository.findAll();
-        assertEquals(2, savedEntities.size());
-    }
-
-    //TODO update this test to use the new BlackDuckProviderDataAccessor
-    @Test
-    public void getEmailAddressesForProjectHrefTest() {
-        Long providerConfigId = 10000L;
-        String href = "href";
-        ProviderProjectEntity projectEntityToSave = new ProviderProjectEntity(null, null, href, null, providerConfigId);
-        ProviderProjectEntity savedProjectEntity = providerProjectRepository.save(projectEntityToSave);
-
-        String emailAddress1 = "someone@gmail.com";
-        String emailAddress2 = "someoneelse@gmail.com";
-        String emailAddress3 = "other@gmail.com";
-        ProviderUserEntity userEntityToSave1 = new ProviderUserEntity(emailAddress1, false, providerConfigId);
-        ProviderUserEntity userEntityToSave2 = new ProviderUserEntity(emailAddress2, false, providerConfigId);
-        ProviderUserEntity userEntityToSave3 = new ProviderUserEntity(emailAddress3, false, providerConfigId);
-        ProviderUserEntity savedUser1 = providerUserRepository.save(userEntityToSave1);
-        ProviderUserEntity savedUser2 = providerUserRepository.save(userEntityToSave2);
-        ProviderUserEntity savedUser3 = providerUserRepository.save(userEntityToSave3);
-        // Extra user to test set
-        ProviderUserEntity savedUser4 = providerUserRepository.save(userEntityToSave3);
-
-        Long projectId = savedProjectEntity.getId();
-        providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedUser1.getId(), projectId));
-        providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedUser2.getId(), projectId));
-        providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedUser3.getId(), projectId));
-        providerUserProjectRelationRepository.save(new ProviderUserProjectRelation(savedUser4.getId(), projectId));
-
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
-        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(null, href);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, href);
         assertEquals(3, foundEmailAddresses.size());
-        assertTrue(foundEmailAddresses.contains(emailAddress1), "Expected email address was missing: " + emailAddress1);
-        assertTrue(foundEmailAddresses.contains(emailAddress2), "Expected email address was missing: " + emailAddress1);
-        assertTrue(foundEmailAddresses.contains(emailAddress3), "Expected email address was missing: " + emailAddress1);
     }
 
-    //TODO update this test to use the new BlackDuckProviderDataAccessor
     @Test
-    public void getEmailAddressesForNonExistentProjectHrefTest() {
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
-        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(null, "expecting no results");
+    public void getEmailAddressesForNonExistentProjectHrefTest() throws Exception {
+        Mockito.when(blackDuckService.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenThrow(new IntegrationException("Could not find the project."));
+
+        Long providerConfigId = providerConfiguration.getConfigurationId();
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, "expecting no results");
         assertEquals(0, foundEmailAddresses.size());
     }
 
-    //TODO update this test to use the new BlackDuckProviderDataAccessor
     @Test
-    public void getAllUsersTest() {
-        Long providerConfigId = 10000L;
-        String newUserEmail1 = "newEmail1@gmail.com";
-        String newUserEmail2 = "newEmail2@gmail.com";
-        String newUserEmail3 = "newEmail3@gmail.com";
-        ProviderUserEntity newUser1 = new ProviderUserEntity(newUserEmail1, false, providerConfigId);
-        ProviderUserEntity newUser2 = new ProviderUserEntity(newUserEmail2, false, providerConfigId);
-        ProviderUserEntity newUser3 = new ProviderUserEntity(newUserEmail3, false, providerConfigId);
-        providerUserRepository.save(newUser1);
-        providerUserRepository.save(newUser2);
-        providerUserRepository.save(newUser3);
+    public void getAllUsersTest() throws Exception {
+        Long providerConfigId = providerConfiguration.getConfigurationId();
 
-        DefaultProviderDataAccessor providerDataAccessor = new DefaultProviderDataAccessor(providerProjectRepository, providerUserProjectRelationRepository, providerUserRepository, configurationAccessor);
+        List<UserView> userViews = new ArrayList<>(createUserViews());
+        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
+
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
         assertEquals(3, allProviderUsers.size());
     }
 
-    //TODO update this test to use the new BlackDuckProviderDataAccessor
     @Test
-    public void deleteAndSaveAllUsersTest() {
-        Long providerConfigId = 10000L;
-        String newUserEmail1 = "newEmail1@gmail.com";
-        String newUserEmail2 = "newEmail2@gmail.com";
-        String newUserEmail3 = "newEmail3@gmail.com";
-        ProviderUserEntity newUser1 = new ProviderUserEntity(newUserEmail1, false, providerConfigId);
-        ProviderUserEntity newUser2 = new ProviderUserEntity(newUserEmail2, false, providerConfigId);
-        ProviderUserEntity newUser3 = new ProviderUserEntity(newUserEmail3, false, providerConfigId);
-        providerUserRepository.save(newUser1);
-        providerUserRepository.save(newUser2);
-        providerUserRepository.save(newUser3);
-        assertEquals(3, providerUserRepository.findAll().size());
+    public void getAllUsersByConfigNameTest() throws Exception {
+        List<UserView> userViews = new ArrayList<>(createUserViews());
+        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
 
-        List<ProviderUserModel> oldUsers = List.of(
-            new ProviderUserModel(newUser1.getEmailAddress(), newUser1.getOptOut()),
-            new ProviderUserModel(newUser2.getEmailAddress(), newUser2.getOptOut()),
-            new ProviderUserModel(newUser3.getEmailAddress(), newUser3.getOptOut())
-        );
-
-        String newUserEmail4 = "newEmail4@gmail.com";
-        String newUserEmail5 = "newEmail5@gmail.com";
-        String newUserEmail6 = "newEmail6@gmail.com";
-        ProviderUserModel newUser4 = new ProviderUserModel(newUserEmail4, false);
-        ProviderUserModel newUser5 = new ProviderUserModel(newUserEmail5, false);
-        ProviderUserModel newUser6 = new ProviderUserModel(newUserEmail6, false);
-        List<ProviderUserModel> newUsers = List.of(newUser4, newUser5, newUser6);
-
-        deleteUsers(providerConfigId, oldUsers);
-        assertEquals(0, providerUserRepository.findAll().size());
-
-        List<ProviderUserModel> savedUsers = saveUsers(providerConfigId, newUsers);
-
-        assertEquals(3, savedUsers.size());
-        assertEquals(3, providerUserRepository.findAll().size());
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigName(providerConfigurationName);
+        assertEquals(3, allProviderUsers.size());
     }
 
-    private List<ProviderUserModel> saveUsers(Long providerConfigId, Collection<ProviderUserModel> users) {
-        return users
-                   .stream()
-                   .map(user -> convertToUserEntity(providerConfigId, user))
-                   .map(providerUserRepository::save)
-                   .map(this::convertToUserModel)
-                   .collect(Collectors.toList());
+    @Test
+    public void getAllProjectsTest() throws Exception {
+        Long providerConfigId = providerConfiguration.getConfigurationId();
+
+        List<ProjectView> projectViews = createProjectViews();
+        Mockito.when(projectService.getAllProjects()).thenReturn(projectViews);
+
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
+        assertEquals(projectViews.size(), allProviderUsers.size());
     }
 
-    private void deleteUsers(Long providerConfigId, Collection<ProviderUserModel> users) {
-        users.forEach(user -> providerUserRepository.deleteByProviderConfigIdAndEmailAddress(providerConfigId, user.getEmailAddress()));
+    @Test
+    public void getAllProjectsByConfigNameTest() throws Exception {
+        List<ProjectView> projectViews = createProjectViews();
+        Mockito.when(projectService.getAllProjects()).thenReturn(projectViews);
+
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigName(providerConfigurationName);
+        assertEquals(projectViews.size(), allProviderUsers.size());
     }
 
-    private List<ProviderProject> saveProjects(Long providerConfigId, Collection<ProviderProject> providerProjects) {
-        Iterable<ProviderProjectEntity> providerProjectEntities = providerProjects
-                                                                      .stream()
-                                                                      .map(project -> convertToProjectEntity(providerConfigId, project))
-                                                                      .collect(Collectors.toSet());
-        List<ProviderProjectEntity> savedEntities = providerProjectRepository.saveAll(providerProjectEntities);
-        return savedEntities
-                   .stream()
-                   .map(this::convertToProjectModel)
-                   .collect(Collectors.toList());
+    private Set<UserView> createUserViews() {
+        String emailAddress1 = "someone@gmail.com";
+        String emailAddress2 = "someoneelse@gmail.com";
+        String emailAddress3 = "other@gmail.com";
+
+        UserView userView1 = new UserView();
+        userView1.setActive(true);
+        userView1.setEmail(emailAddress1);
+
+        UserView userView2 = new UserView();
+        userView2.setActive(true);
+        userView2.setEmail(emailAddress2);
+
+        UserView userView3 = new UserView();
+        userView3.setActive(true);
+        userView3.setEmail(emailAddress3);
+
+        UserView userView4 = new UserView();
+        userView4.setActive(false);
+        userView4.setEmail(emailAddress1);
+
+        UserView userView5 = new UserView();
+        userView5.setActive(true);
+        userView5.setEmail(emailAddress2);
+
+        Set<UserView> userViews = new HashSet<>();
+        userViews.add(userView1);
+        userViews.add(userView2);
+        userViews.add(userView3);
+        userViews.add(userView4);
+        userViews.add(userView5);
+        return userViews;
     }
 
-    private ProviderProject convertToProjectModel(ProviderProjectEntity providerProjectEntity) {
-        return new ProviderProject(providerProjectEntity.getName(), providerProjectEntity.getDescription(), providerProjectEntity.getHref(),
-            providerProjectEntity.getProjectOwnerEmail());
-    }
+    private List<ProjectView> createProjectViews() throws Exception {
+        String href1 = "http://localhost";
+        String href2 = "https://localhost:8443";
 
-    private ProviderProjectEntity convertToProjectEntity(Long providerConfigId, ProviderProject providerProject) {
-        String trimmedDescription = StringUtils.abbreviate(providerProject.getDescription(), DefaultProviderDataAccessor.MAX_DESCRIPTION_LENGTH);
-        return new ProviderProjectEntity(providerProject.getName(), trimmedDescription, providerProject.getHref(), providerProject.getProjectOwnerEmail(), providerConfigId);
-    }
+        ProjectView projectView = new ProjectView();
+        ResourceMetadata resourceMetadata = new ResourceMetadata();
+        resourceMetadata.setHref(new HttpUrl(href1));
+        projectView.setMeta(resourceMetadata);
 
-    private ProviderUserModel convertToUserModel(ProviderUserEntity providerUserEntity) {
-        return new ProviderUserModel(providerUserEntity.getEmailAddress(), providerUserEntity.getOptOut());
-    }
+        ProjectView projectView2 = new ProjectView();
+        ResourceMetadata resourceMetadata2 = new ResourceMetadata();
+        resourceMetadata2.setHref(new HttpUrl(href2));
+        projectView2.setMeta(resourceMetadata2);
 
-    private ProviderUserEntity convertToUserEntity(Long providerConfigId, ProviderUserModel providerUserModel) {
-        return new ProviderUserEntity(providerUserModel.getEmailAddress(), providerUserModel.getOptOut(), providerConfigId);
+        return List.of(projectView, projectView2);
     }
 
 }

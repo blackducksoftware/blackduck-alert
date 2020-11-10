@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -95,9 +96,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     }
 
     private List<ProviderProject> getProjectsForProvider(ConfigurationModel blackDuckConfigurationModel) throws IntegrationException {
-        BlackDuckProperties properties = blackDuckPropertiesFactory.createProperties(blackDuckConfigurationModel);
-        BlackDuckHttpClient blackDuckHttpClient = properties.createBlackDuckHttpClient(logger);
-        BlackDuckServicesFactory blackDuckServicesFactory = properties.createBlackDuckServicesFactory(blackDuckHttpClient, logger);
+        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
         List<ProjectView> allProjects = projectService.getAllProjects();
         return convertBlackDuckProjects(allProjects, blackDuckServicesFactory.getBlackDuckService());
@@ -113,9 +112,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         try {
             Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
             if (providerConfigOptional.isPresent()) {
-                BlackDuckProperties properties = blackDuckPropertiesFactory.createProperties(providerConfigOptional.get());
-                BlackDuckHttpClient blackDuckHttpClient = properties.createBlackDuckHttpClient(logger);
-                BlackDuckServicesFactory blackDuckServicesFactory = properties.createBlackDuckServicesFactory(blackDuckHttpClient, logger);
+                BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
                 BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
                 ProjectView projectView = blackDuckService.getResponse(new HttpUrl(projectHref), ProjectView.class);
                 return getEmailAddressesForProject(projectView, blackDuckServicesFactory.createProjectUsersService());
@@ -162,9 +159,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     }
 
     private List<ProviderUserModel> getEmailAddressesByProvider(ConfigurationModel blackDuckConfiguration) throws IntegrationException {
-        BlackDuckProperties properties = blackDuckPropertiesFactory.createProperties(blackDuckConfiguration);
-        BlackDuckHttpClient blackDuckHttpClient = properties.createBlackDuckHttpClient(logger);
-        BlackDuckServicesFactory blackDuckServicesFactory = properties.createBlackDuckServicesFactory(blackDuckHttpClient, logger);
+        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfiguration);
         BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         Set<String> allActiveBlackDuckUserEmailAddresses = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
         return allActiveBlackDuckUserEmailAddresses.stream()
@@ -195,6 +190,12 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 providerProjects.add(new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref().toString(), projectOwnerEmail));
             });
         return providerProjects;
+    }
+
+    private BlackDuckServicesFactory createBlackDuckServicesFactory(ConfigurationModel blackDuckConfiguration) throws AlertException {
+        BlackDuckProperties properties = blackDuckPropertiesFactory.createProperties(blackDuckConfiguration);
+        BlackDuckHttpClient blackDuckHttpClient = properties.createBlackDuckHttpClient(logger);
+        return properties.createBlackDuckServicesFactory(blackDuckHttpClient, logger);
     }
 
     private Set<String> getEmailAddressesForProject(ProjectView projectView, ProjectUsersService projectUsersService) throws IntegrationException {
