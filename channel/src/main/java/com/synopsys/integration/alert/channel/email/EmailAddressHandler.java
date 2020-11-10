@@ -93,7 +93,7 @@ public class EmailAddressHandler {
         return new FieldUtility(fieldMap);
     }
 
-    public Set<String> getEmailAddressesForProject(Long providerConfigID, ProviderProject project, boolean projectOwnerOnly) {
+    public Set<String> getEmailAddressesForProject(Long providerConfigId, ProviderProject project, boolean projectOwnerOnly) {
         Set<String> emailAddresses;
         if (projectOwnerOnly) {
             String projectOwnerEmail = project.getProjectOwnerEmail();
@@ -103,7 +103,7 @@ public class EmailAddressHandler {
                 emailAddresses = Set.of();
             }
         } else {
-            emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigID, project.getHref());
+            emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, project.getHref());
         }
         if (emailAddresses.isEmpty()) {
             logger.error("Could not find any email addresses for project: {}", project.getName());
