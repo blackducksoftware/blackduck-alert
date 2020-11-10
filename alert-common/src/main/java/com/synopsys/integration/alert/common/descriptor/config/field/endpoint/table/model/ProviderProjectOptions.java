@@ -1,5 +1,5 @@
 /**
- * provider
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,14 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.web.project;
+package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model;
 
 import java.util.List;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
 
-public class BlackDuckProjectOptions extends FieldOptions<BlackDuckProjectSelectOption> {
-    public BlackDuckProjectOptions(List<BlackDuckProjectSelectOption> options) {
+public class ProviderProjectOptions extends FieldOptions<ProviderProjectSelectOption> {
+    public ProviderProjectOptions(List<ProviderProjectSelectOption> options) {
         super(options);
     }
 
