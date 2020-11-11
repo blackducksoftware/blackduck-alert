@@ -73,8 +73,8 @@ public class BlackDuckDistributionApiAction extends ApiAction {
             if (optionalBlackDuckGlobalConfig.isPresent()) {
                 StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(optionalBlackDuckGlobalConfig.get());
 
-                AddUserToProjectsRunnable projectUserSync = new AddUserToProjectsRunnable((BlackDuckProperties) statefulProvider.getProperties(), configuredProjects);
-                projectUserSync.run();
+                AddUserToProjectsRunnable addUserToProjects = new AddUserToProjectsRunnable((BlackDuckProperties) statefulProvider.getProperties(), configuredProjects);
+                addUserToProjects.run();
             }
         }
     }
