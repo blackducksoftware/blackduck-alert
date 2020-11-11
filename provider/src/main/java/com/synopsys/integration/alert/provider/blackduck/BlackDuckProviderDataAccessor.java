@@ -175,21 +175,26 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     private List<ProviderProject> convertBlackDuckProjects(List<ProjectView> projectViews, BlackDuckService blackDuckService) {
         List<ProviderProject> providerProjects = new ArrayList<>();
         projectViews
-            .parallelStream()
+            .stream()
             .forEach(projectView -> {
-                String projectOwnerEmail = null;
-                if (StringUtils.isNotBlank(projectView.getProjectOwner())) {
-                    try {
-                        HttpUrl projectOwnerHttpUrl = new HttpUrl(projectView.getProjectOwner());
-                        UserView projectOwner = blackDuckService.getResponse(projectOwnerHttpUrl, UserView.class);
-                        projectOwnerEmail = projectOwner.getEmail();
-                    } catch (IntegrationException e) {
-                        logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
-                    }
-                }
-                providerProjects.add(new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref().toString(), projectOwnerEmail));
+                ProviderProject providerProject = createProviderProject(projectView, blackDuckService);
+                providerProjects.add(providerProject);
             });
         return providerProjects;
+    }
+
+    private ProviderProject createProviderProject(ProjectView projectView, BlackDuckService blackDuckService) {
+        String projectOwnerEmail = null;
+        if (StringUtils.isNotBlank(projectView.getProjectOwner())) {
+            try {
+                HttpUrl projectOwnerHttpUrl = new HttpUrl(projectView.getProjectOwner());
+                UserView projectOwner = blackDuckService.getResponse(projectOwnerHttpUrl, UserView.class);
+                projectOwnerEmail = projectOwner.getEmail();
+            } catch (IntegrationException e) {
+                logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
+            }
+        }
+        return new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref().toString(), projectOwnerEmail);
     }
 
     private BlackDuckServicesFactory createBlackDuckServicesFactory(ConfigurationModel blackDuckConfiguration) throws AlertException {
