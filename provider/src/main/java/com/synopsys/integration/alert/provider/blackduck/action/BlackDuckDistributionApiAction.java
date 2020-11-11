@@ -40,19 +40,17 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.action.task.BlackDuckProjectUserSyncTaskManager;
+import com.synopsys.integration.alert.provider.blackduck.action.task.AddUserToProjectsRunnable;
 
 @Component
 public class BlackDuckDistributionApiAction extends ApiAction {
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckProvider blackDuckProvider;
-    private final BlackDuckProjectUserSyncTaskManager blackDuckProjectUserSyncTaskManager;
 
     @Autowired
-    public BlackDuckDistributionApiAction(ConfigurationAccessor configurationAccessor, BlackDuckProvider blackDuckProvider, BlackDuckProjectUserSyncTaskManager blackDuckProjectUserSyncTaskManager) {
+    public BlackDuckDistributionApiAction(ConfigurationAccessor configurationAccessor, BlackDuckProvider blackDuckProvider) {
         this.configurationAccessor = configurationAccessor;
         this.blackDuckProvider = blackDuckProvider;
-        this.blackDuckProjectUserSyncTaskManager = blackDuckProjectUserSyncTaskManager;
     }
 
     @Override
@@ -74,7 +72,9 @@ public class BlackDuckDistributionApiAction extends ApiAction {
             Optional<ConfigurationModel> optionalBlackDuckGlobalConfig = configurationAccessor.getConfigurationById(optionalProviderConfigId.get());
             if (optionalBlackDuckGlobalConfig.isPresent()) {
                 StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(optionalBlackDuckGlobalConfig.get());
-                blackDuckProjectUserSyncTaskManager.addAlertGlobalBlackDuckUserToProjects((BlackDuckProperties) statefulProvider.getProperties(), configuredProjects);
+
+                AddUserToProjectsRunnable projectUserSync = new AddUserToProjectsRunnable((BlackDuckProperties) statefulProvider.getProperties(), configuredProjects);
+                projectUserSync.run();
             }
         }
     }
