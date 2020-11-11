@@ -92,7 +92,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final GlobalConfigExistsValidator globalConfigExistsValidator;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
-    private final DescriptorMap descriptorMap;
 
     @Autowired
     public JobConfigActions(
@@ -107,7 +106,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         PKIXErrorResponseFactory pkixErrorResponseFactory,
         DescriptorMap descriptorMap
     ) {
-        super(authorizationManager, descriptorAccessor);
+        super(authorizationManager, descriptorAccessor, descriptorMap);
         this.configurationAccessor = configurationAccessor;
         this.jobAccessor = jobAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
@@ -115,7 +114,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.modelConverter = modelConverter;
         this.globalConfigExistsValidator = globalConfigExistsValidator;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
-        this.descriptorMap = descriptorMap;
     }
 
     @Override
@@ -269,9 +267,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                              .isPresent();
             if (foundDuplicateName) {
                 error = "A distribution configuration with this name already exists.";
-            } else {
-                error = "Name cannot be blank";
             }
+
+            //TODO figure out how to handle if jobName is blank
+            /*else {
+                error = "Name cannot be blank";
+            }*/
         }
         if (StringUtils.isNotBlank(error)) {
             return Optional.of(AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, error));
@@ -309,7 +310,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsValidationRequestModel jobIdsValidationModel) {
         List<PermissionKey> keys = new LinkedList<>();
-        for (Descriptor descriptor : descriptorMap.getDescriptorMap().values()) {
+        for (Descriptor descriptor : getDescriptorMap().getDescriptorMap().values()) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();
             for (ConfigContextEnum context : ConfigContextEnum.values()) {
                 if (descriptor.hasUIConfigForType(context)) {
