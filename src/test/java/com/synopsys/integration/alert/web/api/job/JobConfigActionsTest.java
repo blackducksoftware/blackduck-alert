@@ -112,21 +112,15 @@ public class JobConfigActionsTest {
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
 
-        //TODO clean these up
-        /*Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-
-         */
-        Mockito.when(descriptorMap.getDescriptorKey(Mockito.any())).thenReturn(Optional.of(createDescriptorKey()));
     }
 
     @Test
     public void createTest() throws Exception {
-        Mockito.when(jobAccessor.getJobByName(Mockito.anyString())).thenReturn(Optional.of(configurationJobModel));
-
         Mockito.when(fieldModelProcessor.performBeforeSaveAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("Key", configurationFieldModel));
         Mockito.when(jobAccessor.createJob(Mockito.anyCollection(), Mockito.anyCollection())).thenReturn(configurationJobModel);
@@ -158,9 +152,7 @@ public class JobConfigActionsTest {
         int pageSize = 10;
         RegisteredDescriptorModel registeredDescriptorModel = new RegisteredDescriptorModel(1L, "descriptorName", descriptorType.name());
         AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
-
-        Mockito.when(jobAccessor.getJobByName(Mockito.anyString())).thenReturn(Optional.of(configurationJobModel));
-
+        
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
         Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);

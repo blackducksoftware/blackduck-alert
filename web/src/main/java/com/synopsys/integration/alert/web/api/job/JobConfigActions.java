@@ -268,11 +268,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
             if (foundDuplicateName) {
                 error = "A distribution configuration with this name already exists.";
             }
-
-            //TODO figure out how to handle if jobName is blank
-            /*else {
-                error = "Name cannot be blank";
-            }*/
         }
         if (StringUtils.isNotBlank(error)) {
             return Optional.of(AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, error));

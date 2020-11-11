@@ -223,18 +223,18 @@ public abstract class AbstractJobResourceActions {
         return descriptorMap;
     }
 
-    private boolean hasRequiredPermissions(Collection<FieldModel> fieldModels, BiFunction<ConfigContextEnum, DescriptorKey, Boolean> permissionChecker) {
-        //TODO Once the FieldModel is updated to handle ConfigContextEnum and DescriptorKey, the following code should be used
-        /*return fieldModels
+    private boolean hasRequiredPermissions(Collection<FieldModel> fieldModels, BiFunction<String, String, Boolean> permissionChecker) {
+        return fieldModels
                    .stream()
                    .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
-         */
+        //TODO Once the FieldModel is updated to handle ConfigContextEnum and DescriptorKey, the following code should be used
+        /*
         return fieldModels
                    .stream()
                    .allMatch(model -> checkContextAndDescriptorKey(model, permissionChecker));
+         */
     }
-
-    //TODO Once FieldModel is updated we can deprecate this method
+    
     private boolean checkContextAndDescriptorKey(FieldModel fieldModel, BiFunction<ConfigContextEnum, DescriptorKey, Boolean> permissionChecker) {
         ConfigContextEnum configContextEnum = ConfigContextEnum.valueOf(fieldModel.getContext());
         DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new RuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));
