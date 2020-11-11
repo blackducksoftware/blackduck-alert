@@ -65,7 +65,7 @@ public class ConfigController implements ConfigResourceController, TestControlle
 
     @Override
     public void update(Long id, FieldModel resource) {
-        ResponseFactory.createContentResponseFromAction(configActions.updateWithoutChecks(id, resource));
+        ResponseFactory.createContentResponseFromAction(configActions.update(id, resource));
     }
 
     @Override
