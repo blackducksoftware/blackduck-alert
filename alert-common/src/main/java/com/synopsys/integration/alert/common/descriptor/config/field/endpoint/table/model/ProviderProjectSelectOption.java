@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ProviderProjectSelectOption extends AlertSerializableModel {
-    private String name;
-    private String description;
+    private final String name;
+    private final String description;
 
     public ProviderProjectSelectOption(String name, String description) {
         this.name = name;
@@ -40,4 +40,5 @@ public class ProviderProjectSelectOption extends AlertSerializableModel {
     public String getDescription() {
         return description;
     }
+
 }

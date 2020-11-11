@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.task;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,12 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
@@ -56,19 +50,16 @@ import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckDataSyncTask extends ProviderTask {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataSyncTask.class);
     private final ProviderDataAccessor blackDuckDataAccessor;
-    private final JobAccessor jobAccessor;
 
-    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ProviderProperties providerProperties, JobAccessor jobAccessor) {
+    public BlackDuckDataSyncTask(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, ProviderDataAccessor blackDuckDataAccessor, ProviderProperties providerProperties) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckDataAccessor = blackDuckDataAccessor;
-        this.jobAccessor = jobAccessor;
     }
 
     @Override
@@ -84,15 +75,10 @@ public class BlackDuckDataSyncTask extends ProviderTask {
 
                 List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckService);
-                Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(blackDuckToAlertProjects.values());
 
                 Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(blackDuckToAlertProjects, projectUsersService);
                 Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
                 blackDuckDataAccessor.updateProjectAndUserData(providerProperties.getConfigId(), projectToEmailAddresses, allRelevantBlackDuckUsers);
-
-                blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
-                projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckService);
             } else {
                 logger.error("Missing BlackDuck global configuration.");
             }
@@ -152,22 +138,6 @@ public class BlackDuckDataSyncTask extends ProviderTask {
         return projectToEmailAddresses;
     }
 
-    private Set<String> retrieveAllProjectsInJobs(Collection<ProviderProject> foundProjects) {
-        Set<String> configuredProjectNames = new HashSet<>();
-        for (ConfigurationJobModel configurationJobModel : jobAccessor.getAllJobs()) {
-            FieldUtility fieldUtility = configurationJobModel.getFieldUtility();
-            String projectNamePattern = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
-            if (StringUtils.isNotBlank(projectNamePattern)) {
-                Set<String> matchedProjectNames = foundProjects.stream().map(ProviderProject::getName).filter(name -> name.matches(projectNamePattern)).collect(Collectors.toSet());
-                configuredProjectNames.addAll(matchedProjectNames);
-            }
-            Collection<String> configuredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-            configuredProjectNames.addAll(configuredProjects);
-        }
-
-        return configuredProjectNames;
-    }
-
     private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
         return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
                    .stream()
@@ -175,17 +145,6 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                    .map(UserView::getEmail)
                    .filter(StringUtils::isNotBlank)
                    .collect(Collectors.toSet());
-    }
-
-    private void updateBlackDuckProjectPermissions(Set<String> configuredProjects, List<ProjectView> projectViews, ProjectUsersService projectUsersService, BlackDuckService blackDuckService) throws IntegrationException {
-        UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
-        Set<ProjectView> matchingProjects = projectViews.parallelStream()
-                                                .filter(projectView -> configuredProjects.contains(projectView.getName()))
-                                                .collect(Collectors.toSet());
-        for (ProjectView projectView : matchingProjects) {
-            logger.debug("Adding user to Project {}", projectView.getName());
-            projectUsersService.addUserToProject(projectView, currentUser);
-        }
     }
 
     @Override

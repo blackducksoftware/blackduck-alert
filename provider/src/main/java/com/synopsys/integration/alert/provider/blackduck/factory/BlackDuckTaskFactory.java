@@ -72,7 +72,7 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
     @Override
     public List<ProviderTask> createTasks(ProviderProperties providerProperties) {
         BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationAccessor, providerTaskPropertiesAccessor, providerProperties, blackDuckValidator);
-        BlackDuckDataSyncTask syncTask = new BlackDuckDataSyncTask(blackDuckProviderKey, taskScheduler, blackDuckDataAccessor, providerProperties, jobAccessor);
+        BlackDuckDataSyncTask syncTask = new BlackDuckDataSyncTask(blackDuckProviderKey, taskScheduler, blackDuckDataAccessor, providerProperties);
         return List.of(accumulator, syncTask);
     }
 

@@ -48,11 +48,12 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 @Component
 public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<ProviderProjectOptions> {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
+    private static final ActionResponse<ProviderProjectOptions> NO_PROJECT_OPTIONS = new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(List.of()));
 
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public ProviderProjectCustomFunctionAction(AuthorizationManager authorizationManager, ProviderDataAccessor providerDataAccessor, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+    public ProviderProjectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility, ProviderDataAccessor providerDataAccessor) {
         super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, authorizationManager, descriptorMap, fieldValidationUtility);
         this.providerDataAccessor = providerDataAccessor;
     }
@@ -64,15 +65,18 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
-        List<ProviderProjectSelectOption> options = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
-                                                        .map(Long::parseLong)
-                                                        .map(providerDataAccessor::getProjectsByProviderConfigId)
-                                                        .orElse(List.of())
+        return fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
+                   .map(Long::parseLong)
+                   .map(this::getBlackDuckProjectsActionResponse)
+                   .orElse(NO_PROJECT_OPTIONS);
+    }
+
+    private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId) {
+        List<ProviderProjectSelectOption> options = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId)
                                                         .stream()
                                                         .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
                                                         .collect(Collectors.toList());
-        ProviderProjectOptions optionList = new ProviderProjectOptions(options);
-        return new ActionResponse<>(HttpStatus.OK, optionList);
+        return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(options));
     }
 
 }
