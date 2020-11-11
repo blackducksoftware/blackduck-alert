@@ -24,11 +24,13 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.rest.api.ReadPageController;
+
 import net.minidev.json.annotate.JsonIgnore;
 
 public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSerializableModel {
-    public static final String DEFAULT_PAGE_NUMBER = "0";
-    public static final String DEFAULT_PAGE_SIZE = "10";
+    public static final Integer DEFAULT_PAGE_NUMBER = Integer.valueOf(ReadPageController.DEFAULT_PAGE_NUMBER);
+    public static final Integer DEFAULT_PAGE_SIZE = Integer.valueOf(ReadPageController.DEFAULT_PAGE_SIZE);
 
     // FIXME we should use terminology based on "offset" and "limit" which are standard REST API paging terms
     private final int totalPages;
