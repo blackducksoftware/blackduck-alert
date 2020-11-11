@@ -152,7 +152,7 @@ public class JobConfigActionsTest {
         int pageSize = 10;
         RegisteredDescriptorModel registeredDescriptorModel = new RegisteredDescriptorModel(1L, "descriptorName", descriptorType.name());
         AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
-
+        
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
         Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);

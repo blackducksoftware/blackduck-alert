@@ -81,10 +81,11 @@ function testingJobConfig() {
     };
 }
 
-function testJobSuccess(message) {
+function testJobSuccess(responseData) {
     return {
         type: DISTRIBUTION_JOB_TEST_SUCCESS,
-        configurationMessage: message
+        configurationMessage: responseData.message,
+        errors: responseData.errors
     };
 }
 
@@ -244,8 +245,9 @@ export function testDistributionJob(config) {
                         ...responseData
                     });
                     const handler = createErrorHandler(DISTRIBUTION_JOB_TEST_FAILURE, defaultHandler);
-                    if (!responseData.hasErrors) {
-                        dispatch(testJobSuccess(responseData.message));
+                    const containsErrors = HTTPErrorUtils.hasErrors(responseData.errors);
+                    if (!containsErrors) {
+                        dispatch(testJobSuccess(responseData));
                     } else if (!response.ok) {
                         dispatch(handler(response.status));
                     } else {

@@ -92,7 +92,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final GlobalConfigExistsValidator globalConfigExistsValidator;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
-    private final DescriptorMap descriptorMap;
 
     @Autowired
     public JobConfigActions(
@@ -107,7 +106,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         PKIXErrorResponseFactory pkixErrorResponseFactory,
         DescriptorMap descriptorMap
     ) {
-        super(authorizationManager, descriptorAccessor);
+        super(authorizationManager, descriptorAccessor, descriptorMap);
         this.configurationAccessor = configurationAccessor;
         this.jobAccessor = jobAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
@@ -115,7 +114,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.modelConverter = modelConverter;
         this.globalConfigExistsValidator = globalConfigExistsValidator;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
-        this.descriptorMap = descriptorMap;
     }
 
     @Override
@@ -248,21 +246,18 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
     }
 
-    private ValidationResponseModel validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
-        ValidationResponseModel responseModel = ValidationResponseModel.success("Valid name");
-        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            responseModel = validateJobNameUnique(currentJobId, fieldModel);
-            if (responseModel.hasErrors()) {
-                return responseModel;
-            }
-        }
-        return responseModel;
+    private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
+        Optional<AlertFieldStatus> fieldStatus = jobFieldModel.getFieldModels().stream()
+                                                     .filter(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).isPresent())
+                                                     .findFirst()
+                                                     .flatMap(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME))
+                                                     .flatMap(fieldValueModel -> validateJobNameUnique(currentJobId, fieldValueModel));
+        return fieldStatus;
     }
 
-    private ValidationResponseModel validateJobNameUnique(@Nullable UUID currentJobId, FieldModel fieldModel) {
-        Optional<String> optionalJobName = fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME)
-                                               .flatMap(FieldValueModel::getValue);
+    private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, FieldValueModel fieldValueModel) {
         String error = "";
+        Optional<String> optionalJobName = fieldValueModel.getValue();
         if (optionalJobName.isPresent()) {
             String jobName = optionalJobName.get();
             // Because of FieldValueModel empty values aren't saved, therefore we don't need to check for empty values
@@ -275,10 +270,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
             }
         }
         if (StringUtils.isNotBlank(error)) {
-            AlertFieldStatus fieldStatus = AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, error);
-            return ValidationResponseModel.fromStatusCollection("Job name not unique", List.of(fieldStatus));
+            return Optional.of(AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, error));
         }
-        return ValidationResponseModel.success("Job Name Valid");
+        return Optional.empty();
     }
 
     private boolean filterOutMatchingJobs(@Nullable UUID currentJobId, ConfigurationJobModel configurationJobModel) {
@@ -295,23 +289,23 @@ public class JobConfigActions extends AbstractJobResourceActions {
         if (StringUtils.isNotBlank(resource.getJobId())) {
             jobId = UUID.fromString(resource.getJobId());
         }
-        ValidationResponseModel responseModel = validateJobNameUnique(jobId, resource);
-        if (responseModel.hasErrors()) {
+        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
+
+        validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
+        fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+
+        if (!fieldStatuses.isEmpty()) {
+            ValidationResponseModel responseModel = ValidationResponseModel.fromStatusCollection("Invalid Configuration", fieldStatuses);
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
         }
 
-        List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateJobFieldModel(resource);
-        if (fieldStatuses.isEmpty()) {
-            responseModel = ValidationResponseModel.success("Valid");
-            return new ValidationActionResponse(HttpStatus.OK, responseModel);
-        }
-        responseModel = ValidationResponseModel.fromStatusCollection("Invalid", fieldStatuses);
-        return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
+        ValidationResponseModel responseModel = ValidationResponseModel.success("Valid");
+        return new ValidationActionResponse(HttpStatus.OK, responseModel);
     }
 
     public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsValidationRequestModel jobIdsValidationModel) {
         List<PermissionKey> keys = new LinkedList<>();
-        for (Descriptor descriptor : descriptorMap.getDescriptorMap().values()) {
+        for (Descriptor descriptor : getDescriptorMap().getDescriptorMap().values()) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();
             for (ConfigContextEnum context : ConfigContextEnum.values()) {
                 if (descriptor.hasUIConfigForType(context)) {

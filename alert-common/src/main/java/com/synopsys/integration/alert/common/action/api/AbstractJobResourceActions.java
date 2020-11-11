@@ -36,6 +36,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -48,15 +49,18 @@ import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
+    private final DescriptorMap descriptorMap;
 
-    public AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor) {
+    public AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, DescriptorMap descriptorMap) {
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
+        this.descriptorMap = descriptorMap;
     }
 
     protected abstract Optional<JobFieldModel> findJobFieldModel(UUID id);
@@ -215,10 +219,26 @@ public abstract class AbstractJobResourceActions {
         return descriptorAccessor;
     }
 
+    public DescriptorMap getDescriptorMap() {
+        return descriptorMap;
+    }
+
     private boolean hasRequiredPermissions(Collection<FieldModel> fieldModels, BiFunction<String, String, Boolean> permissionChecker) {
         return fieldModels
                    .stream()
                    .allMatch(model -> permissionChecker.apply(model.getContext(), model.getDescriptorName()));
+        //TODO Once the FieldModel is updated to handle ConfigContextEnum and DescriptorKey, the following code should be used
+        /*
+        return fieldModels
+                   .stream()
+                   .allMatch(model -> checkContextAndDescriptorKey(model, permissionChecker));
+         */
+    }
+    
+    private boolean checkContextAndDescriptorKey(FieldModel fieldModel, BiFunction<ConfigContextEnum, DescriptorKey, Boolean> permissionChecker) {
+        ConfigContextEnum configContextEnum = ConfigContextEnum.valueOf(fieldModel.getContext());
+        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new RuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));
+        return permissionChecker.apply(configContextEnum, descriptorKey);
     }
 
 }
