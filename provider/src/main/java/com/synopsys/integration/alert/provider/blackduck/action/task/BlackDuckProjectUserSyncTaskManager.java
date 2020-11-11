@@ -36,13 +36,17 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 @Component
 public class BlackDuckProjectUserSyncTaskManager {
-    public static final int MAX_TASKS = 10;
+    // A given processor usually has 1-8 available threads.
+    // Because the Runnables have to wait for network I/O, we can afford to context switch even if there is only one available thread per processor.
+    private static final int MAX_TASKS_PER_CORE = 8;
 
+    private final int maxTasks;
     private final ExecutorService executorService;
     private final Queue<Future<?>> syncTasks;
     private final AtomicInteger taskCount;
 
     public BlackDuckProjectUserSyncTaskManager() {
+        this.maxTasks = Runtime.getRuntime().availableProcessors() * MAX_TASKS_PER_CORE;
         this.executorService = Executors.newCachedThreadPool();
         this.syncTasks = new ConcurrentLinkedQueue<>();
         this.taskCount = new AtomicInteger(0);
@@ -66,7 +70,7 @@ public class BlackDuckProjectUserSyncTaskManager {
     }
 
     private void scheduleNewSyncTask(Future<?> syncTaskFuture) {
-        if (taskCount.get() >= MAX_TASKS) {
+        if (taskCount.get() >= maxTasks) {
             Future<?> oldestTask = syncTasks.poll();
             if (null != oldestTask) {
                 oldestTask.cancel(true);
