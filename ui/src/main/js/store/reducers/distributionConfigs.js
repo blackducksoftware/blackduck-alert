@@ -142,7 +142,7 @@ const config = (state = initialState, action) => {
                 success: true,
                 testingConfig: true,
                 configurationMessage: action.configurationMessage,
-                error: HTTPErrorUtils.createEmptyErrorObject(),
+                error: HTTPErrorUtils.createErrorObject(action),
                 status: 'TESTED'
             };
 
