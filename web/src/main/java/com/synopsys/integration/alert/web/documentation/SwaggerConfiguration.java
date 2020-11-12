@@ -32,15 +32,22 @@ import org.springframework.context.annotation.Configuration;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
 
 @Configuration
-@EnableSwagger2
+@EnableOpenApi
 public class SwaggerConfiguration {
-    public static final String SWAGGER_DEFAULT_URL = "/swagger-ui.html";
+    public static final String SWAGGER_DEFAULT_PATH_SPEC = "/swagger-ui/";
+
+    // These must be lower-case in order for Swagger to accept them
+    private static final String[] SUPPORTED_SUBMIT_METHODS = new String[] {
+        "get"
+    };
 
     @Bean
     public Docket api() {
@@ -54,6 +61,14 @@ public class SwaggerConfiguration {
                    .ignoredParameterTypes(HttpServletRequest.class, HttpServletResponse.class)
                    .groupName("production")
                    .apiInfo(apiEndpointInfo());
+    }
+
+    @Bean
+    public UiConfiguration alertSwaggerUiConfiguration() {
+        return UiConfigurationBuilder
+                   .builder()
+                   .supportedSubmitMethods(SUPPORTED_SUBMIT_METHODS)
+                   .build();
     }
 
     private ApiInfo apiEndpointInfo() {

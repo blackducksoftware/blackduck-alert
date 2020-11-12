@@ -70,7 +70,7 @@ public class AboutReader {
             Set<DescriptorMetadata> providers = getDescriptorData(DescriptorType.PROVIDER);
             Set<DescriptorMetadata> channels = getDescriptorData(DescriptorType.CHANNEL);
             AboutModel model = new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
-                createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_URL), systemStatusAccessor.isSystemInitialized(), startupDate, providers, channels);
+                createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_PATH_SPEC), systemStatusAccessor.isSystemInitialized(), startupDate, providers, channels);
             return Optional.of(model);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
