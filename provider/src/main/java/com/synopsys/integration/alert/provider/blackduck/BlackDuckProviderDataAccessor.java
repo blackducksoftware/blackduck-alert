@@ -46,13 +46,19 @@ import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckProper
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.synopsys.integration.blackduck.http.PagedRequest;
+import com.synopsys.integration.blackduck.http.RequestFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
+import com.synopsys.integration.blackduck.http.transform.BlackDuckResponsesTransformer;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.function.ThrowingFunction;
+import com.synopsys.integration.function.ThrowingSupplier;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
@@ -85,27 +91,33 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
-        return getProjectsByProviderConfigId(providerConfigId, this::getProjectsForProvider)
+        return retrieveProviderConfig(providerConfigId)
+                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> getProjectsForProvider(providerConfig)))
                    .orElse(List.of());
     }
 
     @Override
     public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize) {
-        // FIXME consume paging params
-        ThrowingFunction<ConfigurationModel, List<ProviderProject>, IntegrationException> projectRetriever = this::getProjectsForProvider;
-        List<ProviderProject> foundProjects = getProjectsByProviderConfigId(providerConfigId, projectRetriever)
-                                                  .orElse(List.of());
-        return new AlertPagedModel<>(-1, pageNumber, pageSize, foundProjects);
+        return retrieveProviderConfig(providerConfigId)
+                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize)))
+                   .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
 
-    private <T> Optional<T> getProjectsByProviderConfigId(Long providerConfigId, ThrowingFunction<ConfigurationModel, T, IntegrationException> projectRetriever) {
+    private Optional<ConfigurationModel> retrieveProviderConfig(Long providerConfigId) {
         try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
-            if (providerConfigOptional.isPresent()) {
-                return Optional.of(projectRetriever.apply(providerConfigOptional.get()));
-            }
+            return configurationAccessor.getConfigurationById(providerConfigId);
         } catch (IntegrationException e) {
-            logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
+            logger.error(String.format("Could not get provider with id '%s'. %s", providerConfigId, e.getMessage()));
+            logger.debug(e.getMessage(), e);
+        }
+        return Optional.empty();
+    }
+
+    private <T> Optional<T> retrieveOptionalProjectData(ThrowingSupplier<T, IntegrationException> retriever) {
+        try {
+            return Optional.of(retriever.get());
+        } catch (IntegrationException e) {
+            logger.error(String.format("Could not get the requested projects. %s", e.getMessage()));
             logger.debug(e.getMessage(), e);
         }
         return Optional.empty();
@@ -116,6 +128,28 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
         List<ProjectView> allProjects = projectService.getAllProjects();
         return convertBlackDuckProjects(allProjects, blackDuckServicesFactory.getBlackDuckService());
+    }
+
+    private AlertPagedModel<ProviderProject> retrieveProjectsForProvider(ConfigurationModel blackDuckConfigurationModel, int pageNumber, int pageSize) throws IntegrationException {
+        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
+        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        RequestFactory requestFactory = blackDuckServicesFactory.getRequestFactory();
+
+        BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(blackDuckServicesFactory.getGson(), blackDuckServicesFactory.getObjectMapper(), blackDuckServicesFactory.getLogger());
+        BlackDuckResponsesTransformer blackDuckResponsesTransformer = new BlackDuckResponsesTransformer(blackDuckServicesFactory.getBlackDuckHttpClient(), blackDuckJsonTransformer);
+
+        int offset = pageNumber * pageSize;
+        HttpUrl projectsRequestUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl().appendRelativeUrl(ApiDiscovery.PROJECTS_LINK.getPath());
+        BlackDuckRequestBuilder blackDuckRequestBuilder = requestFactory.createCommonGetRequestBuilder()
+                                                              .url(projectsRequestUrl)
+                                                              .addOffset(offset)
+                                                              .addLimit(pageSize);
+
+        PagedRequest pagedRequest = new PagedRequest(blackDuckRequestBuilder);
+        BlackDuckPageResponse<ProjectView> projectViewBlackDuckPageResponse = blackDuckResponsesTransformer.getOnePageOfResponses(pagedRequest, ProjectView.class);
+
+        List<ProviderProject> foundProjects = convertBlackDuckProjects(projectViewBlackDuckPageResponse.getItems(), blackDuckService);
+        return new AlertPagedModel<>(projectViewBlackDuckPageResponse.getTotalCount(), pageNumber, pageSize, foundProjects);
     }
 
     @Override

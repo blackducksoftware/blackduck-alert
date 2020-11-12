@@ -83,7 +83,6 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
     }
 
     private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize) {
-        // FIXME add paging params to response object
         AlertPagedModel<ProviderProject> providerProjectsPage = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId, pageNumber, pageSize);
         List<ProviderProjectSelectOption> options = providerProjectsPage.getModels()
                                                         .stream()
