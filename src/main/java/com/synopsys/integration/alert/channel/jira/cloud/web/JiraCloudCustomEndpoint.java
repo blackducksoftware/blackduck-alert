@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -61,14 +62,17 @@ public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
+    private final ProxyManager proxyManager;
 
     @Autowired
-    public JiraCloudCustomEndpoint(JiraCloudChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
+    public JiraCloudCustomEndpoint(JiraCloudChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson,
+        ProxyManager proxyManager) throws AlertException {
         super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, customEndpointManager);
         this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
+        this.proxyManager = proxyManager;
     }
 
     @Override
@@ -105,7 +109,7 @@ public class JiraCloudCustomEndpoint extends ButtonCustomEndpoint {
                                  .map(this::getAppropriateAccessToken)
                                  .orElse("");
 
-        return new JiraCloudProperties(url, accessToken, username);
+        return new JiraCloudProperties(url, accessToken, username, proxyManager.createProxyInfo());
     }
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {

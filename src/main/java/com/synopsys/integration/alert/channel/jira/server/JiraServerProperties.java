@@ -32,16 +32,19 @@ import com.synopsys.integration.jira.common.server.configuration.JiraServerRestC
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfigBuilder;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class JiraServerProperties implements IssueTrackerServiceConfig {
     private final String url;
     private final String password;
     private final String username;
+    private final ProxyInfo proxyInfo;
 
-    public JiraServerProperties(String url, String password, String username) {
+    public JiraServerProperties(String url, String password, String username, ProxyInfo proxyInfo) {
         this.url = url;
         this.password = password;
         this.username = username;
+        this.proxyInfo = proxyInfo;
     }
 
     public JiraServerRestConfig createJiraServerConfig() throws IssueTrackerException {
@@ -50,6 +53,17 @@ public class JiraServerProperties implements IssueTrackerServiceConfig {
         jiraServerConfigBuilder.setUrl(url);
         jiraServerConfigBuilder.setAuthPassword(password);
         jiraServerConfigBuilder.setAuthUsername(username);
+
+        if (!proxyInfo.isBlank()) {
+            proxyInfo.getHost().ifPresent(proxyHost -> {
+                jiraServerConfigBuilder.setProxyHost(proxyHost);
+                jiraServerConfigBuilder.setProxyPort(proxyInfo.getPort());
+            });
+            proxyInfo.getUsername().ifPresent(jiraServerConfigBuilder::setProxyUsername);
+            proxyInfo.getPassword().ifPresent(jiraServerConfigBuilder::setProxyPassword);
+            proxyInfo.getNtlmWorkstation().ifPresent(jiraServerConfigBuilder::setProxyNtlmWorkstation);
+            proxyInfo.getNtlmDomain().ifPresent(jiraServerConfigBuilder::setProxyNtlmDomain);
+        }
         try {
             return jiraServerConfigBuilder.build();
         } catch (IllegalArgumentException e) {

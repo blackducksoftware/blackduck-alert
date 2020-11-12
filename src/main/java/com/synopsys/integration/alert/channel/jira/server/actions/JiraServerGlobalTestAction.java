@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
@@ -43,10 +44,12 @@ import com.synopsys.integration.jira.common.server.service.UserSearchService;
 public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
     public static final Logger logger = LoggerFactory.getLogger(JiraServerGlobalTestAction.class);
     private final Gson gson;
+    private final ProxyManager proxyManager;
 
     @Autowired
-    public JiraServerGlobalTestAction(Gson gson) {
+    public JiraServerGlobalTestAction(Gson gson, ProxyManager proxyManager) {
         this.gson = gson;
+        this.proxyManager = proxyManager;
     }
 
     @Override
@@ -71,7 +74,7 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
         String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
         String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        return new JiraServerProperties(url, password, username);
+        return new JiraServerProperties(url, password, username, proxyManager.createProxyInfo());
     }
 
     @Override

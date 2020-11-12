@@ -30,7 +30,7 @@ public class JiraTestConfigHelper {
     }
 
     public JiraCloudProperties createJiraCloudProperties() {
-        return new JiraCloudProperties(getEnvBaseUrl(), getEnvApiToken(), getEnvUserEmail());
+        return new JiraCloudProperties(getEnvBaseUrl(), getEnvApiToken(), getEnvUserEmail(), proxyInfo);
     }
 
     public JiraCloudRestConfig createJiraServerConfig() {

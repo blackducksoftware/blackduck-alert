@@ -41,18 +41,19 @@ import com.synopsys.integration.exception.IntegrationException;
 public class JiraCloudDistributionTestAction extends ChannelDistributionTestAction {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
+    private final JiraCloudContextBuilder jiraCloudContextBuilder;
 
     @Autowired
-    public JiraCloudDistributionTestAction(JiraCloudChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser) {
+    public JiraCloudDistributionTestAction(JiraCloudChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser, JiraCloudContextBuilder jiraCloudContextBuilder) {
         super(jiraChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;
+        this.jiraCloudContextBuilder = jiraCloudContextBuilder;
     }
 
     @Override
     public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
-        JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
-        IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
+        IssueTrackerContext context = jiraCloudContextBuilder.build(registeredFieldValues);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction((JiraCloudChannel) getDistributionChannel(), gson, issueCreator);
         return testAction.testConfig(context);

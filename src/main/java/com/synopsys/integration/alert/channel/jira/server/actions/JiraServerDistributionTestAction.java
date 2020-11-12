@@ -41,18 +41,19 @@ import com.synopsys.integration.exception.IntegrationException;
 public class JiraServerDistributionTestAction extends ChannelDistributionTestAction {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
+    private final JiraServerContextBuilder jiraServerContextBuilder;
 
     @Autowired
-    public JiraServerDistributionTestAction(JiraServerChannel jiraServerChannel, Gson gson, JiraMessageParser jiraMessageParser) {
+    public JiraServerDistributionTestAction(JiraServerChannel jiraServerChannel, Gson gson, JiraMessageParser jiraMessageParser, JiraServerContextBuilder jiraServerContextBuilder) {
         super(jiraServerChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;
+        this.jiraServerContextBuilder = jiraServerContextBuilder;
     }
 
     @Override
     public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldAccessor registeredFieldValues) throws IntegrationException {
-        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
-        IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
+        IssueTrackerContext context = jiraServerContextBuilder.build(registeredFieldValues);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction((JiraServerChannel) getDistributionChannel(), gson, issueCreator);
         return testAction.testConfig(context);

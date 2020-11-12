@@ -22,13 +22,21 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerContext;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 
+@Component
 public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerContext> {
+    private final ProxyManager proxyManager;
+
+    @Autowired
+    public JiraServerContextBuilder(ProxyManager proxyManager) {this.proxyManager = proxyManager;}
+
     @Override
     protected String getProjectFieldKey() {
         return JiraServerDescriptor.KEY_JIRA_PROJECT_NAME;
@@ -73,6 +81,6 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
         String url = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
         String username = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
         String password = fieldAccessor.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        return new JiraServerProperties(url, password, username);
+        return new JiraServerProperties(url, password, username, proxyManager.createProxyInfo());
     }
 }

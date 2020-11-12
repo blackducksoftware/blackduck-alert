@@ -22,13 +22,21 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContext;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 
+@Component
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
+    private final ProxyManager proxyManager;
+
+    @Autowired
+    public JiraCloudContextBuilder(ProxyManager proxyManager) {this.proxyManager = proxyManager;}
+
     @Override
     protected String getProjectFieldKey() {
         return JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME;
@@ -73,6 +81,6 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
         String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
         String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        return new JiraCloudProperties(url, accessToken, username);
+        return new JiraCloudProperties(url, accessToken, username, proxyManager.createProxyInfo());
     }
 }

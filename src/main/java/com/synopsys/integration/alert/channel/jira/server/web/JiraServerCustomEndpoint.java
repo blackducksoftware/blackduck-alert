@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -61,14 +62,17 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
     private final ResponseFactory responseFactory;
     private final ConfigurationAccessor configurationAccessor;
     private final Gson gson;
+    private final ProxyManager proxyManager;
 
     @Autowired
-    public JiraServerCustomEndpoint(JiraServerChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson) throws AlertException {
+    public JiraServerCustomEndpoint(JiraServerChannelKey jiraChannelKey, CustomEndpointManager customEndpointManager, ResponseFactory responseFactory, ConfigurationAccessor configurationAccessor, Gson gson,
+        ProxyManager proxyManager) throws AlertException {
         super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, customEndpointManager);
         this.jiraChannelKey = jiraChannelKey;
         this.responseFactory = responseFactory;
         this.configurationAccessor = configurationAccessor;
         this.gson = gson;
+        this.proxyManager = proxyManager;
     }
 
     @Override
@@ -109,7 +113,7 @@ public class JiraServerCustomEndpoint extends ButtonCustomEndpoint {
                               .map(this::getAppropriateAccessToken)
                               .orElse("");
 
-        return new JiraServerProperties(url, password, username);
+        return new JiraServerProperties(url, password, username, proxyManager.createProxyInfo());
     }
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {

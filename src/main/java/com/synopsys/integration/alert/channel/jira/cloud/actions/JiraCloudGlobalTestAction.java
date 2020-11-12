@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDes
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldAccessor;
+import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.UserSearchService;
@@ -43,10 +44,12 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     public static final Logger logger = LoggerFactory.getLogger(JiraCloudGlobalTestAction.class);
     private final Gson gson;
+    private final ProxyManager proxyManager;
 
     @Autowired
-    public JiraCloudGlobalTestAction(Gson gson) {
+    public JiraCloudGlobalTestAction(Gson gson, ProxyManager proxyManager) {
         this.gson = gson;
+        this.proxyManager = proxyManager;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
         String url = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
         String accessToken = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         String username = fieldAccessor.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        return new JiraCloudProperties(url, accessToken, username);
+        return new JiraCloudProperties(url, accessToken, username, proxyManager.createProxyInfo());
     }
 
     @Override
