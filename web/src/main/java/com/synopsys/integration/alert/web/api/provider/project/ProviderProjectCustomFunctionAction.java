@@ -23,9 +23,13 @@
 package com.synopsys.integration.alert.web.api.provider.project;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -41,7 +45,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validation.
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
@@ -60,6 +66,12 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
 
     @Override
     public ActionResponse<ProviderProjectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+        HttpServletRequest httpRequest = servletContentWrapper.getHttpRequest();
+        Map<String, String[]> parameterMap = httpRequest.getParameterMap();
+
+        int pageNumber = extractPagingParam(parameterMap, "pageNumber", 0);
+        int pageSize = extractPagingParam(parameterMap, "pageSize", 10);
+
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
@@ -67,16 +79,32 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
 
         return fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                    .map(Long::parseLong)
-                   .map(this::getBlackDuckProjectsActionResponse)
+                   .map(configId -> getBlackDuckProjectsActionResponse(configId, pageNumber, pageSize))
                    .orElse(NO_PROJECT_OPTIONS);
     }
 
-    private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId) {
-        List<ProviderProjectSelectOption> options = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId)
+    private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize) {
+        // FIXME add paging params to response object
+        AlertPagedModel<ProviderProject> providerProjectsPage = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId, pageNumber, pageSize);
+        List<ProviderProjectSelectOption> options = providerProjectsPage.getModels()
                                                         .stream()
                                                         .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
                                                         .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(options));
+    }
+
+    private int extractPagingParam(Map<String, String[]> parameterMap, String paramName, int defaultValue) {
+        String[] paramValues = parameterMap.get(paramName);
+        if (null != paramValues && paramValues.length > 0) {
+            String extractedValue = paramValues[0];
+            if (NumberUtils.isDigits(extractedValue)) {
+                Integer extractedInteger = NumberUtils.createInteger(extractedValue);
+                if (null != extractedInteger) {
+                    return extractedInteger;
+                }
+            }
+        }
+        return defaultValue;
     }
 
 }

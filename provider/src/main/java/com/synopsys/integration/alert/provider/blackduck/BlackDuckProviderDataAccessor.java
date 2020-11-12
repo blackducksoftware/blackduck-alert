@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
@@ -51,6 +52,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.function.ThrowingFunction;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
@@ -83,16 +85,30 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
+        return getProjectsByProviderConfigId(providerConfigId, this::getProjectsForProvider)
+                   .orElse(List.of());
+    }
+
+    @Override
+    public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize) {
+        // FIXME consume paging params
+        ThrowingFunction<ConfigurationModel, List<ProviderProject>, IntegrationException> projectRetriever = this::getProjectsForProvider;
+        List<ProviderProject> foundProjects = getProjectsByProviderConfigId(providerConfigId, projectRetriever)
+                                                  .orElse(List.of());
+        return new AlertPagedModel<>(-1, pageNumber, pageSize, foundProjects);
+    }
+
+    private <T> Optional<T> getProjectsByProviderConfigId(Long providerConfigId, ThrowingFunction<ConfigurationModel, T, IntegrationException> projectRetriever) {
         try {
             Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
             if (providerConfigOptional.isPresent()) {
-                return getProjectsForProvider(providerConfigOptional.get());
+                return Optional.of(projectRetriever.apply(providerConfigOptional.get()));
             }
         } catch (IntegrationException e) {
             logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
             logger.debug(e.getMessage(), e);
         }
-        return List.of();
+        return Optional.empty();
     }
 
     private List<ProviderProject> getProjectsForProvider(ConfigurationModel blackDuckConfigurationModel) throws IntegrationException {
