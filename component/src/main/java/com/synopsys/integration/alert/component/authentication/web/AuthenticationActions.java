@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.component.authentication.security.AlertAut
 
 @Component
 public class AuthenticationActions {
-    private Logger logger = LoggerFactory.getLogger(AuthenticationActions.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationActions.class);
     private final AlertAuthenticationProvider authenticationProvider;
     private final PasswordResetService passwordResetService;
     private final CsrfTokenRepository csrfTokenRepository;
@@ -70,6 +70,8 @@ public class AuthenticationActions {
                 csrfTokenRepository.saveToken(token, servletRequest, servletResponse);
                 servletResponse.setHeader(token.getHeaderName(), token.getToken());
                 response = new ActionResponse<>(HttpStatus.NO_CONTENT);
+            } else {
+                servletRequest.getSession().invalidate();
             }
         } catch (AuthenticationException ex) {
             logger.error("Error Authenticating user.", ex);
