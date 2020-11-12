@@ -17,7 +17,7 @@ public class JiraCloudPropertiesTest {
     @Test
     public void testBuildConfigException() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties(null, null, null, proxyInfo);
+            JiraCloudProperties properties = new JiraCloudProperties(null, null, null, null);
             assertNull(properties.getUrl());
             assertNull(properties.getAccessToken());
             assertNull(properties.getUsername());
@@ -34,7 +34,7 @@ public class JiraCloudPropertiesTest {
             final String url = "http://localhost:2990";
             final String token = "token";
             final String user = "user";
-            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, proxyInfo);
+            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, null);
             assertEquals(url, properties.getUrl());
             assertEquals(token, properties.getAccessToken());
             assertEquals(user, properties.getUsername());
@@ -49,7 +49,7 @@ public class JiraCloudPropertiesTest {
     @Test
     public void testServerServiceFactory() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", proxyInfo);
+            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", null);
             JiraCloudServiceFactory serviceFactory = properties.createJiraServicesCloudFactory(LoggerFactory.getLogger(getClass()), new Gson());
             assertNotNull(serviceFactory);
         } catch (IssueTrackerException ex) {
