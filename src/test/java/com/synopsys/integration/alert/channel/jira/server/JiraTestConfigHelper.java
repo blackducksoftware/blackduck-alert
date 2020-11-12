@@ -9,6 +9,7 @@ import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactor
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class JiraTestConfigHelper {
     public static final String ENV_BASE_URL = "JIRA_CLOUD_URL";
@@ -30,7 +31,7 @@ public class JiraTestConfigHelper {
     }
 
     public JiraCloudProperties createJiraCloudProperties() {
-        return new JiraCloudProperties(getEnvBaseUrl(), getEnvApiToken(), getEnvUserEmail(), null);
+        return new JiraCloudProperties(getEnvBaseUrl(), getEnvApiToken(), getEnvUserEmail(), ProxyInfo.NO_PROXY_INFO);
     }
 
     public JiraCloudRestConfig createJiraServerConfig() {
