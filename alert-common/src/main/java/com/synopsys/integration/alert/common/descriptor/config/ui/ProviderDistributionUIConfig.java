@@ -104,7 +104,8 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                           .applyRequired(true);
 
         ConfigField filterByProject = new HideCheckboxConfigField(KEY_FILTER_BY_PROJECT, LABEL_FILTER_BY_PROJECT, DESCRIPTION_FILTER_BY_PROJECT)
-                                          .applyRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT);
+                                          .applyRelatedHiddenFieldKeys(KEY_PROJECT_NAME_PATTERN, KEY_CONFIGURED_PROJECT)
+                                          .applyValidationFunctions(this::validateFilterByProject);
         ConfigField projectNamePattern = new TextInputConfigField(KEY_PROJECT_NAME_PATTERN, LABEL_PROJECT_NAME_PATTERN, DESCRIPTION_PROJECT_NAME_PATTERN)
                                              .applyValidationFunctions(this::validateProjectNamePattern);
         ConfigField configuredProject = new EndpointTableSelectField(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS)
@@ -145,7 +146,6 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     }
 
     private ValidationResult validateConfigExists(FieldValueModel fieldToValidate, FieldModel fieldModel) {
-
         Optional<ConfigurationModel> configModel = fieldToValidate.getValue()
                                                        .map(Long::parseLong)
                                                        .flatMap(this::readConfiguration);
@@ -161,6 +161,17 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         } catch (AlertDatabaseConstraintException ex) {
             return Optional.empty();
         }
+    }
+
+    private ValidationResult validateFilterByProject(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        boolean filterByProject = fieldToValidate.getValue().map(Boolean::parseBoolean).orElse(false);
+        String projectNamePattern = fieldModel.getFieldValue(KEY_PROJECT_NAME_PATTERN).orElse(null);
+        Collection<String> configuredProjects = fieldModel.getFieldValueModel(KEY_CONFIGURED_PROJECT).map(FieldValueModel::getValues).orElse(List.of());
+
+        if (filterByProject && StringUtils.isBlank(projectNamePattern) && configuredProjects.isEmpty()) {
+            return ValidationResult.errors("You must specify a project name pattern or select at least one project.");
+        }
+        return ValidationResult.success();
     }
 
     private ValidationResult validateProjectNamePattern(FieldValueModel fieldToValidate, FieldModel fieldModel) {

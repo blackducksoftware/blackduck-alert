@@ -47,13 +47,13 @@ public class FieldValidationUtility {
     }
 
     public List<AlertFieldStatus> validateConfig(Map<String, ConfigField> fieldKeyToConfigField, Collection<FieldModel> fieldModels) {
-        logger.debug("Begin validating fields in configuration field model.");
+        logger.trace("Begin validating fields in configuration field model.");
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         for (ConfigField field : fieldKeyToConfigField.values()) {
             List<AlertFieldStatus> fieldValidationResults = validateConfigField(field, fieldModels, fieldKeyToConfigField);
             fieldStatuses.addAll(fieldValidationResults);
         }
-        logger.debug("Finished validating fields in configuration field model.");
+        logger.trace("Finished validating fields in configuration field model.");
         return fieldStatuses;
     }
 
@@ -64,11 +64,11 @@ public class FieldValidationUtility {
     public List<AlertFieldStatus> validateConfigField(ConfigField fieldToValidate, Collection<FieldModel> fieldModels, Map<String, ConfigField> fieldKeyToConfigField) {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         String key = fieldToValidate.getKey();
-        logger.debug("Validating descriptor field: {}", key);
+        logger.trace("Validating descriptor field: {}", key);
         Optional<FieldValueModel> optionalFieldValue = getFieldValue(key, fieldModels);
         if (optionalFieldValue.isPresent()) {
             // field is present now validate the field
-            logger.debug("FieldModel contains '{}'", key);
+            logger.trace("FieldModel contains '{}'", key);
             FieldValueModel fieldValueModel = optionalFieldValue.get();
             if (hasValueOrChecked(fieldValueModel, fieldToValidate.getType())) {
                 List<AlertFieldStatus> relatedFieldErrors = validateRelatedFields(fieldToValidate, fieldKeyToConfigField, fieldModels);
@@ -83,8 +83,8 @@ public class FieldValidationUtility {
                 validationResult = ValidationResult.success();
             }
 
-            logger.debug("Validating '{}' errors: {}", key, validationResult);
             if (validationResult.hasErrors()) {
+                logger.debug("Validating '{}' errors: {}", key, validationResult);
                 fieldStatuses.add(AlertFieldStatus.error(key, validationResult.combineErrorMessages()));
             }
             if (validationResult.hasWarnings()) {
@@ -103,7 +103,7 @@ public class FieldValidationUtility {
 
     public List<AlertFieldStatus> validateRelatedFields(ConfigField field, Map<String, ConfigField> fieldKeyToConfigField, Collection<FieldModel> fieldModels) {
         List<AlertFieldStatus> relatedFieldErrors = new ArrayList<>();
-        logger.debug("Begin validating related fields for field: '{}'", field.getKey());
+        logger.trace("Begin validating related fields for field: '{}'", field.getKey());
         for (String relatedFieldKey : field.getRequiredRelatedFields()) {
             ConfigField relatedField = fieldKeyToConfigField.get(relatedFieldKey);
             List<AlertFieldStatus> missingFieldErrors = validateAnyRelatedFieldsMissing(relatedField, fieldModels);
@@ -114,7 +114,7 @@ public class FieldValidationUtility {
             validateDisallowedFieldError(relatedField, fieldModels, field.getLabel())
                 .ifPresent(relatedFieldErrors::add);
         }
-        logger.debug("Finished validating related fields for field: '{}'", field.getKey());
+        logger.trace("Finished validating related fields for field: '{}'", field.getKey());
         return relatedFieldErrors;
     }
 
@@ -135,7 +135,7 @@ public class FieldValidationUtility {
         Optional<FieldValueModel> optionalFieldValue = getFieldValue(key, fieldModels);
         if (optionalFieldValue.isEmpty() || optionalFieldValue.map(fieldValueModel -> !hasValueOrIsCheckbox(fieldValueModel, field.getType())).orElse(true)) {
             String missingFieldKey = field.getKey();
-            logger.debug("Validating '{}': Missing related field '{}'", key, missingFieldKey);
+            logger.trace("Validating '{}': Missing related field '{}'", key, missingFieldKey);
             fieldMissingErrors.add(AlertFieldStatus.error(key, field.getLabel() + " is missing"));
         }
         return fieldMissingErrors;
@@ -147,7 +147,7 @@ public class FieldValidationUtility {
         if (optionalFieldValue.isPresent() && hasValueOrChecked(optionalFieldValue.get(), field.getType())) {
             String errorMessage = String.format("%s cannot be set if %s is already set", field.getLabel(), validatedFieldLabel);
             String missingFieldKey = field.getKey();
-            logger.debug("Validating '{}': Disallowed field '{}' cannot be set.", key, missingFieldKey);
+            logger.trace("Validating '{}': Disallowed field '{}' cannot be set.", key, missingFieldKey);
             return Optional.of(AlertFieldStatus.error(key, errorMessage));
         }
         return Optional.empty();
