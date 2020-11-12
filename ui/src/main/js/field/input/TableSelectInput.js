@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import {
+    BootstrapTable,
+    TableHeaderColumn
+} from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LabeledField from 'field/LabeledField';
 import Select, { components } from 'react-select';
@@ -72,6 +75,10 @@ class TableSelectInput extends Component {
         this.state = {
             progress: false,
             showTable: false,
+            currentPage: 1,
+            currentPageSize: 10,
+            totalPageCount: 0,
+            currentSearchTerm: '',
             data: [],
             selectedData: [],
             displayedData: [],
@@ -81,22 +88,24 @@ class TableSelectInput extends Component {
 
     // FIXME componentWillMount is deprecated, use the constructor or componentDidMount to initialize this
     componentWillMount() {
+        const { currentPage, currentPageSize } = this.state;
         const { value } = this.props;
         if (value && value.length > 0) {
-            this.retrieveTableData().then(() => {
+            this.retrieveTableData(currentPage, currentPageSize).then(() => {
                 this.updateSelectedValues();
             });
         }
     }
 
     componentDidUpdate(prevProps) {
+        const { currentPage, currentPageSize } = this.state;
         const { value } = this.props;
         const prevSize = prevProps.value && prevProps.value.length === 0;
         const currentSize = value && value.length > 0;
         const emptySelected = this.state.selectedData.length === 0;
         if (prevSize && currentSize && emptySelected) {
             if (this.state.data.length == 0) {
-                this.retrieveTableData().then(() => {
+                this.retrieveTableData(currentPage, currentPageSize).then(() => {
                     this.updateSelectedValues();
                 });
             } else {
@@ -203,27 +212,31 @@ class TableSelectInput extends Component {
         };
     }
 
-    async retrieveTableData() {
+    async retrieveTableData(uiPageNumber, pageSize) {
         this.setState({
             progress: true,
-            success: false
+            success: false,
+            currentPageNumber: uiPageNumber,
+            currentPageSize: pageSize
         });
         const {
             fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields
         } = this.props;
 
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
+        const pageNumber = uiPageNumber ? uiPageNumber - 1 : 0;
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}`, csrfToken, newFieldModel);
         return request.then((response) => {
             this.setState({
                 progress: false
             });
             if (response.ok) {
                 return response.json().then((data) => {
-                    const { options } = data;
+                    const { options, totalPages } = data;
                     this.setState({
                         data: options,
-                        success: true
+                        success: true,
+                        totalPageCount: totalPages
                     });
                     return data;
                 });
@@ -258,11 +271,44 @@ class TableSelectInput extends Component {
         const columnsProp = this.props.columns;
         const defaultSortName = columnsProp.find((column) => column.sortBy).header;
 
+        const onPageChange = (page, sizePerPage) => {
+            this.setState({
+                currentPage: page,
+                currentPageSize: sizePerPage
+            });
+        };
+
+        const onSizePerPageListChange = (sizePerPage) => {
+            this.setState({
+                currentPageSize: sizePerPage
+            });
+        };
+
+        const onSearchChange = (searchTerm, colInfos, multiColumnSearch) => {
+            this.setState({
+                currentSearchTerm: searchTerm,
+                currentPage: 1
+            });
+        };
+
+        const { currentPage, currentPageSize, totalPageCount } = this.state;
+
+        // Displays the # of pages for the table
+        const tableFetchInfo = {
+            dataTotalSize: totalPageCount * currentPageSize
+        };
+
         const tableOptions = {
             noDataText: 'No data found',
             clearSearch: true,
             defaultSortName,
-            defaultSortOrder: 'asc'
+            defaultSortOrder: 'asc',
+
+            sizePerPage: currentPageSize,
+            page: currentPage,
+            onPageChange,
+            onSizePerPageListChange,
+            onSearchChange
         };
 
         const projectsSelectRowProp = this.createRowSelectionProps();
@@ -299,7 +345,11 @@ class TableSelectInput extends Component {
             const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
             const convertedValues = this.state.selectedData.map((selected) => {
                 const columnContainsValue = this.state.data.map((dataValue) => dataValue[keyColumnHeader]).includes(selected);
-                return { label: selected, value: selected, missing: !columnContainsValue };
+                return {
+                    label: selected,
+                    value: selected,
+                    missing: !columnContainsValue
+                };
             });
             this.setState({
                 showTable: false,
@@ -350,12 +400,15 @@ class TableSelectInput extends Component {
                     hover
                     condensed
                     selectRow={projectsSelectRowProp}
-                    search={searchable}
                     options={tableOptions}
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
+
+                    search={searchable}
                     pagination={paged}
+                    remote
+                    fetchInfo={tableFetchInfo}
                 >
                     {columns}
                 </BootstrapTable>
@@ -378,9 +431,10 @@ class TableSelectInput extends Component {
     }
 
     selectOnClick(event) {
+        const { currentPage, currentPageSize } = this.state;
         event.preventDefault();
         event.stopPropagation();
-        this.retrieveTableData();
+        this.retrieveTableData(currentPage, currentPageSize);
         this.setState({ showTable: true });
     }
 

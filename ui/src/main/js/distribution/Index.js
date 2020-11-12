@@ -370,7 +370,7 @@ class Index extends Component {
     onPageChange(page, sizePerPage) {
         this.setState({
             currentPage: page,
-            sizePerPage: sizePerPage
+            currentPageSize: sizePerPage
         });
     }
 

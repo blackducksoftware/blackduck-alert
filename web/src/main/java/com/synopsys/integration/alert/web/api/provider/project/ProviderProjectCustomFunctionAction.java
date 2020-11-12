@@ -54,7 +54,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 @Component
 public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<ProviderProjectOptions> {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
-    private static final ActionResponse<ProviderProjectOptions> NO_PROJECT_OPTIONS = new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(List.of()));
 
     private final ProviderDataAccessor providerDataAccessor;
 
@@ -80,7 +79,7 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
         return fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                    .map(Long::parseLong)
                    .map(configId -> getBlackDuckProjectsActionResponse(configId, pageNumber, pageSize))
-                   .orElse(NO_PROJECT_OPTIONS);
+                   .orElse(new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(0, pageNumber, pageSize, List.of())));
     }
 
     private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize) {
@@ -90,7 +89,7 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
                                                         .stream()
                                                         .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
                                                         .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(options));
+        return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(providerProjectsPage.getTotalPages(), providerProjectsPage.getCurrentPage(), providerProjectsPage.getPageSize(), options));
     }
 
     private int extractPagingParam(Map<String, String[]> parameterMap, String paramName, int defaultValue) {
