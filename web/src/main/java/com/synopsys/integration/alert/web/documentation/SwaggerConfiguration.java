@@ -44,6 +44,11 @@ import springfox.documentation.swagger.web.UiConfigurationBuilder;
 public class SwaggerConfiguration {
     public static final String SWAGGER_DEFAULT_PATH_SPEC = "/swagger-ui/";
 
+    // These must be lower-case in order for Swagger to accept them
+    private static final String[] SUPPORTED_SUBMIT_METHODS = new String[] {
+        "get"
+    };
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -62,7 +67,7 @@ public class SwaggerConfiguration {
     public UiConfiguration alertSwaggerUiConfiguration() {
         return UiConfigurationBuilder
                    .builder()
-                   .supportedSubmitMethods(new String[] { "get" })
+                   .supportedSubmitMethods(SUPPORTED_SUBMIT_METHODS)
                    .build();
     }
 
