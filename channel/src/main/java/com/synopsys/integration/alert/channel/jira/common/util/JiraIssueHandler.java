@@ -46,11 +46,12 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
+import com.synopsys.integration.jira.common.model.JiraResponseModel;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
+public abstract class JiraIssueHandler extends IssueHandler<JiraResponseModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
@@ -64,13 +65,13 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
     }
 
-    public abstract IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException;
+    public abstract IssueCreationResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException;
 
     public abstract String getIssueCreatorFieldKey();
 
     @Override
     // TODO this does not need to be Optional
-    protected Optional<IssueResponseModel> createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
+    protected Optional<JiraResponseModel> createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
         JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         IssueContentModel contentModel = request.getRequestContent();
 
@@ -86,7 +87,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         String issueCreator = issueConfig.getIssueCreator();
 
         try {
-            IssueResponseModel issue = createIssue(issueCreator, issueConfig.getIssueType(), issueConfig.getProjectName(), fieldsBuilder);
+            IssueCreationResponseModel issue = createIssue(issueCreator, issueConfig.getIssueType(), issueConfig.getProjectName(), fieldsBuilder);
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
             String issueKey = issue.getKey();
             addIssueProperties(issueKey, issueProperties);
@@ -129,8 +130,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     }
 
     @Override
-    protected boolean transitionIssue(IssueResponseModel issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
-        return jiraTransitionHelper.transitionIssueIfNecessary(issueModel.getKey(), issueConfig, operation);
+    protected boolean transitionIssue(String issueKey, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
+        return jiraTransitionHelper.transitionIssueIfNecessary(issueKey, issueConfig, operation);
     }
 
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {

@@ -28,10 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.response.MultiPermissionResponseModel;
@@ -45,10 +46,12 @@ import com.synopsys.integration.jira.common.server.service.UserSearchService;
 @Component
 public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
     public static final Logger logger = LoggerFactory.getLogger(JiraServerGlobalTestAction.class);
+    private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final Gson gson;
 
     @Autowired
-    public JiraServerGlobalTestAction(Gson gson) {
+    public JiraServerGlobalTestAction(JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson) {
+        this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.gson = gson;
     }
 
@@ -60,7 +63,7 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException {
-        JiraServerProperties jiraProperties = createProperties(fieldUtility);
+        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
         return !jiraAppService.isAppInstalled(JiraConstants.JIRA_APP_KEY);
@@ -68,7 +71,7 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException {
-        JiraServerProperties jiraProperties = createProperties(fieldUtility);
+        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         UserSearchService userSearchService = jiraServerServiceFactory.createUserSearchService();
         String username = jiraProperties.getUsername();
@@ -77,20 +80,12 @@ public class JiraServerGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException {
-        JiraServerProperties jiraProperties = createProperties(fieldUtility);
+        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldUtility);
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
         MyPermissionsService myPermissionsService = jiraServerServiceFactory.createMyPermissionsService();
         MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions();
         PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
         return null != adminPermission && adminPermission.getHavePermission();
-    }
-
-    private JiraServerProperties createProperties(FieldUtility fieldUtility) {
-        String url = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_URL);
-        String username = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_USERNAME);
-        String password = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
-        boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return new JiraServerProperties(url, password, username, pluginCheckDisabled);
     }
 
     @Override

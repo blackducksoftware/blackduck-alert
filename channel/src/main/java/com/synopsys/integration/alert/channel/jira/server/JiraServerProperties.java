@@ -32,18 +32,21 @@ import com.synopsys.integration.jira.common.server.configuration.JiraServerRestC
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfigBuilder;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class JiraServerProperties implements IssueTrackerServiceConfig {
     private final String url;
     private final String password;
     private final String username;
     private final boolean pluginCheckDisabled;
+    private final ProxyInfo proxyInfo;
 
-    public JiraServerProperties(String url, String password, String username, boolean pluginCheckDisabled) {
+    public JiraServerProperties(String url, String password, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo) {
         this.url = url;
         this.password = password;
         this.username = username;
         this.pluginCheckDisabled = pluginCheckDisabled;
+        this.proxyInfo = proxyInfo;
     }
 
     public JiraServerRestConfig createJiraServerConfig() throws IssueTrackerException {
@@ -52,6 +55,7 @@ public class JiraServerProperties implements IssueTrackerServiceConfig {
         jiraServerConfigBuilder.setUrl(url);
         jiraServerConfigBuilder.setAuthPassword(password);
         jiraServerConfigBuilder.setAuthUsername(username);
+        jiraServerConfigBuilder.setProxyInfo(proxyInfo);
         try {
             return jiraServerConfigBuilder.build();
         } catch (IllegalArgumentException e) {

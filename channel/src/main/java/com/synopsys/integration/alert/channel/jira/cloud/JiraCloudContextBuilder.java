@@ -27,6 +27,12 @@ import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
+    private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
+
+    public JiraCloudContextBuilder(JiraCloudPropertiesFactory jiraCloudPropertiesFactory) {
+        this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
+    }
+
     @Override
     protected String getProjectFieldKey() {
         return JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME;
@@ -64,15 +70,7 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
 
     @Override
     public JiraCloudContext build(FieldUtility fieldUtility) {
-        return new JiraCloudContext(createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
-    }
-
-    private JiraCloudProperties createJiraProperties(FieldUtility fieldUtility) {
-        String url = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
-        String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled);
+        return new JiraCloudContext(jiraCloudPropertiesFactory.createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
     }
 
 }

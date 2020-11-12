@@ -13,12 +13,13 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class JiraCloudPropertiesTest {
     @Test
     public void testBuildConfigException() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties(null, null, null, false);
+            JiraCloudProperties properties = new JiraCloudProperties(null, null, null, false, ProxyInfo.NO_PROXY_INFO);
             assertNull(properties.getUrl());
             assertNull(properties.getAccessToken());
             assertNull(properties.getUsername());
@@ -37,7 +38,7 @@ public class JiraCloudPropertiesTest {
             String token = "token";
             String user = "user";
             boolean pluginCheckDisabled = true;
-            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, pluginCheckDisabled);
+            JiraCloudProperties properties = new JiraCloudProperties(url, token, user, pluginCheckDisabled, ProxyInfo.NO_PROXY_INFO);
             assertEquals(url, properties.getUrl());
             assertEquals(token, properties.getAccessToken());
             assertEquals(user, properties.getUsername());
@@ -53,7 +54,7 @@ public class JiraCloudPropertiesTest {
     @Test
     public void testServerServiceFactory() {
         try {
-            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", false);
+            JiraCloudProperties properties = new JiraCloudProperties("http://localhost:2990", "token", "user", false, ProxyInfo.NO_PROXY_INFO);
             JiraCloudServiceFactory serviceFactory = properties.createJiraServicesCloudFactory(LoggerFactory.getLogger(getClass()), new Gson());
             assertNotNull(serviceFactory);
         } catch (IssueTrackerException ex) {

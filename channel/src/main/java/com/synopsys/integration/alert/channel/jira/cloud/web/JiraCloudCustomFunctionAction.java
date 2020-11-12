@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.web;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.api.client.http.HttpStatusCodes;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannelKey;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtil;
@@ -40,13 +39,8 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -56,22 +50,20 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomFunctionAction.class);
 
-    private final JiraCloudChannelKey jiraChannelKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
     private final Gson gson;
 
     @Autowired
-    public JiraCloudCustomFunctionAction(AuthorizationManager authorizationManager, JiraCloudChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorMap descriptorMap,
+    public JiraCloudCustomFunctionAction(AuthorizationManager authorizationManager, JiraCloudPropertiesFactory jiraCloudPropertiesFactory, Gson gson, DescriptorMap descriptorMap,
         FieldValidationUtility fieldValidationUtility) {
         super(JiraCloudDescriptor.KEY_JIRA_CONFIGURE_PLUGIN, authorizationManager, descriptorMap, fieldValidationUtility);
-        this.jiraChannelKey = jiraChannelKey;
-        this.configurationAccessor = configurationAccessor;
+        this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.gson = gson;
     }
 
     @Override
     public ActionResponse<String> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
-        JiraCloudProperties jiraProperties = createJiraProperties(fieldModel);
+        JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldModel);
         try {
             JiraCloudServiceFactory jiraServicesCloudFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesCloudFactory.createPluginManagerService();
@@ -94,38 +86,6 @@ public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> 
             Thread.currentThread().interrupt();
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Thread was interrupted while validating Jira '%s' plugin installation: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
         }
-    }
-
-    private JiraCloudProperties createJiraProperties(FieldModel fieldModel) {
-        String url = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_URL).orElse("");
-        String username = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).orElse("");
-        String accessToken = fieldModel.getFieldValueModel(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN)
-                                 .map(this::getAppropriateAccessToken)
-                                 .orElse("");
-        boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK)
-                                          .map(Boolean::parseBoolean)
-                                          .orElse(false);
-
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled);
-    }
-
-    private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
-        String accessToken = fieldAccessToken.getValue().orElse("");
-        boolean accessTokenSet = fieldAccessToken.getIsSet();
-        if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            try {
-                return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
-                           .stream()
-                           .findFirst()
-                           .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))
-                           .flatMap(ConfigurationFieldModel::getFieldValue)
-                           .orElse("");
-
-            } catch (AlertDatabaseConstraintException e) {
-                logger.error("Unable to retrieve existing Jira configuration.");
-            }
-        }
-        return accessToken;
     }
 
 }

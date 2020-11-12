@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerContextBuilder;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -41,17 +42,20 @@ import com.synopsys.integration.exception.IntegrationException;
 public class JiraServerDistributionTestAction extends ChannelDistributionTestAction {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
+    private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
 
     @Autowired
-    public JiraServerDistributionTestAction(JiraServerChannel jiraServerChannel, Gson gson, JiraMessageParser jiraMessageParser) {
+    public JiraServerDistributionTestAction(JiraServerChannel jiraServerChannel, Gson gson, JiraMessageParser jiraMessageParser,
+        JiraServerPropertiesFactory jiraServerPropertiesFactory) {
         super(jiraServerChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;
+        this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
     }
 
     @Override
     public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
-        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder();
+        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder(jiraServerPropertiesFactory);
         IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction((JiraServerChannel) getDistributionChannel(), gson, issueCreator);

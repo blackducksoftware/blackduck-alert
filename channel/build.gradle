@@ -3,6 +3,6 @@ ext.moduleName = 'com.synopsys.integration.alert.channel'
 dependencies {
     implementation project(':alert-common')
     implementation project(':azure-boards-common')
-    implementation 'com.synopsys.integration:int-jira-common:1.1.0'
+    implementation 'com.synopsys.integration:int-jira-common:2.0.1-SNAPSHOT'
     api 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 }
