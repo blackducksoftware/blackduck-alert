@@ -114,7 +114,7 @@ public class JiraServerRequestDelegatorTest {
 
     @Test
     public void testAppMissing() throws Exception {
-        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, new JiraServerChannelKey(), null, null, null, jiraServerContextBuilder);
+        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, new JiraServerChannelKey(), null, null, null, null);
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = createSearchProperties();
