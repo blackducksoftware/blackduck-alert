@@ -62,11 +62,13 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
                 List<ProviderProject> providerProjectsList = new ArrayList<>(providerProjectSet);
 
                 int offsetStart = pageNumber * pageSize;
-                int maxIndex = offsetStart + pageSize;
-                int offsetEnd = maxIndex < totalElements ? maxIndex : totalElements - 1;
+                if (offsetStart < totalElements) {
+                    int maxIndex = offsetStart + pageSize;
+                    int offsetEnd = maxIndex < totalElements ? maxIndex : totalElements - 1;
 
-                providerProjectsList.subList(offsetStart, offsetEnd);
-                return new AlertPagedModel<>(totalPages, pageNumber, pageSize, providerProjectsList.subList(offsetStart, offsetStart + pageSize));
+                    List<ProviderProject> providerProjectSubList = providerProjectsList.subList(offsetStart, offsetEnd);
+                    return new AlertPagedModel<>(totalPages, pageNumber, pageSize, providerProjectSubList);
+                }
             }
         }
         return new AlertPagedModel<>(0, pageNumber, pageSize, List.of());
