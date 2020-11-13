@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.web;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +31,15 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtil;
-import com.synopsys.integration.alert.channel.jira.server.JiraServerChannelKey;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
+import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
@@ -57,22 +51,20 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JiraServerCustomFunctionAction extends CustomFunctionAction<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraServerCustomFunctionAction.class);
 
-    private final JiraServerChannelKey jiraChannelKey;
-    private final ConfigurationAccessor configurationAccessor;
+    private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final Gson gson;
 
     @Autowired
-    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerChannelKey jiraChannelKey, ConfigurationAccessor configurationAccessor, Gson gson, DescriptorMap descriptorMap,
+    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson, DescriptorMap descriptorMap,
         FieldValidationUtility fieldValidationUtility) {
         super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, authorizationManager, descriptorMap, fieldValidationUtility);
-        this.jiraChannelKey = jiraChannelKey;
-        this.configurationAccessor = configurationAccessor;
+        this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.gson = gson;
     }
 
     @Override
     public ActionResponse<String> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper ignoredServletContent) {
-        JiraServerProperties jiraProperties = createJiraProperties(fieldModel);
+        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(fieldModel);
         try {
             JiraServerServiceFactory jiraServicesFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
             PluginManagerService jiraAppService = jiraServicesFactory.createPluginManagerService();
@@ -97,37 +89,6 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
             Thread.currentThread().interrupt();
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Thread was interrupted while validating Jira '%s' plugin installation: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
         }
-    }
-
-    private JiraServerProperties createJiraProperties(FieldModel fieldModel) {
-        String url = fieldModel.getFieldValue(JiraServerDescriptor.KEY_SERVER_URL).orElse("");
-        String username = fieldModel.getFieldValue(JiraServerDescriptor.KEY_SERVER_USERNAME).orElse("");
-        String password = fieldModel.getFieldValueModel(JiraServerDescriptor.KEY_SERVER_PASSWORD)
-                              .map(this::getAppropriateAccessToken)
-                              .orElse("");
-        boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK).map(Boolean::parseBoolean).orElse(false);
-
-        return new JiraServerProperties(url, password, username, pluginCheckDisabled);
-    }
-
-    private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
-        String accessToken = fieldAccessToken.getValue().orElse("");
-        boolean accessTokenSet = fieldAccessToken.getIsSet();
-        if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            try {
-                return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
-                           .stream()
-                           .findFirst()
-                           .flatMap(configurationModel -> configurationModel.getField(JiraServerDescriptor.KEY_SERVER_PASSWORD))
-                           .flatMap(ConfigurationFieldModel::getFieldValue)
-                           .orElse("");
-
-            } catch (AlertDatabaseConstraintException e) {
-                logger.error("Unable to retrieve existing Jira configuration.");
-            }
-        }
-
-        return accessToken;
     }
 
     private ActionResponse<String> createBadRequestIntegrationException(IntegrationException error) {

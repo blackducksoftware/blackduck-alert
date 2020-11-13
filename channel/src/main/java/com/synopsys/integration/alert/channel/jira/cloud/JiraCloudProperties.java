@@ -32,18 +32,21 @@ import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestCon
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class JiraCloudProperties implements IssueTrackerServiceConfig {
     private final String url;
     private final String accessToken;
     private final String username;
     private final boolean pluginCheckDisabled;
+    private final ProxyInfo proxyInfo;
 
-    public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled) {
+    public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo) {
         this.url = url;
         this.accessToken = accessToken;
         this.username = username;
         this.pluginCheckDisabled = pluginCheckDisabled;
+        this.proxyInfo = proxyInfo;
     }
 
     public JiraCloudRestConfig createJiraServerConfig() throws IssueTrackerException {
@@ -52,6 +55,7 @@ public class JiraCloudProperties implements IssueTrackerServiceConfig {
         jiraServerConfigBuilder.setUrl(url);
         jiraServerConfigBuilder.setApiToken(accessToken);
         jiraServerConfigBuilder.setAuthUserEmail(username);
+        jiraServerConfigBuilder.setProxyInfo(proxyInfo);
         try {
             return jiraServerConfigBuilder.build();
         } catch (IllegalArgumentException e) {

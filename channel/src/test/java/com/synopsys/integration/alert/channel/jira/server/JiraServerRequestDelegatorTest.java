@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
+import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
@@ -114,7 +115,7 @@ public class JiraServerRequestDelegatorTest {
 
     @Test
     public void testAppMissing() throws Exception {
-        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, new JiraServerChannelKey(), null, null, null);
+        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, new JiraServerChannelKey(), null, null, null, null);
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = createSearchProperties();
@@ -146,8 +147,10 @@ public class JiraServerRequestDelegatorTest {
         List<IssueSearchIssueComponent> issues = new ArrayList<>();
         IssueSearchResponseModel searchResponseModel = new IssueSearchResponseModel("", issues);
         Mockito.when(issueSearchService.queryForIssues(Mockito.anyString())).thenReturn(searchResponseModel);
+        IssueCreationResponseModel issueCreationResponse = createIssueCreationResponse();
+        Mockito.when(issueService.createIssue(Mockito.any(IssueCreationRequestModel.class))).thenReturn(issueCreationResponse);
         IssueResponseModel issue = createIssueResponse();
-        Mockito.when(issueService.createIssue(Mockito.any(IssueCreationRequestModel.class))).thenReturn(issue);
+        Mockito.when(issueService.getIssue(Mockito.anyString())).thenReturn(issue);
 
         JiraServerRequestDelegator service = new JiraServerRequestDelegator(gson, createContext());
         List<IssueTrackerRequest> requests = new ArrayList<>();
@@ -270,6 +273,11 @@ public class JiraServerRequestDelegatorTest {
         List<String> additionalComments = new ArrayList<>();
         additionalComments.add("Additional Comment");
         return IssueContentModel.of(title, description, descriptionComments, additionalComments);
+    }
+
+    private IssueCreationResponseModel createIssueCreationResponse() {
+        IssueCreationResponseModel issueResponse = new IssueCreationResponseModel("1", null, "project-1");
+        return issueResponse;
     }
 
     private IssueResponseModel createIssueResponse() {
