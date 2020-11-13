@@ -35,7 +35,9 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
     private final ProxyManager proxyManager;
 
     @Autowired
-    public JiraCloudContextBuilder(ProxyManager proxyManager) {this.proxyManager = proxyManager;}
+    public JiraCloudContextBuilder(ProxyManager proxyManager) {
+        this.proxyManager = proxyManager;
+    }
 
     @Override
     protected String getProjectFieldKey() {
