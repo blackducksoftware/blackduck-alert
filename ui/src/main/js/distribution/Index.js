@@ -405,6 +405,7 @@ class Index extends Component {
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No jobs configured',
             clearSearch: true,
+            searchDelayTime: 750,
             insertModal: this.createCustomModal,
             handleConfirmDeleteRow: this.customJobConfigDeletionConfirm,
             // defaultSortName: 'name',

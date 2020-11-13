@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     BootstrapTable,
+    SearchField,
     TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -186,7 +187,7 @@ class TableSelectInput extends Component {
         };
     }
 
-    async retrieveTableData(uiPageNumber, pageSize) {
+    async retrieveTableData(uiPageNumber, pageSize, searchTerm) {
         this.setState({
             progress: true,
             success: false
@@ -197,7 +198,7 @@ class TableSelectInput extends Component {
 
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const pageNumber = uiPageNumber ? uiPageNumber - 1 : 0;
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}`, csrfToken, newFieldModel);
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${searchTerm}`, csrfToken, newFieldModel);
         return request.then((response) => {
             this.setState({
                 progress: false
@@ -210,7 +211,8 @@ class TableSelectInput extends Component {
                         success: true,
                         totalPageCount: totalPages,
                         currentPage: uiPageNumber,
-                        currentPageSize: pageSize
+                        currentPageSize: pageSize,
+                        currentSearchTerm: searchTerm
                     });
                     return data;
                 });
@@ -233,20 +235,22 @@ class TableSelectInput extends Component {
         const defaultSortName = columnsProp.find((column) => column.sortBy).header;
 
         const onPageChange = (page, sizePerPage) => {
-            this.retrieveTableData(page, sizePerPage);
+            const { currentSearchTerm } = this.state;
+            this.retrieveTableData(page, sizePerPage, currentSearchTerm);
         };
 
         const onSizePerPageListChange = (sizePerPage) => {
-            const { currentPage } = this.state;
-            this.retrieveTableData(currentPage, sizePerPage);
+            const { currentPage, currentSearchTerm } = this.state;
+            this.retrieveTableData(currentPage, sizePerPage, currentSearchTerm);
         };
 
         const onSearchChange = (searchTerm, colInfos, multiColumnSearch) => {
-            // TODO consider implementing if possible
+            const { currentPage, currentPageSize } = this.state;
+            this.retrieveTableData(currentPage, currentPageSize, searchTerm);
         };
 
         const {
-            currentPage, currentPageSize, totalPageCount
+            currentPage, currentPageSize, totalPageCount, currentSearchTerm
         } = this.state;
 
         // Displays the # of pages for the table
@@ -259,6 +263,16 @@ class TableSelectInput extends Component {
             clearSearch: true,
             defaultSortName,
             defaultSortOrder: 'asc',
+
+            searchDelayTime: 750,
+            searchField: (searchFieldProps) => {
+                return (
+                    <SearchField
+                        defaultValue={currentSearchTerm}
+                        placeholder='Search'
+                    />
+                );
+            },
 
             sizePerPage: currentPageSize,
             page: currentPage,
@@ -379,7 +393,7 @@ class TableSelectInput extends Component {
         const { currentPage, currentPageSize } = this.state;
         event.preventDefault();
         event.stopPropagation();
-        this.retrieveTableData(currentPage, currentPageSize);
+        this.retrieveTableData(currentPage, currentPageSize, '');
         this.setState({ showTable: true });
     }
 
