@@ -202,11 +202,9 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         int offset = pageNumber * pageSize;
         HttpUrl projectsRequestUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl().appendRelativeUrl(ApiDiscovery.PROJECTS_LINK.getPath());
         BlackDuckRequestBuilder blackDuckRequestBuilder = requestFactory.createCommonGetRequestBuilder()
-                                                              .url(projectsRequestUrl)
-                                                              .addOffset(offset)
-                                                              .addLimit(pageSize);
+                                                              .url(projectsRequestUrl);
 
-        PagedRequest pagedRequest = new PagedRequest(blackDuckRequestBuilder);
+        PagedRequest pagedRequest = new PagedRequest(blackDuckRequestBuilder, offset, pageSize);
         BlackDuckPageResponse<ProjectView> projectViewBlackDuckPageResponse = blackDuckResponsesTransformer.getOnePageOfResponses(pagedRequest, ProjectView.class);
 
         List<ProviderProject> foundProjects = convertBlackDuckProjects(projectViewBlackDuckPageResponse.getItems(), blackDuckService);
