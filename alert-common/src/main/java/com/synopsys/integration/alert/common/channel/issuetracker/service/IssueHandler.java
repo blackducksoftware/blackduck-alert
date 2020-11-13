@@ -122,7 +122,7 @@ public abstract class IssueHandler<R> {
 
     protected abstract List<R> retrieveExistingIssues(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException;
 
-    protected abstract boolean transitionIssue(String issueKey, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException;
+    protected abstract boolean transitionIssue(R issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException;
 
     protected abstract void addComment(IssueConfig issueConfig, String issueKey, String comment) throws IntegrationException;
 
@@ -153,7 +153,7 @@ public abstract class IssueHandler<R> {
                 updatedIssues.add(issue);
             }
 
-            boolean didUpdateIssue = transitionIssue(issueKey, issueConfig, request.getOperation());
+            boolean didUpdateIssue = transitionIssue(issue, issueConfig, request.getOperation());
             if (didUpdateIssue) {
                 updatedIssues.add(issue);
             }

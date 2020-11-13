@@ -22,13 +22,18 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
+@Component
 public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerContext> {
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
 
+    @Autowired
     public JiraServerContextBuilder(JiraServerPropertiesFactory jiraServerPropertiesFactory) {
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
     }

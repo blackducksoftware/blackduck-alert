@@ -111,7 +111,7 @@ public class JiraServerTestActionTest {
         TransitionsResponseModel transitionsResponseModel = new TestTransitionResponsesModel();
         Mockito.when(issueService.getTransitions(Mockito.anyString())).thenReturn(transitionsResponseModel);
 
-        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, new JiraServerChannelKey(), null, null, null, jiraServerPropertiesFactory);
+        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, new JiraServerChannelKey(), null, null, null, null);
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraServerChannel, gson, new TestIssueRequestCreator() {

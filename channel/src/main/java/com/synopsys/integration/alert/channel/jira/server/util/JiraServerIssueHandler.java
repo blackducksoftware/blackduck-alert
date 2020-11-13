@@ -68,8 +68,9 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     }
 
     @Override
-    public IssueCreationResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException {
-        return issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder));
+    public IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException {
+        IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(new IssueCreationRequestModel(issueCreator, issueType, projectName, fieldsBuilder));
+        return issueService.getIssue(issueCreationResponseModel.getKey());
     }
 
     @Override

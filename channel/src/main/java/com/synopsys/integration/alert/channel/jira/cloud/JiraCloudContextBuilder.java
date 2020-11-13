@@ -22,13 +22,18 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 
+@Component
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
     private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
 
+    @Autowired
     public JiraCloudContextBuilder(JiraCloudPropertiesFactory jiraCloudPropertiesFactory) {
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
     }

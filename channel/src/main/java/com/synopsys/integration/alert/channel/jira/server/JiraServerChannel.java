@@ -42,21 +42,20 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class JiraServerChannel extends IssueTrackerChannel {
     private final JiraMessageContentConverter jiraContentConverter;
-    private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
+    private final JiraServerContextBuilder jiraServerContextBuilder;
 
     @Autowired
     public JiraServerChannel(Gson gson, JiraServerChannelKey descriptorKey, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager,
-        JiraServerPropertiesFactory jiraServerPropertiesFactory) {
+        JiraServerContextBuilder jiraServerContextBuilder) {
         super(gson, auditAccessor, descriptorKey, eventManager);
         this.jiraContentConverter = jiraContentConverter;
-        this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
+        this.jiraServerContextBuilder = jiraServerContextBuilder;
     }
 
     @Override
     protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) {
         FieldUtility fieldUtility = event.getFieldUtility();
-        JiraServerContextBuilder contextBuilder = new JiraServerContextBuilder(jiraServerPropertiesFactory);
-        return contextBuilder.build(fieldUtility);
+        return jiraServerContextBuilder.build(fieldUtility);
     }
 
     @Override

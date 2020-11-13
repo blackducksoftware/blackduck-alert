@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudChannel;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudContextBuilder;
-import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
@@ -42,20 +41,19 @@ import com.synopsys.integration.exception.IntegrationException;
 public class JiraCloudDistributionTestAction extends ChannelDistributionTestAction {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
-    private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
+    private final JiraCloudContextBuilder jiraCloudContextBuilder;
 
     @Autowired
-    public JiraCloudDistributionTestAction(JiraCloudChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser, JiraCloudPropertiesFactory jiraCloudPropertiesFactory) {
+    public JiraCloudDistributionTestAction(JiraCloudChannel jiraChannel, Gson gson, JiraMessageParser jiraMessageParser, JiraCloudContextBuilder jiraCloudContextBuilder) {
         super(jiraChannel);
         this.gson = gson;
         this.jiraMessageParser = jiraMessageParser;
-        this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
+        this.jiraCloudContextBuilder = jiraCloudContextBuilder;
     }
 
     @Override
     public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
-        JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder(jiraCloudPropertiesFactory);
-        IssueTrackerContext context = contextBuilder.build(registeredFieldValues);
+        IssueTrackerContext context = jiraCloudContextBuilder.build(registeredFieldValues);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(registeredFieldValues, jiraMessageParser);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction((JiraCloudChannel) getDistributionChannel(), gson, issueCreator);
         return testAction.testConfig(context);
