@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.web.api.provider.project;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +51,7 @@ import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 
 @Component
 public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<ProviderProjectOptions> {
@@ -70,6 +72,10 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
 
         int pageNumber = extractPagingParam(parameterMap, "pageNumber", 0);
         int pageSize = extractPagingParam(parameterMap, "pageSize", 10);
+        Optional<ActionResponse<ProviderProjectOptions>> pageRequestError = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
+        if (pageRequestError.isPresent()) {
+            return pageRequestError.get();
+        }
 
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {

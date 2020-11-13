@@ -38,6 +38,7 @@ public interface ProviderDataAccessor {
 
     AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize);
 
+    @Deprecated
     void deleteProjects(Collection<ProviderProject> providerProjects);
 
     Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String projectHref);
@@ -46,6 +47,7 @@ public interface ProviderDataAccessor {
 
     List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName);
 
+    @Deprecated
     void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers);
 
 }
