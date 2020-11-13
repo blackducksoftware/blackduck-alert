@@ -82,14 +82,15 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
+        String searchTerm = extractFirstParam(parameterMap, "searchTerm").orElse("");
         return fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                    .map(Long::parseLong)
-                   .map(configId -> getBlackDuckProjectsActionResponse(configId, pageNumber, pageSize))
+                   .map(configId -> getBlackDuckProjectsActionResponse(configId, pageNumber, pageSize, searchTerm))
                    .orElse(new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(0, pageNumber, pageSize, List.of())));
     }
 
-    private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize) {
-        AlertPagedModel<ProviderProject> providerProjectsPage = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId, pageNumber, pageSize);
+    private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize, String searchTerm) {
+        AlertPagedModel<ProviderProject> providerProjectsPage = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId, pageNumber, pageSize, searchTerm);
         List<ProviderProjectSelectOption> options = providerProjectsPage.getModels()
                                                         .stream()
                                                         .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
@@ -98,17 +99,16 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
     }
 
     private int extractPagingParam(Map<String, String[]> parameterMap, String paramName, int defaultValue) {
-        String[] paramValues = parameterMap.get(paramName);
-        if (null != paramValues && paramValues.length > 0) {
-            String extractedValue = paramValues[0];
-            if (NumberUtils.isDigits(extractedValue)) {
-                Integer extractedInteger = NumberUtils.createInteger(extractedValue);
-                if (null != extractedInteger) {
-                    return extractedInteger;
-                }
-            }
-        }
-        return defaultValue;
+        return extractFirstParam(parameterMap, paramName)
+                   .filter(NumberUtils::isDigits)
+                   .map(NumberUtils::toInt)
+                   .orElse(defaultValue);
+    }
+
+    private Optional<String> extractFirstParam(Map<String, String[]> parameterMap, String paramName) {
+        return Optional.ofNullable(parameterMap.get(paramName))
+                   .filter(paramValues -> paramValues.length > 0)
+                   .map(paramValues -> paramValues[0]);
     }
 
 }

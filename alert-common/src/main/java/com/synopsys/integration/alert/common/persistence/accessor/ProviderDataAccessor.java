@@ -36,7 +36,7 @@ public interface ProviderDataAccessor {
 
     List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId);
 
-    AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize);
+    AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm);
 
     @Deprecated
     void deleteProjects(Collection<ProviderProject> providerProjects);

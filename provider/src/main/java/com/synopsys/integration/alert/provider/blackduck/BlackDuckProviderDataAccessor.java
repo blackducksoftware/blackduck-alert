@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -97,9 +98,9 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize) {
+    public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
         return retrieveProviderConfigOrLogErrors(providerConfigId)
-                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize)))
+                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
                    .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
 
@@ -191,7 +192,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         return convertBlackDuckProjects(allProjects, blackDuckServicesFactory.getBlackDuckService());
     }
 
-    private AlertPagedModel<ProviderProject> retrieveProjectsForProvider(ConfigurationModel blackDuckConfigurationModel, int pageNumber, int pageSize) throws IntegrationException {
+    private AlertPagedModel<ProviderProject> retrieveProjectsForProvider(ConfigurationModel blackDuckConfigurationModel, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
         BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         RequestFactory requestFactory = blackDuckServicesFactory.getRequestFactory();
@@ -204,8 +205,13 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         BlackDuckRequestBuilder blackDuckRequestBuilder = requestFactory.createCommonGetRequestBuilder()
                                                               .url(projectsRequestUrl);
 
+        Predicate<ProjectView> searchFilter = alwaysTruePredicate -> true;
+        if (StringUtils.isNotBlank(searchTerm)) {
+            searchFilter = projectView -> StringUtils.containsIgnoreCase(projectView.getName(), searchTerm);
+        }
+
         PagedRequest pagedRequest = new PagedRequest(blackDuckRequestBuilder, offset, pageSize);
-        BlackDuckPageResponse<ProjectView> projectViewBlackDuckPageResponse = blackDuckResponsesTransformer.getOnePageOfResponses(pagedRequest, ProjectView.class);
+        BlackDuckPageResponse<ProjectView> projectViewBlackDuckPageResponse = blackDuckResponsesTransformer.getSomeMatchingResponses(pagedRequest, ProjectView.class, searchFilter, pagedRequest.getLimit());
 
         List<ProviderProject> foundProjects = convertBlackDuckProjects(projectViewBlackDuckPageResponse.getItems(), blackDuckService);
         int totalPageCount = (projectViewBlackDuckPageResponse.getTotalCount() + (pageSize - 1)) / pageSize;

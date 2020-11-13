@@ -53,20 +53,24 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
-    public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize) {
+    public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
         Set<ProviderProject> providerProjectSet = this.providerProjects.get(providerConfigId);
         if (null != providerProjectSet) {
-            int totalElements = providerProjectSet.size();
+            List<ProviderProject> providerProjectList = new ArrayList<>(providerProjectSet);
+            List<ProviderProject> reducedProviderProjectList = providerProjectList
+                                                                   .stream()
+                                                                   .filter(providerProject -> providerProject.getName().toLowerCase().contains(searchTerm.toLowerCase()))
+                                                                   .collect(Collectors.toList());
+            int totalElements = reducedProviderProjectList.size();
             int totalPages = (totalElements + (pageSize - 1)) / pageSize;
             if (totalPages > pageNumber) {
-                List<ProviderProject> providerProjectsList = new ArrayList<>(providerProjectSet);
 
                 int offsetStart = pageNumber * pageSize;
                 if (offsetStart < totalElements) {
                     int maxIndex = offsetStart + pageSize;
                     int offsetEnd = maxIndex < totalElements ? maxIndex : totalElements - 1;
 
-                    List<ProviderProject> providerProjectSubList = providerProjectsList.subList(offsetStart, offsetEnd);
+                    List<ProviderProject> providerProjectSubList = reducedProviderProjectList.subList(offsetStart, offsetEnd);
                     return new AlertPagedModel<>(totalPages, pageNumber, pageSize, providerProjectSubList);
                 }
             }
