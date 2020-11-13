@@ -55,7 +55,7 @@ public class HomeActions {
         boolean isAnonymous = authentication.getAuthorities().stream()
                                   .map(GrantedAuthority::getAuthority)
                                   .anyMatch(authority -> authority.equals(ROLE_ANONYMOUS));
-        boolean authorized = authentication.isAuthenticated() && !isAnonymous && csrfToken != null;
+        boolean authorized = authentication.isAuthenticated() && !isAnonymous && csrfToken != null && !authentication.getAuthorities().isEmpty();
 
         if (!authorized) {
             servletRequest.getSession().invalidate();
