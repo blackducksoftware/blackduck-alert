@@ -245,8 +245,8 @@ export function testDistributionJob(config) {
                         ...responseData
                     });
                     const handler = createErrorHandler(DISTRIBUTION_JOB_TEST_FAILURE, defaultHandler);
-                    const containsErrors = HTTPErrorUtils.hasErrors(responseData.errors);
-                    if (!containsErrors) {
+                    const hasErrors = HTTPErrorUtils.containsErrors(responseData);
+                    if (!hasErrors) {
                         dispatch(testJobSuccess(responseData));
                     } else if (!response.ok) {
                         dispatch(handler(response.status));
