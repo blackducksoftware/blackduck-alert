@@ -87,45 +87,64 @@ class TableSelectInput extends Component {
     }
 
     // FIXME componentWillMount is deprecated, use the constructor or componentDidMount to initialize this
-    componentWillMount() {
-        const { currentPage, currentPageSize } = this.state;
-        const { value } = this.props;
-        if (value && value.length > 0) {
-            this.retrieveTableData(currentPage, currentPageSize).then(() => {
-                this.updateSelectedValues();
-            });
-        }
-    }
+    // componentDidMount() {
+    //     const { currentPage, currentPageSize } = this.state;
+    //     const { value } = this.props;
+    //     if (value && value.length > 0) {
+    //         this.retrieveTableData(currentPage, currentPageSize).then(() => {
+    //             this.updateSelectedValues();
+    //         });
+    //     }
+    // }
 
-    componentDidUpdate(prevProps) {
-        const { currentPage, currentPageSize } = this.state;
-        const { value } = this.props;
-        const prevSize = prevProps.value && prevProps.value.length === 0;
-        const currentSize = value && value.length > 0;
-        const emptySelected = this.state.selectedData.length === 0;
-        if (prevSize && currentSize && emptySelected) {
-            if (this.state.data.length == 0) {
-                this.retrieveTableData(currentPage, currentPageSize).then(() => {
-                    this.updateSelectedValues();
-                });
-            } else {
-                this.updateSelectedValues();
-            }
-        }
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     const { value } = this.props;
+    //     const didPrevHaveValues = prevProps.value && prevProps.value.length === 0;
+    //     const doesCurrentHaveValues = value && value.length > 0;
+    //     const isAnythingSelected = this.state.selectedData.length === 0;
+    //
+    //     if (didPrevHaveValues && doesCurrentHaveValues && isAnythingSelected) {
+    //         this.updateSelectedValues();
+    //     }
+    // }
+
+    // updateSelectedValues() {
+    //     const { value } = this.props;
+    //     const { selectedData, data } = this.state;
+    //     selectedData.push(...value);
+    //     const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
+    //     const convertedValues = selectedData.map((selected) => {
+    //         const columnContainsValue = data.map((dataValue) => dataValue[keyColumnHeader])
+    //             .includes(selected);
+    //         return {
+    //             label: selected,
+    //             value: selected,
+    //             missing: !columnContainsValue
+    //         };
+    //     });
+    //     this.setState({
+    //         displayedData: convertedValues
+    //     });
+    // }
+
+    componentDidMount() {
+        this.updateSelectedValues();
     }
 
     updateSelectedValues() {
         const { value } = this.props;
         const { selectedData, data } = this.state;
         selectedData.push(...value);
-        const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
+        // const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
         const convertedValues = selectedData.map((selected) => {
-            const columnContainsValue = data.map((dataValue) => dataValue[keyColumnHeader])
-                .includes(selected);
+            // const columnContainsValue = data.map((dataValue) => dataValue[keyColumnHeader])
+            //     .includes(selected);
             return {
                 label: selected,
                 value: selected,
-                missing: !columnContainsValue
+                // We can't support this since we don't pull all data at once
+                // missing: !columnContainsValue
+                missing: false
             };
         });
         this.setState({
@@ -215,9 +234,7 @@ class TableSelectInput extends Component {
     async retrieveTableData(uiPageNumber, pageSize) {
         this.setState({
             progress: true,
-            success: false,
-            currentPageNumber: uiPageNumber,
-            currentPageSize: pageSize
+            success: false
         });
         const {
             fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields
@@ -236,7 +253,9 @@ class TableSelectInput extends Component {
                     this.setState({
                         data: options,
                         success: true,
-                        totalPageCount: totalPages
+                        totalPageCount: totalPages,
+                        currentPage: uiPageNumber,
+                        currentPageSize: pageSize
                     });
                     return data;
                 });
@@ -251,18 +270,18 @@ class TableSelectInput extends Component {
 
     createDataList() {
         const { data, selectedData } = this.state;
-        const addMissingColumn = data.map((itemData) => Object.assign(itemData, { missing: false }));
+        return data.map((itemData) => Object.assign(itemData, { missing: false }));
 
-        const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
-        selectedData.forEach((itemDataValue) => {
-            const dataFound = addMissingColumn.find((foundData) => itemDataValue === foundData[keyColumnHeader]);
-            if (!dataFound) {
-                addMissingColumn.unshift({
-                    [keyColumnHeader]: itemDataValue,
-                    missing: true
-                });
-            }
-        });
+        // const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
+        // selectedData.forEach((itemDataValue) => {
+        //     const dataFound = addMissingColumn.find((foundData) => itemDataValue === foundData[keyColumnHeader]);
+        //     if (!dataFound) {
+        //         addMissingColumn.unshift({
+        //             [keyColumnHeader]: itemDataValue,
+        //             missing: true
+        //         });
+        //     }
+        // });
 
         return addMissingColumn;
     }
@@ -272,26 +291,21 @@ class TableSelectInput extends Component {
         const defaultSortName = columnsProp.find((column) => column.sortBy).header;
 
         const onPageChange = (page, sizePerPage) => {
-            this.setState({
-                currentPage: page,
-                currentPageSize: sizePerPage
-            });
+            this.retrieveTableData(page, sizePerPage);
         };
 
         const onSizePerPageListChange = (sizePerPage) => {
-            this.setState({
-                currentPageSize: sizePerPage
-            });
+            const { currentPage } = this.state;
+            this.retrieveTableData(currentPage, sizePerPage);
         };
 
         const onSearchChange = (searchTerm, colInfos, multiColumnSearch) => {
-            this.setState({
-                currentSearchTerm: searchTerm,
-                currentPage: 1
-            });
+            // TODO consider implementing if possible
         };
 
-        const { currentPage, currentPageSize, totalPageCount } = this.state;
+        const {
+            currentPage, currentPageSize, totalPageCount
+        } = this.state;
 
         // Displays the # of pages for the table
         const tableFetchInfo = {
@@ -314,20 +328,20 @@ class TableSelectInput extends Component {
         const projectsSelectRowProp = this.createRowSelectionProps();
 
         const assignDataFormat = (cell, row) => {
-            const cellContent = (row.missing && cell && cell !== '')
-                ? (
-                    <span className="missingData">
-                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
-                        {cell}
-                    </span>
-                )
-                : cell;
+            // const cellContent = (row.missing && cell && cell !== '')
+            //     ? (
+            //         <span className="missingData">
+            //             <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+            //             {cell}
+            //         </span>
+            //     )
+            //     : cell;
 
             if (cell) {
                 return (
                     <div title={cell.toString()}>
                         {' '}
-                        {cellContent}
+                        {cell}
                         {' '}
                     </div>
                 );
@@ -335,20 +349,21 @@ class TableSelectInput extends Component {
             return (
                 <div>
                     {' '}
-                    {cellContent}
+                    {cell}
                     {' '}
                 </div>
             );
         };
 
         const okClicked = () => {
-            const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
+            // const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
             const convertedValues = this.state.selectedData.map((selected) => {
-                const columnContainsValue = this.state.data.map((dataValue) => dataValue[keyColumnHeader]).includes(selected);
+                // const columnContainsValue = this.state.data.map((dataValue) => dataValue[keyColumnHeader]).includes(selected);
                 return {
                     label: selected,
                     value: selected,
-                    missing: !columnContainsValue
+                    // missing: !columnContainsValue
+                    missing: false
                 };
             });
             this.setState({
