@@ -43,18 +43,20 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class JiraCloudChannel extends IssueTrackerChannel {
     private final JiraMessageContentConverter jiraContentConverter;
+    private final JiraCloudContextBuilder jiraCloudContextBuilder;
 
     @Autowired
-    public JiraCloudChannel(JiraCloudChannelKey jiraChannelKey, Gson gson, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager) {
+    public JiraCloudChannel(JiraCloudChannelKey jiraChannelKey, Gson gson, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager,
+        JiraCloudContextBuilder jiraCloudContextBuilder) {
         super(gson, auditAccessor, jiraChannelKey, eventManager);
         this.jiraContentConverter = jiraContentConverter;
+        this.jiraCloudContextBuilder = jiraCloudContextBuilder;
     }
 
     @Override
     protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) {
         FieldUtility fieldUtility = event.getFieldUtility();
-        JiraCloudContextBuilder contextBuilder = new JiraCloudContextBuilder();
-        return contextBuilder.build(fieldUtility);
+        return jiraCloudContextBuilder.build(fieldUtility);
     }
 
     @Override

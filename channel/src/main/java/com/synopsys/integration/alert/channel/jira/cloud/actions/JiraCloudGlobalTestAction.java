@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraGlobalTestAction;
@@ -45,10 +46,12 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 @Component
 public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
     public static final Logger logger = LoggerFactory.getLogger(JiraCloudGlobalTestAction.class);
+    private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
     private final Gson gson;
 
     @Autowired
-    public JiraCloudGlobalTestAction(Gson gson) {
+    public JiraCloudGlobalTestAction(JiraCloudPropertiesFactory jiraCloudPropertiesFactory, Gson gson) {
+        this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.gson = gson;
     }
 
@@ -61,7 +64,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isAppMissing(FieldUtility fieldUtility) throws IntegrationException {
-        JiraCloudProperties jiraProperties = createJiraProperties(fieldUtility);
+        JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         String username = jiraProperties.getUsername();
@@ -70,7 +73,7 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isUserMissing(FieldUtility fieldUtility) throws IntegrationException {
-        JiraCloudProperties jiraProperties = createJiraProperties(fieldUtility);
+        JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         UserSearchService userSearchService = jiraCloudServiceFactory.createUserSearchService();
         String username = jiraProperties.getUsername();
@@ -81,20 +84,12 @@ public class JiraCloudGlobalTestAction extends JiraGlobalTestAction {
 
     @Override
     protected boolean isUserAdmin(FieldUtility fieldUtility) throws IntegrationException {
-        JiraCloudProperties jiraProperties = createJiraProperties(fieldUtility);
+        JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(fieldUtility);
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, gson);
         MyPermissionsService myPermissionsService = jiraCloudServiceFactory.createMyPermissionsService();
         MultiPermissionResponseModel myPermissions = myPermissionsService.getMyPermissions(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
         PermissionModel adminPermission = myPermissions.extractPermission(JiraGlobalTestAction.JIRA_ADMIN_PERMISSION_NAME);
         return null != adminPermission && adminPermission.getHavePermission();
-    }
-
-    private JiraCloudProperties createJiraProperties(FieldUtility fieldUtility) {
-        String url = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
-        String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
-        String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        boolean isPluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return new JiraCloudProperties(url, accessToken, username, isPluginCheckDisabled);
     }
 
     @Override

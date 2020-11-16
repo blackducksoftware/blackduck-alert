@@ -103,7 +103,7 @@ public class AzureWorkItemService {
     }
 
     private String createWorkItemSpecWithProject(String organizationName, String projectIdOrName, String workItemType) {
-        return String.format("/%s/%s/_apis/wit/workitems/%s", organizationName, projectIdOrName, workItemType);
+        return String.format("/%s/%s/_apis/wit/workitems/$%s", organizationName, projectIdOrName, workItemType);
     }
 
     private String createWorkItemSpecByIdWithProject(String organizationName, String projectIdOrName, Integer workItemId) {

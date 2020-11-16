@@ -46,12 +46,20 @@ export function combineErrorObjects(errorObject1, errorObject2) {
     };
 }
 
-export function hasErrors(errorObject) {
-    if (!errorObject) {
+export function containsErrors(responseObject) {
+    if (!responseObject) {
         return false;
     }
-    const keys = Object.keys(errorObject);
-    return keys.some((key) => errorObject[key].severity === 'ERROR');
+    const { hasErrors, errors } = responseObject;
+
+    if (hasErrors) {
+        const keys = Object.keys(errors);
+        // Test that the error object isn't empty and contains at least one error
+        if (keys && keys.length > 0) {
+            return keys.some((key) => errors[key].severity === 'ERROR');
+        }
+    }
+    return hasErrors;
 }
 
 export function createStatusCodeHandler(statusCode, callback) {
