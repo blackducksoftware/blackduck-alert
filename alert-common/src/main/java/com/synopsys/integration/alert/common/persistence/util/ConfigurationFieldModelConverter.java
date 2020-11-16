@@ -168,16 +168,14 @@ public class ConfigurationFieldModelConverter {
     }
 
     private String getDescriptorName(ConfigurationModel configurationModel) {
-        String descriptorName;
         try {
-            descriptorName = descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
-                                 .map(RegisteredDescriptorModel::getName)
-                                 .orElseThrow(() -> new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE));
+            return descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
+                       .map(RegisteredDescriptorModel::getName)
+                       .orElseThrow(() -> new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE));
         } catch (AlertDatabaseConstraintException e) {
             logger.debug(e.getMessage());
             throw new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE);
         }
-        return descriptorName;
     }
 
 }
