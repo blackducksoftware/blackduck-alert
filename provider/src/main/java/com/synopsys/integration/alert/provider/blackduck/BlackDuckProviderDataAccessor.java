@@ -49,7 +49,6 @@ import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathRespons
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.api.generated.view.UserViewV4;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.http.PagedRequest;
@@ -230,7 +229,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
         List<ProviderUserModel> foundProjects = pageOfViews.getItems()
                                                     .stream()
-                                                    .map(UserViewV4::getEmail)
+                                                    .map(UserView::getEmail)
                                                     .map(email -> new ProviderUserModel(email, false))
                                                     .collect(Collectors.toList());
         int totalPageCount = (pageOfViews.getTotalCount() + (pageSize - 1)) / pageSize;
