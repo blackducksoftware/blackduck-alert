@@ -129,8 +129,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     }
 
     @Override
-    protected boolean transitionIssue(IssueResponseModel issueModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
-        return jiraTransitionHelper.transitionIssueIfNecessary(issueModel.getKey(), issueConfig, operation);
+    protected boolean transitionIssue(IssueResponseModel issueResponseModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
+        return jiraTransitionHelper.transitionIssueIfNecessary(issueResponseModel.getKey(), issueConfig, operation);
     }
 
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {

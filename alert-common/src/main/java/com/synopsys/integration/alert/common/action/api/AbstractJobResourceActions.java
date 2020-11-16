@@ -97,6 +97,7 @@ public abstract class AbstractJobResourceActions {
         if (!hasPermissions) {
             return ActionResponse.createForbiddenResponse();
         }
+        resource.setJobId(null);
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
