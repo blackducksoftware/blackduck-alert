@@ -14,14 +14,15 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.datastructure.SetMap;
 
 public final class MockProviderDataAccessor implements ProviderDataAccessor {
-    private Map<Long, String> providerConfigs;
-    private SetMap<Long, ProviderProject> providerProjects;
-    private SetMap<Long, ProviderUserModel> providerUsers;
+    private final Map<Long, String> providerConfigs;
+    private final SetMap<Long, ProviderProject> providerProjects;
+    private final SetMap<Long, ProviderUserModel> providerUsers;
 
-    private SetMap<ProviderUserModel, ProviderProject> providerUsersToProjects;
+    private final SetMap<ProviderUserModel, ProviderProject> providerUsersToProjects;
     private Set<String> expectedEmailAddresses = Set.of();
 
     public MockProviderDataAccessor() {
@@ -49,6 +50,32 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
             return new ArrayList<>(providerProjectSet);
         }
         return List.of();
+    }
+
+    @Override
+    public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
+        Set<ProviderProject> providerProjectSet = this.providerProjects.get(providerConfigId);
+        if (null != providerProjectSet) {
+            List<ProviderProject> providerProjectList = new ArrayList<>(providerProjectSet);
+            List<ProviderProject> reducedProviderProjectList = providerProjectList
+                                                                   .stream()
+                                                                   .filter(providerProject -> providerProject.getName().toLowerCase().contains(searchTerm.toLowerCase()))
+                                                                   .collect(Collectors.toList());
+            int totalElements = reducedProviderProjectList.size();
+            int totalPages = (totalElements + (pageSize - 1)) / pageSize;
+            if (totalPages > pageNumber) {
+
+                int offsetStart = pageNumber * pageSize;
+                if (offsetStart < totalElements) {
+                    int maxIndex = offsetStart + pageSize;
+                    int offsetEnd = maxIndex < totalElements ? maxIndex : totalElements - 1;
+
+                    List<ProviderProject> providerProjectSubList = reducedProviderProjectList.subList(offsetStart, offsetEnd);
+                    return new AlertPagedModel<>(totalPages, pageNumber, pageSize, providerProjectSubList);
+                }
+            }
+        }
+        return new AlertPagedModel<>(0, pageNumber, pageSize, List.of());
     }
 
     @Override

@@ -24,11 +24,15 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public class ProviderProjectOptions extends FieldOptions<ProviderProjectSelectOption> {
-    public ProviderProjectOptions(List<ProviderProjectSelectOption> options) {
-        super(options);
+public class ProviderProjectOptions extends AlertPagedModel<ProviderProjectSelectOption> {
+    public ProviderProjectOptions(int totalPages, int currentPage, int pageSize, List<ProviderProjectSelectOption> options) {
+        super(totalPages, currentPage, pageSize, options);
+    }
+
+    public List<ProviderProjectSelectOption> getOptions() {
+        return getModels();
     }
 
 }

@@ -29,12 +29,16 @@ import java.util.Set;
 
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface ProviderDataAccessor {
     List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName);
 
     List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId);
 
+    AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm);
+
+    @Deprecated
     void deleteProjects(Collection<ProviderProject> providerProjects);
 
     Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String projectHref);
@@ -43,6 +47,7 @@ public interface ProviderDataAccessor {
 
     List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName);
 
+    @Deprecated
     void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers);
 
 }

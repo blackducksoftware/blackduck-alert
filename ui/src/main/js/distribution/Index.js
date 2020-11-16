@@ -370,7 +370,7 @@ class Index extends Component {
     onPageChange(page, sizePerPage) {
         this.setState({
             currentPage: page,
-            sizePerPage: sizePerPage
+            currentPageSize: sizePerPage
         });
     }
 
@@ -405,6 +405,7 @@ class Index extends Component {
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No jobs configured',
             clearSearch: true,
+            searchDelayTime: 750,
             insertModal: this.createCustomModal,
             handleConfirmDeleteRow: this.customJobConfigDeletionConfirm,
             // defaultSortName: 'name',

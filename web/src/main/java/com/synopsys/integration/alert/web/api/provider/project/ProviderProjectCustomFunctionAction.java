@@ -23,9 +23,14 @@
 package com.synopsys.integration.alert.web.api.provider.project;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -41,14 +46,16 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validation.
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 
 @Component
 public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<ProviderProjectOptions> {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
-    private static final ActionResponse<ProviderProjectOptions> NO_PROJECT_OPTIONS = new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(List.of()));
 
     private final ProviderDataAccessor providerDataAccessor;
 
@@ -60,23 +67,48 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
 
     @Override
     public ActionResponse<ProviderProjectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+        HttpServletRequest httpRequest = servletContentWrapper.getHttpRequest();
+        Map<String, String[]> parameterMap = httpRequest.getParameterMap();
+
+        int pageNumber = extractPagingParam(parameterMap, "pageNumber", 0);
+        int pageSize = extractPagingParam(parameterMap, "pageSize", 10);
+        Optional<ActionResponse<ProviderProjectOptions>> pageRequestError = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
+        if (pageRequestError.isPresent()) {
+            return pageRequestError.get();
+        }
+
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
+        String searchTerm = extractFirstParam(parameterMap, "searchTerm").orElse("");
         return fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                    .map(Long::parseLong)
-                   .map(this::getBlackDuckProjectsActionResponse)
-                   .orElse(NO_PROJECT_OPTIONS);
+                   .map(configId -> getBlackDuckProjectsActionResponse(configId, pageNumber, pageSize, searchTerm))
+                   .orElse(new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(0, pageNumber, pageSize, List.of())));
     }
 
-    private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId) {
-        List<ProviderProjectSelectOption> options = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId)
+    private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize, String searchTerm) {
+        AlertPagedModel<ProviderProject> providerProjectsPage = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId, pageNumber, pageSize, searchTerm);
+        List<ProviderProjectSelectOption> options = providerProjectsPage.getModels()
                                                         .stream()
                                                         .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
                                                         .collect(Collectors.toList());
-        return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(options));
+        return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(providerProjectsPage.getTotalPages(), providerProjectsPage.getCurrentPage(), providerProjectsPage.getPageSize(), options));
+    }
+
+    private int extractPagingParam(Map<String, String[]> parameterMap, String paramName, int defaultValue) {
+        return extractFirstParam(parameterMap, paramName)
+                   .filter(NumberUtils::isDigits)
+                   .map(NumberUtils::toInt)
+                   .orElse(defaultValue);
+    }
+
+    private Optional<String> extractFirstParam(Map<String, String[]> parameterMap, String paramName) {
+        return Optional.ofNullable(parameterMap.get(paramName))
+                   .filter(paramValues -> paramValues.length > 0)
+                   .map(paramValues -> paramValues[0]);
     }
 
 }

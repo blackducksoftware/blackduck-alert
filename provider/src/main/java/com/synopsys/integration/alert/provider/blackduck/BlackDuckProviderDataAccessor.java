@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,16 +42,24 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.synopsys.integration.blackduck.http.PagedRequest;
+import com.synopsys.integration.blackduck.http.RequestFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
+import com.synopsys.integration.blackduck.http.transform.BlackDuckResponsesTransformer;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.function.ThrowingSupplier;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
@@ -83,23 +92,16 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
-        try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
-            if (providerConfigOptional.isPresent()) {
-                return getProjectsForProvider(providerConfigOptional.get());
-            }
-        } catch (IntegrationException e) {
-            logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
-            logger.debug(e.getMessage(), e);
-        }
-        return List.of();
+        return retrieveProviderConfigOrLogErrors(providerConfigId)
+                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> getProjectsForProvider(providerConfig)))
+                   .orElse(List.of());
     }
 
-    private List<ProviderProject> getProjectsForProvider(ConfigurationModel blackDuckConfigurationModel) throws IntegrationException {
-        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
-        ProjectService projectService = blackDuckServicesFactory.createProjectService();
-        List<ProjectView> allProjects = projectService.getAllProjects();
-        return convertBlackDuckProjects(allProjects, blackDuckServicesFactory.getBlackDuckService());
+    @Override
+    public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
+        return retrieveProviderConfigOrLogErrors(providerConfigId)
+                   .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
+                   .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
 
     @Override
@@ -110,7 +112,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String projectHref) {
         try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            Optional<ConfigurationModel> providerConfigOptional = retrieveProviderConfigOrLogErrors(providerConfigId);
             if (providerConfigOptional.isPresent()) {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
                 BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
@@ -130,7 +132,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             return List.of();
         }
         try {
-            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            Optional<ConfigurationModel> providerConfigOptional = retrieveProviderConfigOrLogErrors(providerConfigId);
             if (providerConfigOptional.isPresent()) {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
             }
@@ -158,6 +160,64 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         return List.of();
     }
 
+    @Override
+    public void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
+        //ignored since are not updating the database
+    }
+
+    private Optional<ConfigurationModel> retrieveProviderConfigOrLogErrors(Long providerConfigId) {
+        try {
+            return configurationAccessor.getConfigurationById(providerConfigId);
+        } catch (IntegrationException e) {
+            logger.error(String.format("Could not get provider with id '%s'. %s", providerConfigId, e.getMessage()));
+            logger.debug(e.getMessage(), e);
+        }
+        return Optional.empty();
+    }
+
+    private <T> Optional<T> retrieveOptionalProjectData(ThrowingSupplier<T, IntegrationException> retriever) {
+        try {
+            return Optional.of(retriever.get());
+        } catch (IntegrationException e) {
+            logger.error(String.format("Could not get the requested projects. %s", e.getMessage()));
+            logger.debug(e.getMessage(), e);
+        }
+        return Optional.empty();
+    }
+
+    private List<ProviderProject> getProjectsForProvider(ConfigurationModel blackDuckConfigurationModel) throws IntegrationException {
+        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
+        ProjectService projectService = blackDuckServicesFactory.createProjectService();
+        List<ProjectView> allProjects = projectService.getAllProjects();
+        return convertBlackDuckProjects(allProjects, blackDuckServicesFactory.getBlackDuckService());
+    }
+
+    private AlertPagedModel<ProviderProject> retrieveProjectsForProvider(ConfigurationModel blackDuckConfigurationModel, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
+        BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
+        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        RequestFactory requestFactory = blackDuckServicesFactory.getRequestFactory();
+
+        BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(blackDuckServicesFactory.getGson(), blackDuckServicesFactory.getObjectMapper(), blackDuckServicesFactory.getLogger());
+        BlackDuckResponsesTransformer blackDuckResponsesTransformer = new BlackDuckResponsesTransformer(blackDuckServicesFactory.getBlackDuckHttpClient(), blackDuckJsonTransformer);
+
+        int offset = pageNumber * pageSize;
+        HttpUrl projectsRequestUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl().appendRelativeUrl(ApiDiscovery.PROJECTS_LINK.getPath());
+        BlackDuckRequestBuilder blackDuckRequestBuilder = requestFactory.createCommonGetRequestBuilder()
+                                                              .url(projectsRequestUrl);
+
+        Predicate<ProjectView> searchFilter = alwaysTruePredicate -> true;
+        if (StringUtils.isNotBlank(searchTerm)) {
+            searchFilter = projectView -> StringUtils.containsIgnoreCase(projectView.getName(), searchTerm);
+        }
+
+        PagedRequest pagedRequest = new PagedRequest(blackDuckRequestBuilder, offset, pageSize);
+        BlackDuckPageResponse<ProjectView> projectViewBlackDuckPageResponse = blackDuckResponsesTransformer.getSomeMatchingResponses(pagedRequest, ProjectView.class, searchFilter, pagedRequest.getLimit());
+
+        List<ProviderProject> foundProjects = convertBlackDuckProjects(projectViewBlackDuckPageResponse.getItems(), blackDuckService);
+        int totalPageCount = (projectViewBlackDuckPageResponse.getTotalCount() + (pageSize - 1)) / pageSize;
+        return new AlertPagedModel<>(totalPageCount, pageNumber, pageSize, foundProjects);
+    }
+
     private List<ProviderUserModel> getEmailAddressesByProvider(ConfigurationModel blackDuckConfiguration) throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfiguration);
         BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
@@ -165,11 +225,6 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         return allActiveBlackDuckUserEmailAddresses.stream()
                    .map(emailAddress -> new ProviderUserModel(emailAddress, false))
                    .collect(Collectors.toList());
-    }
-
-    @Override
-    public void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
-        //ignored since are not updating the database
     }
 
     private List<ProviderProject> convertBlackDuckProjects(List<ProjectView> projectViews, BlackDuckService blackDuckService) {
