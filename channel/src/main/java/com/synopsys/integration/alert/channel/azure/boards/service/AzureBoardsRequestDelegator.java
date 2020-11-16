@@ -80,7 +80,7 @@ public class AzureBoardsRequestDelegator {
         try {
             azureCustomFieldInstaller.installCustomFields(azureIssueConfig.getProjectName(), azureIssueConfig.getIssueType());
         } finally {
-            executorService.isShutdown();
+            executorService.shutdown();
         }
 
         IssueContentLengthValidator workItemContentLengthValidator =
