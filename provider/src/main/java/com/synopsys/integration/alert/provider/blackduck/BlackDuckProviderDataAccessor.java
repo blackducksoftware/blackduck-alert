@@ -293,8 +293,6 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                    .collect(Collectors.toSet());
     }
 
-    // BlackDuckPathResponse
-
     private <T extends BlackDuckResponse> BlackDuckPageResponse<T> retrieveBlackDuckPageResponse(
         BlackDuckServicesFactory blackDuckServicesFactory,
         BlackDuckPathResponse<T> blackDuckPathResponse,
