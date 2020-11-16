@@ -33,18 +33,19 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
 @Component
-public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddressOptions> {
+public class EmailCustomFunctionAction extends PagedCustomFunctionAction<EmailAddressOptions> {
     private final Logger logger = LoggerFactory.getLogger(EmailCustomFunctionAction.class);
     private final ProviderDataAccessor providerDataAccessor;
 
@@ -55,7 +56,7 @@ public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddress
     }
 
     @Override
-    public ActionResponse<EmailAddressOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
+    public ActionResponse<EmailAddressOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) {
         Long providerConfigId = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                                     .map(Long::parseLong)
                                     .orElse(null);
@@ -66,14 +67,15 @@ public class EmailCustomFunctionAction extends CustomFunctionAction<EmailAddress
         }
 
         try {
-            List<ProviderUserModel> pageOfUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
-            if (pageOfUsers.isEmpty()) {
-                logger.info("No user emails found in the database for the provider with id: {}", providerConfigId);
+            AlertPagedModel<ProviderUserModel> pageOfUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId, pageNumber, pageSize, searchTerm);
+            if (pageOfUsers.getModels().isEmpty()) {
+                logger.debug("No user emails found in the database for the provider with id: {}", providerConfigId);
             }
-            List<EmailAddressSelectOption> options = pageOfUsers.stream()
+            List<EmailAddressSelectOption> options = pageOfUsers.getModels()
+                                                         .stream()
                                                          .map(providerUser -> new EmailAddressSelectOption(providerUser.getEmailAddress(), providerUser.getOptOut()))
                                                          .collect(Collectors.toList());
-            EmailAddressOptions optionList = new EmailAddressOptions(options);
+            EmailAddressOptions optionList = new EmailAddressOptions(pageOfUsers.getTotalPages(), pageNumber, pageSize, options);
             return new ActionResponse<>(HttpStatus.OK, optionList);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

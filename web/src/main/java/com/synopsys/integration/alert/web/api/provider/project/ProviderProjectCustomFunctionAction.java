@@ -23,21 +23,16 @@
 package com.synopsys.integration.alert.web.api.provider.project;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectOptions;
@@ -51,10 +46,9 @@ import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 
 @Component
-public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<ProviderProjectOptions> {
+public class ProviderProjectCustomFunctionAction extends PagedCustomFunctionAction<ProviderProjectOptions> {
     private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
 
     private final ProviderDataAccessor providerDataAccessor;
@@ -66,23 +60,12 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
     }
 
     @Override
-    public ActionResponse<ProviderProjectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
-        HttpServletRequest httpRequest = servletContentWrapper.getHttpRequest();
-        Map<String, String[]> parameterMap = httpRequest.getParameterMap();
-
-        int pageNumber = extractPagingParam(parameterMap, "pageNumber", 0);
-        int pageSize = extractPagingParam(parameterMap, "pageSize", 10);
-        Optional<ActionResponse<ProviderProjectOptions>> pageRequestError = PagingParamValidationUtils.createErrorActionResponseIfInvalid(pageNumber, pageSize);
-        if (pageRequestError.isPresent()) {
-            return pageRequestError.get();
-        }
-
+    public ActionResponse<ProviderProjectOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) {
         String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
-        String searchTerm = extractFirstParam(parameterMap, "searchTerm").orElse("");
         return fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                    .map(Long::parseLong)
                    .map(configId -> getBlackDuckProjectsActionResponse(configId, pageNumber, pageSize, searchTerm))
@@ -96,19 +79,6 @@ public class ProviderProjectCustomFunctionAction extends CustomFunctionAction<Pr
                                                         .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
                                                         .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(providerProjectsPage.getTotalPages(), providerProjectsPage.getCurrentPage(), providerProjectsPage.getPageSize(), options));
-    }
-
-    private int extractPagingParam(Map<String, String[]> parameterMap, String paramName, int defaultValue) {
-        return extractFirstParam(parameterMap, paramName)
-                   .filter(NumberUtils::isDigits)
-                   .map(NumberUtils::toInt)
-                   .orElse(defaultValue);
-    }
-
-    private Optional<String> extractFirstParam(Map<String, String[]> parameterMap, String paramName) {
-        return Optional.ofNullable(parameterMap.get(paramName))
-                   .filter(paramValues -> paramValues.length > 0)
-                   .map(paramValues -> paramValues[0]);
     }
 
 }

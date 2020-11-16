@@ -69,6 +69,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
                                                    .applyColumn(new TableSelectColumn("emailAddress", "Email Address", true, true))
                                                    .applySearchable(true)
+                                                   .applyPaged(true)
                                                    .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                    .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)

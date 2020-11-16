@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -15,6 +16,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAc
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.datastructure.SetMap;
 
 public final class MockProviderDataAccessor implements ProviderDataAccessor {
@@ -55,27 +57,8 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
         Set<ProviderProject> providerProjectSet = this.providerProjects.get(providerConfigId);
-        if (null != providerProjectSet) {
-            List<ProviderProject> providerProjectList = new ArrayList<>(providerProjectSet);
-            List<ProviderProject> reducedProviderProjectList = providerProjectList
-                                                                   .stream()
-                                                                   .filter(providerProject -> providerProject.getName().toLowerCase().contains(searchTerm.toLowerCase()))
-                                                                   .collect(Collectors.toList());
-            int totalElements = reducedProviderProjectList.size();
-            int totalPages = (totalElements + (pageSize - 1)) / pageSize;
-            if (totalPages > pageNumber) {
-
-                int offsetStart = pageNumber * pageSize;
-                if (offsetStart < totalElements) {
-                    int maxIndex = offsetStart + pageSize;
-                    int offsetEnd = maxIndex < totalElements ? maxIndex : totalElements - 1;
-
-                    List<ProviderProject> providerProjectSubList = reducedProviderProjectList.subList(offsetStart, offsetEnd);
-                    return new AlertPagedModel<>(totalPages, pageNumber, pageSize, providerProjectSubList);
-                }
-            }
-        }
-        return new AlertPagedModel<>(0, pageNumber, pageSize, List.of());
+        Predicate<ProviderProject> searchFilter = providerProject -> providerProject.getName().toLowerCase().contains(searchTerm.toLowerCase());
+        return retrievePageOfProviderData(providerProjectSet, pageNumber, pageSize, searchFilter);
     }
 
     @Override
@@ -85,6 +68,13 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
             return new ArrayList<>(providerUserModels);
         }
         return List.of();
+    }
+
+    @Override
+    public AlertPagedModel<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
+        Set<ProviderUserModel> providerUserSet = providerUsers.getValue(providerConfigId);
+        Predicate<ProviderUserModel> searchFilter = providerUser -> providerUser.getEmailAddress().toLowerCase().contains(searchTerm.toLowerCase());
+        return retrievePageOfProviderData(providerUserSet, pageNumber, pageSize, searchFilter);
     }
 
     @Override
@@ -206,6 +196,30 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
                    .filter(entry -> entry.getValue().equals(providerConfigName))
                    .map(Map.Entry::getKey)
                    .findFirst();
+    }
+
+    private <T extends AlertSerializableModel> AlertPagedModel<T> retrievePageOfProviderData(Set<T> providerDataSet, int pageNumber, int pageSize, Predicate<T> searchFilter) {
+        if (null != providerDataSet) {
+            List<T> providerDataList = new ArrayList<>(providerDataSet);
+            List<T> reducedProviderDataList = providerDataList
+                                                  .stream()
+                                                  .filter(searchFilter)
+                                                  .collect(Collectors.toList());
+            int totalElements = reducedProviderDataList.size();
+            int totalPages = (totalElements + (pageSize - 1)) / pageSize;
+            if (totalPages > pageNumber) {
+
+                int offsetStart = pageNumber * pageSize;
+                if (offsetStart < totalElements) {
+                    int maxIndex = offsetStart + pageSize;
+                    int offsetEnd = maxIndex < totalElements ? maxIndex : totalElements - 1;
+
+                    List<T> providerDataSubList = reducedProviderDataList.subList(offsetStart, offsetEnd);
+                    return new AlertPagedModel<>(totalPages, pageNumber, pageSize, providerDataSubList);
+                }
+            }
+        }
+        return new AlertPagedModel<>(0, pageNumber, pageSize, List.of());
     }
 
 }

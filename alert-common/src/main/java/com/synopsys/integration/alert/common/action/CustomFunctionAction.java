@@ -47,7 +47,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class CustomFunctionAction<T> {
-
     private final String fieldKey;
     private final AuthorizationManager authorizationManager;
     private final DescriptorMap descriptorMap;
