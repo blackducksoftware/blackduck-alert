@@ -31,11 +31,14 @@ import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -51,9 +54,12 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class ConfigurationFieldModelConverter {
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationFieldModelConverter.class);
     private final EncryptionUtility encryptionUtility;
     private final DescriptorAccessor descriptorAccessor;
     private final Map<String, DescriptorKey> descriptorKeys;
+
+    private final String MISSING_REGISTERED_DESCRIPTOR_MESSAGE = "Expected to find registered descriptor but none was found.";
 
     @Autowired
     public ConfigurationFieldModelConverter(EncryptionUtility encryptionUtility, DescriptorAccessor descriptorAccessor, List<DescriptorKey> descriptorKeys) {
@@ -116,7 +122,7 @@ public class ConfigurationFieldModelConverter {
         return fields;
     }
 
-    public FieldModel convertToFieldModel(ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+    public FieldModel convertToFieldModel(ConfigurationModel configurationModel) {
         Long configId = configurationModel.getConfigurationId();
         String descriptorName = getDescriptorName(configurationModel);
         Map<String, FieldValueModel> fields = new HashMap<>();
@@ -161,11 +167,17 @@ public class ConfigurationFieldModelConverter {
         fields.put(key, fieldValueModel);
     }
 
-    private String getDescriptorName(ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
-        return descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
-                   .map(RegisteredDescriptorModel::getName)
-                   // FIXME this is the wrong type of exception to throw here
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
+    private String getDescriptorName(ConfigurationModel configurationModel) {
+        String descriptorName;
+        try {
+            descriptorName = descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
+                                 .map(RegisteredDescriptorModel::getName)
+                                 .orElseThrow(() -> new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE));
+        } catch (AlertDatabaseConstraintException e) {
+            logger.debug(e.getMessage());
+            throw new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE);
+        }
+        return descriptorName;
     }
 
 }

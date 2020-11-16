@@ -152,7 +152,7 @@ public class JobConfigActionsTest {
         int pageSize = 10;
         RegisteredDescriptorModel registeredDescriptorModel = new RegisteredDescriptorModel(1L, "descriptorName", descriptorType.name());
         AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
-        
+
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
         Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
@@ -162,25 +162,6 @@ public class JobConfigActionsTest {
         assertTrue(jobPagedModelActionResponse.isSuccessful());
         assertTrue(jobPagedModelActionResponse.hasContent());
         assertEquals(HttpStatus.OK, jobPagedModelActionResponse.getHttpStatus());
-    }
-
-    @Test
-    public void getPageServerErrorTest() throws Exception {
-        int totalPages = 1;
-        int pageNumber = 0;
-        int pageSize = 10;
-        RegisteredDescriptorModel registeredDescriptorModel = new RegisteredDescriptorModel(1L, "descriptorName", descriptorType.name());
-        AlertPagedModel<ConfigurationJobModel> pageOfJobs = new AlertPagedModel(totalPages, pageNumber, pageSize, List.of(configurationJobModel));
-
-        Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
-        Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyCollection())).thenReturn(pageOfJobs);
-        Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert tests")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
-
-        ActionResponse<JobPagedModel> jobPagedModelActionResponse = jobConfigActions.getPage(pageNumber, pageSize, "");
-
-        assertTrue(jobPagedModelActionResponse.isError());
-        assertFalse(jobPagedModelActionResponse.hasContent());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, jobPagedModelActionResponse.getHttpStatus());
     }
 
     @Test
@@ -197,7 +178,7 @@ public class JobConfigActionsTest {
     @Test
     public void getOneErrorTest() throws Exception {
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
-        Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
+        Mockito.doThrow(new AlertException("Exception for Alert")).when(fieldModelProcessor).performAfterReadAction(Mockito.any());
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.getOne(jobId);
 
@@ -545,7 +526,7 @@ public class JobConfigActionsTest {
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
         Mockito.when(jobAccessor.getJobsById(Mockito.any())).thenReturn(List.of(configurationJobModel));
 
-        Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert test")).when(configurationFieldModelConverter).convertToFieldModel(Mockito.any());
+        Mockito.doThrow(new AlertException("Exception for Alert test")).when(fieldModelProcessor).performAfterReadAction(Mockito.any());
 
         ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
 
