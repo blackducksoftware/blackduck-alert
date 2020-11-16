@@ -35,7 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -61,7 +61,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<NotificationFilterModelOptions> {
+public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFunctionAction<NotificationFilterModelOptions> {
     private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomFunctionAction.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
@@ -77,7 +77,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     }
 
     @Override
-    public ActionResponse<NotificationFilterModelOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+    public ActionResponse<NotificationFilterModelOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
         Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
         List<NotificationFilterModel> options = List.of();
@@ -91,7 +91,9 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
                 throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
-        NotificationFilterModelOptions notificationFilterModelOptions = new NotificationFilterModelOptions(options);
+
+        // FIXME get the correct totalPages
+        NotificationFilterModelOptions notificationFilterModelOptions = new NotificationFilterModelOptions(100, pageNumber, pageSize, options);
         return new ActionResponse<>(HttpStatus.OK, notificationFilterModelOptions);
     }
 
