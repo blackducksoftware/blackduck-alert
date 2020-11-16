@@ -45,6 +45,8 @@ public interface ProviderDataAccessor {
 
     List<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId);
 
+    AlertPagedModel<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm);
+
     List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName);
 
     @Deprecated
