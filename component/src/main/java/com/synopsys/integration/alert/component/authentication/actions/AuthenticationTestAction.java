@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,9 @@ public class AuthenticationTestAction extends TestAction {
             } catch (Exception ex) {
                 logger.error("Exception occurred testing LDAP authentication", ex);
                 String exceptionMessage = ex.getMessage();
-                errorMessage = String.format("%s Additional details: %s", errorMessage, exceptionMessage);
+                if (StringUtils.isNotBlank(exceptionMessage)) {
+                    errorMessage = String.format("%s Additional details: %s", errorMessage, exceptionMessage);
+                }
                 errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
             }
         }
