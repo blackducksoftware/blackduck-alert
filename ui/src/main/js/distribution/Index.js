@@ -64,8 +64,9 @@ function defaultColumnDataFormat(cell) {
 }
 
 const jobModificationState = {
-    EDIT: 'EDIT',
-    COPY: 'COPY'
+    NEW: 'New',
+    EDIT: 'Edit',
+    COPY: 'Copy'
 };
 
 class Index extends Component {
@@ -91,7 +92,7 @@ class Index extends Component {
             jobsToDelete: [],
             showDeleteModal: false,
             nextDelete: null,
-            modificationState: jobModificationState.EDIT
+            modificationState: jobModificationState.NEW
         };
         this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
     }
@@ -109,7 +110,7 @@ class Index extends Component {
             showDeleteModal: false,
             nextDelete: null,
             jobsToDelete: [],
-            modificationState: jobModificationState.EDIT
+            modificationState: jobModificationState.NEW
         });
     }
 
@@ -126,7 +127,7 @@ class Index extends Component {
                         this.props.fetchDistributionJobs();
                         this.cancelRowSelect();
                     }}
-                    isUpdatingJob={modificationState === jobModificationState.EDIT}
+                    jobModificationState={modificationState}
                 />
             );
         }
@@ -162,7 +163,7 @@ class Index extends Component {
         this.refs.table.cleanSelected();
         this.setState({
             currentRowSelected: null,
-            modificationState: jobModificationState.EDIT
+            modificationState: jobModificationState.NEW
         });
     }
 
@@ -174,7 +175,7 @@ class Index extends Component {
             showDeleteModal: true,
             nextDelete: next,
             jobsToDelete: matchingJobs,
-            modificationState: jobModificationState.EDIT
+            modificationState: jobModificationState.NEW
         });
     }
 

@@ -61,7 +61,7 @@ class DistributionConfiguration extends Component {
 
     componentDidUpdate(prevProps) {
         const {
-            success, onSave, onModalClose, fetching, inProgress, job, descriptors, validateDescriptorForGlobalConfig, status, isUpdatingJob, jobId, saveDistribution, updateDistribution
+            success, onSave, onModalClose, fetching, inProgress, job, descriptors, validateDescriptorForGlobalConfig, status, saveDistribution, updateDistribution
         } = this.props;
         if (prevProps.saving && success) {
             this.setState({ show: false });
@@ -128,7 +128,7 @@ class DistributionConfiguration extends Component {
 
         if (prevProps.status === 'VALIDATING' && status === 'VALIDATED') {
             const jsonBody = this.buildJsonBody();
-            if (isUpdatingJob) {
+            if (jsonBody.jobId) {
                 updateDistribution(jsonBody);
             } else {
                 saveDistribution(jsonBody);
@@ -151,9 +151,10 @@ class DistributionConfiguration extends Component {
 
     buildJsonBody() {
         const { channelConfig, providerConfig } = this.state;
-        const { jobId } = this.props;
+        const { jobId, jobModificationState } = this.props;
+        const jsonJobId = jobModificationState === 'Copy' ? null : jobId;
         return {
-            jobId,
+            jobId: jsonJobId,
             fieldModels: [
                 channelConfig,
                 providerConfig
@@ -267,14 +268,10 @@ class DistributionConfiguration extends Component {
         const {
             providerConfig, channelConfig, currentProvider, currentChannel, show
         } = this.state;
-        const { job, isUpdatingJob, fieldErrors } = this.props;
+        const { jobModificationState, fieldErrors } = this.props;
         const selectedProvider = (currentProvider) ? currentProvider.name : null;
 
-        let jobAction = 'New';
-        if (job.jobId) {
-            jobAction = isUpdatingJob ? 'Edit' : 'Copy';
-        }
-        const modalTitle = `${jobAction} Distribution Job`;
+        const modalTitle = `${jobModificationState} Distribution Job`;
 
         const commonFields = currentChannel.fields.filter((field) => COMMON_KEYS.includes(field.key));
         const channelFields = currentChannel.fields.filter((field) => field.key !== KEY_PROVIDER_NAME && !COMMON_KEYS.includes(field.key));
@@ -326,6 +323,7 @@ DistributionConfiguration.propTypes = {
     fieldErrors: PropTypes.object,
     configurationMessage: PropTypes.string,
     jobId: PropTypes.string,
+    jobModificationState: PropTypes.string,
     job: PropTypes.object,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
@@ -341,21 +339,20 @@ DistributionConfiguration.propTypes = {
     validateDescriptorForGlobalConfig: PropTypes.func.isRequired,
     validateDistribution: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    isUpdatingJob: PropTypes.bool,
     status: PropTypes.string.isRequired
 };
 
 DistributionConfiguration.defaultProps = {
     projects: [],
     jobId: null,
+    jobModificationState: 'New',
     job: {},
     fetching: false,
     inProgress: false,
     saving: false,
     success: false,
     fieldErrors: {},
-    configurationMessage: '',
-    isUpdatingJob: false
+    configurationMessage: ''
 };
 
 const mapDispatchToProps = (dispatch) => ({
