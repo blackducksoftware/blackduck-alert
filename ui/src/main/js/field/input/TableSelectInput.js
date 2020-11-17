@@ -332,6 +332,7 @@ class TableSelectInput extends Component {
                 columnClassName="tableCell"
                 tdStyle={{ whiteSpace: 'normal' }}
                 dataFormat={assignDataFormat}
+                hidden={column.hidden}
             >
                 {column.headerLabel}
             </TableHeaderColumn>

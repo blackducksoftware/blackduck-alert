@@ -55,7 +55,7 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
     public List<ConfigField> createProviderDistributionFields() {
         ConfigField policyNotificationTypeFilter = new EndpointTableSelectField(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
             DESCRIPTION_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER)
-                                                       .applyColumn(new TableSelectColumn("name", "Name", true, true))
+                                                       .applyColumn(TableSelectColumn.visible("name", "Name", true, true))
                                                        .applyPaged(true)
                                                        .applyRequiredRelatedField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
                                                        .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)

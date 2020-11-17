@@ -25,16 +25,26 @@ package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.t
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModelComponent;
 
 public class TableSelectColumn extends AlertSerializableModelComponent {
-    private String header;
-    private String headerLabel;
-    private boolean isKey;
-    private boolean sortBy;
+    private final String header;
+    private final String headerLabel;
+    private final boolean isKey;
+    private final boolean sortBy;
+    private final boolean hidden;
 
-    public TableSelectColumn(String header, String headerLabel, boolean isKey, boolean sortBy) {
+    public static TableSelectColumn visible(String header, String headerLabel, boolean isKey, boolean sortBy) {
+        return new TableSelectColumn(header, headerLabel, isKey, sortBy, false);
+    }
+
+    public static TableSelectColumn hidden(String header, String headerLabel, boolean isKey, boolean sortBy) {
+        return new TableSelectColumn(header, headerLabel, isKey, sortBy, true);
+    }
+
+    public TableSelectColumn(String header, String headerLabel, boolean isKey, boolean sortBy, boolean hidden) {
         this.header = header;
         this.headerLabel = headerLabel;
         this.isKey = isKey;
         this.sortBy = sortBy;
+        this.hidden = hidden;
     }
 
     public String getHeader() {
@@ -51,6 +61,10 @@ public class TableSelectColumn extends AlertSerializableModelComponent {
 
     public boolean isSortBy() {
         return sortBy;
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 
 }
