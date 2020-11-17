@@ -112,12 +112,8 @@ public class ConfigActions extends AbstractConfigResourceActions {
         List<FieldModel> fieldModelList = new LinkedList<>();
         if (null != configurationModels) {
             for (ConfigurationModel configurationModel : configurationModels) {
-                try {
-                    FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
-                    fieldModelList.add(fieldModel);
-                } catch (AlertDatabaseConstraintException ex) {
-                    logger.error("Error converting to field model", ex);
-                }
+                FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
+                fieldModelList.add(fieldModel);
             }
         }
         if (fieldModelList.isEmpty()) {

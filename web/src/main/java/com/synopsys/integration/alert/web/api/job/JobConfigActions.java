@@ -118,21 +118,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     @Override
     public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, String searchTerm, Collection<String> permittedDescriptorsForSession) {
-        try {
-            AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, pageSize, searchTerm, permittedDescriptorsForSession);
-            List<ConfigurationJobModel> pageOfJobsModels = pageOfJobs.getModels();
-            List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobsModels.size());
-            for (ConfigurationJobModel configJobModel : pageOfJobsModels) {
-                JobFieldModel jobFieldModel = convertToJobFieldModel(configJobModel);
-                jobFieldModels.add(jobFieldModel);
-            }
-
-            JobPagedModel jobPagedModel = new JobPagedModel(pageOfJobs.getTotalPages(), pageOfJobs.getCurrentPage(), pageOfJobs.getPageSize(), jobFieldModels);
-            return new ActionResponse<>(HttpStatus.OK, jobPagedModel);
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("Failed to get a page of jobs", e);
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "There was a problem retrieving the jobs from the database");
+        AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, pageSize, searchTerm, permittedDescriptorsForSession);
+        List<ConfigurationJobModel> pageOfJobsModels = pageOfJobs.getModels();
+        List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobsModels.size());
+        for (ConfigurationJobModel configJobModel : pageOfJobsModels) {
+            JobFieldModel jobFieldModel = convertToJobFieldModel(configJobModel);
+            jobFieldModels.add(jobFieldModel);
         }
+
+        JobPagedModel jobPagedModel = new JobPagedModel(pageOfJobs.getTotalPages(), pageOfJobs.getCurrentPage(), pageOfJobs.getPageSize(), jobFieldModels);
+        return new ActionResponse<>(HttpStatus.OK, jobPagedModel);
     }
 
     @Override
@@ -465,7 +460,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return new MessageResult("Provider Config Valid");
     }
 
-    private JobFieldModel convertToJobFieldModel(ConfigurationJobModel configurationJobModel) throws AlertDatabaseConstraintException {
+    private JobFieldModel convertToJobFieldModel(ConfigurationJobModel configurationJobModel) {
         Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
             constructedFieldModels.add(modelConverter.convertToFieldModel(configurationModel));
