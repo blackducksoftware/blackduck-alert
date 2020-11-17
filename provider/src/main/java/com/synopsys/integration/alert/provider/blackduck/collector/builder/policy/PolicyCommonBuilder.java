@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +60,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.enumeration.VulnerabilityWithRemediationSeverityType;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerabilityWithRemediationView;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
@@ -144,7 +143,7 @@ public class PolicyCommonBuilder {
     }
 
     public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
-        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
+        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckApiClient blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
         Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckService, vulnerableComponentViews);
         List<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                  .map(VulnerableComponentView::getVulnerabilityWithRemediation)

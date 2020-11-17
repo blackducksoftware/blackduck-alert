@@ -51,12 +51,12 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
 import com.synopsys.integration.blackduck.http.PagedRequest;
-import com.synopsys.integration.blackduck.http.RequestFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckResponsesTransformer;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
@@ -117,7 +117,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             Optional<ConfigurationModel> providerConfigOptional = retrieveProviderConfigOrLogErrors(providerConfigId);
             if (providerConfigOptional.isPresent()) {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
-                BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+                BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
                 ProjectView projectView = blackDuckService.getResponse(new HttpUrl(projectHref), ProjectView.class);
                 return getEmailAddressesForProject(projectView, blackDuckServicesFactory.createProjectUsersService());
             }
@@ -203,7 +203,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     private AlertPagedModel<ProviderProject> retrieveProjectsForProvider(ConfigurationModel blackDuckConfigurationModel, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
-        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
 
         Predicate<ProjectView> searchFilter = alwaysTruePredicate -> true;
         if (StringUtils.isNotBlank(searchTerm)) {
@@ -238,14 +238,14 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     private List<ProviderUserModel> getEmailAddressesByProvider(ConfigurationModel blackDuckConfiguration) throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfiguration);
-        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         Set<String> allActiveBlackDuckUserEmailAddresses = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
         return allActiveBlackDuckUserEmailAddresses.stream()
                    .map(emailAddress -> new ProviderUserModel(emailAddress, false))
                    .collect(Collectors.toList());
     }
 
-    private List<ProviderProject> convertBlackDuckProjects(List<ProjectView> projectViews, BlackDuckService blackDuckService) {
+    private List<ProviderProject> convertBlackDuckProjects(List<ProjectView> projectViews, BlackDuckApiClient blackDuckService) {
         List<ProviderProject> providerProjects = new ArrayList<>();
         for (ProjectView projectView : projectViews) {
             ProviderProject providerProject = createProviderProject(projectView, blackDuckService);
@@ -254,7 +254,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         return providerProjects;
     }
 
-    private ProviderProject createProviderProject(ProjectView projectView, BlackDuckService blackDuckService) {
+    private ProviderProject createProviderProject(ProjectView projectView, BlackDuckApiClient blackDuckService) {
         String projectOwnerEmail = null;
         if (StringUtils.isNotBlank(projectView.getProjectOwner())) {
             try {
@@ -284,7 +284,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     }
 
-    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
+    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckApiClient blackDuckService) throws IntegrationException {
         return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
                    .stream()
                    .filter(UserView::getActive)
@@ -300,7 +300,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         int pageSize,
         Predicate<T> searchFilter
     ) throws IntegrationException {
-        RequestFactory requestFactory = blackDuckServicesFactory.getRequestFactory();
+        BlackDuckRequestFactory requestFactory = blackDuckServicesFactory.getRequestFactory();
 
         int offset = pageNumber * pageSize;
         HttpUrl requestUrl = blackDuckServicesFactory.getBlackDuckHttpClient()

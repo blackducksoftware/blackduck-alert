@@ -27,7 +27,7 @@ import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
@@ -47,7 +47,7 @@ public class BlackDuckProjectSyncTaskTest {
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
         Mockito.when(jobAccessor.getAllJobs()).thenReturn(List.of(configurationJobModel));
 
-        BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
+        BlackDuckApiClient blackDuckService = Mockito.mock(BlackDuckApiClient.class);
         ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
 
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);

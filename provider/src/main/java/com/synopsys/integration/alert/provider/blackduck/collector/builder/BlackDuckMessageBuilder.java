@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.exception.IntegrationException;
@@ -53,7 +53,7 @@ public abstract class BlackDuckMessageBuilder<T> {
 
     public abstract List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, T notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory);
 
-    protected String getNullableProjectUrlFromProjectVersion(String projectVersionURL, BlackDuckService blackDuckService, Consumer<String> logMethod) {
+    protected String getNullableProjectUrlFromProjectVersion(String projectVersionURL, BlackDuckApiClient blackDuckService, Consumer<String> logMethod) {
         String projectURL = null;
         try {
             ProjectVersionView projectVersionView = blackDuckService.getResponse(new HttpUrl(projectVersionURL), ProjectVersionView.class);
@@ -65,4 +65,5 @@ public abstract class BlackDuckMessageBuilder<T> {
         }
         return projectURL;
     }
+
 }
