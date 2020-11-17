@@ -34,7 +34,7 @@ import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
@@ -58,7 +58,7 @@ public class AddUserToProjectsRunnable implements Runnable {
             BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
 
-            BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+            BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
             ProjectService projectService = blackDuckServicesFactory.createProjectService();
             ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
 

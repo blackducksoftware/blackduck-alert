@@ -23,7 +23,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionCompo
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectBomService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
@@ -66,7 +66,7 @@ public class BlackDuckProviderService {
 
     public void triggerBlackDuckNotification() throws IntegrationException {
         setupBlackDuckServicesFactory();
-        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
         ProjectVersionWrapper projectVersion = projectService.getProjectVersion(blackDuckProjectName, blackDuckProjectVersion)
                                                    .orElseThrow(() -> new IntegrationException(String.format("Could not find the Black Duck project '%s' version '%s'", blackDuckProjectName, blackDuckProjectVersion)));

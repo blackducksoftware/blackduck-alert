@@ -13,9 +13,9 @@ import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionVie
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
-import com.synopsys.integration.blackduck.http.RequestFactory;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectGetService;
@@ -45,7 +45,7 @@ public class BlackDuckMessageBuilderTestHelper {
 
     public static BlackDuckServicesFactory mockServicesFactory() {
         BlackDuckServicesFactory mockServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
-        BlackDuckService blackDuckService = mockBlackDuckService();
+        BlackDuckApiClient blackDuckService = mockBlackDuckService();
         ProjectService projectService = mockProjectService();
         BlackDuckBucketService bucketService = mockBucketService();
 
@@ -56,8 +56,8 @@ public class BlackDuckMessageBuilderTestHelper {
         return mockServicesFactory;
     }
 
-    public static BlackDuckService mockBlackDuckService() {
-        BlackDuckService mockBlackDuckService = Mockito.mock(BlackDuckService.class);
+    public static BlackDuckApiClient mockBlackDuckService() {
+        BlackDuckApiClient mockBlackDuckService = Mockito.mock(BlackDuckApiClient.class);
         try {
             String projectVersion1Href = "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24";
             ProjectVersionView projectVersionView1 = new ProjectVersionView();
@@ -125,15 +125,15 @@ public class BlackDuckMessageBuilderTestHelper {
         return new BlackDuckBucketService(mockBlackDuckService(), mockRequestFactory(), mockLogger(), new NoThreadExecutorService());
     }
 
-    public static RequestFactory mockRequestFactory() {
-        return new RequestFactory();
+    public static BlackDuckRequestFactory mockRequestFactory() {
+        return new BlackDuckRequestFactory();
     }
 
     public static IntLogger mockLogger() {
         return new PrintStreamIntLogger(System.out, LogLevel.ERROR);
     }
 
-    private static void mockVulnSingleResponse(String uri, BlackDuckService blackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity) {
+    private static void mockVulnSingleResponse(String uri, BlackDuckApiClient blackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity) {
         VulnerabilityView vulnerabilityView = new VulnerabilityView();
         vulnerabilityView.setSeverity(severity);
         vulnerabilityView.setMeta(new ResourceMetadata());
