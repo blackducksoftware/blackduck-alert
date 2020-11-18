@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation platform(project(':alert-platform'))
+    implementation project(':alert-common')
 
     implementation 'org.springframework:spring-test'
     implementation 'org.springframework.security:spring-security-test'
