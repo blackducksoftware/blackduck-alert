@@ -76,7 +76,7 @@ public class ProviderProjectCustomFunctionAction extends PagedCustomFunctionActi
         AlertPagedModel<ProviderProject> providerProjectsPage = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId, pageNumber, pageSize, searchTerm);
         List<ProviderProjectSelectOption> options = providerProjectsPage.getModels()
                                                         .stream()
-                                                        .map(project -> new ProviderProjectSelectOption(project.getName(), project.getDescription()))
+                                                        .map(project -> new ProviderProjectSelectOption(project.getName(), project.getHref(), project.getDescription()))
                                                         .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(providerProjectsPage.getTotalPages(), providerProjectsPage.getCurrentPage(), providerProjectsPage.getPageSize(), options));
     }
