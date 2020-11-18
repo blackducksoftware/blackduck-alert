@@ -59,5 +59,12 @@ task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebModuleContent') {
     from "${project.buildDir}/resources/main/static/index.html"
     into "${project.buildDir}/resources/main/templates/"
 }
+
+task copyChannelTemplatesToMainTemplates(type: Copy, dependsOn: ':ui:copyStaticWebContent') {
+    from "${project(':channel').buildDir}/resources/main/templates/"
+    into "${project.buildDir}/resources/main/templates/"
+}
+
 tasks.copyToTemplates.mustRunAfter(copyStaticWebModuleContent)
+tasks.copyChannelTemplatesToMainTemplates.mustRunAfter(copyToTemplates)
 tasks.compileJava.mustRunAfter(createAboutText)

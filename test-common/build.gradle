@@ -22,8 +22,4 @@ dependencies {
     implementation 'com.github.springtestdbunit:spring-test-dbunit'
     implementation 'org.mockito:mockito-core'
     implementation 'org.skyscreamer:jsonassert'
-
-    //    implementation 'jakarta.persistence:jakarta.persistence-api'
-    //    implementation 'org.javassist:javassist'
-    //    implementation 'javax.mail:javax.mail-api'
 }
