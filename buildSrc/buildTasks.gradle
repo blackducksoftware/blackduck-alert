@@ -60,7 +60,7 @@ task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebModuleContent') {
     into "${project.buildDir}/resources/main/templates/"
 }
 
-task copyChannelTemplatesToMainTemplates(type: Copy, dependsOn: ':ui:copyStaticWebContent') {
+task copyChannelTemplatesToMainTemplates(type: Copy) {
     from "${project(':channel').buildDir}/resources/main/templates/"
     into "${project.buildDir}/resources/main/templates/"
 }
