@@ -14,8 +14,6 @@ package com.synopsys.integration.alert.channel;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +31,6 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.test.common.OutputLogger;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -115,8 +112,8 @@ public abstract class AbstractChannelTest {
         return providerBuilder.build();
     }
 
-    public AuditAccessor createAuditUtility() {
-        return Mockito.mock(DefaultAuditAccessor.class);
+    public AuditAccessor createAuditAccessor() {
+        return Mockito.mock(AuditAccessor.class);
     }
 
     public RestChannelUtility createRestChannelUtility() {
@@ -125,14 +122,6 @@ public abstract class AbstractChannelTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
         return new RestChannelUtility(channelRestConnectionFactory);
-    }
-
-    private SortedSet<LinkableItem> asSet(LinkableItem... items) {
-        SortedSet<LinkableItem> collection = new TreeSet<>();
-        for (LinkableItem item : items) {
-            collection.add(item);
-        }
-        return collection;
     }
 
 }

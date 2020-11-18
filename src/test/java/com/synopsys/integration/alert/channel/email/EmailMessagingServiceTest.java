@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.test.common.TestProperties;
 
 public class EmailMessagingServiceTest {
-
     @Test
     public void sendAuthenticatedMessage() throws MessagingException, AlertException {
         TestProperties testProperties = new TestProperties();
