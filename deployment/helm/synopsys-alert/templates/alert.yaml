@@ -65,11 +65,11 @@ spec:
           timeoutSeconds: 10
         name: blackduck-alert
         ports:
-          {{- if .Values.exposedNodePort }}
+          {{ if .Values.exposedNodePort }}
           - containerPort: {{ .Values.exposedNodePort }}
-          {{- else }}
+          {{ else }}
           - containerPort: {{ .Values.alert.port }}
-          {{- end }}
+          {{ end }}
             protocol: TCP
         resources:
           {{- toYaml .Values.alert.resources | nindent 12 }}
@@ -145,17 +145,17 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    {{- if .Values.exposedNodePort }}
+    {{ if .Values.exposedNodePort }}
     - name: port-{{ .Values.exposedNodePort }}
         port: {{ .Values.exposedNodePort }}
         protocol: TCP
         targetPort: {{ .Values.exposedNodePort }}
-    {{- else }}
+    {{ else }}
     - name: port-{{ .Values.alert.port }}
         port: {{ .Values.alert.port }}
         protocol: TCP
         targetPort: {{ .Values.alert.port }}
-    {{- end }}
+    {{ end }}
   selector:
     app: alert
     component: alert
@@ -203,11 +203,11 @@ metadata:
 spec:
   host: ""
   port:
-    {{- if .Values.exposedNodePort }}
+    {{ if .Values.exposedNodePort }}
     targetPort: port-{{ .Values.exposedNodePort }}
-    {{- else }}
+    {{ else }}
     targetPort: port-{{ .Values.alert.port }}
-    {{- end }}
+    {{ end }}
   tls:
     termination: passthrough
   to:
@@ -230,17 +230,17 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    {{- if .Values.exposedNodePort }}
+    {{ if .Values.exposedNodePort }}
     - name: port-{{ .Values.exposedNodePort }}
         port: {{ .Values.exposedNodePort }}
         protocol: TCP
         targetPort: {{ .Values.exposedNodePort }}
-    {{- else }}
+    {{ else }}
     - name: port-{{ .Values.alert.port }}
         port: {{ .Values.alert.port }}
         protocol: TCP
         targetPort: {{ .Values.alert.port }}
-    {{- end }}
+    {{ end }}
       {{ if and .Values.exposedNodePort (eq .Values.exposedServiceType "NodePort") }}
       nodePort: {{ .Values.exposedNodePort }}
       {{ end }}
