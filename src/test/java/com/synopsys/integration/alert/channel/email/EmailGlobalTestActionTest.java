@@ -45,10 +45,10 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.util.TestAlertProperties;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
 
 public class EmailGlobalTestActionTest {
     private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();

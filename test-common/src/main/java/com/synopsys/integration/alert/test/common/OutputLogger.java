@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.util;
+package com.synopsys.integration.alert.test.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,11 +51,11 @@ public class OutputLogger implements AutoCloseable {
         printLoggerOutput();
     }
 
-    public boolean isLineContainingText(final String text) throws IOException {
+    public boolean isLineContainingText(String text) throws IOException {
         loggerOutput.flush();
-        final String[] consoleLines = loggerOutput.toString().split("\n");
+        String[] consoleLines = loggerOutput.toString().split("\n");
 
-        for (final String line : consoleLines) {
+        for (String line : consoleLines) {
             if (line.contains(text)) {
                 return true;
             }
@@ -70,9 +70,10 @@ public class OutputLogger implements AutoCloseable {
 
     private void printLoggerOutput() throws IOException {
         loggerOutput.flush();
-        final String[] consoleLines = loggerOutput.toString().split("\n");
-        for (final String line : consoleLines) {
+        String[] consoleLines = loggerOutput.toString().split("\n");
+        for (String line : consoleLines) {
             System.out.println(line);
         }
     }
+
 }

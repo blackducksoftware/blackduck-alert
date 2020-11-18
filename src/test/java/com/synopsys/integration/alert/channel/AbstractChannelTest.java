@@ -34,9 +34,9 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
-import com.synopsys.integration.alert.util.OutputLogger;
-import com.synopsys.integration.alert.util.TestAlertProperties;
-import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.test.common.OutputLogger;
+import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public abstract class AbstractChannelTest {
@@ -134,4 +134,5 @@ public abstract class AbstractChannelTest {
         }
         return collection;
     }
+
 }

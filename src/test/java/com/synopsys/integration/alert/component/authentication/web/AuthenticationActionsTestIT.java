@@ -52,10 +52,10 @@ import com.synopsys.integration.alert.component.authentication.security.ldap.Lda
 import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.util.TestTags;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
 public class AuthenticationActionsTestIT extends AlertIntegrationTest {
@@ -246,4 +246,5 @@ public class AuthenticationActionsTestIT extends AlertIntegrationTest {
         assertTrue(response.isError());
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
     }
+
 }

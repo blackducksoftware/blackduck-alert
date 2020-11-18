@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.util;
+package com.synopsys.integration.alert.test.common;
 
 import java.util.Properties;
 
@@ -37,13 +37,13 @@ public class TestProperties {
         loadProperties();
     }
 
-    public TestProperties(final String propertiesLocation) {
+    public TestProperties(String propertiesLocation) {
         resourceLoader = new ResourceLoader();
         this.propertiesLocation = propertiesLocation;
         loadProperties();
     }
 
-    public void setPropertiesLocation(final String newPropertiesLocation) {
+    public void setPropertiesLocation(String newPropertiesLocation) {
         properties = null;
         propertiesLocation = newPropertiesLocation;
         loadProperties();
@@ -59,7 +59,7 @@ public class TestProperties {
             properties = new Properties();
             try {
                 properties = resourceLoader.loadProperties(propertiesLocation);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 System.out.println("Couldn't load " + propertiesLocation + " file!");
                 System.out.println("Reading from the environment...");
             }
@@ -67,37 +67,38 @@ public class TestProperties {
         }
     }
 
-    public String getProperty(final TestPropertyKey propertyKey) {
+    public String getProperty(TestPropertyKey propertyKey) {
         return getProperty(propertyKey.getPropertyKey());
     }
 
-    public String getProperty(final String propertyKey) {
+    public String getProperty(String propertyKey) {
         assumeTrue(propertyKey);
         return getProperties().getProperty(propertyKey);
     }
 
-    public void assumeTrue(final TestPropertyKey propertyKey) {
+    public void assumeTrue(TestPropertyKey propertyKey) {
         assumeTrue(propertyKey.getPropertyKey());
     }
 
-    public void assumeTrue(final String propertyKey) {
+    public void assumeTrue(String propertyKey) {
         Assumptions.assumeTrue(getProperties().containsKey(propertyKey));
     }
 
-    public boolean containsKey(final TestPropertyKey propertyKey) {
+    public boolean containsKey(TestPropertyKey propertyKey) {
         return containsKey(propertyKey.getPropertyKey());
     }
 
-    public boolean containsKey(final String propertyKey) {
+    public boolean containsKey(String propertyKey) {
         return getProperties().containsKey(propertyKey);
     }
 
     private void populatePropertiesFromEnv() {
-        for (final TestPropertyKey key : TestPropertyKey.values()) {
-            final String prop = System.getenv(key.name());
+        for (TestPropertyKey key : TestPropertyKey.values()) {
+            String prop = System.getenv(key.name());
             if (prop != null && !prop.isEmpty()) {
                 properties.put(key.getPropertyKey(), prop);
             }
         }
     }
+
 }

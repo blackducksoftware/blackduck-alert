@@ -8,6 +8,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.test.common.ResourceLoader;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+
 public class TestPropertiesFileGenerator {
     @Test
     @Ignore("This test is to generate the test.properties for new developers.")
@@ -34,4 +37,5 @@ public class TestPropertiesFileGenerator {
             System.out.println("The file '" + propertiesFileName + "' already exists, please rename or back it up.");
         }
     }
+
 }

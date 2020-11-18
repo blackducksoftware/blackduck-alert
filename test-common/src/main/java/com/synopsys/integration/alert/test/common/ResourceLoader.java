@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.util;
+package com.synopsys.integration.alert.test.common;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,20 +37,20 @@ public class ResourceLoader {
     public static final String PROPERTIES_ENV_VARIABLE = "SPRING_APPLICATION_JSON";
 
     @SuppressWarnings("resource")
-    public String loadJsonResource(final String resourceLocation) throws IOException {
-        final File file = new File(RESOURCE_DIR, resourceLocation);
-        final BufferedReader reader = new BufferedReader(new FileReader(file));
-        final String contents = String.join("\n", reader.lines().collect(Collectors.toList()));
+    public String loadJsonResource(String resourceLocation) throws IOException {
+        File file = new File(RESOURCE_DIR, resourceLocation);
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String contents = String.join("\n", reader.lines().collect(Collectors.toList()));
         reader.close();
         return contents;
     }
 
     @SuppressWarnings("resource")
-    public Properties loadProperties(final String resourceLocation) throws IOException {
-        final Properties properties = new Properties();
+    public Properties loadProperties(String resourceLocation) throws IOException {
+        Properties properties = new Properties();
 
-        final File propertiesFile = new File(RESOURCE_DIR, resourceLocation);
-        final InputStream iStream = new FileInputStream(propertiesFile);
+        File propertiesFile = new File(RESOURCE_DIR, resourceLocation);
+        InputStream iStream = new FileInputStream(propertiesFile);
         properties.load(iStream);
         iStream.close();
         return properties;

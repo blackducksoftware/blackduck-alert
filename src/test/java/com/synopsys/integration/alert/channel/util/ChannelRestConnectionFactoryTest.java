@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.util.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
