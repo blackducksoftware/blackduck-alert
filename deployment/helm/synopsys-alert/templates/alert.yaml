@@ -70,7 +70,6 @@ spec:
           {{ else }}
           - containerPort: {{ .Values.alert.port }}
           {{ end }}
-            protocol: TCP
         resources:
           {{- toYaml .Values.alert.resources | nindent 12 }}
         {{- with .Values.alert.securityContext }}
@@ -147,14 +146,14 @@ spec:
   ports:
     {{ if .Values.exposedNodePort }}
     - name: port-{{ .Values.exposedNodePort }}
-        port: {{ .Values.exposedNodePort }}
-        protocol: TCP
-        targetPort: {{ .Values.exposedNodePort }}
+      port: {{ .Values.exposedNodePort }}
+      protocol: TCP
+      targetPort: {{ .Values.exposedNodePort }}
     {{ else }}
     - name: port-{{ .Values.alert.port }}
-        port: {{ .Values.alert.port }}
-        protocol: TCP
-        targetPort: {{ .Values.alert.port }}
+      port: {{ .Values.alert.port }}
+      protocol: TCP
+      targetPort: {{ .Values.alert.port }}
     {{ end }}
   selector:
     app: alert
@@ -232,14 +231,14 @@ spec:
   ports:
     {{ if .Values.exposedNodePort }}
     - name: port-{{ .Values.exposedNodePort }}
-        port: {{ .Values.exposedNodePort }}
-        protocol: TCP
-        targetPort: {{ .Values.exposedNodePort }}
+      port: {{ .Values.exposedNodePort }}
+      protocol: TCP
+      targetPort: {{ .Values.exposedNodePort }}
     {{ else }}
     - name: port-{{ .Values.alert.port }}
-        port: {{ .Values.alert.port }}
-        protocol: TCP
-        targetPort: {{ .Values.alert.port }}
+      port: {{ .Values.alert.port }}
+      protocol: TCP
+      targetPort: {{ .Values.alert.port }}
     {{ end }}
       {{ if and .Values.exposedNodePort (eq .Values.exposedServiceType "NodePort") }}
       nodePort: {{ .Values.exposedNodePort }}
