@@ -81,9 +81,9 @@ public class BlackDuckJobDetailsAccessor {
         List<BlackDuckJobNotificationTypeEntity> savedNotificationTypes = blackDuckJobNotificationTypeRepository.saveAll(notificationTypesToSave);
         savedBlackDuckJobDetails.setBlackDuckJobNotificationTypes(savedNotificationTypes);
 
-        List<BlackDuckJobProjectEntity> ProjectFiltersToSave = distributionJobModel.getProjectFilterProjectNames()
+        List<BlackDuckJobProjectEntity> ProjectFiltersToSave = distributionJobModel.getProjectFilterDetails()
                                                                    .stream()
-                                                                   .map(projectName -> new BlackDuckJobProjectEntity(jobId, projectName))
+                                                                   .map(projectDetails -> new BlackDuckJobProjectEntity(jobId, projectDetails.getName(), projectDetails.getHref(), projectDetails.getProjectOwnerEmail().orElse(null)))
                                                                    .collect(Collectors.toList());
         List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(ProjectFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobProjects(savedProjectFilters);

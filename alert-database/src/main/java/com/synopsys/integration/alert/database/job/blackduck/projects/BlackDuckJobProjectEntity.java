@@ -42,12 +42,20 @@ public class BlackDuckJobProjectEntity {
     @Column(name = "project_name")
     private String projectName;
 
+    @Column(name = "href")
+    private String href;
+
+    @Column(name = "project_owner_email")
+    private String projectOwnerEmail;
+
     public BlackDuckJobProjectEntity() {
     }
 
-    public BlackDuckJobProjectEntity(UUID jobId, String projectName) {
+    public BlackDuckJobProjectEntity(UUID jobId, String projectName, String href, String projectOwnerEmail) {
         this.jobId = jobId;
         this.projectName = projectName;
+        this.href = href;
+        this.projectOwnerEmail = projectOwnerEmail;
     }
 
     public UUID getJobId() {

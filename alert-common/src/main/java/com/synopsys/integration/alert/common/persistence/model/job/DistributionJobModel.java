@@ -49,7 +49,7 @@ public class DistributionJobModel extends AlertSerializableModel {
     private final boolean filterByProject;
     private final String projectNamePattern;
     private final List<String> notificationTypes;
-    private final List<String> projectFilterProjectNames;
+    private final List<BlackDuckProjectDetailsModel> projectFilterDetails;
     private final List<String> policyFilterPolicyNames;
     private final List<String> vulnerabilityFilterSeverityNames;
 
@@ -72,7 +72,7 @@ public class DistributionJobModel extends AlertSerializableModel {
         boolean filterByProject,
         String projectNamePattern,
         List<String> notificationTypes,
-        List<String> projectFilterProjectNames,
+        List<BlackDuckProjectDetailsModel> projectFilterDetails,
         List<String> policyFilterPolicyNames,
         List<String> vulnerabilityFilterSeverityNames,
         DistributionJobDetailsModel distributionJobDetails
@@ -89,7 +89,7 @@ public class DistributionJobModel extends AlertSerializableModel {
         this.filterByProject = filterByProject;
         this.projectNamePattern = projectNamePattern;
         this.notificationTypes = notificationTypes;
-        this.projectFilterProjectNames = projectFilterProjectNames;
+        this.projectFilterDetails = projectFilterDetails;
         this.policyFilterPolicyNames = policyFilterPolicyNames;
         this.vulnerabilityFilterSeverityNames = vulnerabilityFilterSeverityNames;
         this.distributionJobDetails = distributionJobDetails;
@@ -144,8 +144,8 @@ public class DistributionJobModel extends AlertSerializableModel {
         return notificationTypes;
     }
 
-    public List<String> getProjectFilterProjectNames() {
-        return projectFilterProjectNames;
+    public List<BlackDuckProjectDetailsModel> getProjectFilterDetails() {
+        return projectFilterDetails;
     }
 
     public List<String> getPolicyFilterPolicyNames() {

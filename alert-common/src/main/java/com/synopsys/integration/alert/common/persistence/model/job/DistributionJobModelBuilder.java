@@ -46,7 +46,7 @@ public class DistributionJobModelBuilder {
     private boolean filterByProject = false;
     private String projectNamePattern;
     private List<String> notificationTypes;
-    private List<String> projectFilterProjectNames;
+    private List<BlackDuckProjectDetailsModel> projectFilterDetails;
     private List<String> policyFilterPolicyNames;
     private List<String> vulnerabilityFilterSeverityNames;
 
@@ -66,7 +66,7 @@ public class DistributionJobModelBuilder {
             filterByProject,
             projectNamePattern,
             notificationTypes,
-            projectFilterProjectNames,
+            projectFilterDetails,
             policyFilterPolicyNames,
             vulnerabilityFilterSeverityNames,
             distributionJobDetails
@@ -143,8 +143,8 @@ public class DistributionJobModelBuilder {
         return this;
     }
 
-    public DistributionJobModelBuilder projectFilterProjectNames(List<String> projectFilterProjectNames) {
-        this.projectFilterProjectNames = projectFilterProjectNames;
+    public DistributionJobModelBuilder projectFilterDetails(List<BlackDuckProjectDetailsModel> projectFilterDetails) {
+        this.projectFilterDetails = projectFilterDetails;
         return this;
     }
 
