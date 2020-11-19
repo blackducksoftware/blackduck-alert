@@ -70,6 +70,7 @@ spec:
           {{ else }}
           - containerPort: {{ .Values.alert.port }}
           {{ end }}
+            protocol: TCP
         resources:
           {{- toYaml .Values.alert.resources | nindent 12 }}
         {{- with .Values.alert.securityContext }}
