@@ -420,7 +420,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
             FieldModel fieldModel = modelConverter.convertToFieldModel(configurationModel);
             constructedFieldModels.add(fieldModelProcessor.performAfterReadAction(fieldModel));
         }
-        return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
+
+        // FIXME when the input to this method is DistributionJobModel, update this with the configured projects
+        return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels, List.of());
     }
 
     private FieldModel getChannelFieldModelAndPopulateOtherJobModels(JobFieldModel jobFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
@@ -465,7 +467,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
         for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
             constructedFieldModels.add(modelConverter.convertToFieldModel(configurationModel));
         }
-        return new JobFieldModel(configurationJobModel.getJobId().toString(), constructedFieldModels);
+
+        // FIXME when the input to this method is DistributionJobModel, update this with the configured projects
+        return new JobFieldModel(configurationJobModel.getJobId().toString(), constructedFieldModels, List.of());
     }
 
     private Optional<ConfigurationFieldModel> convertFieldToConfigurationField(FieldModel fieldModel, String fieldKey) {

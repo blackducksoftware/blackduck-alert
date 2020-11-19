@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
@@ -246,7 +247,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             bdFieldModel.setId(providerId);
         }
 
-        return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
+        return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel), List.of(new JobProviderProjectFieldModel("project", "href", null)));
     }
 
 }

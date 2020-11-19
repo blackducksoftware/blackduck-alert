@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.common.rest.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ public class JobFieldModelTest {
         FieldModel testFieldModel = Mockito.mock(FieldModel.class);
 
         Set<FieldModel> fieldModels = Set.of(testFieldModel);
-        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels);
+        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels, List.of());
         testJobFieldModel.setJobId(newJobId);
 
         assertEquals(newJobId, testJobFieldModel.getJobId());
@@ -37,10 +38,11 @@ public class JobFieldModelTest {
 
         Set<FieldModel> fieldModels = Set.of(testFieldModel);
         Set<FieldModel> newFieldModels = Set.of(testFieldModel, newTestFieldModel);
-        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels);
+        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels, List.of());
         testJobFieldModel.setFieldModels(newFieldModels);
 
         assertEquals(newFieldModels, testJobFieldModel.getFieldModels());
         assertEquals(2, testJobFieldModel.getFieldModels().size());
     }
+
 }

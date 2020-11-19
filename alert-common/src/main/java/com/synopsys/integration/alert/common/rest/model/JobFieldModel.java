@@ -22,26 +22,29 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
+import java.util.List;
 import java.util.Set;
 
 public class JobFieldModel extends AlertSerializableModel {
     private String jobId;
     private Set<FieldModel> fieldModels;
+    private final List<JobProviderProjectFieldModel> configuredProviderProjects;
 
     public JobFieldModel() {
-        this(null, null);
+        this(null, null, null);
     }
 
-    public JobFieldModel(final String jobId, final Set<FieldModel> fieldModels) {
+    public JobFieldModel(String jobId, Set<FieldModel> fieldModels, List<JobProviderProjectFieldModel> configuredProviderProjects) {
         this.jobId = jobId;
         this.fieldModels = fieldModels;
+        this.configuredProviderProjects = configuredProviderProjects;
     }
 
     public String getJobId() {
         return jobId;
     }
 
-    public void setJobId(final String jobId) {
+    public void setJobId(String jobId) {
         this.jobId = jobId;
     }
 
@@ -49,7 +52,12 @@ public class JobFieldModel extends AlertSerializableModel {
         return fieldModels;
     }
 
-    public void setFieldModels(final Set<FieldModel> fieldModels) {
+    public void setFieldModels(Set<FieldModel> fieldModels) {
         this.fieldModels = fieldModels;
     }
+
+    public List<JobProviderProjectFieldModel> getConfiguredProviderProjects() {
+        return configuredProviderProjects;
+    }
+
 }

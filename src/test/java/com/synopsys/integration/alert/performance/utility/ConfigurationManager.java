@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class ConfigurationManager {
@@ -67,7 +68,7 @@ public class ConfigurationManager {
 
         FieldModel jobConfiguration = new FieldModel(channelKey, ConfigContextEnum.DISTRIBUTION.name(), channelFields);
 
-        JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobConfiguration, jobProviderConfiguration));
+        JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobConfiguration, jobProviderConfiguration), List.of(new JobProviderProjectFieldModel(blackDuckProjectName, "href", null)));
 
         String jobConfigBody = gson.toJson(jobFieldModel);
 
