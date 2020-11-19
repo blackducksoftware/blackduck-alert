@@ -13,13 +13,13 @@ import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckMessageBuilderTestConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckIssueTrackerCallbackUtility;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyClearedMessageBuilder;
@@ -40,14 +40,14 @@ public class PolicyViolationMessageBuilderTest {
     public void insertRuleViolationClearedNotificationTest() throws Exception {
         PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(blackDuckIssueTrackerCallbackUtility);
         PolicyClearedMessageBuilder policyViolationClearedMessageBuilder = new PolicyClearedMessageBuilder(policyCommonBuilder);
-        runSingleTest(policyViolationClearedMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION_CLEARED);
+        runSingleTest(policyViolationClearedMessageBuilder, BlackDuckMessageBuilderTestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Test
     public void insertRuleViolationNotificationTest() throws Exception {
         PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(blackDuckIssueTrackerCallbackUtility);
         PolicyViolationMessageBuilder policyViolationMessageBuilder = new PolicyViolationMessageBuilder(policyCommonBuilder, blackDuckIssueTrackerCallbackUtility);
-        runSingleTest(policyViolationMessageBuilder, TestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
+        runSingleTest(policyViolationMessageBuilder, BlackDuckMessageBuilderTestConstants.POLICY_CLEARED_NOTIFICATION_JSON_PATH, NotificationType.RULE_VIOLATION);
     }
 
     private void runSingleTest(BlackDuckMessageBuilder messageBuilder, String notificationJsonFileName, NotificationType notificationType) throws Exception {

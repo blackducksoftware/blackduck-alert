@@ -11,7 +11,7 @@
  */
 package com.synopsys.integration.alert.channel.slack;
 
-import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
+import static com.synopsys.integration.alert.test.common.FieldModelUtils.addConfigurationFieldToMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,8 +48,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
-import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.request.Request;
@@ -62,7 +62,7 @@ public class SlackChannelTest extends AbstractChannelTest {
         RestChannelUtility restChannelUtility = createRestChannelUtility();
         SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser(new MarkupEncoderUtil());
         SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtility);
-        return new SlackChannel(CHANNEL_KEY, gson, createAuditUtility(), restChannelUtility, slackChannelEventParser);
+        return new SlackChannel(CHANNEL_KEY, gson, createAuditAccessor(), restChannelUtility, slackChannelEventParser);
     }
 
     @Test

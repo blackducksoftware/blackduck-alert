@@ -1,6 +1,6 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.provider.blackduck;
 
-public class TestConstants {
+public class BlackDuckMessageBuilderTestConstants {
     public static final String POLICY_CLEARED_NOTIFICATION_JSON_PATH = "json/policyRuleClearedNotification.json";
     public static final String POLICY_OVERRIDE_NOTIFICATION_JSON_PATH = "json/policyOverrideNotification.json";
     public static final String VULNERABILITY_NOTIFICATION_JSON_PATH = "json/vulnerabilityNotificationComplex.json";

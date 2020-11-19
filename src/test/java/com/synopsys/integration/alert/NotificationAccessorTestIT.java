@@ -55,7 +55,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class NotificationAccessorTestITAlert extends AlertIntegrationTest {
+public class NotificationAccessorTestIT extends AlertIntegrationTest {
     private static final String NOTIFICATION_TYPE = "notificationType";
 
     @Autowired

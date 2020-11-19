@@ -87,6 +87,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':workflow')
     implementation project(':web')
+    testImplementation project(':test-common')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'

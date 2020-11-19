@@ -30,10 +30,10 @@ import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.util.TestTags;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 @SpringBootTest
