@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- Create column to insert data into -->
+
+    <changeSet author="gavink" id="add-project-columns">
+       <addColumn schemaName="alert" tableName="blackduck_job_projects">
+           <column name="href" type="VARCHAR"/>
+       </addColumn>
+       <addColumn schemaName="alert" tableName="blackduck_job_projects">
+           <column name="project_owner_email" type="VARCHAR">
+                   <constraints nullable="true"/>
+           </column>
+       </addColumn>
+   </changeSet>
+
+    <!-- Insert data into columns -->
+
+    <changeSet author="gavink" id="insert_provider_project_data">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.blackduck_job_projects bd_job_projects
+            SET bd_job_projects.href = job_project_details.href, bd_job_projects.project_owner_email = job_project_details.project_owner_email
+            FROM (
+                SELECT bd_project.job_id, prov_projects.href, prov_projects.project_owner_email
+                FROM alert.blackduck_job_details bd_job_details
+                INNER JOIN alert.blackduck_job_projects bd_project ON bd_project.job_id = bd_job_details.job_id
+                INNER JOIN alert.provider_projects prov_projects ON prov_projects.name = bd_project.project_name
+                WHERE bd_job_details.global_config_id = prov_project.provider_config_id
+            ) AS job_project_details
+            WHERE bd_job_projects.job_id = job_project_details.job_id;
+        </sql>
+    </changeSet>
+
+    <!-- TODO migrate primary key to include href rather than project_name -->
+
+</databaseChangeLog>
