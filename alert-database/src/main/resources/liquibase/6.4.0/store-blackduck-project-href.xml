@@ -32,6 +32,6 @@
         </sql>
     </changeSet>
 
-    <!-- TODO migrate primary key to include href rather than project_name -->
+    <!-- FIXME migrate primary key to include href rather than project_name -->
 
 </databaseChangeLog>

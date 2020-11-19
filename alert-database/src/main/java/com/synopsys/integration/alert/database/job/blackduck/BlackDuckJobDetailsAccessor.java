@@ -112,6 +112,7 @@ public class BlackDuckJobDetailsAccessor {
                    .collect(Collectors.toList());
     }
 
+    // FIXME convert return type to List<BlackDuckProjectDetailsModel>
     public List<String> retrieveProjectNamesForJob(UUID jobId) {
         return blackDuckJobProjectRepository.findByJobId(jobId)
                    .stream()
