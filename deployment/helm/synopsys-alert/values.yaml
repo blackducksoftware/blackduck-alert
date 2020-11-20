@@ -78,7 +78,7 @@ exposedNodePort: ""
 
 # environs is a map of *additional* environs to add to the Alert's ConfigMap
 # The follwing environs are already set in the ConfigMap
-# at /templates/alert-environ-resources.yaml (go there to set them):
+# at /templates/alert-environ-configmap.yaml (go there to set them):
 #   HUB_WEBAPP_HOST
 #   HUB_CFSSL_HOST
 #   ALERT_SERVER_PORT

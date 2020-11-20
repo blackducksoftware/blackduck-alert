@@ -15,15 +15,15 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.bdio.model.Forge;
 import com.synopsys.integration.bdio.model.externalid.ExternalId;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectBomService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
@@ -66,7 +66,7 @@ public class BlackDuckProviderService {
 
     public void triggerBlackDuckNotification() throws IntegrationException {
         setupBlackDuckServicesFactory();
-        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
         ProjectVersionWrapper projectVersion = projectService.getProjectVersion(blackDuckProjectName, blackDuckProjectVersion)
                                                    .orElseThrow(() -> new IntegrationException(String.format("Could not find the Black Duck project '%s' version '%s'", blackDuckProjectName, blackDuckProjectVersion)));

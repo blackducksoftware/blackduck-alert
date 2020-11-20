@@ -67,7 +67,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     public List<ConfigField> createChannelDistributionFields() {
         ConfigField subjectLine = new TextInputConfigField(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, DESCRIPTION_EMAIL_SUBJECT_LINE);
         ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
-                                                   .applyColumn(new TableSelectColumn("emailAddress", "Email Address", true, true))
+                                                   .applyColumn(TableSelectColumn.visible("emailAddress", "Email Address", true, true))
                                                    .applySearchable(true)
                                                    .applyPaged(true)
                                                    .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)

@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RestController;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -54,7 +55,7 @@ public class SwaggerConfiguration {
         return new Docket(DocumentationType.SWAGGER_2)
                    .select()
                    // TODO eventually only expose the "public" api package(s)
-                   .apis(RequestHandlerSelectors.basePackage("com.synopsys.integration.alert.web.api"))
+                   .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                    .build()
                    .produces(Set.of("application/json"))
                    .consumes(Set.of("application/json"))

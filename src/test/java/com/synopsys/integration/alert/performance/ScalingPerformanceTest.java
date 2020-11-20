@@ -30,9 +30,9 @@ import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
 import com.synopsys.integration.alert.performance.utility.ExternalAlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.IntegrationPerformanceTestRunner;
 import com.synopsys.integration.alert.performance.utility.NotificationWaitJobTask;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;
@@ -104,7 +104,7 @@ public class ScalingPerformanceTest {
         int numberOfJobsToCreate,
         String blackDuckProviderID) throws Exception {
         // create slack jobs
-        createSlackJobs(configurationManager, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey());
+        createSlackJobs(configurationManager, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey(), blackDuckProviderService.getBlackDuckProjectName());
 
         LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
         // trigger BD notification
@@ -123,7 +123,8 @@ public class ScalingPerformanceTest {
         assertTrue(isComplete);
     }
 
-    private void createSlackJobs(ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey)
+    private void createSlackJobs(ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey,
+        String blackDuckProjectName)
         throws Exception {
         int startingJobNum = jobIds.size();
 
@@ -143,7 +144,7 @@ public class ScalingPerformanceTest {
             slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(SLACK_CHANNEL_WEBHOOK), true));
             slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
             slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
-            String jobId = configurationManager.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProviderKey);
+            String jobId = configurationManager.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProjectName);
             jobIds.add(jobId);
 
             if (jobIds.size() % intervalToLog == 0) {

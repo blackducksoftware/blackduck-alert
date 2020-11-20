@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.exception.IntegrationException;

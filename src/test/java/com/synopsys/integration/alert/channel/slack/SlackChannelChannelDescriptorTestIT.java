@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {

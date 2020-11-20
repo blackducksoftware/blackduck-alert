@@ -59,7 +59,7 @@ import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificati
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
@@ -85,7 +85,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
         BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
-        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
         BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
         BomEditNotificationContent bomEditContent = notificationView.getContent();
         Optional<ProjectVersionComponentView> optionalBomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
@@ -158,7 +158,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         return items;
     }
 
-    private Collection<ComponentItem> createPolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckService blackDuckService, Long notificationId, ProjectVersionWrapper projectVersionWrapper,
+    private Collection<ComponentItem> createPolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckApiClient blackDuckService, Long notificationId, ProjectVersionWrapper projectVersionWrapper,
         ProjectVersionComponentView versionBomComponent, List<LinkableItem> commonAttributes) {
         if (!PolicyStatusType.IN_VIOLATION.equals(versionBomComponent.getPolicyStatus())) {
             // TODO Consider removing this for the sake of issue-trackers.

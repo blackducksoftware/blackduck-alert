@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.TestConstants;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -25,6 +24,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckMessageBuilderTestConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckIssueTrackerCallbackUtility;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
@@ -41,7 +41,7 @@ public class PolicyOverrideMessageBuilderTest {
     public void insertPolicyOverrideNotificationTest() throws Exception {
         PolicyCommonBuilder policyCommonBuilder = new PolicyCommonBuilder(blackDuckIssueTrackerCallbackUtility);
         PolicyOverrideMessageBuilder policyOverrideMessageBuilder = new PolicyOverrideMessageBuilder(policyCommonBuilder);
-        runSingleTest(policyOverrideMessageBuilder, TestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
+        runSingleTest(policyOverrideMessageBuilder, BlackDuckMessageBuilderTestConstants.POLICY_OVERRIDE_NOTIFICATION_JSON_PATH);
     }
 
     private void runSingleTest(PolicyOverrideMessageBuilder policyOverrideMessageBuilder, String notificationJsonFileName) throws Exception {
