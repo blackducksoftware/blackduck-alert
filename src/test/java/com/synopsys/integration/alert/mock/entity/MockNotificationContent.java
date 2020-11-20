@@ -32,7 +32,7 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
 
     @Override
     public NotificationEntity createEntity() {
-        NotificationEntity notificationContent = new NotificationEntity(createdAt, provider, providerConfigId, providerCreationTime, notificationType, content);
+        NotificationEntity notificationContent = new NotificationEntity(createdAt, provider, providerConfigId, providerCreationTime, notificationType, content, false);
         notificationContent.setId(id);
         return notificationContent;
     }

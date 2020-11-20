@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,7 @@ public class ScalingPerformanceTest {
 
     @Test
     @Ignore
-    @Disabled
+    //@Disabled
     public void testAlertPerformance() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
@@ -90,11 +89,13 @@ public class ScalingPerformanceTest {
         List<String> jobIds = new ArrayList<>();
         startingTime = LocalDateTime.now();
         // create 10 slack jobs, trigger notification, and wait for all 10 to succeed
-        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 10, blackDuckProviderID);
+        //TODO change numberOfJobsToCreate to 10
+        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 50, blackDuckProviderID);
 
-        startingTime = LocalDateTime.now();
+        //TODO undo comments
+        //startingTime = LocalDateTime.now();
         // create 90 more slack jobs, trigger notification, and wait for all 100 to succeed
-        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 90, blackDuckProviderID);
+        //createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 90, blackDuckProviderID);
 
         // TODO create 900 more slack jobs for a total of 1000
         // TODO create 1000 more slack jobs for a total of 2000
@@ -104,7 +105,7 @@ public class ScalingPerformanceTest {
         int numberOfJobsToCreate,
         String blackDuckProviderID) throws Exception {
         // create slack jobs
-        createSlackJobs(configurationManager, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey());
+        createSlackJobs(configurationManager, startingTime, jobIds, numberOfJobsToCreate, 10, blackDuckProviderID, blackDuckProviderService.getBlackDuckProviderKey(), blackDuckProviderService.getBlackDuckProjectName());
 
         LocalDateTime startingNotificationSearchDateTime = LocalDateTime.now();
         // trigger BD notification
@@ -123,7 +124,8 @@ public class ScalingPerformanceTest {
         assertTrue(isComplete);
     }
 
-    private void createSlackJobs(ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey)
+    private void createSlackJobs(ConfigurationManager configurationManager, LocalDateTime startingTime, List<String> jobIds, int numberOfJobsToCreate, int intervalToLog, String blackDuckProviderID, String blackDuckProviderKey,
+        String blackDuckProjectName)
         throws Exception {
         int startingJobNum = jobIds.size();
 
@@ -143,7 +145,7 @@ public class ScalingPerformanceTest {
             slackKeyToValues.put(SlackDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(SLACK_CHANNEL_WEBHOOK), true));
             slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_NAME), true));
             slackKeyToValues.put(SlackDescriptor.KEY_CHANNEL_USERNAME, new FieldValueModel(List.of(SLACK_CHANNEL_USERNAME), true));
-            String jobId = configurationManager.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProviderKey);
+            String jobId = configurationManager.createJob(slackKeyToValues, jobName, blackDuckProviderID, blackDuckProjectName);
             jobIds.add(jobId);
 
             if (jobIds.size() % intervalToLog == 0) {

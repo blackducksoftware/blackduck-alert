@@ -26,17 +26,18 @@ import java.time.OffsetDateTime;
 
 public class AlertNotificationModel extends AlertSerializableModel {
     private Long id;
-    private Long providerConfigId;
+    private final Long providerConfigId;
 
-    private String provider;
-    private String providerConfigName;
-    private String notificationType;
-    private String content;
+    private final String provider;
+    private final String providerConfigName;
+    private final String notificationType;
+    private final String content;
+    private final boolean processed;
 
-    private OffsetDateTime createdAt;
-    private OffsetDateTime providerCreationTime;
+    private final OffsetDateTime createdAt;
+    private final OffsetDateTime providerCreationTime;
 
-    public AlertNotificationModel(Long id, Long providerConfigId, String provider, String providerConfigName, String notificationType, String content, OffsetDateTime createdAt, OffsetDateTime providerCreationTime) {
+    public AlertNotificationModel(Long id, Long providerConfigId, String provider, String providerConfigName, String notificationType, String content, OffsetDateTime createdAt, OffsetDateTime providerCreationTime, boolean processed) {
         this.id = id;
         this.providerConfigId = providerConfigId;
         this.provider = provider;
@@ -45,6 +46,7 @@ public class AlertNotificationModel extends AlertSerializableModel {
         this.content = content;
         this.createdAt = createdAt;
         this.providerCreationTime = providerCreationTime;
+        this.processed = processed;
     }
 
     public Long getId() {
@@ -81,6 +83,10 @@ public class AlertNotificationModel extends AlertSerializableModel {
 
     public OffsetDateTime getProviderCreationTime() {
         return providerCreationTime;
+    }
+
+    public boolean getProcessed() {
+        return processed;
     }
 
 }

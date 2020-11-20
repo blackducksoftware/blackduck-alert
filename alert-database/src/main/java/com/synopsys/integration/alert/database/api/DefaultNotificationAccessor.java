@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -89,14 +88,23 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                                                        .stream()
                                                        .map(this::toModel)
                                                        .collect(Collectors.toList());
+        /* TODO, Do not commit these comments to master
+        //DELETE ME!
         notificationContentRepository.flush();
         // TODO move this sendEvent call out of this class.  We can then remove the flush call since the save will be in a transaction.
+        //This is what james was talking about
         if (!savedModels.isEmpty()) {
             List<Long> notificationIds = savedModels.stream()
                                              .map(AlertNotificationModel::getId)
                                              .collect(Collectors.toList());
+            //TODO remove later; Log the notificationIds
+            for (Long id : notificationIds) {
+                logger.info("====== NOTIFICATION ID: " + id.toString());
+            }
+
             eventManager.sendEvent(new NotificationEvent(notificationIds));
-        }
+
+        } */
         return savedModels;
     }
 
@@ -186,6 +194,13 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return PageRequest.of(pageNumber, pageSize, Sort.by(sortingOrder));
     }
 
+    //TODO this needs unit tests
+    @Override
+    public Page<AlertNotificationModel> findNotificationsNotProcessed(PageRequest pageRequest) {
+        return notificationContentRepository.findAllNotProcessedNotifications(pageRequest)
+                   .map(this::toModel);
+    }
+
     private void deleteAuditEntries(Long notificationId) {
         List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
         List<Long> auditIdList = foundRelations
@@ -204,7 +219,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     private NotificationEntity fromModel(AlertNotificationModel model) {
-        return new NotificationEntity(model.getId(), model.getCreatedAt(), model.getProvider(), model.getProviderConfigId(), model.getProviderCreationTime(), model.getNotificationType(), model.getContent());
+        return new NotificationEntity(model.getId(), model.getCreatedAt(), model.getProvider(), model.getProviderConfigId(), model.getProviderCreationTime(), model.getNotificationType(), model.getContent(), model.getProcessed());
     }
 
     private AlertNotificationModel toModel(NotificationEntity entity) {
@@ -221,7 +236,8 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                 logger.debug(e.getMessage(), e);
             }
         }
-        return new AlertNotificationModel(entity.getId(), providerConfigId, entity.getProvider(), providerConfigName, entity.getNotificationType(), entity.getContent(), entity.getCreatedAt(), entity.getProviderCreationTime());
+        return new AlertNotificationModel(entity.getId(), providerConfigId, entity.getProvider(), providerConfigName, entity.getNotificationType(), entity.getContent(), entity.getCreatedAt(), entity.getProviderCreationTime(),
+            entity.getProcessed());
     }
 
 }

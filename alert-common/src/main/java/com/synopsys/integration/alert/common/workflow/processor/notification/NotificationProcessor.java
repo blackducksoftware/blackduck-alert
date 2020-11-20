@@ -76,7 +76,6 @@ public class NotificationProcessor {
     }
 
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
-        logger.info("Notifications to Process: {}", notifications.size());
         return processNotifications(notifications, (id, notificationType) -> jobAccessor.getMatchingEnabledJobs(frequency, id, notificationType));
     }
 

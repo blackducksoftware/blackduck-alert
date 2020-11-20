@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -64,14 +65,16 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final NotificationAccessor notificationAccessor;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private final BlackDuckValidator blackDuckValidator;
+    private final EventManager eventManager;
 
     public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
-        ProviderProperties providerProperties, BlackDuckValidator blackDuckValidator) {
+        ProviderProperties providerProperties, BlackDuckValidator blackDuckValidator, EventManager eventManager) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationAccessor = notificationAccessor;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
         this.blackDuckValidator = blackDuckValidator;
+        this.eventManager = eventManager;
     }
 
     public String formatDate(OffsetDateTime date) {
@@ -180,8 +183,10 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     protected void write(List<AlertNotificationModel> contentList) {
-        logger.info("Writing {} Notifications...", contentList.size());
+        logger.info("====== WRITING ====== Writing {} Notifications...", contentList.size());
         notificationAccessor.saveAllNotifications(contentList);
+        //TODO put the eventManager in here:
+        //eventManager.sendEvent(new NotificationEvent());
     }
 
     private List<NotificationView> sort(List<NotificationView> notifications) {
@@ -197,7 +202,8 @@ public class BlackDuckAccumulator extends ProviderTask {
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
-        return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, null, notificationType, jsonContent, createdAt, providerCreationTime);
+        //TODO need to verify here
+        return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, null, notificationType, jsonContent, createdAt, providerCreationTime, false);
     }
 
     // Expects that the notifications are sorted oldest to newest

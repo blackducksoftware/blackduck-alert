@@ -106,7 +106,8 @@ public class RestChannelUtility {
                 throw new AlertException(String.format("Could not send message: %s. Status code: %s", response.getStatusMessage(), response.getStatusCode()));
             }
         } catch (Exception e) {
-            logger.error("Error sending request", e);
+            //TODO removing this logger for debugging DO NOT COMMIT THIS TO MASTER
+            //logger.error("Error sending request", e);
             throw new AlertException(e.getMessage(), e);
         }
     }

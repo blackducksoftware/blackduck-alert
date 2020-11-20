@@ -45,16 +45,16 @@ public class DefaultNotificationAccessorTest {
     private final String KEY_PROVIDER_CONFIG_NAME = ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME;
     private final String fieldValue = "test-channel.common.name-value";
 
-    private AlertNotificationModel expectedAlertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, fieldValue, notificationType, content, DateUtils.createCurrentDateTimestamp(),
-        DateUtils.createCurrentDateTimestamp());
+    private final AlertNotificationModel expectedAlertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, fieldValue, notificationType, content, DateUtils.createCurrentDateTimestamp(),
+        DateUtils.createCurrentDateTimestamp(), false);
 
     @Test
     public void saveAllNotificationsTest() throws Exception {
         OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime providerCreationTime = createdAt.minusSeconds(10);
 
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, createdAt, providerCreationTime);
-        NotificationEntity notificationEntity = new NotificationEntity(id, createdAt, provider, providerConfigId, providerCreationTime, notificationType, content);
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, createdAt, providerCreationTime, false);
+        NotificationEntity notificationEntity = new NotificationEntity(id, createdAt, provider, providerConfigId, providerCreationTime, notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
@@ -88,7 +88,7 @@ public class DefaultNotificationAccessorTest {
     public void finalAllTest() throws Exception {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         Page<NotificationEntity> allSentNotifications = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -110,7 +110,7 @@ public class DefaultNotificationAccessorTest {
     public void finalAllShowNotificationsFalseTest() throws Exception {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         Page<NotificationEntity> allSentNotifications = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -133,7 +133,7 @@ public class DefaultNotificationAccessorTest {
         final String searchTerm = "searchTerm-test";
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         Page<NotificationEntity> notificationEntityPage = new PageImpl<>(List.of(notificationEntity));
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -159,7 +159,7 @@ public class DefaultNotificationAccessorTest {
 
     @Test
     public void findByIdsTest() throws Exception {
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
@@ -178,7 +178,7 @@ public class DefaultNotificationAccessorTest {
 
     @Test
     public void findByIdTest() throws Exception {
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
@@ -196,7 +196,7 @@ public class DefaultNotificationAccessorTest {
 
     @Test
     public void findByCreatedAtBetweenTest() throws Exception {
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
@@ -215,7 +215,7 @@ public class DefaultNotificationAccessorTest {
 
     @Test
     public void findByCreatedAtBeforeTest() throws Exception {
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
@@ -234,7 +234,7 @@ public class DefaultNotificationAccessorTest {
 
     @Test
     public void findByCreatedAtBeforeDayOffsetTest() throws Exception {
-        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
         ConfigurationModel configurationModel = createConfigurationModel();
 
         NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
@@ -254,7 +254,7 @@ public class DefaultNotificationAccessorTest {
     @Test
     public void deleteNotificationListTest() {
         AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp());
+            DateUtils.createCurrentDateTimestamp(), false);
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(1L, 2L);
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), "test-status", "test-errorMessage", "test-errorStackTrace");
 

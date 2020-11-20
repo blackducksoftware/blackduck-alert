@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 
 public interface NotificationAccessor {
@@ -41,6 +44,8 @@ public interface NotificationAccessor {
     List<AlertNotificationModel> findByCreatedAtBefore(OffsetDateTime date);
 
     List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset);
+
+    Page<AlertNotificationModel> findNotificationsNotProcessed(PageRequest pageRequest);
 
     void deleteNotificationList(List<AlertNotificationModel> notifications);
 
