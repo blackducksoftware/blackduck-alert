@@ -58,11 +58,11 @@ import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionVie
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionVulnerableBomComponentsView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -163,7 +163,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
                 ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
                 Optional<ComponentItemCallbackInfo> callbackInfo = blackDuckIssueTrackerCallbackUtility.createCallbackInfo(getNotificationType(), bomComponent);
 
-                List<VulnerableComponentView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, bomComponent);
+                List<ProjectVersionVulnerableBomComponentsView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, bomComponent);
                 List<ComponentItem> vulnerabilityComponentItems =
                     policyCommonBuilder.createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, callbackInfo.orElse(null), notificationId, blackDuckService, blackDuckResponseCache);
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
