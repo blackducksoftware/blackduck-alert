@@ -6,7 +6,12 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import FieldsPanel from 'field/FieldsPanel';
 import {
-    checkDescriptorForGlobalConfig, getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob, validateDistributionJob
+    checkDescriptorForGlobalConfig,
+    getDistributionJob,
+    saveDistributionJob,
+    testDistributionJob,
+    updateDistributionJob,
+    validateDistributionJob
 } from 'store/actions/distributionConfigs';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -45,6 +50,7 @@ class DistributionConfiguration extends Component {
             showSendMessage: false,
             channelConfig: channelFieldModel,
             providerConfig: {},
+            configuredProviderProjects: [],
             currentChannel: defaultDescriptor,
             currentProvider: {}
         };
@@ -84,6 +90,7 @@ class DistributionConfiguration extends Component {
                         fieldErrors: {},
                         channelConfig: channelModel,
                         providerConfig: providerModel,
+                        configuredProviderProjects: job.configuredProviderProjects,
                         currentChannel: newChannel,
                         currentProvider: newProvider
                     });
@@ -150,7 +157,7 @@ class DistributionConfiguration extends Component {
     }
 
     buildJsonBody() {
-        const { channelConfig, providerConfig } = this.state;
+        const { channelConfig, providerConfig, configuredProviderProjects } = this.state;
         const { jobId, jobModificationState } = this.props;
         const jsonJobId = jobModificationState === 'Copy' ? null : jobId;
         return {
@@ -158,7 +165,8 @@ class DistributionConfiguration extends Component {
             fieldModels: [
                 channelConfig,
                 providerConfig
-            ]
+            ],
+            configuredProviderProjects
         };
     }
 
