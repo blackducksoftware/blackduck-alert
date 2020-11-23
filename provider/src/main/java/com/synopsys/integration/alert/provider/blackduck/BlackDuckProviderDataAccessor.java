@@ -49,6 +49,7 @@ import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathRespons
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
@@ -65,6 +66,7 @@ import com.synopsys.integration.function.ThrowingSupplier;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
+import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
@@ -203,17 +205,17 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     private AlertPagedModel<ProviderProject> retrieveProjectsForProvider(ConfigurationModel blackDuckConfigurationModel, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
-        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
 
-        Predicate<ProjectView> searchFilter = alwaysTruePredicate -> true;
-        if (StringUtils.isNotBlank(searchTerm)) {
-            searchFilter = projectView -> StringUtils.containsIgnoreCase(projectView.getName(), searchTerm);
-        }
+        HttpUrl projectsUrl = blackDuckApiClient.getUrl(ApiDiscovery.PROJECTS_LINK);
+        BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder(new Request.Builder())
+                                                     .url(projectsUrl)
+                                                     .addQueryParameter("q", "name:" + searchTerm);
+        BlackDuckPageDefinition blackDuckPageDefinition = new BlackDuckPageDefinition(pageSize, pageNumber * pageSize);
+        BlackDuckPageResponse<ProjectView> pageOfProjects = blackDuckApiClient.getPageResponse(requestBuilder, ProjectView.class, blackDuckPageDefinition);
 
-        BlackDuckPageResponse<ProjectView> pageOfViews = retrieveBlackDuckPageResponse(blackDuckServicesFactory, ApiDiscovery.PROJECTS_LINK_RESPONSE, pageNumber, pageSize, searchFilter);
-
-        List<ProviderProject> foundProjects = convertBlackDuckProjects(pageOfViews.getItems(), blackDuckService);
-        int totalPageCount = (pageOfViews.getTotalCount() + (pageSize - 1)) / pageSize;
+        List<ProviderProject> foundProjects = convertBlackDuckProjects(pageOfProjects.getItems(), blackDuckApiClient);
+        int totalPageCount = computeTotalCount(pageOfProjects, pageSize);
         return new AlertPagedModel<>(totalPageCount, pageNumber, pageSize, foundProjects);
     }
 
@@ -225,14 +227,14 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             searchFilter = searchFilter.and(userView -> StringUtils.containsIgnoreCase(userView.getEmail(), searchTerm));
         }
 
-        BlackDuckPageResponse<UserView> pageOfViews = retrieveBlackDuckPageResponse(blackDuckServicesFactory, ApiDiscovery.USERS_LINK_RESPONSE, pageNumber, pageSize, searchFilter);
+        BlackDuckPageResponse<UserView> pageOfUsers = retrieveBlackDuckPageResponse(blackDuckServicesFactory, ApiDiscovery.USERS_LINK_RESPONSE, pageNumber, pageSize, searchFilter);
 
-        List<ProviderUserModel> foundProjects = pageOfViews.getItems()
+        List<ProviderUserModel> foundProjects = pageOfUsers.getItems()
                                                     .stream()
                                                     .map(UserView::getEmail)
                                                     .map(email -> new ProviderUserModel(email, false))
                                                     .collect(Collectors.toList());
-        int totalPageCount = (pageOfViews.getTotalCount() + (pageSize - 1)) / pageSize;
+        int totalPageCount = computeTotalCount(pageOfUsers, pageSize);
         return new AlertPagedModel<>(totalPageCount, pageNumber, pageSize, foundProjects);
     }
 
@@ -293,6 +295,10 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                    .collect(Collectors.toSet());
     }
 
+    private int computeTotalCount(BlackDuckPageResponse<?> blackDuckPageResponse, int pageSize) {
+        return (blackDuckPageResponse.getTotalCount() + (pageSize - 1)) / pageSize;
+    }
+
     private <T extends BlackDuckResponse> BlackDuckPageResponse<T> retrieveBlackDuckPageResponse(
         BlackDuckServicesFactory blackDuckServicesFactory,
         BlackDuckPathResponse<T> blackDuckPathResponse,
@@ -300,12 +306,11 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         int pageSize,
         Predicate<T> searchFilter
     ) throws IntegrationException {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
         BlackDuckRequestFactory requestFactory = blackDuckServicesFactory.getRequestFactory();
 
         int offset = pageNumber * pageSize;
-        HttpUrl requestUrl = blackDuckServicesFactory.getBlackDuckHttpClient()
-                                 .getBaseUrl()
-                                 .appendRelativeUrl(blackDuckPathResponse.getBlackDuckPath().getPath());
+        HttpUrl requestUrl = blackDuckApiClient.getUrl(blackDuckPathResponse.getBlackDuckPath());
         BlackDuckRequestBuilder blackDuckRequestBuilder = requestFactory.createCommonGetRequestBuilder().url(requestUrl);
 
         PagedRequest pagedRequest = new PagedRequest(blackDuckRequestBuilder, offset, pageSize);
