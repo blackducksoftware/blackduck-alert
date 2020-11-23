@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.common.email.MimeMultipartBuilder;
-import com.synopsys.integration.alert.util.ResourceLoader;
+import com.synopsys.integration.alert.test.common.ResourceLoader;
 
 public class MimeMultipartBuilderTest {
     @Test

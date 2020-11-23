@@ -1,5 +1,5 @@
 /**
- * provider
+ * test-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,19 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.web;
+package com.synopsys.integration.alert.test.common;
 
-import java.util.List;
-
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-
-public class NotificationFilterModelOptions extends AlertPagedModel<NotificationFilterModel> {
-    public NotificationFilterModelOptions(int totalPages, int currentPage, int pageSize, List<NotificationFilterModel> options) {
-        super(totalPages, currentPage, pageSize, options);
-    }
-
-    public List<NotificationFilterModel> getOptions() {
-        return getModels();
-    }
+public class TestTags {
+    // Provided by the common-gradle-plugin
+    public static final String DEFAULT_INTEGRATION = "integration";
+    public static final String DEFAULT_PERFORMANCE = "performance";
+    // Defined by Alert's build.gradle
+    public static final String CUSTOM_BLACKDUCK_CONNECTION = "BlackDuckConnection";
+    public static final String CUSTOM_DATABASE_CONNECTION = "DatabaseConnection";
+    public static final String CUSTOM_EXTERNAL_CONNECTION = "ExternalConnection";
 
 }

@@ -48,16 +48,16 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
-import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyStatusType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionVulnerableBomComponentsView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.RiskProfileView;
 import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -160,7 +160,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
 
     private Collection<ComponentItem> createPolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckApiClient blackDuckService, Long notificationId, ProjectVersionWrapper projectVersionWrapper,
         ProjectVersionComponentView versionBomComponent, List<LinkableItem> commonAttributes) {
-        if (!PolicyStatusType.IN_VIOLATION.equals(versionBomComponent.getPolicyStatus())) {
+        if (!ProjectVersionComponentPolicyStatusType.IN_VIOLATION.equals(versionBomComponent.getPolicyStatus())) {
             // TODO Consider removing this for the sake of issue-trackers.
             //  If a Distribution Job isn't configured for BOM_EDIT, it won't get this anyway.
             return List.of();
@@ -173,7 +173,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
             ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
             List<ComponentPolicyRulesView> policyRules = blackDuckService.getAllResponses(versionBomComponent, ProjectVersionComponentView.POLICY_RULES_LINK_RESPONSE);
             for (ComponentPolicyRulesView rule : policyRules) {
-                if (!PolicyStatusType.IN_VIOLATION.equals(rule.getPolicyApprovalStatus())) {
+                if (!ProjectVersionComponentPolicyStatusType.IN_VIOLATION.equals(rule.getPolicyApprovalStatus())) {
                     // TODO Consider creating a variable for ItemOperation that defaults to UPDATE,
                     //  but set it to INFO if the component is not in violation.
                     continue;
@@ -185,7 +185,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
 
                 List<PolicyRuleExpressionExpressionsView> expressions = rule.getExpression().getExpressions();
                 if (policyCommonBuilder.hasVulnerabilityRule(expressions)) {
-                    List<VulnerableComponentView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, versionBomComponent);
+                    List<ProjectVersionVulnerableBomComponentsView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckService, projectVersionWrapper, versionBomComponent);
                     List<ComponentItem> vulnerabilityComponentItems = policyCommonBuilder.createVulnerabilityPolicyComponentItems(
                         vulnerableComponentViews, policyNameItem, policySeverityItem, componentData, optionalCallbackInfo.orElse(null), notificationId, blackDuckService, blackDuckResponseCache);
                     items.addAll(vulnerabilityComponentItems);

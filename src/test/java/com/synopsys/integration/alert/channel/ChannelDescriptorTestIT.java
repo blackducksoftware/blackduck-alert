@@ -43,8 +43,8 @@ import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional

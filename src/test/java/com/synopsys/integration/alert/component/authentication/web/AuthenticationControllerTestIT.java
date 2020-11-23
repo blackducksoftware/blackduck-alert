@@ -35,9 +35,9 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
 
 public class AuthenticationControllerTestIT extends AlertIntegrationTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -129,4 +129,5 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
 }

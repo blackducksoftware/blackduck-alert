@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.channel.email;
 
-import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
-import static com.synopsys.integration.alert.util.FieldModelUtil.addFieldValueToMap;
+import static com.synopsys.integration.alert.test.common.FieldModelUtils.addConfigurationFieldToMap;
+import static com.synopsys.integration.alert.test.common.FieldModelUtils.addFieldValueToMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.channel.email.template.EmailAttachmentForm
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -43,12 +44,11 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.util.TestAlertProperties;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
 
 public class EmailGlobalTestActionTest {
     private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
@@ -184,7 +184,7 @@ public class EmailGlobalTestActionTest {
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testConfigITTest() throws Exception {
         TestProperties properties = new TestProperties();
-        DefaultAuditAccessor auditUtility = Mockito.mock(DefaultAuditAccessor.class);
+        AuditAccessor auditAccessor = Mockito.mock(AuditAccessor.class);
 
         TestAlertProperties testAlertProperties = new TestAlertProperties();
 
@@ -194,7 +194,7 @@ public class EmailGlobalTestActionTest {
 
         Gson gson = new Gson();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
-        EmailChannel emailChannel = new EmailChannel(new EmailChannelKey(), gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
+        EmailChannel emailChannel = new EmailChannel(new EmailChannelKey(), gson, testAlertProperties, auditAccessor, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
         //////////////////////////////////////
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 

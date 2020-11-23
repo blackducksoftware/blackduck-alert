@@ -19,5 +19,6 @@ dependencies {
     implementation 'javax.mail:javax.mail-api'
     implementation 'org.freemarker:freemarker'
 
+    testImplementation project(':test-common')
     testImplementation 'org.mockito:mockito-core'
 }
