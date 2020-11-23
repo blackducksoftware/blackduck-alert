@@ -90,7 +90,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         int totalPages = 1;
         List<NotificationFilterModel> options = List.of();
 
-        if (isFilterablePolicy(selectedNotificationTypes)) {
+        if (isJobFilterableByPolicy(selectedNotificationTypes)) {
             try {
                 Optional<BlackDuckServicesFactory> blackDuckServicesFactory = createBlackDuckServicesFactory(fieldModel);
                 if (blackDuckServicesFactory.isPresent()) {
@@ -109,7 +109,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         return new ActionResponse<>(HttpStatus.OK, notificationFilterModelOptions);
     }
 
-    private boolean isFilterablePolicy(Collection<String> notificationTypes) {
+    private boolean isJobFilterableByPolicy(Collection<String> notificationTypes) {
         Set<String> filterableNotificationType = Set.of(
             NotificationType.POLICY_OVERRIDE,
             NotificationType.RULE_VIOLATION,
@@ -121,7 +121,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
     private BlackDuckPageResponse<PolicyRuleView> retrievePolicyRules(BlackDuckServicesFactory blackDuckServicesFactory, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
 
-        HttpUrl policyRulesUrl = new HttpUrl(blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl() + ApiDiscovery.POLICY_RULES_LINK.getPath());
+        HttpUrl policyRulesUrl = blackDuckApiClient.getUrl(ApiDiscovery.POLICY_RULES_LINK);
         BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder(new Request.Builder())
                                                      .url(policyRulesUrl)
                                                      .addQueryParameter("q", "name:" + searchTerm)
@@ -142,20 +142,11 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         if (optionalBlackDuckProperties.isPresent()) {
             Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
             BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
-            return createHttpClient(blackDuckProperties)
-                       .map(client -> blackDuckProperties.createBlackDuckServicesFactory(client, intLogger));
+            BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
+            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
+            return Optional.of(blackDuckServicesFactory);
         }
         return Optional.empty();
-    }
-
-    private Optional<BlackDuckHttpClient> createHttpClient(BlackDuckProperties blackDuckProperties) {
-        BlackDuckHttpClient blackDuckHttpClient = null;
-        try {
-            blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
-        } catch (IntegrationException ex) {
-            logger.error("Error creating Black Duck http client", ex);
-        }
-        return Optional.ofNullable(blackDuckHttpClient);
     }
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) throws IntegrationException {
