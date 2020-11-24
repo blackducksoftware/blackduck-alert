@@ -29,8 +29,8 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -49,9 +49,9 @@ public interface JobAccessorV2 {
 
     Optional<DistributionJobModel> getJobByName(String jobName);
 
-    DistributionJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    DistributionJobModel createJob(DistributionJobRequestModel requestModel) throws AlertDatabaseConstraintException;
 
-    DistributionJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertDatabaseConstraintException;
 
     void deleteJob(UUID jobId) throws AlertDatabaseConstraintException;
 

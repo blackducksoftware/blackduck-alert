@@ -25,14 +25,13 @@ package com.synopsys.integration.alert.database.api;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,9 +41,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -56,13 +55,20 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
-import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldExtractorUtils;
+import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
+import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -70,14 +76,37 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 @Component
 public class StaticJobAccessorV2 implements JobAccessorV2 {
     private final DistributionJobRepository distributionJobRepository;
+    private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
+    private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
+    private final EmailJobDetailsAccessor emailJobDetailsAccessor;
+    private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
+    private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
+    private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
+    private final SlackJobDetailsAccessor slackJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
     // BlackDuck is currently the only provider, so this is safe in the short-term while we transition to new models
     private final ProviderKey blackDuckProviderKey;
 
     @Autowired
-    public StaticJobAccessorV2(DistributionJobRepository distributionJobRepository, ProviderKey blackDuckProviderKey) {
+    public StaticJobAccessorV2(DistributionJobRepository distributionJobRepository,
+        BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
+        AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
+        EmailJobDetailsAccessor emailJobDetailsAccessor,
+        JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
+        JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
+        MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
+        SlackJobDetailsAccessor slackJobDetailsAccessor,
+        ProviderKey blackDuckProviderKey
+    ) {
         this.distributionJobRepository = distributionJobRepository;
+        this.blackDuckJobDetailsAccessor = blackDuckJobDetailsAccessor;
+        this.azureBoardsJobDetailsAccessor = azureBoardsJobDetailsAccessor;
+        this.emailJobDetailsAccessor = emailJobDetailsAccessor;
+        this.jiraCloudJobDetailsAccessor = jiraCloudJobDetailsAccessor;
+        this.jiraServerJobDetailsAccessor = jiraServerJobDetailsAccessor;
+        this.msTeamsJobDetailsAccessor = msTeamsJobDetailsAccessor;
+        this.slackJobDetailsAccessor = slackJobDetailsAccessor;
         this.blackDuckProviderKey = blackDuckProviderKey;
     }
 
@@ -153,19 +182,19 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
 
     @Override
     @Transactional
-    public DistributionJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) {
-        return createJobWithId(null, configuredFields, DateUtils.createCurrentDateTimestamp(), null);
+    public DistributionJobModel createJob(DistributionJobRequestModel requestModel) {
+        return createJobWithId(null, requestModel, DateUtils.createCurrentDateTimestamp(), null);
     }
 
     @Override
     @Transactional
-    public DistributionJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+    public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertDatabaseConstraintException {
         DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
                                               .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No job exists with the id [%s]", jobId.toString())));
         OffsetDateTime createdAt = jobEntity.getCreatedAt();
 
         deleteJob(jobId);
-        return createJobWithId(jobId, configuredFields, createdAt, DateUtils.createCurrentDateTimestamp());
+        return createJobWithId(jobId, requestModel, createdAt, DateUtils.createCurrentDateTimestamp());
     }
 
     @Override
@@ -175,7 +204,6 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
     }
 
     private DistributionJobModel convertToDistributionJobModel(DistributionJobEntity jobEntity) {
-
         DistributionJobDetailsModel distributionJobDetailsModel = null;
         String channelDescriptorName = jobEntity.getChannelDescriptorName();
         if ("channel_azure_boards".equals(channelDescriptorName)) {
@@ -243,12 +271,67 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
                    .build();
     }
 
-    private DistributionJobModel createJobWithId(UUID jobId, Collection<ConfigurationFieldModel> configuredFields, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
-        Map<String, ConfigurationFieldModel> configuredFieldsMap = configuredFields
-                                                                       .stream()
-                                                                       .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
+    private DistributionJobModel createJobWithId(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
+        return new DistributionJobModelBuilder()
+                   .jobId(jobId)
+                   .createdAt(createdAt)
+                   .lastUpdated(lastUpdated)
+                   .enabled(requestModel.isEnabled())
+                   .name(requestModel.getName())
+                   .distributionFrequency(requestModel.getDistributionFrequency())
+                   .processingType(requestModel.getProcessingType())
+                   .channelDescriptorName(requestModel.getChannelDescriptorName())
+                   .blackDuckGlobalConfigId(requestModel.getBlackDuckGlobalConfigId())
+                   .filterByProject(requestModel.isFilterByProject())
+                   .projectNamePattern(requestModel.getProjectNamePattern().orElse(null))
+                   .notificationTypes(requestModel.getNotificationTypes())
+                   .projectFilterProjectNames(requestModel.getProjectFilterProjectNames())
+                   .policyFilterPolicyNames(requestModel.getPolicyFilterPolicyNames())
+                   .vulnerabilityFilterSeverityNames(requestModel.getVulnerabilityFilterSeverityNames())
+                   .distributionJobDetails(requestModel.getDistributionJobDetails())
+                   .build();
+    }
 
-        return JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, configuredFieldsMap, createdAt, lastUpdated);
+    private DistributionJobModel createJob(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
+        String channelDescriptorName = requestModel.getChannelDescriptorName();
+        DistributionJobEntity jobToSave = new DistributionJobEntity(
+            jobId,
+            requestModel.getName(),
+            requestModel.isEnabled(),
+            requestModel.getDistributionFrequency().name(),
+            requestModel.getProcessingType().name(),
+            channelDescriptorName,
+            createdAt,
+            lastUpdated
+        );
+        DistributionJobEntity savedJobEntity = distributionJobRepository.save(jobToSave);
+        UUID savedJobId = savedJobEntity.getJobId();
+
+        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(savedJobId, requestModel);
+        savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
+
+        DistributionJobDetailsModel distributionJobDetails = requestModel.getDistributionJobDetails();
+        if (distributionJobDetails.isAzureBoardsDetails()) {
+            AzureBoardsJobDetailsEntity savedAzureBoardsJobDetails = azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(savedJobId, distributionJobDetails.getAsAzureBoardsJobDetails());
+            savedJobEntity.setAzureBoardsJobDetails(savedAzureBoardsJobDetails);
+        } else if (distributionJobDetails.isEmailDetails()) {
+            EmailJobDetailsEntity savedEmailJobDetails = emailJobDetailsAccessor.saveEmailJobDetails(savedJobId, distributionJobDetails.getAsEmailJobDetails());
+            savedJobEntity.setEmailJobDetails(savedEmailJobDetails);
+        } else if (distributionJobDetails.isJiraCloudDetails()) {
+            JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAsJiraCouldJobDetails());
+            savedJobEntity.setJiraCloudJobDetails(savedJiraCloudJobDetails);
+        } else if (distributionJobDetails.isJiraServerDetails()) {
+            JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAsJiraServerJobDetails());
+            savedJobEntity.setJiraServerJobDetails(savedJiraServerJobDetails);
+        } else if (distributionJobDetails.isMSTeamsDetails()) {
+            MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAsMSTeamsJobDetails());
+            savedJobEntity.setMsTeamsJobDetails(savedMSTeamsJobDetails);
+        } else if (distributionJobDetails.isSlackDetails()) {
+            SlackJobDetailsEntity savedSlackJobDetails = slackJobDetailsAccessor.saveSlackJobDetails(savedJobId, distributionJobDetails.getAsSlackJobDetails());
+            savedJobEntity.setSlackJobDetails(savedSlackJobDetails);
+        }
+
+        return convertToDistributionJobModel(savedJobEntity);
     }
 
 }
