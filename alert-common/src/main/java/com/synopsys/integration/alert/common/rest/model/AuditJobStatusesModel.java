@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,18 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.audit;
+package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 
-public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    Optional<AuditEntryEntity> findFirstByCommonConfigIdOrderByTimeLastSentDesc(UUID commonConfigId);
+public class AuditJobStatusesModel extends AlertSerializableModel {
+    private final List<AuditJobStatusModel> statuses;
 
-    @Query(value = "SELECT entity FROM AuditEntryEntity entity INNER JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
-    Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, UUID commonConfigId);
+    public AuditJobStatusesModel() {
+        // For serialization
+        this.statuses = List.of();
+    }
+
+    public AuditJobStatusesModel(List<AuditJobStatusModel> statuses) {
+        this.statuses = statuses;
+    }
+
+    public List<AuditJobStatusModel> getStatuses() {
+        return statuses;
+    }
 
 }

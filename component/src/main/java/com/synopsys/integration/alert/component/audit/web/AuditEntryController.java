@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +41,8 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseController;
+import com.synopsys.integration.alert.common.rest.model.AuditJobStatusesModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 
 @RestController
 @RequestMapping(AuditEntryController.AUDIT_BASE_PATH)
@@ -71,6 +74,11 @@ public class AuditEntryController extends BaseController {
         return ResponseFactory.createContentResponseFromAction(auditEntryActions.getAuditInfoForJob(jobId));
     }
 
+    @PostMapping(value = "/job")
+    public AuditJobStatusesModel queryForJobAuditInfoInJobs(@RequestBody JobIdsRequestModel queryRequestModel) {
+        return ResponseFactory.createContentResponseFromAction(auditEntryActions.queryForAuditInfoInJobs(queryRequestModel));
+    }
+
     @PostMapping(value = "/resend/{id}/")
     // TODO returning something other than the resource being interacted with is considered bad practice
     public AuditEntryPageModel resendById(@PathVariable(value = "id") Long notificationId) {
@@ -82,4 +90,5 @@ public class AuditEntryController extends BaseController {
     public AuditEntryPageModel resendByIdAndJobId(@PathVariable(value = "id") Long notificationId, @PathVariable(value = "jobId") UUID jobId) {
         return ResponseFactory.createContentResponseFromAction(auditEntryActions.resendNotification(notificationId, jobId));
     }
+
 }

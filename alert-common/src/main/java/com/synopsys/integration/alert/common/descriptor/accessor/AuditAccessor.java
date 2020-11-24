@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.descriptor.accessor;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +40,8 @@ public interface AuditAccessor {
 
     Optional<AuditJobStatusModel> findFirstByJobId(UUID jobId);
 
+    List<AuditJobStatusModel> findByJobIds(Collection<UUID> jobIds);
+
     AuditEntryPageModel getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
 
@@ -49,4 +52,5 @@ public interface AuditAccessor {
     void setAuditEntryFailure(Collection<Long> auditEntryIds, String errorMessage, Throwable t);
 
     AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationModel notificationContentEntry);
+
 }

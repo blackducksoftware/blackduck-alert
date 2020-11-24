@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
-import com.synopsys.integration.alert.common.rest.model.JobIdsValidationRequestModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -461,7 +461,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateJobsByIdTest() throws Exception {
-        JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
+        JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
         Descriptor descriptor = createDescriptor(descriptorType);
 
@@ -474,7 +474,7 @@ public class JobConfigActionsTest {
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
 
-        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
+        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsRequestModel);
 
         assertTrue(actionResponse.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
@@ -483,14 +483,14 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateJobsByIdForbiddenTest() {
-        JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
+        JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
         Descriptor descriptor = createDescriptor(descriptorType);
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(false);
 
-        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
+        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsRequestModel);
 
         assertTrue(actionResponse.isError());
         assertEquals(HttpStatus.FORBIDDEN, actionResponse.getHttpStatus());
@@ -499,7 +499,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateJobsByIdEmptyListTest() {
-        JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of());
+        JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of());
         DescriptorKey descriptorKey = createDescriptorKey();
         Descriptor descriptor = createDescriptor(descriptorType);
 
@@ -509,7 +509,7 @@ public class JobConfigActionsTest {
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
 
-        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
+        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsRequestModel);
 
         assertTrue(actionResponse.isSuccessful());
         assertEquals(HttpStatus.OK, actionResponse.getHttpStatus());
@@ -518,7 +518,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateJobsByIdInternalServerErrorTest() throws Exception {
-        JobIdsValidationRequestModel jobIdsValidationRequestModel = new JobIdsValidationRequestModel(List.of(jobId));
+        JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of(jobId));
         DescriptorKey descriptorKey = createDescriptorKey();
         Descriptor descriptor = createDescriptor(descriptorType);
 
@@ -528,7 +528,7 @@ public class JobConfigActionsTest {
 
         Mockito.doThrow(new AlertException("Exception for Alert test")).when(fieldModelProcessor).performAfterReadAction(Mockito.any());
 
-        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsValidationRequestModel);
+        ActionResponse<List<JobFieldStatuses>> actionResponse = jobConfigActions.validateJobsById(jobIdsRequestModel);
 
         assertTrue(actionResponse.isError());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actionResponse.getHttpStatus());
