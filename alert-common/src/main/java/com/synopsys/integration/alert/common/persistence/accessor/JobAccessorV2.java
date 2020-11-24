@@ -49,8 +49,6 @@ public interface JobAccessorV2 {
 
     Optional<DistributionJobModel> getJobByName(String jobName);
 
-    List<DistributionJobModel> getJobsByFrequency(FrequencyType frequency);
-
     DistributionJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
     DistributionJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
