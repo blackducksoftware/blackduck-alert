@@ -203,6 +203,48 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
         distributionJobRepository.deleteById(jobId);
     }
 
+    private DistributionJobModel createJobWithId(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
+        String channelDescriptorName = requestModel.getChannelDescriptorName();
+        DistributionJobEntity jobToSave = new DistributionJobEntity(
+            jobId,
+            requestModel.getName(),
+            requestModel.isEnabled(),
+            requestModel.getDistributionFrequency().name(),
+            requestModel.getProcessingType().name(),
+            channelDescriptorName,
+            createdAt,
+            lastUpdated
+        );
+        DistributionJobEntity savedJobEntity = distributionJobRepository.save(jobToSave);
+        UUID savedJobId = savedJobEntity.getJobId();
+
+        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(savedJobId, requestModel);
+        savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
+
+        DistributionJobDetailsModel distributionJobDetails = requestModel.getDistributionJobDetails();
+        if (distributionJobDetails.isAzureBoardsDetails()) {
+            AzureBoardsJobDetailsEntity savedAzureBoardsJobDetails = azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(savedJobId, distributionJobDetails.getAsAzureBoardsJobDetails());
+            savedJobEntity.setAzureBoardsJobDetails(savedAzureBoardsJobDetails);
+        } else if (distributionJobDetails.isEmailDetails()) {
+            EmailJobDetailsEntity savedEmailJobDetails = emailJobDetailsAccessor.saveEmailJobDetails(savedJobId, distributionJobDetails.getAsEmailJobDetails());
+            savedJobEntity.setEmailJobDetails(savedEmailJobDetails);
+        } else if (distributionJobDetails.isJiraCloudDetails()) {
+            JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAsJiraCouldJobDetails());
+            savedJobEntity.setJiraCloudJobDetails(savedJiraCloudJobDetails);
+        } else if (distributionJobDetails.isJiraServerDetails()) {
+            JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAsJiraServerJobDetails());
+            savedJobEntity.setJiraServerJobDetails(savedJiraServerJobDetails);
+        } else if (distributionJobDetails.isMSTeamsDetails()) {
+            MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAsMSTeamsJobDetails());
+            savedJobEntity.setMsTeamsJobDetails(savedMSTeamsJobDetails);
+        } else if (distributionJobDetails.isSlackDetails()) {
+            SlackJobDetailsEntity savedSlackJobDetails = slackJobDetailsAccessor.saveSlackJobDetails(savedJobId, distributionJobDetails.getAsSlackJobDetails());
+            savedJobEntity.setSlackJobDetails(savedSlackJobDetails);
+        }
+
+        return convertToDistributionJobModel(savedJobEntity);
+    }
+
     private DistributionJobModel convertToDistributionJobModel(DistributionJobEntity jobEntity) {
         DistributionJobDetailsModel distributionJobDetailsModel = null;
         String channelDescriptorName = jobEntity.getChannelDescriptorName();
@@ -269,48 +311,6 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
                    .blackDuckGlobalConfigId(jobEntity.getBlackDuckJobDetails().getGlobalConfigId())
                    .distributionJobDetails(distributionJobDetailsModel)
                    .build();
-    }
-
-    private DistributionJobModel createJobWithId(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
-        String channelDescriptorName = requestModel.getChannelDescriptorName();
-        DistributionJobEntity jobToSave = new DistributionJobEntity(
-            jobId,
-            requestModel.getName(),
-            requestModel.isEnabled(),
-            requestModel.getDistributionFrequency().name(),
-            requestModel.getProcessingType().name(),
-            channelDescriptorName,
-            createdAt,
-            lastUpdated
-        );
-        DistributionJobEntity savedJobEntity = distributionJobRepository.save(jobToSave);
-        UUID savedJobId = savedJobEntity.getJobId();
-
-        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(savedJobId, requestModel);
-        savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
-
-        DistributionJobDetailsModel distributionJobDetails = requestModel.getDistributionJobDetails();
-        if (distributionJobDetails.isAzureBoardsDetails()) {
-            AzureBoardsJobDetailsEntity savedAzureBoardsJobDetails = azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(savedJobId, distributionJobDetails.getAsAzureBoardsJobDetails());
-            savedJobEntity.setAzureBoardsJobDetails(savedAzureBoardsJobDetails);
-        } else if (distributionJobDetails.isEmailDetails()) {
-            EmailJobDetailsEntity savedEmailJobDetails = emailJobDetailsAccessor.saveEmailJobDetails(savedJobId, distributionJobDetails.getAsEmailJobDetails());
-            savedJobEntity.setEmailJobDetails(savedEmailJobDetails);
-        } else if (distributionJobDetails.isJiraCloudDetails()) {
-            JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAsJiraCouldJobDetails());
-            savedJobEntity.setJiraCloudJobDetails(savedJiraCloudJobDetails);
-        } else if (distributionJobDetails.isJiraServerDetails()) {
-            JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAsJiraServerJobDetails());
-            savedJobEntity.setJiraServerJobDetails(savedJiraServerJobDetails);
-        } else if (distributionJobDetails.isMSTeamsDetails()) {
-            MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAsMSTeamsJobDetails());
-            savedJobEntity.setMsTeamsJobDetails(savedMSTeamsJobDetails);
-        } else if (distributionJobDetails.isSlackDetails()) {
-            SlackJobDetailsEntity savedSlackJobDetails = slackJobDetailsAccessor.saveSlackJobDetails(savedJobId, distributionJobDetails.getAsSlackJobDetails());
-            savedJobEntity.setSlackJobDetails(savedSlackJobDetails);
-        }
-
-        return convertToDistributionJobModel(savedJobEntity);
     }
 
 }
