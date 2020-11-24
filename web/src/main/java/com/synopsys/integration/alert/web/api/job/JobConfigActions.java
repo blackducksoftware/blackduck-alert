@@ -73,7 +73,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
-import com.synopsys.integration.alert.common.rest.model.JobIdsValidationRequestModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -298,7 +298,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return new ValidationActionResponse(HttpStatus.OK, responseModel);
     }
 
-    public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsValidationRequestModel jobIdsValidationModel) {
+    public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsRequestModel jobIdsValidationModel) {
         List<PermissionKey> keys = new LinkedList<>();
         for (Descriptor descriptor : getDescriptorMap().getDescriptorMap().values()) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();

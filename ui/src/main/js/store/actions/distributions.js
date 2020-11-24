@@ -18,6 +18,7 @@ import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import * as RequestUtilities from 'util/RequestUtilities'
+import { createPostRequest } from 'util/RequestUtilities'
 import HeaderUtilities from 'util/HeaderUtilities';
 
 function updateJobWithAuditInfo(job) {
@@ -109,31 +110,40 @@ function updateJobModelWithAuditInfo(dispatch, jobConfig, lastRan, status) {
     dispatch(updateJobWithAuditInfo(newConfig));
 }
 
-function fetchAuditInfoForJob(jobConfig) {
+function queryForJobAuditInfo(jobConfigs) {
     return (dispatch, getState) => {
         const { csrfToken } = getState().session;
-        const newConfig = { ...jobConfig };
-        let lastRan = 'Unknown';
-        let currentStatus = 'Unknown';
 
-        if (jobConfig) {
-            const headersUtil = new HeaderUtilities();
-            headersUtil.addApplicationJsonContentType();
-            headersUtil.addXCsrfToken(csrfToken);
-            fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
-                credentials: 'same-origin',
-                headers: headersUtil.getHeaders()
+        if (jobConfigs) {
+            const jobIds = [];
+            jobConfigs.forEach(jobConfig => {
+                jobIds.push(jobConfig.jobId);
+            });
+
+            createPostRequest(`/alert/api/audit/job`, csrfToken, {
+                jobIds: jobIds
             }).then((response) => {
                 if (response.ok) {
-                    response.json().then((auditInfo) => {
-                        if (auditInfo != null) {
-                            lastRan = auditInfo.timeLastSent;
-                            currentStatus = auditInfo.status;
-                        }
-                        updateJobModelWithAuditInfo(dispatch, newConfig, lastRan, currentStatus);
+                    response.json().then((auditQueryResult) => {
+                        const jobIdToStatus = {};
+                        auditQueryResult.statuses.forEach(status => {
+                            jobIdToStatus[status.jobId] = status;
+                        });
+                        jobConfigs.forEach(jobConfig => {
+                            const jobAuditStatus = jobIdToStatus[jobConfig.jobId]
+                            let lastRan = 'Unknown';
+                            let currentStatus = 'Unknown';
+                            if (jobAuditStatus) {
+                                lastRan = jobAuditStatus.timeLastSent;
+                                currentStatus = jobAuditStatus.status;
+                            }
+                            updateJobModelWithAuditInfo(dispatch, jobConfig, lastRan, currentStatus);
+                        });
                     });
                 } else {
-                    updateJobModelWithAuditInfo(dispatch, newConfig, lastRan, currentStatus);
+                    jobConfigs.forEach(jobConfig => {
+                        updateJobModelWithAuditInfo(dispatch, jobConfig, 'Unknown', 'Unknown');
+                    });
                 }
             }).catch((error) => {
                 console.log(error);
@@ -197,9 +207,7 @@ export function fetchDistributionJobs(pageNumber, pageLimit, searchTerm) {
                     .then((responseData) => {
                         if (response.ok) {
                             const { jobs } = responseData;
-                            jobs.forEach((jobConfig) => {
-                                dispatch(fetchAuditInfoForJob(jobConfig));
-                            });
+                            dispatch(queryForJobAuditInfo(jobs));
                             dispatch(allJobsFetched(responseData.totalPages));
                         } else {
                             errorHandlers.push(HTTPErrorUtils.createDefaultHandler(() => {
