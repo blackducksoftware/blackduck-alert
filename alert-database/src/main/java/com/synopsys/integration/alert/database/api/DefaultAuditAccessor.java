@@ -111,10 +111,18 @@ public class DefaultAuditAccessor implements AuditAccessor {
     @Override
     @Transactional
     public List<AuditJobStatusModel> findByJobIds(Collection<UUID> jobIds) {
-        return auditEntryRepository.findAllByCommonConfigIdInOrderByTimeLastSentDesc(jobIds)
-                   .stream()
-                   .map(this::convertToJobStatusModel)
-                   .collect(Collectors.toList());
+        if (jobIds.isEmpty()) {
+            return List.of();
+        }
+
+        // Add these one at a time to avoid complex query with multiple nested "DISTINCT" selections
+        List<AuditJobStatusModel> auditJobStatuses = new ArrayList<>(jobIds.size());
+        for (UUID jobId : jobIds) {
+            auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId)
+                .map(this::convertToJobStatusModel)
+                .ifPresent(auditJobStatuses::add);
+        }
+        return auditJobStatuses;
     }
 
     @Override
