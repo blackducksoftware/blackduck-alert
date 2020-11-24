@@ -271,28 +271,7 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
                    .build();
     }
 
-    private DistributionJobModel createJobWithId(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
-        return new DistributionJobModelBuilder()
-                   .jobId(jobId)
-                   .createdAt(createdAt)
-                   .lastUpdated(lastUpdated)
-                   .enabled(requestModel.isEnabled())
-                   .name(requestModel.getName())
-                   .distributionFrequency(requestModel.getDistributionFrequency())
-                   .processingType(requestModel.getProcessingType())
-                   .channelDescriptorName(requestModel.getChannelDescriptorName())
-                   .blackDuckGlobalConfigId(requestModel.getBlackDuckGlobalConfigId())
-                   .filterByProject(requestModel.isFilterByProject())
-                   .projectNamePattern(requestModel.getProjectNamePattern().orElse(null))
-                   .notificationTypes(requestModel.getNotificationTypes())
-                   .projectFilterProjectNames(requestModel.getProjectFilterProjectNames())
-                   .policyFilterPolicyNames(requestModel.getPolicyFilterPolicyNames())
-                   .vulnerabilityFilterSeverityNames(requestModel.getVulnerabilityFilterSeverityNames())
-                   .distributionJobDetails(requestModel.getDistributionJobDetails())
-                   .build();
-    }
-
-    private DistributionJobModel createJob(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
+    private DistributionJobModel createJobWithId(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
         String channelDescriptorName = requestModel.getChannelDescriptorName();
         DistributionJobEntity jobToSave = new DistributionJobEntity(
             jobId,
