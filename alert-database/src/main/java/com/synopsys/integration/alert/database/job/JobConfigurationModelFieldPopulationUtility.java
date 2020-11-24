@@ -26,12 +26,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
@@ -69,7 +71,11 @@ public class JobConfigurationModelFieldPopulationUtility {
                 blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.project.name.pattern", projectNamePattern));
             }
 
-            List<String> blackDuckProjectNames = blackDuckJobDetailsAccessor.retrieveProjectNamesForJob(jobId);
+            // FIXME support BlackDuckProjectDetailsModel
+            List<String> blackDuckProjectNames = blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(jobId)
+                                                     .stream()
+                                                     .map(BlackDuckProjectDetailsModel::getName)
+                                                     .collect(Collectors.toList());
             if (!blackDuckProjectNames.isEmpty()) {
                 blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.configured.project", blackDuckProjectNames));
             }

@@ -74,4 +74,20 @@ public class BlackDuckJobProjectEntity {
         this.projectName = projectName;
     }
 
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public String getProjectOwnerEmail() {
+        return projectOwnerEmail;
+    }
+
+    public void setProjectOwnerEmail(String projectOwnerEmail) {
+        this.projectOwnerEmail = projectOwnerEmail;
+    }
+
 }

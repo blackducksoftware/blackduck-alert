@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
 import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeRepository;
@@ -113,10 +114,10 @@ public class BlackDuckJobDetailsAccessor {
     }
 
     // FIXME convert return type to List<BlackDuckProjectDetailsModel>
-    public List<String> retrieveProjectNamesForJob(UUID jobId) {
+    public List<BlackDuckProjectDetailsModel> retrieveProjectDetailsForJob(UUID jobId) {
         return blackDuckJobProjectRepository.findByJobId(jobId)
                    .stream()
-                   .map(BlackDuckJobProjectEntity::getProjectName)
+                   .map(blackDuckJobProject -> new BlackDuckProjectDetailsModel(blackDuckJobProject.getProjectName(), blackDuckJobProject.getHref(), blackDuckJobProject.getProjectOwnerEmail()))
                    .collect(Collectors.toList());
     }
 
