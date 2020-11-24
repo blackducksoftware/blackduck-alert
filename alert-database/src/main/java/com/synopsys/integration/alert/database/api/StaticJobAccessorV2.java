@@ -171,15 +171,6 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
     }
 
-    private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
-        // TODO change this to return a page of jobs
-        List<DistributionJobEntity> matchingEnabledJob = getJobs.get();
-        return matchingEnabledJob
-                   .stream()
-                   .map(this::convertToDistributionJobModel)
-                   .collect(Collectors.toList());
-    }
-
     @Override
     @Transactional
     public DistributionJobModel createJob(DistributionJobRequestModel requestModel) {
@@ -201,6 +192,15 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
     @Transactional
     public void deleteJob(UUID jobId) {
         distributionJobRepository.deleteById(jobId);
+    }
+
+    private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
+        // TODO change this to return a page of jobs
+        List<DistributionJobEntity> matchingEnabledJob = getJobs.get();
+        return matchingEnabledJob
+                   .stream()
+                   .map(this::convertToDistributionJobModel)
+                   .collect(Collectors.toList());
     }
 
     private DistributionJobModel createJobWithId(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
