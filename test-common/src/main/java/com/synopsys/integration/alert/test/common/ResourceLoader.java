@@ -50,9 +50,9 @@ public class ResourceLoader {
         Properties properties = new Properties();
 
         File propertiesFile = new File(RESOURCE_DIR, resourceLocation);
-        InputStream iStream = new FileInputStream(propertiesFile);
-        properties.load(iStream);
-        iStream.close();
+        try(InputStream iStream = new FileInputStream(propertiesFile)) {
+            properties.load(iStream);
+        }
         return properties;
     }
 
