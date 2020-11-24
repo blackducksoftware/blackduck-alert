@@ -50,6 +50,8 @@ public class AuditEntryEntity extends BaseEntity implements DatabaseEntity {
     @SequenceGenerator(name = "alert.audit_entries_id_seq_generator", sequenceName = "alert.audit_entries_id_seq")
     @Column(name = "id")
     private Long id;
+
+    // TODO rename to jobId
     @Column(name = "common_config_id")
     private UUID commonConfigId;
 

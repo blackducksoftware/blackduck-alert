@@ -39,13 +39,13 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,6 +106,15 @@ public class DefaultAuditAccessor implements AuditAccessor {
     public Optional<AuditJobStatusModel> findFirstByJobId(UUID jobId) {
         Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
         return auditEntryEntity.map(this::convertToJobStatusModel);
+    }
+
+    @Override
+    @Transactional
+    public List<AuditJobStatusModel> findByJobIds(Collection<UUID> jobIds) {
+        return auditEntryRepository.findAllByCommonConfigIdInOrderByTimeLastSentDesc(jobIds)
+                   .stream()
+                   .map(this::convertToJobStatusModel)
+                   .collect(Collectors.toList());
     }
 
     @Override
@@ -226,14 +235,14 @@ public class DefaultAuditAccessor implements AuditAccessor {
         OffsetDateTime timeLastSentOffsetDateTime = null;
         List<JobAuditModel> jobAuditModels = new ArrayList<>();
         for (AuditEntryEntity auditEntryEntity : auditEntryEntities) {
-            UUID commonConfigId = auditEntryEntity.getCommonConfigId();
+            UUID jobId = auditEntryEntity.getCommonConfigId();
 
             if (null != auditEntryEntity.getTimeLastSent() && (null == timeLastSentOffsetDateTime || timeLastSentOffsetDateTime.isBefore(auditEntryEntity.getTimeLastSent()))) {
                 timeLastSentOffsetDateTime = auditEntryEntity.getTimeLastSent();
                 timeLastSent = formatAuditDate(timeLastSentOffsetDateTime);
             }
             String id = contentConverter.getStringValue(auditEntryEntity.getId());
-            String configId = contentConverter.getStringValue(commonConfigId);
+            String configId = contentConverter.getStringValue(jobId);
             String timeCreated = formatAuditDate(auditEntryEntity.getTimeCreated());
 
             AuditEntryStatus status = null;
@@ -245,7 +254,7 @@ public class DefaultAuditAccessor implements AuditAccessor {
             String errorMessage = auditEntryEntity.getErrorMessage();
             String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-            Optional<ConfigurationJobModel> commonConfig = jobAccessor.getJobById(commonConfigId);
+            Optional<ConfigurationJobModel> commonConfig = jobAccessor.getJobById(jobId);
             String distributionConfigName = null;
             String eventType = null;
             if (commonConfig.isPresent()) {
@@ -257,7 +266,7 @@ public class DefaultAuditAccessor implements AuditAccessor {
             if (null != status) {
                 statusDisplayName = status.getDisplayName();
             }
-            AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(timeCreated, timeLastSent, statusDisplayName);
+            AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(jobId, timeCreated, timeLastSent, statusDisplayName);
             jobAuditModels.add(new JobAuditModel(id, configId, distributionConfigName, eventType, auditJobStatusModel, errorMessage, errorStackTrace));
         }
         String id = contentConverter.getStringValue(notificationContentEntry.getId());
@@ -318,7 +327,7 @@ public class DefaultAuditAccessor implements AuditAccessor {
         if (null != auditEntryEntity.getStatus()) {
             status = AuditEntryStatus.valueOf(auditEntryEntity.getStatus()).getDisplayName();
         }
-        return new AuditJobStatusModel(timeCreated, timeLastSent, status);
+        return new AuditJobStatusModel(auditEntryEntity.getCommonConfigId(), timeCreated, timeLastSent, status);
     }
 
     private Page<AlertNotificationModel> getPageOfNotifications(String sortField, String sortOrder, String searchTerm, Integer pageNumber, Integer pageSize, boolean onlyShowSentNotifications) {

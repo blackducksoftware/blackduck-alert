@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.component.audit.mock;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -13,16 +14,18 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 
 public class MockAuditJobStatusModel {
     private final Gson gson = new Gson();
+    private final UUID jobId = UUID.randomUUID();
     private final String timeAuditCreated = new Date(400).toString();
     private final String timeLastSent = new Date(500).toString();
     private final String status = AuditEntryStatus.SUCCESS.name();
 
     public AuditJobStatusModel createRestModel() {
-        return new AuditJobStatusModel(timeAuditCreated, timeLastSent, status);
+        return new AuditJobStatusModel(jobId, timeAuditCreated, timeLastSent, status);
     }
 
     public String getRestModelJson() {
-        final JsonObject json = new JsonObject();
+        JsonObject json = new JsonObject();
+        json.addProperty("jobId", jobId.toString());
         json.addProperty("timeAuditCreated", timeAuditCreated);
         json.addProperty("timeLastSent", timeLastSent);
         json.addProperty("status", status);
@@ -31,8 +34,8 @@ public class MockAuditJobStatusModel {
     }
 
     public void verifyRestModel() throws JSONException {
-        final String restModel = gson.toJson(createRestModel());
-        final String json = getRestModelJson();
+        String restModel = gson.toJson(createRestModel());
+        String json = getRestModelJson();
         JSONAssert.assertEquals(restModel, json, false);
     }
 

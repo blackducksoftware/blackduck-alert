@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.component.audit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,6 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 
 public class JobAuditModelTest {
-
     @Test
     public void testModel() {
         String id = "1";
@@ -23,7 +23,7 @@ public class JobAuditModelTest {
         String status = AuditEntryStatus.SUCCESS.name();
         String errorMessage = "errorMessage";
         String errorStackTrace = "errorStackTrace";
-        AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(timeAuditCreated, timeLastSent, status);
+        AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(UUID.randomUUID(), timeAuditCreated, timeLastSent, status);
 
         JobAuditModel restModel = new JobAuditModel(id, configId, name, eventType, auditJobStatusModel, errorMessage, errorStackTrace);
 
