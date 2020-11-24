@@ -160,12 +160,14 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
         // TODO change this to return a page of jobs
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(frequency.name(), providerConfigId, notificationType.name()));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
         // TODO change this to return a page of jobs
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
