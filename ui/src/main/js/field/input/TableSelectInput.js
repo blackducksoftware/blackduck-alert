@@ -168,7 +168,7 @@ class TableSelectInput extends Component {
         const rowKeyValue = row[keyColumnHeader];
 
         if (isSelected) {
-            const itemFound = selectedArray.find((selectedItem) => useRowAsValue ? selectedItem[keyColumnHeader] === rowKeyValue : selectedItem === rowKeyValue);
+            const itemFound = selectedArray.find((selectedItem) => (useRowAsValue ? selectedItem[keyColumnHeader] === rowKeyValue : selectedItem === rowKeyValue));
             if (!itemFound) {
                 useRowAsValue ? selectedArray.push(row) : selectedArray.push(rowKeyValue);
             }
@@ -182,10 +182,18 @@ class TableSelectInput extends Component {
     }
 
     createRowSelectionProps() {
-        const { selectedData } = this.state.selectedData;
+        const { selectedData } = this.state;
         const { columns, useRowAsValue } = this.props;
         const keyColumnHeader = columns.find((column) => column.isKey).header;
-        const selectedRowData = selectedData && useRowAsValue ? selectedData[keyColumnHeader] : selectedData;
+
+
+        const condition = selectedData && useRowAsValue;
+        let selectedRowData = null;
+        if (condition) {
+            selectedRowData = selectedData.map((itemData) => itemData[keyColumnHeader]);
+        } else {
+            selectedRowData = selectedData;
+        }
         return {
             mode: 'checkbox',
             clickToSelect: true,

@@ -162,7 +162,7 @@ class DistributionConfiguration extends Component {
         const { jobId, jobModificationState } = this.props;
         const jsonJobId = jobModificationState === 'Copy' ? null : jobId;
 
-        let providerConfigToSave = { ...providerConfig };
+        const providerConfigToSave = JSON.parse(JSON.stringify(providerConfig));
         let configuredProviderProjects = [];
 
         const fieldConfiguredProjects = providerConfig.keyToValues[KEY_PROVIDER_CONFIGURED_PROJECT];
