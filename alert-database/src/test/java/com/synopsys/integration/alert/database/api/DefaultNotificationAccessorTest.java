@@ -45,11 +45,11 @@ public class DefaultNotificationAccessorTest {
     private final String KEY_PROVIDER_CONFIG_NAME = ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME;
     private final String fieldValue = "test-channel.common.name-value";
 
-    private AlertNotificationModel expectedAlertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, fieldValue, notificationType, content, DateUtils.createCurrentDateTimestamp(),
+    private final AlertNotificationModel expectedAlertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, fieldValue, notificationType, content, DateUtils.createCurrentDateTimestamp(),
         DateUtils.createCurrentDateTimestamp());
 
     @Test
-    public void saveAllNotificationsTest() throws Exception {
+    public void saveAllNotificationsTest() {
         OffsetDateTime createdAt = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime providerCreationTime = createdAt.minusSeconds(10);
 
@@ -85,7 +85,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void finalAllTest() throws Exception {
+    public void finalAllTest() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
@@ -107,7 +107,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void finalAllShowNotificationsFalseTest() throws Exception {
+    public void finalAllShowNotificationsFalseTest() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
@@ -129,7 +129,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findAllWithSearchTest() throws Exception {
+    public void findAllWithSearchTest() {
         final String searchTerm = "searchTerm-test";
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -158,7 +158,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByIdsTest() throws Exception {
+    public void findByIdsTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -177,7 +177,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByIdTest() throws Exception {
+    public void findByIdTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -195,7 +195,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByCreatedAtBetweenTest() throws Exception {
+    public void findByCreatedAtBetweenTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -214,7 +214,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByCreatedAtBeforeTest() throws Exception {
+    public void findByCreatedAtBeforeTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -233,7 +233,7 @@ public class DefaultNotificationAccessorTest {
     }
 
     @Test
-    public void findByCreatedAtBeforeDayOffsetTest() throws Exception {
+    public void findByCreatedAtBeforeDayOffsetTest() {
         NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content);
         ConfigurationModel configurationModel = createConfigurationModel();
 
@@ -309,4 +309,5 @@ public class DefaultNotificationAccessorTest {
 
         return configurationModel;
     }
+
 }

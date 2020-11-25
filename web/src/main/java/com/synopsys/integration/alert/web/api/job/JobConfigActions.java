@@ -53,7 +53,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
@@ -437,7 +436,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return channelFieldModel;
     }
 
-    private Map<String, ConfigurationFieldModel> createFieldsMap(FieldModel channelFieldModel, Collection<FieldModel> otherJobModels) throws AlertDatabaseConstraintException {
+    private Map<String, ConfigurationFieldModel> createFieldsMap(FieldModel channelFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
         fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));

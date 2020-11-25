@@ -31,7 +31,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -87,14 +86,10 @@ public class SystemMessageInitializer extends StartupComponent {
         boolean valid = true;
         logger.info("Validating configured providers: ");
         for (Provider provider : providers) {
-            try {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
-                valid = configurations.stream()
-                            .filter(model -> !model.getCopyOfFieldList().isEmpty())
-                            .allMatch(provider::validate);
-            } catch (AlertDatabaseConstraintException ex) {
-                logger.debug("Error getting provider configurations", ex);
-            }
+            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+            valid = configurations.stream()
+                        .filter(model -> !model.getCopyOfFieldList().isEmpty())
+                        .allMatch(provider::validate);
         }
         return valid;
     }

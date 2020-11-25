@@ -53,7 +53,6 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -379,21 +378,15 @@ public class DefaultAuditAccessor implements AuditAccessor {
     }
 
     private String retrieveProviderConfigName(Long providerConfigId) {
-        String configName = "UNKNOWN PROVIDER CONFIG";
-        try {
-            configName = configurationAccessor.getConfigurationById(providerConfigId)
-                             .stream()
-                             .map(ConfigurationModel::getCopyOfFieldList)
-                             .flatMap(List::stream)
-                             .filter(field -> field.getFieldKey().equals(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
-                             .map(ConfigurationFieldModel::getFieldValue)
-                             .flatMap(Optional::stream)
-                             .findFirst()
-                             .orElse(configName);
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("There was a problem retrieving the provider config", e);
-        }
-        return configName;
+        return configurationAccessor.getConfigurationById(providerConfigId)
+                   .stream()
+                   .map(ConfigurationModel::getCopyOfFieldList)
+                   .flatMap(List::stream)
+                   .filter(field -> field.getFieldKey().equals(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                   .map(ConfigurationFieldModel::getFieldValue)
+                   .flatMap(Optional::stream)
+                   .findFirst()
+                   .orElse("UNKNOWN PROVIDER CONFIG");
     }
 
 }

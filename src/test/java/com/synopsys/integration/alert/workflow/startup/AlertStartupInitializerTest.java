@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -116,34 +115,6 @@ public class AlertStartupInitializerTest {
         Mockito.verify(baseDescriptorAccessor, Mockito.times(4)).getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
         Mockito.verify(baseConfigurationAccessor, Mockito.times(2)).createConfiguration(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection());
         Mockito.verify(baseConfigurationAccessor, Mockito.times(2)).getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
-    }
-
-    @Test
-    public void testGetSettingsThrowsException() throws Exception {
-        Environment environment = Mockito.mock(Environment.class);
-        DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
-        ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
-        ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
-
-        List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
-        List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
-        List<ProviderDescriptor> providerDescriptors = List.of();
-        List<ComponentDescriptor> componentDescriptors = List.of();
-        DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, channelDescriptors, providerDescriptors, componentDescriptors);
-        ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, descriptorKeys);
-        Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenThrow(new AlertDatabaseConstraintException("Test Exception"));
-        FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationUtility(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
-        SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
-        Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
-        EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environmentVariableUtility, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
-        initializer.initializeComponent();
-        Mockito.verify(baseDescriptorAccessor, Mockito.times(2)).getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
-        Mockito.verify(baseConfigurationAccessor, Mockito.times(2)).getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
-        Mockito.verify(baseConfigurationAccessor, Mockito.times(0)).createConfiguration(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection());
     }
 
     @Test

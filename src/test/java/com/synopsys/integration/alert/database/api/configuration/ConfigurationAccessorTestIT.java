@@ -17,14 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
@@ -145,42 +142,6 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void getConfigurationsByFrequencyTypeTest() {
-        // No descriptor of Channel type registered
-        List<ConfigurationModel> configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
-        assertTrue(configurationModels.isEmpty());
-        configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.REAL_TIME);
-        assertTrue(configurationModels.isEmpty());
-        ///////////////////////////////////////////
-
-        final String descriptorName = "Unique Descriptor";
-        DescriptorKey descriptorKey = createDescriptorKey(descriptorName);
-        try {
-            // Register a custom descriptor of Channel type
-            descriptorMocker.registerDescriptor(descriptorName, DescriptorType.CHANNEL, Arrays.asList(new DefinedFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE)));
-
-            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
-            assertTrue(configurationModels.isEmpty());
-            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.REAL_TIME);
-            assertTrue(configurationModels.isEmpty());
-            ////////////////////////////////////////////////
-
-            // Add a configuration for the custom descriptor with a Frequency field
-            ConfigurationFieldModel realTimeField = ConfigurationFieldModel.create(ChannelDistributionUIConfig.KEY_FREQUENCY);
-            realTimeField.setFieldValue(FrequencyType.REAL_TIME.name());
-            configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, Arrays.asList(realTimeField));
-
-            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
-            assertTrue(configurationModels.isEmpty());
-            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.REAL_TIME);
-            assertFalse(configurationModels.isEmpty());
-            ////////////////////////////////////////////////////////////////////////
-        } finally {
-            descriptorMocker.unregisterDescriptor(descriptorName);
-        }
-    }
-
-    @Test
     public void updateConfigurationMultipleValueTest() throws AlertConfigurationException {
         final String initialValue = "initial value";
         ConfigurationFieldModel originalField = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
@@ -240,36 +201,13 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void updateConfigurationWithNullIdTest() {
-        try {
-            configurationAccessor.updateConfiguration(null, null);
-            fail("Expected exception to be thrown");
-        } catch (AlertConfigurationException e) {
-            assertEquals("The config id cannot be null", e.getMessage());
-        }
-    }
-
-    @Test
     public void updateConfigurationWithInvalidIdTest() {
         final Long invalidId = Long.MAX_VALUE;
         try {
             configurationAccessor.updateConfiguration(invalidId, null);
             fail("Expected exception to be thrown");
         } catch (AlertConfigurationException e) {
-            assertEquals("A config with that id did not exist", e.getMessage());
-        }
-    }
-
-    @Test
-    public void updateConfigurationWithInvalidFieldKeyTest() {
-        DescriptorKey descriptorKey = createDescriptorKey(DESCRIPTOR_NAME);
-        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.DISTRIBUTION, List.of());
-        try {
-            ConfigurationFieldModel field = ConfigurationFieldModel.create(null);
-            configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), Arrays.asList(field));
-            fail("Expected exception to be thrown");
-        } catch (AlertConfigurationException e) {
-            assertEquals("Field key cannot be empty", e.getMessage());
+            // Success
         }
     }
 

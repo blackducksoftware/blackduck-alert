@@ -28,34 +28,30 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public interface ConfigurationAccessor {
-    List<ConfigurationModel> getChannelConfigurationsByFrequency(FrequencyType frequencyType) throws AlertDatabaseConstraintException;
+    Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName);
 
-    Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName) throws AlertDatabaseConstraintException;
+    Optional<ConfigurationModel> getConfigurationById(Long id);
 
-    Optional<ConfigurationModel> getConfigurationById(Long id) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getConfigurationsByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getConfigurationsByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context);
 
-    List<ConfigurationModel> getConfigurationsByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException;
-
-    ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields);
 
     ConfigurationModel updateConfiguration(Long descriptorConfigId, Collection<ConfigurationFieldModel> configuredFields) throws AlertConfigurationException;
 
-    void deleteConfiguration(ConfigurationModel configModel) throws AlertDatabaseConstraintException;
+    void deleteConfiguration(ConfigurationModel configModel);
 
-    void deleteConfiguration(Long descriptorConfigId) throws AlertDatabaseConstraintException;
+    void deleteConfiguration(Long descriptorConfigId);
 
 }

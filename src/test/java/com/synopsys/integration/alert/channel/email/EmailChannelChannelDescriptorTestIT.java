@@ -144,14 +144,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @AfterEach
-    public void cleanUp() throws Exception {
+    public void cleanUp() {
         if (null != providerConfig) {
             configurationAccessor.deleteConfiguration(providerConfig);
         }
     }
 
     @Override
-    public Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception {
+    public Optional<ConfigurationModel> saveGlobalConfiguration() {
         Map<String, String> valueMap = new HashMap<>();
         String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -175,7 +175,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ConfigurationModel saveDistributionConfiguration() throws Exception {
+    public ConfigurationModel saveDistributionConfiguration() {
         List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
         return configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.DISTRIBUTION, models);

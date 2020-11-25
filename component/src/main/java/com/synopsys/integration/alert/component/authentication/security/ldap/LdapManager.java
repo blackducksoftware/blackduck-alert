@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.component.authentication.security.ldap;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.support.DigestMd5DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
@@ -41,7 +39,6 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -52,8 +49,6 @@ import com.synopsys.integration.alert.component.authentication.security.UserMana
 
 @Component
 public class LdapManager {
-    private final Logger logger = LoggerFactory.getLogger(LdapManager.class);
-
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
@@ -66,22 +61,14 @@ public class LdapManager {
     }
 
     public boolean isLdapEnabled() {
-        try {
-            Optional<ConfigurationModel> ldapConfig = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
-                                                          .stream()
-                                                          .findFirst();
-            if (ldapConfig.isPresent()) {
-                return Boolean.valueOf(getFieldValueOrEmpty(ldapConfig.get(), AuthenticationDescriptor.KEY_LDAP_ENABLED));
-            }
-        } catch (AlertDatabaseConstraintException ex) {
-            logger.warn(ex.getMessage());
-            logger.debug("cause: ", ex);
-        }
-
-        return false;
+        Optional<ConfigurationModel> ldapConfig = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
+                                                      .stream()
+                                                      .findFirst();
+        return ldapConfig.map(configurationModel -> Boolean.valueOf(getFieldValueOrEmpty(configurationModel, AuthenticationDescriptor.KEY_LDAP_ENABLED)))
+                   .orElse(false);
     }
 
-    public FieldUtility getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertConfigurationException {
+    public FieldUtility getCurrentConfiguration() throws AlertConfigurationException {
         ConfigurationModel configModel = configurationAccessor.getConfigurationsByDescriptorKey(authenticationDescriptorKey)
                                              .stream()
                                              .findFirst()
@@ -90,12 +77,8 @@ public class LdapManager {
     }
 
     public Optional<LdapAuthenticationProvider> getAuthenticationProvider() throws AlertConfigurationException {
-        try {
-            FieldUtility fieldUtility = getCurrentConfiguration();
-            return createAuthProvider(fieldUtility);
-        } catch (AlertDatabaseConstraintException ex) {
-            throw new AlertConfigurationException("Error creating LDAP Context Source", ex);
-        }
+        FieldUtility fieldUtility = getCurrentConfiguration();
+        return createAuthProvider(fieldUtility);
     }
 
     public Optional<LdapAuthenticationProvider> createAuthProvider(FieldUtility configuration) throws AlertConfigurationException {

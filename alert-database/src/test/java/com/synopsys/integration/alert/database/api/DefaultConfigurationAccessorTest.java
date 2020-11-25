@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -71,7 +70,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getProviderConfigurationByNameTest() throws Exception {
+    public void getProviderConfigurationByNameTest() {
         final String providerConfigName = "provider-config-name-test";
         final String emptyProviderConfigName = "bad-config-name";
         final Long fieldId = 1L;
@@ -174,38 +173,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getChannelConfigurationsByFrequencyTest() {
-        final Long descriptorId = 3L;
-        final Long configurationId = 5L;
-        FrequencyType frequencyType = FrequencyType.DAILY;
-
-        DescriptorTypeEntity descriptorTypeEntity = new DescriptorTypeEntity("CHANNEL");
-        descriptorTypeEntity.setId(1L);
-        RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity("name-test", 1L);
-        registeredDescriptorEntity.setId(2L);
-        DescriptorConfigEntity descriptorConfigEntity = new DescriptorConfigEntity(descriptorId, 4L, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
-        descriptorConfigEntity.setId(configurationId);
-        ConfigContextEntity configContextEntity = new ConfigContextEntity(configContextEnum.name());
-        FieldValueEntity fieldValueEntity = new FieldValueEntity(6L, 7L, fieldValue);
-        DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
-        definedFieldEntity.setId(8L);
-
-        Mockito.when(descriptorTypeRepository.findFirstByType(Mockito.any())).thenReturn(Optional.of(descriptorTypeEntity));
-        Mockito.when(registeredDescriptorRepository.findByTypeIdAndFrequency(Mockito.any(), Mockito.any())).thenReturn(List.of(registeredDescriptorEntity));
-        setupCreatConfigMocks(descriptorConfigEntity, configContextEntity, fieldValueEntity, definedFieldEntity);
-
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigRepository, configContextRepository,
-            fieldValueRepository,
-            encryptionUtility);
-        List<ConfigurationModel> configurationModelList = configurationAccessor.getChannelConfigurationsByFrequency(frequencyType);
-
-        assertEquals(1, configurationModelList.size());
-        ConfigurationModel configurationModel = configurationModelList.get(0);
-        testConfigurationModel(configurationId, descriptorId, configurationModel);
-    }
-
-    @Test
-    public void getConfigurationsByDescriptorKeyAndContextTest() throws Exception {
+    public void getConfigurationsByDescriptorKeyAndContextTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
 
@@ -228,9 +196,8 @@ public class DefaultConfigurationAccessorTest {
         Mockito.when(definedFieldRepository.findById(Mockito.any())).thenReturn(Optional.of(definedFieldEntity));
         EncryptionUtility encryptionUtility = createEncryptionUtility();
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, null, definedFieldRepository, descriptorConfigRepository, configContextRepository,
-            fieldValueRepository,
-            encryptionUtility);
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(
+            registeredDescriptorRepository, null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtility);
         List<ConfigurationModel> configurationModelList = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, configContextEnum);
 
         assertEquals(1, configurationModelList.size());
@@ -239,7 +206,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void createConfigurationTest() throws Exception {
+    public void createConfigurationTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
 
@@ -311,7 +278,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void deleteConfigurationTest() throws Exception {
+    public void deleteConfigurationTest() {
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 2L, "dateCreated", "lastUpdated", configContextEnum);
 
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, descriptorConfigRepository, null, null, null);
@@ -321,7 +288,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void decryptTest() throws Exception {
+    public void decryptTest() {
         final String decryptedString = "decryptedString";
         final String providerConfigName = "provider-config-name-test";
         final String emptyProviderConfigName = "bad-config-name";

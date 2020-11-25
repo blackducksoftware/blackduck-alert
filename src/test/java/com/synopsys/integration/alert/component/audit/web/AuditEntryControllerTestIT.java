@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.component.audit.web;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -76,7 +74,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     MockNotificationContent mockNotificationContent = new MockNotificationContent();
 
     @BeforeEach
-    public void setup() throws AlertDatabaseConstraintException, IOException {
+    public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
         cleanup();
 
@@ -98,7 +96,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     }
 
     @AfterEach
-    public void cleanup() throws AlertDatabaseConstraintException {
+    public void cleanup() {
         auditEntryRepository.flush();
         descriptorConfigRepository.flush();
         fieldValueRepository.flush();

@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -65,8 +64,6 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 @Component
 @Transactional
 public class DefaultConfigurationAccessor implements ConfigurationAccessor {
-    private static final String NULL_CONFIG_ID = "The config id cannot be null";
-
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DescriptorTypeRepository descriptorTypeRepository;
     private final DefinedFieldRepository definedFieldRepository;
@@ -154,16 +151,6 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
                           .map(DatabaseEntity::getId)
                           .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Descriptor type '%s' does not exist", descriptorTypeName)));
         List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeId(typeId);
-        return createConfigModels(registeredDescriptorEntities);
-    }
-
-    @Override
-    public List<ConfigurationModel> getChannelConfigurationsByFrequency(FrequencyType frequencyType) {
-        String channelDescriptorTypeName = DescriptorType.CHANNEL.name();
-        Long typeId = descriptorTypeRepository.findFirstByType(channelDescriptorTypeName)
-                          .map(DatabaseEntity::getId)
-                          .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Descriptor type '%s' does not exist", channelDescriptorTypeName)));
-        List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeIdAndFrequency(typeId, frequencyType.name());
         return createConfigModels(registeredDescriptorEntities);
     }
 

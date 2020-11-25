@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ta
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
@@ -149,19 +148,11 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private ValidationResult validateConfigExists(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Optional<ConfigurationModel> configModel = fieldToValidate.getValue()
                                                        .map(Long::parseLong)
-                                                       .flatMap(this::readConfiguration);
+                                                       .flatMap(configurationAccessor::getConfigurationById);
         if (!configModel.isPresent()) {
             return ValidationResult.errors("Provider configuration missing.");
         }
         return ValidationResult.success();
-    }
-
-    private Optional<ConfigurationModel> readConfiguration(Long configId) {
-        try {
-            return configurationAccessor.getConfigurationById(configId);
-        } catch (AlertDatabaseConstraintException ex) {
-            return Optional.empty();
-        }
     }
 
     private ValidationResult validateFilterByProject(FieldValueModel fieldToValidate, FieldModel fieldModel) {
