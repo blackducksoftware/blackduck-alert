@@ -32,13 +32,15 @@ import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController
 public class EndpointTableSelectField extends EndpointField {
     private boolean paged;
     private boolean searchable;
+    private boolean useRowAsValue;
     private final List<TableSelectColumn> columns;
 
     public EndpointTableSelectField(String key, String label, String description) {
         super(key, label, description, FieldType.TABLE_SELECT_INPUT, "Select", AbstractFunctionController.API_FUNCTION_URL);
         this.paged = false;
         this.searchable = true;
-        columns = new LinkedList<>();
+        this.useRowAsValue = false;
+        this.columns = new LinkedList<>();
     }
 
     public EndpointTableSelectField applyPaged(boolean paged) {
@@ -48,6 +50,11 @@ public class EndpointTableSelectField extends EndpointField {
 
     public EndpointTableSelectField applySearchable(boolean searchable) {
         this.searchable = searchable;
+        return this;
+    }
+
+    public EndpointTableSelectField applyUseRowAsValue(boolean useRowAsValue) {
+        this.useRowAsValue = useRowAsValue;
         return this;
     }
 
@@ -71,6 +78,10 @@ public class EndpointTableSelectField extends EndpointField {
 
     public boolean isSearchable() {
         return searchable;
+    }
+
+    public boolean isUseRowAsValue() {
+        return useRowAsValue;
     }
 
     public List<TableSelectColumn> getColumns() {
