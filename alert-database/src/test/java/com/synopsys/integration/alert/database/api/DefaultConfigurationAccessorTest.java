@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -102,18 +102,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getProviderConfigurationByNameBlankTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.getProviderConfigurationByName("");
-            fail("Blank providerConfigName did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void getConfigurationByIdEmptyTest() throws Exception {
+    public void getConfigurationByIdEmptyTest() {
         Mockito.when(descriptorConfigRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, descriptorConfigRepository, null, null, null);
@@ -123,18 +112,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getConfigurationByIdNullTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.getConfigurationById(null);
-            fail("Null id did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void getConfigurationsByDescriptorKeyTest() throws Exception {
+    public void getConfigurationsByDescriptorKeyTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
 
@@ -165,18 +143,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getConfigurationsByDescriptorKeyNullTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.getConfigurationsByDescriptorKey(null);
-            fail("Null descriptorKey did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void getConfigurationsByDescriptorTypeTest() throws Exception {
+    public void getConfigurationsByDescriptorTypeTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
         DescriptorType descriptorType = DescriptorType.CHANNEL;
@@ -207,18 +174,7 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getConfigurationsByDescriptorTypeNullTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.getConfigurationsByDescriptorType(null);
-            fail("Null descriptorType did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void getChannelConfigurationsByFrequencyTest() throws Exception {
+    public void getChannelConfigurationsByFrequencyTest() {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
         FrequencyType frequencyType = FrequencyType.DAILY;
@@ -246,17 +202,6 @@ public class DefaultConfigurationAccessorTest {
         assertEquals(1, configurationModelList.size());
         ConfigurationModel configurationModel = configurationModelList.get(0);
         testConfigurationModel(configurationId, descriptorId, configurationModel);
-    }
-
-    @Test
-    public void getChannelConfigurationsByFrequencyNullTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.getChannelConfigurationsByFrequency(null);
-            fail("Null frequencyType did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
     }
 
     @Test
@@ -294,17 +239,6 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void getConfigurationsByDescriptorKeyAndContextNullTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.getConfigurationsByDescriptorKeyAndContext(null, null);
-            fail("Null descriptorKey and context did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
     public void createConfigurationTest() throws Exception {
         final Long descriptorId = 3L;
         final Long configurationId = 5L;
@@ -333,35 +267,6 @@ public class DefaultConfigurationAccessorTest {
         ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, configContextEnum, configuredFields);
 
         testConfigurationModel(configurationId, descriptorId, configurationModel);
-    }
-
-    @Test
-    public void createConfigurationNullTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.createConfiguration(null, null, null);
-            fail("Null descriptorKey, context, and configuredFields did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void getConfigurationByDescriptorNameAndContextNullTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.getConfigurationsByDescriptorNameAndContext(null, configContextEnum);
-            fail("Null descriptorName did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-
-        try {
-            configurationAccessor.getConfigurationsByDescriptorNameAndContext("descriptorName", null);
-            fail("Null context did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
     }
 
     @Test
@@ -395,12 +300,12 @@ public class DefaultConfigurationAccessorTest {
     }
 
     @Test
-    public void updateConfigurationNullTest() throws Exception {
+    public void updateConfigurationNullTest() {
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
         try {
             configurationAccessor.updateConfiguration(null, null);
             fail("Null descriptorConfigId and configuredFields did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
+        } catch (AlertConfigurationException e) {
             assertNotNull(e);
         }
     }
@@ -413,30 +318,6 @@ public class DefaultConfigurationAccessorTest {
         configurationAccessor.deleteConfiguration(configurationModel);
 
         Mockito.verify(descriptorConfigRepository).deleteById(Mockito.any());
-    }
-
-    @Test
-    public void deleteConfigurationNullConfigModelTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            ConfigurationModel configurationModel = null;
-            configurationAccessor.deleteConfiguration(configurationModel);
-            fail("Null configurationModel did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void deleteConfigurationNullDescriptorConfigIdTest() throws Exception {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            Long descriptorConfigId = null;
-            configurationAccessor.deleteConfiguration(descriptorConfigId);
-            fail("Null descriptorConfigId did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
     }
 
     @Test

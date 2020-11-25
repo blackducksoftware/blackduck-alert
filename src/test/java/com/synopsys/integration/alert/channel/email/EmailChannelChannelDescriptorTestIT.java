@@ -189,12 +189,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                              .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        List<ConfigurationModel> models = List.of();
-        try {
-            models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
-        } catch (AlertDatabaseConstraintException e) {
-            e.printStackTrace();
-        }
+        List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
 
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         for (ConfigurationModel model : models) {

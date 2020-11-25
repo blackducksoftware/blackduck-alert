@@ -34,6 +34,7 @@ import com.google.api.client.util.store.AbstractDataStore;
 import com.google.api.client.util.store.DataStore;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -102,7 +103,7 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
 
             try {
                 configurationAccessor.updateConfiguration(defaultConfig.getConfigurationId(), keyToFieldMap.values());
-            } catch (AlertDatabaseConstraintException e) {
+            } catch (AlertConfigurationException e) {
                 throw new IOException("Cannot update the Azure Boards global configuration", e);
             }
         }
