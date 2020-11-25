@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsPr
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceActions;
+import com.synopsys.integration.alert.common.action.api.ConfigResourceActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -73,14 +73,21 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final AzureRedirectUtil azureRedirectUtil;
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
-    // TODO create and use intermediate class for this
-    private final AbstractConfigResourceActions configActions;
+    private final ConfigResourceActions configActions;
 
     @Autowired
-    public AzureBoardsCustomFunctionAction(AlertProperties alertProperties, ConfigurationAccessor configurationAccessor,
-        ConfigurationFieldModelConverter modelConverter, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil,
-        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator, AbstractConfigResourceActions configActions, AuthorizationManager authorizationManager,
-        DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
+    public AzureBoardsCustomFunctionAction(
+        AlertProperties alertProperties,
+        ConfigurationAccessor configurationAccessor,
+        ConfigurationFieldModelConverter modelConverter,
+        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+        AzureRedirectUtil azureRedirectUtil,
+        ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator,
+        ConfigResourceActions configActions,
+        AuthorizationManager authorizationManager,
+        DescriptorMap descriptorMap,
+        FieldValidationUtility fieldValidationUtility
+    ) {
         super(AzureBoardsDescriptor.KEY_OAUTH, authorizationManager, descriptorMap, fieldValidationUtility);
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
