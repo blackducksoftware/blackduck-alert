@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeEntity;
 import com.synopsys.integration.alert.database.job.blackduck.notification.BlackDuckJobNotificationTypeRepository;
 import com.synopsys.integration.alert.database.job.blackduck.policy.BlackDuckJobPolicyFilterEntity;
@@ -65,37 +65,37 @@ public class BlackDuckJobDetailsAccessor {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public BlackDuckJobDetailsEntity saveBlackDuckJobDetails(UUID jobId, DistributionJobModel distributionJobModel) {
+    public BlackDuckJobDetailsEntity saveBlackDuckJobDetails(UUID jobId, DistributionJobRequestModel requestModel) {
         BlackDuckJobDetailsEntity blackDuckJobDetailsToSave = new BlackDuckJobDetailsEntity(
             jobId,
-            distributionJobModel.getBlackDuckGlobalConfigId(),
-            distributionJobModel.isFilterByProject(),
-            distributionJobModel.getProjectNamePattern().orElse(null)
+            requestModel.getBlackDuckGlobalConfigId(),
+            requestModel.isFilterByProject(),
+            requestModel.getProjectNamePattern().orElse(null)
         );
         BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsRepository.save(blackDuckJobDetailsToSave);
 
-        List<BlackDuckJobNotificationTypeEntity> notificationTypesToSave = distributionJobModel.getNotificationTypes()
+        List<BlackDuckJobNotificationTypeEntity> notificationTypesToSave = requestModel.getNotificationTypes()
                                                                                .stream()
                                                                                .map(notificationType -> new BlackDuckJobNotificationTypeEntity(jobId, notificationType))
                                                                                .collect(Collectors.toList());
         List<BlackDuckJobNotificationTypeEntity> savedNotificationTypes = blackDuckJobNotificationTypeRepository.saveAll(notificationTypesToSave);
         savedBlackDuckJobDetails.setBlackDuckJobNotificationTypes(savedNotificationTypes);
 
-        List<BlackDuckJobProjectEntity> ProjectFiltersToSave = distributionJobModel.getProjectFilterProjectNames()
+        List<BlackDuckJobProjectEntity> ProjectFiltersToSave = requestModel.getProjectFilterProjectNames()
                                                                    .stream()
                                                                    .map(projectName -> new BlackDuckJobProjectEntity(jobId, projectName))
                                                                    .collect(Collectors.toList());
         List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(ProjectFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobProjects(savedProjectFilters);
 
-        List<BlackDuckJobPolicyFilterEntity> policyFiltersToSave = distributionJobModel.getPolicyFilterPolicyNames()
+        List<BlackDuckJobPolicyFilterEntity> policyFiltersToSave = requestModel.getPolicyFilterPolicyNames()
                                                                        .stream()
                                                                        .map(policyName -> new BlackDuckJobPolicyFilterEntity(jobId, policyName))
                                                                        .collect(Collectors.toList());
         List<BlackDuckJobPolicyFilterEntity> savedPolicyFilters = blackDuckJobPolicyFilterRepository.saveAll(policyFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobPolicyFilters(savedPolicyFilters);
 
-        List<BlackDuckJobVulnerabilitySeverityFilterEntity> vulnerabilitySeverityFiltersToSave = distributionJobModel.getVulnerabilityFilterSeverityNames()
+        List<BlackDuckJobVulnerabilitySeverityFilterEntity> vulnerabilitySeverityFiltersToSave = requestModel.getVulnerabilityFilterSeverityNames()
                                                                                                      .stream()
                                                                                                      .map(severityName -> new BlackDuckJobVulnerabilitySeverityFilterEntity(jobId, severityName))
                                                                                                      .collect(Collectors.toList());
