@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
-public abstract class AbstractConfigResourceActions {
+public abstract class AbstractConfigResourceActions implements ConfigResourceActions {
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
 
@@ -65,6 +65,7 @@ public abstract class AbstractConfigResourceActions {
 
     protected abstract ValidationActionResponse validateWithoutChecks(FieldModel resource);
 
+    @Override
     public final ActionResponse<MultiFieldModel> getAllByContextAndDescriptor(String context, String descriptorName) {
         if (!authorizationManager.hasReadPermission(context, descriptorName)) {
             return ActionResponse.createForbiddenResponse();
@@ -72,6 +73,7 @@ public abstract class AbstractConfigResourceActions {
         return readAllByContextAndDescriptorWithoutChecks(context, descriptorName);
     }
 
+    @Override
     public final ActionResponse<FieldModel> create(FieldModel resource) {
         if (!authorizationManager.hasCreatePermission(resource.getContext(), resource.getDescriptorName())) {
             return ActionResponse.createForbiddenResponse();
@@ -83,6 +85,7 @@ public abstract class AbstractConfigResourceActions {
         return createWithoutChecks(resource);
     }
 
+    @Override
     public final ActionResponse<MultiFieldModel> getAll() {
         try {
             Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
@@ -98,6 +101,7 @@ public abstract class AbstractConfigResourceActions {
         }
     }
 
+    @Override
     public final ActionResponse<FieldModel> getOne(Long id) {
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
@@ -111,6 +115,7 @@ public abstract class AbstractConfigResourceActions {
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
+    @Override
     public final ActionResponse<FieldModel> update(Long id, FieldModel resource) {
         if (!authorizationManager.hasWritePermission(resource.getContext(), resource.getDescriptorName())) {
             return ActionResponse.createForbiddenResponse();
@@ -128,6 +133,7 @@ public abstract class AbstractConfigResourceActions {
         return updateWithoutChecks(id, resource);
     }
 
+    @Override
     public final ActionResponse<FieldModel> delete(Long id) {
         Optional<FieldModel> fieldModel = findFieldModel(id);
         if (fieldModel.isPresent()) {
@@ -144,6 +150,7 @@ public abstract class AbstractConfigResourceActions {
         return deleteWithoutChecks(id);
     }
 
+    @Override
     public final ValidationActionResponse test(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
@@ -157,6 +164,7 @@ public abstract class AbstractConfigResourceActions {
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
+    @Override
     public final ValidationActionResponse validate(FieldModel resource) {
         if (!authorizationManager.hasExecutePermission(resource.getContext(), resource.getDescriptorName())) {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
@@ -173,4 +181,5 @@ public abstract class AbstractConfigResourceActions {
     public DescriptorAccessor getDescriptorAccessor() {
         return descriptorAccessor;
     }
+
 }
