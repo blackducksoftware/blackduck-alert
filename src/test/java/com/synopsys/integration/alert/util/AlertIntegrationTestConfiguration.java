@@ -46,6 +46,8 @@ public class AlertIntegrationTestConfiguration {
         return new DescriptorMocker(descriptorTypeRepository, registeredDescriptorRepository, descriptorFieldRepository, definedFieldRepository, fieldContextRepository, configContextRepository);
     }
 
+    // FIXME delete
+    @Deprecated(forRemoval = true)
     public void initBlackDuckData() throws AlertException {
         TestProperties testProperties = new TestProperties();
 
@@ -61,9 +63,7 @@ public class AlertIntegrationTestConfiguration {
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
         ConfigurationModel blackDuckConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(blackDuckProviderKey, ConfigContextEnum.GLOBAL).stream().findFirst()
                                                         .orElse(
-
                                                             configurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField))
-
                                                         );
         configurationAccessor.updateConfiguration(blackDuckConfiguration.getConfigurationId(), List.of(blackDuckURLField, blackDuckAPITokenField, blackDuckTimeoutField));
     }

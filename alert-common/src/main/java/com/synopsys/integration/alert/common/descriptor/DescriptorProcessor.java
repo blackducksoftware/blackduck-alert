@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -84,7 +83,7 @@ public class DescriptorProcessor {
         return descriptorMap.getDescriptorKey(descriptorName).flatMap(descriptorMap::getDescriptor);
     }
 
-    public Optional<ConfigurationModel> getSavedEntity(Long id) throws AlertException {
+    public Optional<ConfigurationModel> getSavedEntity(Long id) {
         if (null != id) {
             return configurationAccessor.getConfigurationById(id);
         }

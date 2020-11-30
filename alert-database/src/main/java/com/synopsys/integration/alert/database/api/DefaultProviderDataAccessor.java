@@ -74,19 +74,13 @@ public class DefaultProviderDataAccessor {
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
-        try {
-            Optional<Long> optionalConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
-                                                  .map(ConfigurationModel::getConfigurationId);
-            if (optionalConfigId.isPresent()) {
-                return providerProjectRepository.findByProviderConfigId(optionalConfigId.get())
-                           .stream()
-                           .map(this::convertToProjectModel)
-                           .collect(Collectors.toList());
-            }
-        } catch (AlertDatabaseConstraintException ignored) {
-            // ignoring this exception
-        }
-        return List.of();
+        return configurationAccessor.getProviderConfigurationByName(providerConfigName)
+                   .map(ConfigurationModel::getConfigurationId)
+                   .map(providerProjectRepository::findByProviderConfigId)
+                   .stream()
+                   .flatMap(List::stream)
+                   .map(this::convertToProjectModel)
+                   .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
@@ -132,14 +126,11 @@ public class DefaultProviderDataAccessor {
         if (StringUtils.isBlank(providerConfigName)) {
             return List.of();
         }
-        try {
-            Optional<Long> optionalProviderConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
-                                                          .map(ConfigurationModel::getConfigurationId);
-            if (optionalProviderConfigId.isPresent()) {
-                return getUsersByProviderConfigId(optionalProviderConfigId.get());
-            }
-        } catch (AlertDatabaseConstraintException ignored) {
-            // ignoring this exception
+
+        Optional<Long> optionalProviderConfigId = configurationAccessor.getProviderConfigurationByName(providerConfigName)
+                                                      .map(ConfigurationModel::getConfigurationId);
+        if (optionalProviderConfigId.isPresent()) {
+            return getUsersByProviderConfigId(optionalProviderConfigId.get());
         }
         return List.of();
     }

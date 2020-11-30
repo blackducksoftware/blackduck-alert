@@ -77,7 +77,7 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         return configurationJobModel;
     }
 
-    public ConfigurationModel addGlobalConfiguration(DescriptorKey descriptorKey, Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
+    public ConfigurationModel addGlobalConfiguration(DescriptorKey descriptorKey, Map<String, Collection<String>> fieldsValues) {
         Set<ConfigurationFieldModel> fieldModels = fieldsValues
                                                        .entrySet()
                                                        .stream()

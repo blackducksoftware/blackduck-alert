@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,7 +43,6 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestVal
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -169,17 +167,11 @@ public class AzureOAuthCallbackController {
 
     private FieldUtility createFieldAccessor() {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        try {
-            List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL);
-            Optional<ConfigurationModel> configModel = azureChannelConfigs.stream()
-                                                           .findFirst();
-
-            configModel
-                .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                .ifPresent(fields::putAll);
-        } catch (AlertDatabaseConstraintException ex) {
-            logger.error("Error reading Azure Channel configuration", ex);
-        }
+        List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL);
+        azureChannelConfigs.stream()
+            .findFirst()
+            .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+            .ifPresent(fields::putAll);
         return new FieldUtility(fields);
     }
 

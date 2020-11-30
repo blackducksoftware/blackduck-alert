@@ -79,7 +79,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     }
 
     @AfterEach
-    public void cleanupTest() throws Exception {
+    public void cleanupTest() {
         if (null != global_config && global_config.isPresent()) {
             configurationAccessor.deleteConfiguration(global_config.get());
         }

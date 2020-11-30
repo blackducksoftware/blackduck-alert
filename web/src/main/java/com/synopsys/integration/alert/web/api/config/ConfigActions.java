@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -98,13 +97,10 @@ public class ConfigActions extends AbstractConfigResourceActions {
         if (!descriptorKey.isPresent()) {
             return new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("Unknown descriptor: %s", descriptorName));
         }
-        try {
-            List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), configContext);
-            List<FieldModel> fieldModels = convertConfigurationModelList(descriptorName, context, configurationModels);
-            return new ActionResponse<>(HttpStatus.OK, new MultiFieldModel(fieldModels));
-        } catch (AlertDatabaseConstraintException ex) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error reading configurations: %s", ex.getMessage()));
-        }
+
+        List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), configContext);
+        List<FieldModel> fieldModels = convertConfigurationModelList(descriptorName, context, configurationModels);
+        return new ActionResponse<>(HttpStatus.OK, new MultiFieldModel(fieldModels));
     }
 
     private List<FieldModel> convertConfigurationModelList(String descriptorName, String context, List<ConfigurationModel> configurationModels) {
@@ -133,35 +129,34 @@ public class ConfigActions extends AbstractConfigResourceActions {
     @Override
     protected Optional<FieldModel> findFieldModel(Long id) {
         Optional<FieldModel> optionalModel = Optional.empty();
-        try {
-            Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
-            if (configurationModel.isPresent()) {
+        Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
+        if (configurationModel.isPresent()) {
+            try {
                 FieldModel configurationFieldModel = modelConverter.convertToFieldModel(configurationModel.get());
                 FieldModel fieldModel = fieldModelProcessor.performAfterReadAction(configurationFieldModel);
                 optionalModel = Optional.of(fieldModel);
+            } catch (AlertException ex) {
+                logger.error(String.format("Error finding configuration for id: %d", id), ex);
             }
-        } catch (AlertException ex) {
-            logger.error(String.format("Error finding configuration for id: %d", id), ex);
         }
         return optionalModel;
     }
 
     @Override
     protected ActionResponse<FieldModel> deleteWithoutChecks(Long id) {
-        try {
-            Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
-            if (configuration.isPresent()) {
+        Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
+        if (configuration.isPresent()) {
+            try {
                 ConfigurationModel configurationModel = configuration.get();
                 FieldModel convertedFieldModel = modelConverter.convertToFieldModel(configurationModel);
                 FieldModel fieldModel = fieldModelProcessor.performBeforeDeleteAction(convertedFieldModel);
                 configurationAccessor.deleteConfiguration(Long.parseLong(fieldModel.getId()));
                 fieldModelProcessor.performAfterDeleteAction(fieldModel);
+            } catch (AlertException ex) {
+                logger.error(String.format("Error deleting config id: %d", id), ex);
+                return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
-        } catch (AlertException ex) {
-            logger.error(String.format("Error deleting config id: %d", id), ex);
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
-
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
@@ -188,10 +183,9 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ActionResponse<FieldModel> updateWithoutChecks(Long id, FieldModel resource) {
+        Optional<ConfigurationModel> optionalPreviousConfig = configurationAccessor.getConfigurationById(id);
+        FieldModel previousFieldModel = optionalPreviousConfig.isPresent() ? modelConverter.convertToFieldModel(optionalPreviousConfig.get()) : null;
         try {
-            Optional<ConfigurationModel> optionalPreviousConfig = configurationAccessor.getConfigurationById(id);
-            FieldModel previousFieldModel = optionalPreviousConfig.isPresent() ? modelConverter.convertToFieldModel(optionalPreviousConfig.get()) : null;
-
             FieldModel updatedFieldModel = fieldModelProcessor.performBeforeUpdateAction(resource);
             Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, updatedFieldModel);
             ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);

@@ -155,6 +155,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         if (null == providerConfigId) {
             return Optional.empty();
         }
+
         return configurationAccessor.getConfigurationById(providerConfigId)
                    .map(ConfigurationModel::getCopyOfKeyToFieldMap)
                    .map(FieldUtility::new)

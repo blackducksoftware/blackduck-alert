@@ -34,7 +34,7 @@ import com.google.api.client.util.store.AbstractDataStore;
 import com.google.api.client.util.store.DataStore;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -102,7 +102,7 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
 
             try {
                 configurationAccessor.updateConfiguration(defaultConfig.getConfigurationId(), keyToFieldMap.values());
-            } catch (AlertDatabaseConstraintException e) {
+            } catch (AlertConfigurationException e) {
                 throw new IOException("Cannot update the Azure Boards global configuration", e);
             }
         }
@@ -123,21 +123,17 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
     }
 
     @Override
-    public AzureBoardsCredentialDataStore delete(String key) throws IOException {
+    public AzureBoardsCredentialDataStore delete(String key) {
         if (null != key) {
             ConfigurationModel defaultConfig = retrieveConfiguration();
             if (isConfiguredWithUserEmail(defaultConfig, key)) {
-                try {
-                    configurationAccessor.deleteConfiguration(defaultConfig.getConfigurationId());
-                } catch (AlertDatabaseConstraintException e) {
-                    throw new IOException("Cannot delete the Azure Boards global configuration", e);
-                }
+                configurationAccessor.deleteConfiguration(defaultConfig.getConfigurationId());
             }
         }
         return this;
     }
 
-    private StoredCredential retrieveCredentialMatchingEmailOrNull(String credentialUserEmail) throws IOException {
+    private StoredCredential retrieveCredentialMatchingEmailOrNull(String credentialUserEmail) {
         ConfigurationModel defaultConfig = retrieveConfiguration();
         if (isConfiguredWithUserEmail(defaultConfig, credentialUserEmail)) {
             return createStoredCredential(defaultConfig);
@@ -145,15 +141,11 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
         return null;
     }
 
-    private ConfigurationModel retrieveConfiguration() throws IOException {
-        try {
-            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL)
-                       .stream()
-                       .findFirst()
-                       .orElseThrow(() -> new AlertRuntimeException("No Azure Boards global configuration exists. Cannot read data store."));
-        } catch (AlertDatabaseConstraintException e) {
-            throw new IOException(e);
-        }
+    private ConfigurationModel retrieveConfiguration() {
+        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL)
+                   .stream()
+                   .findFirst()
+                   .orElseThrow(() -> new AlertRuntimeException("No Azure Boards global configuration exists. Cannot read data store."));
     }
 
     private boolean isConfiguredWithUserEmail(ConfigurationModel configurationModel, String credentialUserEmail) {

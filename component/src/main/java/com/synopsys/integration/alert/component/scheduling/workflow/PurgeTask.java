@@ -35,7 +35,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
@@ -55,6 +54,7 @@ public class PurgeTask extends StartupScheduledTask {
     public static final String CRON_FORMAT = "0 0 0 1/%s * ?";
     public static final int DEFAULT_FREQUENCY = 3;
     private static final int DEFAULT_DAY_OFFSET = 1;
+
     private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
     private final SchedulingDescriptorKey schedulingDescriptorKey;
     private final NotificationAccessor notificationAccessor;
@@ -81,19 +81,13 @@ public class PurgeTask extends StartupScheduledTask {
 
     @Override
     public String scheduleCronExpression() {
-        try {
-            List<ConfigurationModel> schedulingConfigs = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey);
-            String purgeSavedCronValue = schedulingConfigs.stream()
-                                             .findFirst()
-                                             .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
-                                             .flatMap(ConfigurationFieldModel::getFieldValue)
-                                             .orElse(String.valueOf(DEFAULT_FREQUENCY));
-            return String.format(CRON_FORMAT, purgeSavedCronValue);
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("Error connecting to DB", e);
-        }
-
-        return String.format(CRON_FORMAT, DEFAULT_FREQUENCY);
+        String purgeSavedCronValue = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey)
+                                         .stream()
+                                         .findFirst()
+                                         .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
+                                         .flatMap(ConfigurationFieldModel::getFieldValue)
+                                         .orElse(String.valueOf(DEFAULT_FREQUENCY));
+        return String.format(CRON_FORMAT, purgeSavedCronValue);
     }
 
     @Override

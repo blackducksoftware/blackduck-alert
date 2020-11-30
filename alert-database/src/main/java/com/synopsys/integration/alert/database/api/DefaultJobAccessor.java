@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
@@ -218,12 +217,8 @@ public class DefaultJobAccessor implements JobAccessor {
     private ConfigurationJobModel createJobModelFromExistingConfigs(UUID jobId, Collection<ConfigGroupEntity> entities) {
         Set<ConfigurationModel> configurationModels = new HashSet<>();
         for (ConfigGroupEntity sortedEntity : entities) {
-            try {
-                configurationAccessor.getConfigurationById(sortedEntity.getConfigId()).ifPresent(configurationModels::add);
-            } catch (AlertDatabaseConstraintException e) {
-                // This case should be impossible based on database constraints
-                throw new AlertRuntimeException(e);
-            }
+            configurationAccessor.getConfigurationById(sortedEntity.getConfigId())
+                .ifPresent(configurationModels::add);
         }
         return new ConfigurationJobModel(jobId, configurationModels);
     }

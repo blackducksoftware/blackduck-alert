@@ -96,14 +96,14 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public List<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId) {
-        return retrieveProviderConfigOrLogErrors(providerConfigId)
+        return configurationAccessor.getConfigurationById(providerConfigId)
                    .flatMap(providerConfig -> retrieveOptionalProjectData(() -> getProjectsForProvider(providerConfig)))
                    .orElse(List.of());
     }
 
     @Override
     public AlertPagedModel<ProviderProject> getProjectsByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
-        return retrieveProviderConfigOrLogErrors(providerConfigId)
+        return configurationAccessor.getConfigurationById(providerConfigId)
                    .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveProjectsForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
                    .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
@@ -115,17 +115,17 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     @Override
     public Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String projectHref) {
-        try {
-            Optional<ConfigurationModel> providerConfigOptional = retrieveProviderConfigOrLogErrors(providerConfigId);
-            if (providerConfigOptional.isPresent()) {
+        Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+        if (providerConfigOptional.isPresent()) {
+            try {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
                 BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
                 ProjectView projectView = blackDuckService.getResponse(new HttpUrl(projectHref), ProjectView.class);
                 return getEmailAddressesForProject(projectView, blackDuckServicesFactory.createProjectUsersService());
+            } catch (IntegrationException e) {
+                logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
+                logger.debug(e.getMessage(), e);
             }
-        } catch (IntegrationException e) {
-            logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
-            logger.debug(e.getMessage(), e);
         }
         return Set.of();
     }
@@ -135,21 +135,22 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         if (null == providerConfigId) {
             return List.of();
         }
-        try {
-            Optional<ConfigurationModel> providerConfigOptional = retrieveProviderConfigOrLogErrors(providerConfigId);
-            if (providerConfigOptional.isPresent()) {
+
+        Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+        if (providerConfigOptional.isPresent()) {
+            try {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
+            } catch (IntegrationException e) {
+                logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
+                logger.debug(e.getMessage(), e);
             }
-        } catch (IntegrationException e) {
-            logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
-            logger.debug(e.getMessage(), e);
         }
         return List.of();
     }
 
     @Override
     public AlertPagedModel<ProviderUserModel> getUsersByProviderConfigId(Long providerConfigId, int pageNumber, int pageSize, String searchTerm) {
-        return retrieveProviderConfigOrLogErrors(providerConfigId)
+        return configurationAccessor.getConfigurationById(providerConfigId)
                    .flatMap(providerConfig -> retrieveOptionalProjectData(() -> retrieveUsersForProvider(providerConfig, pageNumber, pageSize, searchTerm)))
                    .orElse(new AlertPagedModel<>(0, pageNumber, pageSize, List.of()));
     }
@@ -174,16 +175,6 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     @Override
     public void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers) {
         //ignored since are not updating the database
-    }
-
-    private Optional<ConfigurationModel> retrieveProviderConfigOrLogErrors(Long providerConfigId) {
-        try {
-            return configurationAccessor.getConfigurationById(providerConfigId);
-        } catch (IntegrationException e) {
-            logger.error(String.format("Could not get provider with id '%s'. %s", providerConfigId, e.getMessage()));
-            logger.debug(e.getMessage(), e);
-        }
-        return Optional.empty();
     }
 
     private <T> Optional<T> retrieveOptionalProjectData(ThrowingSupplier<T, IntegrationException> retriever) {

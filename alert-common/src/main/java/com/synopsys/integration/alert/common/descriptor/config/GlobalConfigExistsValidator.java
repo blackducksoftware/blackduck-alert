@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -73,18 +72,13 @@ public class GlobalConfigExistsValidator {
         String descriptorDisplayName = optionalDescriptorKey
                                            .map(DescriptorKey::getDisplayName)
                                            .orElse(descriptorName);
-        try {
-            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
-            boolean configurationsAreEmpty = configurations
-                                                 .stream()
-                                                 .filter(configuration -> !configuration.getCopyOfFieldList().isEmpty())
-                                                 .findFirst()
-                                                 .isEmpty();
-            if (configurationsAreEmpty) {
-                return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
-            }
-        } catch (AlertDatabaseConstraintException ex) {
-            logger.error(String.format("Error validating configuration for %s.", descriptorName), ex);
+        List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+        boolean configurationsAreEmpty = configurations
+                                             .stream()
+                                             .filter(configuration -> !configuration.getCopyOfFieldList().isEmpty())
+                                             .findFirst()
+                                             .isEmpty();
+        if (configurationsAreEmpty) {
             return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
         }
         return Optional.empty();

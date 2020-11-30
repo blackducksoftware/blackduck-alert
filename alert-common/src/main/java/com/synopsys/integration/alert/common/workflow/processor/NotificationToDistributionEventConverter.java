@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -76,13 +75,8 @@ public class NotificationToDistributionEventConverter {
     }
 
     private Map<String, ConfigurationFieldModel> getGlobalFields(DescriptorKey descriptorKey) {
-        try {
-            List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
-            return globalConfiguration.stream().findFirst().map(ConfigurationModel::getCopyOfKeyToFieldMap).orElse(Map.of());
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("There was an error retrieving global config : {}", e.getMessage());
-            return Map.of();
-        }
+        List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
+        return globalConfiguration.stream().findFirst().map(ConfigurationModel::getCopyOfKeyToFieldMap).orElse(Map.of());
     }
 
     private DistributionEvent createChannelEvent(ConfigurationJobModel job, MessageContentGroup contentGroup) {
