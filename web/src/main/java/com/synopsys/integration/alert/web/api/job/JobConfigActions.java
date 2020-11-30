@@ -67,6 +67,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobM
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -78,7 +79,10 @@ import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldExtractorUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -169,17 +173,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
     @Override
     protected ActionResponse<JobFieldModel> createWithoutChecks(JobFieldModel resource) {
         try {
-            Set<String> descriptorNames = new HashSet<>();
             Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
             for (FieldModel fieldModel : resource.getFieldModels()) {
                 FieldModel beforeSaveEventFieldModel = fieldModelProcessor.performBeforeSaveAction(fieldModel);
-                descriptorNames.add(beforeSaveEventFieldModel.getDescriptorName());
                 Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertToConfigurationFieldModelMap(beforeSaveEventFieldModel).values();
                 configurationFieldModels.addAll(savedFieldsModels);
             }
 
-            ConfigurationJobModel savedJob = jobAccessor.createJob(descriptorNames, configurationFieldModels);
-            JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
+            DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels);
+            DistributionJobModel savedJob = jobAccessorV2.createJob(jobRequestModel);
+            JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
 
             Set<FieldModel> updatedFieldModels = new HashSet<>();
             for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
@@ -379,6 +382,26 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
+    }
+
+    private DistributionJobRequestModel createDistributionJobRequestModel(Collection<ConfigurationFieldModel> configurationFieldModels) {
+        Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configurationFieldModels, ConfigurationFieldModel::getFieldKey);
+        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, DateUtils.createCurrentDateTimestamp(), null);
+        return new DistributionJobRequestModel(
+            fromResource.isEnabled(),
+            fromResource.getName(),
+            fromResource.getDistributionFrequency(),
+            fromResource.getProcessingType(),
+            fromResource.getChannelDescriptorName(),
+            fromResource.getBlackDuckGlobalConfigId(),
+            fromResource.isFilterByProject(),
+            fromResource.getProjectNamePattern().orElse(null),
+            fromResource.getNotificationTypes(),
+            fromResource.getProjectFilterProjectNames(),
+            fromResource.getPolicyFilterPolicyNames(),
+            fromResource.getVulnerabilityFilterSeverityNames(),
+            fromResource.getDistributionJobDetails()
+        );
     }
 
     public ActionResponse<String> checkGlobalConfigExists(String descriptorName) {

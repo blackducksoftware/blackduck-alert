@@ -135,9 +135,9 @@ public class JobConfigActionsTest {
     public void createTest() throws Exception {
         Mockito.when(fieldModelProcessor.performBeforeSaveAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("Key", configurationFieldModel));
-        Mockito.when(jobAccessor.createJob(Mockito.anyCollection(), Mockito.anyCollection())).thenReturn(configurationJobModel);
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.performAfterSaveAction(Mockito.any())).thenReturn(fieldModel);
+        Mockito.when(jobAccessorV2.createJob(Mockito.any())).thenReturn(distributionJobModel);
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.create(jobFieldModel);
 
@@ -444,7 +444,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void validateBadRequestTest() {
-        UUID newJobId = UUID.randomUUID();
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(jobAccessorV2.getJobByName(Mockito.anyString())).thenReturn(Optional.of(distributionJobModel));
 
