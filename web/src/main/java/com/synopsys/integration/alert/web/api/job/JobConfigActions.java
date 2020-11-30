@@ -61,10 +61,12 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -86,6 +88,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
     private final ConfigurationAccessor configurationAccessor;
     private final JobAccessor jobAccessor;
+    private final JobAccessorV2 jobAccessorV2;
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
@@ -98,6 +101,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         DescriptorAccessor descriptorAccessor,
         ConfigurationAccessor configurationAccessor,
         JobAccessor jobAccessor,
+        JobAccessorV2 jobAccessorV2,
         FieldModelProcessor fieldModelProcessor,
         DescriptorProcessor descriptorProcessor,
         ConfigurationFieldModelConverter modelConverter,
@@ -113,15 +117,17 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.modelConverter = modelConverter;
         this.globalConfigExistsValidator = globalConfigExistsValidator;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
+        this.jobAccessorV2 = jobAccessorV2;
     }
 
     @Override
     public final ActionResponse<JobPagedModel> readPageWithoutChecks(Integer pageNumber, Integer pageSize, String searchTerm, Collection<String> permittedDescriptorsForSession) {
-        AlertPagedModel<ConfigurationJobModel> pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, pageSize, searchTerm, permittedDescriptorsForSession);
-        List<ConfigurationJobModel> pageOfJobsModels = pageOfJobs.getModels();
-        List<JobFieldModel> jobFieldModels = new ArrayList<>(pageOfJobsModels.size());
-        for (ConfigurationJobModel configJobModel : pageOfJobsModels) {
-            JobFieldModel jobFieldModel = convertToJobFieldModel(configJobModel);
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessorV2.getPageOfJobs(pageNumber, pageSize, searchTerm, permittedDescriptorsForSession);
+        List<DistributionJobModel> distributionJobModels = pageOfJobs.getModels();
+
+        List<JobFieldModel> jobFieldModels = new ArrayList<>(distributionJobModels.size());
+        for (DistributionJobModel distributionJobModel : distributionJobModels) {
+            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
             jobFieldModels.add(jobFieldModel);
         }
 
