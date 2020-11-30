@@ -2,9 +2,7 @@ package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +15,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
@@ -264,17 +261,6 @@ public class DefaultConfigurationAccessorTest {
         Mockito.verify(descriptorConfigRepository).save(Mockito.any());
 
         testConfigurationModel(configurationId, descriptorId, configurationModel);
-    }
-
-    @Test
-    public void updateConfigurationNullTest() {
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, null, null, null, null);
-        try {
-            configurationAccessor.updateConfiguration(null, null);
-            fail("Null descriptorConfigId and configuredFields did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertConfigurationException e) {
-            assertNotNull(e);
-        }
     }
 
     @Test
