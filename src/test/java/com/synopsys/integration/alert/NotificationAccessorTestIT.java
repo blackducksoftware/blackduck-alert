@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -94,7 +93,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
     }
 
     @BeforeEach
-    public void init() throws AlertDatabaseConstraintException {
+    public void init() {
         cleanDB();
 
         ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
@@ -114,7 +113,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
     }
 
     @AfterEach
-    public void cleanUpDB() throws AlertDatabaseConstraintException {
+    public void cleanUpDB() {
         configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
         cleanDB();
     }

@@ -20,26 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.exception;
+package com.synopsys.integration.alert.common.rest.model;
 
-@Deprecated(forRemoval = true)
-public class AlertDatabaseConstraintException extends AlertException {
-    private static final long serialVersionUID = 2057996253011099927L;
+import java.util.List;
 
-    public AlertDatabaseConstraintException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
+
+public class AuditJobStatusesModel extends AlertSerializableModel {
+    private final List<AuditJobStatusModel> statuses;
+
+    public AuditJobStatusesModel() {
+        // For serialization
+        this.statuses = List.of();
     }
 
-    public AlertDatabaseConstraintException(String message, Throwable cause) {
-        super(message, cause);
+    public AuditJobStatusesModel(List<AuditJobStatusModel> statuses) {
+        this.statuses = statuses;
     }
 
-    public AlertDatabaseConstraintException(String message) {
-        super(message);
-    }
-
-    public AlertDatabaseConstraintException(Throwable cause) {
-        super(cause);
+    public List<AuditJobStatusModel> getStatuses() {
+        return statuses;
     }
 
 }

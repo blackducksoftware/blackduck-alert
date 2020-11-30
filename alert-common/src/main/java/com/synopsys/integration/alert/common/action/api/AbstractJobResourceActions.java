@@ -235,7 +235,7 @@ public abstract class AbstractJobResourceActions {
                    .allMatch(model -> checkContextAndDescriptorKey(model, permissionChecker));
          */
     }
-    
+
     private boolean checkContextAndDescriptorKey(FieldModel fieldModel, BiFunction<ConfigContextEnum, DescriptorKey, Boolean> permissionChecker) {
         ConfigContextEnum configContextEnum = ConfigContextEnum.valueOf(fieldModel.getContext());
         DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new RuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));

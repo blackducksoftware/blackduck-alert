@@ -21,7 +21,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
@@ -76,12 +75,8 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
     }
 
     @AfterEach
-    public void cleanup() throws Exception {
+    public void cleanup() {
         configurationAccessor.deleteConfiguration(providerConfiguration);
-    }
-
-    private ProviderKey createProviderKey(String key) {
-        return new ProviderKey(key, key);
     }
 
     @Test

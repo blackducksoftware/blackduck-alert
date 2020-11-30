@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.database.api;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,8 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -65,8 +64,6 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 @Component
 @Transactional
 public class DefaultConfigurationAccessor implements ConfigurationAccessor {
-    public static final String EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID = "DescriptorKey is not valid. %s";
-    private static final String NULL_CONFIG_ID = "The config id cannot be null";
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DescriptorTypeRepository descriptorTypeRepository;
     private final DefinedFieldRepository definedFieldRepository;
@@ -76,8 +73,15 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     private final EncryptionUtility encryptionUtility;
 
     @Autowired
-    public DefaultConfigurationAccessor(RegisteredDescriptorRepository registeredDescriptorRepository, DescriptorTypeRepository descriptorTypeRepository, DefinedFieldRepository definedFieldRepository,
-        DescriptorConfigRepository descriptorConfigsRepository, ConfigContextRepository configContextRepository, FieldValueRepository fieldValueRepository, EncryptionUtility encryptionUtility) {
+    public DefaultConfigurationAccessor(
+        RegisteredDescriptorRepository registeredDescriptorRepository,
+        DescriptorTypeRepository descriptorTypeRepository,
+        DefinedFieldRepository definedFieldRepository,
+        DescriptorConfigRepository descriptorConfigsRepository,
+        ConfigContextRepository configContextRepository,
+        FieldValueRepository fieldValueRepository,
+        EncryptionUtility encryptionUtility
+    ) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.descriptorTypeRepository = descriptorTypeRepository;
         this.definedFieldRepository = definedFieldRepository;
@@ -88,15 +92,16 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName) throws AlertDatabaseConstraintException {
+    public Optional<ConfigurationModel> getProviderConfigurationByName(String providerConfigName) {
         if (StringUtils.isBlank(providerConfigName)) {
-            throw new AlertDatabaseConstraintException("The provider configuration name cannot be null");
+            return Optional.empty();
         }
-        Long fieldId = definedFieldRepository.findFirstByKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                           .map(DefinedFieldEntity::getId)
-                           .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("The key '%s' is not registered in the database", ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)));
-        List<Long> providerConfigIds = fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName)
+
+        List<Long> providerConfigIds = definedFieldRepository.findFirstByKey(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                                           .map(DefinedFieldEntity::getId)
                                            .stream()
+                                           .map(fieldId -> fieldValueRepository.findAllByFieldIdAndValue(fieldId, providerConfigName))
+                                           .flatMap(List::stream)
                                            .map(FieldValueEntity::getConfigId)
                                            .collect(Collectors.toList());
         if (!providerConfigIds.isEmpty()) {
@@ -112,78 +117,54 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public Optional<ConfigurationModel> getConfigurationById(Long id) throws AlertDatabaseConstraintException {
+    public Optional<ConfigurationModel> getConfigurationById(Long id) {
         if (id == null) {
-            throw new AlertDatabaseConstraintException(NULL_CONFIG_ID);
+            return Optional.empty();
         }
+
         Optional<DescriptorConfigEntity> optionalDescriptorConfigEntity = descriptorConfigsRepository.findById(id);
         if (optionalDescriptorConfigEntity.isPresent()) {
             DescriptorConfigEntity descriptorConfigEntity = optionalDescriptorConfigEntity.get();
-            return Optional
-                       .of(createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(), descriptorConfigEntity.getCreatedAt(), descriptorConfigEntity.getLastUpdated(), descriptorConfigEntity.getContextId()));
+            ConfigurationModelMutable configModel = createConfigModel(
+                descriptorConfigEntity.getDescriptorId(),
+                descriptorConfigEntity.getId(),
+                descriptorConfigEntity.getCreatedAt(),
+                descriptorConfigEntity.getLastUpdated(),
+                descriptorConfigEntity.getContextId()
+            );
+            return Optional.of(configModel);
         }
         return Optional.empty();
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
-        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
-        }
-        Optional<RegisteredDescriptorEntity> registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey());
-        if (registeredDescriptorEntity.isPresent()) {
-            return createConfigModels(Collections.singleton(registeredDescriptorEntity.get()));
-        }
-        return createConfigModels(Collections.emptyList());
+    public List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) {
+        return registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey())
+                   .map(descriptorEntity -> createConfigModels(Set.of(descriptorEntity)))
+                   .orElseGet(() -> createConfigModels(Set.of()));
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType) throws AlertDatabaseConstraintException {
-        if (null == descriptorType) {
-            throw new AlertDatabaseConstraintException("Descriptor type cannot be null");
-        }
-
-        Long typeId = descriptorTypeRepository
-                          .findFirstByType(descriptorType.name())
+    public List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType) {
+        String descriptorTypeName = descriptorType.name();
+        Long typeId = descriptorTypeRepository.findFirstByType(descriptorTypeName)
                           .map(DatabaseEntity::getId)
-                          .orElseThrow(() -> new AlertDatabaseConstraintException("Descriptor type has not been registered"));
+                          .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Descriptor type '%s' does not exist", descriptorTypeName)));
         List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeId(typeId);
         return createConfigModels(registeredDescriptorEntities);
     }
 
     @Override
-    public List<ConfigurationModel> getChannelConfigurationsByFrequency(FrequencyType frequencyType) throws AlertDatabaseConstraintException {
-        if (null == frequencyType) {
-            throw new AlertDatabaseConstraintException("Frequency type cannot be null");
-        }
-        Long typeId = descriptorTypeRepository
-                          .findFirstByType(DescriptorType.CHANNEL.name())
-                          .map(DatabaseEntity::getId)
-                          .orElseThrow(() -> new AlertDatabaseConstraintException("Descriptor type has not been registered"));
-        List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeIdAndFrequency(typeId, frequencyType.name());
-        return createConfigModels(registeredDescriptorEntities);
-    }
-
-    @Override
-    public List<ConfigurationModel> getConfigurationsByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
-        }
+    public List<ConfigurationModel> getConfigurationsByDescriptorKeyAndContext(DescriptorKey descriptorKey, ConfigContextEnum context) {
         return getConfigurationsByDescriptorNameAndContext(descriptorKey.getUniversalKey(), context);
     }
 
     @Override
-    public ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format(EXCEPTION_FORMAT_DESCRIPTOR_KEY_IS_NOT_VALID, descriptorKey));
-        }
+    public ConfigurationModel createConfiguration(DescriptorKey descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields) {
         return createConfiguration(descriptorKey.getUniversalKey(), context, configuredFields);
     }
 
-    private ConfigurationModel createConfiguration(String descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(descriptorKey)) {
-            throw new AlertDatabaseConstraintException("DescriptorKey cannot be null");
-        }
+    private ConfigurationModel createConfiguration(String descriptorKey, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields) {
         Long descriptorId = getDescriptorIdOrThrowException(descriptorKey);
         Long configContextId = getConfigContextIdOrThrowException(context);
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
@@ -196,9 +177,8 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
             for (ConfigurationFieldModel configuredField : configuredFields) {
                 String fieldKey = configuredField.getFieldKey();
                 if (configuredField.isSet()) {
-                    DefinedFieldEntity associatedField = definedFieldRepository
-                                                             .findFirstByKey(fieldKey)
-                                                             .orElseThrow(() -> new AlertDatabaseConstraintException("A field with the provided key did not exist: " + fieldKey));
+                    DefinedFieldEntity associatedField = definedFieldRepository.findFirstByKey(fieldKey)
+                                                             .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Field with key '%s' did not exist", fieldKey)));
                     for (String value : configuredField.getFieldValues()) {
                         FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), encrypt(value, configuredField.isSensitive()));
                         fieldValuesToSave.add(newFieldValueEntity);
@@ -212,21 +192,13 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public List<ConfigurationModel> getConfigurationsByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(descriptorName)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be null");
-        }
-        if (null == context) {
-            throw new AlertDatabaseConstraintException("Context cannot be null");
-        }
-
+    public List<ConfigurationModel> getConfigurationsByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) {
         Long contextId = getConfigContextIdOrThrowException(context);
         Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
 
         List<DescriptorConfigEntity> descriptorConfigEntities = descriptorConfigsRepository.findByDescriptorIdAndContextId(descriptorId, contextId);
 
         List<ConfigurationModel> configurationModels = new ArrayList<>();
-
         for (DescriptorConfigEntity descriptorConfigEntity : descriptorConfigEntities) {
             configurationModels.add(createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(), descriptorConfigEntity.getCreatedAt(),
                 descriptorConfigEntity.getLastUpdated(), contextId));
@@ -238,14 +210,9 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
      * @return the config after update
      */
     @Override
-    public ConfigurationModel updateConfiguration(Long descriptorConfigId, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        if (descriptorConfigId == null) {
-            throw new AlertDatabaseConstraintException(NULL_CONFIG_ID);
-        }
-        DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository
-                                                            .findById(descriptorConfigId)
-                                                            .orElseThrow(() -> new AlertDatabaseConstraintException("A config with that id did not exist"));
-
+    public ConfigurationModel updateConfiguration(Long descriptorConfigId, Collection<ConfigurationFieldModel> configuredFields) throws AlertConfigurationException {
+        DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository.findById(descriptorConfigId)
+                                                            .orElseThrow(() -> new AlertConfigurationException(String.format("Config with id '%d' did not exist", descriptorConfigId)));
         List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigId);
         fieldValueRepository.deleteAll(oldValues);
         fieldValueRepository.flush();
@@ -274,22 +241,18 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     }
 
     @Override
-    public void deleteConfiguration(ConfigurationModel configModel) throws AlertDatabaseConstraintException {
-        if (configModel == null) {
-            throw new AlertDatabaseConstraintException("Cannot delete a null object from the database");
-        }
+    public void deleteConfiguration(ConfigurationModel configModel) {
         deleteConfiguration(configModel.getConfigurationId());
     }
 
     @Override
-    public void deleteConfiguration(Long descriptorConfigId) throws AlertDatabaseConstraintException {
-        if (descriptorConfigId == null) {
-            throw new AlertDatabaseConstraintException(NULL_CONFIG_ID);
+    public void deleteConfiguration(Long descriptorConfigId) {
+        if (null != descriptorConfigId) {
+            descriptorConfigsRepository.deleteById(descriptorConfigId);
         }
-        descriptorConfigsRepository.deleteById(descriptorConfigId);
     }
 
-    public ConfigurationModel createConfigForRelevantFields(String descriptorName, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+    public ConfigurationModel createConfigForRelevantFields(String descriptorName, Collection<ConfigurationFieldModel> configuredFields) {
         Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
         Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.DISTRIBUTION);
         Set<String> descriptorFields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
@@ -304,7 +267,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return createConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION, relevantFields);
     }
 
-    private List<ConfigurationModel> createConfigModels(Collection<RegisteredDescriptorEntity> descriptors) throws AlertDatabaseConstraintException {
+    private List<ConfigurationModel> createConfigModels(Collection<RegisteredDescriptorEntity> descriptors) {
         List<ConfigurationModel> configs = new ArrayList<>();
         for (RegisteredDescriptorEntity descriptorEntity : descriptors) {
             List<DescriptorConfigEntity> descriptorConfigEntities = descriptorConfigsRepository.findByDescriptorId(descriptorEntity.getId());
@@ -317,7 +280,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return configs;
     }
 
-    private ConfigurationModelMutable createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
+    private ConfigurationModelMutable createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) {
         String configContext = getContextById(contextId);
 
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
@@ -326,9 +289,8 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         ConfigurationModelMutable newModel = new ConfigurationModelMutable(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, configContext);
         List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
         for (FieldValueEntity fieldValueEntity : fieldValueEntities) {
-            DefinedFieldEntity definedFieldEntity = definedFieldRepository
-                                                        .findById(fieldValueEntity.getFieldId())
-                                                        .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
+            DefinedFieldEntity definedFieldEntity = definedFieldRepository.findById(fieldValueEntity.getFieldId())
+                                                        .orElseThrow(() -> new AlertRuntimeException("Field Id missing from the database"));
             String fieldKey = definedFieldEntity.getKey();
             ConfigurationFieldModel fieldModel = BooleanUtils.isTrue(definedFieldEntity.getSensitive()) ? ConfigurationFieldModel.createSensitive(fieldKey) : ConfigurationFieldModel.create(fieldKey);
             String decryptedValue = decrypt(fieldValueEntity.getValue(), fieldModel.isSensitive());
@@ -338,7 +300,7 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return newModel;
     }
 
-    private ConfigurationModelMutable createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) throws AlertDatabaseConstraintException {
+    private ConfigurationModelMutable createEmptyConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) {
         String configContext = getContextById(contextId);
 
         String createdAtFormatted = DateUtils.formatDate(createdAt, DateUtils.UTC_DATE_FORMAT_TO_MINUTE);
@@ -354,49 +316,36 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         return new ConfigurationModelMutable(descriptorId, configId, createdAtFormatted, lastUpdatedFormatted, context);
     }
 
-    private Long getDescriptorIdOrThrowException(String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(descriptorName)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
-        }
-        return registeredDescriptorRepository
-                   .findFirstByName(descriptorName)
+    private Long getDescriptorIdOrThrowException(String descriptorName) {
+        return registeredDescriptorRepository.findFirstByName(descriptorName)
                    .map(RegisteredDescriptorEntity::getId)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("No descriptor with the provided name was registered"));
+                   .orElseThrow(() -> new AlertRuntimeException(String.format("No descriptor with name '%s' exists", descriptorName)));
     }
 
-    private Long getConfigContextIdOrThrowException(ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        if (context == null) {
-            throw new AlertDatabaseConstraintException("Context cannot be null");
-        }
-        return configContextRepository
-                   .findFirstByContext(context.name())
+    private Long getConfigContextIdOrThrowException(ConfigContextEnum context) {
+        String contextName = context.name();
+        return configContextRepository.findFirstByContext(contextName)
                    .map(ConfigContextEntity::getId)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("That context does not exist"));
+                   .orElseThrow(() -> new AlertRuntimeException(String.format("No context with name '%s' exists", contextName)));
     }
 
-    private String getContextById(Long contextId) throws AlertDatabaseConstraintException {
-        return configContextRepository
-                   .findById(contextId)
+    private String getContextById(Long contextId) {
+        return configContextRepository.findById(contextId)
                    .map(ConfigContextEntity::getContext)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("No context with that id exists"));
+                   .orElseThrow(() -> new AlertRuntimeException(String.format("No context with id '%d' exists", contextId)));
     }
 
-    private Long getFieldIdOrThrowException(String fieldKey) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(fieldKey)) {
-            throw new AlertDatabaseConstraintException("Field key cannot be empty");
-        }
-        return definedFieldRepository
-                   .findFirstByKey(fieldKey)
+    private Long getFieldIdOrThrowException(String fieldKey) {
+        return definedFieldRepository.findFirstByKey(fieldKey)
                    .map(DefinedFieldEntity::getId)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
+                   .orElseThrow(() -> new AlertRuntimeException(String.format("A field with key '%s' did not exist", fieldKey)));
     }
 
     private boolean isFieldSensitive(String fieldKey) {
         if (StringUtils.isBlank(fieldKey)) {
             return false;
         }
-        return definedFieldRepository
-                   .findFirstByKey(fieldKey)
+        return definedFieldRepository.findFirstByKey(fieldKey)
                    .map(DefinedFieldEntity::getSensitive)
                    .orElse(false);
     }

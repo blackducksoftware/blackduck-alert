@@ -53,7 +53,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
@@ -73,7 +72,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
-import com.synopsys.integration.alert.common.rest.model.JobIdsValidationRequestModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -298,7 +297,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return new ValidationActionResponse(HttpStatus.OK, responseModel);
     }
 
-    public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsValidationRequestModel jobIdsValidationModel) {
+    public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsRequestModel jobIdsValidationModel) {
         List<PermissionKey> keys = new LinkedList<>();
         for (Descriptor descriptor : getDescriptorMap().getDescriptorMap().values()) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();
@@ -439,7 +438,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return channelFieldModel;
     }
 
-    private Map<String, ConfigurationFieldModel> createFieldsMap(FieldModel channelFieldModel, Collection<FieldModel> otherJobModels) throws AlertDatabaseConstraintException {
+    private Map<String, ConfigurationFieldModel> createFieldsMap(FieldModel channelFieldModel, Collection<FieldModel> otherJobModels) throws AlertException {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
         fields.putAll(modelConverter.convertToConfigurationFieldModelMap(channelFieldModel));

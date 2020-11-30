@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
@@ -20,7 +19,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 public class PurgeTaskTest {
 
     @Test
-    public void cronExpressionNotDefault() throws AlertDatabaseConstraintException {
+    public void cronExpressionNotDefault() {
         final String notDefaultValue = "44";
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.GLOBAL);

@@ -13,7 +13,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -23,15 +22,15 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 
 public class UserManagementAuthoritiesPopulatorTest {
     private static final String TEST_USERNAME = "testUserName";
-    private AuthenticationDescriptorKey descriptorKey = new AuthenticationDescriptorKey();
-    private ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-    private ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
-    private ConfigurationFieldModel roleMappingField = Mockito.mock(ConfigurationFieldModel.class);
-    private ConfigurationFieldModel samlAttributeMappingField = Mockito.mock(ConfigurationFieldModel.class);
-    private UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+    private final AuthenticationDescriptorKey descriptorKey = new AuthenticationDescriptorKey();
+    private final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+    private final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
+    private final ConfigurationFieldModel roleMappingField = Mockito.mock(ConfigurationFieldModel.class);
+    private final ConfigurationFieldModel samlAttributeMappingField = Mockito.mock(ConfigurationFieldModel.class);
+    private final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
 
     @Test
-    public void testAddGrantedAuthorities() throws Exception {
+    public void testAddGrantedAuthorities() {
         String roleNameMapping = "TEST_ADMIN_ROLE";
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.of(roleNameMapping));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
@@ -47,7 +46,7 @@ public class UserManagementAuthoritiesPopulatorTest {
     }
 
     @Test
-    public void testAddGrantedAuthoritiesNoMapping() throws Exception {
+    public void testAddGrantedAuthoritiesNoMapping() {
         String roleNameMapping = "TEST_ADMIN_ROLE";
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.empty());
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
@@ -62,21 +61,9 @@ public class UserManagementAuthoritiesPopulatorTest {
 
         assertEquals(inputRoles, actualRoles);
     }
-
+ 
     @Test
-    public void testAddRoleNamesConfigurationException() throws Exception {
-        String roleNameMapping = "TEST_ADMIN_ROLE";
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenThrow(AlertDatabaseConstraintException.class);
-        Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());
-        UserManagementAuthoritiesPopulator authoritiesPopulator = new UserManagementAuthoritiesPopulator(descriptorKey, configurationAccessor, userAccessor);
-        Set<String> inputRoles = Set.of(DefaultUserRole.ALERT_USER.name(), roleNameMapping);
-        Set<String> actualRoles = authoritiesPopulator.addAdditionalRoleNames(TEST_USERNAME, inputRoles, false);
-
-        assertEquals(inputRoles, actualRoles);
-    }
-
-    @Test
-    public void testAddRoleNames() throws Exception {
+    public void testAddRoleNames() {
         String roleNameMapping = "TEST_ADMIN_ROLE";
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.of(roleNameMapping));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
@@ -90,7 +77,7 @@ public class UserManagementAuthoritiesPopulatorTest {
     }
 
     @Test
-    public void testAddRoleNamesNoMapping() throws Exception {
+    public void testAddRoleNamesNoMapping() {
         String roleNameMapping = "TEST_ADMIN_ROLE";
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.empty());
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
@@ -104,7 +91,7 @@ public class UserManagementAuthoritiesPopulatorTest {
     }
 
     @Test
-    public void testAddRoleNamesWithPrefix() throws Exception {
+    public void testAddRoleNamesWithPrefix() {
         String roleNameMapping = "TEST_ADMIN_ROLE";
         Mockito.when(roleMappingField.getFieldValue()).thenReturn(Optional.of(roleNameMapping));
         Mockito.when(configurationModel.getField(Mockito.eq(AuthenticationDescriptor.KEY_ROLE_MAPPING_NAME_ADMIN))).thenReturn(Optional.of(roleMappingField));
@@ -118,7 +105,7 @@ public class UserManagementAuthoritiesPopulatorTest {
     }
 
     @Test
-    public void testSAMLAttributeName() throws AlertDatabaseConstraintException {
+    public void testSAMLAttributeName() {
         String attributeName = "SAML_ATTRIBUTE_NAME";
         Mockito.when(samlAttributeMappingField.getFieldValue()).thenReturn(Optional.of(attributeName));
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
@@ -129,7 +116,7 @@ public class UserManagementAuthoritiesPopulatorTest {
     }
 
     @Test
-    public void testSAMLAttributeNameNotFound() throws AlertDatabaseConstraintException {
+    public void testSAMLAttributeNameNotFound() {
         String attributeName = "DEFAULT_ATTRIBUTE";
         Mockito.when(samlAttributeMappingField.getFieldValue()).thenReturn(Optional.empty());
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of(configurationModel));
@@ -140,7 +127,7 @@ public class UserManagementAuthoritiesPopulatorTest {
     }
 
     @Test
-    public void testSAMLAttributeConfigurationNotFound() throws AlertDatabaseConstraintException {
+    public void testSAMLAttributeConfigurationNotFound() {
         String attributeName = "DEFAULT_ATTRIBUTE";
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKey(Mockito.eq(descriptorKey))).thenReturn(List.of());
         Mockito.when(userAccessor.getUser(Mockito.anyString())).thenReturn(Optional.empty());

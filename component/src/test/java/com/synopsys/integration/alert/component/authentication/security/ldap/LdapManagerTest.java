@@ -113,7 +113,7 @@ public class LdapManagerTest {
     }
 
     @Test
-    public void testIsEnabled() throws Exception {
+    public void testIsEnabled() {
         ConfigurationModel configurationModel = createConfigurationModel();
         DefaultConfigurationAccessor configurationAccessor = Mockito.mock(DefaultConfigurationAccessor.class);
         UserManagementAuthoritiesPopulator authoritiesPopulator = Mockito.mock(UserManagementAuthoritiesPopulator.class);
@@ -135,7 +135,7 @@ public class LdapManagerTest {
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.getAuthenticationProvider();
         FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class LdapManagerTest {
         LdapManager ldapManager = new LdapManager(AUTHENTICATION_DESCRIPTOR_KEY, configurationAccessor, authoritiesPopulator);
         ldapManager.getAuthenticationProvider();
         FieldUtility updatedProperties = ldapManager.getCurrentConfiguration();
-        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(authenticationType, updatedProperties.getField(AuthenticationDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(ConfigurationFieldModel::getFieldValue).orElse(null));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class LdapManagerTest {
     }
 
     @Test
-    public void testExceptionOnContext() throws Exception {
+    public void testExceptionOnContext() {
         final String managerDN = "";
         final String managerPassword = "";
 
@@ -184,8 +184,7 @@ public class LdapManagerTest {
     }
 
     @Test
-    public void testExceptionOnAuthenticator() throws Exception {
-
+    public void testExceptionOnAuthenticator() {
         final String userSearchBase = "";
         final String userSearchFilter = "";
         final String userDNPatterns = "";
