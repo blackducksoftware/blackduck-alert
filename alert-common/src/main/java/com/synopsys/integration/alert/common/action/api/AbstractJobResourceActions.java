@@ -136,17 +136,17 @@ public abstract class AbstractJobResourceActions {
         if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION), descriptorNames)) {
             return ActionResponse.createForbiddenResponse();
         }
-        Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
 
+        Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
         if (optionalModel.isPresent()) {
             JobFieldModel fieldModel = optionalModel.get();
+
             boolean hasPermissions = hasRequiredPermissions(fieldModel.getFieldModels(), authorizationManager::hasReadPermission);
             if (!hasPermissions) {
                 return ActionResponse.createForbiddenResponse();
             }
             return new ActionResponse<>(HttpStatus.OK, fieldModel);
         }
-
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
