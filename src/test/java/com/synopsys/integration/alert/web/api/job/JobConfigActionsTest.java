@@ -41,10 +41,8 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -74,13 +72,11 @@ public class JobConfigActionsTest {
     private FieldModel fieldModel;
     private JobFieldModel jobFieldModel;
     private DistributionJobModel distributionJobModel;
-    private ConfigurationJobModel configurationJobModel;
     private ConfigurationFieldModel configurationFieldModel;
 
     private AuthorizationManager authorizationManager;
     private DescriptorAccessor descriptorAccessor;
     private ConfigurationAccessor configurationAccessor;
-    private JobAccessor jobAccessor;
     private JobAccessorV2 jobAccessorV2;
     private FieldModelProcessor fieldModelProcessor;
     private DescriptorProcessor descriptorProcessor;
@@ -99,12 +95,10 @@ public class JobConfigActionsTest {
         this.distributionJobModel = createMockDistributionJobModel();
         this.configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         this.configurationFieldModel.setFieldValue(FIELD_VALUE);
-        this.configurationJobModel = new ConfigurationJobModel(jobId, Set.of(createConfigurationModel()));
 
         authorizationManager = Mockito.mock(AuthorizationManager.class);
         descriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        jobAccessor = Mockito.mock(JobAccessor.class);
         jobAccessorV2 = Mockito.mock(JobAccessorV2.class);
         fieldModelProcessor = Mockito.mock(FieldModelProcessor.class);
         descriptorProcessor = Mockito.mock(DescriptorProcessor.class);
@@ -112,10 +106,18 @@ public class JobConfigActionsTest {
         globalConfigExistsValidator = Mockito.mock(GlobalConfigExistsValidator.class);
         pkixErrorResponseFactory = Mockito.mock(PKIXErrorResponseFactory.class);
         descriptorMap = Mockito.mock(DescriptorMap.class);
-
-        jobConfigActions = new JobConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, jobAccessor, jobAccessorV2, fieldModelProcessor, descriptorProcessor, configurationFieldModelConverter,
+        jobConfigActions = new JobConfigActions(
+            authorizationManager,
+            descriptorAccessor,
+            configurationAccessor,
+            jobAccessorV2,
+            fieldModelProcessor,
+            descriptorProcessor,
+            configurationFieldModelConverter,
             globalConfigExistsValidator,
-            pkixErrorResponseFactory, descriptorMap);
+            pkixErrorResponseFactory,
+            descriptorMap
+        );
 
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
@@ -189,7 +191,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void getOneErrorTest() throws Exception {
-        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
         Mockito.doThrow(new AlertException("Exception for Alert")).when(fieldModelProcessor).performAfterReadAction(Mockito.any());
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.getOne(jobId);
@@ -201,12 +202,11 @@ public class JobConfigActionsTest {
 
     @Test
     public void updateTest() throws Exception {
-        mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.when(jobAccessorV2.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
+        Mockito.when(jobAccessorV2.createJob(Mockito.any())).thenReturn(distributionJobModel);
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(fieldModelProcessor.performBeforeUpdateAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.fillFieldModelWithExistingData(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(configurationFieldModel));
-        Mockito.when(jobAccessor.updateJob(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(configurationJobModel);
         Mockito.when(fieldModelProcessor.performAfterUpdateAction(Mockito.any(), Mockito.any())).thenReturn(fieldModel);
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.update(jobId, jobFieldModel);
@@ -218,7 +218,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void updateServerErrorTest() throws Exception {
-        mockFindJobFieldModel(configurationJobModel, fieldModel);
         Mockito.when(jobAccessorV2.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert test")).when(fieldModelProcessor).performBeforeUpdateAction(Mockito.any());
@@ -478,7 +477,6 @@ public class JobConfigActionsTest {
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Map.of(descriptorKey, descriptor));
         Mockito.when(authorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
-        Mockito.when(jobAccessor.getJobsById(Mockito.any())).thenReturn(List.of(configurationJobModel));
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.performAfterReadAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
@@ -640,12 +638,6 @@ public class JobConfigActionsTest {
         };
         descriptor.addGlobalUiConfig(uiConfig);
         return descriptor;
-    }
-
-    private void mockFindJobFieldModel(ConfigurationJobModel configurationJobModel, FieldModel fieldModel) throws Exception {
-        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
-        Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(fieldModelProcessor.performAfterReadAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
     }
 
 }
