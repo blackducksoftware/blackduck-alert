@@ -35,10 +35,10 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -48,11 +48,9 @@ import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 @Transactional
 public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private static final String DEFAULT_BLACK_DUCK_CONFIG = "Default Black Duck Config";
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
-    private final String url = JobConfigController.JOB_CONFIGURATION_PATH;
+    private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
+    private static final String REQUEST_URL = JobConfigController.JOB_CONFIGURATION_PATH;
 
-    @Autowired
-    private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
     @Autowired
@@ -76,7 +74,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         int pageSize = 10;
         addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
 
-        String urlPath = url + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
+        String urlPath = REQUEST_URL + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -86,10 +84,10 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        String configId = String.valueOf(minimumConfigurationModel.getJobId());
+        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        String configId = String.valueOf(distributionJobModel.getJobId());
 
-        String urlPath = url + "/" + configId;
+        String urlPath = REQUEST_URL + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -100,12 +98,12 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
-        String jobId = String.valueOf(minimumConfigurationModel.getJobId());
+        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        String jobId = String.valueOf(distributionJobModel.getJobId());
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
-        String urlPath = url + "/" + jobId;
+        String urlPath = REQUEST_URL + "/" + jobId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -129,7 +127,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
 
         String configId = String.valueOf(minimumConfigurationModel.getJobId());
-        String urlPath = url + "/" + configId;
+        String urlPath = REQUEST_URL + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -137,7 +135,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         fieldModel.setJobId(configId);
 
         request.content(gson.toJson(fieldModel));
-        request.contentType(contentType);
+        request.contentType(MEDIA_TYPE);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
@@ -149,14 +147,14 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(REQUEST_URL)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
         request.content(gson.toJson(fieldModel));
-        request.contentType(contentType);
+        request.contentType(MEDIA_TYPE);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
     }
@@ -164,7 +162,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testValidateConfig() throws Exception {
-        final String urlPath = url + "/validate";
+        final String urlPath = REQUEST_URL + "/validate";
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
@@ -176,7 +174,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
         request.content(gson.toJson(fieldModel));
-        request.contentType(contentType);
+        request.contentType(MEDIA_TYPE);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -184,7 +182,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testTestConfig() throws Exception {
-        final String urlPath = url + "/test";
+        final String urlPath = REQUEST_URL + "/test";
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
@@ -196,7 +194,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
         request.content(gson.toJson(fieldModel));
-        request.contentType(contentType);
+        request.contentType(MEDIA_TYPE);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }

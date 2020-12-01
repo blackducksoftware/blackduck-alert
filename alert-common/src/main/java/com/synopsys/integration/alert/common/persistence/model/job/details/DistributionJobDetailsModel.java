@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
@@ -29,7 +30,6 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
     private final String channelDescriptorName;
