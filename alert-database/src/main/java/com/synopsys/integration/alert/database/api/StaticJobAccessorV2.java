@@ -248,6 +248,7 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
     }
 
     private DistributionJobModel convertToDistributionJobModel(DistributionJobEntity jobEntity) {
+        UUID jobId = jobEntity.getJobId();
         DistributionJobDetailsModel distributionJobDetailsModel = null;
         String channelDescriptorName = jobEntity.getChannelDescriptorName();
         if ("channel_azure_boards".equals(channelDescriptorName)) {
@@ -302,15 +303,28 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
             );
         }
 
+        BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
+        List<String> notificationTypes = blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(jobId);
+        List<String> projectNames = blackDuckJobDetailsAccessor.retrieveProjectNamesForJob(jobId);
+        List<String> policyNames = blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(jobId);
+        List<String> vulnerabilitySeverityNames = blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(jobId);
+
         return new DistributionJobModelBuilder()
-                   .jobId(jobEntity.getJobId())
+                   .jobId(jobId)
                    .name(jobEntity.getName())
                    .enabled(jobEntity.getEnabled())
                    .distributionFrequency(jobEntity.getDistributionFrequency())
                    .processingType(jobEntity.getProcessingType())
+                   .channelDescriptorName(channelDescriptorName)
                    .createdAt(jobEntity.getCreatedAt())
                    .lastUpdated(jobEntity.getLastUpdated())
-                   .blackDuckGlobalConfigId(jobEntity.getBlackDuckJobDetails().getGlobalConfigId())
+                   .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())
+                   .filterByProject(blackDuckJobDetails.getFilterByProject())
+                   .projectNamePattern(blackDuckJobDetails.getProjectNamePattern())
+                   .notificationTypes(notificationTypes)
+                   .projectFilterProjectNames(projectNames)
+                   .policyFilterPolicyNames(policyNames)
+                   .vulnerabilityFilterSeverityNames(vulnerabilitySeverityNames)
                    .distributionJobDetails(distributionJobDetailsModel)
                    .build();
     }

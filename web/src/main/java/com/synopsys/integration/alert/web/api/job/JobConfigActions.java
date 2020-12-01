@@ -62,7 +62,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAcce
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -446,14 +445,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
             return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
         }
         return new MessageResult("Provider Config Valid");
-    }
-
-    private JobFieldModel convertToJobFieldModel(ConfigurationJobModel configurationJobModel) {
-        Set<FieldModel> constructedFieldModels = new HashSet<>();
-        for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-            constructedFieldModels.add(modelConverter.convertToFieldModel(configurationModel));
-        }
-        return new JobFieldModel(configurationJobModel.getJobId().toString(), constructedFieldModels);
     }
 
     private Optional<ConfigurationFieldModel> convertFieldToConfigurationField(FieldModel fieldModel, String fieldKey) {

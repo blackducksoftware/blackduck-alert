@@ -176,7 +176,9 @@ public class JobFieldModelPopulationUtils {
     }
 
     private static void putField(FieldModel fieldModel, String key, String value) {
-        putField(fieldModel, key, List.of(value));
+        if (null != value) {
+            putField(fieldModel, key, List.of(value));
+        }
     }
 
     private static void putField(FieldModel fieldModel, String key, List<String> values) {
