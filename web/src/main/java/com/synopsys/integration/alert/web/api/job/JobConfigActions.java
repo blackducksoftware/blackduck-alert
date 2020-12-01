@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.web.api.job;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -175,7 +176,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 configurationFieldModels.addAll(savedFieldsModels);
             }
 
-            DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels);
+            DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, DateUtils.createCurrentDateTimestamp(), null);
             DistributionJobModel savedJob = jobAccessor.createJob(jobRequestModel);
             JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
 
@@ -205,18 +206,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     descriptorAndContextToPreviousFieldModel.put(previousJobFieldModel.getDescriptorName() + previousJobFieldModel.getContext(), previousJobFieldModel);
                 }
 
-                Set<String> descriptorNames = new HashSet<>();
                 Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
                 for (FieldModel fieldModel : resource.getFieldModels()) {
                     FieldModel beforeUpdateEventFieldModel = fieldModelProcessor.performBeforeUpdateAction(fieldModel);
-                    descriptorNames.add(beforeUpdateEventFieldModel.getDescriptorName());
                     String beforeFieldModelId = beforeUpdateEventFieldModel.getId();
                     Long fieldModelId = (StringUtils.isNotBlank(beforeFieldModelId)) ? Long.parseLong(beforeFieldModelId) : null;
                     Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, beforeUpdateEventFieldModel);
                     configurationFieldModels.addAll(updatedFieldModels);
                 }
 
-                DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels);
+                DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, previousJob.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
                 DistributionJobModel savedJob = jobAccessor.createJob(jobRequestModel);
                 JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
 
@@ -381,9 +380,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
     }
 
-    private DistributionJobRequestModel createDistributionJobRequestModel(Collection<ConfigurationFieldModel> configurationFieldModels) {
+    private DistributionJobRequestModel createDistributionJobRequestModel(Collection<ConfigurationFieldModel> configurationFieldModels, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
         Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configurationFieldModels, ConfigurationFieldModel::getFieldKey);
-        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, DateUtils.createCurrentDateTimestamp(), null);
+        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated);
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),
             fromResource.getName(),

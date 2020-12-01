@@ -327,6 +327,8 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
                    .policyFilterPolicyNames(policyNames)
                    .vulnerabilityFilterSeverityNames(vulnerabilitySeverityNames)
                    .distributionJobDetails(distributionJobDetailsModel)
+                   .createdAt(jobEntity.getCreatedAt())
+                   .lastUpdated(jobEntity.getLastUpdated())
                    .build();
     }
 
