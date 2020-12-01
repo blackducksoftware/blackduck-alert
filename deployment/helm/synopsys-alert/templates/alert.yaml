@@ -65,11 +65,7 @@ spec:
           timeoutSeconds: 10
         name: blackduck-alert
         ports:
-          {{ if .Values.exposedNodePort }}
-          - containerPort: {{ .Values.exposedNodePort }}
-          {{ else }}
           - containerPort: {{ .Values.alert.port }}
-          {{ end }}
             protocol: TCP
         resources:
           {{- toYaml .Values.alert.resources | nindent 12 }}
@@ -145,17 +141,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    {{ if .Values.exposedNodePort }}
-    - name: port-{{ .Values.exposedNodePort }}
-      port: {{ .Values.exposedNodePort }}
-      protocol: TCP
-      targetPort: {{ .Values.exposedNodePort }}
-    {{ else }}
     - name: port-{{ .Values.alert.port }}
       port: {{ .Values.alert.port }}
       protocol: TCP
       targetPort: {{ .Values.alert.port }}
-    {{ end }}
   selector:
     app: alert
     component: alert
@@ -203,11 +192,7 @@ metadata:
 spec:
   host: ""
   port:
-    {{ if .Values.exposedNodePort }}
-    targetPort: port-{{ .Values.exposedNodePort }}
-    {{ else }}
     targetPort: port-{{ .Values.alert.port }}
-    {{ end }}
   tls:
     termination: passthrough
   to:
@@ -230,17 +215,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    {{ if .Values.exposedNodePort }}
-    - name: port-{{ .Values.exposedNodePort }}
-      port: {{ .Values.exposedNodePort }}
-      protocol: TCP
-      targetPort: {{ .Values.exposedNodePort }}
-    {{ else }}
     - name: port-{{ .Values.alert.port }}
       port: {{ .Values.alert.port }}
       protocol: TCP
       targetPort: {{ .Values.alert.port }}
-    {{ end }}
       {{ if and .Values.exposedNodePort (eq .Values.exposedServiceType "NodePort") }}
       nodePort: {{ .Values.exposedNodePort }}
       {{ end }}
