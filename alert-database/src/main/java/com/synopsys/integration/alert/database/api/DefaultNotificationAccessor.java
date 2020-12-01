@@ -196,9 +196,22 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     //TODO this needs unit tests
     @Override
-    public Page<AlertNotificationModel> findNotificationsNotProcessed(PageRequest pageRequest) {
-        return notificationContentRepository.findAllNotProcessedNotifications(pageRequest)
+    public Page<AlertNotificationModel> findNotificationsNotProcessed() {
+        Sort.Order sortingOrder = Sort.Order.asc("provider_creation_time");
+        PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(sortingOrder));
+        return notificationContentRepository.findNotProcessedNotifications(pageRequest)
                    .map(this::toModel);
+    }
+
+    @Override
+    public void processNotifications(List<AlertNotificationModel> notifications) {
+        List<NotificationEntity> notificationEntities = notifications.stream()
+                                                            .map(this::fromModel)
+                                                            .collect(Collectors.toList());
+        notificationEntities.forEach(NotificationEntity::setProcessed);
+        notificationContentRepository.saveAll(notificationEntities);
+        //TODO: We wont need this because this class is @Transactional
+        //notificationContentRepository.flush();
     }
 
     private void deleteAuditEntries(Long notificationId) {

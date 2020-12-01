@@ -129,6 +129,10 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         return processed;
     }
 
+    public void setProcessed() {
+        processed = true;
+    }
+
     public List<AuditNotificationRelation> getAuditNotificationRelations() {
         return auditNotificationRelations;
     }

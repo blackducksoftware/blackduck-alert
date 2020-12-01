@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -186,7 +187,8 @@ public class BlackDuckAccumulator extends ProviderTask {
         logger.info("====== WRITING ====== Writing {} Notifications...", contentList.size());
         notificationAccessor.saveAllNotifications(contentList);
         //TODO put the eventManager in here:
-        //eventManager.sendEvent(new NotificationEvent());
+        logger.info("====== SENDING ====== Sending event for notifications."); //TODO: DELETE ME later
+        eventManager.sendEvent(new NotificationEvent());
     }
 
     private List<NotificationView> sort(List<NotificationView> notifications) {

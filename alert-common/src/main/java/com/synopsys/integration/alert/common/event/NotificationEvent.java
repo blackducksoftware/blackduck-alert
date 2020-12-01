@@ -22,22 +22,20 @@
  */
 package com.synopsys.integration.alert.common.event;
 
-import java.util.List;
-
 public class NotificationEvent extends AlertEvent {
     public static final String NOTIFICATION_EVENT_TYPE = "notification_event";
     //TODO Remove this
-    private final List<Long> notificationIds;
+    //private final List<Long> notificationIds;
 
-    public NotificationEvent(List<Long> notificationIds) {
+    public NotificationEvent() {
         super(NOTIFICATION_EVENT_TYPE);
         //TODO Remove this before merging to master
-        this.notificationIds = notificationIds;
+        //this.notificationIds = notificationIds;
     }
 
     //TODO Remove this before merging to master
-    public List<Long> getNotificationIds() {
-        return notificationIds;
-    }
+    //public List<Long> getNotificationIds() {
+    //    return notificationIds;
+    //}
 
 }

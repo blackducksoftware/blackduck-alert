@@ -27,6 +27,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -74,7 +75,20 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 eventManager.sendEvents(distributionEvents);
                 notifications = notificationAccessor.findNotificationsNotProcessed(PageRequest pageRequest);
             }*/
-            
+            // ###############
+            Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
+            //get content, if not null and not empty, then go into the loop
+            while (pageOfAlertNotificationModels.getTotalPages() > 0) {
+                List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getContent();
+                List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
+                logger.info("====== SENDING ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message
+                eventManager.sendEvents(distributionEvents);
+                notificationAccessor.processNotifications(notifications);
+                pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
+            }
+            // ###############
+
+            /*
             //TODO: Old code with my modifications
             if (null == event.getNotificationIds() || event.getNotificationIds().isEmpty()) {
                 logger.warn("Can not process a notification event without notification Id's.");
@@ -92,6 +106,8 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
             logger.info("====== SENDING ====== Sending {} events for notifications.", distributionEvents.size());
             eventManager.sendEvents(distributionEvents);
 
+             */
+
         } else {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationEvent.NOTIFICATION_EVENT_TYPE);
         }
@@ -102,9 +118,9 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
         return NotificationEvent.NOTIFICATION_EVENT_TYPE;
     }
 
-
     /*
     //TODO create a method to get a PageRequest of notifications with processed = false, sorted by oldest Date
+    // update: maybe not, we shouldn't manage paging here, instead do it in the NotificationAccessor
     private PageRequest getPageRequest() {
 
     }*/
