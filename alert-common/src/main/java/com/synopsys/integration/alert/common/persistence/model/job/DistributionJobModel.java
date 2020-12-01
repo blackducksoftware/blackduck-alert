@@ -32,28 +32,11 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class DistributionJobModel extends AlertSerializableModel {
+public class DistributionJobModel extends DistributionJobModelData {
     private final UUID jobId;
-    private final boolean enabled;
-    private final String name;
-    private final FrequencyType distributionFrequency;
-    private final ProcessingType processingType;
-    private final String channelDescriptorName;
     private final OffsetDateTime createdAt;
     private final OffsetDateTime lastUpdated;
-
-    // Black Duck fields will be common as long as it is the only provider
-    private final Long blackDuckGlobalConfigId;
-    private final boolean filterByProject;
-    private final String projectNamePattern;
-    private final List<String> notificationTypes;
-    private final List<String> projectFilterProjectNames;
-    private final List<String> policyFilterPolicyNames;
-    private final List<String> vulnerabilityFilterSeverityNames;
-
-    private final DistributionJobDetailsModel distributionJobDetails;
 
     public static DistributionJobModelBuilder builder() {
         return new DistributionJobModelBuilder();
@@ -77,47 +60,29 @@ public class DistributionJobModel extends AlertSerializableModel {
         List<String> vulnerabilityFilterSeverityNames,
         DistributionJobDetailsModel distributionJobDetails
     ) {
+        super(
+            enabled,
+            name,
+            distributionFrequency,
+            processingType,
+            channelDescriptorName,
+            blackDuckGlobalConfigId,
+            filterByProject,
+            projectNamePattern,
+            notificationTypes,
+            projectFilterProjectNames,
+            policyFilterPolicyNames,
+            vulnerabilityFilterSeverityNames,
+            distributionJobDetails
+        );
         this.jobId = jobId;
-        this.enabled = enabled;
-        this.name = name;
-        this.distributionFrequency = distributionFrequency;
-        this.processingType = processingType;
-        this.channelDescriptorName = channelDescriptorName;
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
-        this.blackDuckGlobalConfigId = blackDuckGlobalConfigId;
-        this.filterByProject = filterByProject;
-        this.projectNamePattern = projectNamePattern;
-        this.notificationTypes = notificationTypes;
-        this.projectFilterProjectNames = projectFilterProjectNames;
-        this.policyFilterPolicyNames = policyFilterPolicyNames;
-        this.vulnerabilityFilterSeverityNames = vulnerabilityFilterSeverityNames;
-        this.distributionJobDetails = distributionJobDetails;
     }
 
     @Nullable
     public UUID getJobId() {
         return jobId;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public FrequencyType getDistributionFrequency() {
-        return distributionFrequency;
-    }
-
-    public ProcessingType getProcessingType() {
-        return processingType;
-    }
-
-    public String getChannelDescriptorName() {
-        return channelDescriptorName;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -127,37 +92,4 @@ public class DistributionJobModel extends AlertSerializableModel {
     public Optional<OffsetDateTime> getLastUpdated() {
         return Optional.ofNullable(lastUpdated);
     }
-
-    public Long getBlackDuckGlobalConfigId() {
-        return blackDuckGlobalConfigId;
-    }
-
-    public boolean isFilterByProject() {
-        return filterByProject;
-    }
-
-    public Optional<String> getProjectNamePattern() {
-        return Optional.ofNullable(projectNamePattern);
-    }
-
-    public List<String> getNotificationTypes() {
-        return notificationTypes;
-    }
-
-    public List<String> getProjectFilterProjectNames() {
-        return projectFilterProjectNames;
-    }
-
-    public List<String> getPolicyFilterPolicyNames() {
-        return policyFilterPolicyNames;
-    }
-
-    public List<String> getVulnerabilityFilterSeverityNames() {
-        return vulnerabilityFilterSeverityNames;
-    }
-
-    public DistributionJobDetailsModel getDistributionJobDetails() {
-        return distributionJobDetails;
-    }
-
 }

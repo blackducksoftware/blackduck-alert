@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -286,7 +287,23 @@ public class StaticJobAccessor implements JobAccessor {
         DistributionJobEntity savedJobEntity = distributionJobRepository.save(jobToSave);
         UUID savedJobId = savedJobEntity.getJobId();
 
-        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(savedJobId, distributionJobModel);
+        DistributionJobRequestModel requestModel = new DistributionJobRequestModel(
+            distributionJobModel.isEnabled(),
+            distributionJobModel.getName(),
+            distributionJobModel.getDistributionFrequency(),
+            distributionJobModel.getProcessingType(),
+            distributionJobModel.getChannelDescriptorName(),
+            distributionJobModel.getBlackDuckGlobalConfigId(),
+            distributionJobModel.isFilterByProject(),
+            distributionJobModel.getProjectNamePattern().orElse(null),
+            distributionJobModel.getNotificationTypes(),
+            distributionJobModel.getProjectFilterProjectNames(),
+            distributionJobModel.getPolicyFilterPolicyNames(),
+            distributionJobModel.getVulnerabilityFilterSeverityNames(),
+            distributionJobModel.getDistributionJobDetails()
+        );
+
+        BlackDuckJobDetailsEntity savedBlackDuckJobDetails = blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(savedJobId, requestModel);
         savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
 
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();

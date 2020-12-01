@@ -19,10 +19,9 @@ import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.test.common.TestProperties;
 
 public class EmailMessagingServiceTest {
-
     @Test
     public void sendAuthenticatedMessage() throws MessagingException, AlertException {
         TestProperties testProperties = new TestProperties();

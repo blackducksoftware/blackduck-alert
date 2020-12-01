@@ -24,10 +24,15 @@ package com.synopsys.integration.alert.provider.blackduck.web;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.FieldOptions;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
-public class NotificationFilterModelOptions extends FieldOptions<NotificationFilterModel> {
-    public NotificationFilterModelOptions(List<NotificationFilterModel> options) {
-        super(options);
+public class NotificationFilterModelOptions extends AlertPagedModel<NotificationFilterModel> {
+    public NotificationFilterModelOptions(int totalPages, int currentPage, int pageSize, List<NotificationFilterModel> options) {
+        super(totalPages, currentPage, pageSize, options);
     }
+
+    public List<NotificationFilterModel> getOptions() {
+        return getModels();
+    }
+
 }

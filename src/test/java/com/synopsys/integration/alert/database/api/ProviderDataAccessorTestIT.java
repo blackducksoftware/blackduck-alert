@@ -21,7 +21,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderDataAccessor;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
@@ -31,7 +30,7 @@ import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathMultipl
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
@@ -40,6 +39,8 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
 public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
+    private static final String PROVIDER_CONFIG_NAME = "Test Black Duck configuration";
+
     @Autowired
     private ConfigurationAccessor configurationAccessor;
     @Autowired
@@ -47,11 +48,10 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
 
     private BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private ProjectService projectService;
-    private BlackDuckService blackDuckService;
+    private BlackDuckApiClient blackDuckService;
     private ProjectUsersService projectUsersService;
 
     private ConfigurationModel providerConfiguration;
-    private String providerConfigurationName = "Test Black Duck configuration";
 
     @BeforeEach
     public void init() throws Exception {
@@ -64,23 +64,19 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(BlackDuckHttpClient.class), Mockito.any(IntLogger.class))).thenReturn(blackDuckServicesFactory);
         projectService = Mockito.mock(ProjectService.class);
         Mockito.when(blackDuckServicesFactory.createProjectService()).thenReturn(projectService);
-        blackDuckService = Mockito.mock(BlackDuckService.class);
+        blackDuckService = Mockito.mock(BlackDuckApiClient.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckService()).thenReturn(blackDuckService);
         projectUsersService = Mockito.mock(ProjectUsersService.class);
         Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
         ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
-        configurationFieldModel.setFieldValue(providerConfigurationName);
+        configurationFieldModel.setFieldValue(PROVIDER_CONFIG_NAME);
         providerConfiguration = configurationAccessor.createConfiguration(blackDuckProviderKey, ConfigContextEnum.GLOBAL, List.of(configurationFieldModel));
     }
 
     @AfterEach
-    public void cleanup() throws Exception {
+    public void cleanup() {
         configurationAccessor.deleteConfiguration(providerConfiguration);
-    }
-
-    private ProviderKey createProviderKey(String key) {
-        return new ProviderKey(key, key);
     }
 
     @Test
@@ -131,7 +127,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
 
         BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
-        List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigName(providerConfigurationName);
+        List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigName(PROVIDER_CONFIG_NAME);
         assertEquals(3, allProviderUsers.size());
     }
 
@@ -153,7 +149,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         Mockito.when(projectService.getAllProjects()).thenReturn(projectViews);
 
         BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
-        List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigName(providerConfigurationName);
+        List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigName(PROVIDER_CONFIG_NAME);
         assertEquals(projectViews.size(), allProviderUsers.size());
     }
 

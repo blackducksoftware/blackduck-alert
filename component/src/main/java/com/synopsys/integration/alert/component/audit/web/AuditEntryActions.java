@@ -49,6 +49,8 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.model.AuditJobStatusesModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
@@ -121,6 +123,22 @@ public class AuditEntryActions {
             return new ActionResponse<>(HttpStatus.OK, auditJobStatusModel.get());
         }
         return new ActionResponse<>(HttpStatus.GONE, "The Audit information could not be found for this job.");
+    }
+
+    public ActionResponse<AuditJobStatusesModel> queryForAuditInfoInJobs(JobIdsRequestModel queryRequestModel) {
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
+            return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
+        }
+
+        List<UUID> jobIds = queryRequestModel.getJobIds();
+        for (UUID jobId : jobIds) {
+            if (null == jobId) {
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The field 'jobIds' cannot contain null values");
+            }
+        }
+
+        List<AuditJobStatusModel> auditJobStatusModels = auditAccessor.findByJobIds(jobIds);
+        return new ActionResponse<>(HttpStatus.OK, new AuditJobStatusesModel(auditJobStatusModels));
     }
 
     public ActionResponse<AuditEntryPageModel> resendNotification(Long notificationId, UUID commonConfigId) {

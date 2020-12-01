@@ -46,7 +46,7 @@ import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
@@ -71,7 +71,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
                 BlackDuckServicesFactory blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+                BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
 
                 List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckService);
@@ -92,7 +92,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
         return (BlackDuckProperties) super.getProviderProperties();
     }
 
-    private Map<ProjectView, ProviderProject> mapBlackDuckProjectsToAlertProjects(List<ProjectView> projectViews, BlackDuckService blackDuckService) {
+    private Map<ProjectView, ProviderProject> mapBlackDuckProjectsToAlertProjects(List<ProjectView> projectViews, BlackDuckApiClient blackDuckService) {
         Map<ProjectView, ProviderProject> projectMap = new ConcurrentHashMap<>();
         projectViews
             .parallelStream()
@@ -138,7 +138,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
         return projectToEmailAddresses;
     }
 
-    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
+    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckApiClient blackDuckService) throws IntegrationException {
         return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
                    .stream()
                    .filter(UserView::getActive)

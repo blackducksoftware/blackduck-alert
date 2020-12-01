@@ -60,8 +60,8 @@ import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.util.TestAlertProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
@@ -144,14 +144,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @AfterEach
-    public void cleanUp() throws Exception {
+    public void cleanUp() {
         if (null != providerConfig) {
             configurationAccessor.deleteConfiguration(providerConfig);
         }
     }
 
     @Override
-    public Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception {
+    public Optional<ConfigurationModel> saveGlobalConfiguration() {
         Map<String, String> valueMap = new HashMap<>();
         String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -175,7 +175,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ConfigurationModel saveDistributionConfiguration() throws Exception {
+    public ConfigurationModel saveDistributionConfiguration() {
         List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
         return configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.DISTRIBUTION, models);
@@ -189,12 +189,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                              .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        List<ConfigurationModel> models = List.of();
-        try {
-            models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
-        } catch (AlertDatabaseConstraintException e) {
-            e.printStackTrace();
-        }
+        List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
 
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         for (ConfigurationModel model : models) {

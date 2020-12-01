@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -42,9 +41,9 @@ import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 @Component
 public class ProviderConfigMissingValidator extends BaseSystemValidator {
     public static final String MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT = "Black Duck configuration is invalid. Black Duck configurations missing.";
-    private Logger logger = LoggerFactory.getLogger(ProvidersMissingTask.class);
-    private List<Provider> providers;
-    private ConfigurationAccessor configurationAccessor;
+    private final Logger logger = LoggerFactory.getLogger(ProvidersMissingTask.class);
+    private final List<Provider> providers;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
     public ProviderConfigMissingValidator(SystemMessageAccessor systemMessageAccessor, List<Provider> providers,
@@ -57,14 +56,9 @@ public class ProviderConfigMissingValidator extends BaseSystemValidator {
     public void validate() {
         removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_CONFIGURATION_MISSING);
         for (Provider provider : providers) {
-            try {
-                List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
-                boolean emptyConfiguration = isConfigurationsEmpty(configurations);
-                if (emptyConfiguration) {
-                    addSystemMessageForError(MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONFIGURATION_MISSING, true);
-                }
-            } catch (AlertDatabaseConstraintException ex) {
-                logger.debug("Error getting provider configurations", ex);
+            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(provider.getKey(), ConfigContextEnum.GLOBAL);
+            boolean emptyConfiguration = isConfigurationsEmpty(configurations);
+            if (emptyConfiguration) {
                 addSystemMessageForError(MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONFIGURATION_MISSING, true);
             }
         }
@@ -74,9 +68,9 @@ public class ProviderConfigMissingValidator extends BaseSystemValidator {
         if (configurations.isEmpty()) {
             return true;
         }
-        boolean emptyModels = configurations.stream()
-                                  .map(ConfigurationModel::getCopyOfFieldList)
-                                  .allMatch(List::isEmpty);
-        return emptyModels;
+        return configurations.stream()
+                   .map(ConfigurationModel::getCopyOfFieldList)
+                   .allMatch(List::isEmpty);
     }
+
 }

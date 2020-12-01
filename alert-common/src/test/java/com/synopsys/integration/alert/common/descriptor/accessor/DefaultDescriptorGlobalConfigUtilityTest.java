@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -45,16 +44,7 @@ public class DefaultDescriptorGlobalConfigUtilityTest {
 
         assertTrue(configUtility.doesConfigurationExist());
     }
-
-    @Test
-    public void testConfigurationExistsWithException() throws Exception {
-        DescriptorKey descriptorKey = createDescriptorKey();
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenThrow(new AlertDatabaseConstraintException("Test exception"));
-        DefaultDescriptorGlobalConfigUtility configUtility = new DefaultDescriptorGlobalConfigUtility(descriptorKey, configurationAccessor, null, null);
-        assertFalse(configUtility.doesConfigurationExist());
-    }
-
+ 
     @Test
     public void testGetConfiguration() throws Exception {
         DescriptorKey descriptorKey = createDescriptorKey();

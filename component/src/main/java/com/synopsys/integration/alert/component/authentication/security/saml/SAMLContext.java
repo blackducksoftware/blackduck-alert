@@ -42,8 +42,8 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 public class SAMLContext implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(SAMLContext.class);
     private static final long serialVersionUID = 4696749244318473215L;
-    private AuthenticationDescriptorKey descriptorKey;
-    private transient ConfigurationAccessor configurationAccessor;
+    private final AuthenticationDescriptorKey descriptorKey;
+    private final transient ConfigurationAccessor configurationAccessor;
 
     public SAMLContext(AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor) {
         this.descriptorKey = descriptorKey;
@@ -57,17 +57,10 @@ public class SAMLContext implements Serializable {
     }
 
     public boolean isSAMLEnabled() {
-        try {
-            Optional<ConfigurationModel> samlConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
-                                                          .stream()
-                                                          .findFirst();
-            return isSAMLEnabled(samlConfig);
-        } catch (AlertException ex) {
-            logger.warn(ex.getMessage());
-            logger.debug("cause: ", ex);
-        }
-
-        return false;
+        Optional<ConfigurationModel> samlConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL)
+                                                      .stream()
+                                                      .findFirst();
+        return isSAMLEnabled(samlConfig);
     }
 
     public void disableSAML() {

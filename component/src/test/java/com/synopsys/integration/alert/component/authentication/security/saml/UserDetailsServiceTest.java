@@ -38,9 +38,9 @@ public class UserDetailsServiceTest {
     private UserManagementAuthoritiesPopulator authoritiesPopulator;
 
     @BeforeEach
-    public void initializeAuthoritiesPopulator() throws Exception {
+    public void initializeAuthoritiesPopulator() {
         Set<UserRoleModel> roles = Arrays.stream(VALID_DB_ROLES)
-                                       .map(roleName -> UserRoleModel.of(roleName))
+                                       .map(UserRoleModel::of)
                                        .collect(Collectors.toSet());
         UserModel userModel = UserModel.newUser(USER_NAME, "password", EMAIL, AuthenticationType.SAML, roles, true);
         AuthenticationDescriptorKey key = new AuthenticationDescriptorKey();
@@ -135,4 +135,5 @@ public class UserDetailsServiceTest {
                    .map(authority -> StringUtils.remove(authority, UserModel.ROLE_PREFIX))
                    .collect(Collectors.toList());
     }
+
 }

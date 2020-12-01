@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -113,7 +112,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     MockNotificationContent mockNotification = new MockNotificationContent();
 
     @BeforeEach
-    public void init() throws AlertDatabaseConstraintException {
+    public void init() {
         auditEntryRepository.flush();
         notificationContentRepository.flush();
         descriptorConfigRepository.flush();
@@ -142,7 +141,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     @AfterEach
-    public void cleanup() throws AlertDatabaseConstraintException {
+    public void cleanup() {
         configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
 
         auditEntryRepository.flush();
@@ -205,7 +204,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void getGetAuditInfoForJobIT() throws Exception {
+    public void getGetAuditInfoForJobIT() {
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
         ConfigurationModel configurationModel = configurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
         UUID jobID = UUID.randomUUID();

@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -33,7 +32,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
@@ -48,7 +47,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     private SlackChannelKey slackChannelKey;
 
     @BeforeEach
-    public void testSetup() throws Exception {
+    public void testSetup() {
         String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
         blackDuckTimeoutField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
@@ -71,7 +70,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ConfigurationModel saveDistributionConfiguration() throws Exception {
+    public ConfigurationModel saveDistributionConfiguration() {
         List<ConfigurationFieldModel> models = MockConfigurationModelFactory.createSlackDistributionFields();
         Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(models);
 
@@ -89,12 +88,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                              .applyTopic("testTopic", "")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        List<ConfigurationModel> models = List.of();
-        try {
-            models = configurationAccessor.getConfigurationsByDescriptorKey(slackChannelKey);
-        } catch (AlertDatabaseConstraintException e) {
-            e.printStackTrace();
-        }
+        List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorKey(slackChannelKey);
 
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         for (ConfigurationModel model : models) {

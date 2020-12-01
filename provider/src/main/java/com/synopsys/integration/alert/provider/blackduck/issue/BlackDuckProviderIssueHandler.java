@@ -32,10 +32,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.IssueView;
+import com.synopsys.integration.blackduck.api.generated.view.IssueView;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.http.RequestFactory;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.request.Request;
@@ -43,10 +43,10 @@ import com.synopsys.integration.rest.request.Request;
 public class BlackDuckProviderIssueHandler {
     public static final String ISSUE_ENDPOINT_MEDIA_TYPE_V6 = "application/vnd.blackducksoftware.bill-of-materials-6+json";
     private final Gson gson;
-    private final BlackDuckService blackDuckService;
-    private final RequestFactory requestFactory;
+    private final BlackDuckApiClient blackDuckService;
+    private final BlackDuckRequestFactory requestFactory;
 
-    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckService blackDuckService, RequestFactory requestFactory) {
+    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckApiClient blackDuckService, BlackDuckRequestFactory requestFactory) {
         this.gson = gson;
         this.blackDuckService = blackDuckService;
         this.requestFactory = requestFactory;

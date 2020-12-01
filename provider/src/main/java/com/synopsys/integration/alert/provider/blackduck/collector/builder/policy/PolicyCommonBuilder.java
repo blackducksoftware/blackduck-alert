@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +52,15 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionVulnerableBomComponentsView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.throwaway.generated.enumeration.VulnerabilityWithRemediationSeverityType;
-import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerabilityWithRemediationView;
-import com.synopsys.integration.blackduck.api.manual.throwaway.generated.view.VulnerableComponentView;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
@@ -143,15 +142,16 @@ public class PolicyCommonBuilder {
         return false;
     }
 
-    public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<VulnerableComponentView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
-        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckService blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
+    public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<ProjectVersionVulnerableBomComponentsView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
+        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckApiClient blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
         Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckService, vulnerableComponentViews);
-        List<VulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
-                                                                                 .map(VulnerableComponentView::getVulnerabilityWithRemediation)
-                                                                                 .sorted(Comparator.comparing(VulnerabilityWithRemediationView::getSeverity))
-                                                                                 .collect(Collectors.toList());
+        List<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
+                                                                                                                           .map(ProjectVersionVulnerableBomComponentsView::getVulnerabilityWithRemediation)
+                                                                                                                           .sorted(
+                                                                                                                               Comparator.comparing(ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationView::getSeverity))
+                                                                                                                           .collect(Collectors.toList());
         SetMap<LinkableItem, LinkableItem> severityToVulns = SetMap.createLinked();
-        for (VulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
+        for (ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationView vulnerabilityView : notificationVulnerabilities) {
             // TODO to get the URLS for vulnerabilities we would want to traverse the vulnerabilities link
             String vulnerabilityId = vulnerabilityView.getVulnerabilityName();
             String vulnerabilityUrl = null;
@@ -162,7 +162,7 @@ public class PolicyCommonBuilder {
             vulnerabilityIdItem.setCollapsible(true);
 
             String severity = Optional.ofNullable(vulnerabilityView.getSeverity())
-                                  .map(VulnerabilityWithRemediationSeverityType::name)
+                                  .map(VulnerabilitySeverityType::name)
                                   .orElse("UNKNOWN");
             LinkableItem severityItem = new LinkableItem(MessageBuilderConstants.LABEL_VULNERABILITY_SEVERITY, severity);
 

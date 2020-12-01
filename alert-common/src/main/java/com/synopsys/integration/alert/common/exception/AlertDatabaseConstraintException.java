@@ -22,22 +22,24 @@
  */
 package com.synopsys.integration.alert.common.exception;
 
+@Deprecated(forRemoval = true)
 public class AlertDatabaseConstraintException extends AlertException {
     private static final long serialVersionUID = 2057996253011099927L;
 
-    public AlertDatabaseConstraintException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public AlertDatabaseConstraintException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public AlertDatabaseConstraintException(final String message, final Throwable cause) {
+    public AlertDatabaseConstraintException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public AlertDatabaseConstraintException(final String message) {
+    public AlertDatabaseConstraintException(String message) {
         super(message);
     }
 
-    public AlertDatabaseConstraintException(final Throwable cause) {
+    public AlertDatabaseConstraintException(Throwable cause) {
         super(cause);
     }
+
 }

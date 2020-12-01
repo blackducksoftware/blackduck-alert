@@ -40,7 +40,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -115,7 +114,7 @@ public class NotificationProcessor {
             return List.of();
         }
 
-        Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(job.getProviderConfigIdAsLong());
+        Optional<ConfigurationModel> optionalProviderConfig = configurationAccessor.getConfigurationById(job.getProviderConfigIdAsLong());
         if (optionalProviderConfig.isPresent()) {
             Provider provider = providerKeyToProvider.get(job.getProviderName());
             ConfigurationModel providerConfiguration = optionalProviderConfig.get();
@@ -142,7 +141,7 @@ public class NotificationProcessor {
     }
 
     private List<DistributionEvent> processNotificationsThatMatchFilter(NotificationFilterModel notificationFilterModel, List<ConfigurationJobModel> matchingJobs, List<AlertNotificationModel> notifications) {
-        Optional<ConfigurationModel> optionalProviderConfig = retrieveProviderConfig(notificationFilterModel.getProviderConfigId());
+        Optional<ConfigurationModel> optionalProviderConfig = configurationAccessor.getConfigurationById(notificationFilterModel.getProviderConfigId());
         if (optionalProviderConfig.isPresent()) {
             Provider provider = providerKeyToProvider.get(notificationFilterModel.getProvider());
 
@@ -218,16 +217,6 @@ public class NotificationProcessor {
             logger.error("Could not create distribution events", e);
         }
         return List.of();
-    }
-
-    private Optional<ConfigurationModel> retrieveProviderConfig(Long providerConfigId) {
-        try {
-            return configurationAccessor.getConfigurationById(providerConfigId);
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("Could not retrieve the provider config for Id: {}", providerConfigId);
-            logger.debug(e.getMessage(), e);
-            return Optional.empty();
-        }
     }
 
     private SetMap<NotificationFilterModel, AlertNotificationModel> extractNotificationInformation(List<AlertNotificationModel> notifications) {

@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -50,8 +49,8 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.rest.RestConstants;
 
 @Transactional
@@ -70,7 +69,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     private ConfigurationModel providerConfigModel = null;
 
     @BeforeEach
-    public void init() throws AlertDatabaseConstraintException {
+    public void init() {
         notificationContentRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
         notificationContentRepository.flush();
@@ -93,7 +92,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     }
 
     @AfterEach
-    public void cleanup() throws AlertDatabaseConstraintException {
+    public void cleanup() {
         configurationAccessor.deleteConfiguration(providerConfigModel.getConfigurationId());
 
         notificationContentRepository.deleteAllInBatch();

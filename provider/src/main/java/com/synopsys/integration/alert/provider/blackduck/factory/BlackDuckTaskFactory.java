@@ -29,7 +29,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -46,7 +45,6 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final TaskScheduler taskScheduler;
     private final ProviderDataAccessor blackDuckDataAccessor;
-    private final JobAccessor jobAccessor;
     private final NotificationAccessor notificationAccessor;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private final BlackDuckValidator blackDuckValidator;
@@ -57,7 +55,6 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         BlackDuckProviderKey blackDuckProviderKey,
         TaskScheduler taskScheduler,
         ProviderDataAccessor blackDuckDataAccessor,
-        JobAccessor jobAccessor,
         NotificationAccessor notificationAccessor,
         ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
         BlackDuckValidator blackDuckValidator,
@@ -66,7 +63,6 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.taskScheduler = taskScheduler;
         this.blackDuckDataAccessor = blackDuckDataAccessor;
-        this.jobAccessor = jobAccessor;
         this.notificationAccessor = notificationAccessor;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
         this.blackDuckValidator = blackDuckValidator;

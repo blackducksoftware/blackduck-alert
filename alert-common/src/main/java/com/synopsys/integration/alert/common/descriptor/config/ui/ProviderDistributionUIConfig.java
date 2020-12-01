@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.ta
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.TableSelectColumn;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderContent;
@@ -111,8 +110,9 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         ConfigField configuredProject = new EndpointTableSelectField(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS)
                                             .applyPaged(true)
                                             .applySearchable(true)
-                                            .applyColumn(new TableSelectColumn("name", "Project Name", true, true))
-                                            .applyColumn(new TableSelectColumn("description", "Project Description", false, false))
+                                            .applyColumn(TableSelectColumn.visible("name", "Project Name", true, true))
+                                            .applyColumn(TableSelectColumn.hidden("href", "Project URL", false, false))
+                                            .applyColumn(TableSelectColumn.visible("description", "Project Description", false, false))
                                             .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                             .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
                                             .applyValidationFunctions(this::validateConfiguredProject);
@@ -148,19 +148,11 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     private ValidationResult validateConfigExists(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Optional<ConfigurationModel> configModel = fieldToValidate.getValue()
                                                        .map(Long::parseLong)
-                                                       .flatMap(this::readConfiguration);
+                                                       .flatMap(configurationAccessor::getConfigurationById);
         if (!configModel.isPresent()) {
             return ValidationResult.errors("Provider configuration missing.");
         }
         return ValidationResult.success();
-    }
-
-    private Optional<ConfigurationModel> readConfiguration(Long configId) {
-        try {
-            return configurationAccessor.getConfigurationById(configId);
-        } catch (AlertDatabaseConstraintException ex) {
-            return Optional.empty();
-        }
     }
 
     private ValidationResult validateFilterByProject(FieldValueModel fieldToValidate, FieldModel fieldModel) {

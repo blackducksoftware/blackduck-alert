@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccess
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
-import com.synopsys.integration.alert.util.OutputLogger;
+import com.synopsys.integration.alert.test.common.OutputLogger;
 import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.log.IntLogger;
@@ -223,4 +223,5 @@ public class SystemValidatorTest {
         blackDuckValidator.validate(blackDuckProperties);
         Mockito.verify(defaultSystemMessageUtility, Mockito.times(0)).addSystemMessage(Mockito.anyString(), Mockito.any(SystemMessageSeverity.class), Mockito.any(SystemMessageType.class));
     }
+
 }

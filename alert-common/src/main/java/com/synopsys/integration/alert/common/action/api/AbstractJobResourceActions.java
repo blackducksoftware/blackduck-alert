@@ -136,17 +136,17 @@ public abstract class AbstractJobResourceActions {
         if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION), descriptorNames)) {
             return ActionResponse.createForbiddenResponse();
         }
-        Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
 
+        Optional<JobFieldModel> optionalModel = findJobFieldModel(id);
         if (optionalModel.isPresent()) {
             JobFieldModel fieldModel = optionalModel.get();
+
             boolean hasPermissions = hasRequiredPermissions(fieldModel.getFieldModels(), authorizationManager::hasReadPermission);
             if (!hasPermissions) {
                 return ActionResponse.createForbiddenResponse();
             }
             return new ActionResponse<>(HttpStatus.OK, fieldModel);
         }
-
         return new ActionResponse<>(HttpStatus.NOT_FOUND);
     }
 
@@ -235,7 +235,7 @@ public abstract class AbstractJobResourceActions {
                    .allMatch(model -> checkContextAndDescriptorKey(model, permissionChecker));
          */
     }
-    
+
     private boolean checkContextAndDescriptorKey(FieldModel fieldModel, BiFunction<ConfigContextEnum, DescriptorKey, Boolean> permissionChecker) {
         ConfigContextEnum configContextEnum = ConfigContextEnum.valueOf(fieldModel.getContext());
         DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new RuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));

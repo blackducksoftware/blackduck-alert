@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -77,30 +76,26 @@ public abstract class ProviderGlobalUIConfig extends UIConfig {
 
     private ValidationResult validateDuplicateNames(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         List<String> errorList = List.of();
-        try {
-            List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
-            if (configurations.isEmpty()) {
-                return ValidationResult.success();
-            }
+        List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
+        if (configurations.isEmpty()) {
+            return ValidationResult.success();
+        }
 
-            List<ConfigurationModel> modelsWithName = configurations.stream()
-                                                          .filter(configurationModel -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
-                                                          .filter(configurationModel ->
-                                                                      configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                                                                          .flatMap(ConfigurationFieldModel::getFieldValue)
-                                                                          .filter(configName -> configName.equals(fieldToValidate.getValue().orElse("")))
-                                                                          .isPresent())
-                                                          .collect(Collectors.toList());
-            if (modelsWithName.size() > 1) {
+        List<ConfigurationModel> modelsWithName = configurations.stream()
+                                                      .filter(configurationModel -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
+                                                      .filter(configurationModel ->
+                                                                  configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                                                                      .flatMap(ConfigurationFieldModel::getFieldValue)
+                                                                      .filter(configName -> configName.equals(fieldToValidate.getValue().orElse("")))
+                                                                      .isPresent())
+                                                      .collect(Collectors.toList());
+        if (modelsWithName.size() > 1) {
+            errorList = List.of(ERROR_DUPLICATE_PROVIDER_NAME);
+        } else if (modelsWithName.size() == 1) {
+            boolean sameConfig = fieldModel.getId() != null && modelsWithName.get(0).getConfigurationId().equals(Long.valueOf(fieldModel.getId()));
+            if (!sameConfig) {
                 errorList = List.of(ERROR_DUPLICATE_PROVIDER_NAME);
-            } else if (modelsWithName.size() == 1) {
-                boolean sameConfig = fieldModel.getId() != null && modelsWithName.get(0).getConfigurationId().equals(Long.valueOf(fieldModel.getId()));
-                if (!sameConfig) {
-                    errorList = List.of(ERROR_DUPLICATE_PROVIDER_NAME);
-                }
             }
-        } catch (AlertDatabaseConstraintException ex) {
-            logger.error("Error reading provider configurations to detect duplicate names.", ex);
         }
         return ValidationResult.errors(errorList);
     }

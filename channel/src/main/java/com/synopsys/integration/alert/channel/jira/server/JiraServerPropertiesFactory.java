@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -77,19 +76,14 @@ public class JiraServerPropertiesFactory {
         String accessToken = fieldAccessToken.getValue().orElse("");
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            try {
-                return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
-                           .stream()
-                           .findFirst()
-                           .flatMap(configurationModel -> configurationModel.getField(JiraServerDescriptor.KEY_SERVER_PASSWORD))
-                           .flatMap(ConfigurationFieldModel::getFieldValue)
-                           .orElse("");
-
-            } catch (AlertDatabaseConstraintException e) {
-                logger.error("Unable to retrieve existing Jira configuration.");
-            }
+            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
+                       .stream()
+                       .findFirst()
+                       .flatMap(configurationModel -> configurationModel.getField(JiraServerDescriptor.KEY_SERVER_PASSWORD))
+                       .flatMap(ConfigurationFieldModel::getFieldValue)
+                       .orElse("");
         }
-
         return accessToken;
     }
+
 }

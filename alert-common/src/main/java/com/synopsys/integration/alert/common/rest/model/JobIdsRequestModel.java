@@ -25,14 +25,14 @@ package com.synopsys.integration.alert.common.rest.model;
 import java.util.List;
 import java.util.UUID;
 
-public class JobIdsValidationRequestModel extends AlertSerializableModel {
+public class JobIdsRequestModel extends AlertSerializableModel {
     private List<UUID> jobIds;
 
-    public JobIdsValidationRequestModel() {
+    public JobIdsRequestModel() {
         // For serialization
     }
 
-    public JobIdsValidationRequestModel(List<UUID> jobIds) {
+    public JobIdsRequestModel(List<UUID> jobIds) {
         this.jobIds = jobIds;
     }
 

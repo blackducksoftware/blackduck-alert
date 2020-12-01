@@ -39,7 +39,7 @@ public class DefaultProviderDataAccessorTest {
     ProviderProject expectedProviderProject = new ProviderProject(name, description, href, projectOwnerEmail);
 
     @Test
-    public void getProjectsByProviderConfigNameTest() throws Exception {
+    public void getProjectsByProviderConfigNameTest() {
         ConfigurationModel configurationModel = createConfigurationModel();
         ProviderProjectEntity providerProjectEntity = new ProviderProjectEntity(name, description, href, projectOwnerEmail, 1L);
 
@@ -58,7 +58,7 @@ public class DefaultProviderDataAccessorTest {
     }
 
     @Test
-    public void getProjectsByProviderConfigNameEmptyTest() throws Exception {
+    public void getProjectsByProviderConfigNameEmptyTest() {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         ProviderProjectRepository providerProjectRepository = Mockito.mock(ProviderProjectRepository.class);
 
@@ -160,7 +160,7 @@ public class DefaultProviderDataAccessorTest {
     }
 
     @Test
-    public void getUsersByProviderConfigNameTest() throws Exception {
+    public void getUsersByProviderConfigNameTest() {
         ConfigurationModel configurationModel = createConfigurationModel();
         ProviderUserEntity providerUserEntity = new ProviderUserEntity(projectOwnerEmail, true, 1L);
 
@@ -189,7 +189,7 @@ public class DefaultProviderDataAccessorTest {
     }
 
     @Test
-    public void getUsersByProviderConfigNameOptionalEmptyTest() throws Exception {
+    public void getUsersByProviderConfigNameOptionalEmptyTest() {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         Mockito.when(configurationAccessor.getProviderConfigurationByName(Mockito.any())).thenReturn(Optional.empty());
@@ -248,4 +248,5 @@ public class DefaultProviderDataAccessorTest {
         assertEquals(expected.getHref(), actual.getHref());
         assertEquals(expected.getProjectOwnerEmail(), actual.getProjectOwnerEmail());
     }
+
 }

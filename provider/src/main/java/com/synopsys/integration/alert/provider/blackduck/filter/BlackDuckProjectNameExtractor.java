@@ -47,7 +47,7 @@ import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotifica
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
@@ -71,7 +71,7 @@ public class BlackDuckProjectNameExtractor {
     }
 
     private Collection<String> getBomEditProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
-        BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
 
         BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
         String bomComponentUri = notificationView.getContent().getBomComponent();
@@ -121,7 +121,7 @@ public class BlackDuckProjectNameExtractor {
                    .collect(Collectors.toSet());
     }
 
-    private Optional<String> getProjectName(BlackDuckService blackDuckService, ProjectVersionComponentView versionBomComponent) {
+    private Optional<String> getProjectName(BlackDuckApiClient blackDuckService, ProjectVersionComponentView versionBomComponent) {
         try {
             String versionHref = versionBomComponent.getHref().toString();
             int projectVersionIndex = versionHref.indexOf(ProjectView.VERSIONS_LINK);

@@ -1,0 +1,198 @@
+/**
+ * web
+ *
+ * Copyright (c) 2020 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package com.synopsys.integration.alert.web.api.job;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
+import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+
+public final class JobFieldModelPopulationUtils {
+    public static JobFieldModel createJobFieldModel(DistributionJobModel jobModel) {
+        FieldModel providerFieldModel = new FieldModel(new BlackDuckProviderKey().getUniversalKey(), ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
+        populateProviderFields(providerFieldModel, jobModel);
+
+        FieldModel channelFieldModel = new FieldModel(jobModel.getChannelDescriptorName(), ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
+        populateChannelFields(channelFieldModel, jobModel);
+
+        String jobIdString = Optional.ofNullable(jobModel.getJobId())
+                                 .map(UUID::toString)
+                                 .orElse(null);
+        return new JobFieldModel(jobIdString, Set.of(providerFieldModel, channelFieldModel));
+    }
+
+    public static void populateProviderFields(FieldModel providerFieldModel, DistributionJobModel jobModel) {
+        String providerCommonConfigId = Optional.ofNullable(jobModel.getBlackDuckGlobalConfigId())
+                                            .map(String::valueOf)
+                                            .orElse(null);
+        putField(providerFieldModel, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, providerCommonConfigId);
+        putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, jobModel.getProcessingType().toString());
+        putField(providerFieldModel, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, jobModel.getNotificationTypes());
+
+        boolean filterByProject = jobModel.isFilterByProject();
+        putField(providerFieldModel, ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, Boolean.toString(filterByProject));
+
+        if (filterByProject) {
+            jobModel.getProjectNamePattern()
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(pattern -> putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, pattern));
+
+            List<String> blackDuckProjectNames = jobModel.getProjectFilterProjectNames();
+            if (!blackDuckProjectNames.isEmpty()) {
+                putField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, blackDuckProjectNames);
+            }
+        }
+
+        List<String> blackDuckPolicyNames = jobModel.getPolicyFilterPolicyNames();
+        if (null == blackDuckPolicyNames || !blackDuckPolicyNames.isEmpty()) {
+            putField(providerFieldModel, "blackduck.policy.notification.filter", blackDuckPolicyNames);
+        }
+
+        List<String> blackDuckJobVulnerabilitySeverityNames = jobModel.getVulnerabilityFilterSeverityNames();
+        if (null == blackDuckJobVulnerabilitySeverityNames || !blackDuckJobVulnerabilitySeverityNames.isEmpty()) {
+            putField(providerFieldModel, "blackduck.vulnerability.notification.filter", blackDuckJobVulnerabilitySeverityNames);
+        }
+    }
+
+    public static void populateChannelFields(FieldModel channelFieldModel, DistributionJobModel jobModel) {
+        String channelDescriptorName = jobModel.getChannelDescriptorName();
+        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_ENABLED, Boolean.toString(jobModel.isEnabled()));
+        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_NAME, jobModel.getName());
+        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
+        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_FREQUENCY, jobModel.getDistributionFrequency().name());
+        putField(channelFieldModel, ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
+
+        DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
+        if (jobDetails.isAzureBoardsDetails()) {
+            populateAzureBoardsFields(channelFieldModel, jobDetails.getAsAzureBoardsJobDetails());
+        } else if (jobDetails.isEmailDetails()) {
+            populateEmailFields(channelFieldModel, jobDetails.getAsEmailJobDetails());
+        } else if (jobDetails.isJiraCloudDetails()) {
+            populateJiraCloudFields(channelFieldModel, jobDetails.getAsJiraCouldJobDetails());
+        } else if (jobDetails.isJiraServerDetails()) {
+            populateJiraServerFields(channelFieldModel, jobDetails.getAsJiraServerJobDetails());
+        } else if (jobDetails.isMSTeamsDetails()) {
+            populateMSTeamsField(channelFieldModel, jobDetails.getAsMSTeamsJobDetails());
+        } else if (jobDetails.isSlackDetails()) {
+            populateSlackFields(channelFieldModel, jobDetails.getAsSlackJobDetails());
+        }
+    }
+
+    private static void populateAzureBoardsFields(FieldModel channelFieldModel, AzureBoardsJobDetailsModel azureBoardsJobDetails) {
+        if (null != azureBoardsJobDetails) {
+            putField(channelFieldModel, AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT, Boolean.toString(azureBoardsJobDetails.isAddComments()));
+            putField(channelFieldModel, AzureBoardsDescriptor.KEY_AZURE_PROJECT, azureBoardsJobDetails.getProjectNameOrId());
+            putField(channelFieldModel, AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE, azureBoardsJobDetails.getWorkItemType());
+            putField(channelFieldModel, AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE, azureBoardsJobDetails.getWorkItemCompletedState());
+            putField(channelFieldModel, AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE, azureBoardsJobDetails.getWorkItemReopenState());
+        }
+    }
+
+    private static void populateEmailFields(FieldModel channelFieldModel, EmailJobDetailsModel emailJobDetails) {
+        if (null != emailJobDetails) {
+            putField(channelFieldModel, EmailDescriptor.KEY_SUBJECT_LINE, emailJobDetails.getSubjectLine());
+            putField(channelFieldModel, EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, emailJobDetails.getAttachmentFileType());
+            putField(channelFieldModel, EmailDescriptor.KEY_PROJECT_OWNER_ONLY, Boolean.toString(emailJobDetails.isProjectOwnerOnly()));
+            putField(channelFieldModel, EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, Boolean.toString(emailJobDetails.isAdditionalEmailAddressesOnly()));
+
+            List<String> emailAddresses = emailJobDetails.getAdditionalEmailAddresses();
+            if (!emailAddresses.isEmpty()) {
+                putField(channelFieldModel, EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, emailAddresses);
+            }
+        }
+    }
+
+    private static void populateJiraCloudFields(FieldModel channelFieldModel, JiraCloudJobDetailsModel jiraCloudJobDetails) {
+        if (null != jiraCloudJobDetails) {
+            putField(channelFieldModel, JiraCloudDescriptor.KEY_ADD_COMMENTS, Boolean.toString(jiraCloudJobDetails.isAddComments()));
+            putField(channelFieldModel, JiraCloudDescriptor.KEY_ISSUE_CREATOR, jiraCloudJobDetails.getIssueCreatorEmail());
+            putField(channelFieldModel, JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, jiraCloudJobDetails.getProjectNameOrKey());
+            putField(channelFieldModel, JiraCloudDescriptor.KEY_ISSUE_TYPE, jiraCloudJobDetails.getIssueType());
+            putField(channelFieldModel, JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, jiraCloudJobDetails.getResolveTransition());
+            putField(channelFieldModel, JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, jiraCloudJobDetails.getReopenTransition());
+        }
+    }
+
+    private static void populateJiraServerFields(FieldModel channelFieldModel, JiraServerJobDetailsModel jiraServerJobDetails) {
+        if (null != jiraServerJobDetails) {
+            putField(channelFieldModel, JiraServerDescriptor.KEY_ADD_COMMENTS, Boolean.toString(jiraServerJobDetails.isAddComments()));
+            putField(channelFieldModel, JiraServerDescriptor.KEY_ISSUE_CREATOR, jiraServerJobDetails.getIssueCreatorUsername());
+            putField(channelFieldModel, JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, jiraServerJobDetails.getProjectNameOrKey());
+            putField(channelFieldModel, JiraServerDescriptor.KEY_ISSUE_TYPE, jiraServerJobDetails.getIssueType());
+            putField(channelFieldModel, JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, jiraServerJobDetails.getResolveTransition());
+            putField(channelFieldModel, JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, jiraServerJobDetails.getReopenTransition());
+        }
+    }
+
+    private static void populateMSTeamsField(FieldModel channelFieldModel, MSTeamsJobDetailsModel msTeamsJobDetails) {
+        if (null != msTeamsJobDetails) {
+            putField(channelFieldModel, MsTeamsDescriptor.KEY_WEBHOOK, msTeamsJobDetails.getWebhook());
+        }
+    }
+
+    private static void populateSlackFields(FieldModel channelFieldModel, SlackJobDetailsModel slackJobDetails) {
+        if (null != slackJobDetails) {
+            putField(channelFieldModel, SlackDescriptor.KEY_WEBHOOK, slackJobDetails.getWebhook());
+            putField(channelFieldModel, SlackDescriptor.KEY_CHANNEL_NAME, slackJobDetails.getChannelName());
+            putField(channelFieldModel, SlackDescriptor.KEY_CHANNEL_USERNAME, slackJobDetails.getChannelUsername());
+        }
+    }
+
+    private static void putField(FieldModel fieldModel, String key, String value) {
+        if (null != value) {
+            putField(fieldModel, key, List.of(value));
+        }
+    }
+
+    private static void putField(FieldModel fieldModel, String key, List<String> values) {
+        FieldValueModel fieldValueModel = new FieldValueModel(values, true);
+        fieldModel.putField(key, fieldValueModel);
+    }
+
+}

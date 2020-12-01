@@ -62,15 +62,10 @@ public class DefaultDescriptorGlobalConfigUtility {
     }
 
     public boolean doesConfigurationExist() {
-        try {
-            return !configurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context).isEmpty();
-        } catch (AlertException ex) {
-            logger.debug("Error reading configuration from database.", ex);
-            return false;
-        }
+        return !configurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context).isEmpty();
     }
 
-    public Optional<ConfigurationModel> getConfiguration() throws AlertException {
+    public Optional<ConfigurationModel> getConfiguration() {
         return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(key, context)
                    .stream()
                    .findFirst();

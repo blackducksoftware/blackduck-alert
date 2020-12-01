@@ -26,15 +26,21 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ProviderProjectSelectOption extends AlertSerializableModel {
     private final String name;
+    private final String href;
     private final String description;
 
-    public ProviderProjectSelectOption(String name, String description) {
+    public ProviderProjectSelectOption(String name, String href, String description) {
         this.name = name;
+        this.href = href;
         this.description = description;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getHref() {
+        return href;
     }
 
     public String getDescription() {

@@ -17,7 +17,6 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -54,7 +53,7 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
     private DescriptorAccessor descriptorAccessor;
 
     @Test
-    public void deleteSensitiveFieldFromConfig() throws AlertException {
+    public void deleteSensitiveFieldFromConfig() {
         FieldModelProcessor spiedFieldModelProcessor = Mockito.spy(fieldModelProcessor);
         Mockito.doReturn(List.of()).when(spiedFieldModelProcessor).validateFieldModel(Mockito.any());
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
@@ -93,4 +92,5 @@ public class ConfigActionTestIT extends AlertIntegrationTest {
         assertEquals(newUsername, updatedValues.get(ProxyManager.KEY_PROXY_USERNAME).getValue().orElse(""));
         assertNull(updatedValues.get(ProxyManager.KEY_PROXY_PWD), "Saving an empty values should remove it from DB.");
     }
+
 }

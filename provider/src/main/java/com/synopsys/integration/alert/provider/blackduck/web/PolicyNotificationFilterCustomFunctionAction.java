@@ -35,7 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -52,16 +52,22 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
+import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.HttpUrl;
+import com.synopsys.integration.rest.request.Request;
 
 @Component
-public class PolicyNotificationFilterCustomFunctionAction extends CustomFunctionAction<NotificationFilterModelOptions> {
+public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFunctionAction<NotificationFilterModelOptions> {
     private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomFunctionAction.class);
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
@@ -77,25 +83,33 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
     }
 
     @Override
-    public ActionResponse<NotificationFilterModelOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws IntegrationException {
+    public ActionResponse<NotificationFilterModelOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
         Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
+
+        int totalPages = 1;
         List<NotificationFilterModel> options = List.of();
 
-        if (isFilterablePolicy(selectedNotificationTypes)) {
+        if (isJobFilterableByPolicy(selectedNotificationTypes)) {
             try {
-                options = retrieveBlackDuckPolicyOptions(fieldModel);
+                Optional<BlackDuckServicesFactory> blackDuckServicesFactory = createBlackDuckServicesFactory(fieldModel);
+                if (blackDuckServicesFactory.isPresent()) {
+                    BlackDuckPageResponse<PolicyRuleView> policyRulesPage = retrievePolicyRules(blackDuckServicesFactory.get(), pageNumber, pageSize, searchTerm);
+                    totalPages = (policyRulesPage.getTotalCount() + (pageSize - 1)) / pageSize;
+                    options = convertToNotificationFilterModel(policyRulesPage.getItems());
+                }
             } catch (IntegrationException e) {
                 logger.error("There was an issue communicating with Black Duck");
                 logger.debug(e.getMessage(), e);
                 throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
-        NotificationFilterModelOptions notificationFilterModelOptions = new NotificationFilterModelOptions(options);
+
+        NotificationFilterModelOptions notificationFilterModelOptions = new NotificationFilterModelOptions(totalPages, pageNumber, pageSize, options);
         return new ActionResponse<>(HttpStatus.OK, notificationFilterModelOptions);
     }
 
-    private boolean isFilterablePolicy(Collection<String> notificationTypes) {
+    private boolean isJobFilterableByPolicy(Collection<String> notificationTypes) {
         Set<String> filterableNotificationType = Set.of(
             NotificationType.POLICY_OVERRIDE,
             NotificationType.RULE_VIOLATION,
@@ -104,40 +118,35 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
         return notificationTypes.stream().anyMatch(filterableNotificationType::contains);
     }
 
-    private List<NotificationFilterModel> retrieveBlackDuckPolicyOptions(FieldModel fieldModel) throws IntegrationException {
-        Optional<PolicyRuleService> optionalPolicyRuleService = createPolicyRuleService(fieldModel);
-        if (optionalPolicyRuleService.isPresent()) {
-            return optionalPolicyRuleService.get()
-                       .getAllPolicyRules()
-                       .stream()
-                       .filter(PolicyRuleView::getEnabled)
-                       .map(PolicyRuleView::getName)
-                       .map(NotificationFilterModel::new)
-                       .collect(Collectors.toList());
-        }
-        return List.of();
+    private BlackDuckPageResponse<PolicyRuleView> retrievePolicyRules(BlackDuckServicesFactory blackDuckServicesFactory, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+
+        HttpUrl policyRulesUrl = blackDuckApiClient.getUrl(ApiDiscovery.POLICY_RULES_LINK);
+        BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder(new Request.Builder())
+                                                     .url(policyRulesUrl)
+                                                     .addQueryParameter("q", "name:" + searchTerm)
+                                                     .addQueryParameter("filter", "policyRuleEnabled:true");
+        BlackDuckPageDefinition blackDuckPageDefinition = new BlackDuckPageDefinition(pageSize, pageNumber * pageSize);
+        return blackDuckApiClient.getPageResponse(requestBuilder, PolicyRuleView.class, blackDuckPageDefinition);
     }
 
-    private Optional<PolicyRuleService> createPolicyRuleService(FieldModel fieldModel) throws IntegrationException {
+    private List<NotificationFilterModel> convertToNotificationFilterModel(List<PolicyRuleView> policyRules) {
+        return policyRules.stream()
+                   .map(PolicyRuleView::getName)
+                   .map(NotificationFilterModel::new)
+                   .collect(Collectors.toList());
+    }
+
+    private Optional<BlackDuckServicesFactory> createBlackDuckServicesFactory(FieldModel fieldModel) throws IntegrationException {
         Optional<BlackDuckProperties> optionalBlackDuckProperties = createBlackDuckProperties(fieldModel);
         if (optionalBlackDuckProperties.isPresent()) {
             Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
             BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
-            return createHttpClient(blackDuckProperties)
-                       .map(client -> blackDuckProperties.createBlackDuckServicesFactory(client, intLogger))
-                       .map(BlackDuckServicesFactory::createPolicyRuleService);
+            BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
+            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
+            return Optional.of(blackDuckServicesFactory);
         }
         return Optional.empty();
-    }
-
-    private Optional<BlackDuckHttpClient> createHttpClient(BlackDuckProperties blackDuckProperties) {
-        BlackDuckHttpClient blackDuckHttpClient = null;
-        try {
-            blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
-        } catch (IntegrationException ex) {
-            logger.error("Error creating Black Duck http client", ex);
-        }
-        return Optional.ofNullable(blackDuckHttpClient);
     }
 
     private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) throws IntegrationException {
@@ -146,6 +155,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends CustomFunction
         if (null == providerConfigId) {
             return Optional.empty();
         }
+
         return configurationAccessor.getConfigurationById(providerConfigId)
                    .map(ConfigurationModel::getCopyOfKeyToFieldMap)
                    .map(FieldUtility::new)

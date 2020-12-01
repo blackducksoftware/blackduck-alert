@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -239,15 +239,10 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         Long providerConfigId = entity.getProviderConfigId();
         String providerConfigName = "DELETED CONFIGURATION";
         if (null != providerConfigId) {
-            try {
-                providerConfigName = configurationAccessor.getConfigurationById(providerConfigId)
-                                         .flatMap(field -> field.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
-                                         .flatMap(ConfigurationFieldModel::getFieldValue)
-                                         .orElse(providerConfigName);
-            } catch (AlertDatabaseConstraintException e) {
-                logger.warn("Failed to retrieve provider config name for audit notification: {}", e.getMessage());
-                logger.debug(e.getMessage(), e);
-            }
+            providerConfigName = configurationAccessor.getConfigurationById(providerConfigId)
+                                     .flatMap(field -> field.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                                     .flatMap(ConfigurationFieldModel::getFieldValue)
+                                     .orElse(providerConfigName);
         }
         return new AlertNotificationModel(entity.getId(), providerConfigId, entity.getProvider(), providerConfigName, entity.getNotificationType(), entity.getContent(), entity.getCreatedAt(), entity.getProviderCreationTime(),
             entity.getProcessed());
