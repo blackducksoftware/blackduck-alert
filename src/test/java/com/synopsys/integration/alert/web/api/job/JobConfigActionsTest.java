@@ -91,7 +91,7 @@ public class JobConfigActionsTest {
     public void init() {
         this.jobId = UUID.randomUUID();
         this.fieldModel = createFieldModel();
-        this.jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel));
+        this.jobFieldModel = new JobFieldModel(jobId.toString(), Set.of(fieldModel), List.of());
         this.distributionJobModel = createMockDistributionJobModel();
         this.configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         this.configurationFieldModel.setFieldValue(FIELD_VALUE);

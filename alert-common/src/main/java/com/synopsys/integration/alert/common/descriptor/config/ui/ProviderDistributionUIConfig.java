@@ -110,6 +110,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
         ConfigField configuredProject = new EndpointTableSelectField(KEY_CONFIGURED_PROJECT, LABEL_PROJECTS, DESCRIPTION_PROJECTS)
                                             .applyPaged(true)
                                             .applySearchable(true)
+                                            .applyUseRowAsValue(true)
                                             .applyColumn(TableSelectColumn.visible("name", "Project Name", true, true))
                                             .applyColumn(TableSelectColumn.hidden("href", "Project URL", false, false))
                                             .applyColumn(TableSelectColumn.visible("description", "Project Description", false, false))

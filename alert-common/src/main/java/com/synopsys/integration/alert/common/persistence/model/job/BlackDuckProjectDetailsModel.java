@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,37 +20,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job.blackduck.projects;
+package com.synopsys.integration.alert.common.persistence.model.job;
 
-import java.io.Serializable;
-import java.util.UUID;
+import java.util.Optional;
 
-public class BlackDuckJobProjectPK implements Serializable {
-    private UUID jobId;
-    private String href;
+import org.jetbrains.annotations.Nullable;
 
-    public BlackDuckJobProjectPK() {
-    }
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-    public BlackDuckJobProjectPK(UUID jobId, String href) {
-        this.jobId = jobId;
+public class BlackDuckProjectDetailsModel extends AlertSerializableModel {
+    private final String name;
+    private final String href;
+    private final String projectOwnerEmail;
+
+    public BlackDuckProjectDetailsModel(String name, String href, @Nullable String projectOwnerEmail) {
+        this.name = name;
         this.href = href;
+        this.projectOwnerEmail = projectOwnerEmail;
     }
 
-    public UUID getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(UUID jobId) {
-        this.jobId = jobId;
+    public String getName() {
+        return name;
     }
 
     public String getHref() {
         return href;
     }
 
-    public void setHref(String href) {
-        this.href = href;
+    public Optional<String> getProjectOwnerEmail() {
+        return Optional.ofNullable(projectOwnerEmail);
     }
 
 }

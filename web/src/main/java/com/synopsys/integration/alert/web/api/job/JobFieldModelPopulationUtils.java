@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,6 +41,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -51,6 +53,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 
 public final class JobFieldModelPopulationUtils {
@@ -63,10 +66,17 @@ public final class JobFieldModelPopulationUtils {
         FieldModel channelFieldModel = new FieldModel(jobModel.getChannelDescriptorName(), ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
         populateChannelFields(channelFieldModel, jobModel);
 
+        // Temporary work-around
+        List<JobProviderProjectFieldModel> jobProviderProjects = Optional.ofNullable(jobModel.getProjectFilterDetails())
+                                                                     .stream()
+                                                                     .flatMap(List::stream)
+                                                                     .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref(), projectDetails.getProjectOwnerEmail().orElse(null)))
+                                                                     .collect(Collectors.toList());
+
         String jobIdString = Optional.ofNullable(jobModel.getJobId())
                                  .map(UUID::toString)
                                  .orElse(null);
-        return new JobFieldModel(jobIdString, Set.of(providerFieldModel, channelFieldModel));
+        return new JobFieldModel(jobIdString, Set.of(providerFieldModel, channelFieldModel), jobProviderProjects);
     }
 
     public static void populateProviderFields(FieldModel providerFieldModel, DistributionJobModel jobModel) {
@@ -85,9 +95,13 @@ public final class JobFieldModelPopulationUtils {
                 .filter(StringUtils::isNotBlank)
                 .ifPresent(pattern -> putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, pattern));
 
-            List<String> blackDuckProjectNames = jobModel.getProjectFilterProjectNames();
-            if (!blackDuckProjectNames.isEmpty()) {
-                putField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, blackDuckProjectNames);
+            // Convert to JSON for 6.4.0 while the dynamic ui still uses these as initial values on edit/copy
+            List<String> blackDuckProjectJson = jobModel.getProjectFilterDetails()
+                                                    .stream()
+                                                    .map(BlackDuckProjectDetailsModel::toString)
+                                                    .collect(Collectors.toList());
+            if (!blackDuckProjectJson.isEmpty()) {
+                putField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, blackDuckProjectJson);
             }
         }
 

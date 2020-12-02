@@ -26,12 +26,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
@@ -44,7 +46,8 @@ import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEnti
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
 @Component
-public class JobConfigurationModelFieldPopulationUtility {
+@Deprecated
+public final class JobConfigurationModelFieldPopulationUtility {
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final EmailJobDetailsAccessor emailJobDetailsAccessor;
 
@@ -54,6 +57,9 @@ public class JobConfigurationModelFieldPopulationUtility {
         this.emailJobDetailsAccessor = emailJobDetailsAccessor;
     }
 
+    /**
+     * This will not properly assign {@link BlackDuckProjectDetailsModel}
+     */
     public final void populateBlackDuckConfigurationModelFields(DistributionJobEntity jobEntity, ConfigurationModelMutable blackDuckConfigurationModel) {
         UUID jobId = jobEntity.getJobId();
         BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
@@ -69,7 +75,11 @@ public class JobConfigurationModelFieldPopulationUtility {
                 blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.project.name.pattern", projectNamePattern));
             }
 
-            List<String> blackDuckProjectNames = blackDuckJobDetailsAccessor.retrieveProjectNamesForJob(jobId);
+            // FIXME support BlackDuckProjectDetailsModel
+            List<String> blackDuckProjectNames = blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(jobId)
+                                                     .stream()
+                                                     .map(BlackDuckProjectDetailsModel::getName)
+                                                     .collect(Collectors.toList());
             if (!blackDuckProjectNames.isEmpty()) {
                 blackDuckConfigurationModel.put(createConfigFieldModel("channel.common.configured.project", blackDuckProjectNames));
             }

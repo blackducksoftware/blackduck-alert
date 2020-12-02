@@ -33,12 +33,12 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -72,7 +72,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testGetPage() throws Exception {
         int pageNumber = 0;
         int pageSize = 10;
-        addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), Map.of());
+        addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
 
         String urlPath = REQUEST_URL + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
@@ -124,9 +124,9 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        ConfigurationJobModel minimumConfigurationModel = addJob(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey(), fieldValueModels);
+        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), fieldValueModels);
 
-        String configId = String.valueOf(minimumConfigurationModel.getJobId());
+        String configId = String.valueOf(distributionJobModel.getJobId());
         String urlPath = REQUEST_URL + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
@@ -244,7 +244,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             bdFieldModel.setId(providerId);
         }
 
-        return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
+        return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel), List.of(new JobProviderProjectFieldModel("project", "href", null)));
     }
 
 }

@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,16 +20,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job.blackduck.vulnerability;
+package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.List;
-import java.util.UUID;
+public class JobProviderProjectFieldModel extends AlertSerializableModel {
+    private String name;
+    private String href;
+    private String projectOwnerEmail;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+    public JobProviderProjectFieldModel() {
+    }
 
-public interface BlackDuckJobVulnerabilitySeverityFilterRepository extends JpaRepository<BlackDuckJobVulnerabilitySeverityFilterEntity, BlackDuckJobVulnerabilitySeverityFilterPK> {
-    void deleteAllByJobId(UUID jobId);
+    public JobProviderProjectFieldModel(String name, String href, String projectOwnerEmail) {
+        this.name = name;
+        this.href = href;
+        this.projectOwnerEmail = projectOwnerEmail;
+    }
 
-    List<BlackDuckJobVulnerabilitySeverityFilterEntity> findByJobId(UUID jobId);
+    public String getName() {
+        return name;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public String getProjectOwnerEmail() {
+        return projectOwnerEmail;
+    }
 
 }

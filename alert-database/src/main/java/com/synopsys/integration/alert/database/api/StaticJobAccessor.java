@@ -297,7 +297,7 @@ public class StaticJobAccessor implements JobAccessor {
             distributionJobModel.isFilterByProject(),
             distributionJobModel.getProjectNamePattern().orElse(null),
             distributionJobModel.getNotificationTypes(),
-            distributionJobModel.getProjectFilterProjectNames(),
+            distributionJobModel.getProjectFilterDetails(),
             distributionJobModel.getPolicyFilterPolicyNames(),
             distributionJobModel.getVulnerabilityFilterSeverityNames(),
             distributionJobModel.getDistributionJobDetails()
