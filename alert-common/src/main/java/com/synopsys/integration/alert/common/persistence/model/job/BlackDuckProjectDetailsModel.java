@@ -26,7 +26,9 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-public class BlackDuckProjectDetailsModel {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class BlackDuckProjectDetailsModel extends AlertSerializableModel {
     private final String name;
     private final String href;
     private final String projectOwnerEmail;

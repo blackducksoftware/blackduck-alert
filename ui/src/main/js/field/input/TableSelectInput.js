@@ -95,11 +95,19 @@ class TableSelectInput extends Component {
         const { value, columns, useRowAsValue } = this.props;
         const { selectedData } = this.state;
 
-        const keyColumnHeader = columns.find((column) => column.isKey).header;
+        let valueToUse = value;
+        if (useRowAsValue && value && value.length > 0) {
+            const areStringValues = value.every(option => typeof option === "string");
+            if (areStringValues) {
+                valueToUse = value.map(option => JSON.parse(option));
+            }
+        }
 
-        selectedData.push(...value);
+        selectedData.push(...valueToUse);
+
+        const keyColumnHeader = columns.find((column) => column.isKey).header;
         const convertedValues = selectedData.map((selected) => {
-            const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
+            let labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
             return {
                 label: labelToUse,
                 value: selected,
@@ -185,7 +193,6 @@ class TableSelectInput extends Component {
         const { selectedData } = this.state;
         const { columns, useRowAsValue } = this.props;
         const keyColumnHeader = columns.find((column) => column.isKey).header;
-
 
         const condition = selectedData && useRowAsValue;
         let selectedRowData = null;

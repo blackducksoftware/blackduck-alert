@@ -95,12 +95,13 @@ public final class JobFieldModelPopulationUtils {
                 .filter(StringUtils::isNotBlank)
                 .ifPresent(pattern -> putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, pattern));
 
-            List<String> blackDuckProjectNames = jobModel.getProjectFilterDetails()
-                                                     .stream()
-                                                     .map(BlackDuckProjectDetailsModel::getName)
-                                                     .collect(Collectors.toList());
-            if (!blackDuckProjectNames.isEmpty()) {
-                putField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, blackDuckProjectNames);
+            // Convert to JSON for 6.4.0 while the dynamic ui still uses these as initial values on edit/copy
+            List<String> blackDuckProjectJson = jobModel.getProjectFilterDetails()
+                                                    .stream()
+                                                    .map(BlackDuckProjectDetailsModel::toString)
+                                                    .collect(Collectors.toList());
+            if (!blackDuckProjectJson.isEmpty()) {
+                putField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, blackDuckProjectJson);
             }
         }
 
