@@ -171,7 +171,7 @@ class DistributionConfiguration extends Component {
                 return {
                     name: selectedValue.name,
                     href: selectedValue.href,
-                    projectOwnerEmail: null
+                    projectOwnerEmail: selectedValue.projectOwnerEmail
                 };
             });
 

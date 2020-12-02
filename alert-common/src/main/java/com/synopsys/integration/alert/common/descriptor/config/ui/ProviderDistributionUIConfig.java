@@ -113,6 +113,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
                                             .applyUseRowAsValue(true)
                                             .applyColumn(TableSelectColumn.visible("name", "Project Name", true, true))
                                             .applyColumn(TableSelectColumn.hidden("href", "Project URL", false, false))
+                                            .applyColumn(TableSelectColumn.hidden("projectOwnerEmail", "Project Link", false, false))
                                             .applyColumn(TableSelectColumn.visible("description", "Project Description", false, false))
                                             .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                             .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
