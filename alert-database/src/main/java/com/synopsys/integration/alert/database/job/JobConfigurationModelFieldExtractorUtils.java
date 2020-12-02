@@ -68,7 +68,7 @@ public class JobConfigurationModelFieldExtractorUtils {
 
         List<BlackDuckProjectDetailsModel> blackDuckProjectDetails = extractFieldValues("channel.common.configured.project", configuredFieldsMap)
                                                                          .stream()
-                                                                         .map(projectName -> new BlackDuckProjectDetailsModel(projectName, projectName, null))
+                                                                         .map(projectName -> new BlackDuckProjectDetailsModel(projectName, projectName))
                                                                          .collect(Collectors.toList());
         builder.projectFilterDetails(blackDuckProjectDetails);
 

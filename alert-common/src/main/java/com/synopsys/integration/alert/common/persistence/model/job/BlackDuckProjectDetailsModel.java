@@ -22,21 +22,15 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job;
 
-import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class BlackDuckProjectDetailsModel extends AlertSerializableModel {
     private final String name;
     private final String href;
-    private final String projectOwnerEmail;
 
-    public BlackDuckProjectDetailsModel(String name, String href, @Nullable String projectOwnerEmail) {
+    public BlackDuckProjectDetailsModel(String name, String href) {
         this.name = name;
         this.href = href;
-        this.projectOwnerEmail = projectOwnerEmail;
     }
 
     public String getName() {
@@ -45,10 +39,6 @@ public class BlackDuckProjectDetailsModel extends AlertSerializableModel {
 
     public String getHref() {
         return href;
-    }
-
-    public Optional<String> getProjectOwnerEmail() {
-        return Optional.ofNullable(projectOwnerEmail);
     }
 
 }

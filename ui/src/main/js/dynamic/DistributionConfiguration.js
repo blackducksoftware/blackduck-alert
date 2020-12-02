@@ -170,8 +170,7 @@ class DistributionConfiguration extends Component {
             configuredProviderProjects = fieldConfiguredProjects.values.map(selectedValue => {
                 return {
                     name: selectedValue.name,
-                    href: selectedValue.href,
-                    projectOwnerEmail: null
+                    href: selectedValue.href
                 };
             });
 
