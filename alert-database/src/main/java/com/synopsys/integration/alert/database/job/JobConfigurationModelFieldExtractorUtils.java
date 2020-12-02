@@ -42,7 +42,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraS
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
+@Deprecated
 public class JobConfigurationModelFieldExtractorUtils {
+    /**
+     * This will not properly assign {@link BlackDuckProjectDetailsModel}
+     */
     public static DistributionJobModel convertToDistributionJobModel(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap, OffsetDateTime createdAt, OffsetDateTime lastUpdated) {
         String channelDescriptorName = extractFieldValueOrEmptyString("channel.common.channel.name", configuredFieldsMap);
         DistributionJobModelBuilder builder = DistributionJobModel.builder()
@@ -62,10 +66,9 @@ public class JobConfigurationModelFieldExtractorUtils {
                                                   .policyFilterPolicyNames(extractFieldValues("blackduck.policy.notification.filter", configuredFieldsMap))
                                                   .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap));
 
-        // FIXME include href and project owner email
         List<BlackDuckProjectDetailsModel> blackDuckProjectDetails = extractFieldValues("channel.common.configured.project", configuredFieldsMap)
                                                                          .stream()
-                                                                         .map(projectName -> new BlackDuckProjectDetailsModel(projectName, null, null))
+                                                                         .map(projectName -> new BlackDuckProjectDetailsModel(projectName, projectName, null))
                                                                          .collect(Collectors.toList());
         builder.projectFilterDetails(blackDuckProjectDetails);
 

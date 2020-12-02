@@ -67,8 +67,9 @@ public final class JobFieldModelPopulationUtils {
         populateChannelFields(channelFieldModel, jobModel);
 
         // Temporary work-around
-        List<JobProviderProjectFieldModel> jobProviderProjects = jobModel.getProjectFilterDetails()
+        List<JobProviderProjectFieldModel> jobProviderProjects = Optional.ofNullable(jobModel.getProjectFilterDetails())
                                                                      .stream()
+                                                                     .flatMap(List::stream)
                                                                      .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref(), projectDetails.getProjectOwnerEmail().orElse(null)))
                                                                      .collect(Collectors.toList());
 

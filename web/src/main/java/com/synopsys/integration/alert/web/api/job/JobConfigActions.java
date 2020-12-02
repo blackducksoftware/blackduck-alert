@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +66,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -76,6 +78,7 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
+import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
@@ -176,7 +179,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 configurationFieldModels.addAll(savedFieldsModels);
             }
 
-            DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, DateUtils.createCurrentDateTimestamp(), null);
+            List<JobProviderProjectFieldModel> configuredProviderProjects = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of());
+            DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, DateUtils.createCurrentDateTimestamp(), null);
             DistributionJobModel savedJob = jobAccessor.createJob(jobRequestModel);
             JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
 
@@ -215,7 +219,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     configurationFieldModels.addAll(updatedFieldModels);
                 }
 
-                DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, previousJob.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
+                List<JobProviderProjectFieldModel> configuredProviderProjects = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of());
+                DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, previousJob.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
                 DistributionJobModel savedJob = jobAccessor.createJob(jobRequestModel);
                 JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
 
@@ -380,9 +385,18 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
     }
 
-    private DistributionJobRequestModel createDistributionJobRequestModel(Collection<ConfigurationFieldModel> configurationFieldModels, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
-        Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configurationFieldModels, ConfigurationFieldModel::getFieldKey);
+    private DistributionJobRequestModel createDistributionJobRequestModel(
+        Collection<ConfigurationFieldModel> configFieldModels,
+        List<JobProviderProjectFieldModel> jobProjects,
+        OffsetDateTime createdAt,
+        @Nullable OffsetDateTime lastUpdated
+    ) {
+        Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
         DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated);
+        List<BlackDuckProjectDetailsModel> projectFilterDetails = jobProjects
+                                                                      .stream()
+                                                                      .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref(), jobProject.getProjectOwnerEmail()))
+                                                                      .collect(Collectors.toList());
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),
             fromResource.getName(),
@@ -393,7 +407,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             fromResource.isFilterByProject(),
             fromResource.getProjectNamePattern().orElse(null),
             fromResource.getNotificationTypes(),
-            fromResource.getProjectFilterDetails(),
+            projectFilterDetails,
             fromResource.getPolicyFilterPolicyNames(),
             fromResource.getVulnerabilityFilterSeverityNames(),
             fromResource.getDistributionJobDetails()

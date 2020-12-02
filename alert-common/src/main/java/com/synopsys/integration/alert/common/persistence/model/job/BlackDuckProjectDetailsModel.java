@@ -24,12 +24,14 @@ package com.synopsys.integration.alert.common.persistence.model.job;
 
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 public class BlackDuckProjectDetailsModel {
     private final String name;
     private final String href;
     private final String projectOwnerEmail;
 
-    public BlackDuckProjectDetailsModel(String name, String href, String projectOwnerEmail) {
+    public BlackDuckProjectDetailsModel(String name, String href, @Nullable String projectOwnerEmail) {
         this.name = name;
         this.href = href;
         this.projectOwnerEmail = projectOwnerEmail;

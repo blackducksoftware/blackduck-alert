@@ -28,7 +28,7 @@ import java.util.Set;
 public class JobFieldModel extends AlertSerializableModel {
     private String jobId;
     private Set<FieldModel> fieldModels;
-    private final List<JobProviderProjectFieldModel> configuredProviderProjects;
+    private List<JobProviderProjectFieldModel> configuredProviderProjects;
 
     public JobFieldModel() {
         this(null, null, null);
@@ -58,6 +58,10 @@ public class JobFieldModel extends AlertSerializableModel {
 
     public List<JobProviderProjectFieldModel> getConfiguredProviderProjects() {
         return configuredProviderProjects;
+    }
+
+    public void setConfiguredProviderProjects(List<JobProviderProjectFieldModel> configuredProviderProjects) {
+        this.configuredProviderProjects = configuredProviderProjects;
     }
 
 }

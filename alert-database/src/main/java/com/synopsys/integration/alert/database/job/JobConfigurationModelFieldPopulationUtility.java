@@ -46,7 +46,8 @@ import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEnti
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 
 @Component
-public class JobConfigurationModelFieldPopulationUtility {
+@Deprecated
+public final class JobConfigurationModelFieldPopulationUtility {
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final EmailJobDetailsAccessor emailJobDetailsAccessor;
 
@@ -56,6 +57,9 @@ public class JobConfigurationModelFieldPopulationUtility {
         this.emailJobDetailsAccessor = emailJobDetailsAccessor;
     }
 
+    /**
+     * This will not properly assign {@link BlackDuckProjectDetailsModel}
+     */
     public final void populateBlackDuckConfigurationModelFields(DistributionJobEntity jobEntity, ConfigurationModelMutable blackDuckConfigurationModel) {
         UUID jobId = jobEntity.getJobId();
         BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();

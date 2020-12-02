@@ -38,10 +38,10 @@ public class BlackDuckJobProjectEntity {
     @Column(name = "job_id")
     private UUID jobId;
 
-    @Id
     @Column(name = "project_name")
     private String projectName;
 
+    @Id
     @Column(name = "href")
     private String href;
 

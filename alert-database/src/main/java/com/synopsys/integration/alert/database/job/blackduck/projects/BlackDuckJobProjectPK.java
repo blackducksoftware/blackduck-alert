@@ -27,14 +27,14 @@ import java.util.UUID;
 
 public class BlackDuckJobProjectPK implements Serializable {
     private UUID jobId;
-    private String projectName;
+    private String href;
 
     public BlackDuckJobProjectPK() {
     }
 
-    public BlackDuckJobProjectPK(UUID jobId, String projectName) {
+    public BlackDuckJobProjectPK(UUID jobId, String href) {
         this.jobId = jobId;
-        this.projectName = projectName;
+        this.href = href;
     }
 
     public UUID getJobId() {
@@ -45,12 +45,12 @@ public class BlackDuckJobProjectPK implements Serializable {
         this.jobId = jobId;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getHref() {
+        return href;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setHref(String href) {
+        this.href = href;
     }
 
 }

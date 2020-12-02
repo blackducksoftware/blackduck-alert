@@ -16,13 +16,11 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
@@ -61,20 +59,8 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         fieldValueRepository.deleteAllInBatch();
     }
 
-    public ConfigurationJobModel addJob(String descriptorName, String providerName, Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
-        Map<String, Collection<String>> fieldValuesWithDefaults = createWithDefaults(descriptorName, fieldsValues);
-
-        Set<ConfigurationFieldModel> fieldModels = fieldValuesWithDefaults
-                                                       .entrySet()
-                                                       .stream()
-                                                       .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
-                                                       .collect(Collectors.toSet());
-        ConfigurationJobModel configurationJobModel = jobAccessor.createJob(Set.of(descriptorName, providerName), fieldModels);
-        return configurationJobModel;
-    }
-
-    public DistributionJobModel addDistributionJob(String descriptorName, Map<String, Collection<String>> fieldsValues) throws AlertException {
-        Map<String, Collection<String>> fieldValuesWithDefaults = createWithDefaults(descriptorName, fieldsValues);
+    public DistributionJobModel addDistributionJob(String channelDescriptorName, Map<String, Collection<String>> fieldsValues) throws AlertException {
+        Map<String, Collection<String>> fieldValuesWithDefaults = createWithDefaults(channelDescriptorName, fieldsValues);
         Map<String, ConfigurationFieldModel> keyToConfigurationFieldModels = new HashMap<>();
         for (Map.Entry<String, Collection<String>> fieldToValues : fieldValuesWithDefaults.entrySet()) {
             String fieldKey = fieldToValues.getKey();
@@ -128,7 +114,7 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
             initialJobModel.isFilterByProject(),
             initialJobModel.getProjectNamePattern().orElse(null),
             initialJobModel.getNotificationTypes(),
-            initialJobModel.getProjectFilterProjectNames(),
+            initialJobModel.getProjectFilterDetails(),
             initialJobModel.getPolicyFilterPolicyNames(),
             initialJobModel.getVulnerabilityFilterSeverityNames(),
             initialJobModel.getDistributionJobDetails()
