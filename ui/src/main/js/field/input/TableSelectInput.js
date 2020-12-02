@@ -181,7 +181,7 @@ class TableSelectInput extends Component {
                 useRowAsValue ? selectedArray.push(row) : selectedArray.push(rowKeyValue);
             }
         } else {
-            const index = useRowAsValue ? selectedArray.indexOf(row) : selectedArray.indexOf(rowKeyValue);
+            const index = useRowAsValue ? selectedArray.findIndex(selection => selection[keyColumnHeader] === rowKeyValue) : selectedArray.indexOf(rowKeyValue);
             if (index >= 0) {
                 // if found, remove that element from selected array
                 selectedArray.splice(index, 1);
