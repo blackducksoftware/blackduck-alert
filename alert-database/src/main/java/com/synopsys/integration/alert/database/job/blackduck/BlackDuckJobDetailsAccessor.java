@@ -83,13 +83,13 @@ public class BlackDuckJobDetailsAccessor {
         List<BlackDuckJobNotificationTypeEntity> savedNotificationTypes = blackDuckJobNotificationTypeRepository.saveAll(notificationTypesToSave);
         savedBlackDuckJobDetails.setBlackDuckJobNotificationTypes(savedNotificationTypes);
 
-        List<BlackDuckJobProjectEntity> ProjectFiltersToSave = requestModel.getProjectFilterDetails()
+        List<BlackDuckJobProjectEntity> projectFiltersToSave = requestModel.getProjectFilterDetails()
                                                                    .stream()
                                                                    .map(projectDetails -> new BlackDuckJobProjectEntity(jobId, projectDetails.getName(), projectDetails.getHref(),
                                                                        projectDetails.getProjectOwnerEmail().orElse(null)))
                                                                    .collect(Collectors.toList());
         blackDuckJobProjectRepository.deleteAllByJobId(jobId);
-        List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(ProjectFiltersToSave);
+        List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(projectFiltersToSave);
         savedBlackDuckJobDetails.setBlackDuckJobProjects(savedProjectFilters);
 
         List<BlackDuckJobPolicyFilterEntity> policyFiltersToSave = requestModel.getPolicyFilterPolicyNames()
