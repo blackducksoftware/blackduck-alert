@@ -30,11 +30,17 @@ public class CreateKeystoreTask extends Exec {
             "-storetype",
             "PKCS12",
             "-validity",
-            "3650",
+            "365",
             "-storepass",
             "changeit",
             "-dname",
-            "CN=localhost, OU=Engineering, O=Synopsys, C=US"
+            "CN=localhost, OU=Engineering, O=Synopsys, C=US",
+            "-ext",
+            "eku=sa,ca",
+            "-ext",
+            "BasicConstraints=ca:true",
+            "-ext",
+            "san=dns:localhost,dns:localhost.localdomain,dns:lvh.me,ip:127.0.0.1,ip:FE80:0:0:0:0:0:0:1"
         );
     }
 }
