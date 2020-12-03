@@ -33,7 +33,6 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,11 +188,6 @@ public class PhoneHomeTask extends StartupScheduledTask {
         for (DistributionJobModel job : jobs) {
             String channelName = job.getChannelDescriptorName();
             String providerName = providerKey.getUniversalKey();
-
-            if (StringUtils.isBlank(channelName)) {
-                // We want to specifically get the channel configuration here and the only way to determine that is if it has this field.
-                continue;
-            }
 
             updateMetaDataCount(createdDistributions, channelName);
             updateMetaDataCount(createdDistributions, providerName);
