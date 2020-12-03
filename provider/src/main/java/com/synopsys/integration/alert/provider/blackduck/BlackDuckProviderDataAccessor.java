@@ -32,6 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,6 +71,8 @@ import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
+    private static final int PROJECT_DESCRIPTION_MAX_CHARS = 256;
+
     private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(BlackDuckProviderDataAccessor.class));
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
@@ -258,7 +261,9 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
             }
         }
-        return new ProviderProject(projectView.getName(), StringUtils.trimToEmpty(projectView.getDescription()), projectView.getMeta().getHref().toString(), projectOwnerEmail);
+
+        String truncatedDescription = truncateDescription(projectView.getDescription());
+        return new ProviderProject(projectView.getName(), truncatedDescription, projectView.getMeta().getHref().toString(), projectOwnerEmail);
     }
 
     private BlackDuckServicesFactory createBlackDuckServicesFactory(ConfigurationModel blackDuckConfiguration) throws AlertException {
@@ -312,6 +317,15 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(blackDuckServicesFactory.getGson(), blackDuckServicesFactory.getObjectMapper(), blackDuckServicesFactory.getLogger());
         BlackDuckResponsesTransformer blackDuckResponsesTransformer = new BlackDuckResponsesTransformer(blackDuckServicesFactory.getBlackDuckHttpClient(), blackDuckJsonTransformer);
         return blackDuckResponsesTransformer.getSomeMatchingResponses(pagedRequest, responseClass, searchFilter, pagedRequest.getLimit());
+    }
+
+    private String truncateDescription(@Nullable String originalDescription) {
+        if (StringUtils.isBlank(originalDescription)) {
+            return StringUtils.EMPTY;
+        } else if (originalDescription.length() > PROJECT_DESCRIPTION_MAX_CHARS) {
+            return StringUtils.truncate(originalDescription, PROJECT_DESCRIPTION_MAX_CHARS) + ". . .";
+        }
+        return originalDescription;
     }
 
 }
