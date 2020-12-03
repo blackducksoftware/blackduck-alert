@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.test.common.ResourceLoader;
@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 
 public class TestPropertiesFileGenerator {
     @Test
-    @Ignore("This test is to generate the test.properties for new developers.")
+    @Disabled("This test is to generate the test.properties for new developers.")
     public void generatePropertiesFile() throws IOException {
         String propertiesFileName = ResourceLoader.RESOURCE_DIR + "/" + ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
         System.out.println("Generating file: " + propertiesFileName + "..");
