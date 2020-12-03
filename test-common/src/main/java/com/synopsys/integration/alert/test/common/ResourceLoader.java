@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class ResourceLoader {
     public static final String DEFAULT_PROPERTIES_FILE_LOCATION = "test.properties";
-    public static final File RESOURCE_DIR = new File(ResourceLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "../resources/");
+    public static final File RESOURCE_DIR = new File(ResourceLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "../../../../src/test/resources/");
     public static final String PROPERTIES_ENV_VARIABLE = "SPRING_APPLICATION_JSON";
 
     @SuppressWarnings("resource")
