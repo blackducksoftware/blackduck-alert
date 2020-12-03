@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -31,7 +30,6 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.test.common.OutputLogger;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -39,7 +37,6 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 public abstract class AbstractChannelTest {
     protected Gson gson;
     protected TestProperties properties;
-    protected OutputLogger outputLogger;
     protected ContentConverter contentConverter;
     protected AuditAccessor auditAccessor;
 
@@ -47,14 +44,8 @@ public abstract class AbstractChannelTest {
     public void init() throws IOException {
         gson = new Gson();
         properties = new TestProperties();
-        outputLogger = new OutputLogger();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         auditAccessor = Mockito.mock(AuditAccessor.class);
-    }
-
-    @AfterEach
-    public void cleanup() throws IOException {
-        outputLogger.cleanup();
     }
 
     public ProviderMessageContent createMessageContent(String testName) throws AlertException {
