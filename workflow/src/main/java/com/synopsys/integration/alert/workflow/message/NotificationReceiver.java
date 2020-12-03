@@ -76,6 +76,8 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 notifications = notificationAccessor.findNotificationsNotProcessed(PageRequest pageRequest);
             }*/
             // ###############
+            logger.info("====== PROCESSING ====== Processing event for notifications."); //TODO: Delete this log
+
             Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
             //get content, if not null and not empty, then go into the loop
             while (pageOfAlertNotificationModels.getTotalPages() > 0) {

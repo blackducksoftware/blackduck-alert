@@ -187,7 +187,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         logger.info("====== WRITING ====== Writing {} Notifications...", contentList.size());
         notificationAccessor.saveAllNotifications(contentList);
         //TODO put the eventManager in here:
-        logger.info("====== SENDING ====== Sending event for notifications."); //TODO: DELETE ME later
+        logger.info("====== DISPATCH ====== Sending event for notifications."); //TODO: DELETE ME later
         eventManager.sendEvent(new NotificationEvent());
     }
 

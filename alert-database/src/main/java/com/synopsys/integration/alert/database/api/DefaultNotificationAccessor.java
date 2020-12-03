@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -197,7 +196,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     //TODO this needs unit tests
     @Override
     public Page<AlertNotificationModel> findNotificationsNotProcessed() {
-        Sort.Order sortingOrder = Sort.Order.asc("provider_creation_time");
+        Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
         PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(sortingOrder));
         return notificationContentRepository.findNotProcessedNotifications(pageRequest)
                    .map(this::toModel);
