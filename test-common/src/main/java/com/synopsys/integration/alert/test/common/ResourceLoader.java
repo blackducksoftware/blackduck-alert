@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class ResourceLoader {
     public static final String DEFAULT_PROPERTIES_FILE_LOCATION = "test.properties";
-    public static final File RESOURCE_DIR = new File("./src/test/resources/");
+    public static final File RESOURCE_DIR = new File(ResourceLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "../resources/");
     public static final String PROPERTIES_ENV_VARIABLE = "SPRING_APPLICATION_JSON";
 
     @SuppressWarnings("resource")
@@ -49,8 +49,8 @@ public class ResourceLoader {
     public Properties loadProperties(String resourceLocation) throws IOException {
         Properties properties = new Properties();
 
-        File propertiesFile = new File(RESOURCE_DIR, resourceLocation);
-        try(InputStream iStream = new FileInputStream(propertiesFile)) {
+        File propertiesFile = new File(RESOURCE_DIR, DEFAULT_PROPERTIES_FILE_LOCATION);
+        try (InputStream iStream = new FileInputStream(propertiesFile)) {
             properties.load(iStream);
         }
         return properties;

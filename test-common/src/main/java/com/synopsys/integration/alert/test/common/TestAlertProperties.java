@@ -28,10 +28,6 @@ import com.synopsys.integration.alert.common.AlertProperties;
 
 // TODO rename class to include "Mock"
 public class TestAlertProperties extends AlertProperties {
-    public static final String PROPERTY_USER_DIR = "user.dir";
-    public static final String RESOURCES_PATH = "/src/main/resources";
-    public static final String IMAGES_PATH = RESOURCES_PATH + "/images/";
-
     private String alertConfigHome;
     private String alertImagesDir;
     private String alertSecretsDir;
@@ -45,8 +41,8 @@ public class TestAlertProperties extends AlertProperties {
     private String encryptionSalt;
 
     public TestAlertProperties() {
-        String userDirectory = System.getProperties().getProperty(PROPERTY_USER_DIR);
-        alertImagesDir = userDirectory + IMAGES_PATH;
+        String imagesDirectory = TestAlertProperties.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "../../../../src/main/resources/images/";
+        alertImagesDir = imagesDirectory;
 
         encryptionPassword = "changeme";
         encryptionSalt = "changeme";

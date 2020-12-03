@@ -41,6 +41,7 @@ public abstract class AbstractChannelTest {
     protected TestProperties properties;
     protected OutputLogger outputLogger;
     protected ContentConverter contentConverter;
+    protected AuditAccessor auditAccessor;
 
     @BeforeEach
     public void init() throws IOException {
@@ -48,6 +49,7 @@ public abstract class AbstractChannelTest {
         properties = new TestProperties();
         outputLogger = new OutputLogger();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        auditAccessor = Mockito.mock(AuditAccessor.class);
     }
 
     @AfterEach
@@ -110,10 +112,6 @@ public abstract class AbstractChannelTest {
             .applyAllComponentItems(items);
 
         return providerBuilder.build();
-    }
-
-    public AuditAccessor createAuditAccessor() {
-        return Mockito.mock(AuditAccessor.class);
     }
 
     public RestChannelUtility createRestChannelUtility() {

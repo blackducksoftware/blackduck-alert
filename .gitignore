@@ -33,3 +33,4 @@ ui/node_modules
 sonar-project.properties
 .scannerwork/
 /coverage/
+/test-common/src/main/resources/test.properties

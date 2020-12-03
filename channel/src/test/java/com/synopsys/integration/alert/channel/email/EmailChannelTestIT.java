@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -44,14 +43,13 @@ public class EmailChannelTestIT extends AbstractChannelTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() throws Exception {
-        AuditAccessor auditUtility = createAuditAccessor();
         TestAlertProperties testAlertProperties = new TestAlertProperties();
         EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(ProviderDataAccessor.class));
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
-        EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
+        EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditAccessor, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
         ProviderMessageContent content = createMessageContent(getClass().getSimpleName());
         Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
         String subjectLine = "Integration test subject line";
@@ -72,6 +70,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         DistributionEvent event = new DistributionEvent(
             "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldUtility);
         emailChannel.sendAuditedMessage(event);
+        Mockito.verify(auditAccessor).setAuditEntrySuccess(Mockito.any());
     }
 
     @Test

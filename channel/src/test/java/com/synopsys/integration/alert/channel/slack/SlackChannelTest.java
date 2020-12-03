@@ -62,7 +62,7 @@ public class SlackChannelTest extends AbstractChannelTest {
         RestChannelUtility restChannelUtility = createRestChannelUtility();
         SlackChannelMessageParser slackChannelMessageParser = new SlackChannelMessageParser(new MarkupEncoderUtil());
         SlackChannelEventParser slackChannelEventParser = new SlackChannelEventParser(slackChannelMessageParser, restChannelUtility);
-        return new SlackChannel(CHANNEL_KEY, gson, createAuditAccessor(), restChannelUtility, slackChannelEventParser);
+        return new SlackChannel(CHANNEL_KEY, gson, auditAccessor, restChannelUtility, slackChannelEventParser);
     }
 
     @Test
@@ -84,8 +84,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         slackChannel.sendAuditedMessage(event);
 
-        boolean actual = outputLogger.isLineContainingText("Successfully sent a " + CHANNEL_KEY.getUniversalKey() + " message!");
-        assertTrue(actual, "No success message appeared in the logs");
+        Mockito.verify(auditAccessor).setAuditEntrySuccess(Mockito.any());
     }
 
     @Test
