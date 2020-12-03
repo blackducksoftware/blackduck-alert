@@ -74,6 +74,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     public static final String ARTIFACT_ID = "blackduck-alert";
     public static final Long DEFAULT_TIMEOUT = 10L;
     public static final String CRON_EXPRESSION = "0 0 12 1/1 * ?";
+    public static String SUCCESS_KEY_PART = "::Successes";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AboutReader aboutReader;
@@ -184,7 +185,6 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     private Set<String> retrieveChannelMetadataForJobs(List<DistributionJobModel> jobs) {
         Map<String, Integer> createdDistributions = new HashMap<>();
-        String successKeyPart = "::Successes";
         for (DistributionJobModel job : jobs) {
             String channelName = job.getChannelDescriptorName();
             String providerName = providerKey.getUniversalKey();
@@ -193,8 +193,8 @@ public class PhoneHomeTask extends StartupScheduledTask {
             updateMetaDataCount(createdDistributions, providerName);
 
             if (hasAuditSuccess(job.getJobId())) {
-                updateMetaDataCount(createdDistributions, channelName + successKeyPart);
-                updateMetaDataCount(createdDistributions, providerName + successKeyPart);
+                updateMetaDataCount(createdDistributions, channelName + SUCCESS_KEY_PART);
+                updateMetaDataCount(createdDistributions, providerName + SUCCESS_KEY_PART);
             }
 
         }
