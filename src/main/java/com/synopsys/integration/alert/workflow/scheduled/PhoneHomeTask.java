@@ -55,7 +55,7 @@ import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
 import com.synopsys.integration.log.IntLogger;
@@ -84,6 +84,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final Gson gson;
     private final AuditAccessor auditAccessor;
     private final List<ProviderPhoneHomeHandler> providerHandlers;
+    private final ProviderKey providerKey;
 
     @Value("${" + PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE + ":FALSE}")
     private Boolean skipPhoneHome;
@@ -98,8 +99,8 @@ public class PhoneHomeTask extends StartupScheduledTask {
         ProxyManager proxyManager,
         Gson gson,
         AuditAccessor auditAccessor,
-        List<ProviderPhoneHomeHandler> providerHandlers
-    ) {
+        List<ProviderPhoneHomeHandler> providerHandlers,
+        ProviderKey providerKey) {
         super(taskScheduler, taskManager);
         this.aboutReader = aboutReader;
         this.jobAccessor = jobAccessor;
@@ -108,6 +109,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         this.gson = gson;
         this.auditAccessor = auditAccessor;
         this.providerHandlers = providerHandlers;
+        this.providerKey = providerKey;
     }
 
     @Override
@@ -186,7 +188,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         String successKeyPart = "::Successes";
         for (DistributionJobModel job : jobs) {
             String channelName = job.getChannelDescriptorName();
-            String providerName = new BlackDuckProviderKey().getUniversalKey();
+            String providerName = providerKey.getUniversalKey();
 
             if (StringUtils.isBlank(channelName)) {
                 // We want to specifically get the channel configuration here and the only way to determine that is if it has this field.

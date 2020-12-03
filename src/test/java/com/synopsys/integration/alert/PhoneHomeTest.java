@@ -19,7 +19,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -53,7 +55,10 @@ public class PhoneHomeTest {
 
         Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(descriptorKey, descriptor));
         List<ProviderPhoneHomeHandler> providerHandlers = List.of();
-        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, jobAccessor, configurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers);
+
+        ProviderKey providerKey = new BlackDuckProviderKey();
+
+        PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, aboutReader, jobAccessor, configurationAccessor, null, proxyManager, new Gson(), auditAccessor, providerHandlers, providerKey);
 
         try {
             phoneHomeTask.run();
