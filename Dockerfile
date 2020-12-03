@@ -29,7 +29,6 @@ RUN set -e \
     		jq \
     		openssl \
     		bash \
-    		zip \
     		postgresql-client
 
 RUN mkdir -p -m 775 $CERTIFICATE_MANAGER_DIR
