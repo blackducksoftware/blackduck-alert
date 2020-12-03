@@ -45,17 +45,13 @@ public class BlackDuckJobProjectEntity {
     @Column(name = "href")
     private String href;
 
-    @Column(name = "project_owner_email")
-    private String projectOwnerEmail;
-
     public BlackDuckJobProjectEntity() {
     }
 
-    public BlackDuckJobProjectEntity(UUID jobId, String projectName, String href, String projectOwnerEmail) {
+    public BlackDuckJobProjectEntity(UUID jobId, String projectName, String href) {
         this.jobId = jobId;
         this.projectName = projectName;
         this.href = href;
-        this.projectOwnerEmail = projectOwnerEmail;
     }
 
     public UUID getJobId() {
@@ -80,14 +76,6 @@ public class BlackDuckJobProjectEntity {
 
     public void setHref(String href) {
         this.href = href;
-    }
-
-    public String getProjectOwnerEmail() {
-        return projectOwnerEmail;
-    }
-
-    public void setProjectOwnerEmail(String projectOwnerEmail) {
-        this.projectOwnerEmail = projectOwnerEmail;
     }
 
 }
