@@ -76,18 +76,24 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 notifications = notificationAccessor.findNotificationsNotProcessed(PageRequest pageRequest);
             }*/
             // ###############
-            logger.info("====== PROCESSING ====== Processing event for notifications."); //TODO: Delete this log
+            logger.info("====== RECEIVED ====== Processing event for notifications."); //TODO: Delete this log
 
             Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
+            logger.info("====== Initial total pages before loop: {} ======", pageOfAlertNotificationModels.getTotalPages());
             //get content, if not null and not empty, then go into the loop
             while (pageOfAlertNotificationModels.getTotalPages() > 0) {
                 List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getContent();
+                logger.info("====== SIZE OF NOTIFICATIONS ====== Sending {} notifications.", notifications.size()); //TODO clean up this log message
                 List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
-                logger.info("====== SENDING ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message
+                logger.info("====== SENDING DISTRIBUTION EVENTS ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message
                 eventManager.sendEvents(distributionEvents);
+                logger.info("====== FINISHED SENDING EVENTS ======"); //TODO clean up this log message
                 notificationAccessor.processNotifications(notifications);
+                logger.info("====== Setting Notifications to processed =====");
                 pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
+                logger.info("====== New total pages: {} ======", pageOfAlertNotificationModels.getTotalPages());
             }
+            logger.info("===== Exiting While loop, no pages should remain =====");
             // ###############
 
             /*
