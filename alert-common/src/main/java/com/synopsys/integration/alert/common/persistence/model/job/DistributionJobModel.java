@@ -55,7 +55,7 @@ public class DistributionJobModel extends DistributionJobModelData {
         boolean filterByProject,
         String projectNamePattern,
         List<String> notificationTypes,
-        List<String> projectFilterProjectNames,
+        List<BlackDuckProjectDetailsModel> projectFilterDetails,
         List<String> policyFilterPolicyNames,
         List<String> vulnerabilityFilterSeverityNames,
         DistributionJobDetailsModel distributionJobDetails
@@ -70,7 +70,7 @@ public class DistributionJobModel extends DistributionJobModelData {
             filterByProject,
             projectNamePattern,
             notificationTypes,
-            projectFilterProjectNames,
+            projectFilterDetails,
             policyFilterPolicyNames,
             vulnerabilityFilterSeverityNames,
             distributionJobDetails
@@ -92,4 +92,5 @@ public class DistributionJobModel extends DistributionJobModelData {
     public Optional<OffsetDateTime> getLastUpdated() {
         return Optional.ofNullable(lastUpdated);
     }
+
 }

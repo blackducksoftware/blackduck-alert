@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- Create column to insert data into -->
+
+    <changeSet author="gavink" id="add-project-columns">
+       <addColumn schemaName="alert" tableName="blackduck_job_projects">
+           <column name="href" type="VARCHAR"/>
+       </addColumn>
+       <addColumn schemaName="alert" tableName="blackduck_job_projects">
+           <column name="project_owner_email" type="VARCHAR">
+                   <constraints nullable="true"/>
+           </column>
+       </addColumn>
+   </changeSet>
+
+    <!-- Insert data into columns -->
+
+    <changeSet author="gavink" id="insert-provider-project-data">
+        <sql dbms="postgresql" stripComments="true">
+            UPDATE alert.blackduck_job_projects bd_job_projects
+            SET href = job_project_details.href, project_owner_email = job_project_details.project_owner_email
+            FROM alert.blackduck_job_details bd_job_details
+            JOIN (
+                SELECT bd_project.job_id, prov_project.href, prov_project.project_owner_email
+                FROM alert.blackduck_job_details bd_job_details
+                INNER JOIN alert.blackduck_job_projects bd_project ON bd_project.job_id = bd_job_details.job_id
+                INNER JOIN alert.provider_projects prov_project ON prov_project.name = bd_project.project_name
+                WHERE bd_job_details.global_config_id = prov_project.provider_config_id
+            ) job_project_details ON job_project_details.job_id = bd_job_details.job_id
+            WHERE bd_job_projects.job_id = job_project_details.job_id;
+        </sql>
+    </changeSet>
+
+    <!-- Remove all projects with missing hrefs as they will not be able to be properly processed -->
+
+    <changeSet author="gavink" id="delete-missing-projects">
+        <delete schemaName="alert" tableName="blackduck_job_projects">
+            <where>
+                href = null
+            </where>
+        </delete>
+    </changeSet>
+
+    <!-- Migrate primary key to include href rather than project_name -->
+
+    <changeSet author="gavink" id="drop-old-primary-key">
+        <dropPrimaryKey schemaName="alert" tableName="blackduck_job_projects"/>
+    </changeSet>
+    <changeSet author="gavink" id="add-new-primary-key">
+        <addPrimaryKey
+                schemaName="alert"
+                tableName="blackduck_job_projects"
+                columnNames="job_id,href"
+                constraintName="blackduck_job_projects_pk"
+        />
+    </changeSet>
+
+</databaseChangeLog>

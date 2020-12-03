@@ -41,12 +41,13 @@ public class DistributionJobRequestModel extends DistributionJobModelData {
         boolean filterByProject,
         @Nullable String projectNamePattern,
         List<String> notificationTypes,
-        List<String> projectFilterProjectNames,
+        List<BlackDuckProjectDetailsModel> projectFilterDetails,
         List<String> policyFilterPolicyNames,
         List<String> vulnerabilityFilterSeverityNames,
         DistributionJobDetailsModel distributionJobDetails
     ) {
-        super(enabled, name, distributionFrequency, processingType, channelDescriptorName, blackDuckGlobalConfigId, filterByProject, projectNamePattern, notificationTypes, projectFilterProjectNames, policyFilterPolicyNames,
+        super(enabled, name, distributionFrequency, processingType, channelDescriptorName, blackDuckGlobalConfigId, filterByProject, projectNamePattern, notificationTypes, projectFilterDetails, policyFilterPolicyNames,
             vulnerabilityFilterSeverityNames, distributionJobDetails);
     }
+
 }

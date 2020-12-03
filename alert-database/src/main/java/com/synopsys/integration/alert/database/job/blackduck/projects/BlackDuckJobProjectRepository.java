@@ -28,6 +28,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BlackDuckJobProjectRepository extends JpaRepository<BlackDuckJobProjectEntity, BlackDuckJobProjectPK> {
+    void deleteAllByJobId(UUID jobId);
+
     List<BlackDuckJobProjectEntity> findByJobId(UUID jobId);
 
 }

@@ -6,7 +6,12 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import FieldsPanel from 'field/FieldsPanel';
 import {
-    checkDescriptorForGlobalConfig, getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob, validateDistributionJob
+    checkDescriptorForGlobalConfig,
+    getDistributionJob,
+    saveDistributionJob,
+    testDistributionJob,
+    updateDistributionJob,
+    validateDistributionJob
 } from 'store/actions/distributionConfigs';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -19,6 +24,7 @@ export const KEY_CHANNEL_NAME = 'channel.common.channel.name';
 export const KEY_PROVIDER_NAME = 'channel.common.provider.name';
 export const KEY_FREQUENCY = 'channel.common.frequency';
 export const KEY_PROVIDER_CONFIG_ID = 'provider.common.config.id';
+export const KEY_PROVIDER_CONFIGURED_PROJECT = 'channel.common.configured.project';
 
 export const COMMON_KEYS = [KEY_ENABLED, KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
 
@@ -45,6 +51,7 @@ class DistributionConfiguration extends Component {
             showSendMessage: false,
             channelConfig: channelFieldModel,
             providerConfig: {},
+            configuredProviderProjects: [],
             currentChannel: defaultDescriptor,
             currentProvider: {}
         };
@@ -84,6 +91,7 @@ class DistributionConfiguration extends Component {
                         fieldErrors: {},
                         channelConfig: channelModel,
                         providerConfig: providerModel,
+                        configuredProviderProjects: job.configuredProviderProjects,
                         currentChannel: newChannel,
                         currentProvider: newProvider
                     });
@@ -153,12 +161,31 @@ class DistributionConfiguration extends Component {
         const { channelConfig, providerConfig } = this.state;
         const { jobId, jobModificationState } = this.props;
         const jsonJobId = jobModificationState === 'Copy' ? null : jobId;
+
+        const providerConfigToSave = JSON.parse(JSON.stringify(providerConfig));
+        let configuredProviderProjects = [];
+
+        const fieldConfiguredProjects = providerConfig.keyToValues[KEY_PROVIDER_CONFIGURED_PROJECT];
+        if (fieldConfiguredProjects) {
+            configuredProviderProjects = fieldConfiguredProjects.values.map(selectedValue => {
+                return {
+                    name: selectedValue.name,
+                    href: selectedValue.href,
+                    projectOwnerEmail: null
+                };
+            });
+
+            // Related fields need this to have a value in order to validate successfully
+            providerConfigToSave.keyToValues[KEY_PROVIDER_CONFIGURED_PROJECT].values = ['undefined'];
+        }
+
         return {
             jobId: jsonJobId,
             fieldModels: [
                 channelConfig,
-                providerConfig
-            ]
+                providerConfigToSave
+            ],
+            configuredProviderProjects
         };
     }
 

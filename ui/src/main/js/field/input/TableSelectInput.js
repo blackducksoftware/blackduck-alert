@@ -92,12 +92,24 @@ class TableSelectInput extends Component {
     }
 
     updateSelectedValues() {
-        const { value } = this.props;
+        const { value, columns, useRowAsValue } = this.props;
         const { selectedData } = this.state;
-        selectedData.push(...value);
+
+        let valueToUse = value;
+        if (useRowAsValue && value && value.length > 0) {
+            const areStringValues = value.every(option => typeof option === "string");
+            if (areStringValues) {
+                valueToUse = value.map(option => JSON.parse(option));
+            }
+        }
+
+        selectedData.push(...valueToUse);
+
+        const keyColumnHeader = columns.find((column) => column.isKey).header;
         const convertedValues = selectedData.map((selected) => {
+            let labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
             return {
-                label: selected,
+                label: labelToUse,
                 value: selected,
                 missing: false
             };
@@ -159,16 +171,17 @@ class TableSelectInput extends Component {
     }
 
     createSelectedArray(selectedArray, row, isSelected) {
-        const keyColumnHeader = this.props.columns.find((column) => column.isKey).header;
-        const rowValue = row[keyColumnHeader];
+        const { columns, useRowAsValue } = this.props;
+        const keyColumnHeader = columns.find((column) => column.isKey).header;
+        const rowKeyValue = row[keyColumnHeader];
 
         if (isSelected) {
-            const projectFound = selectedArray.find((project) => project === rowValue);
-            if (!projectFound) {
-                selectedArray.push(rowValue);
+            const itemFound = selectedArray.find((selectedItem) => (useRowAsValue ? selectedItem[keyColumnHeader] === rowKeyValue : selectedItem === rowKeyValue));
+            if (!itemFound) {
+                useRowAsValue ? selectedArray.push(row) : selectedArray.push(rowKeyValue);
             }
         } else {
-            const index = selectedArray.indexOf(rowValue);
+            const index = useRowAsValue ? selectedArray.findIndex(selection => selection[keyColumnHeader] === rowKeyValue) : selectedArray.indexOf(rowKeyValue);
             if (index >= 0) {
                 // if found, remove that element from selected array
                 selectedArray.splice(index, 1);
@@ -177,11 +190,22 @@ class TableSelectInput extends Component {
     }
 
     createRowSelectionProps() {
+        const { selectedData } = this.state;
+        const { columns, useRowAsValue } = this.props;
+        const keyColumnHeader = columns.find((column) => column.isKey).header;
+
+        const condition = selectedData && useRowAsValue;
+        let selectedRowData = null;
+        if (condition) {
+            selectedRowData = selectedData.map((itemData) => itemData[keyColumnHeader]);
+        } else {
+            selectedRowData = selectedData;
+        }
         return {
             mode: 'checkbox',
             clickToSelect: true,
             showOnlySelected: true,
-            selected: this.state.selectedData,
+            selected: selectedRowData,
             onSelect: this.onRowSelected,
             onSelectAll: this.onRowSelectedAll
         };
@@ -231,8 +255,8 @@ class TableSelectInput extends Component {
     }
 
     createTable() {
-        const columnsProp = this.props.columns;
-        const defaultSortName = columnsProp.find((column) => column.sortBy).header;
+        const { columns, useRowAsValue } = this.props;
+        const defaultSortName = columns.find((column) => column.sortBy).header;
 
         const onPageChange = (page, sizePerPage) => {
             const { currentSearchTerm } = this.state;
@@ -302,10 +326,12 @@ class TableSelectInput extends Component {
             );
         };
 
+        const keyColumnHeader = columns.find((column) => column.isKey).header;
         const okClicked = () => {
             const convertedValues = this.state.selectedData.map((selected) => {
+                const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
                 return {
-                    label: selected,
+                    label: labelToUse,
                     value: selected,
                     missing: false
                 };
@@ -323,7 +349,7 @@ class TableSelectInput extends Component {
             });
         };
 
-        const columns = columnsProp.map((column) => (
+        const tableColumns = columns.map((column) => (
             <TableHeaderColumn
                 key={column.header}
                 dataField={column.header}
@@ -338,8 +364,8 @@ class TableSelectInput extends Component {
             </TableHeaderColumn>
         ));
 
-        // Need to add this column to the array as you can't display columns dynamically and statically https://github.com/AllenFang/react-bootstrap-table/issues/1814
-        columns.push(<TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>);
+        // Need to add this column to the array as you can't display tableColumns dynamically and statically https://github.com/AllenFang/react-bootstrap-table/issues/1814
+        tableColumns.push(<TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>);
 
         const { paged, searchable, fieldKey } = this.props;
 
@@ -370,7 +396,7 @@ class TableSelectInput extends Component {
                     remote
                     fetchInfo={tableFetchInfo}
                 >
-                    {columns}
+                    {tableColumns}
                 </BootstrapTable>
             );
 
@@ -494,11 +520,17 @@ TableSelectInput.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     currentConfig: PropTypes.object.isRequired,
     columns: PropTypes.array.isRequired,
-    requiredRelatedFields: PropTypes.array
+    requiredRelatedFields: PropTypes.array,
+    searchable: PropTypes.bool,
+    paged: PropTypes.bool,
+    useRowAsValue: PropTypes.bool
 };
 
 TableSelectInput.defaultProps = {
-    requiredRelatedFields: []
+    requiredRelatedFields: [],
+    searchable: true,
+    paged: false,
+    useRowAsValue: false
 };
 
 const mapStateToProps = (state) => ({

@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
@@ -305,7 +306,7 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
 
         BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
         List<String> notificationTypes = blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(jobId);
-        List<String> projectNames = blackDuckJobDetailsAccessor.retrieveProjectNamesForJob(jobId);
+        List<BlackDuckProjectDetailsModel> projectDetails = blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(jobId);
         List<String> policyNames = blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(jobId);
         List<String> vulnerabilitySeverityNames = blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(jobId);
 
@@ -322,10 +323,12 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
                    .filterByProject(blackDuckJobDetails.getFilterByProject())
                    .projectNamePattern(blackDuckJobDetails.getProjectNamePattern())
                    .notificationTypes(notificationTypes)
-                   .projectFilterProjectNames(projectNames)
+                   .projectFilterDetails(projectDetails)
                    .policyFilterPolicyNames(policyNames)
                    .vulnerabilityFilterSeverityNames(vulnerabilitySeverityNames)
                    .distributionJobDetails(distributionJobDetailsModel)
+                   .createdAt(jobEntity.getCreatedAt())
+                   .lastUpdated(jobEntity.getLastUpdated())
                    .build();
     }
 
