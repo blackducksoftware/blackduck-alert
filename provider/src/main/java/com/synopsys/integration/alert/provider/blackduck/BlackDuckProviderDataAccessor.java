@@ -320,12 +320,11 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     }
 
     private String truncateDescription(@Nullable String originalDescription) {
-        if (StringUtils.isBlank(originalDescription)) {
-            return StringUtils.EMPTY;
-        } else if (originalDescription.length() > PROJECT_DESCRIPTION_MAX_CHARS) {
-            return StringUtils.truncate(originalDescription, PROJECT_DESCRIPTION_MAX_CHARS) + ". . .";
+        String trimmedDescription = StringUtils.trimToEmpty(originalDescription);
+        if (trimmedDescription.length() > PROJECT_DESCRIPTION_MAX_CHARS) {
+            return StringUtils.truncate(trimmedDescription, PROJECT_DESCRIPTION_MAX_CHARS) + ". . .";
         }
-        return originalDescription;
+        return trimmedDescription;
     }
 
 }
