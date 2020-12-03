@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -88,6 +87,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                              .applyTopic("testTopic", "")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
+
         List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorKey(slackChannelKey);
 
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
@@ -98,8 +98,14 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         FieldUtility fieldUtility = new FieldUtility(fieldMap);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
         DistributionEvent event = new DistributionEvent(
-            String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content),
-            fieldUtility);
+            slackChannelKey.getUniversalKey(),
+            createdAt,
+            1L,
+            ProcessingType.DEFAULT.name(),
+            MessageContentGroup.singleton(content),
+            distributionJobModel,
+            channelGlobalConfig
+        );
         return event;
     }
 
@@ -147,7 +153,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public TestAction getTestAction() {
+    public ChannelDistributionTestAction getTestAction() {
         return new ChannelDistributionTestAction(slackChannel) {};
     }
 

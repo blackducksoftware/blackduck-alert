@@ -60,7 +60,7 @@ public class DescriptorProcessor {
         for (AutoActionable autoActionable : autoActionables) {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();
-
+            
             ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {
             };
             ConfigurationAction configurationAction = new ConfigurationAction(channelKey) {

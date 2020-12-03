@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestEventCreationUtils;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -35,6 +37,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
@@ -195,7 +198,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     public abstract String getDestinationName();
 
-    public abstract TestAction getTestAction();
+    public abstract ChannelDistributionTestAction getTestAction();
 
     private Map<String, ConfigField> createFieldMap(ConfigContextEnum context) {
         return getDescriptor().getUIConfig(context)
@@ -209,8 +212,12 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
         FieldModel fieldModel = createTestConfigDestination();
         try {
-            TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), fieldModel, fieldUtility);
+            ChannelDistributionTestAction descriptorActionApi = getTestAction();
+
+            // FIXME populated distributionJobModel with contents of: fieldModel, fieldUtility;
+            DistributionJobModel distributionJobModel = DistributionJobModel.builder().build();
+            DistributionEvent channelTestEvent = ChannelDistributionTestEventCreationUtils.createChannelTestEvent("customTopic", "customMessage", distributionJobModel, global_config.orElse(null));
+            descriptorActionApi.testConfig(channelTestEvent);
         } catch (IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -233,7 +240,6 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     @Test
     public void testCreateChannelEvent() throws Exception {
         DistributionEvent channelEvent = createChannelEvent();
-        assertEquals(String.valueOf(distribution_config.getConfigurationId()), channelEvent.getConfigId());
         assertEquals(36, channelEvent.getEventId().length());
         assertEquals(destinationName, channelEvent.getDestination());
     }

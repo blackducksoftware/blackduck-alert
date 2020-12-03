@@ -28,14 +28,14 @@ public class ContentEvent extends AlertEvent {
     private static final long serialVersionUID = 8592125218004089822L;
     private final String createdAt;
     private final Long providerConfigId;
-    private final String formatType;
+    private final String processingType;
     private final MessageContentGroup contentGroup;
 
-    public ContentEvent(String destination, String createdAt, Long providerConfigId, String formatType, MessageContentGroup contentGroup) {
+    public ContentEvent(String destination, String createdAt, Long providerConfigId, String processingType, MessageContentGroup contentGroup) {
         super(destination);
         this.createdAt = createdAt;
         this.providerConfigId = providerConfigId;
-        this.formatType = formatType;
+        this.processingType = processingType;
         this.contentGroup = contentGroup;
     }
 
@@ -47,8 +47,8 @@ public class ContentEvent extends AlertEvent {
         return providerConfigId;
     }
 
-    public String getFormatType() {
-        return formatType;
+    public String getProcessingType() {
+        return processingType;
     }
 
     public MessageContentGroup getContent() {

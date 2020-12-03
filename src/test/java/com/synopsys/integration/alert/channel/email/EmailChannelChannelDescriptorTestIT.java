@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -198,8 +198,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
         FieldUtility fieldUtility = new FieldUtility(fieldMap);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
-        DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
-            MessageContentGroup.singleton(content), fieldUtility);
+        DistributionEvent event = new DistributionEvent(EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
+            MessageContentGroup.singleton(content), distributionJobModel, channelGlobalConfig);
         return event;
     }
 
@@ -264,7 +264,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public TestAction getTestAction() {
+    public ChannelDistributionTestAction getTestAction() {
         AlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);

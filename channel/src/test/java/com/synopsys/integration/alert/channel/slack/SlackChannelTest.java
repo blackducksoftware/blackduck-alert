@@ -80,7 +80,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         FieldUtility fieldUtility = new FieldUtility(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldUtility);
+            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), distributionJobModel, channelGlobalConfig);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -348,7 +348,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         FieldUtility fieldUtility = new FieldUtility(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldUtility);
+            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), distributionJobModel, channelGlobalConfig);
 
         try {
             request = slackChannel.createRequests(event);
@@ -364,7 +364,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         fieldUtility = new FieldUtility(fieldModels);
         event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldUtility);
+            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), distributionJobModel, channelGlobalConfig);
 
         try {
             request = slackChannel.createRequests(event);
@@ -391,7 +391,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         FieldUtility fieldUtility = new FieldUtility(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldUtility);
+            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), distributionJobModel, channelGlobalConfig);
 
         slackChannel.sendMessage(event);
 
@@ -412,7 +412,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         FieldUtility fieldUtility = new FieldUtility(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), new MessageContentGroup(), fieldUtility);
+            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), new MessageContentGroup(), distributionJobModel, channelGlobalConfig);
         SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         List<Request> requests = slackChannel.createRequests(event);
         assertTrue(requests.isEmpty(), "Expected no requests to be created");

@@ -47,10 +47,11 @@ public class EmailPropertiesTest {
 
         IllegalArgumentException caughtException = null;
         try {
-            new EmailProperties(null);
+            new EmailProperties((FieldUtility) null);
         } catch (IllegalArgumentException e) {
             caughtException = e;
         }
         assertNotNull(caughtException);
     }
+
 }

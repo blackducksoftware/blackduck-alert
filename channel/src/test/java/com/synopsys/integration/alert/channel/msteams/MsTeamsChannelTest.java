@@ -44,7 +44,7 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
 
         FieldUtility fieldUtility = new FieldUtility(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", msTeamsKey.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), fieldUtility);
+            msTeamsKey.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), distributionJobModel, channelGlobalConfig);
 
         msTeamsChannel.sendAuditedMessage(event);
 

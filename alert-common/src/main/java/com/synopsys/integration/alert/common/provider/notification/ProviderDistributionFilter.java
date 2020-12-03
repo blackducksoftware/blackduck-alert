@@ -22,12 +22,13 @@
  */
 package com.synopsys.integration.alert.common.provider.notification;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 
 public interface ProviderDistributionFilter {
-    boolean doesNotificationApplyToConfiguration(AlertNotificationModel notification, ConfigurationJobModel configurationJobModel);
+    boolean doesNotificationApplyToConfiguration(AlertNotificationModel notification, DistributionJobModel configurationJobModel);
 
     NotificationDeserializationCache getCache();
+
 }

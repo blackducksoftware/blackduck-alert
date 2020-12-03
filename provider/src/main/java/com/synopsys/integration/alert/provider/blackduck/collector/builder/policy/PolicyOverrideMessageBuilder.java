@@ -36,12 +36,11 @@ import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
@@ -79,8 +78,8 @@ public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<Policy
                 .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), projectVersionUrl);
 
             List<PolicyInfo> policies = overrideContent.getPolicyInfos();
-            FieldUtility fieldUtility = commonMessageData.getJob().getFieldUtility();
-            Collection<String> policyFilter = fieldUtility.getAllStrings(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER);
+            DistributionJobModel job = commonMessageData.getJob();
+            Collection<String> policyFilter = job.getPolicyFilterPolicyNames();
             List<ComponentItem> items = retrievePolicyItems(responseCache, overrideContent, policies, commonMessageData.getNotificationId(), projectVersionUrl, policyFilter);
             messageContentBuilder.applyAllComponentItems(items);
             return List.of(messageContentBuilder.build());

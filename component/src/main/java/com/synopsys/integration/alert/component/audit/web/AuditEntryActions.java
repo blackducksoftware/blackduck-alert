@@ -41,12 +41,12 @@ import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.AuditJobStatusesModel;
@@ -64,7 +64,7 @@ public class AuditEntryActions {
     private final AuditDescriptorKey descriptorKey;
     private final NotificationAccessor notificationAccessor;
     private final AuditAccessor auditAccessor;
-    private final JobAccessor jobAccessor;
+    private final JobAccessorV2 jobAccessor;
     private final ChannelEventManager eventManager;
     private final NotificationProcessor notificationProcessor;
 
@@ -74,7 +74,7 @@ public class AuditEntryActions {
         AuditDescriptorKey descriptorKey,
         AuditAccessor auditAccessor,
         NotificationAccessor notificationAccessor,
-        JobAccessor jobAccessor,
+        JobAccessorV2 jobAccessor,
         ChannelEventManager eventManager,
         NotificationProcessor notificationProcessor
     ) {
@@ -155,16 +155,16 @@ public class AuditEntryActions {
 
         List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
-            Optional<ConfigurationJobModel> commonDistributionConfig = jobAccessor.getJobById(commonConfigId);
-            if (commonDistributionConfig.isEmpty()) {
+            Optional<DistributionJobModel> optionalDistributionJob = jobAccessor.getJobById(commonConfigId);
+            if (optionalDistributionJob.isEmpty()) {
                 String message = String.format("The Distribution Job with this id could not be found. %s", commonConfigId.toString());
                 return new ActionResponse<>(HttpStatus.GONE, message);
             }
-            ConfigurationJobModel commonConfig = commonDistributionConfig.get();
-            if (commonConfig.isEnabled()) {
-                distributionEvents = notificationProcessor.processNotificationsForJob(commonConfig, List.of(notificationContent));
+            DistributionJobModel distributionJob = optionalDistributionJob.get();
+            if (distributionJob.isEnabled()) {
+                distributionEvents = notificationProcessor.processNotificationsForJob(distributionJob, List.of(notificationContent));
             } else {
-                UUID jobConfigId = commonConfig.getJobId();
+                UUID jobConfigId = distributionJob.getJobId();
                 logger.warn("The Distribution Job with Id {} was disabled. This notification could not be sent", jobConfigId);
                 String message = String.format("The Distribution Job is currently disabled. %s", jobConfigId.toString());
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, message);
@@ -177,8 +177,8 @@ public class AuditEntryActions {
         }
 
         for (DistributionEvent event : distributionEvents) {
-            UUID commonDistributionId = UUID.fromString(event.getConfigId());
-            Long auditId = auditAccessor.findMatchingAuditId(notificationContent.getId(), commonDistributionId).orElse(null);
+            DistributionJobModel distributionJobModel = event.getDistributionJobModel();
+            Long auditId = auditAccessor.findMatchingAuditId(notificationContent.getId(), distributionJobModel.getJobId()).orElse(null);
             Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             notificationIdToAuditId.put(notificationContent.getId(), auditId);
             event.setNotificationIdToAuditId(notificationIdToAuditId);

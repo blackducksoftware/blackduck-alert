@@ -40,7 +40,7 @@ public class ProcessingTaskTest {
         AlertNotificationModel model = new AlertNotificationModel(
             1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), null, new FieldUtility(Map.of())));
+        eventList = Arrays.asList(new DistributionEvent("FORMAT", RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), null, channelGlobalConfig, new FieldUtility(Map.of())));
     }
 
     public ProcessingTask createTask(TaskScheduler taskScheduler, DefaultNotificationAccessor notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager,
@@ -158,4 +158,5 @@ public class ProcessingTaskTest {
         assertEquals(expected.getMonth(), actual.getMonth());
         assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());
     }
+
 }

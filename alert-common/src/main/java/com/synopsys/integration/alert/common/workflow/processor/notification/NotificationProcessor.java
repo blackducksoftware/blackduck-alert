@@ -43,9 +43,9 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
@@ -54,6 +54,7 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
@@ -61,13 +62,16 @@ import com.synopsys.integration.datastructure.SetMap;
 public class NotificationProcessor {
     private final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
 
+    private final ProviderKey defaultProviderKey;
     private final ConfigurationAccessor configurationAccessor;
-    private final JobAccessor jobAccessor;
+    private final JobAccessorV2 jobAccessor;
     private final Map<String, Provider> providerKeyToProvider;
     private final NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(ConfigurationAccessor configurationAccessor, JobAccessor jobAccessor, List<Provider> providers, NotificationToDistributionEventConverter notificationToEventConverter) {
+    public NotificationProcessor(ProviderKey defaultProviderKey, ConfigurationAccessor configurationAccessor, JobAccessorV2 jobAccessor, List<Provider> providers,
+        NotificationToDistributionEventConverter notificationToEventConverter) {
+        this.defaultProviderKey = defaultProviderKey;
         this.configurationAccessor = configurationAccessor;
         this.jobAccessor = jobAccessor;
         this.providerKeyToProvider = DataStructureUtils.mapToValues(providers, provider -> provider.getKey().getUniversalKey());
@@ -85,7 +89,7 @@ public class NotificationProcessor {
         return processNotifications(notifications, jobAccessor::getMatchingEnabledJobs);
     }
 
-    private List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications, BiFunction<Long, NotificationType, List<ConfigurationJobModel>> getJobs) {
+    private List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications, BiFunction<Long, NotificationType, List<DistributionJobModel>> getJobs) {
         logger.info("Notifications to Process: {}", notifications.size());
         SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = extractNotificationInformation(notifications);
 
@@ -96,7 +100,7 @@ public class NotificationProcessor {
                 continue;
             }
             // FIXME consider paging the jobs
-            List<ConfigurationJobModel> matchingJobs = getJobs.apply(notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
+            List<DistributionJobModel> matchingJobs = getJobs.apply(notificationFilterModel.getProviderConfigId(), notificationFilterModel.getNotificationType());
             List<AlertNotificationModel> matchingNotifications = new ArrayList<>(entry.getValue());
             if (!matchingNotifications.isEmpty() && !matchingJobs.isEmpty()) {
                 events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
@@ -105,7 +109,7 @@ public class NotificationProcessor {
         return events;
     }
 
-    public List<DistributionEvent> processNotificationsForJob(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
+    public List<DistributionEvent> processNotificationsForJob(DistributionJobModel job, List<AlertNotificationModel> notifications) {
         // used in AuditEntryActions
         if (!job.isEnabled()) {
             logger.debug("Skipping disabled distribution job: {}", job.getName());
@@ -115,9 +119,9 @@ public class NotificationProcessor {
             return List.of();
         }
 
-        Optional<ConfigurationModel> optionalProviderConfig = configurationAccessor.getConfigurationById(job.getProviderConfigIdAsLong());
+        Optional<ConfigurationModel> optionalProviderConfig = configurationAccessor.getConfigurationById(job.getBlackDuckGlobalConfigId());
         if (optionalProviderConfig.isPresent()) {
-            Provider provider = providerKeyToProvider.get(job.getProviderName());
+            Provider provider = providerKeyToProvider.get(defaultProviderKey.getUniversalKey());
             ConfigurationModel providerConfiguration = optionalProviderConfig.get();
             StatefulProvider statefulProvider;
             try {
@@ -141,7 +145,7 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private List<DistributionEvent> processNotificationsThatMatchFilter(NotificationFilterModel notificationFilterModel, List<ConfigurationJobModel> matchingJobs, List<AlertNotificationModel> notifications) {
+    private List<DistributionEvent> processNotificationsThatMatchFilter(NotificationFilterModel notificationFilterModel, List<DistributionJobModel> matchingJobs, List<AlertNotificationModel> notifications) {
         Optional<ConfigurationModel> optionalProviderConfig = configurationAccessor.getConfigurationById(notificationFilterModel.getProviderConfigId());
         if (optionalProviderConfig.isPresent()) {
             Provider provider = providerKeyToProvider.get(notificationFilterModel.getProvider());
@@ -166,17 +170,17 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private List<DistributionEvent> processNotificationsForJobs(ProviderMessageContentCollector messageContentCollector, ProviderDistributionFilter providerDistributionFilter, Collection<ConfigurationJobModel> jobs,
+    private List<DistributionEvent> processNotificationsForJobs(ProviderMessageContentCollector messageContentCollector, ProviderDistributionFilter providerDistributionFilter, Collection<DistributionJobModel> jobs,
         List<AlertNotificationModel> notifications) {
         List<DistributionEvent> distributionEvents = new LinkedList<>();
-        for (ConfigurationJobModel job : jobs) {
+        for (DistributionJobModel job : jobs) {
             List<DistributionEvent> distributionEventsForJob = processNotifications(messageContentCollector, providerDistributionFilter, job, notifications);
             distributionEvents.addAll(distributionEventsForJob);
         }
         return distributionEvents;
     }
 
-    private List<DistributionEvent> processNotifications(ProviderMessageContentCollector messageContentCollector, ProviderDistributionFilter distributionFilter, ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
+    private List<DistributionEvent> processNotifications(ProviderMessageContentCollector messageContentCollector, ProviderDistributionFilter distributionFilter, DistributionJobModel job, List<AlertNotificationModel> notifications) {
         List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notifications);
 
         if (!filteredNotifications.isEmpty()) {
@@ -186,7 +190,7 @@ public class NotificationProcessor {
         return List.of();
     }
 
-    private List<AlertNotificationModel> filterNotificationsByType(ConfigurationJobModel job, List<AlertNotificationModel> notifications) {
+    private List<AlertNotificationModel> filterNotificationsByType(DistributionJobModel job, List<AlertNotificationModel> notifications) {
         return notifications
                    .stream()
                    .filter(notification -> job.getNotificationTypes().contains(notification.getNotificationType()))
@@ -200,7 +204,7 @@ public class NotificationProcessor {
                    .collect(Collectors.toList());
     }
 
-    private List<AlertNotificationModel> filterNotificationsByProviderFields(ConfigurationJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationModel> notifications) {
+    private List<AlertNotificationModel> filterNotificationsByProviderFields(DistributionJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationModel> notifications) {
         List<AlertNotificationModel> filteredNotifications = new LinkedList<>();
         for (AlertNotificationModel notification : notifications) {
             if (distributionFilter.doesNotificationApplyToConfiguration(notification, job)) {
@@ -210,7 +214,7 @@ public class NotificationProcessor {
         return filteredNotifications;
     }
 
-    private List<DistributionEvent> createDistributionEventsForNotifications(ProviderMessageContentCollector collector, ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) {
+    private List<DistributionEvent> createDistributionEventsForNotifications(ProviderMessageContentCollector collector, DistributionJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) {
         try {
             List<MessageContentGroup> messageGroups = collector.createMessageContentGroups(job, cache, notifications);
             return notificationToEventConverter.convertToEvents(job, messageGroups);

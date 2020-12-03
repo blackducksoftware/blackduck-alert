@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.common.event;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,8 +31,8 @@ public class EventManagerTest {
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
         FieldUtility fieldUtility = new FieldUtility(Map.of());
-        DistributionEvent event = new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
-            MessageContentGroup.singleton(content), fieldUtility);
+        DistributionEvent event = new DistributionEvent("destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
+            MessageContentGroup.singleton(content), distributionJobModel, channelGlobalConfig);
         eventManager.sendEvents(List.of(event));
     }
 
@@ -52,4 +51,5 @@ public class EventManagerTest {
         AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);
     }
+
 }

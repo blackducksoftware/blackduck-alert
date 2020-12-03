@@ -22,45 +22,19 @@
  */
 package com.synopsys.integration.alert.common.channel;
 
-import java.util.Date;
-import java.util.UUID;
-
-import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.RestConstants;
 
-public abstract class ChannelDistributionTestAction extends TestAction {
+public abstract class ChannelDistributionTestAction {
     private final DistributionChannel distributionChannel;
 
     public ChannelDistributionTestAction(DistributionChannel distributionChannel) {
         this.distributionChannel = distributionChannel;
     }
 
-    @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility fieldUtility) throws IntegrationException {
-        DistributionEvent event = createChannelTestEvent(jobId, fieldUtility);
-        return distributionChannel.sendMessage(event);
-    }
-
-    public DistributionEvent createChannelTestEvent(String configId, FieldUtility fieldUtility) throws AlertException {
-        ProviderMessageContent messageContent = createTestNotificationContent(fieldUtility, ItemOperation.ADD, UUID.randomUUID().toString());
-
-        String channelName = fieldUtility.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        Long providerConfigId = fieldUtility.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
-        String formatType = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE);
-
-        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigId, formatType, MessageContentGroup.singleton(messageContent), fieldUtility);
+    public MessageResult testConfig(DistributionEvent testEvent) throws IntegrationException {
+        return distributionChannel.sendMessage(testEvent);
     }
 
     public DistributionChannel getDistributionChannel() {

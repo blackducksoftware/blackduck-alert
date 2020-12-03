@@ -35,7 +35,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionTestAction extends ChannelDistributionTestAction {
-    private EmailActionHelper emailActionHelper;
+    private final EmailActionHelper emailActionHelper;
 
     @Autowired
     public EmailDistributionTestAction(EmailChannel emailChannel, EmailActionHelper emailActionHelper) {

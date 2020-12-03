@@ -70,7 +70,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
 
         FieldUtility fieldUtility = new FieldUtility(fieldModels);
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldUtility);
+            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), distributionJobModel, channelGlobalConfig);
         emailChannel.sendAuditedMessage(event);
     }
 
@@ -89,7 +89,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
             Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
             FieldUtility fieldUtility = new FieldUtility(fieldMap);
             DistributionEvent event = new DistributionEvent(
-                "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), fieldUtility);
+                CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), distributionJobModel, channelGlobalConfig);
             emailChannel.sendMessage(event);
             fail();
         } catch (IntegrationException e) {
