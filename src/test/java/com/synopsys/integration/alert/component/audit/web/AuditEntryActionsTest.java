@@ -26,13 +26,17 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -106,16 +110,18 @@ public class AuditEntryActionsTest {
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         ChannelEventManager eventManager = Mockito.mock(ChannelEventManager.class);
-        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        JobAccessor oldJobAccessor = Mockito.mock(JobAccessor.class);
+        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
         MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         MockNotificationContent mockNotificationEntity = new MockNotificationContent();
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
+        Mockito.when(oldJobAccessor.getJobById(Mockito.any())).thenReturn(null);
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationRepository, auditEntryRepository, auditNotificationRepository, null, eventManager);
         DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, null, notificationManager, null);
-        AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobAccessor, null, null);
+        AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, oldJobAccessor, null, null);
 
         ActionResponse<AuditEntryPageModel> response = auditEntryActions.resendNotification(1L, null);
         assertTrue(response.isError());
@@ -152,21 +158,26 @@ public class AuditEntryActionsTest {
 
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        JobAccessor oldJobAccessor = Mockito.mock(JobAccessor.class);
+        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
                                                      .createEntity();
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
-        ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
-            "filterByProject", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), "formatType");
+        ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", FrequencyType.REAL_TIME.name(),
+            "false", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), ProcessingType.DEFAULT.name());
+        DistributionJobModel distributionJob = DistributionJobModel.builder()
+                                                   .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name")
+                                                   .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of()).processingType(ProcessingType.DEFAULT).build();
 
-        Mockito.doReturn(Optional.of(configuration)).when(jobAccessor).getJobById(Mockito.any());
+        Mockito.doReturn(Optional.of(configuration)).when(oldJobAccessor).getJobById(Mockito.any());
+        Mockito.doReturn(Optional.of(distributionJob)).when(jobAccessor).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
 
         DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, configurationAccessor, notificationManager, contentConverter);
-        AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobAccessor, null, null);
+        AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, oldJobAccessor, null, null);
 
         ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
 
@@ -207,21 +218,26 @@ public class AuditEntryActionsTest {
 
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        JobAccessor oldJobAccessor = Mockito.mock(JobAccessor.class);
+        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
                                                      .createEntity();
 
-        ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", "frequency",
-            "filterByProject", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), "formatType");
+        ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", FrequencyType.REAL_TIME.name(),
+            "false", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), ProcessingType.DEFAULT.name());
+        DistributionJobModel distributionJob = DistributionJobModel.builder()
+                                                   .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name")
+                                                   .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of()).processingType(ProcessingType.DEFAULT).build();
 
-        Mockito.doReturn(Optional.of(configuration)).when(jobAccessor).getJobById(Mockito.any());
+        Mockito.doReturn(Optional.of(configuration)).when(oldJobAccessor).getJobById(Mockito.any());
+        Mockito.doReturn(Optional.of(distributionJob)).when(jobAccessor).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
 
         DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, configurationAccessor, notificationManager, contentConverter);
-        AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobAccessor, null, null);
+        AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, oldJobAccessor, null, null);
 
         ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
 
