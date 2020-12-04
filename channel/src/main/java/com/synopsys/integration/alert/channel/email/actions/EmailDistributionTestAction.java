@@ -26,28 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionTestAction extends ChannelDistributionTestAction {
-    private final EmailActionHelper emailActionHelper;
-
     @Autowired
-    public EmailDistributionTestAction(EmailChannel emailChannel, EmailActionHelper emailActionHelper) {
+    public EmailDistributionTestAction(EmailChannel emailChannel) {
         super(emailChannel);
-        this.emailActionHelper = emailActionHelper;
-    }
-
-    @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
-        String destination = fieldModel.getFieldValue(TestAction.KEY_DESTINATION_NAME).orElse("");
-        FieldUtility updatedFieldUtility = emailActionHelper.createUpdatedFieldAccessor(registeredFieldValues, destination);
-        return super.testConfig(jobId, fieldModel, updatedFieldUtility);
     }
 
 }

@@ -22,8 +22,14 @@
  */
 package com.synopsys.integration.alert.common.channel;
 
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class ChannelDistributionTestAction {
@@ -33,8 +39,15 @@ public abstract class ChannelDistributionTestAction {
         this.distributionChannel = distributionChannel;
     }
 
-    public MessageResult testConfig(DistributionEvent testEvent) throws IntegrationException {
-        return distributionChannel.sendMessage(testEvent);
+    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig) throws IntegrationException {
+        return testConfig(testJobModel, channelGlobalConfig, null, null);
+    }
+
+    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig, @Nullable String customTopic, @Nullable String customMessage) throws IntegrationException {
+        String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
+        String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
+        DistributionEvent channelTestEvent = ChannelDistributionTestEventCreationUtils.createChannelTestEvent(topicString, messageString, testJobModel, channelGlobalConfig);
+        return distributionChannel.sendMessage(channelTestEvent);
     }
 
     public DistributionChannel getDistributionChannel() {

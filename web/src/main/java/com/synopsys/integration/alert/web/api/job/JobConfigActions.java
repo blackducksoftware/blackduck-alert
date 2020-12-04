@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractJobResourceActions;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
@@ -99,6 +100,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final GlobalConfigExistsValidator globalConfigExistsValidator;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final Map<String, ChannelDistributionTestAction> channelNameToDistributionTestActions;
 
     @Autowired
     public JobConfigActions(
@@ -111,7 +113,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         ConfigurationFieldModelConverter modelConverter,
         GlobalConfigExistsValidator globalConfigExistsValidator,
         PKIXErrorResponseFactory pkixErrorResponseFactory,
-        DescriptorMap descriptorMap
+        DescriptorMap descriptorMap,
+        Collection<ChannelDistributionTestAction> channelDistributionTestActions
     ) {
         super(authorizationManager, descriptorAccessor, descriptorMap);
         this.configurationAccessor = configurationAccessor;
@@ -121,6 +124,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.globalConfigExistsValidator = globalConfigExistsValidator;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.jobAccessor = jobAccessor;
+        this.channelNameToDistributionTestActions = DataStructureUtils.mapToValues(channelDistributionTestActions, action -> action.getDistributionChannel().getDestinationName());
     }
 
     @Override
@@ -324,15 +328,15 @@ public class JobConfigActions extends AbstractJobResourceActions {
     @Override
     protected ValidationActionResponse testWithoutChecks(JobFieldModel resource) {
         ValidationResponseModel responseModel;
-        String id = resource.getJobId();
+        String jobId = resource.getJobId();
         try {
 
             Collection<FieldModel> otherJobModels = new LinkedList<>();
             FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(resource, otherJobModels);
 
             if (null != channelFieldModel) {
-                Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(channelFieldModel);
-                if (testActionOptional.isPresent()) {
+                ChannelDistributionTestAction channelDistributionTestAction = channelNameToDistributionTestActions.get(channelFieldModel.getDescriptorName());
+                if (null != channelDistributionTestAction) {
                     Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
                     // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
                     // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
@@ -340,17 +344,21 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
                     topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
                     messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
-                    TestAction testAction = testActionOptional.get();
-                    FieldUtility fieldUtility = new FieldUtility(fields);
-                    String jobId = channelFieldModel.getId();
 
-                    MessageResult providerTestResult = testProviderConfig(fieldUtility, jobId, channelFieldModel);
+                    MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobId, channelFieldModel);
                     if (providerTestResult.hasErrors()) {
                         responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
                         return new ValidationActionResponse(HttpStatus.OK, responseModel);
                     }
 
-                    MessageResult testActionResult = testAction.testConfig(jobId, channelFieldModel, fieldUtility);
+                    // FIXME include global config
+                    List<BlackDuckProjectDetailsModel> projectFilterDetails = resource.getConfiguredProviderProjects()
+                                                                                  .stream()
+                                                                                  .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
+                                                                                  .collect(Collectors.toList());
+                    DistributionJobModel testJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails);
+
+                    MessageResult testActionResult = channelDistributionTestAction.testConfig(testJobModel, null);
                     List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
                     responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
                     return new ValidationActionResponse(HttpStatus.OK, responseModel);
@@ -374,12 +382,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
             logger.error(e.getMessage(), e);
             return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.generalError(e.getMessage()));
         } catch (IntegrationException e) {
-            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
+            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobId, e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
+            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobId, e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
@@ -391,12 +399,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
         OffsetDateTime createdAt,
         @Nullable OffsetDateTime lastUpdated
     ) {
-        Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
-        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated);
         List<BlackDuckProjectDetailsModel> projectFilterDetails = jobProjects
                                                                       .stream()
                                                                       .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                       .collect(Collectors.toList());
+        Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
+        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails);
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),
             fromResource.getName(),
@@ -452,11 +460,13 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private MessageResult testProviderConfig(FieldUtility fieldUtility, String jobId, FieldModel fieldModel) throws IntegrationException {
-        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                      .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
-        if (providerTestAction.isPresent()) {
-            return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
-        }
+        // FIXME there does not seem to be a provider distribution test action
+        //  this makes sense because providers really aren't supposed to receive events
+        //        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+        //                                                      .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
+        //        if (providerTestAction.isPresent()) {
+        //            return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
+        //        }
         return new MessageResult("Provider Config Valid");
     }
 

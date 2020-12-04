@@ -271,7 +271,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
 
         EmailActionHelper emailActionHelper = new EmailActionHelper(new EmailAddressHandler(providerDataAccessor), providerDataAccessor);
-        return new EmailDistributionTestAction(emailChannel, emailActionHelper);
+        return new EmailDistributionTestAction(emailChannel);
     }
 
     @Test

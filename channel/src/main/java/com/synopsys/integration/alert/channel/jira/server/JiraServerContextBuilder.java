@@ -27,7 +27,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component
 public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerContext> {
@@ -76,6 +81,25 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
     @Override
     public JiraServerContext build(FieldUtility fieldUtility) {
         return new JiraServerContext(jiraServerPropertiesFactory.createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
+    }
+
+    @Override
+    public JiraServerContext build(ConfigurationModel globalConfig, DistributionJobModel testJobModel) {
+        FieldUtility globalFieldUtility = new FieldUtility(globalConfig.getCopyOfKeyToFieldMap());
+        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(globalFieldUtility);
+
+        DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
+        JiraServerJobDetailsModel jiraServerJobDetails = distributionJobDetails.getAsJiraServerJobDetails();
+
+        IssueConfig issueConfig = new IssueConfig();
+        issueConfig.setProjectName(jiraServerJobDetails.getProjectNameOrKey());
+        issueConfig.setIssueCreator(jiraServerJobDetails.getIssueCreatorUsername());
+        issueConfig.setIssueType(jiraServerJobDetails.getIssueType());
+        issueConfig.setCommentOnIssues(jiraServerJobDetails.isAddComments());
+        issueConfig.setResolveTransition(jiraServerJobDetails.getResolveTransition());
+        issueConfig.setOpenTransition(jiraServerJobDetails.getReopenTransition());
+
+        return new JiraServerContext(jiraProperties, issueConfig);
     }
 
 }

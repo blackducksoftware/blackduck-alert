@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.channel.jira.common;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 public abstract class JiraContextBuilder<T> {
     protected abstract String getProjectFieldKey();
@@ -41,6 +43,8 @@ public abstract class JiraContextBuilder<T> {
     protected abstract String getDefaultIssueCreatorFieldKey();
 
     public abstract T build(FieldUtility fieldUtility);
+
+    public abstract T build(ConfigurationModel channelGlobalConfig, DistributionJobModel testJobModel);
 
     protected IssueConfig createIssueConfig(FieldUtility fieldUtility) {
         String projectName = fieldUtility.getStringOrNull(getProjectFieldKey());
@@ -60,4 +64,5 @@ public abstract class JiraContextBuilder<T> {
 
         return issueConfig;
     }
+
 }

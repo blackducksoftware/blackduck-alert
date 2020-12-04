@@ -30,8 +30,8 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class ConfigurationAction {
     private final DescriptorKey descriptorKey;
-    private final Map<ConfigContextEnum, ApiAction> apiActionMap = new EnumMap(ConfigContextEnum.class);
-    private final Map<ConfigContextEnum, TestAction> testActionMap = new EnumMap(ConfigContextEnum.class);
+    private final Map<ConfigContextEnum, ApiAction> apiActionMap = new EnumMap<>(ConfigContextEnum.class);
+    private final Map<ConfigContextEnum, TestAction> testActionMap = new EnumMap<>(ConfigContextEnum.class);
 
     protected ConfigurationAction(DescriptorKey descriptorKey) {
         this.descriptorKey = descriptorKey;

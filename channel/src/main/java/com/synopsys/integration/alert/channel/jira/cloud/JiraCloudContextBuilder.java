@@ -27,7 +27,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
+import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
@@ -76,6 +81,25 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
     @Override
     public JiraCloudContext build(FieldUtility fieldUtility) {
         return new JiraCloudContext(jiraCloudPropertiesFactory.createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
+    }
+
+    @Override
+    public JiraCloudContext build(ConfigurationModel globalConfig, DistributionJobModel testJobModel) {
+        FieldUtility globalFieldUtility = new FieldUtility(globalConfig.getCopyOfKeyToFieldMap());
+        JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(globalFieldUtility);
+
+        DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
+        JiraCloudJobDetailsModel jiraCouldJobDetails = distributionJobDetails.getAsJiraCouldJobDetails();
+
+        IssueConfig issueConfig = new IssueConfig();
+        issueConfig.setProjectName(jiraCouldJobDetails.getProjectNameOrKey());
+        issueConfig.setIssueCreator(jiraCouldJobDetails.getIssueCreatorEmail());
+        issueConfig.setIssueType(jiraCouldJobDetails.getIssueType());
+        issueConfig.setCommentOnIssues(jiraCouldJobDetails.isAddComments());
+        issueConfig.setResolveTransition(jiraCouldJobDetails.getResolveTransition());
+        issueConfig.setOpenTransition(jiraCouldJobDetails.getReopenTransition());
+
+        return new JiraCloudContext(jiraProperties, issueConfig);
     }
 
 }
