@@ -1,7 +1,5 @@
 package com.synopsys.integration.alert.channel.msteams;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +7,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
@@ -37,7 +36,7 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
         MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
         MsTeamsKey msTeamsKey = new MsTeamsKey();
         MsTeamsMessageParser msTeamsMessageParser = new MsTeamsMessageParser(new MarkupEncoderUtil());
-        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, createAuditAccessor(), createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
+        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, auditAccessor, createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
@@ -53,8 +52,7 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
 
         msTeamsChannel.sendAuditedMessage(event);
 
-        boolean actual = outputLogger.isLineContainingText("Successfully sent a " + msTeamsKey.getUniversalKey() + " message!");
-        assertTrue(actual, "No success message appeared in the logs");
+        Mockito.verify(auditAccessor).setAuditEntrySuccess(Mockito.any());
     }
 
 }

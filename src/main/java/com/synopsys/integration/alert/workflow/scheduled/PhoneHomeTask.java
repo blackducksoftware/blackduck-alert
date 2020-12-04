@@ -33,7 +33,6 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,20 +42,19 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
 import com.synopsys.integration.log.IntLogger;
@@ -76,15 +74,17 @@ public class PhoneHomeTask extends StartupScheduledTask {
     public static final String ARTIFACT_ID = "blackduck-alert";
     public static final Long DEFAULT_TIMEOUT = 10L;
     public static final String CRON_EXPRESSION = "0 0 12 1/1 * ?";
+    public static String SUCCESS_KEY_PART = "::Successes";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AboutReader aboutReader;
-    private final JobAccessor jobAccessor;
+    private final JobAccessorV2 jobAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final Gson gson;
     private final AuditAccessor auditAccessor;
     private final List<ProviderPhoneHomeHandler> providerHandlers;
+    private final ProviderKey providerKey;
 
     @Value("${" + PhoneHomeClient.SKIP_PHONE_HOME_VARIABLE + ":FALSE}")
     private Boolean skipPhoneHome;
@@ -93,14 +93,14 @@ public class PhoneHomeTask extends StartupScheduledTask {
     public PhoneHomeTask(
         TaskScheduler taskScheduler,
         AboutReader aboutReader,
-        JobAccessor jobAccessor,
+        JobAccessorV2 jobAccessor,
         ConfigurationAccessor configurationAccessor,
         TaskManager taskManager,
         ProxyManager proxyManager,
         Gson gson,
         AuditAccessor auditAccessor,
-        List<ProviderPhoneHomeHandler> providerHandlers
-    ) {
+        List<ProviderPhoneHomeHandler> providerHandlers,
+        ProviderKey providerKey) {
         super(taskScheduler, taskManager);
         this.aboutReader = aboutReader;
         this.jobAccessor = jobAccessor;
@@ -109,6 +109,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         this.gson = gson;
         this.auditAccessor = auditAccessor;
         this.providerHandlers = providerHandlers;
+        this.providerKey = providerKey;
     }
 
     @Override
@@ -172,7 +173,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         Set<String> channelMetadata = new HashSet<>();
 
         int pageNumber = 0;
-        AlertPagedModel<ConfigurationJobModel> pageOfJobs;
+        AlertPagedModel<DistributionJobModel> pageOfJobs;
         do {
             pageOfJobs = jobAccessor.getPageOfJobs(pageNumber, 100);
             Set<String> channelMetadataBatch = retrieveChannelMetadataForJobs(pageOfJobs.getModels());
@@ -182,26 +183,18 @@ public class PhoneHomeTask extends StartupScheduledTask {
         return channelMetadata.toArray(String[]::new);
     }
 
-    private Set<String> retrieveChannelMetadataForJobs(List<ConfigurationJobModel> jobs) {
+    private Set<String> retrieveChannelMetadataForJobs(List<DistributionJobModel> jobs) {
         Map<String, Integer> createdDistributions = new HashMap<>();
-        String successKeyPart = "::Successes";
-        for (ConfigurationJobModel job : jobs) {
-            for (ConfigurationModel configuration : job.getCopyOfConfigurations()) {
-                String channelName = configuration.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
-                String providerName = configuration.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+        for (DistributionJobModel job : jobs) {
+            String channelName = job.getChannelDescriptorName();
+            String providerName = providerKey.getUniversalKey();
 
-                if (StringUtils.isBlank(channelName) || StringUtils.isBlank(providerName)) {
-                    // We want to specifically get the channel configuration here and the only way to determine that is if it has these fields.
-                    continue;
-                }
+            updateMetaDataCount(createdDistributions, channelName);
+            updateMetaDataCount(createdDistributions, providerName);
 
-                updateMetaDataCount(createdDistributions, channelName);
-                updateMetaDataCount(createdDistributions, providerName);
-
-                if (hasAuditSuccess(job.getJobId())) {
-                    updateMetaDataCount(createdDistributions, channelName + successKeyPart);
-                    updateMetaDataCount(createdDistributions, providerName + successKeyPart);
-                }
+            if (hasAuditSuccess(job.getJobId())) {
+                updateMetaDataCount(createdDistributions, channelName + SUCCESS_KEY_PART);
+                updateMetaDataCount(createdDistributions, providerName + SUCCESS_KEY_PART);
             }
 
         }
