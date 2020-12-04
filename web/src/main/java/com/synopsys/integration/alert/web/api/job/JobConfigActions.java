@@ -325,7 +325,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
     @Override
     protected ValidationActionResponse testWithoutChecks(JobFieldModel resource) {
         ValidationResponseModel responseModel;
-        String jobId = resource.getJobId();
+        String jobIdString = resource.getJobId();
+        UUID jobId = Optional.ofNullable(jobIdString)
+                         .filter(StringUtils::isNotBlank)
+                         .map(UUID::fromString)
+                         .orElse(null);
+
         try {
 
             Collection<FieldModel> otherJobModels = new LinkedList<>();
@@ -340,23 +345,36 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
                     Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_TOPIC);
                     Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
+                    Optional<ConfigurationFieldModel> destinationField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_DESTINATION_NAME);
                     topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
                     messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
+                    destinationField.ifPresent(model -> fields.put(TestAction.KEY_DESTINATION_NAME, model));
 
-                    MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobId, channelFieldModel);
+                    MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobIdString, channelFieldModel);
                     if (providerTestResult.hasErrors()) {
                         responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
                         return new ValidationActionResponse(HttpStatus.OK, responseModel);
                     }
 
-                    // FIXME include global config
+                    // Not all channels have a global config
+                    ConfigurationModel nullableChannelGlobalConfig = configurationAccessor.getConfigurationsByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL)
+                                                                         .stream()
+                                                                         .findFirst()
+                                                                         .orElse(null);
+
                     List<BlackDuckProjectDetailsModel> projectFilterDetails = resource.getConfiguredProviderProjects()
                                                                                   .stream()
                                                                                   .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                                   .collect(Collectors.toList());
-                    DistributionJobModel testJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails);
+                    DistributionJobModel testJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails);
 
-                    MessageResult testActionResult = channelDistributionTestAction.testConfig(testJobModel, null);
+                    MessageResult testActionResult = channelDistributionTestAction.testConfig(
+                        testJobModel,
+                        nullableChannelGlobalConfig,
+                        topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
+                        messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
+                        destinationField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
+                    );
                     List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
                     responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
                     return new ValidationActionResponse(HttpStatus.OK, responseModel);
@@ -380,12 +398,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
             logger.error(e.getMessage(), e);
             return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.generalError(e.getMessage()));
         } catch (IntegrationException e) {
-            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobId, e)
+            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobIdString, e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobId, e)
+            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobIdString, e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }

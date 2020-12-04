@@ -61,7 +61,13 @@ public class AzureBoardsDistributionTestAction extends ChannelDistributionTestAc
     }
 
     @Override
-    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig, @Nullable String customTopic, @Nullable String customMessage) throws IntegrationException {
+    public MessageResult testConfig(
+        DistributionJobModel testJobModel,
+        @Nullable ConfigurationModel channelGlobalConfig,
+        @Nullable String customTopic,
+        @Nullable String customMessage,
+        @Nullable String destination
+    ) throws IntegrationException {
         DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
         AzureBoardsContext azureBoardsContext = azureBoardsContextFactory.fromConfig(channelGlobalConfig, distributionJobDetails.getAsAzureBoardsJobDetails());
         AzureBoardsTestIssueRequestCreator issueCreator = new AzureBoardsTestIssueRequestCreator(azureBoardsRequestCreator, azureBoardsMessageParser, customTopic, customMessage);

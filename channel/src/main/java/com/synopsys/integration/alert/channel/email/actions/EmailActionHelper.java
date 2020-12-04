@@ -24,23 +24,22 @@ package com.synopsys.integration.alert.channel.email.actions;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -53,43 +52,40 @@ public class EmailActionHelper {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public FieldUtility createUpdatedFieldAccessor(FieldUtility fieldUtility, String destination) throws IntegrationException {
+    public Set<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel, @Nullable String destination) throws IntegrationException {
         Set<String> emailAddresses = new HashSet<>();
         if (StringUtils.isNotBlank(destination)) {
             emailAddresses.add(destination);
         }
 
-        boolean filterByProject = fieldUtility.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        Long providerConfigId = fieldUtility.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
-        boolean onlyAdditionalEmails = fieldUtility.getBooleanOrFalse(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
+        DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
+        EmailJobDetailsModel emailJobDetails = distributionJobDetails.getAsEmailJobDetails();
+
+        Long providerConfigId = distributionJobModel.getBlackDuckGlobalConfigId();
+        boolean onlyAdditionalEmails = emailJobDetails.isAdditionalEmailAddressesOnly();
 
         if (null != providerConfigId && !onlyAdditionalEmails) {
-            Set<ProviderProject> providerProjects = retrieveProviderProjects(fieldUtility, filterByProject, providerConfigId);
+            Set<ProviderProject> providerProjects = retrieveProviderProjects(distributionJobModel, providerConfigId);
             if (null != providerProjects) {
-                Set<String> providerEmailAddresses = addEmailAddresses(providerConfigId, providerProjects, fieldUtility);
+                Set<String> providerEmailAddresses = addEmailAddresses(providerConfigId, providerProjects, distributionJobModel, emailJobDetails);
                 emailAddresses.addAll(providerEmailAddresses);
             }
         }
-
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(EmailDescriptor.KEY_EMAIL_ADDRESSES);
-        configurationFieldModel.setFieldValues(emailAddresses);
-
-        Map<String, ConfigurationFieldModel> fields = fieldUtility.getFields();
-        fields.put(EmailDescriptor.KEY_EMAIL_ADDRESSES, configurationFieldModel);
-
-        return new FieldUtility(fields);
+        return emailAddresses;
     }
 
     private boolean doesProjectMatchConfiguration(String currentProjectName, String projectNamePattern, Set<String> configuredProjectNames) {
         return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    private Set<ProviderProject> retrieveProviderProjects(FieldUtility fieldUtility, boolean filterByProject, Long providerConfigId) {
+    private Set<ProviderProject> retrieveProviderProjects(DistributionJobModel distributionJobModel, Long providerConfigId) {
         List<ProviderProject> providerProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
-        if (filterByProject) {
-            Optional<ConfigurationFieldModel> projectField = fieldUtility.getField(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-            Set<String> configuredProjects = new HashSet<>(projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()));
-            String projectNamePattern = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+        if (distributionJobModel.isFilterByProject()) {
+            Set<String> configuredProjects = distributionJobModel.getProjectFilterDetails()
+                                                 .stream()
+                                                 .map(BlackDuckProjectDetailsModel::getName)
+                                                 .collect(Collectors.toSet());
+            String projectNamePattern = distributionJobModel.getProjectNamePattern().orElse("");
             return providerProjects
                        .stream()
                        .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
@@ -98,8 +94,8 @@ public class EmailActionHelper {
         return new HashSet<>(providerProjects);
     }
 
-    private Set<String> addEmailAddresses(Long providerConfigId, Set<ProviderProject> providerProjects, FieldUtility fieldUtility) throws AlertFieldException {
-        boolean projectOwnerOnly = fieldUtility.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
+    private Set<String> addEmailAddresses(Long providerConfigId, Set<ProviderProject> providerProjects, DistributionJobModel distributionJobModel, EmailJobDetailsModel emailJobDetails) throws AlertFieldException {
+        boolean projectOwnerOnly = emailJobDetails.isProjectOwnerOnly();
 
         Set<String> emailAddresses = new HashSet<>();
         Set<String> projectsWithoutEmails = new HashSet<>();
@@ -119,7 +115,7 @@ public class EmailActionHelper {
                 errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
             }
             String errorField = ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
-            boolean filterByProject = fieldUtility.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
+            boolean filterByProject = distributionJobModel.isFilterByProject();
             if (!filterByProject) {
                 errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
             }

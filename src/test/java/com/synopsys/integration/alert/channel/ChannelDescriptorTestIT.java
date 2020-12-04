@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.api.job.JobFieldModelPopulationUtils;
@@ -64,6 +65,8 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     protected TestProperties properties;
 
     @Autowired
+    protected ProviderKey providerKey;
+    @Autowired
     protected JobAccessorV2 jobAccessor;
     @Autowired
     protected DefaultConfigurationAccessor configurationAccessor;
@@ -75,17 +78,18 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     protected ConfigurationModel providerGlobalConfig;
     protected Optional<ConfigurationModel> optionalChannelGlobalConfig;
     protected DistributionJobModel distributionJobModel;
-    protected String destinationName;
+    protected String eventDestinationName;
 
     @BeforeEach
     public void init() throws Exception {
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
+        providerGlobalConfig = saveProviderGlobalConfig();
         optionalChannelGlobalConfig = saveGlobalConfiguration();
-        distributionJobModel = saveDistributionJob();
+        eventDestinationName = getEventDestinationName();
         channelEvent = createChannelEvent();
-        destinationName = getDestinationName();
+        distributionJobModel = saveDistributionJob();
     }
 
     @AfterEach
@@ -126,23 +130,22 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
         if (ConfigContextEnum.DISTRIBUTION == context) {
             optionalChannelGlobalConfig.ifPresent(globalConfig -> fieldValueMap.putAll(createFieldModelMap(globalConfig.getCopyOfFieldList())));
         }
-        FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), destinationName, context.name(), fieldValueMap);
+        FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), eventDestinationName, context.name(), fieldValueMap);
         return model;
     }
 
-    public FieldUtility createValidFieldAccessor(ConfigurationModel configurationModel) {
+    public FieldUtility createValidGlobalFieldUtility(ConfigurationModel configurationModel) {
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         fieldMap.putAll(configurationModel.getCopyOfKeyToFieldMap());
         optionalChannelGlobalConfig.ifPresent(globalConfig -> fieldMap.putAll(globalConfig.getCopyOfKeyToFieldMap()));
-        FieldUtility fieldUtility = new FieldUtility(fieldMap);
-        return fieldUtility;
+        return new FieldUtility(fieldMap);
 
     }
 
     public FieldModel createInvalidGlobalFieldModel() {
         Map<String, String> invalidValuesMap = createInvalidGlobalFieldMap();
         Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.GLOBAL.name(), fieldModelMap);
+        FieldModel model = new FieldModel("1L", eventDestinationName, ConfigContextEnum.GLOBAL.name(), fieldModelMap);
         return model;
     }
 
@@ -182,23 +185,24 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     public abstract String getTestJobName();
 
-    public abstract String getDestinationName();
+    public abstract String getEventDestinationName();
 
     public abstract TestAction getGlobalTestAction();
 
     public abstract ChannelDistributionTestAction getChannelDistributionTestAction();
 
-    private DistributionJobModel saveDistributionJob() {
+    private ConfigurationModel saveProviderGlobalConfig() {
+        return configurationAccessor.createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of());
+    }
 
-        ConfigurationModel globalConfig = optionalChannelGlobalConfig
-                                              .orElseThrow(() -> new AlertRuntimeException("Missing Email global config"));
+    private DistributionJobModel saveDistributionJob() {
         DistributionJobRequestModel requestModel = new DistributionJobRequestModel(
             true,
             getClass().getSimpleName(),
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
-            destinationName,
-            globalConfig.getConfigurationId(),
+            eventDestinationName,
+            providerGlobalConfig.getConfigurationId(),
             false,
             null,
             List.of("VULNERABILITY"),
@@ -226,7 +230,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     public void testDistributionConfig() {
         try {
             ChannelDistributionTestAction descriptorActionApi = getChannelDistributionTestAction();
-            descriptorActionApi.testConfig(distributionJobModel, optionalChannelGlobalConfig.orElse(null), "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT");
+            descriptorActionApi.testConfig(distributionJobModel, optionalChannelGlobalConfig.orElse(null), "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT", null);
         } catch (IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -237,7 +241,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     public void testGlobalConfig() {
         if (optionalChannelGlobalConfig.isPresent()) {
             ConfigurationModel channelGlobalConfig = optionalChannelGlobalConfig.get();
-            FieldUtility fieldUtility = createValidFieldAccessor(channelGlobalConfig);
+            FieldUtility fieldUtility = createValidGlobalFieldUtility(channelGlobalConfig);
             try {
                 TestAction globalConfigTestAction = getGlobalTestAction();
                 globalConfigTestAction.testConfig(String.valueOf(channelGlobalConfig.getConfigurationId()), createTestConfigDestination(), fieldUtility);
@@ -252,7 +256,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     public void testCreateChannelEvent() throws Exception {
         DistributionEvent channelEvent = createChannelEvent();
         assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(destinationName, channelEvent.getDestination());
+        assertEquals(eventDestinationName, channelEvent.getDestination());
     }
 
     @Test
@@ -260,7 +264,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
         JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
         FieldModel restModel = jobFieldModel.getFieldModels()
                                    .stream()
-                                   .filter(fieldModel -> destinationName.equals(fieldModel.getDescriptorName()))
+                                   .filter(fieldModel -> eventDestinationName.equals(fieldModel.getDescriptorName()))
                                    .findFirst()
                                    .orElseThrow(() -> new AlertRuntimeException("Missing distribution rest model"));
         FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
@@ -274,7 +278,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     @Test
     public void testDistributionValidateWithFieldErrors() {
         ConfigContextEnum context = ConfigContextEnum.DISTRIBUTION;
-        FieldModel restModel = new FieldModel(destinationName, context.name(), Map.of());
+        FieldModel restModel = new FieldModel(eventDestinationName, context.name(), Map.of());
         Map<String, ConfigField> configFieldMap = createFieldMap(context);
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);

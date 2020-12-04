@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
+import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
@@ -38,12 +39,14 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -66,12 +69,13 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
-    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
     private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
 
     public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     private static final String EMAIL_TEST_PROVIDER_CONFIG_NAME = "emailTestProviderConfig";
+    private static final String DEFAULT_TEST_EMAIL_ADDRESS = "noreply@blackducksoftware.com";
+
     @Autowired
     private ProviderDataAccessor providerDataAccessor;
     @Autowired
@@ -96,6 +100,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     private EmailChannelMessageParser emailChannelMessageParser;
     @Autowired
     private EmailGlobalTestAction emailGlobalTestAction;
+    @Autowired
+    private EmailActionHelper emailActionHelper;
 
     private ConfigurationModel providerConfig;
 
@@ -142,7 +148,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         providerGlobalConfig = configurationAccessor
-                                   .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+                                   .createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
 
     }
 
@@ -247,8 +253,17 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
+    public FieldUtility createValidGlobalFieldUtility(ConfigurationModel configurationModel) {
+        FieldUtility validGlobalFieldUtility = super.createValidGlobalFieldUtility(configurationModel);
+        ConfigurationFieldModel destinationField = ConfigurationFieldModel.create(TestAction.KEY_DESTINATION_NAME);
+        destinationField.setFieldValue("noreply@blackducksoftware.com");
+        validGlobalFieldUtility.addFields(Map.of(TestAction.KEY_DESTINATION_NAME, destinationField));
+        return validGlobalFieldUtility;
+    }
+
+    @Override
     public FieldModel createTestConfigDestination() {
-        return createFieldModel(new SlackChannelKey().getUniversalKey(), "noreply@blackducksoftware.com");
+        return createFieldModel(new SlackChannelKey().getUniversalKey(), DEFAULT_TEST_EMAIL_ADDRESS);
     }
 
     @Override
@@ -257,7 +272,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public String getDestinationName() {
+    public String getEventDestinationName() {
         return EMAIL_CHANNEL_KEY.getUniversalKey();
     }
 
@@ -273,19 +288,37 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
         EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
 
-        return new EmailDistributionTestAction(emailChannel);
+        return new EmailDistributionTestAction(emailChannel, emailActionHelper);
     }
 
     @Test
     public void testProjectOwner() throws Exception {
         // update the distribution jobs configuration and run the send test again
         // set the project owner field to false
-        List<ConfigurationModel> model = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(getDescriptor().getDescriptorKey(), ConfigContextEnum.DISTRIBUTION);
-        for (ConfigurationModel configurationModel : model) {
-            Long configId = configurationModel.getConfigurationId();
-            List<ConfigurationFieldModel> fieldModels = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
-            configurationAccessor.updateConfiguration(configId, fieldModels);
-        }
+        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(
+            "Alert unit test subject line",
+            true,
+            false,
+            null,
+            List.of("noreply@blackducksoftware.com")
+        );
+        DistributionJobRequestModel updateRequestModel = new DistributionJobRequestModel(
+            distributionJobModel.isEnabled(),
+            distributionJobModel.getName(),
+            distributionJobModel.getDistributionFrequency(),
+            distributionJobModel.getProcessingType(),
+            distributionJobModel.getChannelDescriptorName(),
+            distributionJobModel.getBlackDuckGlobalConfigId(),
+            distributionJobModel.isFilterByProject(),
+            distributionJobModel.getProjectNamePattern().orElse(null),
+            distributionJobModel.getNotificationTypes(),
+            distributionJobModel.getProjectFilterDetails(),
+            distributionJobModel.getPolicyFilterPolicyNames(),
+            distributionJobModel.getVulnerabilityFilterSeverityNames(),
+            emailJobDetails
+        );
+
+        jobAccessor.updateJob(distributionJobModel.getJobId(), updateRequestModel);
         testDistributionConfig();
     }
 

@@ -54,7 +54,13 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
     }
 
     @Override
-    public MessageResult testConfig(DistributionJobModel testJobModel, ConfigurationModel channelGlobalConfig, @Nullable String customTopic, @Nullable String customMessage) throws IntegrationException {
+    public MessageResult testConfig(
+        DistributionJobModel testJobModel,
+        @Nullable ConfigurationModel channelGlobalConfig,
+        @Nullable String customTopic,
+        @Nullable String customMessage,
+        @Nullable String destination
+    ) throws IntegrationException {
         IssueTrackerContext context = jiraServerContextBuilder.build(channelGlobalConfig, testJobModel);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(jiraMessageParser, customTopic, customMessage);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction((JiraServerChannel) getDistributionChannel(), gson, issueCreator);

@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -36,7 +35,6 @@ import com.synopsys.integration.rest.RestConstants;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
     public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
-    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
 
     @Autowired
     private SlackDescriptor slackDescriptor;
@@ -60,7 +58,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         providerGlobalConfig = configurationAccessor
-                                   .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+                                   .createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
     }
 
     @Override
@@ -71,8 +69,8 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Override
     public DistributionJobDetailsModel createDistributionJobDetails() {
         return new SlackJobDetailsModel(
-            "Alert unit test subject line",
-            "Alert unit test channel name",
+            properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
+            properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             getClass().getSimpleName()
         );
     }
@@ -132,7 +130,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public String getDestinationName() {
+    public String getEventDestinationName() {
         return slackChannelKey.getUniversalKey();
     }
 

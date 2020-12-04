@@ -54,6 +54,7 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
 
         boolean filterByProject = distributionJob.isFilterByProject();
         if (filterByProject) {
+            // TODO consider filtering by href
             Collection<String> configuredProjects = distributionJob.getProjectFilterDetails()
                                                         .stream()
                                                         .map(BlackDuckProjectDetailsModel::getName)

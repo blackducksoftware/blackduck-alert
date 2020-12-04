@@ -56,7 +56,6 @@ public class EmailAddressHandler {
     }
 
     public Set<String> getUpdatedEmailAddresses(Long providerConfigId, MessageContentGroup contentGroup, DistributionJobModel distributionJobModel, EmailJobDetailsModel emailJobDetailsModel) {
-        // FIXME determine if there was something that initialized this before
         Set<String> emailAddresses = new HashSet<>();
 
         boolean projectOwnerOnly = emailJobDetailsModel.isProjectOwnerOnly();

@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -591,13 +590,12 @@ public class JobConfigActionsTest {
     }
 
     private ChannelDistributionTestAction createChannelDistributionTestAction() {
-        ChannelDistributionTestAction testAction = new ChannelDistributionTestAction(null) {
+        return new ChannelDistributionTestAction(null) {
             @Override
-            public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig, @Nullable String customTopic, @Nullable String customMessage) throws IntegrationException {
+            public MessageResult testConfig(DistributionJobModel testJobModel, ConfigurationModel channelGlobalConfig, String customTopic, String customMessage, String destination) {
                 return new MessageResult("Test Status Message");
             }
         };
-        return testAction;
     }
 
     private TestAction createTestActionWithErrors() {

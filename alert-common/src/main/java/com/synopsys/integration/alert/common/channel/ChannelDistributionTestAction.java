@@ -40,10 +40,16 @@ public abstract class ChannelDistributionTestAction {
     }
 
     public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig) throws IntegrationException {
-        return testConfig(testJobModel, channelGlobalConfig, null, null);
+        return testConfig(testJobModel, channelGlobalConfig, null, null, null);
     }
 
-    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig, @Nullable String customTopic, @Nullable String customMessage) throws IntegrationException {
+    public MessageResult testConfig(
+        DistributionJobModel testJobModel,
+        @Nullable ConfigurationModel channelGlobalConfig,
+        @Nullable String customTopic,
+        @Nullable String customMessage,
+        @Nullable String destination
+    ) throws IntegrationException {
         String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
         String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
         DistributionEvent channelTestEvent = ChannelDistributionTestEventCreationUtils.createChannelTestEvent(topicString, messageString, testJobModel, channelGlobalConfig);
