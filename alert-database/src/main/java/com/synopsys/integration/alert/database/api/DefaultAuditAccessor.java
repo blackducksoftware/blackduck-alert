@@ -57,13 +57,14 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelData;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
@@ -78,13 +79,13 @@ public class DefaultAuditAccessor implements AuditAccessor {
     private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
-    private final JobAccessor jobAccessor;
+    private final JobAccessorV2 jobAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final DefaultNotificationAccessor notificationAccessor;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, JobAccessor jobAccessor,
+    public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, JobAccessorV2 jobAccessor,
         ConfigurationAccessor configurationAccessor,
         DefaultNotificationAccessor notificationAccessor, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
@@ -261,13 +262,9 @@ public class DefaultAuditAccessor implements AuditAccessor {
             String errorMessage = auditEntryEntity.getErrorMessage();
             String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-            Optional<ConfigurationJobModel> commonConfig = jobAccessor.getJobById(jobId);
-            String distributionConfigName = null;
-            String eventType = null;
-            if (commonConfig.isPresent()) {
-                distributionConfigName = commonConfig.get().getName();
-                eventType = commonConfig.get().getChannelName();
-            }
+            Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
+            String distributionConfigName = distributionJobModel.map(DistributionJobModelData::getName).orElse(null);
+            String eventType = distributionJobModel.map(DistributionJobModelData::getChannelDescriptorName).orElse(null);
 
             String statusDisplayName = null;
             if (null != status) {

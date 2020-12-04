@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -27,23 +26,21 @@ import org.springframework.data.domain.Pageable;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -201,7 +198,7 @@ public class DefaultAuditAccessorTest {
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
@@ -214,16 +211,18 @@ public class DefaultAuditAccessorTest {
         Mockito.when(auditNotificationRepository.findByNotificationId(Mockito.any())).thenReturn(List.of(auditNotificationRelation));
         Mockito.when(auditEntryRepository.findAllById(Mockito.any())).thenReturn(List.of(auditEntryEntity));
 
-        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(10L, 11L, "createdAt-test", "lastUpdate-test", ConfigContextEnum.DISTRIBUTION);
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create("channel.common.name");
-        configurationFieldModel.setFieldValue("test-channel.common.name-value");
-        ConfigurationFieldModel configurationFieldModel2 = ConfigurationFieldModel.create("channel.common.channel.name");
-        configurationFieldModel2.setFieldValue("test-channel.common.channel.name-value");
-        configurationModel.put(configurationFieldModel);
-        configurationModel.put(configurationFieldModel2);
-
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
-        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(configurationJobModel));
+        DistributionJobModel distributionJob = DistributionJobModel.builder()
+                                                   .jobId(UUID.randomUUID())
+                                                   .enabled(true)
+                                                   .blackDuckGlobalConfigId(2L)
+                                                   .channelDescriptorName("test-channel.common.channel.name-value")
+                                                   .name("test-channel.common.name-value")
+                                                   .distributionFrequency(FrequencyType.REAL_TIME)
+                                                   .filterByProject(false)
+                                                   .notificationTypes(List.of())
+                                                   .processingType(ProcessingType.DEFAULT)
+                                                   .build();
+        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJob));
 
         DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, configurationAccessor, null, contentConverter);
         AuditEntryModel testAuditEntryModel = auditUtility.convertToAuditEntryModelFromNotification(alertNotificationModel);
