@@ -100,7 +100,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final GlobalConfigExistsValidator globalConfigExistsValidator;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
-    private final Map<String, ChannelDistributionTestAction> channelNameToDistributionTestActions;
 
     @Autowired
     public JobConfigActions(
@@ -113,8 +112,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         ConfigurationFieldModelConverter modelConverter,
         GlobalConfigExistsValidator globalConfigExistsValidator,
         PKIXErrorResponseFactory pkixErrorResponseFactory,
-        DescriptorMap descriptorMap,
-        Collection<ChannelDistributionTestAction> channelDistributionTestActions
+        DescriptorMap descriptorMap
     ) {
         super(authorizationManager, descriptorAccessor, descriptorMap);
         this.configurationAccessor = configurationAccessor;
@@ -124,7 +122,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.globalConfigExistsValidator = globalConfigExistsValidator;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.jobAccessor = jobAccessor;
-        this.channelNameToDistributionTestActions = DataStructureUtils.mapToValues(channelDistributionTestActions, action -> action.getDistributionChannel().getDestinationName());
     }
 
     @Override
@@ -335,8 +332,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
             FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(resource, otherJobModels);
 
             if (null != channelFieldModel) {
-                ChannelDistributionTestAction channelDistributionTestAction = channelNameToDistributionTestActions.get(channelFieldModel.getDescriptorName());
-                if (null != channelDistributionTestAction) {
+                Optional<ChannelDistributionTestAction> optionalChannelDistributionTestAction = descriptorProcessor.retrieveChannelDistributionTestAction(channelFieldModel.getDescriptorName());
+                if (optionalChannelDistributionTestAction.isPresent()) {
+                    ChannelDistributionTestAction channelDistributionTestAction = optionalChannelDistributionTestAction.get();
                     Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
                     // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
                     // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
@@ -460,13 +458,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private MessageResult testProviderConfig(FieldUtility fieldUtility, String jobId, FieldModel fieldModel) throws IntegrationException {
-        // FIXME there does not seem to be a provider distribution test action
-        //  this makes sense because providers really aren't supposed to receive events
-        //        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-        //                                                      .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
-        //        if (providerTestAction.isPresent()) {
-        //            return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
-        //        }
+        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+                                                      .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
+        if (providerTestAction.isPresent()) {
+            return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
+        }
         return new MessageResult("Provider Config Valid");
     }
 

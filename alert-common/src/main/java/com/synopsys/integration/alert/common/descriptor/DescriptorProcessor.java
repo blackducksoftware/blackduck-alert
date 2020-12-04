@@ -60,7 +60,7 @@ public class DescriptorProcessor {
         for (AutoActionable autoActionable : autoActionables) {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();
-            
+
             ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {
             };
             ConfigurationAction configurationAction = new ConfigurationAction(channelKey) {
@@ -77,6 +77,10 @@ public class DescriptorProcessor {
 
     public Optional<TestAction> retrieveTestAction(String descriptorName, ConfigContextEnum context) {
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
+    }
+
+    public Optional<ChannelDistributionTestAction> retrieveChannelDistributionTestAction(String descriptorName) {
+        return retrieveConfigurationAction(descriptorName).flatMap(ConfigurationAction::getChannelDistributionTestAction);
     }
 
     public Optional<Descriptor> retrieveDescriptor(String descriptorName) {

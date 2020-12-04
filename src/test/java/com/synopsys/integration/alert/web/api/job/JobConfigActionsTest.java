@@ -116,8 +116,7 @@ public class JobConfigActionsTest {
             configurationFieldModelConverter,
             globalConfigExistsValidator,
             pkixErrorResponseFactory,
-            descriptorMap,
-            Set.of()
+            descriptorMap
         );
 
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
