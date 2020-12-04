@@ -395,7 +395,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated);
         List<BlackDuckProjectDetailsModel> projectFilterDetails = jobProjects
                                                                       .stream()
-                                                                      .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref(), jobProject.getProjectOwnerEmail()))
+                                                                      .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                       .collect(Collectors.toList());
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),

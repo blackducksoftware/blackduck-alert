@@ -85,8 +85,7 @@ public class BlackDuckJobDetailsAccessor {
 
         List<BlackDuckJobProjectEntity> projectFiltersToSave = requestModel.getProjectFilterDetails()
                                                                    .stream()
-                                                                   .map(projectDetails -> new BlackDuckJobProjectEntity(jobId, projectDetails.getName(), projectDetails.getHref(),
-                                                                       projectDetails.getProjectOwnerEmail().orElse(null)))
+                                                                   .map(projectDetails -> new BlackDuckJobProjectEntity(jobId, projectDetails.getName(), projectDetails.getHref()))
                                                                    .collect(Collectors.toList());
         blackDuckJobProjectRepository.deleteAllByJobId(jobId);
         List<BlackDuckJobProjectEntity> savedProjectFilters = blackDuckJobProjectRepository.saveAll(projectFiltersToSave);
@@ -121,7 +120,7 @@ public class BlackDuckJobDetailsAccessor {
     public List<BlackDuckProjectDetailsModel> retrieveProjectDetailsForJob(UUID jobId) {
         return blackDuckJobProjectRepository.findByJobId(jobId)
                    .stream()
-                   .map(blackDuckJobProject -> new BlackDuckProjectDetailsModel(blackDuckJobProject.getProjectName(), blackDuckJobProject.getHref(), blackDuckJobProject.getProjectOwnerEmail()))
+                   .map(blackDuckJobProject -> new BlackDuckProjectDetailsModel(blackDuckJobProject.getProjectName(), blackDuckJobProject.getHref()))
                    .collect(Collectors.toList());
     }
 

@@ -8,11 +8,6 @@
        <addColumn schemaName="alert" tableName="blackduck_job_projects">
            <column name="href" type="VARCHAR"/>
        </addColumn>
-       <addColumn schemaName="alert" tableName="blackduck_job_projects">
-           <column name="project_owner_email" type="VARCHAR">
-                   <constraints nullable="true"/>
-           </column>
-       </addColumn>
    </changeSet>
 
     <!-- Insert data into columns -->
@@ -20,10 +15,10 @@
     <changeSet author="gavink" id="insert-provider-project-data">
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.blackduck_job_projects bd_job_projects
-            SET href = job_project_details.href, project_owner_email = job_project_details.project_owner_email
+            SET href = job_project_details.href
             FROM alert.blackduck_job_details bd_job_details
             JOIN (
-                SELECT bd_project.job_id, prov_project.href, prov_project.project_owner_email
+                SELECT bd_project.job_id, prov_project.href
                 FROM alert.blackduck_job_details bd_job_details
                 INNER JOIN alert.blackduck_job_projects bd_project ON bd_project.job_id = bd_job_details.job_id
                 INNER JOIN alert.provider_projects prov_project ON prov_project.name = bd_project.project_name
