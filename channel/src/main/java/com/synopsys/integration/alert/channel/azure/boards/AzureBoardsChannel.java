@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
@@ -42,7 +41,12 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
@@ -69,9 +73,13 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
     @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
-        FieldUtility fieldUtility = event.getFieldUtility();
-        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromFieldAccessor(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldUtility);
-        IssueConfig issueConfig = createIssueConfig(fieldUtility);
+        ConfigurationModel globalConfig = event.getChannelGlobalConfig()
+                                              .orElseThrow(() -> new AlertRuntimeException(new AlertConfigurationException("Missing Azure Boards global configuration")));
+        AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), globalConfig);
+
+        DistributionJobModel distributionJobModel = event.getDistributionJobModel();
+        DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
+        IssueConfig issueConfig = createIssueConfig(distributionJobDetails.getAsAzureBoardsJobDetails());
         return new AzureBoardsContext(serviceConfig, issueConfig);
     }
 
@@ -86,21 +94,16 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
         return issueTrackerService.sendRequests(requests);
     }
 
-    private IssueConfig createIssueConfig(FieldUtility fieldUtility) {
-        String azureProjectName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_AZURE_PROJECT);
-        String workItemTypeName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
-        boolean commentOnWorkItems = fieldUtility.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
-        String completedStateName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
-        String reopenStateName = fieldUtility.getStringOrNull(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
+    private IssueConfig createIssueConfig(AzureBoardsJobDetailsModel jobDetails) {
         return new IssueConfig(
-            azureProjectName,
+            jobDetails.getProjectNameOrId(),
             null,
             null,
             null,
-            workItemTypeName,
-            commentOnWorkItems,
-            completedStateName,
-            reopenStateName
+            jobDetails.getWorkItemType(),
+            jobDetails.isAddComments(),
+            jobDetails.getWorkItemCompletedState(),
+            jobDetails.getWorkItemReopenState()
         );
     }
 

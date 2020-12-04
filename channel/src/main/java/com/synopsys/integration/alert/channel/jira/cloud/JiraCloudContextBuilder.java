@@ -84,11 +84,11 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
     }
 
     @Override
-    public JiraCloudContext build(ConfigurationModel globalConfig, DistributionJobModel testJobModel) {
+    public JiraCloudContext build(ConfigurationModel globalConfig, DistributionJobModel jobModel) {
         FieldUtility globalFieldUtility = new FieldUtility(globalConfig.getCopyOfKeyToFieldMap());
         JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(globalFieldUtility);
 
-        DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
+        DistributionJobDetailsModel distributionJobDetails = jobModel.getDistributionJobDetails();
         JiraCloudJobDetailsModel jiraCouldJobDetails = distributionJobDetails.getAsJiraCouldJobDetails();
 
         IssueConfig issueConfig = new IssueConfig();
