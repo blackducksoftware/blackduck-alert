@@ -64,6 +64,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelData;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.JobAuditModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
@@ -262,12 +263,8 @@ public class DefaultAuditAccessor implements AuditAccessor {
             String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
             Optional<DistributionJobModel> distributionJobModel = jobAccessor.getJobById(jobId);
-            String distributionConfigName = null;
-            String eventType = null;
-            if (distributionJobModel.isPresent()) {
-                distributionConfigName = distributionJobModel.get().getName();
-                eventType = distributionJobModel.get().getChannelDescriptorName();
-            }
+            String distributionConfigName = distributionJobModel.map(DistributionJobModelData::getName).orElse(null);
+            String eventType = distributionJobModel.map(DistributionJobModelData::getChannelDescriptorName).orElse(null);
 
             String statusDisplayName = null;
             if (null != status) {
