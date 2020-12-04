@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.common.event;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,7 +11,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EventManagerTest {
@@ -30,9 +29,10 @@ public class EventManagerTest {
                                              .applyTopic("testTopic", "topic")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        FieldUtility fieldUtility = new FieldUtility(Map.of());
+
+        DistributionJobModel emptyJob = DistributionJobModel.builder().build();
         DistributionEvent event = new DistributionEvent("destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
-            MessageContentGroup.singleton(content), distributionJobModel, channelGlobalConfig);
+            MessageContentGroup.singleton(content), emptyJob, null);
         eventManager.sendEvents(List.of(event));
     }
 

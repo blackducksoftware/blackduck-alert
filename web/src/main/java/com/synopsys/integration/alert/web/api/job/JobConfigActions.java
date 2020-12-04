@@ -222,7 +222,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
                 List<JobProviderProjectFieldModel> configuredProviderProjects = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of());
                 DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, previousJob.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
-                DistributionJobModel savedJob = jobAccessor.createJob(jobRequestModel);
+                DistributionJobModel savedJob = jobAccessor.updateJob(previousJob.getJobId(), jobRequestModel);
                 JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
 
                 Set<FieldModel> updatedFieldModels = new HashSet<>();

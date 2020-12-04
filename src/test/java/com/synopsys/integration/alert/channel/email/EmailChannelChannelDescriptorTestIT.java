@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel.email;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,12 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
-import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
+import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
@@ -33,18 +33,19 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
@@ -93,11 +94,13 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     private EmailAddressHandler emailAddressHandler;
     @Autowired
     private EmailChannelMessageParser emailChannelMessageParser;
+    @Autowired
+    private EmailGlobalTestAction emailGlobalTestAction;
 
     private ConfigurationModel providerConfig;
 
     @BeforeEach
-    public void testSetup() throws Exception {
+    public void testSetup() {
         ConfigurationFieldModel nameField = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         nameField.setFieldValue(EMAIL_TEST_PROVIDER_CONFIG_NAME);
         ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
@@ -138,8 +141,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        provider_global = configurationAccessor
-                              .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+        providerGlobalConfig = configurationAccessor
+                                   .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
 
     }
 
@@ -175,10 +178,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ConfigurationModel saveDistributionConfiguration() {
-        List<ConfigurationFieldModel> models = new LinkedList<>();
-        models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
-        return configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.DISTRIBUTION, models);
+    public DistributionJobDetailsModel createDistributionJobDetails() {
+        return new EmailJobDetailsModel(
+            "Alert unit test subject line",
+            false,
+            true,
+            null,
+            List.of("noreply@blackducksoftware.com")
+        );
     }
 
     @Override
@@ -189,17 +196,13 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                              .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorKey(EMAIL_CHANNEL_KEY);
 
-        Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-        for (ConfigurationModel model : models) {
-            fieldMap.putAll(model.getCopyOfKeyToFieldMap());
-        }
+        ConfigurationModel emailGlobalConfig = optionalChannelGlobalConfig
+                                                   .orElseThrow(() -> new AlertRuntimeException("Missing Email global config"));
 
-        FieldUtility fieldUtility = new FieldUtility(fieldMap);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
         DistributionEvent event = new DistributionEvent(EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
-            MessageContentGroup.singleton(content), distributionJobModel, channelGlobalConfig);
+            MessageContentGroup.singleton(content), distributionJobModel, emailGlobalConfig);
         return event;
     }
 
@@ -244,11 +247,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public Map<String, String> createInvalidDistributionFieldMap() {
-        return Map.of();
-    }
-
-    @Override
     public FieldModel createTestConfigDestination() {
         return createFieldModel(new SlackChannelKey().getUniversalKey(), "noreply@blackducksoftware.com");
     }
@@ -264,13 +262,17 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ChannelDistributionTestAction getTestAction() {
+    public TestAction getGlobalTestAction() {
+        return emailGlobalTestAction;
+    }
+
+    @Override
+    public ChannelDistributionTestAction getChannelDistributionTestAction() {
         AlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
         EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
 
-        EmailActionHelper emailActionHelper = new EmailActionHelper(new EmailAddressHandler(providerDataAccessor), providerDataAccessor);
         return new EmailDistributionTestAction(emailChannel);
     }
 
@@ -287,9 +289,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         testDistributionConfig();
     }
 
-    private void mapUsersToProjectByEmail(Long providerConfigId, String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+    private void mapUsersToProjectByEmail(Long providerConfigId, String projectHref, Collection<String> emailAddresses) {
         ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
-                                            .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
+                                            .orElseThrow(() -> new AlertRuntimeException("A project with the following href did not exist: " + projectHref));
         Long projectId = project.getId();
         for (String emailAddress : emailAddresses) {
             providerUserRepository.findByEmailAddressAndProviderConfigId(emailAddress, providerConfigId)

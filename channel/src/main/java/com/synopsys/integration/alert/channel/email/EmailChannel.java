@@ -83,7 +83,7 @@ public class EmailChannel extends NamedDistributionChannel {
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
         ConfigurationModel globalConfig = event.getChannelGlobalConfig()
-                                              .orElseThrow(() -> new AlertConfigurationException("Missing Email global configuration"));
+                                              .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing global config."));
         DistributionJobModel distributionJobModel = event.getDistributionJobModel();
         EmailJobDetailsModel emailJobDetails = distributionJobModel.getDistributionJobDetails().getAsEmailJobDetails();
 

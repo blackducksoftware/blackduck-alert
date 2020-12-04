@@ -194,6 +194,8 @@ public abstract class AbstractJobResourceActions {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
         ValidationActionResponse response = testWithoutChecks(resource);
+        // FIXME this should only return OK if validation COMPLETED successfully (even
+        //  if there are field errors), not if there were other types of errors unrelated to validation
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
 
