@@ -51,4 +51,8 @@ public class ProvidersMissingTask extends StartupScheduledTask {
         providerMissingValidator.validate();
     }
 
+    @Override
+    protected void postTaskStartup() {
+        runTask();
+    }
 }
