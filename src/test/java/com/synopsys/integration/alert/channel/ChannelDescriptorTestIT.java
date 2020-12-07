@@ -24,10 +24,10 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -72,6 +72,8 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     protected DefaultConfigurationAccessor configurationAccessor;
     @Autowired
     protected DefaultDescriptorAccessor descriptorAccessor;
+    @Autowired
+    protected DescriptorProcessor descriptorProcessor;
     @Autowired
     protected RegisteredDescriptorRepository registeredDescriptorRepository;
 
@@ -262,16 +264,20 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     @Test
     public void testDistributionValidate() {
         JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
-        FieldModel restModel = jobFieldModel.getFieldModels()
-                                   .stream()
-                                   .filter(fieldModel -> eventDestinationName.equals(fieldModel.getDescriptorName()))
-                                   .findFirst()
-                                   .orElseThrow(() -> new AlertRuntimeException("Missing distribution rest model"));
-        FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
-        jobNameField.setValue(getTestJobName());
-        Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
+
+        Map<String, ConfigField> configFields = new HashMap<>();
+        for (FieldModel singleFieldModelFromJob : jobFieldModel.getFieldModels()) {
+            List<ConfigField> fieldsFromModel = descriptorProcessor.retrieveUIConfigFields(singleFieldModelFromJob.getContext(), singleFieldModelFromJob.getDescriptorName());
+            for (ConfigField fieldFromModel : fieldsFromModel) {
+                String fieldKey = fieldFromModel.getKey();
+                if (!configFields.containsKey(fieldKey)) {
+                    configFields.put(fieldKey, fieldFromModel);
+                }
+            }
+        }
+
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
-        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);
+        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFields, jobFieldModel.getFieldModels());
         assertTrue(fieldErrors.isEmpty());
     }
 
