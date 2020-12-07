@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.email.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,12 +40,12 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionTestAction extends ChannelDistributionTestAction {
-    private final EmailActionHelper emailActionHelper;
+    private final EmailTestActionHelper emailTestActionHelper;
 
     @Autowired
-    public EmailDistributionTestAction(EmailChannel emailChannel, EmailActionHelper emailActionHelper) {
+    public EmailDistributionTestAction(EmailChannel emailChannel, EmailTestActionHelper emailTestActionHelper) {
         super(emailChannel);
-        this.emailActionHelper = emailActionHelper;
+        this.emailTestActionHelper = emailTestActionHelper;
     }
 
     @Override
@@ -60,16 +61,21 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
     }
 
     private DistributionJobModel creatUpdatedJobModelWithEmailAddresses(DistributionJobModel originalJobModel, @Nullable String destination) throws IntegrationException {
-        Set<String> updateEmailAddresses = emailActionHelper.createUpdatedEmailAddresses(originalJobModel, destination);
+        Set<String> updateEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(originalJobModel, destination);
         EmailJobDetailsModel originalEmailJobDetails = originalJobModel.getDistributionJobDetails().getAsEmailJobDetails();
 
         // For testing configuration, just use additional email addresses field
+        List<String> originalAdditionalEmailAddresses = originalEmailJobDetails.getAdditionalEmailAddresses();
+        List<String> additionalEmailAddressesToUse = new ArrayList<>(updateEmailAddresses.size() + originalAdditionalEmailAddresses.size());
+        additionalEmailAddressesToUse.addAll(originalAdditionalEmailAddresses);
+        additionalEmailAddressesToUse.addAll(updateEmailAddresses);
+
         EmailJobDetailsModel updatedEmailJobDetails = new EmailJobDetailsModel(
             originalEmailJobDetails.getSubjectLine(),
             false,
             true,
             originalEmailJobDetails.getAttachmentFileType(),
-            List.copyOf(updateEmailAddresses)
+            additionalEmailAddressesToUse
         );
         return DistributionJobModel.builder()
                    .enabled(originalJobModel.isEnabled())

@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
-import com.synopsys.integration.alert.channel.email.actions.EmailActionHelper;
 import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
+import com.synopsys.integration.alert.channel.email.actions.EmailTestActionHelper;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
@@ -75,7 +75,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Autowired
     private EmailGlobalTestAction emailGlobalTestAction;
     @Autowired
-    private EmailActionHelper emailActionHelper;
+    private EmailTestActionHelper emailTestActionHelper;
 
     @Override
     public Optional<ConfigurationModel> saveGlobalConfiguration() {
@@ -205,7 +205,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
         EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
 
-        return new EmailDistributionTestAction(emailChannel, emailActionHelper);
+        return new EmailDistributionTestAction(emailChannel, emailTestActionHelper);
     }
 
     @Test

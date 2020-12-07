@@ -43,11 +43,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailActionHelper {
+public class EmailTestActionHelper {
     private final EmailAddressHandler emailAddressHandler;
     private final ProviderDataAccessor providerDataAccessor;
 
-    public EmailActionHelper(EmailAddressHandler emailAddressHandler, ProviderDataAccessor providerDataAccessor) {
+    public EmailTestActionHelper(EmailAddressHandler emailAddressHandler, ProviderDataAccessor providerDataAccessor) {
         this.emailAddressHandler = emailAddressHandler;
         this.providerDataAccessor = providerDataAccessor;
     }
