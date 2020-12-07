@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.channel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,7 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -235,22 +236,21 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
             descriptorActionApi.testConfig(distributionJobModel, optionalChannelGlobalConfig.orElse(null), "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT", null);
         } catch (IntegrationException e) {
             e.printStackTrace();
-            Assert.fail();
+            fail();
         }
     }
 
     @Test
     public void testGlobalConfig() {
-        if (optionalChannelGlobalConfig.isPresent()) {
-            ConfigurationModel channelGlobalConfig = optionalChannelGlobalConfig.get();
-            FieldUtility fieldUtility = createValidGlobalFieldUtility(channelGlobalConfig);
-            try {
-                TestAction globalConfigTestAction = getGlobalTestAction();
-                globalConfigTestAction.testConfig(String.valueOf(channelGlobalConfig.getConfigurationId()), createTestConfigDestination(), fieldUtility);
-            } catch (IntegrationException e) {
-                e.printStackTrace();
-                Assert.fail();
-            }
+        assumeTrue(optionalChannelGlobalConfig.isPresent(), "Cannot test channel global configuration because none was provided to test");
+        ConfigurationModel channelGlobalConfig = optionalChannelGlobalConfig.get();
+        FieldUtility fieldUtility = createValidGlobalFieldUtility(channelGlobalConfig);
+        try {
+            TestAction globalConfigTestAction = getGlobalTestAction();
+            globalConfigTestAction.testConfig(String.valueOf(channelGlobalConfig.getConfigurationId()), createTestConfigDestination(), fieldUtility);
+        } catch (IntegrationException e) {
+            e.printStackTrace();
+            fail();
         }
     }
 
