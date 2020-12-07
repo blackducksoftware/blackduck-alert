@@ -43,7 +43,7 @@ public class ProvidersMissingTask extends StartupScheduledTask {
 
     @Override
     public String scheduleCronExpression() {
-        return ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION;
+        return ScheduledTask.EVERY_HOUR_CRON_EXPRESSION;
     }
 
     @Override

@@ -44,6 +44,7 @@ public abstract class ScheduledTask implements Runnable {
     public static final String STOP_SCHEDULE_EXPRESSION = "";
     //Spring Cron documentation  https://riptutorial.com/spring/example/21209/cron-expression
     public static final String EVERY_MINUTE_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
+    public static final String EVERY_HOUR_CRON_EXPRESSION = "0 * * * * *";
     public static final String ONCE_DAILY_CRON_EXPRESSION = "0 0 0 * * *";
     public static final Long EVERY_MINUTE_SECONDS = 60L;
 
