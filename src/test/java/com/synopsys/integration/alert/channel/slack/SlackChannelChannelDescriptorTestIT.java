@@ -47,15 +47,15 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     public void testSetup() {
         String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
-        blackDuckTimeoutField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
+        blackDuckTimeoutField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
 
         String blackDuckApiKey = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY;
         ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
-        blackDuckApiField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
+        blackDuckApiField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
 
         String blackDuckProviderUrlKey = BlackDuckDescriptor.KEY_BLACKDUCK_URL;
         ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
-        blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+        blackDuckProviderUrlField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         providerGlobalConfig = configurationAccessor
                                    .createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
@@ -69,8 +69,8 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Override
     public DistributionJobDetailsModel createDistributionJobDetails() {
         return new SlackJobDetailsModel(
-            properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
-            properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
+            testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
+            testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             getClass().getSimpleName()
         );
     }

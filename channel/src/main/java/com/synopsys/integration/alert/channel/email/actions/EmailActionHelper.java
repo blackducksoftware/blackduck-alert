@@ -66,7 +66,7 @@ public class EmailActionHelper {
 
         if (null != providerConfigId && !onlyAdditionalEmails) {
             Set<ProviderProject> providerProjects = retrieveProviderProjects(distributionJobModel, providerConfigId);
-            if (null != providerProjects) {
+            if (null != providerProjects && !providerProjects.isEmpty()) {
                 Set<String> providerEmailAddresses = addEmailAddresses(providerConfigId, providerProjects, distributionJobModel, emailJobDetails);
                 emailAddresses.addAll(providerEmailAddresses);
             }

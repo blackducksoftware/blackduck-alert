@@ -62,10 +62,12 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
     private DistributionJobModel creatUpdatedJobModelWithEmailAddresses(DistributionJobModel originalJobModel, @Nullable String destination) throws IntegrationException {
         Set<String> updateEmailAddresses = emailActionHelper.createUpdatedEmailAddresses(originalJobModel, destination);
         EmailJobDetailsModel originalEmailJobDetails = originalJobModel.getDistributionJobDetails().getAsEmailJobDetails();
+
+        // For testing configuration, just use additional email addresses field
         EmailJobDetailsModel updatedEmailJobDetails = new EmailJobDetailsModel(
             originalEmailJobDetails.getSubjectLine(),
-            originalEmailJobDetails.isProjectOwnerOnly(),
-            originalEmailJobDetails.isAdditionalEmailAddressesOnly(),
+            false,
+            true,
             originalEmailJobDetails.getAttachmentFileType(),
             List.copyOf(updateEmailAddresses)
         );

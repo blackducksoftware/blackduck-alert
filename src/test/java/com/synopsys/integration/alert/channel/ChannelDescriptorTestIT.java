@@ -63,7 +63,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     protected DistributionEvent channelEvent;
 
     protected ContentConverter contentConverter;
-    protected TestProperties properties;
+    protected TestProperties testProperties;
 
     @Autowired
     protected ProviderKey providerKey;
@@ -87,7 +87,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     public void init() throws Exception {
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        properties = new TestProperties();
+        testProperties = new TestProperties();
         providerGlobalConfig = saveProviderGlobalConfig();
         optionalChannelGlobalConfig = saveGlobalConfiguration();
         eventDestinationName = getEventDestinationName();
@@ -194,7 +194,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     public abstract ChannelDistributionTestAction getChannelDistributionTestAction();
 
-    private ConfigurationModel saveProviderGlobalConfig() {
+    protected ConfigurationModel saveProviderGlobalConfig() {
         return configurationAccessor.createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of());
     }
 
