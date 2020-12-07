@@ -21,16 +21,19 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class NotificationToDistributionEventConverterTestIT extends AlertIntegrationTest {
     @Autowired
+    private DescriptorMap descriptorMap;
+    @Autowired
     private ConfigurationAccessor configurationAccessor;
 
     @Test
     public void convertToEventsTest() throws Exception {
-        DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of(), List.of());
         NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor, descriptorMap);
         List<MessageContentGroup> messageContentGroups = new ArrayList<>();
         MessageContentGroup contentGroup1 = MessageContentGroup.singleton(createMessageContent("test"));
@@ -45,6 +48,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private DistributionJobModel createEmailConfig() {
         DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
+        jobBuilder.channelDescriptorName(new EmailChannelKey().getUniversalKey());
         EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
             "Alert unit test subject line",
             false,
@@ -58,6 +62,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private DistributionJobModel createSlackConfig() {
         DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
+        jobBuilder.channelDescriptorName(new SlackChannelKey().getUniversalKey());
         SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel("IT Test Slack Webhook", "IT Test Slack Channel Name", "IT Test Slack Channel Username");
         jobBuilder.distributionJobDetails(slackJobDetails);
         return jobBuilder.build();
