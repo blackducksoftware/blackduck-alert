@@ -159,8 +159,7 @@ public abstract class AbstractConfigResourceActions implements LongIdResourceAct
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        ValidationActionResponse response = testWithoutChecks(resource);
-        return ValidationActionResponse.createOKResponseWithContent(response);
+        return testWithoutChecks(resource);
     }
 
     @Override

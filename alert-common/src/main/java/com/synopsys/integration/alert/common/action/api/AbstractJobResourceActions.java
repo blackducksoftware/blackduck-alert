@@ -184,8 +184,7 @@ public abstract class AbstractJobResourceActions implements JobResourceActions, 
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        ValidationActionResponse response = testWithoutChecks(resource);
-        return ValidationActionResponse.createOKResponseWithContent(response);
+        return testWithoutChecks(resource);
     }
 
     @Override

@@ -10,7 +10,7 @@ class MessageFormatter extends Component {
     createDetailedMessage(messageBody) {
         const {
             header, title, message, componentLabel, componentLink
-        } = JSON.parse(messageBody);
+        } = messageBody;
 
         return (
             <div>
@@ -28,13 +28,12 @@ class MessageFormatter extends Component {
 
     createMessage() {
         try {
-            const parsedMessaged = JSON.parse(this.props.message);
-            const { isDetailed, message } = parsedMessaged;
-
+            const { isDetailed, message } = this.props;
+            const parsedMessaged = JSON.parse(message);
             if (isDetailed) {
-                return this.createDetailedMessage(message);
+                return this.createDetailedMessage(parsedMessaged);
             }
-            return message;
+            return parsedMessaged;
         } catch (e) {
             return this.props.message;
         }
@@ -53,11 +52,13 @@ class MessageFormatter extends Component {
 
 MessageFormatter.propTypes = {
     id: PropTypes.string,
+    isDetailed: PropTypes.bool,
     message: PropTypes.string
 };
 
 MessageFormatter.defaultProps = {
     id: 'messageFormatterId',
+    isDetailed: false,
     message: null
 };
 

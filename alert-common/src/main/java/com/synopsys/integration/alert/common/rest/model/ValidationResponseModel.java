@@ -40,9 +40,7 @@ public class ValidationResponseModel extends AlertSerializableModel {
     }
 
     public static ValidationResponseModel generalError(String message) {
-        ValidationResponseModel invalid = new ValidationResponseModel(message, Map.of());
-        invalid.hasErrors = true;
-        return invalid;
+        return new ValidationResponseModel(message, true);
     }
 
     public static ValidationResponseModel fromStatusCollection(String message, Collection<AlertFieldStatus> fieldStatuses) {
@@ -65,6 +63,12 @@ public class ValidationResponseModel extends AlertSerializableModel {
 
     public ValidationResponseModel() {
         // For serialization
+    }
+
+    protected ValidationResponseModel(String message, Boolean hasErrors) {
+        this.message = message;
+        this.errors = Map.of();
+        this.hasErrors = hasErrors;
     }
 
     public ValidationResponseModel(String message, Map<String, AlertFieldStatus> errors) {

@@ -28,7 +28,7 @@ class StatusMessage extends Component {
 
     render() {
         const { showError, showMessage } = this.state;
-        const { id, errorMessage, actionMessage } = this.props;
+        const { id, errorMessage, actionMessage, errorIsDetailed } = this.props;
         const onErrorClose = () => {
             this.setState({ showError: false });
         };
@@ -50,7 +50,7 @@ class StatusMessage extends Component {
                         onClose={onErrorClose}
                         variant="danger"
                     >
-                        <MessageFormatter message={errorMessage} />
+                        <MessageFormatter message={errorMessage} isDetailed={errorIsDetailed} />
                     </Alert>
                 )}
 
@@ -75,12 +75,14 @@ class StatusMessage extends Component {
 StatusMessage.propTypes = {
     id: PropTypes.string,
     errorMessage: PropTypes.string,
+    errorIsDetailed: PropTypes.bool,
     actionMessage: PropTypes.string
 };
 
 StatusMessage.defaultProps = {
     id: 'statusMessageId',
     errorMessage: null,
+    errorIsDetailed: false,
     actionMessage: null
 };
 

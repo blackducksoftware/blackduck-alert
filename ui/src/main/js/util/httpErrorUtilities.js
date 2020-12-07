@@ -6,6 +6,7 @@ export const MESSAGES = {
 export function createEmptyErrorObject() {
     return {
         message: '',
+        isDetailed: false,
         fieldErrors: {}
     };
 }
@@ -15,11 +16,13 @@ export function createErrorObject(errorResponse) {
         return createEmptyErrorObject();
     }
     const responseMessage = errorResponse.message;
+    const { isDetailed } = errorResponse;
     const responseErrors = errorResponse.errors;
     const message = responseMessage || '';
     const fieldErrors = responseErrors || {};
     return {
         fieldErrors,
+        isDetailed,
         message
     };
 }
@@ -42,6 +45,7 @@ export function combineErrorObjects(errorObject1, errorObject2) {
 
     return {
         message,
+        isDetailed: false,
         fieldErrors
     };
 }

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+    BootstrapTable,
+    DeleteButton,
+    InsertButton,
+    TableHeaderColumn
 } from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
@@ -255,7 +258,7 @@ class TableDisplay extends Component {
         const tablePopupRef = this.tablePopup.current;
         const { currentRowSelected, isInsertModal } = this.state;
         const {
-            id, modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage,
+            id, modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage, errorIsDetailed,
             actionMessage, hasFieldErrors, ignoredActionMessages
         } = this.props;
         // TODO have a better way of displaying action messages for the dialog versus the table. The ignoredActionMessages is to fix an issue with the provider table in a generic way.
@@ -300,6 +303,7 @@ class TableDisplay extends Component {
                         id={`${id}-status-message`}
                         actionMessage={popupActionMessage}
                         errorMessage={errorDialogMessage}
+                        errorIsDetailed={errorIsDetailed}
                     />
                 </PopUp>
             </div>
@@ -546,6 +550,7 @@ TableDisplay.propTypes = {
     tableRefresh: PropTypes.bool,
     hasFieldErrors: PropTypes.bool,
     errorDialogMessage: PropTypes.string,
+    errorIsDetailed: PropTypes.bool,
     actionMessage: PropTypes.string,
     nestedInAnotherModal: PropTypes.bool,
     enableEdit: PropTypes.bool,
@@ -585,6 +590,7 @@ TableDisplay.defaultProps = {
     tableRefresh: true,
     hasFieldErrors: false,
     errorDialogMessage: null,
+    errorIsDetailed: false,
     actionMessage: null,
     nestedInAnotherModal: false,
     enableEdit: true,
