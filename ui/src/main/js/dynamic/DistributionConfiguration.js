@@ -150,6 +150,7 @@ class DistributionConfiguration extends Component {
         });
     }
 
+    // FIXME this is never actually used
     handleTestSubmit(event) {
         event.preventDefault();
         const { testDistribution } = this.props;

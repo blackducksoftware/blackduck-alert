@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 
 @Deprecated
 public class JobConfigurationModelFieldExtractorUtils {
-
     /**
      * This will not properly assign {@link BlackDuckProjectDetailsModel}
      */

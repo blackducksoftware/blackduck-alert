@@ -362,7 +362,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                          .findFirst()
                                                                          .orElse(null);
 
-                    List<BlackDuckProjectDetailsModel> projectFilterDetails = resource.getConfiguredProviderProjects()
+                    List<BlackDuckProjectDetailsModel> projectFilterDetails = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of())
                                                                                   .stream()
                                                                                   .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                                   .collect(Collectors.toList());
