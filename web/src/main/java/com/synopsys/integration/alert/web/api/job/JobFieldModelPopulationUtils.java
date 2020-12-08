@@ -70,7 +70,7 @@ public final class JobFieldModelPopulationUtils {
         List<JobProviderProjectFieldModel> jobProviderProjects = Optional.ofNullable(jobModel.getProjectFilterDetails())
                                                                      .stream()
                                                                      .flatMap(List::stream)
-                                                                     .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref(), projectDetails.getProjectOwnerEmail().orElse(null)))
+                                                                     .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref()))
                                                                      .collect(Collectors.toList());
 
         String jobIdString = Optional.ofNullable(jobModel.getJobId())

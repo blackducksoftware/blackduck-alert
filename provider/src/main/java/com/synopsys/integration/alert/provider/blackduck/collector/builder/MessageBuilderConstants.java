@@ -35,9 +35,11 @@ public class MessageBuilderConstants {
     public static final String LABEL_LICENSE_LIMIT_MESSAGE = "License Limit Message";
     public static final String LABEL_VULNERABILITIES = "Vulnerabilities";
     public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
-    public static final String LABEL_REMEDIATION_FIX_PREVIOUS = "Remediation - Fixes Previous Vulnerabilities";
-    public static final String LABEL_REMEDIATION_CLEAN = "Remediation - Without Vulnerabilities";
-    public static final String LABEL_REMEDIATION_LATEST = "Remediation - Latest Version";
+    public static final String LABEL_REMEDIATION = "Remediation";
+    public static final String REMEDIATION_ERROR_VALUE = "Error retrieving the remediation information";
+    public static final String LABEL_REMEDIATION_FIX_PREVIOUS = LABEL_REMEDIATION + " - Fixes Previous Vulnerabilities";
+    public static final String LABEL_REMEDIATION_CLEAN = LABEL_REMEDIATION + " - Without Vulnerabilities";
+    public static final String LABEL_REMEDIATION_LATEST = LABEL_REMEDIATION + " - Latest Version";
     public static final String VULNERABILITY_CHECK_TEXT = "vuln";
     public static final String CATEGORY_TYPE_POLICY = "Policy";
     public static final String CATEGORY_TYPE_VULNERABILITY = "Vulnerability";
