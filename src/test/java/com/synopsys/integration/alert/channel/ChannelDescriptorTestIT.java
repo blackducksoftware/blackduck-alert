@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.channel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,7 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,29 +23,38 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.web.api.job.JobFieldModelPopulationUtils;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
@@ -53,43 +63,52 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     protected DistributionEvent channelEvent;
 
     protected ContentConverter contentConverter;
-    protected TestProperties properties;
+    protected TestProperties testProperties;
 
+    @Autowired
+    protected ProviderKey providerKey;
+    @Autowired
+    protected JobAccessorV2 jobAccessor;
     @Autowired
     protected DefaultConfigurationAccessor configurationAccessor;
     @Autowired
     protected DefaultDescriptorAccessor descriptorAccessor;
     @Autowired
+    protected DescriptorProcessor descriptorProcessor;
+    @Autowired
     protected RegisteredDescriptorRepository registeredDescriptorRepository;
 
-    protected ConfigurationModel provider_global;
-    protected Optional<ConfigurationModel> global_config;
-    protected ConfigurationModel distribution_config;
-    protected String destinationName;
+    protected ConfigurationModel providerGlobalConfig;
+    protected Optional<ConfigurationModel> optionalChannelGlobalConfig;
+    protected DistributionJobModel distributionJobModel;
+    protected String eventDestinationName;
 
     @BeforeEach
     public void init() throws Exception {
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        properties = new TestProperties();
-        global_config = saveGlobalConfiguration();
-        distribution_config = saveDistributionConfiguration();
+        testProperties = new TestProperties();
+        providerGlobalConfig = saveProviderGlobalConfig();
+        optionalChannelGlobalConfig = saveGlobalConfiguration();
+        eventDestinationName = getEventDestinationName();
         channelEvent = createChannelEvent();
-        destinationName = getDestinationName();
+        distributionJobModel = saveDistributionJob();
     }
 
     @AfterEach
     public void cleanupTest() {
-        if (null != global_config && global_config.isPresent()) {
-            configurationAccessor.deleteConfiguration(global_config.get());
+        optionalChannelGlobalConfig.ifPresent(configurationAccessor::deleteConfiguration);
+
+        if (distributionJobModel != null) {
+            try {
+                jobAccessor.deleteJob(distributionJobModel.getJobId());
+            } catch (AlertDatabaseConstraintException e) {
+                // TODO delete this try-catch when method signature no longer contains that exception
+            }
         }
 
-        if (distribution_config != null) {
-            configurationAccessor.deleteConfiguration(distribution_config);
-        }
-
-        if (provider_global != null) {
-            configurationAccessor.deleteConfiguration(provider_global);
+        if (providerGlobalConfig != null) {
+            configurationAccessor.deleteConfiguration(providerGlobalConfig);
         }
     }
 
@@ -107,51 +126,27 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
         return fieldModelMap;
     }
 
-    public FieldModel createValidFieldModel(ConfigurationModel configurationModel, ConfigContextEnum context) {
+    private FieldModel createValidFieldModel(ConfigurationModel configurationModel, ConfigContextEnum context) {
         Map<String, FieldValueModel> fieldValueMap = createFieldModelMap(configurationModel.getCopyOfFieldList());
         if (ConfigContextEnum.DISTRIBUTION == context) {
-            global_config.ifPresent(globalConfig -> fieldValueMap.putAll(createFieldModelMap(globalConfig.getCopyOfFieldList())));
+            optionalChannelGlobalConfig.ifPresent(globalConfig -> fieldValueMap.putAll(createFieldModelMap(globalConfig.getCopyOfFieldList())));
         }
-        FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), destinationName, context.name(), fieldValueMap);
+        FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), eventDestinationName, context.name(), fieldValueMap);
         return model;
     }
 
-    public FieldUtility createValidFieldAccessor(ConfigurationModel configurationModel) {
+    public FieldUtility createValidGlobalFieldUtility(ConfigurationModel configurationModel) {
         Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
         fieldMap.putAll(configurationModel.getCopyOfKeyToFieldMap());
-        global_config.ifPresent(globalConfig -> fieldMap.putAll(globalConfig.getCopyOfKeyToFieldMap()));
-        FieldUtility fieldUtility = new FieldUtility(fieldMap);
-        return fieldUtility;
+        optionalChannelGlobalConfig.ifPresent(globalConfig -> fieldMap.putAll(globalConfig.getCopyOfKeyToFieldMap()));
+        return new FieldUtility(fieldMap);
 
-    }
-
-    public FieldModel createInvalidDistributionFieldModel() {
-        Map<String, String> invalidValuesMap = new HashMap<>();
-        invalidValuesMap.putAll(createInvalidCommonDistributionFieldMap());
-        invalidValuesMap.putAll(createInvalidDistributionFieldMap());
-
-        Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
-        return model;
-    }
-
-    public Map<String, String> createValidCommonDistributionFieldMap() {
-        BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        SlackChannelKey slackChannelKey = new SlackChannelKey();
-        return Map.of(ChannelDistributionUIConfig.KEY_NAME, "name", ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.name(), ChannelDistributionUIConfig.KEY_CHANNEL_NAME, slackChannelKey.getUniversalKey(),
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, blackDuckProviderKey.getUniversalKey());
-    }
-
-    public Map<String, String> createInvalidCommonDistributionFieldMap() {
-        Map<String, String> invalidValuesMap = Map.of(ChannelDistributionUIConfig.KEY_NAME, "", ChannelDistributionUIConfig.KEY_FREQUENCY, "", ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "",
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "");
-        return invalidValuesMap;
     }
 
     public FieldModel createInvalidGlobalFieldModel() {
         Map<String, String> invalidValuesMap = createInvalidGlobalFieldMap();
         Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
-        FieldModel model = new FieldModel("1L", destinationName, ConfigContextEnum.GLOBAL.name(), fieldModelMap);
+        FieldModel model = new FieldModel("1L", eventDestinationName, ConfigContextEnum.GLOBAL.name(), fieldModelMap);
         return model;
     }
 
@@ -177,7 +172,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     public abstract Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception;
 
-    public abstract ConfigurationModel saveDistributionConfiguration() throws Exception;
+    public abstract DistributionJobDetailsModel createDistributionJobDetails();
 
     public abstract ChannelDescriptor getDescriptor();
 
@@ -189,13 +184,42 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     public abstract Map<String, String> createInvalidGlobalFieldMap();
 
-    public abstract Map<String, String> createInvalidDistributionFieldMap();
-
     public abstract String getTestJobName();
 
-    public abstract String getDestinationName();
+    public abstract String getEventDestinationName();
 
-    public abstract TestAction getTestAction();
+    public abstract TestAction getGlobalTestAction();
+
+    public abstract ChannelDistributionTestAction getChannelDistributionTestAction();
+
+    protected ConfigurationModel saveProviderGlobalConfig() {
+        return configurationAccessor.createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of());
+    }
+
+    private DistributionJobModel saveDistributionJob() {
+        DistributionJobRequestModel requestModel = new DistributionJobRequestModel(
+            true,
+            getClass().getSimpleName(),
+            FrequencyType.REAL_TIME,
+            ProcessingType.DEFAULT,
+            eventDestinationName,
+            providerGlobalConfig.getConfigurationId(),
+            false,
+            null,
+            List.of("VULNERABILITY"),
+            List.of(),
+            List.of(),
+            List.of(),
+            createDistributionJobDetails()
+        );
+
+        try {
+            return jobAccessor.createJob(requestModel);
+        } catch (AlertDatabaseConstraintException e) {
+            // TODO remove this when method signature is updated
+            throw new AlertRuntimeException(e);
+        }
+    }
 
     private Map<String, ConfigField> createFieldMap(ConfigContextEnum context) {
         return getDescriptor().getUIConfig(context)
@@ -205,54 +229,61 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testDistributionConfig() {
-        FieldUtility fieldUtility = createValidFieldAccessor(distribution_config);
-
-        FieldModel fieldModel = createTestConfigDestination();
         try {
-            TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(String.valueOf(distribution_config.getConfigurationId()), fieldModel, fieldUtility);
+            ChannelDistributionTestAction descriptorActionApi = getChannelDistributionTestAction();
+            descriptorActionApi.testConfig(distributionJobModel, optionalChannelGlobalConfig.orElse(null), "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT", null);
         } catch (IntegrationException e) {
             e.printStackTrace();
-            Assert.fail();
+            fail();
         }
     }
 
     @Test
     public void testGlobalConfig() {
-        ConfigurationModel configurationModel = global_config.orElse(null);
-        FieldUtility fieldUtility = createValidFieldAccessor(configurationModel);
+        assumeTrue(optionalChannelGlobalConfig.isPresent(), "Cannot test channel global configuration because none was provided to test");
+        ConfigurationModel channelGlobalConfig = optionalChannelGlobalConfig.get();
+        FieldUtility fieldUtility = createValidGlobalFieldUtility(channelGlobalConfig);
         try {
-            TestAction descriptorActionApi = getTestAction();
-            descriptorActionApi.testConfig(String.valueOf(configurationModel.getConfigurationId()), createTestConfigDestination(), fieldUtility);
+            TestAction globalConfigTestAction = getGlobalTestAction();
+            globalConfigTestAction.testConfig(String.valueOf(channelGlobalConfig.getConfigurationId()), createTestConfigDestination(), fieldUtility);
         } catch (IntegrationException e) {
             e.printStackTrace();
-            Assert.fail();
+            fail();
         }
     }
 
     @Test
     public void testCreateChannelEvent() throws Exception {
         DistributionEvent channelEvent = createChannelEvent();
-        assertEquals(String.valueOf(distribution_config.getConfigurationId()), channelEvent.getConfigId());
         assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(destinationName, channelEvent.getDestination());
+        assertEquals(eventDestinationName, channelEvent.getDestination());
     }
 
     @Test
     public void testDistributionValidate() {
-        FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
-        FieldValueModel jobNameField = restModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
-        jobNameField.setValue(getTestJobName());
-        Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
+        JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
+
+        Map<String, ConfigField> configFields = new HashMap<>();
+        for (FieldModel singleFieldModelFromJob : jobFieldModel.getFieldModels()) {
+            List<ConfigField> fieldsFromModel = descriptorProcessor.retrieveUIConfigFields(singleFieldModelFromJob.getContext(), singleFieldModelFromJob.getDescriptorName());
+            for (ConfigField fieldFromModel : fieldsFromModel) {
+                String fieldKey = fieldFromModel.getKey();
+                if (!configFields.containsKey(fieldKey)) {
+                    configFields.put(fieldKey, fieldFromModel);
+                }
+            }
+        }
+
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
-        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);
+        List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFields, jobFieldModel.getFieldModels());
         assertTrue(fieldErrors.isEmpty());
     }
 
     @Test
     public void testDistributionValidateWithFieldErrors() {
-        FieldModel restModel = createInvalidDistributionFieldModel();
-        Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
+        ConfigContextEnum context = ConfigContextEnum.DISTRIBUTION;
+        FieldModel restModel = new FieldModel(eventDestinationName, context.name(), Map.of());
+        Map<String, ConfigField> configFieldMap = createFieldMap(context);
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);
 
@@ -263,7 +294,9 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGlobalValidate() {
-        FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
+        ConfigurationModel globalChannelConfig = optionalChannelGlobalConfig
+                                                     .orElseThrow(() -> new AlertRuntimeException("Missing global channel config"));
+        FieldModel restModel = createValidFieldModel(globalChannelConfig, ConfigContextEnum.GLOBAL);
         Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, restModel);

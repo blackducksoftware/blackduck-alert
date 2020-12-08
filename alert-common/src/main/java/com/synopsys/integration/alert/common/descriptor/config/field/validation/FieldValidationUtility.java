@@ -57,10 +57,6 @@ public class FieldValidationUtility {
         return fieldStatuses;
     }
 
-    public List<AlertFieldStatus> validateConfigField(ConfigField fieldToValidate, FieldModel fieldModel, Map<String, ConfigField> fieldKeyToConfigField) {
-        return validateConfigField(fieldToValidate, List.of(fieldModel), fieldKeyToConfigField);
-    }
-
     public List<AlertFieldStatus> validateConfigField(ConfigField fieldToValidate, Collection<FieldModel> fieldModels, Map<String, ConfigField> fieldKeyToConfigField) {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         String key = fieldToValidate.getKey();

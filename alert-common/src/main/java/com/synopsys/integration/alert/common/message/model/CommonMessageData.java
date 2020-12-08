@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.message.model;
 
 import java.time.OffsetDateTime;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 public class CommonMessageData {
     private final Long notificationId;
@@ -33,9 +33,9 @@ public class CommonMessageData {
     private final String providerConfigName;
     private final String providerURL;
     private final OffsetDateTime providerCreationDate;
-    private final ConfigurationJobModel job;
+    private final DistributionJobModel job;
 
-    public CommonMessageData(Long notificationId, Long providerConfigId, String providerName, String providerConfigName, String providerURL, OffsetDateTime providerCreationDate, ConfigurationJobModel job) {
+    public CommonMessageData(Long notificationId, Long providerConfigId, String providerName, String providerConfigName, String providerURL, OffsetDateTime providerCreationDate, DistributionJobModel job) {
         this.notificationId = notificationId;
         this.providerConfigId = providerConfigId;
         this.providerName = providerName;
@@ -69,7 +69,7 @@ public class CommonMessageData {
         return providerCreationDate;
     }
 
-    public ConfigurationJobModel getJob() {
+    public DistributionJobModel getJob() {
         return job;
     }
 

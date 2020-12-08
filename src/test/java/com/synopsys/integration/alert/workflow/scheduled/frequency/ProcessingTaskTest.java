@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
@@ -31,7 +29,6 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ProcessingTaskTest {
-
     private List<AlertNotificationModel> modelList;
     private List<DistributionEvent> eventList;
 
@@ -40,7 +37,7 @@ public class ProcessingTaskTest {
         AlertNotificationModel model = new AlertNotificationModel(
             1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), null, new FieldUtility(Map.of())));
+        eventList = Arrays.asList(new DistributionEvent("FORMAT", RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), null, null, null));
     }
 
     public ProcessingTask createTask(TaskScheduler taskScheduler, DefaultNotificationAccessor notificationManager, NotificationProcessor notificationProcessor, ChannelEventManager eventManager,
@@ -158,4 +155,5 @@ public class ProcessingTaskTest {
         assertEquals(expected.getMonth(), actual.getMonth());
         assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());
     }
+
 }

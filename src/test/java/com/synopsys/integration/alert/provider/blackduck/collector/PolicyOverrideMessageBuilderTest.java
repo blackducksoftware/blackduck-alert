@@ -8,7 +8,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -20,8 +19,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckMessageBuilderTestConstants;
@@ -60,8 +58,7 @@ public class PolicyOverrideMessageBuilderTest {
         BlackDuckServicesFactory blackDuckServicesFactory = BlackDuckMessageBuilderTestHelper.mockServicesFactory();
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(BlackDuckMessageBuilderTestHelper.mockHttpClient());
 
-        ConfigurationJobModel job = Mockito.mock(ConfigurationJobModel.class);
-        Mockito.when(job.getFieldUtility()).thenReturn(new FieldUtility(Map.of()));
+        DistributionJobModel job = Mockito.mock(DistributionJobModel.class);
         CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), job);
         List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(commonMessageData, notification, blackDuckBucket, blackDuckServicesFactory);
         assertFalse(messageContentGroups.isEmpty());

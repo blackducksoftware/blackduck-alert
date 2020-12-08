@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 @Component
 public class ChannelEventManager extends EventManager {
@@ -52,7 +53,9 @@ public class ChannelEventManager extends EventManager {
         if (alertEvent instanceof DistributionEvent) {
             String destination = alertEvent.getDestination();
             DistributionEvent distributionEvent = (DistributionEvent) alertEvent;
-            UUID jobId = UUID.fromString(distributionEvent.getConfigId());
+            DistributionJobModel distributionJobModel = distributionEvent.getDistributionJobModel();
+
+            UUID jobId = distributionJobModel.getJobId();
             Map<Long, Long> notificationIdToAuditId = auditAccessor.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), jobId, distributionEvent.getContent());
             distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
             String jsonMessage = getContentConverter().getJsonString(distributionEvent);

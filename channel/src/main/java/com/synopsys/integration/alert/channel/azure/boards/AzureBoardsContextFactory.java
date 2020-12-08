@@ -30,6 +30,8 @@ import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBo
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 @Component
 public class AzureBoardsContextFactory {
@@ -44,6 +46,19 @@ public class AzureBoardsContextFactory {
 
     public AzureBoardsContext build(FieldUtility fieldUtility) {
         return new AzureBoardsContext(createAzureBoardsProperties(fieldUtility), createIssueConfig(fieldUtility));
+    }
+
+    public AzureBoardsContext fromConfig(ConfigurationModel azureBoardsGlobalConfig, AzureBoardsJobDetailsModel jobDetails) {
+        AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromGlobalConfig(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), azureBoardsGlobalConfig);
+
+        IssueConfig issueConfig = new IssueConfig();
+        issueConfig.setProjectName(jobDetails.getProjectNameOrId());
+        issueConfig.setIssueType(jobDetails.getWorkItemType());
+        issueConfig.setCommentOnIssues(jobDetails.isAddComments());
+        issueConfig.setResolveTransition(jobDetails.getWorkItemCompletedState());
+        issueConfig.setOpenTransition(jobDetails.getWorkItemReopenState());
+
+        return new AzureBoardsContext(azureBoardsProperties, issueConfig);
     }
 
     private IssueConfig createIssueConfig(FieldUtility fieldUtility) {
@@ -70,4 +85,5 @@ public class AzureBoardsContextFactory {
     private AzureBoardsProperties createAzureBoardsProperties(FieldUtility fieldUtility) {
         return AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldUtility);
     }
+
 }

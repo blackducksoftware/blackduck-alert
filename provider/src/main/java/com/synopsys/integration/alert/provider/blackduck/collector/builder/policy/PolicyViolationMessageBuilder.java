@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckIssueTrackerCallbackUtility;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
@@ -52,7 +52,6 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.model
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
@@ -105,8 +104,8 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
                 .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), projectVersionUrl);
             Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
-            FieldUtility fieldUtility = commonMessageData.getJob().getFieldUtility();
-            Collection<String> policyFilters = fieldUtility.getAllStrings(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER);
+            DistributionJobModel job = commonMessageData.getJob();
+            Collection<String> policyFilters = job.getPolicyFilterPolicyNames();
             List<ComponentItem> items = new LinkedList<>();
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();

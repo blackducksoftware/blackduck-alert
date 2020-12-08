@@ -24,12 +24,13 @@ package com.synopsys.integration.alert.test.common;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
+import org.springframework.core.io.ClassPathResource;
 
 public class ResourceLoader {
     public static final String DEFAULT_PROPERTIES_FILE_LOCATION = "test.properties";
@@ -48,9 +49,8 @@ public class ResourceLoader {
     @SuppressWarnings("resource")
     public Properties loadProperties(String resourceLocation) throws IOException {
         Properties properties = new Properties();
-
-        File propertiesFile = new File(RESOURCE_DIR, DEFAULT_PROPERTIES_FILE_LOCATION);
-        try (InputStream iStream = new FileInputStream(propertiesFile)) {
+        ClassPathResource classPathResource = new ClassPathResource(resourceLocation);
+        try (InputStream iStream = classPathResource.getInputStream()) {
             properties.load(iStream);
         }
         return properties;

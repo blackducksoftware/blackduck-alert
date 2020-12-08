@@ -9,25 +9,31 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
-import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class NotificationToDistributionEventConverterTestIT extends AlertIntegrationTest {
-
+    @Autowired
+    private DescriptorMap descriptorMap;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
 
     @Test
     public void convertToEventsTest() throws Exception {
-        DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of(), List.of());
         NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(configurationAccessor, descriptorMap);
         List<MessageContentGroup> messageContentGroups = new ArrayList<>();
         MessageContentGroup contentGroup1 = MessageContentGroup.singleton(createMessageContent("test"));
@@ -40,22 +46,48 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
         assertEquals(4, emailEvents.size() + slackEvents.size());
     }
 
-    private ConfigurationJobModel createEmailConfig() {
-        List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
-        fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
-        return MockConfigurationModelFactory.createDistributionJob(fields);
+    private DistributionJobModel createEmailConfig() {
+        DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
+        jobBuilder.channelDescriptorName(new EmailChannelKey().getUniversalKey());
+        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
+            "Alert unit test subject line",
+            false,
+            true,
+            null,
+            List.of("noreply@blackducksoftware.com")
+        );
+        jobBuilder.distributionJobDetails(emailJobDetailsModel);
+        return jobBuilder.build();
     }
 
-    private ConfigurationJobModel createSlackConfig() {
-        List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackDistributionFields();
-        fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
-        return MockConfigurationModelFactory.createDistributionJob(fields);
+    private DistributionJobModel createSlackConfig() {
+        DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
+        jobBuilder.channelDescriptorName(new SlackChannelKey().getUniversalKey());
+        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel("IT Test Slack Webhook", "IT Test Slack Channel Name", "IT Test Slack Channel Username");
+        jobBuilder.distributionJobDetails(slackJobDetails);
+        return jobBuilder.build();
     }
 
     private ProviderMessageContent createMessageContent(String value) throws AlertException {
         return new ProviderMessageContent.Builder()
                    .applyProvider("testProvider", 1L, "testProviderConfig")
                    .applyTopic("Name", value).build();
+    }
+
+    private DistributionJobModelBuilder createJobBuilderWithDefaultBlackDuckFields() {
+        List<BlackDuckProjectDetailsModel> projectDetails = List.of(
+            new BlackDuckProjectDetailsModel("TestProject1", "TestProject1_href"),
+            new BlackDuckProjectDetailsModel("TestProject2", "TestProject2_href")
+        );
+
+        return DistributionJobModel.builder()
+                   .name("Mock Job")
+                   .enabled(true)
+                   .notificationTypes(List.of(NotificationType.VULNERABILITY.toString(), NotificationType.RULE_VIOLATION.toString()))
+                   .processingType(ProcessingType.DEFAULT)
+                   .filterByProject(true)
+                   .projectNamePattern(".*UnitTest.*")
+                   .projectFilterDetails(projectDetails);
     }
 
 }

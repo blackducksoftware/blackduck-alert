@@ -53,6 +53,7 @@ public class DistributionJobModelBuilder {
     private DistributionJobDetailsModel distributionJobDetails;
 
     public DistributionJobModel build() {
+        // TODO validate required fields are present
         return new DistributionJobModel(
             jobId,
             enabled,

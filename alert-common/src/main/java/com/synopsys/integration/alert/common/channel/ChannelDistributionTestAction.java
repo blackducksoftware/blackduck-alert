@@ -22,45 +22,38 @@
  */
 package com.synopsys.integration.alert.common.channel;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.Optional;
 
-import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.RestConstants;
 
-public abstract class ChannelDistributionTestAction extends TestAction {
+public abstract class ChannelDistributionTestAction {
     private final DistributionChannel distributionChannel;
 
     public ChannelDistributionTestAction(DistributionChannel distributionChannel) {
         this.distributionChannel = distributionChannel;
     }
 
-    @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility fieldUtility) throws IntegrationException {
-        DistributionEvent event = createChannelTestEvent(jobId, fieldUtility);
-        return distributionChannel.sendMessage(event);
+    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig) throws IntegrationException {
+        return testConfig(testJobModel, channelGlobalConfig, null, null, null);
     }
 
-    public DistributionEvent createChannelTestEvent(String configId, FieldUtility fieldUtility) throws AlertException {
-        ProviderMessageContent messageContent = createTestNotificationContent(fieldUtility, ItemOperation.ADD, UUID.randomUUID().toString());
-
-        String channelName = fieldUtility.getStringOrEmpty(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        Long providerConfigId = fieldUtility.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
-        String formatType = fieldUtility.getStringOrEmpty(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE);
-
-        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerConfigId, formatType, MessageContentGroup.singleton(messageContent), fieldUtility);
+    public MessageResult testConfig(
+        DistributionJobModel testJobModel,
+        @Nullable ConfigurationModel channelGlobalConfig,
+        @Nullable String customTopic,
+        @Nullable String customMessage,
+        @Nullable String destination
+    ) throws IntegrationException {
+        String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
+        String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
+        DistributionEvent channelTestEvent = ChannelDistributionTestEventCreationUtils.createChannelTestEvent(topicString, messageString, testJobModel, channelGlobalConfig);
+        return distributionChannel.sendMessage(channelTestEvent);
     }
 
     public DistributionChannel getDistributionChannel() {

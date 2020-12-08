@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.actions;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +35,10 @@ import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMe
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -59,10 +61,18 @@ public class AzureBoardsDistributionTestAction extends ChannelDistributionTestAc
     }
 
     @Override
-    public MessageResult testConfig(String jobId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
-        AzureBoardsContext azureBoardsContext = azureBoardsContextFactory.build(registeredFieldValues);
-        AzureBoardsTestIssueRequestCreator issueCreator = new AzureBoardsTestIssueRequestCreator(registeredFieldValues, azureBoardsRequestCreator, azureBoardsMessageParser);
+    public MessageResult testConfig(
+        DistributionJobModel testJobModel,
+        @Nullable ConfigurationModel channelGlobalConfig,
+        @Nullable String customTopic,
+        @Nullable String customMessage,
+        @Nullable String destination
+    ) throws IntegrationException {
+        DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
+        AzureBoardsContext azureBoardsContext = azureBoardsContextFactory.fromConfig(channelGlobalConfig, distributionJobDetails.getAsAzureBoardsJobDetails());
+        AzureBoardsTestIssueRequestCreator issueCreator = new AzureBoardsTestIssueRequestCreator(azureBoardsRequestCreator, azureBoardsMessageParser, customTopic, customMessage);
         AzureBoardsCreateIssueTestAction azureBoardsCreateIssueTestAction = new AzureBoardsCreateIssueTestAction((AzureBoardsChannel) getDistributionChannel(), gson, issueCreator, proxyManager);
         return azureBoardsCreateIssueTestAction.testConfig(azureBoardsContext);
     }
+
 }

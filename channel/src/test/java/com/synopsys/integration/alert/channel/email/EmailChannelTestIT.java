@@ -4,8 +4,10 @@ import static com.synopsys.integration.alert.test.common.FieldModelUtils.addConf
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,20 +16,22 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.AbstractChannelTest;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
@@ -55,9 +59,6 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         String subjectLine = "Integration test subject line";
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addConfigurationFieldToMap(fieldModels, EmailDescriptor.KEY_EMAIL_ADDRESSES, emailAddresses);
-        addConfigurationFieldToMap(fieldModels, EmailDescriptor.KEY_SUBJECT_LINE, subjectLine);
-
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
@@ -66,9 +67,11 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
         addConfigurationFieldToMap(fieldModels, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
-        FieldUtility fieldUtility = new FieldUtility(fieldModels);
+        ConfigurationModel emailGlobalConfig = new ConfigurationModel(-1L, -1L, null, null, ConfigContextEnum.DISTRIBUTION, fieldModels);
+        DistributionJobModel testJobModel = createTestJobModel(subjectLine, emailAddresses);
+
         DistributionEvent event = new DistributionEvent(
-            "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), fieldUtility);
+            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), testJobModel, emailGlobalConfig);
         emailChannel.sendAuditedMessage(event);
         Mockito.verify(auditAccessor).setAuditEntrySuccess(Mockito.any());
     }
@@ -85,15 +88,26 @@ public class EmailChannelTestIT extends AbstractChannelTest {
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
         try {
-            Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-            FieldUtility fieldUtility = new FieldUtility(fieldMap);
-            DistributionEvent event = new DistributionEvent(
-                "1L", CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), fieldUtility);
+            DistributionJobModel testJobModel = createTestJobModel("Null Global Test", List.of());
+            DistributionEvent event = new DistributionEvent(CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), testJobModel, null);
             emailChannel.sendMessage(event);
-            fail();
+            fail("Expected exception to be thrown for null global config");
         } catch (IntegrationException e) {
             assertEquals("ERROR: Missing global config.", e.getMessage());
         }
+    }
+
+    private DistributionJobModel createTestJobModel(String subjectLine, Collection<String> emailAddresses) {
+        EmailJobDetailsModel jobDetailsModel = new EmailJobDetailsModel(
+            subjectLine,
+            false,
+            true,
+            null,
+            List.copyOf(emailAddresses)
+        );
+        return DistributionJobModel.builder()
+                   .distributionJobDetails(jobDetailsModel)
+                   .build();
     }
 
 }

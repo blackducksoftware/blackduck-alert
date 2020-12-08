@@ -38,13 +38,12 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -84,8 +83,8 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
                 .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), projectVersionUrl);
             Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
-            FieldUtility fieldUtility = commonMessageData.getJob().getFieldUtility();
-            Collection<String> policyFilter = fieldUtility.getAllStrings(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER);
+            DistributionJobModel job = commonMessageData.getJob();
+            Collection<String> policyFilter = job.getPolicyFilterPolicyNames();
             List<ComponentItem> items = new LinkedList<>();
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
@@ -112,4 +111,5 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
             ItemOperation.DELETE, componentVersionStatus.getBomComponent(), List.of(), policyFilter));
         return componentItems;
     }
+
 }

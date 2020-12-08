@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.azure.boards;
 import java.util.Optional;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +53,24 @@ import com.synopsys.integration.alert.common.util.UrlUtils;
 //TODO: This is a near copy of JiraTestIssueRequestCreator, we should abstract out this class
 public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreator {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsTestIssueRequestCreator.class);
-    private final FieldUtility fieldUtility;
+
+    private final String customTopic;
+    private final String customMessage;
     private final AzureBoardsRequestCreator azureBoardsRequestCreator;
     private final AzureBoardsMessageParser azureBoardsMessageParser;
 
     public AzureBoardsTestIssueRequestCreator(FieldUtility fieldUtility, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser) {
-        this.fieldUtility = fieldUtility;
+        this(
+            azureBoardsRequestCreator,
+            azureBoardsMessageParser,
+            fieldUtility.getString(TestAction.KEY_CUSTOM_TOPIC).orElse(null),
+            fieldUtility.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse(null)
+        );
+    }
+
+    public AzureBoardsTestIssueRequestCreator(AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser, @Nullable String customTopic, @Nullable String customMessage) {
+        this.customTopic = Optional.ofNullable(customTopic).orElse("Alert Test Message");
+        this.customMessage = Optional.ofNullable(customMessage).orElse("Test Message Content");
         this.azureBoardsRequestCreator = azureBoardsRequestCreator;
         this.azureBoardsMessageParser = azureBoardsMessageParser;
     }
@@ -65,9 +78,7 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
     @Override
     public Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId) {
         try {
-            String topic = fieldUtility.getString(TestAction.KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
-            String customMessage = fieldUtility.getString(TestAction.KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
-            ProviderMessageContent providerMessageContent = createTestNotificationContent(ItemOperation.ADD, messageId, topic, customMessage);
+            ProviderMessageContent providerMessageContent = createTestNotificationContent(ItemOperation.ADD, messageId, customTopic, customMessage);
             ComponentItem arbitraryItem = providerMessageContent.getComponentItems().stream()
                                               .findAny()
                                               .orElseThrow(() -> new AlertException("No actionable component items were found. Cannot create test message content."));

@@ -24,30 +24,43 @@ package com.synopsys.integration.alert.common.event;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 public class DistributionEvent extends ContentEvent {
-    private static final long serialVersionUID = -2067819359358348281L;
-    private final FieldUtility fieldUtility;
-    private final String configId;
+    private static final long serialVersionUID = -7858733753649257748L;
+
+    private final DistributionJobModel distributionJobModel;
+    private final ConfigurationModel channelGlobalConfig;
     private Map<Long, Long> notificationIdToAuditId;
 
-    public DistributionEvent(String configId, String destination, String createdAt, Long providerConfigId, String formatType, MessageContentGroup contentGroup, FieldUtility fieldUtility) {
+    public DistributionEvent(
+        String destination,
+        String createdAt,
+        Long providerConfigId,
+        String formatType,
+        MessageContentGroup contentGroup,
+        DistributionJobModel distributionJobModel,
+        @Nullable ConfigurationModel channelGlobalConfig
+    ) {
         super(destination, createdAt, providerConfigId, formatType, contentGroup);
-        this.fieldUtility = fieldUtility;
-        this.configId = configId;
+        this.distributionJobModel = distributionJobModel;
+        this.channelGlobalConfig = channelGlobalConfig;
     }
 
-    public FieldUtility getFieldUtility() {
-        return fieldUtility;
+    public DistributionJobModel getDistributionJobModel() {
+        return distributionJobModel;
     }
 
-    public String getConfigId() {
-        return configId;
+    public Optional<ConfigurationModel> getChannelGlobalConfig() {
+        return Optional.ofNullable(channelGlobalConfig);
     }
 
     public Map<Long, Long> getNotificationIdToAuditId() {

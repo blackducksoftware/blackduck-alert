@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +41,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -60,10 +63,12 @@ public class SlackChannelEventParser {
     }
 
     public List<Request> createRequests(DistributionEvent event) throws IntegrationException {
-        FieldUtility fields = event.getFieldUtility();
+        DistributionJobModel distributionJobModel = event.getDistributionJobModel();
+        DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
+        SlackJobDetailsModel slackJobDetails = distributionJobDetails.getAsSlackJobDetails();
 
-        String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElse("");
-        String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse("");
+        String webhook = slackJobDetails.getWebhook();
+        String channelName = slackJobDetails.getChannelName();
 
         List<AlertFieldStatus> fieldErrors = new ArrayList<>();
         if (StringUtils.isBlank(webhook)) {
@@ -76,7 +81,9 @@ public class SlackChannelEventParser {
             throw new AlertFieldException(fieldErrors);
         }
 
-        String channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME).orElse(SLACK_DEFAULT_USERNAME);
+        String channelUsername = Optional.ofNullable(slackJobDetails.getChannelUsername())
+                                     .filter(StringUtils::isNotBlank)
+                                     .orElse(SLACK_DEFAULT_USERNAME);
         MessageContentGroup eventContent = event.getContent();
         if (!eventContent.isEmpty()) {
             Map<String, String> requestHeaders = new HashMap<>();
@@ -108,4 +115,5 @@ public class SlackChannelEventParser {
 
         return json.toString();
     }
+
 }

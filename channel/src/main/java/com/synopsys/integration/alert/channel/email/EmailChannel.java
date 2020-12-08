@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.channel.email;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
@@ -48,11 +46,15 @@ import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -80,23 +82,27 @@ public class EmailChannel extends NamedDistributionChannel {
 
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
-        FieldUtility fieldUtility = event.getFieldUtility();
+        ConfigurationModel globalConfig = event.getChannelGlobalConfig()
+                                              .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing global config."));
+        DistributionJobModel distributionJobModel = event.getDistributionJobModel();
+        EmailJobDetailsModel emailJobDetails = distributionJobModel.getDistributionJobDetails().getAsEmailJobDetails();
 
-        Optional<String> host = fieldUtility.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        Optional<String> from = fieldUtility.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+        Optional<String> host = globalConfig.getField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey())
+                                    .flatMap(ConfigurationFieldModel::getFieldValue);
+        Optional<String> from = globalConfig.getField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())
+                                    .flatMap(ConfigurationFieldModel::getFieldValue);
 
         if (host.isEmpty() || from.isEmpty()) {
             throw new AlertException("ERROR: Missing global config.");
         }
-        FieldUtility updatedFieldUtility = emailAddressHandler.updateEmailAddresses(event.getProviderConfigId(), event.getContent(), fieldUtility);
 
-        Set<String> emailAddresses = new HashSet<>(updatedFieldUtility.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES));
-        EmailProperties emailProperties = new EmailProperties(updatedFieldUtility);
-        String subjectLine = fieldUtility.getStringOrEmpty(EmailDescriptor.KEY_SUBJECT_LINE);
-        EmailAttachmentFormat attachmentFormat = fieldUtility.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
+        Set<String> emailAddresses = emailAddressHandler.getUpdatedEmailAddresses(event.getProviderConfigId(), event.getContent(), distributionJobModel, emailJobDetails);
+        EmailProperties emailProperties = new EmailProperties(globalConfig);
+        String subjectLine = emailJobDetails.getSubjectLine();
+        EmailAttachmentFormat attachmentFormat = Optional.ofNullable(emailJobDetails.getAttachmentFileType())
                                                      .map(EmailAttachmentFormat::getValueSafely)
                                                      .orElse(EmailAttachmentFormat.NONE);
-        sendMessage(emailProperties, emailAddresses, subjectLine, event.getFormatType(), attachmentFormat, event.getContent());
+        sendMessage(emailProperties, emailAddresses, subjectLine, event.getProcessingType(), attachmentFormat, event.getContent());
     }
 
     public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContent) throws IntegrationException {
