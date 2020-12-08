@@ -332,7 +332,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
                          .orElse(null);
 
         try {
-
             Collection<FieldModel> otherJobModels = new LinkedList<>();
             FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(resource, otherJobModels);
 

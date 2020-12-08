@@ -290,16 +290,17 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
+        Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
-        assertTrue(validationActionResponse.isSuccessful());
+        assertTrue(validationActionResponse.isSuccessful(), "Expected response to be successful");
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
-        assertTrue(validationActionResponse.hasContent());
+        assertTrue(validationActionResponse.hasContent(), "Expected response to have content");
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
-        assertTrue(validationResponseModel.hasErrors());
+        assertTrue(validationResponseModel.hasErrors(), "Expected response to ");
     }
 
     @Test
@@ -401,12 +402,13 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
+        Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithIntegrationRestException()));
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
-        assertTrue(validationActionResponse.isSuccessful());
+        assertTrue(validationActionResponse.isSuccessful(), "Expected response to be successful");
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
