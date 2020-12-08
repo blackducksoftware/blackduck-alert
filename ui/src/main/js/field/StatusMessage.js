@@ -50,7 +50,7 @@ class StatusMessage extends Component {
                         onClose={onErrorClose}
                         variant="danger"
                     >
-                        <MessageFormatter message={errorMessage} isDetailed={errorIsDetailed} />
+                        <MessageFormatter message={errorMessage} errorIsDetailed={errorIsDetailed} />
                     </Alert>
                 )}
 

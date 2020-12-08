@@ -28,9 +28,9 @@ class MessageFormatter extends Component {
 
     createMessage() {
         try {
-            const { isDetailed, message } = this.props;
+            const { errorIsDetailed, message } = this.props;
             const parsedMessaged = JSON.parse(message);
-            if (isDetailed) {
+            if (errorIsDetailed) {
                 return this.createDetailedMessage(parsedMessaged);
             }
             return parsedMessaged;
@@ -52,13 +52,13 @@ class MessageFormatter extends Component {
 
 MessageFormatter.propTypes = {
     id: PropTypes.string,
-    isDetailed: PropTypes.bool,
+    errorIsDetailed: PropTypes.bool,
     message: PropTypes.string
 };
 
 MessageFormatter.defaultProps = {
     id: 'messageFormatterId',
-    isDetailed: false,
+    errorIsDetailed: false,
     message: null
 };
 
