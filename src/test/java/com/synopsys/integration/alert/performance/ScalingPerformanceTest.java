@@ -68,7 +68,7 @@ public class ScalingPerformanceTest {
 
     @Test
     @Ignore
-    //@Disabled
+    //@Disabled //TODO remove this when testing
     public void testAlertPerformance() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));

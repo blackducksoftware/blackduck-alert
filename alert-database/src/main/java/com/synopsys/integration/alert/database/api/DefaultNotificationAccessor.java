@@ -202,15 +202,14 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                    .map(this::toModel);
     }
 
+    //TODO this needs unit tests
     @Override
-    public void processNotifications(List<AlertNotificationModel> notifications) {
+    public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
         List<NotificationEntity> notificationEntities = notifications.stream()
                                                             .map(this::fromModel)
                                                             .collect(Collectors.toList());
         notificationEntities.forEach(NotificationEntity::setProcessed);
         notificationContentRepository.saveAll(notificationEntities);
-        //TODO: We wont need this because this class is @Transactional
-        //notificationContentRepository.flush();
     }
 
     private void deleteAuditEntries(Long notificationId) {

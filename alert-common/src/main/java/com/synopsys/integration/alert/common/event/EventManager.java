@@ -24,15 +24,18 @@ package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 
 @Component
 public class EventManager {
+    private final Logger logger = LoggerFactory.getLogger(getClass()); //TODO clean up this log message
+
     private final JmsTemplate jmsTemplate;
     private final ContentConverter contentConverter;
 
@@ -42,15 +45,16 @@ public class EventManager {
         this.jmsTemplate = jmsTemplate;
     }
 
-    @Transactional
+    //@Transactional
     public void sendEvents(List<? extends AlertEvent> eventList) {
         if (!eventList.isEmpty()) {
             eventList.forEach(this::sendEvent);
         }
     }
 
-    @Transactional
+    //@Transactional
     public void sendEvent(AlertEvent event) {
+        logger.info("====== EventManager: Sending Event: {} ======"); //TODO clean up this log message
         String destination = event.getDestination();
         String jsonMessage = contentConverter.getJsonString(event);
         jmsTemplate.convertAndSend(destination, jsonMessage);

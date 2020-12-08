@@ -64,6 +64,8 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
             logger.debug("Event {}", event);
             logger.info("Processing event for notifications.");
 
+            int numPagesProcessed = 0;
+
             /*
             //pseudo code
             //look for the first 10 notifications
@@ -81,17 +83,20 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
             Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
             logger.info("====== Initial total pages before loop: {} ======", pageOfAlertNotificationModels.getTotalPages());
             //get content, if not null and not empty, then go into the loop
-            while (pageOfAlertNotificationModels.getTotalPages() > 0) {
+            //Idea: MAX_NUMBER_OF_PAGES, set to "1000" upper bound so that this loop is not stuck forever
+            while (pageOfAlertNotificationModels.getTotalPages() > 0 && numPagesProcessed < 1000) {
                 List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getContent();
                 logger.info("====== SIZE OF NOTIFICATIONS ====== Sending {} notifications.", notifications.size()); //TODO clean up this log message
                 List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
                 logger.info("====== SENDING DISTRIBUTION EVENTS ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message
-                eventManager.sendEvents(distributionEvents);
+                eventManager.sendEvents(distributionEvents); //TODO: investigate this, does sendEvents need to be @Transactional
+                //TODO: Put a sleep?
                 logger.info("====== FINISHED SENDING EVENTS ======"); //TODO clean up this log message
-                notificationAccessor.processNotifications(notifications);
+                notificationAccessor.setNotificationsProcessed(notifications);
                 logger.info("====== Setting Notifications to processed =====");
                 pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
                 logger.info("====== New total pages: {} ======", pageOfAlertNotificationModels.getTotalPages());
+                numPagesProcessed++;
             }
             logger.info("===== Exiting While loop, no pages should remain =====");
             // ###############

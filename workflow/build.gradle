@@ -14,4 +14,6 @@ dependencies {
     implementation 'com.synopsys.integration:integration-common'
     //FIXME We don't want this dependency, we want to abstract it out
     implementation 'org.springframework.data:spring-data-jpa'
+
+    testImplementation 'org.mockito:mockito-core'
 }

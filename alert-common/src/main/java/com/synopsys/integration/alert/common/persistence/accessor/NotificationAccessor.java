@@ -46,7 +46,7 @@ public interface NotificationAccessor {
 
     Page<AlertNotificationModel> findNotificationsNotProcessed();
 
-    void processNotifications(List<AlertNotificationModel> notifications);
+    void setNotificationsProcessed(List<AlertNotificationModel> notifications);
 
     void deleteNotificationList(List<AlertNotificationModel> notifications);
 

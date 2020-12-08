@@ -102,6 +102,7 @@ public class NotificationProcessor {
                 events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
             }
         }
+        logger.info("====== Notification Processor, FINISHED!"); //TODO delete this line
         return events;
     }
 
