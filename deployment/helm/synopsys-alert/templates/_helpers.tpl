@@ -3,6 +3,15 @@
 _helpers.tpl - create helper functions for templating here...
 */}}
 
+{{/*
+Custom Node Port
+*/}}
+{{- define "customNodePort" -}}
+{{- if and .Values.exposedNodePort (eq .Values.exposedServiceType "NodePort") }}
+PUBLIC_ALERT_WEBSERVER_PORT: {{ quote .Values.exposedNodePort }}
+{{- end -}}
+{{- end -}}
+
 {{- define "alert.encryptionSecretEnvirons" -}}
 {{- if not (hasKey .Values.secretEnvirons "ALERT_ENCRYPTION_PASSWORD") }}
 ALERT_ENCRYPTION_PASSWORD: {{ required "must provide --set alertEncryptionPassword=\"\"" .Values.alertEncryptionPassword | b64enc }}
