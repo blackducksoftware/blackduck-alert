@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +49,7 @@ public class JobConfigurationModelFieldExtractorUtils {
      * This will not properly assign {@link BlackDuckProjectDetailsModel}
      */
     public static DistributionJobModel convertToDistributionJobModel(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
-        return convertToDistributionJobModel(jobId, configuredFieldsMap, createdAt, lastUpdated, null);
+        return convertToDistributionJobModel(jobId, configuredFieldsMap, createdAt, lastUpdated, List.of());
     }
 
     /**
@@ -61,7 +60,7 @@ public class JobConfigurationModelFieldExtractorUtils {
         Map<String, ConfigurationFieldModel> configuredFieldsMap,
         OffsetDateTime createdAt,
         @Nullable OffsetDateTime lastUpdated,
-        @Nullable List<BlackDuckProjectDetailsModel> projectFilterDetails
+        List<BlackDuckProjectDetailsModel> projectFilterDetails
     ) {
         String channelDescriptorName = extractFieldValueOrEmptyString("channel.common.channel.name", configuredFieldsMap);
         DistributionJobModelBuilder builder = DistributionJobModel.builder()
@@ -79,15 +78,8 @@ public class JobConfigurationModelFieldExtractorUtils {
                                                   .projectNamePattern(extractFieldValue("channel.common.project.name.pattern", configuredFieldsMap).orElse(null))
                                                   .notificationTypes(extractFieldValues("provider.distribution.notification.types", configuredFieldsMap))
                                                   .policyFilterPolicyNames(extractFieldValues("blackduck.policy.notification.filter", configuredFieldsMap))
-                                                  .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap));
-
-        List<BlackDuckProjectDetailsModel> blackDuckProjectDetails = Optional.ofNullable(projectFilterDetails)
-                                                                         .orElseGet(() -> extractFieldValues("channel.common.configured.project", configuredFieldsMap)
-                                                                                              .stream()
-                                                                                              .map(projectName -> new BlackDuckProjectDetailsModel(projectName, projectName))
-                                                                                              .collect(Collectors.toList())
-                                                                         );
-        builder.projectFilterDetails(blackDuckProjectDetails);
+                                                  .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap))
+                                                  .projectFilterDetails(projectFilterDetails);
 
         DistributionJobDetailsModel jobDetails = null;
         if ("channel_azure_boards".equals(channelDescriptorName)) {

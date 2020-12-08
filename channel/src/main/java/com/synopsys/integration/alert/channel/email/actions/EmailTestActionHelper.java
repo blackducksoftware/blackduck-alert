@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -66,7 +67,7 @@ public class EmailTestActionHelper {
 
         if (null != providerConfigId && !onlyAdditionalEmails) {
             Set<ProviderProject> providerProjects = retrieveProviderProjects(distributionJobModel, providerConfigId);
-            if (null != providerProjects && !providerProjects.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(providerProjects)) {
                 Set<String> providerEmailAddresses = addEmailAddresses(providerConfigId, providerProjects, distributionJobModel, emailJobDetails);
                 emailAddresses.addAll(providerEmailAddresses);
             }
@@ -88,7 +89,7 @@ public class EmailTestActionHelper {
             String projectNamePattern = distributionJobModel.getProjectNamePattern().orElse("");
             return providerProjects
                        .stream()
-                       .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
+                       .filter(providerProject -> doesProjectMatchConfiguration(providerProject.getName(), projectNamePattern, configuredProjects))
                        .collect(Collectors.toSet());
         }
         return new HashSet<>(providerProjects);

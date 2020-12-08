@@ -97,9 +97,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanupTest() {
-        if (null != optionalChannelGlobalConfig && optionalChannelGlobalConfig.isPresent()) {
-            configurationAccessor.deleteConfiguration(optionalChannelGlobalConfig.get());
-        }
+        optionalChannelGlobalConfig.ifPresent(configurationAccessor::deleteConfiguration);
 
         if (distributionJobModel != null) {
             try {
