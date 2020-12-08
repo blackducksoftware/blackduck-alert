@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
-@JsonAdapter(DistributionJobDetailsModelDeserializer.class)
+@JsonAdapter(DistributionJobDetailsModelJsonAdapter.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
     private final String channelDescriptorName;
 

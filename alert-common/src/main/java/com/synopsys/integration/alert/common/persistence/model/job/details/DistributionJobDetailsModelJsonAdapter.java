@@ -30,8 +30,29 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
-public class DistributionJobDetailsModelDeserializer implements JsonDeserializer<DistributionJobDetailsModel> {
+public class DistributionJobDetailsModelJsonAdapter implements JsonSerializer<DistributionJobDetailsModel>, JsonDeserializer<DistributionJobDetailsModel> {
+    @Override
+    public JsonElement serialize(DistributionJobDetailsModel distributionJobDetailsModel, Type type, JsonSerializationContext context) {
+        if (distributionJobDetailsModel.isAzureBoardsDetails()) {
+            return context.serialize(distributionJobDetailsModel.getAsAzureBoardsJobDetails());
+        } else if (distributionJobDetailsModel.isEmailDetails()) {
+            return context.serialize(distributionJobDetailsModel.getAsEmailJobDetails());
+        } else if (distributionJobDetailsModel.isJiraCloudDetails()) {
+            return context.serialize(distributionJobDetailsModel.getAsJiraCouldJobDetails());
+        } else if (distributionJobDetailsModel.isJiraServerDetails()) {
+            return context.serialize(distributionJobDetailsModel.getAsJiraServerJobDetails());
+        } else if (distributionJobDetailsModel.isMSTeamsDetails()) {
+            return context.serialize(distributionJobDetailsModel.getAsMSTeamsJobDetails());
+        } else if (distributionJobDetailsModel.isSlackDetails()) {
+            return context.serialize(distributionJobDetailsModel.getAsSlackJobDetails());
+        } else {
+            return context.serialize(distributionJobDetailsModel);
+        }
+    }
+
     @Override
     public DistributionJobDetailsModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
