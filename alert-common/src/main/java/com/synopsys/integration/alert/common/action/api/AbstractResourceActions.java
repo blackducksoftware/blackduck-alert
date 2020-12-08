@@ -153,8 +153,7 @@ public abstract class AbstractResourceActions<T extends Config, D extends AlertS
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        ValidationActionResponse response = testWithoutChecks(resource);
-        return ValidationActionResponse.createOKResponseWithContent(response);
+        return testWithoutChecks(resource);
     }
 
     public final ValidationActionResponse validate(T resource) {

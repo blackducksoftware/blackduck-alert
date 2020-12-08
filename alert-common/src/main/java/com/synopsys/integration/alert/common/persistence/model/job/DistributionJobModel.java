@@ -42,6 +42,12 @@ public class DistributionJobModel extends DistributionJobModelData {
         return new DistributionJobModelBuilder();
     }
 
+    /* package private */ DistributionJobModel() {
+        this.jobId = null;
+        this.createdAt = null;
+        this.lastUpdated = null;
+    }
+
     protected DistributionJobModel(
         UUID jobId,
         boolean enabled,

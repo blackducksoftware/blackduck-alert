@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
@@ -31,8 +32,13 @@ import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
+@JsonAdapter(DistributionJobDetailsModelDeserializer.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
     private final String channelDescriptorName;
+
+    /* package private */ DistributionJobDetailsModel() {
+        this.channelDescriptorName = null;
+    }
 
     /* package private */ DistributionJobDetailsModel(String channelDescriptorName) {
         this.channelDescriptorName = channelDescriptorName;

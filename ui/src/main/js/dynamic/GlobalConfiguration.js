@@ -130,7 +130,7 @@ class GlobalConfiguration extends React.Component {
             label, description, fields, type, testFields
         } = currentDescriptor;
         const {
-            errorMessage, actionMessage, fieldErrors, testConfigAction
+            errorMessage, actionMessage, fieldErrors, testConfigAction, errorIsDetailed
         } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
@@ -183,6 +183,7 @@ class GlobalConfiguration extends React.Component {
                     id="global-config-status-message"
                     errorMessage={errorMessage}
                     actionMessage={actionMessage}
+                    errorIsDetailed={errorIsDetailed}
                 />
 
                 {body}
@@ -197,6 +198,7 @@ GlobalConfiguration.propTypes = {
     currentConfig: PropTypes.object,
     fieldErrors: PropTypes.object,
     errorMessage: PropTypes.string,
+    errorIsDetailed: PropTypes.bool,
     actionMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     getConfigAction: PropTypes.func.isRequired,
@@ -210,6 +212,7 @@ GlobalConfiguration.propTypes = {
 GlobalConfiguration.defaultProps = {
     currentConfig: {},
     errorMessage: null,
+    errorIsDetailed: false,
     actionMessage: null,
     updateStatus: null,
     fieldErrors: {}
@@ -221,6 +224,7 @@ const mapStateToProps = (state) => ({
     actionMessage: state.globalConfiguration.actionMessage,
     updateStatus: state.globalConfiguration.updateStatus,
     errorMessage: state.globalConfiguration.error.message,
+    errorIsDetailed: state.globalConfiguration.error.isDetailed,
     fieldErrors: state.globalConfiguration.error.fieldErrors
 });
 

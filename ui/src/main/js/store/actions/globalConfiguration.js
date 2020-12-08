@@ -130,10 +130,12 @@ function testSuccess() {
     };
 }
 
-function testFailed({ message, errors }) {
+function testFailed({ message, errors, detailed }) {
+    const isDetailed = detailed;
     return {
         type: CONFIG_TEST_FAILED,
         message,
+        isDetailed,
         errors
 
     };

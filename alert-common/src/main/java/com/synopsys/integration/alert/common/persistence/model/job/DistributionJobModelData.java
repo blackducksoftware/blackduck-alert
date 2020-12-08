@@ -51,6 +51,22 @@ public abstract class DistributionJobModelData extends AlertSerializableModel {
 
     private final DistributionJobDetailsModel distributionJobDetails;
 
+    /* package private */ DistributionJobModelData() {
+        this.enabled = true;
+        this.name = null;
+        this.distributionFrequency = FrequencyType.REAL_TIME;
+        this.processingType = ProcessingType.DEFAULT;
+        this.channelDescriptorName = null;
+        this.blackDuckGlobalConfigId = null;
+        this.filterByProject = false;
+        this.projectNamePattern = null;
+        this.notificationTypes = List.of();
+        this.projectFilterDetails = List.of();
+        this.policyFilterPolicyNames = List.of();
+        this.vulnerabilityFilterSeverityNames = List.of();
+        this.distributionJobDetails = null;
+    }
+
     public DistributionJobModelData(
         boolean enabled,
         String name,
