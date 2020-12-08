@@ -193,8 +193,7 @@ public abstract class AbstractJobResourceActions {
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        ValidationActionResponse response = testWithoutChecks(resource);
-        return ValidationActionResponse.createOKResponseWithContent(response);
+        return testWithoutChecks(resource);
     }
 
     public final ValidationActionResponse validate(JobFieldModel resource) {

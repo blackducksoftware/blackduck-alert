@@ -160,8 +160,7 @@ public abstract class AbstractConfigResourceActions implements ConfigResourceAct
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
         }
-        ValidationActionResponse response = testWithoutChecks(resource);
-        return ValidationActionResponse.createOKResponseWithContent(response);
+        return testWithoutChecks(resource);
     }
 
     @Override
