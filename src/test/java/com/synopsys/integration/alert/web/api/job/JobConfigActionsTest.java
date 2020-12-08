@@ -315,8 +315,8 @@ public class JobConfigActionsTest {
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
-        assertTrue(validationActionResponse.isSuccessful());
-        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.isError());
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertTrue(validationResponseModel.hasErrors());
@@ -329,8 +329,8 @@ public class JobConfigActionsTest {
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
-        assertTrue(validationActionResponse.isSuccessful());
-        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.isError());
+        assertEquals(HttpStatus.BAD_REQUEST, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertTrue(validationResponseModel.hasErrors());
@@ -366,8 +366,8 @@ public class JobConfigActionsTest {
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
 
-        assertTrue(validationActionResponse.isSuccessful());
-        assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
+        assertTrue(validationActionResponse.isError());
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertTrue(validationResponseModel.hasErrors());
