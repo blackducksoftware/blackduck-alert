@@ -6,14 +6,14 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
-import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
-import com.synopsys.integration.blackduck.http.RequestFactory;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectGetService;
@@ -43,92 +43,92 @@ public class BlackDuckMessageBuilderTestHelper {
 
     public static BlackDuckServicesFactory mockServicesFactory() {
         BlackDuckServicesFactory mockServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
-        BlackDuckService blackDuckService = mockBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = mockBlackDuckApiClient();
         ProjectService projectService = mockProjectService();
         BlackDuckBucketService bucketService = mockBucketService();
 
-        Mockito.when(mockServicesFactory.getBlackDuckService()).thenReturn(blackDuckService);
+        Mockito.when(mockServicesFactory.getBlackDuckService()).thenReturn(blackDuckApiClient);
         Mockito.when(mockServicesFactory.createProjectService()).thenReturn(projectService);
         Mockito.when(mockServicesFactory.createBlackDuckBucketService()).thenReturn(bucketService);
 
         return mockServicesFactory;
     }
 
-    public static BlackDuckService mockBlackDuckService() {
-        BlackDuckService mockBlackDuckService = Mockito.mock(BlackDuckService.class);
+    public static BlackDuckApiClient mockBlackDuckApiClient() {
+        BlackDuckApiClient mockBlackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         try {
             String project1Href = "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24";
             ProjectVersionView projectVersionView1 = new ProjectVersionView();
             projectVersionView1.setMeta(new ResourceMetadata());
             HttpUrl project1HrefHttpUrl = new HttpUrl(project1Href);
             projectVersionView1.getMeta().setHref(project1HrefHttpUrl);
-            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(project1HrefHttpUrl), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView1);
+            Mockito.when(mockBlackDuckApiClient.getResponse(Mockito.eq(project1HrefHttpUrl), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView1);
 
             String project2Href = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c";
             ProjectVersionView projectVersionView2 = new ProjectVersionView();
             projectVersionView1.setMeta(new ResourceMetadata());
             HttpUrl project2HrefHttpURl = new HttpUrl(project2Href);
             projectVersionView1.getMeta().setHref(project2HrefHttpURl);
-            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(project2HrefHttpURl), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView2);
+            Mockito.when(mockBlackDuckApiClient.getResponse(Mockito.eq(project2HrefHttpURl), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView2);
 
             String bomComponentUri = "https://a-hub-server.blackduck.com/api/projects/fa9ca16d-1238-4795-85d4-f47853a9b06c/versions/6c39d4f1-713d-4702-b9c8-e964e6ec932c/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96";
             ProjectVersionComponentView versionBomComponentView = new ProjectVersionComponentView();
             versionBomComponentView.setMeta(new ResourceMetadata());
             HttpUrl bomComponentUriHttpUrl = new HttpUrl(bomComponentUri);
             versionBomComponentView.getMeta().setHref(bomComponentUriHttpUrl);
-            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(bomComponentUriHttpUrl), Mockito.eq(ProjectVersionComponentView.class))).thenReturn(versionBomComponentView);
+            Mockito.when(mockBlackDuckApiClient.getResponse(Mockito.eq(bomComponentUriHttpUrl), Mockito.eq(ProjectVersionComponentView.class))).thenReturn(versionBomComponentView);
 
             String componentVersionUri = "https://a-hub-server.blackduck.com/api/components/7792be90-bfd2-42d7-ae19-66e051978675/versions/5a01d0b3-a6c4-469a-b9c8-c5769cffae78";
             ComponentVersionView componentVersionView = new ComponentVersionView();
             componentVersionView.setMeta(new ResourceMetadata());
             HttpUrl componentVersionUriHttpUrl = new HttpUrl(componentVersionUri);
             componentVersionView.getMeta().setHref(componentVersionUriHttpUrl);
-            Mockito.when(mockBlackDuckService.getResponse(Mockito.eq(componentVersionUriHttpUrl), Mockito.eq(ComponentVersionView.class))).thenReturn(componentVersionView);
+            Mockito.when(mockBlackDuckApiClient.getResponse(Mockito.eq(componentVersionUriHttpUrl), Mockito.eq(ComponentVersionView.class))).thenReturn(componentVersionView);
 
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_1, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_2, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_3, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_4, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_5, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_6, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_7, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_8, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_9, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_10, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_11, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_12, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_13, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
-            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_BDSA_4, mockBlackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_1, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_2, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_3, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_4, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_5, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_6, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_7, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_8, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_9, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_10, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_11, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_12, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_CVE_13, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
+            mockVulnSingleResponse(VulnerabilityTestConstants.VULNERABILITY_URL_BDSA_4, mockBlackDuckApiClient, VulnerabilitySeverityType.HIGH);
         } catch (IntegrationException ignored) {
         }
 
-        return mockBlackDuckService;
+        return mockBlackDuckApiClient;
     }
 
     public static ProjectService mockProjectService() {
-        return new ProjectService(mockBlackDuckService(), mockRequestFactory(), mockLogger(), Mockito.mock(ProjectGetService.class));
+        return new ProjectService(mockBlackDuckApiClient(), mockBlackDuckRequestFactory(), mockLogger(), Mockito.mock(ProjectGetService.class));
     }
 
     public static BlackDuckBucketService mockBucketService() {
-        return new BlackDuckBucketService(mockBlackDuckService(), mockRequestFactory(), mockLogger(), new NoThreadExecutorService());
+        return new BlackDuckBucketService(mockBlackDuckApiClient(), mockBlackDuckRequestFactory(), mockLogger(), new NoThreadExecutorService());
     }
 
-    public static RequestFactory mockRequestFactory() {
-        return new RequestFactory();
+    public static BlackDuckRequestFactory mockBlackDuckRequestFactory() {
+        return new BlackDuckRequestFactory();
     }
 
     public static IntLogger mockLogger() {
         return new PrintStreamIntLogger(System.out, LogLevel.ERROR);
     }
 
-    private static void mockVulnSingleResponse(String uri, BlackDuckService blackDuckService, ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationSeverityType severity) {
+    private static void mockVulnSingleResponse(String uri, BlackDuckApiClient blackDuckApiClient, VulnerabilitySeverityType severity) {
         VulnerabilityView vulnerabilityView = new VulnerabilityView();
         vulnerabilityView.setSeverity(severity);
         vulnerabilityView.setMeta(new ResourceMetadata());
         try {
             HttpUrl httpUrl = new HttpUrl(uri);
             vulnerabilityView.getMeta().setHref(httpUrl);
-            Mockito.when(blackDuckService.getResponse(Mockito.eq(httpUrl), Mockito.eq(VulnerabilityView.class))).thenReturn(vulnerabilityView);
+            Mockito.when(blackDuckApiClient.getResponse(Mockito.eq(httpUrl), Mockito.eq(VulnerabilityView.class))).thenReturn(vulnerabilityView);
         } catch (IntegrationException ignored) {
         }
     }

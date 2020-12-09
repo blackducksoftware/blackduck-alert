@@ -51,7 +51,7 @@ import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
@@ -79,19 +79,19 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
                 BlackDuckServicesFactory blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                BlackDuckService blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+                BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
 
-                List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
-                Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckService);
+                List<ProjectView> projectViews = blackDuckApiClient.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
+                Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckApiClient);
                 Set<String> allProjectsInJobs = retrieveAllProjectsInJobs(blackDuckToAlertProjects.values());
 
                 Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(blackDuckToAlertProjects, projectUsersService);
-                Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
+                Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckApiClient);
                 blackDuckDataAccessor.updateProjectAndUserData(providerProperties.getConfigId(), projectToEmailAddresses, allRelevantBlackDuckUsers);
 
                 blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new SilentIntLogger());
                 projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckService);
+                updateBlackDuckProjectPermissions(allProjectsInJobs, projectViews, projectUsersService, blackDuckApiClient);
             } else {
                 logger.error("Missing BlackDuck global configuration.");
             }
@@ -105,7 +105,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
         return (BlackDuckProperties) super.getProviderProperties();
     }
 
-    private Map<ProjectView, ProviderProject> mapBlackDuckProjectsToAlertProjects(List<ProjectView> projectViews, BlackDuckService blackDuckService) {
+    private Map<ProjectView, ProviderProject> mapBlackDuckProjectsToAlertProjects(List<ProjectView> projectViews, BlackDuckApiClient blackDuckApiClient) {
         Map<ProjectView, ProviderProject> projectMap = new ConcurrentHashMap<>();
         projectViews
             .parallelStream()
@@ -114,7 +114,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 if (StringUtils.isNotBlank(projectView.getProjectOwner())) {
                     try {
                         HttpUrl projectOwnerHttpUrl = new HttpUrl(projectView.getProjectOwner());
-                        UserView projectOwner = blackDuckService.getResponse(projectOwnerHttpUrl, UserView.class);
+                        UserView projectOwner = blackDuckApiClient.getResponse(projectOwnerHttpUrl, UserView.class);
                         projectOwnerEmail = projectOwner.getEmail();
                     } catch (IntegrationException e) {
                         logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
@@ -167,8 +167,8 @@ public class BlackDuckDataSyncTask extends ProviderTask {
         return configuredProjectNames;
     }
 
-    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckService blackDuckService) throws IntegrationException {
-        return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
+    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
+        return blackDuckApiClient.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
                    .stream()
                    .filter(UserView::getActive)
                    .map(UserView::getEmail)
@@ -176,8 +176,8 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                    .collect(Collectors.toSet());
     }
 
-    private void updateBlackDuckProjectPermissions(Set<String> configuredProjects, List<ProjectView> projectViews, ProjectUsersService projectUsersService, BlackDuckService blackDuckService) throws IntegrationException {
-        UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
+    private void updateBlackDuckProjectPermissions(Set<String> configuredProjects, List<ProjectView> projectViews, ProjectUsersService projectUsersService, BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
+        UserView currentUser = blackDuckApiClient.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
         Set<ProjectView> matchingProjects = projectViews.parallelStream()
                                                 .filter(projectView -> configuredProjects.contains(projectView.getName()))
                                                 .collect(Collectors.toSet());
