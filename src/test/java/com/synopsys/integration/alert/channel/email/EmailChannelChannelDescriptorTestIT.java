@@ -55,7 +55,6 @@ import com.synopsys.integration.rest.RestConstants;
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
     private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
 
-    public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     private static final String EMAIL_TEST_PROVIDER_CONFIG_NAME = "emailTestProviderConfig";
     private static final String DEFAULT_TEST_EMAIL_ADDRESS = "noreply@blackducksoftware.com";
@@ -181,11 +180,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Override
     public FieldModel createTestConfigDestination() {
         return createFieldModel(new EmailChannelKey().getUniversalKey(), DEFAULT_TEST_EMAIL_ADDRESS);
-    }
-
-    @Override
-    public String getTestJobName() {
-        return UNIT_TEST_JOB_NAME;
     }
 
     @Override

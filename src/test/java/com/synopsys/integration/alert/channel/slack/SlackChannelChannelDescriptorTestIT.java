@@ -34,8 +34,6 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
-    public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
-
     @Autowired
     private SlackDescriptor slackDescriptor;
     @Autowired
@@ -122,11 +120,6 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Override
     public FieldModel createTestConfigDestination() {
         return createFieldModel(new SlackChannelKey().getUniversalKey(), "");
-    }
-
-    @Override
-    public String getTestJobName() {
-        return UNIT_TEST_JOB_NAME;
     }
 
     @Override

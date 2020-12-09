@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -97,18 +96,20 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanupTest() {
-        optionalChannelGlobalConfig.ifPresent(configurationAccessor::deleteConfiguration);
+        if (null != configurationAccessor) {
+            optionalChannelGlobalConfig.ifPresent(configurationAccessor::deleteConfiguration);
 
-        if (distributionJobModel != null) {
-            try {
-                jobAccessor.deleteJob(distributionJobModel.getJobId());
-            } catch (AlertDatabaseConstraintException e) {
-                // TODO delete this try-catch when method signature no longer contains that exception
+            if (null != providerGlobalConfig) {
+                configurationAccessor.deleteConfiguration(providerGlobalConfig);
             }
         }
 
-        if (providerGlobalConfig != null) {
-            configurationAccessor.deleteConfiguration(providerGlobalConfig);
+        if (null != jobAccessor && null != distributionJobModel && null != distributionJobModel.getJobId()) {
+            try {
+                jobAccessor.deleteJob(distributionJobModel.getJobId());
+            } catch (AlertException e) {
+                // TODO delete this try-catch when method signature no longer contains that exception
+            }
         }
     }
 
@@ -184,8 +185,6 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     public abstract Map<String, String> createInvalidGlobalFieldMap();
 
-    public abstract String getTestJobName();
-
     public abstract String getEventDestinationName();
 
     public abstract TestAction getGlobalTestAction();
@@ -215,7 +214,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
         try {
             return jobAccessor.createJob(requestModel);
-        } catch (AlertDatabaseConstraintException e) {
+        } catch (AlertException e) {
             // TODO remove this when method signature is updated
             throw new AlertRuntimeException(e);
         }
