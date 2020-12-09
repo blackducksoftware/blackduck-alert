@@ -78,7 +78,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     protected RegisteredDescriptorRepository registeredDescriptorRepository;
 
     protected ConfigurationModel providerGlobalConfig;
-    protected Optional<ConfigurationModel> optionalChannelGlobalConfig;
+    protected Optional<ConfigurationModel> optionalChannelGlobalConfig = Optional.empty();
     protected DistributionJobModel distributionJobModel;
     protected String eventDestinationName;
 
