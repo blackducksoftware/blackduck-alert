@@ -116,8 +116,12 @@ public abstract class JiraIssueConfigValidator {
     private String validateIssueCreator(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
         String issueCreatorFieldKey = getIssueCreatorFieldKey();
         String issueCreator = config.getIssueCreator();
+        if (StringUtils.isBlank(issueCreator)) {
+            return null;
+        }
+
         try {
-            if (StringUtils.isNotBlank(issueCreator) && isUserValid(issueCreator)) {
+            if (isUserValid(issueCreator)) {
                 return issueCreator;
             } else {
                 fieldErrors.add(AlertFieldStatus.error(issueCreatorFieldKey, String.format("The username '%s' is not associated with any valid Jira users.", issueCreator)));
@@ -158,4 +162,5 @@ public abstract class JiraIssueConfigValidator {
     private void requireField(List<AlertFieldStatus> fieldErrors, String key) {
         fieldErrors.add(AlertFieldStatus.error(key, "This field is required"));
     }
+
 }
