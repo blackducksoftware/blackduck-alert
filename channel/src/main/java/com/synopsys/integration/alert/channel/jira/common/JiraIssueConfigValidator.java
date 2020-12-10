@@ -30,7 +30,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -103,7 +102,7 @@ public abstract class JiraIssueConfigValidator {
         );
     }
 
-    private ProjectComponent validateProject(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
+    private ProjectComponent validateProject(JiraIssueConfig config, List<AlertFieldStatus> fieldErrors) {
         String jiraProjectName = config.getProjectName();
         if (StringUtils.isNotBlank(jiraProjectName)) {
             try {
@@ -126,7 +125,7 @@ public abstract class JiraIssueConfigValidator {
         return null;
     }
 
-    private String validateIssueCreator(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
+    private String validateIssueCreator(JiraIssueConfig config, List<AlertFieldStatus> fieldErrors) {
         String issueCreatorFieldKey = getIssueCreatorFieldKey();
         String issueCreator = config.getIssueCreator();
         if (StringUtils.isBlank(issueCreator)) {
@@ -145,7 +144,7 @@ public abstract class JiraIssueConfigValidator {
         return null;
     }
 
-    private String validateIssueType(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
+    private String validateIssueType(JiraIssueConfig config, List<AlertFieldStatus> fieldErrors) {
         String issueType = config.getIssueType();
         if (StringUtils.isBlank(issueType)) {
             return null;

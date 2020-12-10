@@ -23,17 +23,18 @@
 package com.synopsys.integration.alert.channel.jira.server.util;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira.common.model.CustomFieldDefinitionModel;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
 
 public class JiraServerCustomFieldResolver extends JiraCustomFieldResolver {
     @Override
-    protected String retrieveCustomFieldId(JiraCustomFieldConfig customFieldConfig) {
+    protected CustomFieldDefinitionModel retrieveCustomFieldId(JiraCustomFieldConfig customFieldConfig) {
         // FIXME implement
         return null;
     }
 
     @Override
-    protected Object convertValueToRequestObject(JiraCustomFieldConfig customFieldConfig) {
+    protected Object convertValueToRequestObject(CustomFieldDefinitionModel fieldDefinition, JiraCustomFieldConfig jiraCustomFieldConfig) {
         // FIXME implement
         return null;
     }

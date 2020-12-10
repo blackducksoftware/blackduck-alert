@@ -22,23 +22,19 @@
  */
 package com.synopsys.integration.alert.channel.jira.common.model;
 
-public class JiraCustomFieldConfig {
-    private final String fieldName;
-    private final String fieldValue;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class CustomFieldDefinitionModel extends AlertSerializableModel {
+    private final String fieldId;
     private final String fieldType;
 
-    public JiraCustomFieldConfig(String fieldName, String fieldValue, String fieldType) {
-        this.fieldName = fieldName;
-        this.fieldValue = fieldValue;
+    public CustomFieldDefinitionModel(String fieldId, String fieldType) {
+        this.fieldId = fieldId;
         this.fieldType = fieldType;
     }
 
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public String getFieldValue() {
-        return fieldValue;
+    public String getFieldId() {
+        return fieldId;
     }
 
     public String getFieldType() {

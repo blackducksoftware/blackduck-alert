@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.exception.Issu
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.service.FieldService;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -86,10 +87,12 @@ public class JiraCloudRequestDelegator {
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
         IssueSearchService issueSearchService = jiraCloudServiceFactory.createIssueSearchService();
+        FieldService fieldService = jiraCloudServiceFactory.createFieldService();
+
         JiraContentValidator contentValidator = new JiraContentValidator();
         JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraCloudCustomFieldResolver jiraCloudCustomFieldResolver = new JiraCloudCustomFieldResolver();
+        JiraCloudCustomFieldResolver jiraCloudCustomFieldResolver = new JiraCloudCustomFieldResolver(fieldService);
         JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator, jiraCloudCustomFieldResolver);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
