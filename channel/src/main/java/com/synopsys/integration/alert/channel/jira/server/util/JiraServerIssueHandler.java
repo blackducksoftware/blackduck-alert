@@ -60,8 +60,8 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     private final JiraServerIssuePropertyHandler jiraIssuePropertyHelper;
 
     public JiraServerIssueHandler(IssueService issueService, JiraServerProperties jiraProperties, Gson gson, JiraServerTransitionHandler jiraTransitionHandler,
-        JiraServerIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator) {
-        super(gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
+        JiraServerIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraServerCustomFieldResolver jiraServerCustomFieldResolver) {
+        super(gson, jiraServerCustomFieldResolver, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;

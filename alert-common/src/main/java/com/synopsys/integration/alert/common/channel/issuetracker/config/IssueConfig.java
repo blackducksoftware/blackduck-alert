@@ -24,7 +24,9 @@ package com.synopsys.integration.alert.common.channel.issuetracker.config;
 
 import java.util.Optional;
 
-public class IssueConfig {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class IssueConfig extends AlertSerializableModel {
     // TODO figure out if we need all of these fields for projects
     private String projectName;
     private String projectKey;
@@ -35,7 +37,7 @@ public class IssueConfig {
     private String resolveTransition;
     private String openTransition;
 
-    public IssueConfig() {
+    /* package private */ IssueConfig() {
         // For serialization
     }
 

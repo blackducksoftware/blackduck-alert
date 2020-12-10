@@ -28,11 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
+import com.synopsys.integration.alert.channel.jira.server.util.JiraServerCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssueHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
@@ -89,7 +90,8 @@ public class JiraServerRequestDelegator {
         JiraContentValidator jiraContentValidator = new JiraContentValidator();
         JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
+        JiraServerCustomFieldResolver jiraServerCustomFieldResolver = new JiraServerCustomFieldResolver();
+        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraServerCustomFieldResolver);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
 

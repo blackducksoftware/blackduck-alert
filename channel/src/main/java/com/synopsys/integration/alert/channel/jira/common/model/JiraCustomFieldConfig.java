@@ -20,12 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.channel.jira.common.model;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+public class JiraCustomFieldConfig {
+    private final String name;
+    private final String fieldValue;
+    private final String fieldType;
 
-public abstract class JiraContextBuilder<T> {
-    public abstract T build(ConfigurationModel channelGlobalConfig, DistributionJobModel testJobModel);
+    public JiraCustomFieldConfig(String fieldName, String fieldValue, String fieldType) {
+        this.name = fieldName;
+        this.fieldValue = fieldValue;
+        this.fieldType = fieldType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getFieldValue() {
+        return fieldValue;
+    }
+
+    public String getFieldType() {
+        return fieldType;
+    }
 
 }

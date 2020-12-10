@@ -20,12 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.channel.jira.server.util;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
 
-public abstract class JiraContextBuilder<T> {
-    public abstract T build(ConfigurationModel channelGlobalConfig, DistributionJobModel testJobModel);
+public class JiraServerCustomFieldResolver extends JiraCustomFieldResolver {
+    @Override
+    protected String retrieveCustomFieldId(JiraCustomFieldConfig customFieldConfig) {
+        // FIXME implement
+        return null;
+    }
+
+    @Override
+    protected Object convertValueToRequestObject(JiraCustomFieldConfig customFieldConfig) {
+        // FIXME implement
+        return null;
+    }
 
 }

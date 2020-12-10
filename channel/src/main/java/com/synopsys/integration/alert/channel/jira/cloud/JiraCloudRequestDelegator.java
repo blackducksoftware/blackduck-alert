@@ -28,9 +28,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueHandler;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
@@ -88,7 +89,8 @@ public class JiraCloudRequestDelegator {
         JiraContentValidator contentValidator = new JiraContentValidator();
         JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator);
+        JiraCloudCustomFieldResolver jiraCloudCustomFieldResolver = new JiraCloudCustomFieldResolver();
+        JiraCloudIssueHandler jiraIssueHandler = new JiraCloudIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator, jiraCloudCustomFieldResolver);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
 

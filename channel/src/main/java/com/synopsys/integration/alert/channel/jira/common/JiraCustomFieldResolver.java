@@ -22,10 +22,18 @@
  */
 package com.synopsys.integration.alert.channel.jira.common;
 
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraResolvedCustomField;
 
-public abstract class JiraContextBuilder<T> {
-    public abstract T build(ConfigurationModel channelGlobalConfig, DistributionJobModel testJobModel);
+public abstract class JiraCustomFieldResolver {
+    public final JiraResolvedCustomField resolveCustomField(JiraCustomFieldConfig jiraCustomFieldConfig) {
+        String fieldId = retrieveCustomFieldId(jiraCustomFieldConfig);
+        Object requestObject = convertValueToRequestObject(jiraCustomFieldConfig);
+        return new JiraResolvedCustomField(fieldId, requestObject);
+    }
+
+    protected abstract String retrieveCustomFieldId(JiraCustomFieldConfig customFieldConfig);
+
+    protected abstract Object convertValueToRequestObject(JiraCustomFieldConfig customFieldConfig);
 
 }

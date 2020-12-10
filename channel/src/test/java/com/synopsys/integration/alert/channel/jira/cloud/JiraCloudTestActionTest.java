@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.model.TestNewStatusDeta
 import com.synopsys.integration.alert.channel.jira.cloud.model.TestTransitionResponsesModel;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -163,16 +163,18 @@ public class JiraCloudTestActionTest {
             "additionalKey");
     }
 
-    private IssueConfig createIssueConfig() {
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setCommentOnIssues(true);
-        issueConfig.setIssueType("task");
-        issueConfig.setProjectName("project");
-        issueConfig.setResolveTransition("done");
-        issueConfig.setOpenTransition("new");
-        issueConfig.setIssueCreator("creator");
-
-        return issueConfig;
+    private JiraIssueConfig createIssueConfig() {
+        return new JiraIssueConfig(
+            "project",
+            null,
+            null,
+            "creator",
+            "task",
+            true,
+            "done",
+            "new",
+            List.of()
+        );
     }
 
     private IssueContentModel createContentModel() {

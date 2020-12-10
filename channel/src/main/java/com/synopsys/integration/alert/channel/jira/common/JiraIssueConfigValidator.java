@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -66,28 +67,40 @@ public abstract class JiraIssueConfigValidator {
 
     public abstract boolean isUserValid(String issueCreator) throws IntegrationException;
 
-    public IssueConfig createValidIssueConfig(IssueTrackerContext context) throws AlertFieldException {
-        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
-        IssueConfig issueConfig = context.getIssueConfig();
-        IssueConfig newConfig = new IssueConfig();
-        newConfig.setCommentOnIssues(issueConfig.getCommentOnIssues());
-        newConfig.setOpenTransition(issueConfig.getOpenTransition().orElse(null));
-        newConfig.setResolveTransition(issueConfig.getResolveTransition().orElse(null));
-        ProjectComponent projectComponent = validateProject(issueConfig, fieldErrors);
-        if (projectComponent != null) {
-            newConfig.setProjectId(projectComponent.getId());
-            newConfig.setProjectKey(projectComponent.getKey());
-            newConfig.setProjectName(projectComponent.getName());
-        }
+    public JiraIssueConfig createValidIssueConfig(IssueTrackerContext context) throws AlertFieldException {
+        JiraIssueConfig originalIssueConfig = (JiraIssueConfig) context.getIssueConfig();
 
-        newConfig.setIssueCreator(validateIssueCreator(issueConfig, fieldErrors));
-        newConfig.setIssueType(validateIssueType(issueConfig, fieldErrors));
+        List<AlertFieldStatus> fieldErrors = new ArrayList<>();
+        ProjectComponent projectComponent = validateProject(originalIssueConfig, fieldErrors);
+        String validatedIssueCreator = validateIssueCreator(originalIssueConfig, fieldErrors);
+        String validatedIssueType = validateIssueType(originalIssueConfig, fieldErrors);
+
+        // TODO validate custom fields
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(JiraConstants.JIRA_ISSUE_VALIDATION_ERROR_MESSAGE, fieldErrors);
         }
 
-        return newConfig;
+        String projectName = null;
+        String projectKey = null;
+        String projectId = null;
+        if (projectComponent != null) {
+            projectName = projectComponent.getName();
+            projectKey = projectComponent.getKey();
+            projectId = projectComponent.getId();
+        }
+
+        return new JiraIssueConfig(
+            projectName,
+            projectKey,
+            projectId,
+            validatedIssueCreator,
+            validatedIssueType,
+            originalIssueConfig.getCommentOnIssues(),
+            originalIssueConfig.getResolveTransition().orElse(null),
+            originalIssueConfig.getOpenTransition().orElse(null),
+            originalIssueConfig.getCustomFields()
+        );
     }
 
     private ProjectComponent validateProject(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
@@ -133,8 +146,12 @@ public abstract class JiraIssueConfigValidator {
     }
 
     private String validateIssueType(IssueConfig config, List<AlertFieldStatus> fieldErrors) {
-        String issueTypeFieldKey = getIssueTypeFieldKey();
         String issueType = config.getIssueType();
+        if (StringUtils.isBlank(issueType)) {
+            return null;
+        }
+
+        String issueTypeFieldKey = getIssueTypeFieldKey();
         try {
             boolean isValidIssueType = issueTypeService.getAllIssueTypes()
                                            .stream()

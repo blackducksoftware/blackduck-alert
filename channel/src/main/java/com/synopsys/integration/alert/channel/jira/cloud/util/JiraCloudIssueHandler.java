@@ -52,8 +52,8 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     private final JiraCloudIssuePropertyHandler jiraIssuePropertyHandler;
 
     public JiraCloudIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
-        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator) {
-        super(gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
+        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCloudCustomFieldResolver jiraCloudCustomFieldResolver) {
+        super(gson, jiraCloudCustomFieldResolver, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHandler = jiraIssuePropertyHandler;

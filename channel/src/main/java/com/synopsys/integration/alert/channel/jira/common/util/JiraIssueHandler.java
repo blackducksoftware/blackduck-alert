@@ -35,7 +35,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraResolvedCustomField;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
@@ -54,12 +58,14 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
+    private final JiraCustomFieldResolver jiraCustomFieldResolver;
     private final JiraTransitionHandler jiraTransitionHelper;
     private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
 
-    public JiraIssueHandler(Gson gson, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler, JiraContentValidator contentValidator) {
+    public JiraIssueHandler(Gson gson, JiraCustomFieldResolver jiraCustomFieldResolver, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler, JiraContentValidator contentValidator) {
         super(contentValidator);
         this.gson = gson;
+        this.jiraCustomFieldResolver = jiraCustomFieldResolver;
         this.jiraTransitionHelper = jiraTransitionHandler;
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
     }
@@ -81,10 +87,9 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         }
 
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(issueContentModel);
-        fieldsBuilder.setProject(issueConfig.getProjectId());
-        fieldsBuilder.setIssueType(issueConfig.getIssueType());
-        String issueCreator = issueConfig.getIssueCreator();
+        appendIssueConfig(fieldsBuilder, (JiraIssueConfig) issueConfig);
 
+        String issueCreator = issueConfig.getIssueCreator();
         try {
             IssueResponseModel issue = createIssue(issueCreator, issueConfig.getIssueType(), issueConfig.getProjectName(), fieldsBuilder);
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
@@ -116,6 +121,11 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             arbitraryItemSubComponent);
     }
 
+    @Override
+    protected boolean transitionIssue(IssueResponseModel issueResponseModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
+        return jiraTransitionHelper.transitionIssueIfNecessary(issueResponseModel.getKey(), issueConfig, operation);
+    }
+
     private void addIssueProperties(String issueKey, JiraIssueSearchProperties issueProperties) throws IntegrationException {
         jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, issueProperties);
     }
@@ -124,13 +134,17 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
         fieldsBuilder.setSummary(contentModel.getTitle());
         fieldsBuilder.setDescription(contentModel.getDescription());
-
         return fieldsBuilder;
     }
 
-    @Override
-    protected boolean transitionIssue(IssueResponseModel issueResponseModel, IssueConfig issueConfig, IssueOperation operation) throws IntegrationException {
-        return jiraTransitionHelper.transitionIssueIfNecessary(issueResponseModel.getKey(), issueConfig, operation);
+    private void appendIssueConfig(IssueRequestModelFieldsBuilder fieldsBuilder, JiraIssueConfig issueConfig) {
+        fieldsBuilder.setProject(issueConfig.getProjectId());
+        fieldsBuilder.setIssueType(issueConfig.getIssueType());
+
+        for (JiraCustomFieldConfig customField : issueConfig.getCustomFields()) {
+            JiraResolvedCustomField resolvedCustomField = jiraCustomFieldResolver.resolveCustomField(customField);
+            fieldsBuilder.setValue(resolvedCustomField.getFieldId(), resolvedCustomField.getFieldValue());
+        }
     }
 
     private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
