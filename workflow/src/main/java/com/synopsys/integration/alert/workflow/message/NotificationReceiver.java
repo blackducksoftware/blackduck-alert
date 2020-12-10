@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
@@ -43,6 +44,7 @@ import com.synopsys.integration.alert.common.workflow.processor.notification.Not
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
 public class NotificationReceiver extends MessageReceiver<NotificationEvent> implements AlertEventListener {
+    private final static int MAX_NUMBER_PAGES_PROCESSED = 100;
     public static final String COMPONENT_NAME = "notification_receiver";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -66,61 +68,31 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
 
             int numPagesProcessed = 0;
 
-            /*
-            //pseudo code
-            //look for the first 10 notifications
-            Page<AlertNotificationModel> notifications = notificationAccessor.findNotificationsNotProcessed(PageRequest pageRequest);
-            //some loop condition, check if there are existing notifications
-            while (moreNotificationsToProcess) {
-                List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
-                notificationAccessor.processedNotification(notifications);
-                eventManager.sendEvents(distributionEvents);
-                notifications = notificationAccessor.findNotificationsNotProcessed(PageRequest pageRequest);
-            }*/
-            // ###############
             logger.info("====== RECEIVED ====== Processing event for notifications."); //TODO: Delete this log
-
             Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
-            logger.info("====== Initial total pages before loop: {} ======", pageOfAlertNotificationModels.getTotalPages());
+            logger.info("====== Initial total pages before loop: {} ======", pageOfAlertNotificationModels.getTotalPages()); //TODO delete this log
             //get content, if not null and not empty, then go into the loop
             //Idea: MAX_NUMBER_OF_PAGES, set to "1000" upper bound so that this loop is not stuck forever
-            while (pageOfAlertNotificationModels.getTotalPages() > 0 && numPagesProcessed < 1000) {
+
+            //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
+            while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getContent()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
                 List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getContent();
                 logger.info("====== SIZE OF NOTIFICATIONS ====== Sending {} notifications.", notifications.size()); //TODO clean up this log message
                 List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
-                logger.info("====== SENDING DISTRIBUTION EVENTS ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message
+                logger.info("====== SENDING DISTRIBUTION EVENTS ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message, leave the sending events for notifications part
                 eventManager.sendEvents(distributionEvents); //TODO: investigate this, does sendEvents need to be @Transactional
                 //TODO: Put a sleep?
                 logger.info("====== FINISHED SENDING EVENTS ======"); //TODO clean up this log message
                 notificationAccessor.setNotificationsProcessed(notifications);
                 logger.info("====== Setting Notifications to processed =====");
+                numPagesProcessed++;
                 pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
                 logger.info("====== New total pages: {} ======", pageOfAlertNotificationModels.getTotalPages());
-                numPagesProcessed++;
             }
-            logger.info("===== Exiting While loop, no pages should remain =====");
-            // ###############
-
-            /*
-            //TODO: Old code with my modifications
-            if (null == event.getNotificationIds() || event.getNotificationIds().isEmpty()) {
-                logger.warn("Can not process a notification event without notification Id's.");
-                return;
+            if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
+                logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
             }
-            logger.debug("Event {}", event);
-            logger.info("====== PROCESSING ====== Processing event for {} notifications.", event.getNotificationIds().size());
-            //TODO Delete me
-
-            //instead of findingById's we want to get a page of notifications sorted by date, by oldest, limit 10
-            //Page<AlertNotificationModel> notifications = notificationAccessor.findNotificationsNotProcessed(PageRequest pageRequest);
-            //pull the models out of the page
-            List<AlertNotificationModel> notifications = notificationAccessor.findByIds(event.getNotificationIds());
-            List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
-            logger.info("====== SENDING ====== Sending {} events for notifications.", distributionEvents.size());
-            eventManager.sendEvents(distributionEvents);
-
-             */
-
+            logger.info("===== Exiting While loop, no pages should remain ====="); //TODO delete me
         } else {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationEvent.NOTIFICATION_EVENT_TYPE);
         }

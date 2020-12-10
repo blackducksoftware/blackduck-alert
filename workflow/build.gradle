@@ -5,6 +5,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':alert-database')
+    testImplementation project(':test-common')
 
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-tx'
@@ -14,6 +15,6 @@ dependencies {
     implementation 'com.synopsys.integration:integration-common'
     //FIXME We don't want this dependency, we want to abstract it out
     implementation 'org.springframework.data:spring-data-jpa'
-
+    //TODO: Do not merge this into master yet, figure out why this isn't working when implementing :test-common
     testImplementation 'org.mockito:mockito-core'
 }

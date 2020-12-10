@@ -8,18 +8,15 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 
 public class MockNotificationAccessor implements NotificationAccessor {
-    private final int pageSize = 100;
-
-    List<AlertNotificationModel> alertNotificationModels = new ArrayList<>();
+    ArrayList<AlertNotificationModel> alertNotificationModels;
 
     public MockNotificationAccessor(List<AlertNotificationModel> alertNotificationModels) {
-        this.alertNotificationModels = alertNotificationModels;
+        this.alertNotificationModels = new ArrayList<>(alertNotificationModels);
     }
 
     @Override
@@ -54,12 +51,26 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     @Override
     public Page<AlertNotificationModel> findNotificationsNotProcessed() {
-        return new PageImpl<>(alertNotificationModels, Pageable.unpaged(), pageSize);
+        ArrayList<AlertNotificationModel> notificationsNotProcessed = new ArrayList<>();
+        for (AlertNotificationModel notification : alertNotificationModels) {
+            if (!notification.getProcessed()) {
+                notificationsNotProcessed.add(notification);
+            }
+        }
+        if (notificationsNotProcessed.size() > 0) {
+            return new PageImpl<>(notificationsNotProcessed);
+        } else {
+            return Page.empty();
+        }
     }
 
     @Override
     public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
-
+        for (AlertNotificationModel notification : notifications) {
+            AlertNotificationModel updatedNotification = createProcessedAlertNotificationModel(notification);
+            int index = alertNotificationModels.indexOf(notification);
+            alertNotificationModels.set(index, updatedNotification);
+        }
     }
 
     @Override
@@ -70,5 +81,18 @@ public class MockNotificationAccessor implements NotificationAccessor {
     @Override
     public void deleteNotification(AlertNotificationModel notification) {
 
+    }
+
+    //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
+    private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
+        return new AlertNotificationModel(alertNotificationModel.getId(),
+            alertNotificationModel.getProviderConfigId(),
+            alertNotificationModel.getProvider(),
+            alertNotificationModel.getProviderConfigName(),
+            alertNotificationModel.getNotificationType(),
+            alertNotificationModel.getContent(),
+            alertNotificationModel.getCreatedAt(),
+            alertNotificationModel.getProviderCreationTime(),
+            true);
     }
 }
