@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.cloud.service.FieldService;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -62,6 +63,7 @@ public class JiraCloudRequestDelegatorTest {
     private IssueService issueService;
     private IssuePropertyService issuePropertyService;
     private IssueSearchService issueSearchService;
+    private FieldService fieldService;
 
     @BeforeEach
     public void init() {
@@ -73,6 +75,7 @@ public class JiraCloudRequestDelegatorTest {
         issueService = Mockito.mock(IssueService.class);
         issuePropertyService = Mockito.mock(IssuePropertyService.class);
         issueSearchService = Mockito.mock(IssueSearchService.class);
+        fieldService = Mockito.mock(FieldService.class);
     }
 
     @Test
@@ -222,6 +225,7 @@ public class JiraCloudRequestDelegatorTest {
         Mockito.when(serviceFactory.createIssueService()).thenReturn(issueService);
         Mockito.when(serviceFactory.createIssuePropertyService()).thenReturn(issuePropertyService);
         Mockito.when(serviceFactory.createIssueSearchService()).thenReturn(issueSearchService);
+        Mockito.when(serviceFactory.createFieldService()).thenReturn(fieldService);
 
         return serviceFactory;
     }

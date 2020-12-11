@@ -46,6 +46,7 @@ import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.server.service.FieldService;
 import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
@@ -63,6 +64,7 @@ public class JiraServerTestActionTest {
     private IssueService issueService;
     private IssuePropertyService issuePropertyService;
     private IssueSearchService issueSearchService;
+    private FieldService fieldService;
 
     @BeforeEach
     public void init() {
@@ -74,6 +76,7 @@ public class JiraServerTestActionTest {
         issueService = Mockito.mock(IssueService.class);
         issuePropertyService = Mockito.mock(IssuePropertyService.class);
         issueSearchService = Mockito.mock(IssueSearchService.class);
+        fieldService = Mockito.mock(FieldService.class);
     }
 
     private JiraServerServiceFactory createMockServiceFactory() {
@@ -86,6 +89,7 @@ public class JiraServerTestActionTest {
         Mockito.when(serviceFactory.createIssueService()).thenReturn(issueService);
         Mockito.when(serviceFactory.createIssuePropertyService()).thenReturn(issuePropertyService);
         Mockito.when(serviceFactory.createIssueSearchService()).thenReturn(issueSearchService);
+        Mockito.when(serviceFactory.createFieldService()).thenReturn(fieldService);
 
         return serviceFactory;
     }

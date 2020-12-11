@@ -44,6 +44,7 @@ import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
+import com.synopsys.integration.jira.common.server.service.FieldService;
 import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
@@ -87,10 +88,12 @@ public class JiraServerRequestDelegator {
         IssueService issueService = jiraServerServiceFactory.createIssueService();
         IssuePropertyService issuePropertyService = jiraServerServiceFactory.createIssuePropertyService();
         IssueSearchService issueSearchService = jiraServerServiceFactory.createIssueSearchService();
+        FieldService fieldService = jiraServerServiceFactory.createFieldService();
+
         JiraContentValidator jiraContentValidator = new JiraContentValidator();
         JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraServerCustomFieldResolver jiraServerCustomFieldResolver = new JiraServerCustomFieldResolver();
+        JiraServerCustomFieldResolver jiraServerCustomFieldResolver = new JiraServerCustomFieldResolver(fieldService);
         JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraServerCustomFieldResolver);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
