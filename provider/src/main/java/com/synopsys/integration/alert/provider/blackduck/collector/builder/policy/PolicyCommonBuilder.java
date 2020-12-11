@@ -143,8 +143,8 @@ public class PolicyCommonBuilder {
     }
 
     public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<ProjectVersionVulnerableBomComponentsView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
-        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckApiClient blackDuckService, BlackDuckResponseCache blackDuckResponseCache) {
-        Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckService, vulnerableComponentViews);
+        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckApiClient blackDuckApiClient, BlackDuckResponseCache blackDuckResponseCache) {
+        Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckApiClient, vulnerableComponentViews);
         List<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                                                            .map(ProjectVersionVulnerableBomComponentsView::getVulnerabilityWithRemediation)
                                                                                                                            .sorted(

@@ -43,13 +43,13 @@ import com.synopsys.integration.rest.request.Request;
 public class BlackDuckProviderIssueHandler {
     public static final String ISSUE_ENDPOINT_MEDIA_TYPE_V6 = "application/vnd.blackducksoftware.bill-of-materials-6+json";
     private final Gson gson;
-    private final BlackDuckApiClient blackDuckService;
-    private final BlackDuckRequestFactory requestFactory;
+    private final BlackDuckApiClient blackDuckApiClient;
+    private final BlackDuckRequestFactory blackDuckRequestFactory;
 
-    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckApiClient blackDuckService, BlackDuckRequestFactory requestFactory) {
+    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckApiClient blackDuckApiClient, BlackDuckRequestFactory blackDuckRequestFactory) {
         this.gson = gson;
-        this.blackDuckService = blackDuckService;
-        this.requestFactory = requestFactory;
+        this.blackDuckApiClient = blackDuckApiClient;
+        this.blackDuckRequestFactory = blackDuckRequestFactory;
     }
 
     public void createOrUpdateBlackDuckIssue(String bomComponentVersionIssuesUrl, BlackDuckProviderIssueModel issueModel) throws IntegrationException {
@@ -68,11 +68,11 @@ public class BlackDuckProviderIssueHandler {
 
             // The request uri should point at the specific issue for PUT requests
             requestUri = existingIssue.getMeta().getHref();
-            requestBuilderCreator = requestFactory::createCommonPutRequestBuilder;
+            requestBuilderCreator = blackDuckRequestFactory::createCommonPutRequestBuilder;
         } else {
             issueRequestModel.setIssueCreatedAt(currentDate);
             issueRequestModel.setIssueUpdatedAt(null);
-            requestBuilderCreator = requestFactory::createCommonPostRequestBuilder;
+            requestBuilderCreator = blackDuckRequestFactory::createCommonPostRequestBuilder;
         }
         performRequest(requestUri, issueRequestModel, requestBuilderCreator);
     }
@@ -81,11 +81,11 @@ public class BlackDuckProviderIssueHandler {
     private Optional<IssueView> retrieveExistingIssue(String bomComponentVersionIssuesUrl, String issueKey) throws IntegrationException {
         String issueLookupUrl = createIssueLookupUrl(bomComponentVersionIssuesUrl);
         HttpUrl issueLookupHttpUrl = new HttpUrl(issueLookupUrl);
-        BlackDuckRequestBuilder requestBuilder = requestFactory.createCommonGetRequestBuilder(issueLookupHttpUrl)
+        BlackDuckRequestBuilder requestBuilder = blackDuckRequestFactory.createCommonGetRequestBuilder(issueLookupHttpUrl)
                                                      .addHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6);
 
         // This is really a List<BomComponentIssueView>, but BomComponentIssueView is not considered a BlackDuckResponse.
-        List<IssueView> bomComponentIssues = blackDuckService.getAllResponses(requestBuilder, IssueView.class);
+        List<IssueView> bomComponentIssues = blackDuckApiClient.getAllResponses(requestBuilder, IssueView.class);
         return bomComponentIssues
                    .stream()
                    .filter(issue -> issue.getIssueId().equals(issueKey))
@@ -98,7 +98,7 @@ public class BlackDuckProviderIssueHandler {
                               .addHeader(HttpHeaders.CONTENT_TYPE, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
                               .addHeader(HttpHeaders.ACCEPT, ISSUE_ENDPOINT_MEDIA_TYPE_V6)
                               .build();
-        blackDuckService.execute(request);
+        blackDuckApiClient.execute(request);
     }
 
     private IssueView createIssueRequestModel(BlackDuckProviderIssueModel issueModel) {
