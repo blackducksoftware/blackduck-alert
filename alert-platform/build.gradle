@@ -13,7 +13,7 @@ dependencies {
         api 'com.sun.mail:javax.mail:1.6.2'
         api 'javax.mail:javax.mail-api:1.6.2'
 
-        api 'com.synopsys.integration:blackduck-common:50.1.0'
+        api 'com.synopsys.integration:blackduck-common:50.3.0'
         api 'com.synopsys.integration:integration-rest:6.1.2'
         api 'com.synopsys.integration:integration-common:24.1.0'
 

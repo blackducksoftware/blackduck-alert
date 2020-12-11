@@ -61,6 +61,9 @@ public class AlertProperties {
     @Value("${server.port:}")
     private String serverPort;
 
+    @Value("${public.alert.webserver.port:}")
+    private String publicServerPort;
+
     @Value("${server.servlet.context-path:}")
     private String contextPath;
 
@@ -146,6 +149,10 @@ public class AlertProperties {
         return getOptionalString(serverPort);
     }
 
+    public Optional<String> getPublicServerPort() {
+        return getOptionalString(publicServerPort);
+    }
+
     public Optional<String> getContextPath() {
         return getOptionalString(contextPath);
     }
@@ -191,8 +198,8 @@ public class AlertProperties {
 
     public Optional<String> getServerUrl() {
         try {
-            String hostName = getAlertHostName().orElse(getAlertHostName().orElse("localhost"));
-            String port = getServerPort().orElse(getServerPort().orElse(getServerPort().orElse("")));
+            String hostName = getAlertHostName().orElse("localhost");
+            String port = getPublicServerPort().orElse(getServerPort().orElse(""));
             String path = getContextPath().orElse("");
             String protocol = "http";
             if (getSslEnabled()) {

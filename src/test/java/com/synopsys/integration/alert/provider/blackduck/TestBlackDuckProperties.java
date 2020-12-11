@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
     private final TestAlertProperties testAlertProperties;
@@ -42,8 +43,19 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     private Long configId;
     private boolean configIdSet;
 
-    public TestBlackDuckProperties(TestAlertProperties alertProperties) {
-        this(new Gson(), alertProperties, new TestProperties(), Mockito.mock(ProxyManager.class));
+    public static ProxyManager createMockedProxyManger() {
+        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        ProxyInfo proxyInfo = Mockito.mock(ProxyInfo.class);
+        Mockito.when(proxyInfo.getHost()).thenReturn(Optional.empty());
+        Mockito.when(proxyInfo.getPort()).thenReturn(-1);
+        Mockito.when(proxyInfo.getUsername()).thenReturn(Optional.empty());
+        Mockito.when(proxyInfo.getPassword()).thenReturn(Optional.empty());
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(proxyInfo);
+        return proxyManager;
+    }
+
+    public TestBlackDuckProperties(TestAlertProperties alertProperties, ProxyManager proxyManager) {
+        this(new Gson(), alertProperties, new TestProperties(), proxyManager);
     }
 
     public TestBlackDuckProperties(Gson gson, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {
