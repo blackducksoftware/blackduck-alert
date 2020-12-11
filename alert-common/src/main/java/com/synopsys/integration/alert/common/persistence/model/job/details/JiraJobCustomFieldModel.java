@@ -1,5 +1,5 @@
 /**
- * alert-database
+ * alert-common
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -20,29 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job.jira.server.custom_field;
+package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import java.io.Serializable;
-import java.util.UUID;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class JiraServerJobCustomFieldPK implements Serializable {
-    private UUID jobId;
+public class JiraJobCustomFieldModel extends AlertSerializableModel {
     private String fieldName;
+    private String fieldValue;
 
-    public JiraServerJobCustomFieldPK() {
+    public JiraJobCustomFieldModel() {
     }
 
-    public JiraServerJobCustomFieldPK(UUID jobId, String fieldName) {
-        this.jobId = jobId;
+    public JiraJobCustomFieldModel(String fieldName, String fieldValue) {
         this.fieldName = fieldName;
-    }
-
-    public UUID getJobId() {
-        return jobId;
+        this.fieldValue = fieldValue;
     }
 
     public String getFieldName() {
         return fieldName;
+    }
+
+    public String getFieldValue() {
+        return fieldValue;
     }
 
 }
