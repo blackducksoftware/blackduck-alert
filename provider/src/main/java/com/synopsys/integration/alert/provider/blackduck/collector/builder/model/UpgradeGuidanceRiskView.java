@@ -1,21 +1,17 @@
 package com.synopsys.integration.alert.provider.blackduck.collector.builder.model;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
 import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
 
 public class UpgradeGuidanceRiskView extends AlertSerializableModel {
-    private BigDecimal critical;
-    private BigDecimal high;
-    private BigDecimal medium;
-    private BigDecimal low;
-    private boolean hasCriticalVulnerabilities;
-    private boolean hasHighVulnerabilities;
-    private boolean hasMediumVulnerabilities;
-    private boolean hasLowVulnerabilities;
-    private boolean hasVulnerabilities;
+    private Integer critical;
+    private Integer high;
+    private Integer medium;
+    private Integer low;
 
     public static UpgradeGuidanceRiskView fromShortTermVulnerabilityRiskView(ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermVulnerabilityRiskView) {
         if (null == shortTermVulnerabilityRiskView) {
@@ -32,56 +28,37 @@ public class UpgradeGuidanceRiskView extends AlertSerializableModel {
     }
 
     public UpgradeGuidanceRiskView(BigDecimal critical, BigDecimal high, BigDecimal medium, BigDecimal low) {
-        this.critical = critical;
-        this.high = high;
-        this.medium = medium;
-        this.low = low;
-        hasCriticalVulnerabilities = isBigDecimalGreaterThanZero(critical);
-        hasHighVulnerabilities = isBigDecimalGreaterThanZero(high);
-        hasMediumVulnerabilities = isBigDecimalGreaterThanZero(medium);
-        hasLowVulnerabilities = isBigDecimalGreaterThanZero(low);
-        hasVulnerabilities = hasCriticalVulnerabilities || hasHighVulnerabilities || hasMediumVulnerabilities || hasLowVulnerabilities;
-
+        this.critical = getIntegerFromBigDecimal(critical);
+        this.high = getIntegerFromBigDecimal(high);
+        this.medium = getIntegerFromBigDecimal(medium);
+        this.low = getIntegerFromBigDecimal(low);
     }
 
-    public BigDecimal getCritical() {
-        return critical;
+    public Optional<Integer> getCritical() {
+        return Optional.ofNullable(critical);
     }
 
-    public BigDecimal getHigh() {
-        return high;
+    public Optional<Integer> getHigh() {
+        return Optional.ofNullable(high);
     }
 
-    public BigDecimal getMedium() {
-        return medium;
+    public Optional<Integer> getMedium() {
+        return Optional.ofNullable(medium);
     }
 
-    public BigDecimal getLow() {
-        return low;
-    }
-
-    public boolean hasCriticalVulnerabilities() {
-        return hasCriticalVulnerabilities;
-    }
-
-    public boolean hasHighVulnerabilities() {
-        return hasHighVulnerabilities;
-    }
-
-    public boolean hasMediumVulnerabilities() {
-        return hasMediumVulnerabilities;
-    }
-
-    public boolean hasLowVulnerabilities() {
-        return hasLowVulnerabilities;
+    public Optional<Integer> getLow() {
+        return Optional.ofNullable(low);
     }
 
     public boolean hasVulnerabilities() {
-        return hasVulnerabilities;
+        return (null != critical && critical > 0) ||
+                   (null != high && high > 0) ||
+                   (null != medium && medium > 0) ||
+                   (null != low && low > 0);
     }
 
-    private boolean isBigDecimalGreaterThanZero(BigDecimal bigDecimal) {
-        return bigDecimal != null && BigDecimal.ZERO.compareTo(bigDecimal) < 0;
+    private Integer getIntegerFromBigDecimal(BigDecimal bigDecimal) {
+        return null == bigDecimal ? null : bigDecimal.intValue();
     }
 
 }
