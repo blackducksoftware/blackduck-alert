@@ -15,23 +15,29 @@ public class UpgradeGuidanceRiskView extends AlertSerializableModel {
 
     public static UpgradeGuidanceRiskView fromShortTermVulnerabilityRiskView(ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermVulnerabilityRiskView) {
         if (null == shortTermVulnerabilityRiskView) {
-            return new UpgradeGuidanceRiskView(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+            return new UpgradeGuidanceRiskView(null, null, null, null);
         }
-        return new UpgradeGuidanceRiskView(shortTermVulnerabilityRiskView.getCritical(), shortTermVulnerabilityRiskView.getHigh(), shortTermVulnerabilityRiskView.getMedium(), shortTermVulnerabilityRiskView.getLow());
+        return new UpgradeGuidanceRiskView(getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getCritical()), getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getHigh()),
+            getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getMedium()), getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getLow()));
     }
 
     public static UpgradeGuidanceRiskView fromLongTermVulnerabilityRiskView(ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView longTermVulnerabilityRiskView) {
         if (null == longTermVulnerabilityRiskView) {
-            return new UpgradeGuidanceRiskView(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+            return new UpgradeGuidanceRiskView(null, null, null, null);
         }
-        return new UpgradeGuidanceRiskView(longTermVulnerabilityRiskView.getCritical(), longTermVulnerabilityRiskView.getHigh(), longTermVulnerabilityRiskView.getMedium(), longTermVulnerabilityRiskView.getLow());
+        return new UpgradeGuidanceRiskView(getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getCritical()), getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getHigh()),
+            getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getMedium()), getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getLow()));
     }
 
-    public UpgradeGuidanceRiskView(BigDecimal critical, BigDecimal high, BigDecimal medium, BigDecimal low) {
-        this.critical = getIntegerFromBigDecimal(critical);
-        this.high = getIntegerFromBigDecimal(high);
-        this.medium = getIntegerFromBigDecimal(medium);
-        this.low = getIntegerFromBigDecimal(low);
+    private static Integer getIntegerFromBigDecimal(BigDecimal bigDecimal) {
+        return null == bigDecimal ? null : bigDecimal.intValue();
+    }
+
+    public UpgradeGuidanceRiskView(Integer critical, Integer high, Integer medium, Integer low) {
+        this.critical = critical;
+        this.high = high;
+        this.medium = medium;
+        this.low = low;
     }
 
     public Optional<Integer> getCritical() {
@@ -55,10 +61,6 @@ public class UpgradeGuidanceRiskView extends AlertSerializableModel {
                    (null != high && high > 0) ||
                    (null != medium && medium > 0) ||
                    (null != low && low > 0);
-    }
-
-    private Integer getIntegerFromBigDecimal(BigDecimal bigDecimal) {
-        return null == bigDecimal ? null : bigDecimal.intValue();
     }
 
 }
