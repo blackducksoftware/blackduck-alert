@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
@@ -263,34 +264,46 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
             );
         } else if ("channel_email".equals(channelDescriptorName)) {
             EmailJobDetailsEntity jobDetails = jobEntity.getEmailJobDetails();
+            List<String> additionalEmailAddresses = jobDetails.getEmailJobAdditionalEmailAddresses()
+                                                        .stream()
+                                                        .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
+                                                        .collect(Collectors.toList());
             distributionJobDetailsModel = new EmailJobDetailsModel(
                 jobDetails.getSubjectLine(),
                 jobDetails.getProjectOwnerOnly(),
                 jobDetails.getAdditionalEmailAddressesOnly(),
                 jobDetails.getAttachmentFileType(),
-                jobDetails.getEmailJobAdditionalEmailAddresses().stream()
-                    .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
-                    .collect(Collectors.toList())
+                additionalEmailAddresses
             );
         } else if ("channel_jira_cloud".equals(channelDescriptorName)) {
             JiraCloudJobDetailsEntity jobDetails = jobEntity.getJiraCloudJobDetails();
+            List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
+                                                             .stream()
+                                                             .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                                                             .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraCloudJobDetailsModel(
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorEmail(),
                 jobDetails.getProjectNameOrKey(),
                 jobDetails.getIssueType(),
                 jobDetails.getResolveTransition(),
-                jobDetails.getReopenTransition()
+                jobDetails.getReopenTransition(),
+                customFields
             );
         } else if ("channel_jira_server".equals(channelDescriptorName)) {
             JiraServerJobDetailsEntity jobDetails = jobEntity.getJiraServerJobDetails();
+            List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
+                                                             .stream()
+                                                             .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                                                             .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraServerJobDetailsModel(
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorUsername(),
                 jobDetails.getProjectNameOrKey(),
                 jobDetails.getIssueType(),
                 jobDetails.getResolveTransition(),
-                jobDetails.getReopenTransition()
+                jobDetails.getReopenTransition(),
+                customFields
             );
         } else if ("msteamskey".equals(channelDescriptorName)) {
             MSTeamsJobDetailsEntity jobDetails = jobEntity.getMsTeamsJobDetails();

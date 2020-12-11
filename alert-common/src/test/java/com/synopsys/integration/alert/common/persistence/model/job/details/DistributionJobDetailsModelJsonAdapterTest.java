@@ -51,14 +51,14 @@ public class DistributionJobDetailsModelJsonAdapterTest {
 
     @Test
     public void serializeJiraCloudJobDetailsModelTest() {
-        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(true, "unknown", "JIRA-X", "bug", "done", "undone");
+        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(true, "unknown", "JIRA-X", "bug", "done", "undone", List.of());
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
 
     @Test
     public void serializeJiraServerJobDetailsModelTest() {
-        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(true, "user_name01", "JIRA-Y", "other", "finished", "unfinished");
+        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of());
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -121,7 +121,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
 
     @Test
     public void deserializeJiraCloudJobDetailsModelTest() {
-        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(true, "unknown", "JIRA-X", "bug", "done", "undone");
+        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(true, "unknown", "JIRA-X", "bug", "done", "undone", List.of());
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, DistributionJobDetailsModel::isJiraCloudDetails);
 
@@ -136,7 +136,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
 
     @Test
     public void deserializeJiraServerJobDetailsModelTest() {
-        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(true, "user_name01", "JIRA-Y", "other", "finished", "unfinished");
+        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of());
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, DistributionJobDetailsModel::isJiraServerDetails);
 
