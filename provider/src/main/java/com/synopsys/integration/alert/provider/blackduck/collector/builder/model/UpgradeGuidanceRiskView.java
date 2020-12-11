@@ -15,7 +15,7 @@ public class UpgradeGuidanceRiskView extends AlertSerializableModel {
 
     public static UpgradeGuidanceRiskView fromShortTermVulnerabilityRiskView(ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermVulnerabilityRiskView) {
         if (null == shortTermVulnerabilityRiskView) {
-            return new UpgradeGuidanceRiskView(null, null, null, null);
+            return new UpgradeGuidanceRiskView();
         }
         return new UpgradeGuidanceRiskView(getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getCritical()), getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getHigh()),
             getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getMedium()), getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getLow()));
@@ -23,7 +23,7 @@ public class UpgradeGuidanceRiskView extends AlertSerializableModel {
 
     public static UpgradeGuidanceRiskView fromLongTermVulnerabilityRiskView(ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView longTermVulnerabilityRiskView) {
         if (null == longTermVulnerabilityRiskView) {
-            return new UpgradeGuidanceRiskView(null, null, null, null);
+            return new UpgradeGuidanceRiskView();
         }
         return new UpgradeGuidanceRiskView(getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getCritical()), getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getHigh()),
             getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getMedium()), getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getLow()));
@@ -31,6 +31,13 @@ public class UpgradeGuidanceRiskView extends AlertSerializableModel {
 
     private static Integer getIntegerFromBigDecimal(BigDecimal bigDecimal) {
         return null == bigDecimal ? null : bigDecimal.intValue();
+    }
+
+    public UpgradeGuidanceRiskView() {
+        this.critical = null;
+        this.high = null;
+        this.medium = null;
+        this.low = null;
     }
 
     public UpgradeGuidanceRiskView(Integer critical, Integer high, Integer medium, Integer low) {
