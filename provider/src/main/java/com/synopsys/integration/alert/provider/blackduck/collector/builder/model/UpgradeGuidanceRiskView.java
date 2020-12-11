@@ -31,7 +31,7 @@ public class UpgradeGuidanceRiskView extends AlertSerializableModel {
         return new UpgradeGuidanceRiskView(longTermVulnerabilityRiskView.getCritical(), longTermVulnerabilityRiskView.getHigh(), longTermVulnerabilityRiskView.getMedium(), longTermVulnerabilityRiskView.getLow());
     }
 
-    private UpgradeGuidanceRiskView(BigDecimal critical, BigDecimal high, BigDecimal medium, BigDecimal low) {
+    public UpgradeGuidanceRiskView(BigDecimal critical, BigDecimal high, BigDecimal medium, BigDecimal low) {
         this.critical = critical;
         this.high = high;
         this.medium = medium;

@@ -31,7 +31,7 @@ public class UpgradeGuidanceView extends AlertSerializableModel {
             UpgradeGuidanceRiskView.fromLongTermVulnerabilityRiskView(upgradeGuidanceLongTermView.getVulnerabilityRisk()));
     }
 
-    private UpgradeGuidanceView(String origin, String originExternalId, String originExternalNamespace, String originName, String version, String versionName,
+    public UpgradeGuidanceView(String origin, String originExternalId, String originExternalNamespace, String originName, String version, String versionName,
         UpgradeGuidanceRiskView vulnerabilityRisk) {
         this.origin = origin;
         this.originExternalId = originExternalId;
