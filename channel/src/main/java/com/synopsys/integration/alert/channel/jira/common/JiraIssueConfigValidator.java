@@ -74,7 +74,8 @@ public abstract class JiraIssueConfigValidator {
         String validatedIssueCreator = validateIssueCreator(originalIssueConfig, fieldErrors);
         String validatedIssueType = validateIssueType(originalIssueConfig, fieldErrors);
 
-        // TODO validate custom fields
+        // FIXME validate custom fields
+        //  this needs to be done when the UI design is finalized
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(JiraConstants.JIRA_ISSUE_VALIDATION_ERROR_MESSAGE, fieldErrors);

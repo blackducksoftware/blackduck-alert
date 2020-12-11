@@ -25,12 +25,10 @@ package com.synopsys.integration.alert.channel.jira.common.model;
 public class JiraCustomFieldConfig {
     private final String fieldName;
     private final String fieldValue;
-    private final String fieldType;
 
-    public JiraCustomFieldConfig(String fieldName, String fieldValue, String fieldType) {
+    public JiraCustomFieldConfig(String fieldName, String fieldValue) {
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
-        this.fieldType = fieldType;
     }
 
     public String getFieldName() {
@@ -39,10 +37,6 @@ public class JiraCustomFieldConfig {
 
     public String getFieldValue() {
         return fieldValue;
-    }
-
-    public String getFieldType() {
-        return fieldType;
     }
 
 }
