@@ -60,6 +60,7 @@ public class JiraCloudJobDetailsAccessor {
         );
         JiraCloudJobDetailsEntity savedJobDetails = jiraCloudJobDetailsRepository.save(jiraCloudJobDetailsToSave);
 
+        jiraCloudJobCustomFieldRepository.deleteByJobId(jobId);
         List<JiraCloudJobCustomFieldEntity> customFieldsToSave = jiraCloudJobDetails.getCustomFields()
                                                                      .stream()
                                                                      .map(model -> new JiraCloudJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))

@@ -30,4 +30,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface JiraServerJobCustomFieldRepository extends JpaRepository<JiraServerJobCustomFieldEntity, JiraServerJobCustomFieldPK> {
     List<JiraServerJobCustomFieldEntity> findByJobId(UUID jobId);
 
+    void deleteByJobId(UUID jobId);
+
 }
