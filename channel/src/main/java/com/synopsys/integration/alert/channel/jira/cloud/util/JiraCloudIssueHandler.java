@@ -28,6 +28,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
@@ -52,8 +53,8 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     private final JiraCloudIssuePropertyHandler jiraIssuePropertyHandler;
 
     public JiraCloudIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
-        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCloudCustomFieldResolver jiraCloudCustomFieldResolver) {
-        super(gson, jiraCloudCustomFieldResolver, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
+        JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCustomFieldResolver jiraCustomFieldResolver) {
+        super(gson, jiraCustomFieldResolver, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHandler = jiraIssuePropertyHandler;

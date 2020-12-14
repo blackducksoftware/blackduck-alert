@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
-import com.synopsys.integration.alert.channel.jira.server.util.JiraServerCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssueHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
@@ -93,8 +93,8 @@ public class JiraServerRequestDelegator {
         JiraContentValidator jiraContentValidator = new JiraContentValidator();
         JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraServerCustomFieldResolver jiraServerCustomFieldResolver = new JiraServerCustomFieldResolver(fieldService);
-        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraServerCustomFieldResolver);
+        JiraCustomFieldResolver jiraCustomFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
+        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraCustomFieldResolver);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
 

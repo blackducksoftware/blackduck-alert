@@ -40,7 +40,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingSupplier;
 import com.synopsys.integration.jira.common.model.response.CustomFieldCreationResponseModel;
 
-public abstract class JiraCustomFieldResolver {
+public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_STRING_VALUE = "string";
     private static final String CUSTOM_FIELD_TYPE_ARRAY_VALUE = "array";
     private static final String CUSTOM_FIELD_TYPE_OPTION_VALUE = "option";
@@ -51,8 +51,7 @@ public abstract class JiraCustomFieldResolver {
     private final Map<String, CustomFieldCreationResponseModel> fieldCache;
     private boolean isCachePopulated;
 
-    public JiraCustomFieldResolver(
-        ThrowingSupplier<List<CustomFieldCreationResponseModel>, IntegrationException> retrieveAvailableFields) {
+    public JiraCustomFieldResolver(ThrowingSupplier<List<CustomFieldCreationResponseModel>, IntegrationException> retrieveAvailableFields) {
         this.retrieveAvailableFields = retrieveAvailableFields;
         this.fieldCache = new HashMap<>();
         this.isCachePopulated = false;

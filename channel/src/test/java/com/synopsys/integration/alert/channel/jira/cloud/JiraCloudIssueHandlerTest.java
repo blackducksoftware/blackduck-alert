@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestConfigHelper;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
@@ -55,7 +55,7 @@ public class JiraCloudIssueHandlerTest {
         JiraContentValidator contentValidator = new JiraContentValidator();
         JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
-        JiraCloudCustomFieldResolver customFieldResolver = Mockito.mock(JiraCloudCustomFieldResolver.class);
+        JiraCustomFieldResolver customFieldResolver = Mockito.mock(JiraCustomFieldResolver.class);
         MockJiraIssueHandler jiraCloudIssueHandler = new MockJiraIssueHandler(issueService, jiraTestConfigHelper.createJiraCloudProperties(), gson, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator, customFieldResolver);
 
         JiraIssueConfig issueConfig = new JiraIssueConfig(
@@ -86,7 +86,7 @@ public class JiraCloudIssueHandlerTest {
 
     private static class MockJiraIssueHandler extends JiraCloudIssueHandler {
         public MockJiraIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
-            JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCloudCustomFieldResolver jiraCustomFieldResolver) {
+            JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCustomFieldResolver jiraCustomFieldResolver) {
             super(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraCustomFieldResolver);
         }
 
