@@ -22,12 +22,13 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -44,46 +45,6 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
     }
 
     @Override
-    protected String getProjectFieldKey() {
-        return JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME;
-    }
-
-    @Override
-    protected String getIssueTypeFieldKey() {
-        return JiraCloudDescriptor.KEY_ISSUE_TYPE;
-    }
-
-    @Override
-    protected String getIssueCreatorFieldKey() {
-        return JiraCloudDescriptor.KEY_ISSUE_CREATOR;
-    }
-
-    @Override
-    protected String getAddCommentsFieldKey() {
-        return JiraCloudDescriptor.KEY_ADD_COMMENTS;
-    }
-
-    @Override
-    protected String getResolveTransitionFieldKey() {
-        return JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getOpenTransitionFieldKey() {
-        return JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getDefaultIssueCreatorFieldKey() {
-        return JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
-    }
-
-    @Override
-    public JiraCloudContext build(FieldUtility fieldUtility) {
-        return new JiraCloudContext(jiraCloudPropertiesFactory.createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
-    }
-
-    @Override
     public JiraCloudContext build(ConfigurationModel globalConfig, DistributionJobModel jobModel) {
         FieldUtility globalFieldUtility = new FieldUtility(globalConfig.getCopyOfKeyToFieldMap());
         JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(globalFieldUtility);
@@ -91,13 +52,18 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
         DistributionJobDetailsModel distributionJobDetails = jobModel.getDistributionJobDetails();
         JiraCloudJobDetailsModel jiraCouldJobDetails = distributionJobDetails.getAsJiraCouldJobDetails();
 
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setProjectName(jiraCouldJobDetails.getProjectNameOrKey());
-        issueConfig.setIssueCreator(jiraCouldJobDetails.getIssueCreatorEmail());
-        issueConfig.setIssueType(jiraCouldJobDetails.getIssueType());
-        issueConfig.setCommentOnIssues(jiraCouldJobDetails.isAddComments());
-        issueConfig.setResolveTransition(jiraCouldJobDetails.getResolveTransition());
-        issueConfig.setOpenTransition(jiraCouldJobDetails.getReopenTransition());
+        // FIXME add custom fields
+        JiraIssueConfig issueConfig = new JiraIssueConfig(
+            jiraCouldJobDetails.getProjectNameOrKey(),
+            jiraCouldJobDetails.getProjectNameOrKey(),
+            null,
+            jiraCouldJobDetails.getIssueCreatorEmail(),
+            jiraCouldJobDetails.getIssueType(),
+            jiraCouldJobDetails.isAddComments(),
+            jiraCouldJobDetails.getResolveTransition(),
+            jiraCouldJobDetails.getReopenTransition(),
+            List.of()
+        );
 
         return new JiraCloudContext(jiraProperties, issueConfig);
     }

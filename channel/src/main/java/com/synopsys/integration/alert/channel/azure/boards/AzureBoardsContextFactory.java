@@ -51,31 +51,36 @@ public class AzureBoardsContextFactory {
     public AzureBoardsContext fromConfig(ConfigurationModel azureBoardsGlobalConfig, AzureBoardsJobDetailsModel jobDetails) {
         AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromGlobalConfig(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), azureBoardsGlobalConfig);
 
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setProjectName(jobDetails.getProjectNameOrId());
-        issueConfig.setIssueType(jobDetails.getWorkItemType());
-        issueConfig.setCommentOnIssues(jobDetails.isAddComments());
-        issueConfig.setResolveTransition(jobDetails.getWorkItemCompletedState());
-        issueConfig.setOpenTransition(jobDetails.getWorkItemReopenState());
-
+        IssueConfig issueConfig = new IssueConfig(
+            jobDetails.getProjectNameOrId(),
+            null,
+            null,
+            null,
+            jobDetails.getWorkItemType(),
+            jobDetails.isAddComments(),
+            jobDetails.getWorkItemCompletedState(),
+            jobDetails.getWorkItemReopenState()
+        );
         return new AzureBoardsContext(azureBoardsProperties, issueConfig);
     }
 
     private IssueConfig createIssueConfig(FieldUtility fieldUtility) {
         String projectName = getFieldString(fieldUtility, AzureBoardsDescriptor.KEY_AZURE_PROJECT);
         String issueType = getFieldString(fieldUtility, AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE);
-        Boolean commentOnIssues = fieldUtility.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
+        boolean commentOnIssues = fieldUtility.getBooleanOrFalse(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT);
         String resolveTransition = getFieldString(fieldUtility, AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE);
         String openTransition = getFieldString(fieldUtility, AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE);
 
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setProjectName(projectName);
-        issueConfig.setIssueType(issueType);
-        issueConfig.setCommentOnIssues(commentOnIssues);
-        issueConfig.setResolveTransition(resolveTransition);
-        issueConfig.setOpenTransition(openTransition);
-
-        return issueConfig;
+        return new IssueConfig(
+            projectName,
+            null,
+            null,
+            null,
+            issueType,
+            commentOnIssues,
+            resolveTransition,
+            openTransition
+        );
     }
 
     private String getFieldString(FieldUtility fieldUtility, String fieldKey) {
