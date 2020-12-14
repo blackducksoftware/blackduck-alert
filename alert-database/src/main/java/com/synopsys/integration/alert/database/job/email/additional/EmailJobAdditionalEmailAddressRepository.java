@@ -30,4 +30,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface EmailJobAdditionalEmailAddressRepository extends JpaRepository<EmailJobAdditionalEmailAddressEntity, EmailJobAdditionalEmailAddressPK> {
     List<EmailJobAdditionalEmailAddressEntity> findByJobId(UUID jobId);
 
+    void deleteByJobId(UUID jobId);
+
 }
