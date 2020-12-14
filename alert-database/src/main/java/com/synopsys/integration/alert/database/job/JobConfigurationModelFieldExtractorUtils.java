@@ -105,7 +105,9 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("channel.jira.cloud.project.name", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.cloud.issue.type", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.cloud.resolve.workflow", configuredFieldsMap),
-                extractFieldValueOrEmptyString("channel.jira.cloud.reopen.workflow", configuredFieldsMap)
+                extractFieldValueOrEmptyString("channel.jira.cloud.reopen.workflow", configuredFieldsMap),
+                // FIXME add custom fields
+                List.of()
             );
         } else if ("channel_jira_server".equals(channelDescriptorName)) {
             jobDetails = new JiraServerJobDetailsModel(
@@ -114,7 +116,9 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("channel.jira.server.project.name", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.server.issue.type", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.server.resolve.workflow", configuredFieldsMap),
-                extractFieldValueOrEmptyString("channel.jira.server.reopen.workflow", configuredFieldsMap)
+                extractFieldValueOrEmptyString("channel.jira.server.reopen.workflow", configuredFieldsMap),
+                // FIXME add custom fields
+                List.of()
             );
         } else if ("msteamskey".equals(channelDescriptorName)) {
             jobDetails = new MSTeamsJobDetailsModel(extractFieldValueOrEmptyString("channel.msteams.webhook", configuredFieldsMap));

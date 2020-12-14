@@ -4,4 +4,5 @@
     <include file="static-distribution-jobs.xml" relativeToChangelogFile="true"/>
     <include file="migrate-distribution-jobs.xml" relativeToChangelogFile="true"/>
     <include file="store-blackduck-project-href.xml" relativeToChangelogFile="true"/>
+    <include file="jira-custom-fields.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -22,7 +22,9 @@
  */
 package com.synopsys.integration.alert.database.job.jira.cloud;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,14 +32,19 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldEntity;
+import com.synopsys.integration.alert.database.job.jira.cloud.custom_field.JiraCloudJobCustomFieldRepository;
 
 @Component
 public class JiraCloudJobDetailsAccessor {
     private final JiraCloudJobDetailsRepository jiraCloudJobDetailsRepository;
+    private final JiraCloudJobCustomFieldRepository jiraCloudJobCustomFieldRepository;
 
     @Autowired
-    public JiraCloudJobDetailsAccessor(JiraCloudJobDetailsRepository jiraCloudJobDetailsRepository) {
+    public JiraCloudJobDetailsAccessor(JiraCloudJobDetailsRepository jiraCloudJobDetailsRepository, JiraCloudJobCustomFieldRepository jiraCloudJobCustomFieldRepository) {
         this.jiraCloudJobDetailsRepository = jiraCloudJobDetailsRepository;
+        this.jiraCloudJobCustomFieldRepository = jiraCloudJobCustomFieldRepository;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -51,7 +58,25 @@ public class JiraCloudJobDetailsAccessor {
             jiraCloudJobDetails.getResolveTransition(),
             jiraCloudJobDetails.getReopenTransition()
         );
-        return jiraCloudJobDetailsRepository.save(jiraCloudJobDetailsToSave);
+        JiraCloudJobDetailsEntity savedJobDetails = jiraCloudJobDetailsRepository.save(jiraCloudJobDetailsToSave);
+
+        jiraCloudJobCustomFieldRepository.deleteByJobId(jobId);
+        List<JiraCloudJobCustomFieldEntity> customFieldsToSave = jiraCloudJobDetails.getCustomFields()
+                                                                     .stream()
+                                                                     .map(model -> new JiraCloudJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))
+                                                                     .collect(Collectors.toList());
+        if (!customFieldsToSave.isEmpty()) {
+            List<JiraCloudJobCustomFieldEntity> savedCustomFields = jiraCloudJobCustomFieldRepository.saveAll(customFieldsToSave);
+            savedJobDetails.setJobCustomFields(savedCustomFields);
+        }
+        return savedJobDetails;
+    }
+
+    public List<JiraJobCustomFieldModel> retrieveCustomFieldsForJob(UUID jobId) {
+        return jiraCloudJobCustomFieldRepository.findByJobId(jobId)
+                   .stream()
+                   .map(customFieldEntity -> new JiraJobCustomFieldModel(customFieldEntity.getFieldName(), customFieldEntity.getFieldValue()))
+                   .collect(Collectors.toList());
     }
 
 }
