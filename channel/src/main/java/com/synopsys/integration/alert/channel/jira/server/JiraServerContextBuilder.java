@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +50,6 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
         DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
         JiraServerJobDetailsModel jiraServerJobDetails = distributionJobDetails.getAsJiraServerJobDetails();
 
-        // FIXME add custom fields
         JiraIssueConfig issueConfig = new JiraIssueConfig(
             jiraServerJobDetails.getProjectNameOrKey(),
             jiraServerJobDetails.getProjectNameOrKey(),
@@ -62,7 +59,7 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
             jiraServerJobDetails.isAddComments(),
             jiraServerJobDetails.getResolveTransition(),
             jiraServerJobDetails.getReopenTransition(),
-            List.of()
+            createJiraCustomFieldConfig(jiraServerJobDetails.getCustomFields())
         );
         return new JiraServerContext(jiraProperties, issueConfig);
     }

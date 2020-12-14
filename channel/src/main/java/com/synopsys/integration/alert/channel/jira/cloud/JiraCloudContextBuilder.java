@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +50,6 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
         DistributionJobDetailsModel distributionJobDetails = jobModel.getDistributionJobDetails();
         JiraCloudJobDetailsModel jiraCouldJobDetails = distributionJobDetails.getAsJiraCouldJobDetails();
 
-        // FIXME add custom fields
         JiraIssueConfig issueConfig = new JiraIssueConfig(
             jiraCouldJobDetails.getProjectNameOrKey(),
             jiraCouldJobDetails.getProjectNameOrKey(),
@@ -62,7 +59,7 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
             jiraCouldJobDetails.isAddComments(),
             jiraCouldJobDetails.getResolveTransition(),
             jiraCouldJobDetails.getReopenTransition(),
-            List.of()
+            createJiraCustomFieldConfig(jiraCouldJobDetails.getCustomFields())
         );
 
         return new JiraCloudContext(jiraProperties, issueConfig);
