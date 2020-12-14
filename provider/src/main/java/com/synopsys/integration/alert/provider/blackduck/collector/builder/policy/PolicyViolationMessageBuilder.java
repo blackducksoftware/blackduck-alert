@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Messa
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
-import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertBlackDuckService;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
@@ -65,12 +65,11 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.datastructure.SetMap;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 @Component
 public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleViolationNotificationView> {
@@ -86,11 +85,9 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
-        long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
-        BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
-        BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        AlertBlackDuckService alertBlackDuckService = new AlertBlackDuckService(blackDuckApiClient);
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
         RuleViolationNotificationContent violationContent = notificationView.getContent();
 
@@ -110,7 +107,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
                 Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
-                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, blackDuckApiClient, componentService, componentVersionStatus, policies, commonMessageData.getNotificationId(),
+                List<ComponentItem> componentItems = retrievePolicyItems(alertBlackDuckService, blackDuckApiClient, componentService, componentVersionStatus, policies, commonMessageData.getNotificationId(),
                     violationContent.getProjectVersion(), policyFilters);
                 items.addAll(componentItems);
             }
@@ -123,27 +120,27 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
         return List.of();
     }
 
-    private List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckApiClient blackDuckApiClient, ComponentService componentService, ComponentVersionStatus componentVersionStatus,
+    private List<ComponentItem> retrievePolicyItems(AlertBlackDuckService alertBlackDuckService, BlackDuckApiClient blackDuckApiClient, ComponentService componentService, ComponentVersionStatus componentVersionStatus,
         Set<PolicyInfo> policies, Long notificationId, String projectVersionUrl, Collection<String> policyFilters) {
         List<ComponentItem> componentItems = new LinkedList<>();
         String componentName = componentVersionStatus.getComponentName();
         String componentVersionName = componentVersionStatus.getComponentVersionName();
         String bomComponentUrl = componentVersionStatus.getBomComponent();
 
-        Optional<ProjectVersionComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
+        Optional<ProjectVersionComponentView> optionalBomComponent = alertBlackDuckService.getBomComponentView(bomComponentUrl);
         ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
         componentItems.addAll(
-            policyCommonBuilder.retrievePolicyItems(getNotificationType(), blackDuckResponseCache, componentData, policies, notificationId, ItemOperation.ADD, bomComponentUrl, List.of(), policyFilters));
+            policyCommonBuilder.retrievePolicyItems(getNotificationType(), alertBlackDuckService, componentData, policies, notificationId, ItemOperation.ADD, bomComponentUrl, List.of(), policyFilters));
         for (PolicyInfo policyInfo : policies) {
             String policyName = policyInfo.getPolicyName();
             if (policyFilters.isEmpty() || policyFilters.contains(policyName)) {
                 LinkableItem policyNameItem = ComponentBuilderUtil.createPolicyNameItem(policyInfo);
                 LinkableItem nullablePolicySeverityItem = ComponentBuilderUtil.createPolicySeverityItem(policyInfo).orElse(null);
-                Optional<PolicyRuleView> optionalPolicyRule = blackDuckResponseCache.getPolicyRule(blackDuckResponseCache, policyInfo);
+                Optional<PolicyRuleView> optionalPolicyRule = alertBlackDuckService.getPolicyRule(policyInfo);
                 List<PolicyRuleExpressionExpressionsView> expressions = optionalPolicyRule.map(rule -> rule.getExpression().getExpressions()).orElse(List.of());
                 if (optionalBomComponent.isPresent() && policyCommonBuilder.hasVulnerabilityRule(expressions)) {
                     List<ComponentItem> vulnerabilityPolicyItems = createVulnerabilityPolicyItems(
-                        blackDuckResponseCache, blackDuckApiClient, componentService, optionalBomComponent.get(), policyNameItem, nullablePolicySeverityItem, projectVersionUrl, componentName, componentVersionName, notificationId);
+                        alertBlackDuckService, blackDuckApiClient, componentService, optionalBomComponent.get(), policyNameItem, nullablePolicySeverityItem, projectVersionUrl, componentName, componentVersionName, notificationId);
                     componentItems.addAll(vulnerabilityPolicyItems);
                 }
             }
@@ -151,11 +148,11 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
         return componentItems;
     }
 
-    private List<ComponentItem> createVulnerabilityPolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckApiClient blackDuckApiClient, ComponentService componentService, ProjectVersionComponentView bomComponent,
+    private List<ComponentItem> createVulnerabilityPolicyItems(AlertBlackDuckService alertBlackDuckService, BlackDuckApiClient blackDuckApiClient, ComponentService componentService, ProjectVersionComponentView bomComponent,
         LinkableItem policyNameItem, LinkableItem policySeverity, String projectVersionUrl, String componentName, String componentVersionName, Long notificationId) {
         List<ComponentItem> vulnerabilityPolicyItems = new ArrayList<>();
 
-        Optional<ProjectVersionWrapper> optionalProjectVersionWrapper = blackDuckResponseCache.getProjectVersionWrapper(projectVersionUrl);
+        Optional<ProjectVersionWrapper> optionalProjectVersionWrapper = alertBlackDuckService.getProjectVersionWrapper(projectVersionUrl);
         if (optionalProjectVersionWrapper.isPresent()) {
             try {
                 ProjectVersionWrapper projectVersionWrapper = optionalProjectVersionWrapper.get();
@@ -164,11 +161,11 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
 
                 List<ProjectVersionVulnerableBomComponentsView> vulnerableComponentViews = VulnerabilityUtil.getVulnerableComponentViews(blackDuckApiClient, projectVersionWrapper, bomComponent);
                 List<ComponentItem> vulnerabilityComponentItems =
-                    policyCommonBuilder.createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, callbackInfo.orElse(null), notificationId, blackDuckApiClient, blackDuckResponseCache);
+                    policyCommonBuilder.createVulnerabilityPolicyComponentItems(vulnerableComponentViews, policyNameItem, policySeverity, componentData, callbackInfo.orElse(null), notificationId, blackDuckApiClient, alertBlackDuckService);
                 vulnerabilityPolicyItems.addAll(vulnerabilityComponentItems);
-                ComponentVersionView componentVersionView = blackDuckResponseCache.getItem(ComponentVersionView.class, bomComponent.getComponentVersion()).orElse(null);
+                ComponentVersionView componentVersionView = blackDuckApiClient.getResponse(new HttpUrl(bomComponent.getComponentVersion()), ComponentVersionView.class);
 
-                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(blackDuckResponseCache, MessageBuilderConstants.CATEGORY_TYPE_POLICY, componentService, componentVersionView, componentData, policyNameItem,
+                Optional<ComponentItem> remediationComponentItem = createRemediationComponentItem(alertBlackDuckService, MessageBuilderConstants.CATEGORY_TYPE_POLICY, componentService, componentVersionView, componentData, policyNameItem,
                     policySeverity, true, notificationId);
                 remediationComponentItem.ifPresent(vulnerabilityPolicyItems::add);
             } catch (IntegrationException e) {
@@ -178,7 +175,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
         return vulnerabilityPolicyItems;
     }
 
-    protected Optional<ComponentItem> createRemediationComponentItem(BlackDuckResponseCache blackDuckResponseCache, String categoryType, ComponentService componentService, ComponentVersionView componentVersionView,
+    protected Optional<ComponentItem> createRemediationComponentItem(AlertBlackDuckService alertBlackDuckService, String categoryType, ComponentService componentService, ComponentVersionView componentVersionView,
         ComponentData componentData, LinkableItem categoryItem, LinkableItem categoryGrouping, boolean collapseOnCategory, Long notificationId) {
         try {
             List<LinkableItem> remediationItems = VulnerabilityUtil.getRemediationItems(componentService, componentVersionView);
@@ -192,7 +189,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
                                                                  .applyCollapseOnCategory(collapseOnCategory)
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);
-                ComponentBuilderUtil.applyComponentInformation(remediationComponent, blackDuckResponseCache, componentData);
+                ComponentBuilderUtil.applyComponentInformation(remediationComponent, alertBlackDuckService, componentData);
                 // TODO should this get callbackInfo?
                 return Optional.of(remediationComponent.build());
             }

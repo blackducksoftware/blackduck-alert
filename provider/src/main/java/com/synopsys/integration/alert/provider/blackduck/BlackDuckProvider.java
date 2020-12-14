@@ -89,6 +89,7 @@ public class BlackDuckProvider extends Provider {
     public StatefulProvider createStatefulProvider(ConfigurationModel configurationModel) throws AlertException {
         BlackDuckProperties blackDuckProperties = propertiesFactory.createProperties(configurationModel);
         List<ProviderTask> tasks = taskFactory.createTasks(blackDuckProperties);
+        //TODO change to use the new Cache Client
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckProperties);
         ProviderDistributionFilter distributionFilter = distributionFilterFactory.createFilter(blackDuckServicesFactory, getNotificationClassMap());
         BlackDuckMessageContentCollector messageContentCollector = messageContentCollectorFactory.createCollector(blackDuckServicesFactory);

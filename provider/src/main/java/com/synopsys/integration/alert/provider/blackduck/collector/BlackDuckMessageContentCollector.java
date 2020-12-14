@@ -39,20 +39,17 @@ import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageC
 import com.synopsys.integration.alert.common.workflow.processor.message.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 public class BlackDuckMessageContentCollector extends ProviderMessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckMessageContentCollector.class);
 
     private final BlackDuckServicesFactory blackDuckServicesFactory;
     private final Map<String, BlackDuckMessageBuilder> messageBuilderMap;
-    private final BlackDuckBucket blackDuckBucket;
 
     public BlackDuckMessageContentCollector(BlackDuckServicesFactory blackDuckServicesFactory, List<MessageContentProcessor> messageContentProcessors, List<BlackDuckMessageBuilder> messageBuilders) {
         super(messageContentProcessors);
         this.blackDuckServicesFactory = blackDuckServicesFactory;
         this.messageBuilderMap = DataStructureUtils.mapToValues(messageBuilders, builder -> builder.getNotificationType().name());
-        this.blackDuckBucket = new BlackDuckBucket();
     }
 
     @Override
@@ -68,7 +65,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
                 CommonMessageData commonMessageData = new CommonMessageData(
                     notification.getId(), notification.getProviderConfigId(), blackDuckMessageBuilder.getProviderName(), notification.getProviderConfigName(), baseUrlString, notification.getProviderCreationTime(), job);
                 List<ProviderMessageContent> providerMessageContentsForNotification =
-                    blackDuckMessageBuilder.buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckBucket, blackDuckServicesFactory);
+                    blackDuckMessageBuilder.buildMessageContents(commonMessageData, cache.getTypedContent(notification), blackDuckServicesFactory);
                 providerMessageContents.addAll(providerMessageContentsForNotification);
             }
         }

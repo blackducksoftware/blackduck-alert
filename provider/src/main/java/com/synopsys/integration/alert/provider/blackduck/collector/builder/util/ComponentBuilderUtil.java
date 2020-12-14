@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
-import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertBlackDuckService;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -70,8 +70,8 @@ public final class ComponentBuilderUtil {
         return Optional.empty();
     }
 
-    public static void applyComponentInformation(ComponentItem.Builder componentBuilder, BlackDuckResponseCache responseCache, ComponentData componentData) {
-        String projectQueryLink = responseCache.getProjectComponentQueryLink(componentData.getProjectVersionUrl(), componentData.getProjectComponentLink(), componentData.getComponentName()).orElse(null);
+    public static void applyComponentInformation(ComponentItem.Builder componentBuilder, AlertBlackDuckService alertBlackDuckService, ComponentData componentData) {
+        String projectQueryLink = alertBlackDuckService.getProjectComponentQueryLink(componentData.getProjectVersionUrl(), componentData.getProjectComponentLink(), componentData.getComponentName()).orElse(null);
         componentData.getComponentVersionName()
             .filter(StringUtils::isNotBlank)
             .ifPresentOrElse(componentVersion -> {

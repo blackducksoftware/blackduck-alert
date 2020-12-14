@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
@@ -46,7 +45,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.polic
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
-import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertBlackDuckService;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
@@ -61,10 +60,9 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotificationView> {
@@ -80,47 +78,46 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, BomEditNotificationView notificationView, BlackDuckBucket blackDuckBucket,
-        BlackDuckServicesFactory blackDuckServicesFactory) {
-        long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
-        BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, BomEditNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
-        BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
+
+        AlertBlackDuckService alertBlackDuckService = new AlertBlackDuckService(blackDuckApiClient);
         BomEditNotificationContent bomEditContent = notificationView.getContent();
-        Optional<ProjectVersionComponentView> optionalBomComponent = responseCache.getBomComponentView(bomEditContent.getBomComponent());
+
         Long notificationId = commonMessageData.getNotificationId();
 
-        Optional<ProjectVersionWrapper> projectVersionWrapper = responseCache.getProjectVersionWrapper(bomEditContent.getProjectVersion());
-        if (optionalBomComponent.isPresent() && projectVersionWrapper.isPresent()) {
-            ProjectVersionComponentView bomComponent = optionalBomComponent.get();
+        Optional<ProjectVersionComponentView> projectVersionComponentViewOptional = alertBlackDuckService.getBomComponentView(bomEditContent.getBomComponent());
+        Optional<ProjectVersionWrapper> projectVersionWrapperOptional = alertBlackDuckService.getProjectVersionWrapper(bomEditContent.getProjectVersion());
+        if (projectVersionComponentViewOptional.isPresent() && projectVersionWrapperOptional.isPresent()) {
             try {
-                ProjectVersionWrapper projectVersionData = projectVersionWrapper.get();
-                ProjectView projectView = projectVersionData.getProjectView();
-                ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
+                ProjectVersionComponentView bomComponent = projectVersionComponentViewOptional.get();
+                ProjectVersionWrapper projectVersionWrapper = projectVersionWrapperOptional.get();
 
+                ProjectView projectView = projectVersionWrapper.getProjectView();
+                ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
                 messageContentBuilder
                     .applyCommonData(commonMessageData)
                     .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectView.getName(), projectView.getHref().toString())
-                    .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionData.getProjectVersionView().getVersionName(),
-                        projectVersionData.getProjectVersionView().getHref().toString());
+                    .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionWrapper.getProjectVersionView().getVersionName(),
+                        projectVersionWrapper.getProjectVersionView().getHref().toString());
 
                 List<LinkableItem> commonAttributes = Stream.concat(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent).stream(), ComponentBuilderUtil.getUsageLinkableItems(bomComponent).stream())
                                                           .collect(Collectors.toList());
 
-                List<ComponentItem> componentItems = new LinkedList<>(addVulnerabilityData(responseCache, componentService, notificationId, bomComponent, projectVersionData, commonAttributes));
-                componentItems.addAll(createPolicyItems(responseCache, blackDuckApiClient, notificationId, projectVersionData, bomComponent, commonAttributes));
+                List<ComponentItem> componentItems = new LinkedList<>(addVulnerabilityData(alertBlackDuckService, componentService, notificationId, bomComponent, projectVersionWrapper, commonAttributes));
+                componentItems.addAll(createPolicyItems(alertBlackDuckService, blackDuckApiClient, notificationId, projectVersionWrapper, bomComponent, commonAttributes));
 
                 messageContentBuilder.applyAllComponentItems(componentItems);
                 return List.of(messageContentBuilder.build());
-            } catch (AlertException ex) {
+            } catch (IntegrationException ex) {
                 logger.error("Error creating policy violation message.", ex);
             }
         }
         return List.of();
     }
 
-    private Collection<ComponentItem> addVulnerabilityData(BlackDuckResponseCache blackDuckResponseCache, ComponentService componentService, Long notificationId, ProjectVersionComponentView versionBomComponent,
+    private Collection<ComponentItem> addVulnerabilityData(AlertBlackDuckService alertBlackDuckService, ComponentService componentService, Long notificationId, ProjectVersionComponentView versionBomComponent,
         ProjectVersionWrapper projectVersionWrapper, List<LinkableItem> commonAttributes) {
         Collection<ComponentItem> items = new LinkedList<>();
         RiskProfileView securityRiskProfile = versionBomComponent.getSecurityRiskProfile();
@@ -133,7 +130,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                 List<LinkableItem> componentAttributes = new LinkedList<>();
                 componentAttributes.addAll(commonAttributes);
 
-                Optional<ComponentVersionView> componentVersionView = blackDuckResponseCache.getItem(ComponentVersionView.class, versionBomComponent.getComponentVersion());
+                Optional<ComponentVersionView> componentVersionView = alertBlackDuckService.getComponentVersion(versionBomComponent);
                 if (componentVersionView.isPresent()) {
                     List<LinkableItem> remediationItems = VulnerabilityUtil.getRemediationItems(componentService, componentVersionView.get());
                     componentAttributes.addAll(remediationItems);
@@ -146,7 +143,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                                                     .applyCollapseOnCategory(true)
                                                     .applyAllComponentAttributes(componentAttributes)
                                                     .applyNotificationId(notificationId);
-                ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                ComponentBuilderUtil.applyComponentInformation(builder, alertBlackDuckService, componentData);
                 blackDuckIssueTrackerCallbackUtility.createCallbackInfo(getNotificationType(), versionBomComponent)
                     .ifPresent(builder::applyComponentItemCallbackInfo);
                 items.add(builder.build());
@@ -158,7 +155,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
         return items;
     }
 
-    private Collection<ComponentItem> createPolicyItems(BlackDuckResponseCache blackDuckResponseCache, BlackDuckApiClient blackDuckApiClient, Long notificationId, ProjectVersionWrapper projectVersionWrapper,
+    private Collection<ComponentItem> createPolicyItems(AlertBlackDuckService blackDuckResponseCache, BlackDuckApiClient blackDuckApiClient, Long notificationId, ProjectVersionWrapper projectVersionWrapper,
         ProjectVersionComponentView versionBomComponent, List<LinkableItem> commonAttributes) {
         if (!ProjectVersionComponentPolicyStatusType.IN_VIOLATION.equals(versionBomComponent.getPolicyStatus())) {
             // TODO Consider removing this for the sake of issue-trackers.
