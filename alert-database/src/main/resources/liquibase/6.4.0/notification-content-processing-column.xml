@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
-    <changeSet author="martinch" id="2020-12-01-14-04-07-258">
+    <changeSet author="martinch" id="add_processed_column_to_notification_table">
         <preConditions onFail="MARK_RAN">
             <not>
                 <columnExists schemaName="alert" tableName="raw_notification_content" columnName="processed"/>

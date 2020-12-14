@@ -72,7 +72,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
             Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
             logger.info("====== Initial total pages before loop: {} ======", pageOfAlertNotificationModels.getTotalPages()); //TODO delete this log
             //get content, if not null and not empty, then go into the loop
-            //Idea: MAX_NUMBER_OF_PAGES, set to "1000" upper bound so that this loop is not stuck forever
+            //Idea: MAX_NUMBER_OF_PAGES, set to "100" upper bound so that this loop is not stuck forever
 
             //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
             while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getContent()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
@@ -87,7 +87,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
                 logger.info("====== Setting Notifications to processed =====");
                 numPagesProcessed++;
                 pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
-                logger.info("====== New total pages: {} ======", pageOfAlertNotificationModels.getTotalPages());
+                logger.info("====== New total pages: {} ======", pageOfAlertNotificationModels.getTotalPages()); //TODO bump to trace make it to "processing page from numPagesProcessed, and then new pages found getTotalPages".
             }
             if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
                 logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
