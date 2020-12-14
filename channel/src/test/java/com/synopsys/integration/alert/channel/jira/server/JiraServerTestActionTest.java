@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.server.actions.JiraServerCreateIssueTestAction;
 import com.synopsys.integration.alert.channel.jira.server.model.TestIssueCreator;
 import com.synopsys.integration.alert.channel.jira.server.model.TestIssueResponse;
@@ -21,7 +22,6 @@ import com.synopsys.integration.alert.channel.jira.server.model.TestIssueSearchI
 import com.synopsys.integration.alert.channel.jira.server.model.TestIssueTypeResponseModel;
 import com.synopsys.integration.alert.channel.jira.server.model.TestNewStatusDetailsComponent;
 import com.synopsys.integration.alert.channel.jira.server.model.TestTransitionResponsesModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -46,6 +46,7 @@ import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.server.service.FieldService;
 import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 import com.synopsys.integration.jira.common.server.service.JiraServerServiceFactory;
@@ -63,6 +64,7 @@ public class JiraServerTestActionTest {
     private IssueService issueService;
     private IssuePropertyService issuePropertyService;
     private IssueSearchService issueSearchService;
+    private FieldService fieldService;
 
     @BeforeEach
     public void init() {
@@ -74,6 +76,7 @@ public class JiraServerTestActionTest {
         issueService = Mockito.mock(IssueService.class);
         issuePropertyService = Mockito.mock(IssuePropertyService.class);
         issueSearchService = Mockito.mock(IssueSearchService.class);
+        fieldService = Mockito.mock(FieldService.class);
     }
 
     private JiraServerServiceFactory createMockServiceFactory() {
@@ -86,6 +89,7 @@ public class JiraServerTestActionTest {
         Mockito.when(serviceFactory.createIssueService()).thenReturn(issueService);
         Mockito.when(serviceFactory.createIssuePropertyService()).thenReturn(issuePropertyService);
         Mockito.when(serviceFactory.createIssueSearchService()).thenReturn(issueSearchService);
+        Mockito.when(serviceFactory.createFieldService()).thenReturn(fieldService);
 
         return serviceFactory;
     }
@@ -162,16 +166,18 @@ public class JiraServerTestActionTest {
             "additionalKey");
     }
 
-    private IssueConfig createIssueConfig() {
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setCommentOnIssues(true);
-        issueConfig.setIssueType("task");
-        issueConfig.setProjectName("project");
-        issueConfig.setResolveTransition("done");
-        issueConfig.setOpenTransition("new");
-        issueConfig.setIssueCreator("creator");
-
-        return issueConfig;
+    private JiraIssueConfig createIssueConfig() {
+        return new JiraIssueConfig(
+            "project",
+            null,
+            null,
+            "creator",
+            "task",
+            true,
+            "done",
+            "new",
+            List.of()
+        );
     }
 
     private IssueContentModel createContentModel() {

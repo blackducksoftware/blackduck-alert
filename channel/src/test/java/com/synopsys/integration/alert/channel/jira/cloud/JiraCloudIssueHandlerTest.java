@@ -3,17 +3,21 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssueHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.cloud.util.JiraCloudTransitionHandler;
+import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestConfigHelper;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -51,12 +55,20 @@ public class JiraCloudIssueHandlerTest {
         JiraContentValidator contentValidator = new JiraContentValidator();
         JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
-        TestJiraIssueHandler jiraCloudIssueHandler = new TestJiraIssueHandler(issueService, jiraTestConfigHelper.createJiraCloudProperties(), gson, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator);
+        JiraCustomFieldResolver customFieldResolver = Mockito.mock(JiraCustomFieldResolver.class);
+        MockJiraIssueHandler jiraCloudIssueHandler = new MockJiraIssueHandler(issueService, jiraTestConfigHelper.createJiraCloudProperties(), gson, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator, customFieldResolver);
 
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setProjectName(jiraTestConfigHelper.getTestProject());
-        issueConfig.setIssueCreator(email);
-        issueConfig.setIssueType(taskType);
+        JiraIssueConfig issueConfig = new JiraIssueConfig(
+            jiraTestConfigHelper.getTestProject(),
+            null,
+            null,
+            email,
+            taskType,
+            true,
+            null,
+            null,
+            List.of()
+        );
 
         JiraIssueSearchProperties jiraIssueSearchProperties = new JiraIssueSearchProperties("Provider", "Provider URL", "Topic", "Topic Value",
             "Sub Topic", "Sub Topic Value", "Category", "Component Name", "Component Value", "Sub Component", "Sub Component Value", "");
@@ -72,11 +84,10 @@ public class JiraCloudIssueHandlerTest {
         logger.alwaysLog("Done");
     }
 
-    private class TestJiraIssueHandler extends JiraCloudIssueHandler {
-
-        public TestJiraIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
-            JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator) {
-            super(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
+    private static class MockJiraIssueHandler extends JiraCloudIssueHandler {
+        public MockJiraIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
+            JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCustomFieldResolver jiraCustomFieldResolver) {
+            super(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraCustomFieldResolver);
         }
 
         public Optional<IssueResponseModel> testCreateIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
@@ -84,4 +95,5 @@ public class JiraCloudIssueHandlerTest {
         }
 
     }
+
 }

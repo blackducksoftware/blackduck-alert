@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
@@ -60,8 +61,8 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     private final JiraServerIssuePropertyHandler jiraIssuePropertyHelper;
 
     public JiraServerIssueHandler(IssueService issueService, JiraServerProperties jiraProperties, Gson gson, JiraServerTransitionHandler jiraTransitionHandler,
-        JiraServerIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator) {
-        super(gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
+        JiraServerIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCustomFieldResolver jiraCustomFieldResolver) {
+        super(gson, jiraCustomFieldResolver, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
