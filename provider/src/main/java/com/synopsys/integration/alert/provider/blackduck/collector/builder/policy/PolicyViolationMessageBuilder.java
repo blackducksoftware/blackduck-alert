@@ -86,7 +86,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
 
     @Override
     public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         AlertBlackDuckService alertBlackDuckService = new AlertBlackDuckService(blackDuckApiClient);
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
         RuleViolationNotificationContent violationContent = notificationView.getContent();

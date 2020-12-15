@@ -54,7 +54,7 @@ public class BlackDuckMessageBuilderTestHelper {
     public static BlackDuckServicesFactory mockServicesFactory(BlackDuckApiClient blackDuckApiClient, ProjectService projectService) {
         BlackDuckServicesFactory mockServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
 
-        Mockito.when(mockServicesFactory.getBlackDuckService()).thenReturn(blackDuckApiClient);
+        Mockito.when(mockServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
         Mockito.when(mockServicesFactory.createProjectService()).thenReturn(projectService);
 
         return mockServicesFactory;

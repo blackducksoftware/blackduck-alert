@@ -62,13 +62,12 @@ public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<Policy
 
     @Override
     public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, PolicyOverrideNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
-        long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         AlertBlackDuckService alertBlackDuckService = new AlertBlackDuckService(blackDuckApiClient);
         PolicyOverrideNotificationContent overrideContent = notificationView.getContent();
 
         String projectVersionUrl = overrideContent.getProjectVersion();
-        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, blackDuckServicesFactory.getBlackDuckService(), logger::warn);
+        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, blackDuckServicesFactory.getBlackDuckApiClient(), logger::warn);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder

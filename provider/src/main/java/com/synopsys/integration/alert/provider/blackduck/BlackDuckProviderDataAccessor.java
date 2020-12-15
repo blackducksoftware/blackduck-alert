@@ -122,7 +122,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         if (providerConfigOptional.isPresent()) {
             try {
                 BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
-                BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+                BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
                 ProjectView projectView = blackDuckService.getResponse(new HttpUrl(projectHref), ProjectView.class);
                 return getEmailAddressesForProject(projectView, blackDuckServicesFactory.createProjectUsersService());
             } catch (IntegrationException e) {
@@ -194,12 +194,12 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
         ProjectService projectService = blackDuckServicesFactory.createProjectService();
         List<ProjectView> allProjects = projectService.getAllProjects();
-        return convertBlackDuckProjects(allProjects, blackDuckServicesFactory.getBlackDuckService());
+        return convertBlackDuckProjects(allProjects, blackDuckServicesFactory.getBlackDuckApiClient());
     }
 
     private AlertPagedModel<ProviderProject> retrieveProjectsForProvider(ConfigurationModel blackDuckConfigurationModel, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfigurationModel);
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         HttpUrl projectsUrl = blackDuckApiClient.getUrl(ApiDiscovery.PROJECTS_LINK);
         BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder(new Request.Builder())
@@ -234,7 +234,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     private List<ProviderUserModel> getEmailAddressesByProvider(ConfigurationModel blackDuckConfiguration) throws IntegrationException {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfiguration);
-        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
         Set<String> allActiveBlackDuckUserEmailAddresses = getAllActiveBlackDuckUserEmailAddresses(blackDuckService);
         return allActiveBlackDuckUserEmailAddresses.stream()
                    .map(emailAddress -> new ProviderUserModel(emailAddress, false))
@@ -302,7 +302,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         int pageSize,
         Predicate<T> searchFilter
     ) throws IntegrationException {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         BlackDuckRequestFactory requestFactory = blackDuckServicesFactory.getRequestFactory();
 
         int offset = pageNumber * pageSize;

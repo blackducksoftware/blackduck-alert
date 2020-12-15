@@ -72,7 +72,7 @@ public class BlackDuckProjectNameExtractor {
     }
 
     private Collection<String> getBomEditProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
         String bomComponentUri = notificationView.getContent().getBomComponent();

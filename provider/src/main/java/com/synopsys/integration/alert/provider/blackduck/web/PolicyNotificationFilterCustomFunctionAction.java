@@ -119,7 +119,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
     }
 
     private BlackDuckPageResponse<PolicyRuleView> retrievePolicyRules(BlackDuckServicesFactory blackDuckServicesFactory, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         HttpUrl policyRulesUrl = blackDuckApiClient.getUrl(ApiDiscovery.POLICY_RULES_LINK);
         BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder(new Request.Builder())

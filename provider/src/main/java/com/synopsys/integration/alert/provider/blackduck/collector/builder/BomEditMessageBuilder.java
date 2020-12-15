@@ -80,7 +80,7 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
     @Override
     public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, BomEditNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
         ComponentService componentService = blackDuckServicesFactory.createComponentService();
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         AlertBlackDuckService alertBlackDuckService = new AlertBlackDuckService(blackDuckApiClient);
         BomEditNotificationContent bomEditContent = notificationView.getContent();
