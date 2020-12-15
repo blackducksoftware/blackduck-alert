@@ -4,20 +4,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
@@ -25,6 +29,8 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class StaticJobAccessorV2Test {
     private DistributionJobRepository distributionJobRepository;
@@ -72,7 +78,7 @@ class StaticJobAccessorV2Test {
     }
 
     @Test
-    void createJobTest() throws Exception {
+    void createJobTest() {
         UUID jobId = UUID.randomUUID();
         DistributionJobDetailsModel distributionJobDetailsModel = new DistributionJobDetailsModel(new ChannelKey("test", "channel") {}) {};
         DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
@@ -119,7 +125,7 @@ class StaticJobAccessorV2Test {
     }
 
     @Test
-    void deleteJobTest() throws AlertConfigurationException {
+    void deleteJobTest() {
         JobAccessorV2 jobAccessor = createJobAccessor();
         UUID jobId = UUID.randomUUID();
         jobAccessor.deleteJob(jobId);
@@ -174,6 +180,133 @@ class StaticJobAccessorV2Test {
 
         assertEquals(jobId, updatedJob.getJobId());
         assertEquals(jobName, updatedJob.getName());
+    }
+
+    @Test
+    void getJobsByIdTest() {
+        UUID jobId = UUID.randomUUID();
+
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+
+        Mockito.when(distributionJobRepository.findAllById(Mockito.any())).thenReturn(List.of(distributionJobEntity));
+        JobAccessorV2 jobAccessor = createJobAccessor();
+        List<DistributionJobModel> jobsById = jobAccessor.getJobsById(List.of(jobId));
+
+        assertEquals(1, jobsById.size());
+        DistributionJobModel distributionJobModel = jobsById.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
+    void getPageOfJobsTest() {
+        UUID jobId = UUID.randomUUID();
+
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+
+        Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
+        Mockito.when(distributionJobRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(page);
+
+        JobAccessorV2 jobAccessor = createJobAccessor();
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10);
+
+        assertEquals(1, pageOfJobs.getTotalPages());
+        List<DistributionJobModel> models = pageOfJobs.getModels();
+        assertEquals(1, models.size());
+        DistributionJobModel distributionJobModel = models.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
+    void getPageOfJobsSearchTest() {
+        ProviderKey providerKey = new BlackDuckProviderKey();
+        UUID jobId = UUID.randomUUID();
+
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, providerKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+
+        Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
+        Mockito.when(distributionJobRepository.findByChannelDescriptorNamesAndSearchTerm(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(page);
+
+        JobAccessorV2 jobAccessor = createJobAccessor();
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, "test-search-term", List.of(providerKey.getUniversalKey()));
+
+        assertEquals(1, pageOfJobs.getTotalPages());
+        List<DistributionJobModel> models = pageOfJobs.getModels();
+        assertEquals(1, models.size());
+        DistributionJobModel distributionJobModel = models.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
+    void getPageOfJobsBlankSearchTest() {
+        ProviderKey providerKey = new BlackDuckProviderKey();
+        UUID jobId = UUID.randomUUID();
+
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, providerKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+
+        Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
+        Mockito.when(distributionJobRepository.findByChannelDescriptorNameIn(Mockito.any(), Mockito.any())).thenReturn(page);
+
+        JobAccessorV2 jobAccessor = createJobAccessor();
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, " ", List.of(providerKey.getUniversalKey()));
+
+        assertEquals(1, pageOfJobs.getTotalPages());
+        List<DistributionJobModel> models = pageOfJobs.getModels();
+        assertEquals(1, models.size());
+        DistributionJobModel distributionJobModel = models.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
+    void getPageOfJobsExcludedDescriptorTest() {
+        JobAccessorV2 jobAccessor = createJobAccessor();
+        AlertPagedModel<DistributionJobModel> pageOfJobs = jobAccessor.getPageOfJobs(0, 10, null, List.of("invalid-descriptor-key"));
+
+        assertEquals(0, pageOfJobs.getTotalPages());
+        assertEquals(0, pageOfJobs.getCurrentPage());
+        assertEquals(10, pageOfJobs.getPageSize());
+        assertEquals(0, pageOfJobs.getModels().size());
+    }
+
+    @Test
+    void getMatchingEnabledJobsTest() {
+        UUID jobId = UUID.randomUUID();
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+
+        JobAccessorV2 jobAccessor = createJobAccessor();
+        Mockito.when(distributionJobRepository.findMatchingEnabledJob(Mockito.any(), Mockito.any())).thenReturn(List.of(distributionJobEntity));
+
+        List<DistributionJobModel> matchingEnabledJobs = jobAccessor.getMatchingEnabledJobs(3L, NotificationType.BOM_EDIT);
+
+        assertEquals(1, matchingEnabledJobs.size());
+        DistributionJobModel distributionJobModel = matchingEnabledJobs.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
+    void getMatchingEnabledJobsWithFrequencyTest() {
+        UUID jobId = UUID.randomUUID();
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
+
+        JobAccessorV2 jobAccessor = createJobAccessor();
+        Mockito.when(distributionJobRepository.findMatchingEnabledJob(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(List.of(distributionJobEntity));
+
+        List<DistributionJobModel> matchingEnabledJobs = jobAccessor.getMatchingEnabledJobs(FrequencyType.DAILY, 3L, NotificationType.BOM_EDIT);
+
+        assertEquals(1, matchingEnabledJobs.size());
+        DistributionJobModel distributionJobModel = matchingEnabledJobs.get(0);
+        assertEquals(jobId, distributionJobModel.getJobId());
+        assertEquals(jobName, distributionJobModel.getName());
     }
 
     private JobAccessorV2 createJobAccessor() {
