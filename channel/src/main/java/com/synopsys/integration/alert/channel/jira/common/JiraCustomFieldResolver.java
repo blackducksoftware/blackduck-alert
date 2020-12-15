@@ -84,20 +84,25 @@ public class JiraCustomFieldResolver {
 
     protected Object convertValueToRequestObject(CustomFieldDefinitionModel fieldDefinition, JiraCustomFieldConfig jiraCustomFieldConfig) {
         String fieldType = fieldDefinition.getFieldType();
+        String innerFieldValue = extractUsableInnerValue(jiraCustomFieldConfig);
         switch (fieldType) {
             case CUSTOM_FIELD_TYPE_STRING_VALUE:
                 return jiraCustomFieldConfig;
             case CUSTOM_FIELD_TYPE_ARRAY_VALUE:
                 JsonArray jsonArray = new JsonArray();
-                jsonArray.add(jiraCustomFieldConfig.getFieldOriginalValue());
+                jsonArray.add(innerFieldValue);
                 return jsonArray;
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("value", jiraCustomFieldConfig.getFieldOriginalValue());
+                jsonObject.addProperty("value", innerFieldValue);
                 return jsonObject;
             default:
                 throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
         }
+    }
+
+    private String extractUsableInnerValue(JiraCustomFieldConfig jiraCustomFieldConfig) {
+        return jiraCustomFieldConfig.getFieldReplacementValue().orElseGet(jiraCustomFieldConfig::getFieldOriginalValue);
     }
 
     private void initializeCache() throws IntegrationException {
