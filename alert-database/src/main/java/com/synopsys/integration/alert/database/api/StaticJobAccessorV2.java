@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -90,7 +90,8 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
     private final ProviderKey blackDuckProviderKey;
 
     @Autowired
-    public StaticJobAccessorV2(DistributionJobRepository distributionJobRepository,
+    public StaticJobAccessorV2(
+        DistributionJobRepository distributionJobRepository,
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
         AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
         EmailJobDetailsAccessor emailJobDetailsAccessor,
@@ -174,6 +175,15 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
     }
 
+    private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
+        // TODO change this to return a page of jobs
+        List<DistributionJobEntity> matchingEnabledJob = getJobs.get();
+        return matchingEnabledJob
+                   .stream()
+                   .map(this::convertToDistributionJobModel)
+                   .collect(Collectors.toList());
+    }
+
     @Override
     @Transactional
     public DistributionJobModel createJob(DistributionJobRequestModel requestModel) {
@@ -182,9 +192,13 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
 
     @Override
     @Transactional
-    public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertDatabaseConstraintException {
+    public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException {
+        if (jobId == null) {
+            throw new AlertConfigurationException("Cannot update job with null id.");
+        }
+
         DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
-                                              .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No job exists with the id [%s]", jobId.toString())));
+                                              .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId.toString())));
         OffsetDateTime createdAt = jobEntity.getCreatedAt();
 
         deleteJob(jobId);
@@ -193,17 +207,12 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
 
     @Override
     @Transactional
-    public void deleteJob(UUID jobId) {
-        distributionJobRepository.deleteById(jobId);
-    }
+    public void deleteJob(UUID jobId) throws AlertConfigurationException {
+        if (jobId == null) {
+            throw new AlertConfigurationException("Cannot delete job with null id.");
+        }
 
-    private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
-        // TODO change this to return a page of jobs
-        List<DistributionJobEntity> matchingEnabledJob = getJobs.get();
-        return matchingEnabledJob
-                   .stream()
-                   .map(this::convertToDistributionJobModel)
-                   .collect(Collectors.toList());
+        distributionJobRepository.deleteById(jobId);
     }
 
     private DistributionJobModel createJobWithId(UUID jobId, DistributionJobRequestModel requestModel, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {

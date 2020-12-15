@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -49,10 +49,10 @@ public interface JobAccessorV2 {
 
     Optional<DistributionJobModel> getJobByName(String jobName);
 
-    DistributionJobModel createJob(DistributionJobRequestModel requestModel) throws AlertDatabaseConstraintException;
+    DistributionJobModel createJob(DistributionJobRequestModel requestModel);
 
-    DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertDatabaseConstraintException;
+    DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException;
 
-    void deleteJob(UUID jobId) throws AlertDatabaseConstraintException;
+    void deleteJob(UUID jobId) throws AlertConfigurationException;
 
 }
