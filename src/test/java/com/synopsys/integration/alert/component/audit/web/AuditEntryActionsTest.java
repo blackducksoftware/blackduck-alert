@@ -24,7 +24,6 @@ import org.springframework.data.domain.Sort;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -105,7 +104,6 @@ public class AuditEntryActionsTest {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        ChannelEventManager eventManager = Mockito.mock(ChannelEventManager.class);
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         MockNotificationContent mockNotificationEntity = new MockNotificationContent();
@@ -113,7 +111,7 @@ public class AuditEntryActionsTest {
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationRepository, auditEntryRepository, auditNotificationRepository, null, eventManager);
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationRepository, auditEntryRepository, auditNotificationRepository, null);
         DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, null, notificationManager, null);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobAccessor, null, null);
 

@@ -22,10 +22,10 @@
  */
 package com.synopsys.integration.alert.common.event;
 
-public class NotificationEvent extends AlertEvent {
-    public static final String NOTIFICATION_EVENT_TYPE = "notification_event";
+public class NotificationReceivedEvent extends AlertEvent {
+    public static final String NOTIFICATION_RECEIVED_EVENT_TYPE = "notification_received_event";
 
-    public NotificationEvent() {
-        super(NOTIFICATION_EVENT_TYPE);
+    public NotificationReceivedEvent() {
+        super(NOTIFICATION_RECEIVED_EVENT_TYPE);
     }
 }

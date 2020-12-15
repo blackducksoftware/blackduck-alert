@@ -90,7 +90,6 @@ public class NotificationProcessor {
 
         List<DistributionEvent> events = new ArrayList<>();
         for (Map.Entry<NotificationFilterModel, Set<AlertNotificationModel>> entry : notificationFilterMap.entrySet()) {
-            logger.info("====== Notification Processor, Creating new entry..."); //TODO delete this line
             NotificationFilterModel notificationFilterModel = entry.getKey();
             if (null == notificationFilterModel.getNotificationType()) {
                 continue;
@@ -102,7 +101,6 @@ public class NotificationProcessor {
                 events.addAll(processNotificationsThatMatchFilter(notificationFilterModel, matchingJobs, matchingNotifications));
             }
         }
-        logger.info("====== Notification Processor, FINISHED!"); //TODO delete this line
         return events;
     }
 

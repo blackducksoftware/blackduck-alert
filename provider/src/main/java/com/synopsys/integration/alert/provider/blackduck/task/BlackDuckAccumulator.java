@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.event.NotificationEvent;
+import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -188,7 +188,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         notificationAccessor.saveAllNotifications(contentList);
         //TODO put the eventManager in here:
         logger.info("====== DISPATCH ====== Sending event for notifications."); //TODO: DELETE ME later
-        eventManager.sendEvent(new NotificationEvent());
+        eventManager.sendEvent(new NotificationReceivedEvent());
     }
 
     private List<NotificationView> sort(List<NotificationView> notifications) {
@@ -204,7 +204,6 @@ public class BlackDuckAccumulator extends ProviderTask {
         String provider = blackDuckProviderKey.getUniversalKey();
         String notificationType = notification.getType().name();
         String jsonContent = notification.getJson();
-        //TODO need to verify here
         return new AlertNotificationModel(null, getProviderProperties().getConfigId(), provider, null, notificationType, jsonContent, createdAt, providerCreationTime, false);
     }
 

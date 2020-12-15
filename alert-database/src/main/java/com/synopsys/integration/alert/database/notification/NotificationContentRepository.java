@@ -43,9 +43,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     @Query(value = "SELECT entity FROM NotificationEntity entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
     Page<NotificationEntity> findAllSentNotifications(Pageable pageable);
 
-    //TODO: we may be able to remove the new NotificationEntity
     @Query(value = "SELECT DISTINCT notificationRow "
-                       //+ "new NotificationEntity(notificationRow.id, notificationRow.createdAt, notificationRow.provider, notificationRow.providerConfigId, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content, notificationRow.processed) "
                        + "FROM NotificationEntity notificationRow "
                        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
@@ -64,7 +62,6 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     Page<NotificationEntity> findMatchingNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query(value = "SELECT DISTINCT notificationRow "
-                       //+ "new NotificationEntity(notificationRow.id, notificationRow.createdAt , notificationRow.provider, notificationRow.providerConfigId, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content) "
                        + "FROM NotificationEntity notificationRow "
                        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "

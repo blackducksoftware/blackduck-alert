@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.event.NotificationEvent;
+import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
@@ -42,14 +42,14 @@ public class NotificationReceiverTest {
         Mockito.when(notificationProcessor.processNotifications(Mockito.eq(FrequencyType.REAL_TIME), Mockito.eq(alertNotificationModels))).thenReturn(List.of(distributionEvent));
 
         NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessor, notificationProcessor, channelEventManager);
-        notificationReceiver.handleEvent(new NotificationEvent());
+        notificationReceiver.handleEvent(new NotificationReceivedEvent());
 
         Mockito.verify(channelEventManager, Mockito.times(1)).sendEvents(Mockito.any());
     }
 
     //TODO: Once NotificationReceiver is updated and the MAX_NUMBER_PAGES_PROCESSED is removed this will no longer need to be tested
     @Test
-    public void handleEventMaxPagesProcessed() throws Exception {
+    public void handleEventMaxPagesProcessedTest() throws Exception {
         List<AlertNotificationModel> alertNotificationModels = List.of(createAlertNotificationModel(1L, false));
         DistributionEvent distributionEvent = createDistributionEvent(1L);
 
@@ -61,9 +61,15 @@ public class NotificationReceiverTest {
         Mockito.when(notificationAccessorMock.findNotificationsNotProcessed()).thenReturn(new PageImpl<>(alertNotificationModels));
 
         NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessorMock, notificationProcessor, channelEventManager);
-        notificationReceiver.handleEvent(new NotificationEvent());
+        notificationReceiver.handleEvent(new NotificationReceivedEvent());
 
         Mockito.verify(channelEventManager, Mockito.times(100)).sendEvents(Mockito.any());
+    }
+
+    @Test
+    public void getDestinationNameTest() {
+        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, null, null, null);
+
     }
 
     private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) {

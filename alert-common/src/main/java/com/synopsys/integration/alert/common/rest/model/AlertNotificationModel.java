@@ -26,16 +26,16 @@ import java.time.OffsetDateTime;
 
 public class AlertNotificationModel extends AlertSerializableModel {
     private Long id;
-    private final Long providerConfigId;
+    private Long providerConfigId;
 
-    private final String provider;
-    private final String providerConfigName;
-    private final String notificationType;
-    private final String content;
-    private final boolean processed;
+    private String provider;
+    private String providerConfigName;
+    private String notificationType;
+    private String content;
+    private boolean processed;
 
-    private final OffsetDateTime createdAt;
-    private final OffsetDateTime providerCreationTime;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime providerCreationTime;
 
     public AlertNotificationModel(Long id, Long providerConfigId, String provider, String providerConfigName, String notificationType, String content, OffsetDateTime createdAt, OffsetDateTime providerCreationTime, boolean processed) {
         this.id = id;

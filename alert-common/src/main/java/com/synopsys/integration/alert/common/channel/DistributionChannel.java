@@ -51,8 +51,7 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
             try {
                 sendAuditedMessage(event);
             } catch (IntegrationException ex) {
-                //TODO reenable this later, removed for debugging sincne its flooding the logs
-                //logger.error("There was an error sending the message.", ex);
+                logger.error("There was an error sending the message.", ex);
             }
         } else {
             logger.warn("Received an event for channel '{}', but this channel is '{}'.", event.getDestination(), getDestinationName());
@@ -68,8 +67,7 @@ public abstract class DistributionChannel extends MessageReceiver<DistributionEv
             logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
             throw new AlertException(irex.getMessage(), irex);
         } catch (Exception e) {
-            //TODO removed to clean up logs
-            //logger.error("Error occurred sending message: ", e);
+            logger.error("Error occurred sending message: ", e);
             auditAccessor.setAuditEntryFailure(event.getAuditIds(), e.getMessage(), e);
             throw new AlertException(e.getMessage(), e);
         }

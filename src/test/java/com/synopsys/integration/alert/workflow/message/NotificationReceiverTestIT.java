@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-import com.synopsys.integration.alert.common.event.NotificationEvent;
+import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
@@ -45,7 +45,7 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
 
-        notificationReceiver.handleEvent(new NotificationEvent());
+        notificationReceiver.handleEvent(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
     }
@@ -60,7 +60,7 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
         assertNotNull(savedModels);
         assertEquals(0, defaultNotificationAccessor.findNotificationsNotProcessed().getContent().size());
 
-        notificationReceiver.handleEvent(new NotificationEvent());
+        notificationReceiver.handleEvent(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
     }
@@ -74,7 +74,7 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
 
-        notificationReceiver.handleEvent(new NotificationEvent());
+        notificationReceiver.handleEvent(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
     }

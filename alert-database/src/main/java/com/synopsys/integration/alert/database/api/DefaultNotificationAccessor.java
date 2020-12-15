@@ -42,11 +42,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -64,16 +64,14 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
-    private final EventManager eventManager;
 
     @Autowired
     public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository, AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository,
-        ConfigurationAccessor configurationAccessor, EventManager eventManager) {
+        ConfigurationAccessor configurationAccessor) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;
-        this.eventManager = eventManager;
     }
 
     @Override
@@ -87,23 +85,6 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                                                        .stream()
                                                        .map(this::toModel)
                                                        .collect(Collectors.toList());
-        /* TODO, Do not commit these comments to master
-        //DELETE ME!
-        notificationContentRepository.flush();
-        // TODO move this sendEvent call out of this class.  We can then remove the flush call since the save will be in a transaction.
-        //This is what james was talking about
-        if (!savedModels.isEmpty()) {
-            List<Long> notificationIds = savedModels.stream()
-                                             .map(AlertNotificationModel::getId)
-                                             .collect(Collectors.toList());
-            //TODO remove later; Log the notificationIds
-            for (Long id : notificationIds) {
-                logger.info("====== NOTIFICATION ID: " + id.toString());
-            }
-
-            eventManager.sendEvent(new NotificationEvent(notificationIds));
-
-        } */
         return savedModels;
     }
 
@@ -196,6 +177,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     //TODO this needs unit tests
     @Override
     public Page<AlertNotificationModel> findNotificationsNotProcessed() {
+        AlertPagedModel<AlertNotificationModel> test;
         Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
         PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(sortingOrder));
         return notificationContentRepository.findNotProcessedNotifications(pageRequest)

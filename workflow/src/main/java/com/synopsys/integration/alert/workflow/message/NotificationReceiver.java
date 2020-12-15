@@ -36,33 +36,33 @@ import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.event.NotificationEvent;
+import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
-public class NotificationReceiver extends MessageReceiver<NotificationEvent> implements AlertEventListener {
+public class NotificationReceiver extends MessageReceiver<NotificationReceivedEvent> implements AlertEventListener {
     private final static int MAX_NUMBER_PAGES_PROCESSED = 100;
     public static final String COMPONENT_NAME = "notification_receiver";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final NotificationAccessor notificationAccessor;
-    private final NotificationProcessor notificationProcessor;
-    private final ChannelEventManager eventManager;
+    private NotificationAccessor notificationAccessor;
+    private NotificationProcessor notificationProcessor;
+    private ChannelEventManager eventManager;
 
     @Autowired
     public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, ChannelEventManager eventManager) {
-        super(gson, NotificationEvent.class);
+        super(gson, NotificationReceivedEvent.class);
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
     }
 
     @Override
-    public void handleEvent(NotificationEvent event) {
-        if (NotificationEvent.NOTIFICATION_EVENT_TYPE.equals(event.getDestination())) {
+    public void handleEvent(NotificationReceivedEvent event) {
+        if (NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE.equals(event.getDestination())) {
             logger.debug("Event {}", event);
             logger.info("Processing event for notifications.");
 
@@ -71,8 +71,6 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
             logger.info("====== RECEIVED ====== Processing event for notifications."); //TODO: Delete this log
             Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
             logger.info("====== Initial total pages before loop: {} ======", pageOfAlertNotificationModels.getTotalPages()); //TODO delete this log
-            //get content, if not null and not empty, then go into the loop
-            //Idea: MAX_NUMBER_OF_PAGES, set to "100" upper bound so that this loop is not stuck forever
 
             //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
             while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getContent()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
@@ -94,19 +92,12 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
             }
             logger.info("===== Exiting While loop, no pages should remain ====="); //TODO delete me
         } else {
-            logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationEvent.NOTIFICATION_EVENT_TYPE);
+            logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE);
         }
     }
 
     @Override
     public String getDestinationName() {
-        return NotificationEvent.NOTIFICATION_EVENT_TYPE;
+        return NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE;
     }
-
-    /*
-    //TODO create a method to get a PageRequest of notifications with processed = false, sorted by oldest Date
-    // update: maybe not, we shouldn't manage paging here, instead do it in the NotificationAccessor
-    private PageRequest getPageRequest() {
-
-    }*/
 }
