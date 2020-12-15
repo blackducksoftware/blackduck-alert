@@ -5,6 +5,11 @@
     <!-- Create column to insert data into -->
 
     <changeSet author="gavink" id="add-project-columns">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists schemaName="alert" tableName="blackduck_job_projects" columnName="href"/>
+            </not>
+        </preConditions>
        <addColumn schemaName="alert" tableName="blackduck_job_projects">
            <column name="href" type="VARCHAR"/>
        </addColumn>
@@ -41,9 +46,17 @@
     <!-- Migrate primary key to include href rather than project_name -->
 
     <changeSet author="gavink" id="drop-old-primary-key">
+        <preConditions onFail="MARK_RAN">
+            <primaryKeyExists schemaName="alert" tableName="blackduck_job_projects"/>
+        </preConditions>
         <dropPrimaryKey schemaName="alert" tableName="blackduck_job_projects"/>
     </changeSet>
     <changeSet author="gavink" id="add-new-primary-key">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists schemaName="alert" tableName="blackduck_job_projects"/>
+            </not>
+        </preConditions>
         <addPrimaryKey
                 schemaName="alert"
                 tableName="blackduck_job_projects"

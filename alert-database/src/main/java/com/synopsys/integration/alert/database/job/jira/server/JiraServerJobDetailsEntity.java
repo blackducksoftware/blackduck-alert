@@ -22,12 +22,17 @@
  */
 package com.synopsys.integration.alert.database.job.jira.server;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldEntity;
 
 @Entity
 @Table(schema = "alert", name = "jira_server_job_details")
@@ -53,6 +58,10 @@ public class JiraServerJobDetailsEntity {
 
     @Column(name = "reopen_transition")
     private String reopenTransition;
+
+    @OneToMany
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
+    private List<JiraServerJobCustomFieldEntity> jobCustomFields;
 
     public JiraServerJobDetailsEntity() {
     }
@@ -121,6 +130,14 @@ public class JiraServerJobDetailsEntity {
 
     public void setReopenTransition(String reopenTransition) {
         this.reopenTransition = reopenTransition;
+    }
+
+    public List<JiraServerJobCustomFieldEntity> getJobCustomFields() {
+        return jobCustomFields;
+    }
+
+    public void setJobCustomFields(List<JiraServerJobCustomFieldEntity> jobCustomFields) {
+        this.jobCustomFields = jobCustomFields;
     }
 
 }

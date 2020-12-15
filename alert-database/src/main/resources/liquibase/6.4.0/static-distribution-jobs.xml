@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
     <changeSet author="gavink" id="create-uuid-ossp-extension">
         <sql stripComments="true">
             CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
         </sql>
     </changeSet>
+
+    <!-- Base Job Table -->
+
     <changeSet author="gavink" id="create-distribution-jobs-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="distribution_jobs"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="distribution_jobs">
             <column name="job_id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints primaryKey="true"/>
@@ -38,6 +47,11 @@
     <!-- Black Duck Job Tables -->
 
     <changeSet author="gavink" id="create-blackduck-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="blackduck_job_details"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="blackduck_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -55,6 +69,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="blackduck_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="blackduck_job_details_job_id_fk"
                 baseTableSchemaName="alert"
@@ -68,6 +87,11 @@
         />
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-notification-types-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="blackduck_job_notification_types"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="blackduck_job_notification_types">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -78,6 +102,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-notification-types-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="blackduck_job_notification_types_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="blackduck_job_notification_types_job_id_fk"
                 baseTableSchemaName="alert"
@@ -91,6 +120,11 @@
         />
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-policy-filters-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="blackduck_job_policy_filters"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="blackduck_job_policy_filters">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -101,6 +135,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-policy-filters-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="blackduck_job_policy_filters_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="blackduck_job_policy_filters_job_id_fk"
                 baseTableSchemaName="alert"
@@ -114,6 +153,11 @@
         />
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -124,6 +168,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-vulnerability-severity-filters-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="blackduck_job_vuln_severity_filters_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="blackduck_job_vuln_severity_filters_job_id_fk"
                 baseTableSchemaName="alert"
@@ -137,6 +186,11 @@
         />
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-projects-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="blackduck_job_projects"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="blackduck_job_projects">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -147,6 +201,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-blackduck-job-projects-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="blackduck_job_projects_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="blackduck_job_projects_job_id_fk"
                 baseTableSchemaName="alert"
@@ -163,6 +222,11 @@
     <!-- Azure Boards Job Table -->
 
     <changeSet author="gavink" id="create-azure-boards-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="azure_boards_job_details"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="azure_boards_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -185,6 +249,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-azure-boards-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="azure_boards_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="azure_boards_job_details_job_id_fk"
                 baseTableSchemaName="alert"
@@ -201,6 +270,11 @@
     <!-- Email Job Tables -->
 
     <changeSet author="gavink" id="create-email-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="email_job_details"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="email_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -220,6 +294,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-email-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="email_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="email_job_details_job_id_fk"
                 baseTableSchemaName="alert"
@@ -233,6 +312,11 @@
         />
     </changeSet>
     <changeSet author="gavink" id="create-email-job-additional-email-addresses-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="email_job_additional_email_addresses"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="email_job_additional_email_addresses">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -243,6 +327,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-email-job-additional-email-addresses-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="email_job_additional_email_addresses_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="email_job_additional_email_addresses_job_id_fk"
                 baseTableSchemaName="alert"
@@ -259,6 +348,11 @@
     <!-- Jira Could Job Tables -->
 
     <changeSet author="gavink" id="create-jira-cloud-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="jira_cloud_job_details"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="jira_cloud_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -284,6 +378,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-jira-cloud-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="jira_cloud_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="jira_cloud_job_details_job_id_fk"
                 baseTableSchemaName="alert"
@@ -300,6 +399,11 @@
     <!-- Jira Server Job Tables -->
 
     <changeSet author="gavink" id="create-jira-server-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="jira_server_job_details"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="jira_server_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -325,6 +429,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-jira-server-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="jira_server_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="jira_server_job_details_job_id_fk"
                 baseTableSchemaName="alert"
@@ -341,6 +450,11 @@
     <!-- MS Teams Job Tables -->
 
     <changeSet author="gavink" id="create-ms-teams-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="ms_teams_job_details"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="ms_teams_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -351,6 +465,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-ms-teams-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="ms_teams_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="ms_teams_job_details_job_id_fk"
                 baseTableSchemaName="alert"
@@ -367,6 +486,11 @@
     <!-- Slack Job Tables -->
 
     <changeSet author="gavink" id="create-slack-job-details-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="slack_job_details"/>
+            </not>
+        </preConditions>
         <createTable schemaName="alert" tableName="slack_job_details">
             <column name="job_id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -383,6 +507,11 @@
         </createTable>
     </changeSet>
     <changeSet author="gavink" id="create-slack-job-details-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="slack_job_details_job_id_fk"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint
                 constraintName="slack_job_details_job_id_fk"
                 baseTableSchemaName="alert"
