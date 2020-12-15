@@ -22,19 +22,13 @@
  */
 package com.synopsys.integration.alert.channel.jira.common.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
@@ -45,9 +39,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueHandler;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
@@ -61,6 +53,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     private final JiraCustomFieldResolver jiraCustomFieldResolver;
     private final JiraTransitionHandler jiraTransitionHelper;
     private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
+    private final JiraErrorMessageUtility jiraErrorMessageUtility;
 
     public JiraIssueHandler(Gson gson, JiraCustomFieldResolver jiraCustomFieldResolver, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler, JiraContentValidator contentValidator) {
         super(contentValidator);
@@ -68,6 +61,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         this.jiraCustomFieldResolver = jiraCustomFieldResolver;
         this.jiraTransitionHelper = jiraTransitionHandler;
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
+        this.jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
     }
 
     public abstract IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException;
@@ -77,7 +71,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
     @Override
     // TODO this does not need to be Optional
     protected Optional<IssueResponseModel> createIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
-        JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
+        JiraIssueSearchProperties issueSearchProperties = request.getIssueSearchProperties();
         IssueContentModel contentModel = request.getRequestContent();
 
         IssueContentModel issueContentModel = contentModel;
@@ -87,14 +81,14 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         }
 
         IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(issueContentModel);
-        appendIssueConfig(fieldsBuilder, (JiraIssueConfig) issueConfig);
+        appendIssueConfig(fieldsBuilder, (JiraIssueConfig) issueConfig, issueSearchProperties);
 
         String issueCreator = issueConfig.getIssueCreator();
         try {
             IssueResponseModel issue = createIssue(issueCreator, issueConfig.getIssueType(), issueConfig.getProjectName(), fieldsBuilder);
             logger.debug("Created new Jira Cloud issue: {}", issue.getKey());
             String issueKey = issue.getKey();
-            addIssueProperties(issueKey, issueProperties);
+            addIssueProperties(issueKey, issueSearchProperties);
             if (issueConfig.getCommentOnIssues()) {
                 addComment(issueConfig, issueKey, "This issue was automatically created by Alert.");
                 for (String additionalComment : issueContentModel.getDescriptionComments()) {
@@ -104,7 +98,7 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             }
             return Optional.of(issue);
         } catch (IntegrationRestException e) {
-            AlertException improvedException = improveRestException(e, issueCreator);
+            AlertException improvedException = jiraErrorMessageUtility.improveRestException(e, getIssueCreatorFieldKey(), issueCreator);
             logger.error("Error creating issue", improvedException);
             throw improvedException;
         }
@@ -137,59 +131,15 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         return fieldsBuilder;
     }
 
-    private void appendIssueConfig(IssueRequestModelFieldsBuilder fieldsBuilder, JiraIssueConfig issueConfig) {
+    private void appendIssueConfig(IssueRequestModelFieldsBuilder fieldsBuilder, JiraIssueConfig issueConfig, JiraIssueSearchProperties issueSearchProperties) {
         fieldsBuilder.setProject(issueConfig.getProjectId());
         fieldsBuilder.setIssueType(issueConfig.getIssueType());
 
         for (JiraCustomFieldConfig customField : issueConfig.getCustomFields()) {
+            JiraCustomFieldValueReplacementUtils.injectReplacementFieldValue(customField, issueSearchProperties);
             JiraResolvedCustomField resolvedCustomField = jiraCustomFieldResolver.resolveCustomField(customField);
             fieldsBuilder.setValue(resolvedCustomField.getFieldId(), resolvedCustomField.getFieldValue());
         }
-    }
-
-    private AlertException improveRestException(IntegrationRestException restException, String issueCreatorEmail) {
-        String message = restException.getMessage();
-        try {
-            List<String> responseErrors = extractErrorsFromResponseContent(restException.getHttpResponseContent(), issueCreatorEmail);
-            if (!responseErrors.isEmpty()) {
-                message += " | Details: " + StringUtils.join(responseErrors, ", ");
-            }
-        } catch (AlertFieldException reporterException) {
-            return reporterException;
-        }
-        return new AlertException(message, restException);
-    }
-
-    private List<String> extractErrorsFromResponseContent(String httpResponseContent, String issueCreatorEmail) throws AlertFieldException {
-        JsonObject responseContentObject = gson.fromJson(httpResponseContent, JsonObject.class);
-        if (null != responseContentObject && responseContentObject.has("errors")) {
-            return extractSpecificErrorsFromErrorsObject(responseContentObject.getAsJsonObject("errors"), issueCreatorEmail);
-        }
-        return List.of();
-    }
-
-    private List<String> extractSpecificErrorsFromErrorsObject(JsonObject errors, String issueCreatorEmail) throws AlertFieldException {
-        List<String> responseErrors = new ArrayList<>();
-        if (errors.has("reporter")) {
-            throw new AlertFieldException(List.of(
-                AlertFieldStatus.error(getIssueCreatorFieldKey(),
-                    String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, errors.get("reporter")))
-            ));
-        } else {
-            List<String> fieldErrors = errors.entrySet()
-                                           .stream()
-                                           .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
-                                           .collect(Collectors.toList());
-            responseErrors.addAll(fieldErrors);
-        }
-
-        if (errors.has("errorMessages")) {
-            JsonArray errorMessages = errors.getAsJsonArray("errorMessages");
-            for (JsonElement errorMessage : errorMessages) {
-                responseErrors.add(errorMessage.getAsString());
-            }
-        }
-        return responseErrors;
     }
 
 }

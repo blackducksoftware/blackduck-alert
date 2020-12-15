@@ -89,11 +89,11 @@ public class JiraCustomFieldResolver {
                 return jiraCustomFieldConfig;
             case CUSTOM_FIELD_TYPE_ARRAY_VALUE:
                 JsonArray jsonArray = new JsonArray();
-                jsonArray.add(jiraCustomFieldConfig.getFieldValue());
+                jsonArray.add(jiraCustomFieldConfig.getFieldOriginalValue());
                 return jsonArray;
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("value", jiraCustomFieldConfig.getFieldValue());
+                jsonObject.addProperty("value", jiraCustomFieldConfig.getFieldOriginalValue());
                 return jsonObject;
             default:
                 throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
