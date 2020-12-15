@@ -28,7 +28,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
@@ -49,19 +48,18 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Gson gson;
     private final JiraCustomFieldResolver jiraCustomFieldResolver;
     private final JiraTransitionHandler jiraTransitionHelper;
     private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
 
-    public JiraIssueHandler(Gson gson, JiraCustomFieldResolver jiraCustomFieldResolver, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler, JiraContentValidator contentValidator) {
+    public JiraIssueHandler(JiraErrorMessageUtility jiraErrorMessageUtility, JiraCustomFieldResolver jiraCustomFieldResolver, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler,
+        JiraContentValidator contentValidator) {
         super(contentValidator);
-        this.gson = gson;
         this.jiraCustomFieldResolver = jiraCustomFieldResolver;
         this.jiraTransitionHelper = jiraTransitionHandler;
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
-        this.jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
+        this.jiraErrorMessageUtility = jiraErrorMessageUtility;
     }
 
     public abstract IssueResponseModel createIssue(String issueCreator, String issueType, String projectName, IssueRequestModelFieldsMapBuilder fieldsBuilder) throws IntegrationException;

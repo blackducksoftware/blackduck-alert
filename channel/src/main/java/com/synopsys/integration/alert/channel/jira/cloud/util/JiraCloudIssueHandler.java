@@ -25,13 +25,13 @@ package com.synopsys.integration.alert.channel.jira.cloud.util;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -52,9 +52,9 @@ public class JiraCloudIssueHandler extends JiraIssueHandler {
     private final JiraCloudProperties jiraProperties;
     private final JiraCloudIssuePropertyHandler jiraIssuePropertyHandler;
 
-    public JiraCloudIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
+    public JiraCloudIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, JiraErrorMessageUtility jiraErrorMessageUtility, JiraCloudTransitionHandler jiraTransitionHandler,
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCustomFieldResolver jiraCustomFieldResolver) {
-        super(gson, jiraCustomFieldResolver, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
+        super(jiraErrorMessageUtility, jiraCustomFieldResolver, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         this.issueService = issueService;
         this.jiraProperties = jiraProperties;
         this.jiraIssuePropertyHandler = jiraIssuePropertyHandler;
