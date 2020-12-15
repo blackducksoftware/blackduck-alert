@@ -36,7 +36,7 @@ public final class JiraCustomFieldValueReplacementUtils {
     public static final String REPLACEMENT_COMPONENT_NAME = "{{componentName}}";
     public static final String REPLACEMENT_COMPONENT_VERSION = "{{componentVersion}}";
 
-    // "None" is a frequently used default String for may fields
+    // "None" is a frequently used default String for many fields
     public static final String DEFAULT_REPLACEMENT = "None";
 
     public static void injectReplacementFieldValue(JiraCustomFieldConfig jiraCustomField, JiraIssueSearchProperties jiraIssueSearchProperties) {
