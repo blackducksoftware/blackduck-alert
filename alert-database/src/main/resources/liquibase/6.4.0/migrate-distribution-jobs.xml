@@ -5,6 +5,9 @@
     <!-- Create initial job entries with default data -->
 
     <changeSet author="gavink" id="create-initial-job-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="distribution_jobs" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.distribution_jobs (job_id, name, enabled, distribution_frequency, processing_type, channel_descriptor_name, created_at, last_updated)
                 SELECT DISTINCT job.job_id, job.job_id::TEXT, true, 'DAILY', 'DEFAULT', 'channel_email', config.created_at, config.last_updated
@@ -75,6 +78,9 @@
     <!-- Create initial blackduck job details with default data -->
 
     <changeSet author="gavink" id="create-initial-blackduck-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="blackduck_job_details" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_details (job_id, global_config_id, filter_by_project, project_name_pattern)
                 SELECT job.job_id, GET_PROVIDER_CONFIG_ID('provider_blackduck'), false, null
@@ -111,6 +117,14 @@
     <!-- Create joined blackduck job detail tables -->
 
     <changeSet author="gavink" id="join-blackduck-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <rowCount schemaName="alert" tableName="blackduck_job_notification_types" expectedRows="0"/>
+                <rowCount schemaName="alert" tableName="blackduck_job_policy_filters" expectedRows="0"/>
+                <rowCount schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters" expectedRows="0"/>
+                <rowCount schemaName="alert" tableName="blackduck_job_projects" expectedRows="0"/>
+            </and>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_notification_types (job_id, notification_type)
                 SELECT jobFields.job_id, jobFields.field_value
@@ -144,6 +158,9 @@
     <!-- Create initial azure boards job details with default data -->
 
     <changeSet author="gavink" id="create-initial-azure-boards-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="azure_boards_job_details" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.azure_boards_job_details (job_id, add_comments, project_name_or_id, work_item_type, work_item_completed_state, work_item_reopen_state)
                 SELECT job.job_id, false, 'Unknown', 'Task', null, null
@@ -195,6 +212,9 @@
     <!-- Create initial email job details with default data -->
 
     <changeSet author="gavink" id="create-initial-email-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="email_job_details" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.email_job_details (job_id, subject_line, project_owner_only, additional_email_addresses_only, attachment_file_type)
                 SELECT job.job_id, 'Migrated Subject Line', false, false, null
@@ -239,6 +259,9 @@
     <!-- Create joined email job detail table  -->
 
     <changeSet author="gavink" id="join-email-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="email_job_additional_email_addresses" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.email_job_additional_email_addresses (job_id, email_address)
                 SELECT jobFields.job_id, jobFields.field_value
@@ -251,6 +274,9 @@
     <!-- Create initial jira cloud job details with default data -->
 
     <changeSet author="gavink" id="create-initial-jira-cloud-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="jira_cloud_job_details" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.jira_cloud_job_details (job_id, add_comments, issue_creator_email, project_name_or_key, issue_type, resolve_transition, reopen_transition)
                 SELECT job.job_id, false, null, 'Unknown', 'Task', null, null
@@ -309,6 +335,9 @@
     <!-- Create initial jira server job details with default data -->
 
     <changeSet author="gavink" id="create-initial-jira-server-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="jira_server_job_details" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.jira_server_job_details (job_id, add_comments, issue_creator_username, project_name_or_key, issue_type, resolve_transition, reopen_transition)
                 SELECT job.job_id, false, null, 'Unknown', 'Task', null, null
@@ -367,6 +396,9 @@
     <!-- Create initial ms teams job details with default data -->
 
     <changeSet author="gavink" id="create-initial-ms-teams-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="ms_teams_job_details" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.ms_teams_job_details (job_id, webhook)
                 SELECT job.job_id, 'Unknown'
@@ -390,6 +422,9 @@
     <!-- Create initial slack job details with default data -->
 
     <changeSet author="gavink" id="create-initial-slack-job-detail-entries">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="slack_job_details" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.slack_job_details (job_id, webhook, channel_name, channel_username)
                 SELECT job.job_id, 'Unknown', 'Unknown', null
