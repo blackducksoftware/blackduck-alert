@@ -1,9 +1,7 @@
 package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -57,14 +55,6 @@ class StaticJobAccessorV2Test {
         assertEquals(jobName, distributionJobModel.getName());
     }
 
-    // TODO: We may not need null ID tests
-    @Test
-    void getJobByIdNullTest() {
-        JobAccessorV2 jobAccessor = createJobAccessor();
-        Optional<DistributionJobModel> jobById = jobAccessor.getJobById(null);
-        assertTrue(jobById.isEmpty(), "Expected no job with a null id to be found");
-    }
-
     @Test
     void getJobByNameTest() {
         UUID jobId = UUID.randomUUID();
@@ -79,14 +69,6 @@ class StaticJobAccessorV2Test {
         DistributionJobModel distributionJobModel = jobByName.get();
         assertEquals(jobId, distributionJobModel.getJobId());
         assertEquals(jobName, distributionJobModel.getName());
-    }
-
-    // TODO: We may not need null ID tests
-    @Test
-    void getJobByNameNullTest() {
-        JobAccessorV2 jobAccessor = createJobAccessor();
-        Optional<DistributionJobModel> jobByName = jobAccessor.getJobByName(null);
-        assertTrue(jobByName.isEmpty(), "Expected no job with a null id to be found");
     }
 
     @Test
@@ -144,18 +126,6 @@ class StaticJobAccessorV2Test {
         Mockito.verify(distributionJobRepository).deleteById(Mockito.any());
     }
 
-    // TODO: We may not need null ID tests
-    @Test
-    void deleteJobNullIdTest() {
-        JobAccessorV2 jobAccessor = createJobAccessor();
-        try {
-            jobAccessor.deleteJob(null);
-            fail("Null jobId did not throw expected AlertConfigurationException.");
-        } catch (AlertConfigurationException e) {
-            assertNotNull(e);
-        }
-    }
-
     @Test
     void updateJobTest() throws Exception {
         UUID jobId = UUID.randomUUID();
@@ -204,19 +174,6 @@ class StaticJobAccessorV2Test {
 
         assertEquals(jobId, updatedJob.getJobId());
         assertEquals(jobName, updatedJob.getName());
-    }
-
-    // TODO: We may not need null ID tests
-    @Test
-    void updateJobNullIdTest() {
-        JobAccessorV2 jobAccessor = createJobAccessor();
-        Mockito.when(distributionJobRepository.findById(Mockito.any())).thenReturn(Optional.empty());
-        try {
-            jobAccessor.updateJob(null, null);
-            fail("Null jobId did not throw expected AlertConfigurationException.");
-        } catch (AlertConfigurationException e) {
-            assertNotNull(e);
-        }
     }
 
     private JobAccessorV2 createJobAccessor() {

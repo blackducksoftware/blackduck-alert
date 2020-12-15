@@ -193,10 +193,6 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
     @Override
     @Transactional
     public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException {
-        if (jobId == null) {
-            throw new AlertConfigurationException("Cannot update job with null id.");
-        }
-
         DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
                                               .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId.toString())));
         OffsetDateTime createdAt = jobEntity.getCreatedAt();
@@ -207,11 +203,7 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
 
     @Override
     @Transactional
-    public void deleteJob(UUID jobId) throws AlertConfigurationException {
-        if (jobId == null) {
-            throw new AlertConfigurationException("Cannot delete job with null id.");
-        }
-
+    public void deleteJob(UUID jobId) {
         distributionJobRepository.deleteById(jobId);
     }
 

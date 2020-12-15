@@ -53,6 +53,6 @@ public interface JobAccessorV2 {
 
     DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException;
 
-    void deleteJob(UUID jobId) throws AlertConfigurationException;
+    void deleteJob(UUID jobId);
 
 }
