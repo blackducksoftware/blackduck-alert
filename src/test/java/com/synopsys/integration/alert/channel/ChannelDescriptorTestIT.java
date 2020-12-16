@@ -105,11 +105,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
         }
 
         if (null != jobAccessor && null != distributionJobModel && null != distributionJobModel.getJobId()) {
-            try {
-                jobAccessor.deleteJob(distributionJobModel.getJobId());
-            } catch (AlertException e) {
-                // TODO delete this try-catch when method signature no longer contains that exception
-            }
+            jobAccessor.deleteJob(distributionJobModel.getJobId());
         }
     }
 
@@ -211,13 +207,8 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
             List.of(),
             createDistributionJobDetails()
         );
-
-        try {
-            return jobAccessor.createJob(requestModel);
-        } catch (AlertException e) {
-            // TODO remove this when method signature is updated
-            throw new AlertRuntimeException(e);
-        }
+        
+        return jobAccessor.createJob(requestModel);
     }
 
     private Map<String, ConfigField> createFieldMap(ConfigContextEnum context) {
