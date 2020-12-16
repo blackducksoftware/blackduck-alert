@@ -183,12 +183,14 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private void configureHeaders(HttpSecurity http) throws Exception {
         http
+            //preserve default headers.
             .headers()
             .contentTypeOptions()
             .and().xssProtection()
             .and().cacheControl()
             .and().httpStrictTransportSecurity()
             .and().frameOptions()
+            // new header for Content Security Policy to allow the SAML auto-submit form for post binding.
             .and().addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy", "script-src 'self' 'unsafe-inline'"));
     }
 
