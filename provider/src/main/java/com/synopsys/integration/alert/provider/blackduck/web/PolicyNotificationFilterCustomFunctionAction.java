@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,13 +61,14 @@ import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFunctionAction<NotificationFilterModelOptions> {
-    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationFilterCustomFunctionAction.class);
+    private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationFieldModelConverter fieldModelConverter;
     private final ConfigurationAccessor configurationAccessor;
@@ -99,8 +99,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
                     options = convertToNotificationFilterModel(policyRulesPage.getItems());
                 }
             } catch (IntegrationException e) {
-                logger.error("There was an issue communicating with Black Duck");
-                logger.debug(e.getMessage(), e);
+                logger.errorAndDebug("There was an issue communicating with Black Duck. " + e.getMessage(), e);
                 throw new AlertException("Unable to communicate with Black Duck.", e);
             }
         }
@@ -119,7 +118,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
     }
 
     private BlackDuckPageResponse<PolicyRuleView> retrievePolicyRules(BlackDuckServicesFactory blackDuckServicesFactory, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         HttpUrl policyRulesUrl = blackDuckApiClient.getUrl(ApiDiscovery.POLICY_RULES_LINK);
         BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder(new Request.Builder())
@@ -140,10 +139,9 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
     private Optional<BlackDuckServicesFactory> createBlackDuckServicesFactory(FieldModel fieldModel) throws IntegrationException {
         Optional<BlackDuckProperties> optionalBlackDuckProperties = createBlackDuckProperties(fieldModel);
         if (optionalBlackDuckProperties.isPresent()) {
-            Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
             BlackDuckProperties blackDuckProperties = optionalBlackDuckProperties.get();
             BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
-            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
+            BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, logger);
             return Optional.of(blackDuckServicesFactory);
         }
         return Optional.empty();

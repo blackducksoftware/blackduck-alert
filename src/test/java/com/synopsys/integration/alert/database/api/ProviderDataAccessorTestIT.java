@@ -65,7 +65,7 @@ public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
         projectService = Mockito.mock(ProjectService.class);
         Mockito.when(blackDuckServicesFactory.createProjectService()).thenReturn(projectService);
         blackDuckService = Mockito.mock(BlackDuckApiClient.class);
-        Mockito.when(blackDuckServicesFactory.getBlackDuckService()).thenReturn(blackDuckService);
+        Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckService);
         projectUsersService = Mockito.mock(ProjectUsersService.class);
         Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 

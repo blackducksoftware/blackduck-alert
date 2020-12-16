@@ -71,7 +71,7 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
                 BlackDuckServicesFactory blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
-                BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+                BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
                 List<ProjectView> projectViews = blackDuckApiClient.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                 Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckApiClient);

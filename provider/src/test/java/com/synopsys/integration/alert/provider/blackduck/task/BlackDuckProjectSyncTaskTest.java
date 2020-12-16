@@ -51,7 +51,7 @@ public class BlackDuckProjectSyncTaskTest {
         ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
 
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
-        Mockito.when(blackDuckServicesFactory.getBlackDuckService()).thenReturn(blackDuckApiClient);
+        Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
         Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);

@@ -77,7 +77,7 @@ public class BlackDuckPhoneHomeHandler implements ProviderPhoneHomeHandler {
             BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
             BlackDuckRegistrationService blackDuckRegistrationService = blackDuckServicesFactory.createBlackDuckRegistrationService();
-            BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+            BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
             CurrentVersionView currentVersionView = blackDuckApiClient.getResponse(ApiDiscovery.CURRENT_VERSION_LINK_RESPONSE);
             blackDuckVersion = currentVersionView.getVersion();
             registrationId = blackDuckRegistrationService.getRegistrationId();

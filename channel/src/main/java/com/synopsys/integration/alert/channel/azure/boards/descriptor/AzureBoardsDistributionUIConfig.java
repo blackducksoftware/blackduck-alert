@@ -44,8 +44,8 @@ public class AzureBoardsDistributionUIConfig extends ChannelDistributionUIConfig
     private static final String DESCRIPTION_WORK_ITEM_COMMENT = "If selected, Alert will comment on Work Items it created when updates occur.";
     private static final String DESCRIPTION_AZURE_PROJECT = "The project name or id in Azure Boards.";
     private static final String DESCRIPTION_WORK_ITEM_TYPE = "The work item type in Azure Boards.";
-    private static final String DESCRIPTION_WORK_ITEM_COMPLETED_STATE = "The state a work item should result in if Alert recieves a DELETE operation for it.";
-    private static final String DESCRIPTION_WORK_ITEM_REOPEN_STATE = "The state a work item should result in if Alert recieves an ADD operation and the work item is in a completed state.";
+    private static final String DESCRIPTION_WORK_ITEM_COMPLETED_STATE = "The state a work item should result in if Alert receives a DELETE operation for it.";
+    private static final String DESCRIPTION_WORK_ITEM_REOPEN_STATE = "The state a work item should result in if Alert receives an ADD operation and the work item is in a completed state.";
 
     @Autowired
     public AzureBoardsDistributionUIConfig(AzureBoardsChannelKey channelKey) {

@@ -118,6 +118,11 @@ public class BlackDuckProperties extends ProviderProperties {
         return createBlackDuckHttpClient(intLogger, blackDuckServerConfig);
     }
 
+    public BlackDuckHttpClient createBlackDuckCacheClient(IntLogger intLogger) throws AlertException {
+        BlackDuckServerConfig blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
+        return blackDuckServerConfig.createCacheHttpClient(intLogger);
+    }
+
     public BlackDuckHttpClient createBlackDuckHttpClient(IntLogger intLogger, BlackDuckServerConfig blackDuckServerConfig) {
         return blackDuckServerConfig.createBlackDuckHttpClient(intLogger);
     }

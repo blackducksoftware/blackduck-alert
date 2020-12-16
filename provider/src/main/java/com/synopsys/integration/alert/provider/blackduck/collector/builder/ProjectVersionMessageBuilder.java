@@ -38,7 +38,6 @@ import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNot
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 @Component
 public class ProjectVersionMessageBuilder extends BlackDuckMessageBuilder<ProjectVersionNotificationView> {
@@ -52,8 +51,7 @@ public class ProjectVersionMessageBuilder extends BlackDuckMessageBuilder<Projec
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, ProjectVersionNotificationView notificationView, BlackDuckBucket blackDuckBucket,
-        BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, ProjectVersionNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
         ProjectVersionNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
 

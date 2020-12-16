@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchPropert
 import com.synopsys.integration.alert.channel.jira.common.JiraTestConfigHelper;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -56,7 +57,9 @@ public class JiraCloudIssueHandlerTest {
         JiraCloudTransitionHandler jiraTransitionHandler = new JiraCloudTransitionHandler(issueService);
         JiraCloudIssuePropertyHandler jiraIssuePropertyHandler = new JiraCloudIssuePropertyHandler(issueSearchService, issuePropertyService);
         JiraCustomFieldResolver customFieldResolver = Mockito.mock(JiraCustomFieldResolver.class);
-        MockJiraIssueHandler jiraCloudIssueHandler = new MockJiraIssueHandler(issueService, jiraTestConfigHelper.createJiraCloudProperties(), gson, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator, customFieldResolver);
+        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
+        MockJiraIssueHandler jiraCloudIssueHandler = new MockJiraIssueHandler(issueService, jiraTestConfigHelper.createJiraCloudProperties(), jiraErrorMessageUtility, jiraTransitionHandler, jiraIssuePropertyHandler, contentValidator,
+            customFieldResolver);
 
         JiraIssueConfig issueConfig = new JiraIssueConfig(
             jiraTestConfigHelper.getTestProject(),
@@ -85,9 +88,9 @@ public class JiraCloudIssueHandlerTest {
     }
 
     private static class MockJiraIssueHandler extends JiraCloudIssueHandler {
-        public MockJiraIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, Gson gson, JiraCloudTransitionHandler jiraTransitionHandler,
+        public MockJiraIssueHandler(IssueService issueService, JiraCloudProperties jiraProperties, JiraErrorMessageUtility jiraErrorMessageUtility, JiraCloudTransitionHandler jiraTransitionHandler,
             JiraCloudIssuePropertyHandler jiraIssuePropertyHandler, JiraContentValidator jiraContentValidator, JiraCustomFieldResolver jiraCustomFieldResolver) {
-            super(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraCustomFieldResolver);
+            super(issueService, jiraProperties, jiraErrorMessageUtility, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraCustomFieldResolver);
         }
 
         public Optional<IssueResponseModel> testCreateIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {

@@ -27,8 +27,10 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
+import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 
 public class PolicyViolationMessageBuilderTest {
     private final Gson gson = new Gson();
@@ -68,14 +70,16 @@ public class PolicyViolationMessageBuilderTest {
     }
 
     private void test(BlackDuckMessageBuilder messageBuilder, NotificationView notificationView) {
-        BlackDuckBucket blackDuckBucket = new BlackDuckBucket();
-        BlackDuckServicesFactory blackDuckServicesFactory = BlackDuckMessageBuilderTestHelper.mockServicesFactory();
+        BlackDuckApiClient blackDuckApiClient = BlackDuckMessageBuilderTestHelper.mockBlackDuckApiClient();
+        ProjectService projectService = BlackDuckMessageBuilderTestHelper.mockProjectService(blackDuckApiClient);
+        BlackDuckServicesFactory blackDuckServicesFactory = BlackDuckMessageBuilderTestHelper.mockServicesFactory(blackDuckApiClient, projectService);
 
-        Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(BlackDuckMessageBuilderTestHelper.mockHttpClient());
+        BlackDuckHttpClient blackDuckHttpClient = BlackDuckMessageBuilderTestHelper.mockHttpClient();
+        Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(blackDuckHttpClient);
 
         DistributionJobModel job = Mockito.mock(DistributionJobModel.class);
         CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), job);
-        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckBucket, blackDuckServicesFactory);
+        List<ProviderMessageContent> aggregateMessageContentList = messageBuilder.buildMessageContents(commonMessageData, notificationView, blackDuckServicesFactory);
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 

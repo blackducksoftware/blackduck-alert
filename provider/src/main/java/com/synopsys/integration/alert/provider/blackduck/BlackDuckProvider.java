@@ -58,6 +58,8 @@ import com.synopsys.integration.blackduck.api.manual.view.VersionBomCodeLocation
 import com.synopsys.integration.blackduck.api.manual.view.VulnerabilityNotificationView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckProvider extends Provider {
@@ -97,8 +99,9 @@ public class BlackDuckProvider extends Provider {
     }
 
     private BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckProperties blackDuckProperties) throws AlertException {
-        BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(logger);
-        return blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, blackDuckHttpClient.getLogger());
+        IntLogger intLogger = new Slf4jIntLogger(logger);
+        BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckCacheClient(intLogger);
+        return blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
     }
 
     @Override
