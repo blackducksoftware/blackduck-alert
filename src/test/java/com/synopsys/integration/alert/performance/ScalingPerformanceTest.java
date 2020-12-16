@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,7 @@ public class ScalingPerformanceTest {
 
     @Test
     @Ignore
-    //@Disabled //TODO remove this when testing
+    @Disabled
     public void testAlertPerformance() throws Exception {
         LocalDateTime startingTime = LocalDateTime.now();
         intLogger.info(String.format("Starting time %s", dateTimeFormatter.format(startingTime)));
@@ -89,13 +90,11 @@ public class ScalingPerformanceTest {
         List<String> jobIds = new ArrayList<>();
         startingTime = LocalDateTime.now();
         // create 10 slack jobs, trigger notification, and wait for all 10 to succeed
-        //TODO change numberOfJobsToCreate to 10
-        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 50, blackDuckProviderID);
+        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 10, blackDuckProviderID);
 
-        //TODO undo comments
-        //startingTime = LocalDateTime.now();
+        startingTime = LocalDateTime.now();
         // create 90 more slack jobs, trigger notification, and wait for all 100 to succeed
-        //createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 90, blackDuckProviderID);
+        createAndTestJobs(alertRequestUtility, blackDuckProviderService, configurationManager, startingTime, jobIds, 90, blackDuckProviderID);
 
         // TODO create 900 more slack jobs for a total of 1000
         // TODO create 1000 more slack jobs for a total of 2000

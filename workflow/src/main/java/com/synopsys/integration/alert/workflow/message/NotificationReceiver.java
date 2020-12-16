@@ -72,22 +72,19 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
             //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
             while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
                 List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
-                logger.info("====== SIZE OF NOTIFICATIONS ====== Sending {} notifications.", notifications.size()); //TODO clean up this log message
+                logger.info("Sending {} notifications.", notifications.size());
                 List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
-                logger.info("====== SENDING DISTRIBUTION EVENTS ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message, leave the sending events for notifications part
-                eventManager.sendEvents(distributionEvents); //TODO: investigate this, does sendEvents need to be @Transactional
-                //TODO: Put a sleep?
-                logger.info("====== FINISHED SENDING EVENTS ======"); //TODO clean up this log message
+                logger.info("Sending {} events for notifications.", distributionEvents.size());
+                eventManager.sendEvents(distributionEvents);
                 notificationAccessor.setNotificationsProcessed(notifications);
-                logger.info("====== Setting Notifications to processed =====");
                 numPagesProcessed++;
                 pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed();
-                logger.info("====== New total pages: {} ======", pageOfAlertNotificationModels.getTotalPages()); //TODO bump to trace make it to "processing page from numPagesProcessed, and then new pages found getTotalPages".
+                logger.trace("Processing Page: {}. New pages found: {}", numPagesProcessed,
+                    pageOfAlertNotificationModels.getTotalPages());
             }
             if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
                 logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
             }
-            logger.info("===== Exiting While loop, no pages should remain ====="); //TODO delete me
         } else {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE);
         }
