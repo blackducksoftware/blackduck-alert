@@ -22,21 +22,35 @@
  */
 package com.synopsys.integration.alert.channel.jira.common.model;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
+
 public class JiraCustomFieldConfig {
     private final String fieldName;
-    private final String fieldValue;
+    private final String fieldOriginalValue;
+    private @Nullable String fieldReplacementValue;
 
-    public JiraCustomFieldConfig(String fieldName, String fieldValue) {
+    public JiraCustomFieldConfig(String fieldName, String fieldOriginalValue) {
         this.fieldName = fieldName;
-        this.fieldValue = fieldValue;
+        this.fieldOriginalValue = fieldOriginalValue;
     }
 
     public String getFieldName() {
         return fieldName;
     }
 
-    public String getFieldValue() {
-        return fieldValue;
+    public String getFieldOriginalValue() {
+        return fieldOriginalValue;
+    }
+
+    public Optional<String> getFieldReplacementValue() {
+        return Optional.ofNullable(fieldReplacementValue);
+    }
+
+    public void setFieldReplacementValue(String fieldReplacementValue) {
+        this.fieldReplacementValue = StringUtils.trimToNull(fieldReplacementValue);
     }
 
 }
