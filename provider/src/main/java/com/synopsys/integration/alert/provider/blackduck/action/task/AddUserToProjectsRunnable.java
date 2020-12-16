@@ -58,7 +58,7 @@ public class AddUserToProjectsRunnable implements Runnable {
             BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
 
-            BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckService();
+            BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
             ProjectService projectService = blackDuckServicesFactory.createProjectService();
             ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
 

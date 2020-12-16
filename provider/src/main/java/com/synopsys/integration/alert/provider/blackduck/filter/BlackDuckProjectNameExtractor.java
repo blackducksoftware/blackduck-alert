@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class BlackDuckProjectNameExtractor {
     }
 
     private Collection<String> getBomEditProjectNames(NotificationDeserializationCache cache, AlertNotificationModel notification) {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckService();
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         BomEditNotificationView notificationView = cache.getTypedContent(notification, BomEditNotificationView.class);
         String bomComponentUri = notificationView.getContent().getBomComponent();
@@ -123,9 +124,8 @@ public class BlackDuckProjectNameExtractor {
 
     private Optional<String> getProjectName(BlackDuckApiClient blackDuckApiClient, ProjectVersionComponentView versionBomComponent) {
         try {
-            String versionHref = versionBomComponent.getHref().toString();
-            int projectVersionIndex = versionHref.indexOf(ProjectView.VERSIONS_LINK);
-            String projectUri = versionHref.substring(0, projectVersionIndex - 1);
+            String bomComponentHref = versionBomComponent.getHref().toString();
+            String projectUri = StringUtils.substringBefore(bomComponentHref, "/" + ProjectView.VERSIONS_LINK);
 
             HttpUrl projectHttpUrl = new HttpUrl(projectUri);
             ProjectView projectView = blackDuckApiClient.getResponse(projectHttpUrl, ProjectView.class);
