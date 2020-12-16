@@ -10,7 +10,7 @@ class PasswordInput extends Component {
 
         const placeholderText = (isSet) ? '***********' : null;
 
-        let field = null;
+        let field;
         if (readOnly) {
             field = (
                 <div className="d-inline-flex flex-column p-2 col-sm-8">
