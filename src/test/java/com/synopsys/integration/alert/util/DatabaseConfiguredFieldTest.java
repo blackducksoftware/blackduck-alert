@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -32,8 +31,6 @@ import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldExt
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
-    @Autowired
-    private JobAccessor jobAccessor;
     @Autowired
     private JobAccessorV2 jobAccessorV2;
     @Autowired
