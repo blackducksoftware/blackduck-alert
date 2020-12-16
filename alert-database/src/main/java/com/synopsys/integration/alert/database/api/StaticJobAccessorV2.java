@@ -76,6 +76,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
+// TODO rename this in a separate PR for ease of review
 public class StaticJobAccessorV2 implements JobAccessorV2 {
     private final DistributionJobRepository distributionJobRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
