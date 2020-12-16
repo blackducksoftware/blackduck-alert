@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -38,12 +37,11 @@ import org.springframework.web.server.ResponseStatusException;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -52,6 +50,9 @@ import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusMod
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -89,8 +90,6 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Autowired
     private NotificationContentRepository notificationContentRepository;
     @Autowired
-    private JobAccessor oldJobAccessor;
-    @Autowired
     private JobAccessorV2 jobAccessor;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
@@ -100,7 +99,6 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private FieldValueRepository fieldValueRepository;
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
-
     @Autowired
     private AuditAccessor auditAccessor;
     @Autowired
@@ -170,11 +168,11 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         notificationContentRepository
             .save(new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{}", 234L, providerConfigModel.getConfigurationId()).createEntity());
 
-        Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        ConfigurationJobModel configurationJobModel = oldJobAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFields);
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel();
+        DistributionJobModel jobModel = jobAccessor.createJob(jobRequestModel);
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
-            new AuditEntryEntity(configurationJobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null));
+            new AuditEntryEntity(jobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
@@ -192,9 +190,6 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
-        FieldUtility keyToFieldMap = configurationJobModel.getFieldUtility();
-        assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).get(), auditEntry.getJobs().get(0).getEventType());
-        assertEquals(keyToFieldMap.getString(ChannelDistributionUIConfig.KEY_NAME).get(), auditEntry.getJobs().get(0).getName());
 
         NotificationConfig notification = auditEntry.getNotification();
         String createdAtStringValue = DateUtils.formatDate(savedNotificationEntity.getCreatedAt(), DateUtils.AUDIT_DATE_FORMAT);
@@ -231,18 +226,16 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         MockNotificationContent mockNotification = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), blackDuckProviderKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), "POLICY_OVERRIDE", content, 1L,
             providerConfigModel.getConfigurationId());
 
-        List<ConfigurationFieldModel> slackFieldsList = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
-
         ConfigurationFieldModel providerConfigId = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         providerConfigId.setFieldValue(String.valueOf(providerConfigModel.getConfigurationId()));
-        slackFieldsList.add(providerConfigId);
 
-        ConfigurationJobModel configurationJobModel = oldJobAccessor.createJob(Set.of(slackChannelKey.getUniversalKey(), blackDuckProviderKey.getUniversalKey()), slackFieldsList);
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel();
+        DistributionJobModel jobModel = jobAccessor.createJob(jobRequestModel);
 
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                     .save(new AuditEntryEntity(configurationJobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(),
+                                                     .save(new AuditEntryEntity(jobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(),
                                                          AuditEntryStatus.SUCCESS.toString(),
                                                          null, null));
 
@@ -255,7 +248,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         try {
             auditEntryActions.resendNotification(savedNotificationEntity.getId(), null);
             auditEntryActions.resendNotification(savedNotificationEntity.getId(), null);
-            auditEntryActions.resendNotification(savedNotificationEntity.getId(), configurationJobModel.getJobId());
+            auditEntryActions.resendNotification(savedNotificationEntity.getId(), jobModel.getJobId());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             fail("Expected the Audit POST request(s) not to throw an exception");
@@ -271,6 +264,26 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         } catch (ResponseStatusException e) {
             assertEquals(expectedStatus, e.getStatus());
         }
+    }
+
+    private DistributionJobRequestModel createJobRequestModel() {
+        SlackChannelKey slackChannelKey = new SlackChannelKey();
+        SlackJobDetailsModel details = new SlackJobDetailsModel("test_webhook", "#test-channel", null);
+        return new DistributionJobRequestModel(
+            true,
+            "Test Slack Job",
+            FrequencyType.REAL_TIME,
+            ProcessingType.DEFAULT,
+            slackChannelKey.getUniversalKey(),
+            providerConfigModel.getConfigurationId(),
+            false,
+            null,
+            List.of(),
+            List.of(),
+            List.of(),
+            List.of(),
+            details
+        );
     }
 
 }
