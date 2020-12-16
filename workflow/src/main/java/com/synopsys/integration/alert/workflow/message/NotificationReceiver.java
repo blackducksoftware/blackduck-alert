@@ -62,31 +62,33 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
 
     @Override
     public void handleEvent(NotificationReceivedEvent event) {
-        if (NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE.equals(event.getDestination())) {
-            logger.debug("Event {}", event);
-            logger.info("Processing event for notifications.");
-
-            int numPagesProcessed = 0;
-
-            AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed();
-            //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
-            while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
-                List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
-                logger.info("Sending {} notifications.", notifications.size());
-                List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
-                logger.info("Sending {} events for notifications.", distributionEvents.size());
-                eventManager.sendEvents(distributionEvents);
-                notificationAccessor.setNotificationsProcessed(notifications);
-                numPagesProcessed++;
-                pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed();
-                logger.trace("Processing Page: {}. New pages found: {}", numPagesProcessed,
-                    pageOfAlertNotificationModels.getTotalPages());
-            }
-            if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
-                logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
-            }
-        } else {
+        if (!NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE.equals(event.getDestination())) {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE);
+            return;
+        }
+        logger.debug("Event {}", event);
+        logger.info("Processing event for notifications.");
+
+        int numPagesProcessed = 0;
+        int pageSize = 100;
+
+        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
+        //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
+        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
+            List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
+            logger.info("Sending {} notifications.", notifications.size());
+            List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
+            logger.info("Sending {} events for notifications.", distributionEvents.size());
+            eventManager.sendEvents(distributionEvents);
+            notificationAccessor.setNotificationsProcessed(notifications);
+            numPagesProcessed++;
+            pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
+            logger.trace("Processing Page: {}. New pages found: {}",
+                numPagesProcessed,
+                pageOfAlertNotificationModels.getTotalPages());
+        }
+        if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
+            logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
         }
     }
 

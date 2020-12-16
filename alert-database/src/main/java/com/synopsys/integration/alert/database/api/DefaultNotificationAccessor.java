@@ -175,12 +175,11 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed() {
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
         int currentPage = 0;
-        int pageSize = 100;
         Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
-        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findNotProcessedNotifications(pageRequest)
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalse(pageRequest)
                                                                .map(this::toModel);
         List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
         return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
@@ -225,7 +224,14 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                                      .flatMap(ConfigurationFieldModel::getFieldValue)
                                      .orElse(providerConfigName);
         }
-        return new AlertNotificationModel(entity.getId(), providerConfigId, entity.getProvider(), providerConfigName, entity.getNotificationType(), entity.getContent(), entity.getCreatedAt(), entity.getProviderCreationTime(),
+        return new AlertNotificationModel(entity.getId(),
+            providerConfigId,
+            entity.getProvider(),
+            providerConfigName,
+            entity.getNotificationType(),
+            entity.getContent(),
+            entity.getCreatedAt(),
+            entity.getProviderCreationTime(),
             entity.getProcessed());
     }
 

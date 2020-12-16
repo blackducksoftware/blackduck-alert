@@ -30,6 +30,8 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
     @Autowired
     private NotificationReceiver notificationReceiver;
 
+    int pageSize = 10;
+
     @AfterEach
     public void cleanUpDB() {
         notificationContentRepository.flush();
@@ -58,7 +60,7 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
 
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
-        assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed().getModels().size());
+        assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
         notificationReceiver.handleEvent(new NotificationReceivedEvent());
 
@@ -89,7 +91,7 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
         List<AlertNotificationModel> alertNotificationModels = defaultNotificationAccessor.findAll(pageRequest, false).getContent();
 
         assertModelsAreProcessed(alertNotificationModels);
-        assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed().getModels().size());
+        assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
     }
 
     private void assertModelsAreProcessed(List<AlertNotificationModel> notificationModels) {

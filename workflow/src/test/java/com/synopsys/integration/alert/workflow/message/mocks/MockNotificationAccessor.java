@@ -51,7 +51,7 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed() {
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
         ArrayList<AlertNotificationModel> notificationsNotProcessed = new ArrayList<>();
         for (AlertNotificationModel notification : alertNotificationModels) {
             if (!notification.getProcessed()) {

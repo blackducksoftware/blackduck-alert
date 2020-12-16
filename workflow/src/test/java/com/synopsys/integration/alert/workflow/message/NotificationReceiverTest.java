@@ -62,7 +62,7 @@ public class NotificationReceiverTest {
         ChannelEventManager channelEventManager = Mockito.mock(ChannelEventManager.class);
 
         Mockito.when(notificationProcessor.processNotifications(Mockito.eq(FrequencyType.REAL_TIME), Mockito.eq(alertNotificationModels))).thenReturn(List.of(distributionEvent));
-        Mockito.when(notificationAccessorMock.getFirstPageOfNotificationsNotProcessed())
+        Mockito.when(notificationAccessorMock.getFirstPageOfNotificationsNotProcessed(100))
             .thenReturn(new AlertPagedModel(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent()));
 
         NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessorMock, notificationProcessor, channelEventManager);

@@ -43,7 +43,7 @@ public interface NotificationAccessor {
 
     List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset);
 
-    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed();
+    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize);
 
     void setNotificationsProcessed(List<AlertNotificationModel> notifications);
 
