@@ -87,6 +87,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -149,6 +150,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         configureActiveMQProvider();
         configureWithSSL(http);
         configureH2Console(http);
+        configureHeaders(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
             .and().authorizeRequests().anyRequest().authenticated()
@@ -177,6 +179,17 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             // nothing needed here if that provider does not exist
             logger.info("Alert Application Configuration: Bouncy Castle provider not found");
         }
+    }
+
+    private void configureHeaders(HttpSecurity http) throws Exception {
+        http
+            .headers()
+            .contentTypeOptions()
+            .and().xssProtection()
+            .and().cacheControl()
+            .and().httpStrictTransportSecurity()
+            .and().frameOptions()
+            .and().addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy", "script-src 'self' 'unsafe-inline'"));
     }
 
     private void configureH2Console(HttpSecurity http) throws Exception {
@@ -246,6 +259,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler() {
         SavedRequestAwareAuthenticationSuccessHandler redirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         redirectHandler.setDefaultTargetUrl("/");
+        redirectHandler.setAlwaysUseDefaultTargetUrl(true);
         return redirectHandler;
     }
 
