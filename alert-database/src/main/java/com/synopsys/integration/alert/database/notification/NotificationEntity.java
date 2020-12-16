@@ -129,7 +129,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         return processed;
     }
 
-    public void setProcessed() {
+    public void setProcessedToTrue() {
         processed = true;
     }
 

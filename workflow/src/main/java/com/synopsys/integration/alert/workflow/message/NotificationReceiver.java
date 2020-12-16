@@ -62,6 +62,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
 
     @Override
     public void handleEvent(NotificationReceivedEvent event) {
+        //FIXME This check may not be required
         if (!NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE.equals(event.getDestination())) {
             logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE);
             return;

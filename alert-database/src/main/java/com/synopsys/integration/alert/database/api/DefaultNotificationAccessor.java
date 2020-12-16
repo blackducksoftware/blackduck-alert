@@ -190,7 +190,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         List<NotificationEntity> notificationEntities = notifications.stream()
                                                             .map(this::fromModel)
                                                             .collect(Collectors.toList());
-        notificationEntities.forEach(NotificationEntity::setProcessed);
+        notificationEntities.forEach(NotificationEntity::setProcessedToTrue);
         notificationContentRepository.saveAll(notificationEntities);
     }
 
