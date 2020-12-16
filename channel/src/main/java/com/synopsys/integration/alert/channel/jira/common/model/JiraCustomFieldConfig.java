@@ -50,10 +50,7 @@ public class JiraCustomFieldConfig {
     }
 
     public void setFieldReplacementValue(String fieldReplacementValue) {
-        // Leave the field null if it would be set to a blank value
-        if (StringUtils.isNotBlank(fieldReplacementValue)) {
-            this.fieldReplacementValue = fieldReplacementValue;
-        }
+        this.fieldReplacementValue = StringUtils.trimToNull(fieldReplacementValue);
     }
 
 }

@@ -63,10 +63,8 @@ public final class JiraCustomFieldValueReplacementUtils {
     }
 
     private static Optional<String> defaultIfBlank(String nullableValue) {
-        if (StringUtils.isNotBlank(nullableValue)) {
-            return Optional.of(nullableValue);
-        }
-        return Optional.of(DEFAULT_REPLACEMENT);
+        return Optional.ofNullable(StringUtils.trimToNull(nullableValue))
+                   .or(() -> Optional.of(DEFAULT_REPLACEMENT));
     }
 
 }
