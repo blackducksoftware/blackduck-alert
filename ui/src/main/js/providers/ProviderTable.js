@@ -4,7 +4,12 @@ import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
 import {
-    clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig, validateConfig
+    clearConfigFieldErrors,
+    deleteConfig,
+    getAllConfigs,
+    testConfig,
+    updateConfig,
+    validateConfig
 } from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -271,7 +276,7 @@ class ProviderTable extends Component {
 
     render() {
         const {
-            providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, actionMessage, descriptors, descriptorName
+            providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, errorIsDetailed, actionMessage, descriptors, descriptorName
         } = this.props;
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
 
@@ -315,6 +320,7 @@ class ProviderTable extends Component {
                         saveButton={canSave}
                         hasFieldErrors={hasFieldErrors}
                         errorDialogMessage={errorMessage}
+                        errorIsDetailed={errorIsDetailed}
                         actionMessage={providerActionMessage}
                         ignoredActionMessages={['Delete successful']}
                         inProgress={inProgress}
@@ -335,6 +341,7 @@ ProviderTable.propTypes = {
     updateStatus: PropTypes.string,
     providerConfigs: PropTypes.arrayOf(PropTypes.object).isRequired,
     errorMessage: PropTypes.string,
+    errorIsDetailed: PropTypes.bool,
     actionMessage: PropTypes.string,
     fieldErrors: PropTypes.object,
     getAllConfigs: PropTypes.func.isRequired,
@@ -350,6 +357,7 @@ ProviderTable.defaultProps = {
     testInProgress: false,
     updateStatus: '',
     errorMessage: '',
+    errorIsDetailed: false,
     actionMessage: null,
     fieldErrors: {}
 };
@@ -362,6 +370,7 @@ const mapStateToProps = (state) => ({
     testInProgress: state.globalConfiguration.testing,
     providerConfigs: state.globalConfiguration.allConfigs,
     errorMessage: state.globalConfiguration.error.message,
+    errorIsDetailed: state.globalConfiguration.error.isDetailed,
     actionMessage: state.globalConfiguration.actionMessage,
     fieldErrors: state.globalConfiguration.error.fieldErrors
 });

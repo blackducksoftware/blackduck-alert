@@ -26,8 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component
 public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerContext> {
@@ -39,43 +43,25 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
     }
 
     @Override
-    protected String getProjectFieldKey() {
-        return JiraServerDescriptor.KEY_JIRA_PROJECT_NAME;
-    }
+    public JiraServerContext build(ConfigurationModel globalConfig, DistributionJobModel testJobModel) {
+        FieldUtility globalFieldUtility = new FieldUtility(globalConfig.getCopyOfKeyToFieldMap());
+        JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(globalFieldUtility);
 
-    @Override
-    protected String getIssueTypeFieldKey() {
-        return JiraServerDescriptor.KEY_ISSUE_TYPE;
-    }
+        DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
+        JiraServerJobDetailsModel jiraServerJobDetails = distributionJobDetails.getAsJiraServerJobDetails();
 
-    @Override
-    protected String getIssueCreatorFieldKey() {
-        return JiraServerDescriptor.KEY_ISSUE_CREATOR;
-    }
-
-    @Override
-    protected String getAddCommentsFieldKey() {
-        return JiraServerDescriptor.KEY_ADD_COMMENTS;
-    }
-
-    @Override
-    protected String getResolveTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getOpenTransitionFieldKey() {
-        return JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getDefaultIssueCreatorFieldKey() {
-        return JiraServerDescriptor.KEY_SERVER_USERNAME;
-    }
-
-    @Override
-    public JiraServerContext build(FieldUtility fieldUtility) {
-        return new JiraServerContext(jiraServerPropertiesFactory.createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
+        JiraIssueConfig issueConfig = new JiraIssueConfig(
+            jiraServerJobDetails.getProjectNameOrKey(),
+            jiraServerJobDetails.getProjectNameOrKey(),
+            null,
+            jiraServerJobDetails.getIssueCreatorUsername(),
+            jiraServerJobDetails.getIssueType(),
+            jiraServerJobDetails.isAddComments(),
+            jiraServerJobDetails.getResolveTransition(),
+            jiraServerJobDetails.getReopenTransition(),
+            createJiraCustomFieldConfig(jiraServerJobDetails.getCustomFields())
+        );
+        return new JiraServerContext(jiraProperties, issueConfig);
     }
 
 }

@@ -24,9 +24,9 @@ package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +35,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -56,32 +55,31 @@ public class NotificationToDistributionEventConverter {
         this.descriptorMap = descriptorMap;
     }
 
-    public List<DistributionEvent> convertToEvents(ConfigurationJobModel job, List<MessageContentGroup> messages) {
-        Map<String, ConfigurationFieldModel> globalFields = Map.of();
-        try {
-            String descriptorName = job.getChannelName();
-            DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + descriptorName));
-            globalFields = getGlobalFields(descriptorKey);
-        } catch (AlertException e) {
-            logger.error(e.getMessage());
-        }
-        job.getFieldUtility().addFields(globalFields);
+    public List<DistributionEvent> convertToEvents(DistributionJobModel job, List<MessageContentGroup> messages) {
+        String descriptorName = job.getChannelDescriptorName();
+        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(descriptorName)
+                                          .orElseThrow(() -> new AlertRuntimeException("Could not find a Descriptor with the name: " + descriptorName));
+        ConfigurationModel channelGlobalConfig = getChannelGlobalConfig(descriptorKey);
+
         List<DistributionEvent> events = messages
                                              .stream()
-                                             .map(message -> createChannelEvent(job, message))
+                                             .map(message -> createChannelEvent(channelGlobalConfig, job, message))
                                              .collect(Collectors.toList());
         logger.debug("Created {} events for job: {}", events.size(), job.getName());
         return events;
     }
 
-    private Map<String, ConfigurationFieldModel> getGlobalFields(DescriptorKey descriptorKey) {
+    private ConfigurationModel getChannelGlobalConfig(DescriptorKey descriptorKey) {
         List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, ConfigContextEnum.GLOBAL);
-        return globalConfiguration.stream().findFirst().map(ConfigurationModel::getCopyOfKeyToFieldMap).orElse(Map.of());
+        return globalConfiguration
+                   .stream()
+                   .findFirst()
+                   .orElse(null);
     }
 
-    private DistributionEvent createChannelEvent(ConfigurationJobModel job, MessageContentGroup contentGroup) {
+    private DistributionEvent createChannelEvent(@Nullable ConfigurationModel channelGlobalConfig, DistributionJobModel job, MessageContentGroup contentGroup) {
         // TODO fix date usage
-        return new DistributionEvent(job.getJobId().toString(), job.getChannelName(), RestConstants.formatDate(new Date()), job.getProviderConfigIdAsLong(), job.getProcessingType().name(), contentGroup, job.getFieldUtility());
+        return new DistributionEvent(job.getChannelDescriptorName(), RestConstants.formatDate(new Date()), job.getBlackDuckGlobalConfigId(), job.getProcessingType().name(), contentGroup, job, channelGlobalConfig);
     }
 
 }

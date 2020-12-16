@@ -40,6 +40,9 @@ public class MessageBuilderConstants {
     public static final String LABEL_REMEDIATION_FIX_PREVIOUS = LABEL_REMEDIATION + " - Fixes Previous Vulnerabilities";
     public static final String LABEL_REMEDIATION_CLEAN = LABEL_REMEDIATION + " - Without Vulnerabilities";
     public static final String LABEL_REMEDIATION_LATEST = LABEL_REMEDIATION + " - Latest Version";
+    public static final String LABEL_GUIDANCE = "Guidance";
+    public static final String LABEL_GUIDANCE_SHORT_TERM = LABEL_GUIDANCE + " - Short term";
+    public static final String LABEL_GUIDANCE_LONG_TERM = LABEL_GUIDANCE + " - Long term";
     public static final String VULNERABILITY_CHECK_TEXT = "vuln";
     public static final String CATEGORY_TYPE_POLICY = "Policy";
     public static final String CATEGORY_TYPE_VULNERABILITY = "Vulnerability";

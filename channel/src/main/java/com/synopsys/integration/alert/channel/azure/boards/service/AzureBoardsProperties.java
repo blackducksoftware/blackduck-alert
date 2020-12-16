@@ -55,6 +55,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTr
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
@@ -78,6 +79,11 @@ public class AzureBoardsProperties implements IssueTrackerServiceConfig {
         String oAuthUserEmail = fieldUtility.getString(AzureBoardsDescriptor.KEY_OAUTH_USER_EMAIL).orElse(DEFAULT_AZURE_OAUTH_USER_ID);
         List<String> defaultScopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
         return new AzureBoardsProperties(credentialDataStoreFactory, organizationName, clientId, clientSecret, oAuthUserEmail, defaultScopes, redirectUri);
+    }
+
+    public static AzureBoardsProperties fromGlobalConfig(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String redirectUri, ConfigurationModel globalConfiguration) {
+        FieldUtility globalFieldUtility = new FieldUtility(globalConfiguration.getCopyOfKeyToFieldMap());
+        return fromFieldAccessor(credentialDataStoreFactory, redirectUri, globalFieldUtility);
     }
 
     public AzureBoardsProperties(AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, String organizationName, String clientId, String clientSecret, String oauthUserId, List<String> scopes, String redirectUri) {

@@ -22,12 +22,9 @@
  */
 package com.synopsys.integration.alert.channel.email;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,15 +35,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
 @Component
 public class EmailAddressHandler {
@@ -59,12 +55,11 @@ public class EmailAddressHandler {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public FieldUtility updateEmailAddresses(Long providerConfigId, MessageContentGroup contentGroup, FieldUtility originalAccessor) {
-        Collection<String> allEmailAddresses = originalAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES);
-        Set<String> emailAddresses = new HashSet<>(allEmailAddresses);
+    public Set<String> getUpdatedEmailAddresses(Long providerConfigId, MessageContentGroup contentGroup, DistributionJobModel distributionJobModel, EmailJobDetailsModel emailJobDetailsModel) {
+        Set<String> emailAddresses = new HashSet<>();
 
-        boolean projectOwnerOnly = originalAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
-        boolean useOnlyAdditionalEmailAddresses = originalAccessor.getBoolean(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY).orElse(false);
+        boolean projectOwnerOnly = emailJobDetailsModel.isProjectOwnerOnly();
+        boolean useOnlyAdditionalEmailAddresses = emailJobDetailsModel.isAdditionalEmailAddressesOnly();
 
         if (!useOnlyAdditionalEmailAddresses) {
             Optional<String> optionalHref = contentGroup.getCommonTopic().getUrl();
@@ -78,19 +73,13 @@ public class EmailAddressHandler {
 
         if (emailAddresses.isEmpty()) {
             // Temporary fix for license notifications
-            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), originalAccessor, providerConfigId, projectOwnerOnly);
+            Set<String> licenseNotificationEmails = systemWideNotificationCheck(contentGroup.getSubContent(), distributionJobModel, providerConfigId, projectOwnerOnly);
             emailAddresses.addAll(licenseNotificationEmails);
         }
 
-        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(providerConfigId, originalAccessor);
+        Set<String> additionalEmailAddresses = collectAdditionalEmailAddresses(providerConfigId, emailJobDetailsModel);
         emailAddresses.addAll(additionalEmailAddresses);
-
-        Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-        fieldMap.putAll(originalAccessor.getFields());
-        ConfigurationFieldModel newEmailFieldModel = ConfigurationFieldModel.create(EmailDescriptor.KEY_EMAIL_ADDRESSES);
-        newEmailFieldModel.setFieldValues(emailAddresses);
-        fieldMap.put(EmailDescriptor.KEY_EMAIL_ADDRESSES, newEmailFieldModel);
-        return new FieldUtility(fieldMap);
+        return emailAddresses;
     }
 
     public Set<String> getEmailAddressesForProject(Long providerConfigId, ProviderProject project, boolean projectOwnerOnly) {
@@ -111,8 +100,8 @@ public class EmailAddressHandler {
         return emailAddresses;
     }
 
-    public Set<String> collectAdditionalEmailAddresses(Long providerConfigId, FieldUtility fieldUtility) {
-        Collection<String> additionalEmailAddresses = fieldUtility.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
+    private Set<String> collectAdditionalEmailAddresses(Long providerConfigId, EmailJobDetailsModel emailJobDetailsModel) {
+        Collection<String> additionalEmailAddresses = emailJobDetailsModel.getAdditionalEmailAddresses();
         if (!additionalEmailAddresses.isEmpty()) {
             logger.debug("Adding additional email addresses");
             return providerDataAccessor.getUsersByProviderConfigId(providerConfigId)
@@ -137,17 +126,19 @@ public class EmailAddressHandler {
     }
 
     // FIXME temporary fix for license notifications before we rewrite the way emails are handled in our workflow
-    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, FieldUtility fieldUtility, Long providerConfigId, boolean projectOwnerOnly) {
+    private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, DistributionJobModel distributionJobModel, Long providerConfigId, boolean projectOwnerOnly) {
         boolean hasSubTopic = messages
                                   .stream()
                                   .map(ProviderMessageContent::getSubTopic)
                                   .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
-            boolean filterByProject = fieldUtility.getBoolean(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(false);
+            boolean filterByProject = distributionJobModel.isFilterByProject();
             List<String> associatedProjects;
             if (filterByProject) {
-                Collection<String> allConfiguredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-                associatedProjects = new ArrayList<>(allConfiguredProjects);
+                associatedProjects = distributionJobModel.getProjectFilterDetails()
+                                         .stream()
+                                         .map(BlackDuckProjectDetailsModel::getHref)
+                                         .collect(Collectors.toList());
             } else {
                 associatedProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId)
                                          .stream()

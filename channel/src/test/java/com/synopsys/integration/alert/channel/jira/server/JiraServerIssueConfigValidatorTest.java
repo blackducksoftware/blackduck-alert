@@ -13,8 +13,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusConverter;
@@ -43,12 +44,17 @@ public class JiraServerIssueConfigValidatorTest {
         String issueTypeString = "IssueType";
         String issueCreatorString = "IssueCreator";
 
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setCommentOnIssues(true);
-        issueConfig.setResolveTransition(resolveTransitionString);
-        issueConfig.setProjectName(projectName);
-        issueConfig.setIssueType(issueTypeString);
-        issueConfig.setIssueCreator(issueCreatorString);
+        JiraIssueConfig issueConfig = new JiraIssueConfig(
+            projectName,
+            null,
+            null,
+            issueCreatorString,
+            issueTypeString,
+            true,
+            resolveTransitionString,
+            null,
+            List.of()
+        );
 
         IssueTypeResponseModel issue = Mockito.mock(IssueTypeResponseModel.class);
         Mockito.when(issue.getName()).thenReturn(issueTypeString);
@@ -89,10 +95,17 @@ public class JiraServerIssueConfigValidatorTest {
         String resolveTransitionString = "Resolve";
         String issueTypeString = "IssueType";
 
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setCommentOnIssues(true);
-        issueConfig.setResolveTransition(resolveTransitionString);
-        issueConfig.setIssueType(issueTypeString);
+        JiraIssueConfig issueConfig = new JiraIssueConfig(
+            null,
+            null,
+            null,
+            null,
+            issueTypeString,
+            true,
+            resolveTransitionString,
+            null,
+            List.of()
+        );
 
         IssueTypeResponseModel issue = Mockito.mock(IssueTypeResponseModel.class);
         Mockito.when(issue.getName()).thenReturn(issueTypeString);
@@ -107,7 +120,7 @@ public class JiraServerIssueConfigValidatorTest {
         } catch (AlertFieldException e) {
             Map<String, AlertFieldStatus> errorMap = AlertFieldStatusConverter.convertToMap(e.getFieldErrors());
             assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME));
-            assertTrue(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_CREATOR));
+            assertFalse(errorMap.containsKey(JiraCloudDescriptor.KEY_ISSUE_CREATOR));
             assertFalse(errorMap.containsKey(JiraServerDescriptor.KEY_ISSUE_TYPE));
         }
     }

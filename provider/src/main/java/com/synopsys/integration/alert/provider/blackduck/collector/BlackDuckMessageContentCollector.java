@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.message.model.CommonMessageData;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
@@ -56,7 +56,7 @@ public class BlackDuckMessageContentCollector extends ProviderMessageContentColl
     }
 
     @Override
-    protected List<ProviderMessageContent> createProviderMessageContents(ConfigurationJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) {
+    protected List<ProviderMessageContent> createProviderMessageContents(DistributionJobModel job, NotificationDeserializationCache cache, List<AlertNotificationModel> notifications) {
         List<ProviderMessageContent> providerMessageContents = new LinkedList<>();
         for (AlertNotificationModel notification : notifications) {
             String notificationType = notification.getNotificationType();

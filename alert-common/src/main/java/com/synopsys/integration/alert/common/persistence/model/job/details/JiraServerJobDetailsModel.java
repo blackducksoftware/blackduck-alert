@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
+import java.util.List;
+
 public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
     private final boolean addComments;
     private final String issueCreatorUsername;
@@ -29,8 +31,17 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
     private final String issueType;
     private final String resolveTransition;
     private final String reopenTransition;
+    private final List<JiraJobCustomFieldModel> customFields;
 
-    public JiraServerJobDetailsModel(boolean addComments, String issueCreatorUsername, String projectNameOrKey, String issueType, String resolveTransition, String reopenTransition) {
+    public JiraServerJobDetailsModel(
+        boolean addComments,
+        String issueCreatorUsername,
+        String projectNameOrKey,
+        String issueType,
+        String resolveTransition,
+        String reopenTransition,
+        List<JiraJobCustomFieldModel> customFields
+    ) {
         super("channel_jira_server");
         this.addComments = addComments;
         this.issueCreatorUsername = issueCreatorUsername;
@@ -38,6 +49,7 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
         this.issueType = issueType;
         this.resolveTransition = resolveTransition;
         this.reopenTransition = reopenTransition;
+        this.customFields = customFields;
     }
 
     public boolean isAddComments() {
@@ -62,6 +74,10 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
 
     public String getReopenTransition() {
         return reopenTransition;
+    }
+
+    public List<JiraJobCustomFieldModel> getCustomFields() {
+        return customFields;
     }
 
 }

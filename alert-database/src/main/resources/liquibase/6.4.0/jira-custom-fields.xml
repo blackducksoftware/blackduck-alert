@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- Jira Cloud -->
+
+    <changeSet author="gavink" id="create-jira-cloud-custom-fields-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="jira_cloud_job_custom_fields"/>
+            </not>
+        </preConditions>
+       <createTable schemaName="alert" tableName="jira_cloud_job_custom_fields">
+           <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="field_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="field_value" type="VARCHAR"/>
+       </createTable>
+   </changeSet>
+    <changeSet author="gavink" id="create-jira-cloud-custom-fields-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="jira_cloud_job_custom_fields_job_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="jira_cloud_job_custom_fields_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="jira_cloud_job_custom_fields"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="jira_cloud_job_details"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Jira Server -->
+
+    <changeSet author="gavink" id="create-jira-server-custom-fields-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="alert" tableName="jira_server_job_custom_fields"/>
+            </not>
+        </preConditions>
+       <createTable schemaName="alert" tableName="jira_server_job_custom_fields">
+           <column name="job_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="field_name" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="field_value" type="VARCHAR"/>
+       </createTable>
+   </changeSet>
+    <changeSet author="gavink" id="create-jira-server-custom-fields-table-fk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="alert" foreignKeyName="jira_server_job_custom_fields_job_id_fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="jira_server_job_custom_fields_job_id_fk"
+                baseTableSchemaName="alert"
+                baseTableName="jira_server_job_custom_fields"
+                baseColumnNames="job_id"
+                referencedTableSchemaName="alert"
+                referencedTableName="jira_server_job_details"
+                referencedColumnNames="job_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+        />
+    </changeSet>
+
+</databaseChangeLog>

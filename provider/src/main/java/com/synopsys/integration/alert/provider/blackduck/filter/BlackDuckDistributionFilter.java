@@ -23,13 +23,13 @@
 package com.synopsys.integration.alert.provider.blackduck.filter;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
 import com.synopsys.integration.alert.common.provider.notification.ProviderNotificationClassMap;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserial
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
-    private BlackDuckProjectNameExtractor blackDuckProjectNameExtractor;
-    private NotificationDeserializationCache cache;
+    private final BlackDuckProjectNameExtractor blackDuckProjectNameExtractor;
+    private final NotificationDeserializationCache cache;
 
     public BlackDuckDistributionFilter(Gson gson, ProviderNotificationClassMap providerNotificationClassMap, BlackDuckProjectNameExtractor blackDuckProjectNameExtractor) {
         this.cache = new NotificationDeserializationCache(gson, providerNotificationClassMap);
@@ -46,17 +46,20 @@ public class BlackDuckDistributionFilter implements ProviderDistributionFilter {
     }
 
     @Override
-    public boolean doesNotificationApplyToConfiguration(AlertNotificationModel notification, ConfigurationJobModel configurationJobModel) {
+    public boolean doesNotificationApplyToConfiguration(AlertNotificationModel notification, DistributionJobModel distributionJob) {
         if (NotificationType.LICENSE_LIMIT.name().equals(notification.getNotificationType())) {
             // License Limit notifications are always allowed because they do not have projects.
             return true;
         }
 
-        FieldUtility fieldUtility = configurationJobModel.getFieldUtility();
-        boolean filterByProject = fieldUtility.getBooleanOrFalse(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        boolean filterByProject = distributionJob.isFilterByProject();
         if (filterByProject) {
-            Collection<String> configuredProjects = fieldUtility.getAllStrings(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-            String nullablePattern = fieldUtility.getStringOrNull(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            // TODO consider filtering by href
+            Collection<String> configuredProjects = distributionJob.getProjectFilterDetails()
+                                                        .stream()
+                                                        .map(BlackDuckProjectDetailsModel::getName)
+                                                        .collect(Collectors.toSet());
+            String nullablePattern = distributionJob.getProjectNamePattern().orElse(null);
             return doProjectsFromNotificationMatchConfiguredProjects(notification, configuredProjects, nullablePattern);
         }
         return true;

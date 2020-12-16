@@ -22,7 +22,10 @@
  */
 package com.synopsys.integration.alert.test.common;
 
+import java.io.IOException;
 import java.util.Optional;
+
+import org.springframework.core.io.ClassPathResource;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 
@@ -41,8 +44,11 @@ public class TestAlertProperties extends AlertProperties {
     private String encryptionSalt;
 
     public TestAlertProperties() {
-        String imagesDirectory = TestAlertProperties.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "../../../../src/main/resources/images/";
-        alertImagesDir = imagesDirectory;
+        try {
+            alertImagesDir = new ClassPathResource("images").getFile().getAbsolutePath();
+        } catch (IOException e) {
+            alertImagesDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "../../../../src/main/resources/images/";
+        }
 
         encryptionPassword = "changeme";
         encryptionSalt = "changeme";

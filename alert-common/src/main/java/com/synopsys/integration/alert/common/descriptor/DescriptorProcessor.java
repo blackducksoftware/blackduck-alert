@@ -79,6 +79,10 @@ public class DescriptorProcessor {
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
     }
 
+    public Optional<ChannelDistributionTestAction> retrieveChannelDistributionTestAction(String descriptorName) {
+        return retrieveConfigurationAction(descriptorName).flatMap(ConfigurationAction::getChannelDistributionTestAction);
+    }
+
     public Optional<Descriptor> retrieveDescriptor(String descriptorName) {
         return descriptorMap.getDescriptorKey(descriptorName).flatMap(descriptorMap::getDescriptor);
     }

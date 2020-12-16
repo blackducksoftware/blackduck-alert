@@ -22,13 +22,8 @@
  */
 package com.synopsys.integration.alert.common.action;
 
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -38,26 +33,5 @@ public abstract class TestAction {
     public static final String KEY_DESTINATION_NAME = "test.field.destination.name";
 
     public abstract MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException;
-
-    public ProviderMessageContent createTestNotificationContent(FieldUtility fieldUtility, ItemOperation operation, String messageId) throws AlertException {
-        String customTopic = fieldUtility.getString(KEY_CUSTOM_TOPIC).orElse("Alert Test Message");
-        String customMessage = fieldUtility.getString(KEY_CUSTOM_MESSAGE).orElse("Test Message Content");
-        return new ProviderMessageContent.Builder()
-                   .applyProvider("Alert", ProviderProperties.UNKNOWN_CONFIG_ID, "Test")
-                   .applyTopic("Test Topic", customTopic)
-                   .applySubTopic("Test SubTopic", "Test message sent by Alert")
-                   .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))
-                   .build();
-    }
-
-    private ComponentItem createTestComponentItem(ItemOperation operation, String messageId, String customMessage) throws AlertException {
-        return new ComponentItem.Builder()
-                   .applyOperation(operation)
-                   .applyCategory("Test Category")
-                   .applyComponentData("Message ID", messageId)
-                   .applyCategoryItem("Details", customMessage)
-                   .applyNotificationId(1L)
-                   .build();
-    }
 
 }

@@ -25,9 +25,13 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraContextBuilder;
+import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
 public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext> {
@@ -39,43 +43,26 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
     }
 
     @Override
-    protected String getProjectFieldKey() {
-        return JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME;
-    }
+    public JiraCloudContext build(ConfigurationModel globalConfig, DistributionJobModel jobModel) {
+        FieldUtility globalFieldUtility = new FieldUtility(globalConfig.getCopyOfKeyToFieldMap());
+        JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(globalFieldUtility);
 
-    @Override
-    protected String getIssueTypeFieldKey() {
-        return JiraCloudDescriptor.KEY_ISSUE_TYPE;
-    }
+        DistributionJobDetailsModel distributionJobDetails = jobModel.getDistributionJobDetails();
+        JiraCloudJobDetailsModel jiraCouldJobDetails = distributionJobDetails.getAsJiraCouldJobDetails();
 
-    @Override
-    protected String getIssueCreatorFieldKey() {
-        return JiraCloudDescriptor.KEY_ISSUE_CREATOR;
-    }
+        JiraIssueConfig issueConfig = new JiraIssueConfig(
+            jiraCouldJobDetails.getProjectNameOrKey(),
+            jiraCouldJobDetails.getProjectNameOrKey(),
+            null,
+            jiraCouldJobDetails.getIssueCreatorEmail(),
+            jiraCouldJobDetails.getIssueType(),
+            jiraCouldJobDetails.isAddComments(),
+            jiraCouldJobDetails.getResolveTransition(),
+            jiraCouldJobDetails.getReopenTransition(),
+            createJiraCustomFieldConfig(jiraCouldJobDetails.getCustomFields())
+        );
 
-    @Override
-    protected String getAddCommentsFieldKey() {
-        return JiraCloudDescriptor.KEY_ADD_COMMENTS;
-    }
-
-    @Override
-    protected String getResolveTransitionFieldKey() {
-        return JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getOpenTransitionFieldKey() {
-        return JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION;
-    }
-
-    @Override
-    protected String getDefaultIssueCreatorFieldKey() {
-        return JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS;
-    }
-
-    @Override
-    public JiraCloudContext build(FieldUtility fieldUtility) {
-        return new JiraCloudContext(jiraCloudPropertiesFactory.createJiraProperties(fieldUtility), createIssueConfig(fieldUtility));
+        return new JiraCloudContext(jiraProperties, issueConfig);
     }
 
 }

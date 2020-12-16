@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,8 +18,8 @@ import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
@@ -98,8 +96,8 @@ public class NotificationReceiverTest {
                                              .applyTopic("testTopic", "topic")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        FieldUtility fieldUtility = new FieldUtility(Map.of());
-        return new DistributionEvent(UUID.randomUUID().toString(), "destination", RestConstants.formatDate(new Date()), providerConfigId, "FORMAT",
-            MessageContentGroup.singleton(content), fieldUtility);
+        DistributionJobModel emptyJob = DistributionJobModel.builder().build();
+        return new DistributionEvent("destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
+            MessageContentGroup.singleton(content), emptyJob, null);
     }
 }

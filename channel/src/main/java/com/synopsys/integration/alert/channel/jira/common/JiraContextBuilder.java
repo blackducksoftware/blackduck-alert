@@ -22,42 +22,23 @@
  */
 package com.synopsys.integration.alert.channel.jira.common;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 
 public abstract class JiraContextBuilder<T> {
-    protected abstract String getProjectFieldKey();
+    public abstract T build(ConfigurationModel channelGlobalConfig, DistributionJobModel testJobModel);
 
-    protected abstract String getIssueTypeFieldKey();
-
-    protected abstract String getIssueCreatorFieldKey();
-
-    protected abstract String getAddCommentsFieldKey();
-
-    protected abstract String getResolveTransitionFieldKey();
-
-    protected abstract String getOpenTransitionFieldKey();
-
-    protected abstract String getDefaultIssueCreatorFieldKey();
-
-    public abstract T build(FieldUtility fieldUtility);
-
-    protected IssueConfig createIssueConfig(FieldUtility fieldUtility) {
-        String projectName = fieldUtility.getStringOrNull(getProjectFieldKey());
-        String issueCreator = fieldUtility.getString(getIssueCreatorFieldKey()).orElseGet(() -> fieldUtility.getStringOrNull(getDefaultIssueCreatorFieldKey()));
-        String issueType = fieldUtility.getString(getIssueTypeFieldKey()).orElse(JiraConstants.DEFAULT_ISSUE_TYPE);
-        Boolean commentOnIssues = fieldUtility.getBooleanOrFalse(getAddCommentsFieldKey());
-        String resolveTransition = fieldUtility.getStringOrNull(getResolveTransitionFieldKey());
-        String openTransition = fieldUtility.getStringOrNull(getOpenTransitionFieldKey());
-
-        IssueConfig issueConfig = new IssueConfig();
-        issueConfig.setProjectName(projectName);
-        issueConfig.setIssueCreator(issueCreator);
-        issueConfig.setIssueType(issueType);
-        issueConfig.setCommentOnIssues(commentOnIssues);
-        issueConfig.setResolveTransition(resolveTransition);
-        issueConfig.setOpenTransition(openTransition);
-
-        return issueConfig;
+    protected List<JiraCustomFieldConfig> createJiraCustomFieldConfig(Collection<JiraJobCustomFieldModel> jobCustomFieldModels) {
+        return jobCustomFieldModels
+                   .stream()
+                   .map(customField -> new JiraCustomFieldConfig(customField.getFieldName(), customField.getFieldValue()))
+                   .collect(Collectors.toList());
     }
+
 }

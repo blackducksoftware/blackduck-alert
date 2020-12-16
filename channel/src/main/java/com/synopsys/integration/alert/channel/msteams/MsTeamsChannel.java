@@ -25,7 +25,9 @@ package com.synopsys.integration.alert.channel.msteams;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +39,9 @@ import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
@@ -59,8 +63,11 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
 
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
-        FieldUtility fields = event.getFieldUtility();
-        String webhook = fields.getString(MsTeamsDescriptor.KEY_WEBHOOK)
+        DistributionJobModel distributionJobModel = event.getDistributionJobModel();
+        DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
+        MSTeamsJobDetailsModel asMSTeamsJobDetails = distributionJobDetails.getAsMSTeamsJobDetails();
+        String webhook = Optional.ofNullable(asMSTeamsJobDetails.getWebhook())
+                             .filter(StringUtils::isNotBlank)
                              .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));
 
         MsTeamsMessage msTeamsMessage = msTeamsMessageParser.createMsTeamsMessage(event.getContent());

@@ -84,7 +84,8 @@ class JobCustomMessageModal extends Component {
         const jobFieldModel = jobFieldModelBuilder();
         const newJobFieldModel = {
             jobId: jobFieldModel.jobId,
-            fieldModels: []
+            fieldModels: [],
+            configuredProviderProjects: jobFieldModel.configuredProviderProjects
         };
         const customMessageFieldModel = this.createCustomMessageFieldModel(jobFieldModel);
         newJobFieldModel.fieldModels.push(customMessageFieldModel);

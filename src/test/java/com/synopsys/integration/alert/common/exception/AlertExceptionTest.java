@@ -27,7 +27,6 @@ public class AlertExceptionTest {
     public void createExceptionSet() {
         exceptionSet = new LinkedHashSet<>();
         exceptionSet.add(AlertException.class);
-        exceptionSet.add(AlertDatabaseConstraintException.class);
         exceptionSet.add(AlertConfigurationException.class);
         exceptionSet.add(AlertRuntimeException.class);
     }
@@ -95,4 +94,5 @@ public class AlertExceptionTest {
         Constructor<E> constructor = exceptionClass.getConstructor(Throwable.class);
         return constructor.newInstance(throwable);
     }
+
 }

@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.channel.slack;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,23 +21,19 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
-import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
-    public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
-    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
-
     @Autowired
     private SlackDescriptor slackDescriptor;
     @Autowired
@@ -50,18 +45,18 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     public void testSetup() {
         String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
-        blackDuckTimeoutField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
+        blackDuckTimeoutField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
 
         String blackDuckApiKey = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY;
         ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
-        blackDuckApiField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
+        blackDuckApiField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
 
         String blackDuckProviderUrlKey = BlackDuckDescriptor.KEY_BLACKDUCK_URL;
         ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
-        blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+        blackDuckProviderUrlField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        provider_global = configurationAccessor
-                              .createConfiguration(BLACK_DUCK_PROVIDER_KEY, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
+        providerGlobalConfig = configurationAccessor
+                                   .createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
     }
 
     @Override
@@ -70,14 +65,12 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ConfigurationModel saveDistributionConfiguration() {
-        List<ConfigurationFieldModel> models = MockConfigurationModelFactory.createSlackDistributionFields();
-        Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(models);
-
-        fieldMap.get(SlackDescriptor.KEY_WEBHOOK).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
-        fieldMap.get(SlackDescriptor.KEY_CHANNEL_NAME).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
-        fieldMap.get(SlackDescriptor.KEY_CHANNEL_USERNAME).setFieldValue(properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
-        return configurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, models);
+    public DistributionJobDetailsModel createDistributionJobDetails() {
+        return new SlackJobDetailsModel(
+            testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
+            testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
+            getClass().getSimpleName()
+        );
     }
 
     @Override
@@ -88,18 +81,17 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                              .applyTopic("testTopic", "")
                                              .applySubTopic(subTopic.getName(), subTopic.getValue())
                                              .build();
-        List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorKey(slackChannelKey);
 
-        Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-        for (ConfigurationModel model : models) {
-            fieldMap.putAll(model.getCopyOfKeyToFieldMap());
-        }
-
-        FieldUtility fieldUtility = new FieldUtility(fieldMap);
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
         DistributionEvent event = new DistributionEvent(
-            String.valueOf(distribution_config.getConfigurationId()), slackChannelKey.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content),
-            fieldUtility);
+            slackChannelKey.getUniversalKey(),
+            createdAt,
+            1L,
+            ProcessingType.DEFAULT.name(),
+            MessageContentGroup.singleton(content),
+            distributionJobModel,
+            null
+        );
         return event;
     }
 
@@ -126,44 +118,39 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public Map<String, String> createInvalidDistributionFieldMap() {
-        return Map.of(SlackDescriptor.KEY_WEBHOOK, "",
-            SlackDescriptor.KEY_CHANNEL_NAME, "");
-    }
-
-    @Override
     public FieldModel createTestConfigDestination() {
         return createFieldModel(new SlackChannelKey().getUniversalKey(), "");
     }
 
     @Override
-    public String getTestJobName() {
-        return UNIT_TEST_JOB_NAME;
-    }
-
-    @Override
-    public String getDestinationName() {
+    public String getEventDestinationName() {
         return slackChannelKey.getUniversalKey();
     }
 
     @Override
-    public TestAction getTestAction() {
+    public ChannelDistributionTestAction getChannelDistributionTestAction() {
         return new ChannelDistributionTestAction(slackChannel) {};
     }
 
     @Override
     public void testGlobalConfig() {
-
+        // Slack has no global config
     }
 
     @Override
     public void testGlobalValidate() {
-
+        // Slack has no global config
     }
 
     @Override
     public void testGlobalValidateWithFieldErrors() {
+        // Slack has no global config
+    }
 
+    @Override
+    public TestAction getGlobalTestAction() {
+        // Slack has no global config
+        return null;
     }
 
 }
