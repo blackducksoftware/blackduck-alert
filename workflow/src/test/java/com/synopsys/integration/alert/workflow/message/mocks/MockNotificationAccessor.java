@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public class MockNotificationAccessor implements NotificationAccessor {
     ArrayList<AlertNotificationModel> alertNotificationModels;
@@ -50,18 +51,20 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public Page<AlertNotificationModel> findNotificationsNotProcessed() {
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed() {
         ArrayList<AlertNotificationModel> notificationsNotProcessed = new ArrayList<>();
         for (AlertNotificationModel notification : alertNotificationModels) {
             if (!notification.getProcessed()) {
                 notificationsNotProcessed.add(notification);
             }
         }
+        Page<AlertNotificationModel> pageOfNotifications;
         if (notificationsNotProcessed.size() > 0) {
-            return new PageImpl<>(notificationsNotProcessed);
+            pageOfNotifications = new PageImpl<>(notificationsNotProcessed);
         } else {
-            return Page.empty();
+            pageOfNotifications = Page.empty();
         }
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent());
     }
 
     @Override

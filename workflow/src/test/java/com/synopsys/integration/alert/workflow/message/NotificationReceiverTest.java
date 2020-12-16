@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.workflow.message;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import com.google.gson.Gson;
@@ -20,6 +23,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.workflow.message.mocks.MockNotificationAccessor;
@@ -53,12 +57,15 @@ public class NotificationReceiverTest {
         List<AlertNotificationModel> alertNotificationModels = List.of(createAlertNotificationModel(1L, false));
         DistributionEvent distributionEvent = createDistributionEvent(1L);
 
+        Page<AlertNotificationModel> pageOfNotifications = new PageImpl<>(alertNotificationModels);
+
         NotificationAccessor notificationAccessorMock = Mockito.mock(NotificationAccessor.class);
         NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         ChannelEventManager channelEventManager = Mockito.mock(ChannelEventManager.class);
 
         Mockito.when(notificationProcessor.processNotifications(Mockito.eq(FrequencyType.REAL_TIME), Mockito.eq(alertNotificationModels))).thenReturn(List.of(distributionEvent));
-        Mockito.when(notificationAccessorMock.findNotificationsNotProcessed()).thenReturn(new PageImpl<>(alertNotificationModels));
+        Mockito.when(notificationAccessorMock.getFirstPageOfNotificationsNotProcessed())
+            .thenReturn(new AlertPagedModel(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent()));
 
         NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessorMock, notificationProcessor, channelEventManager);
         notificationReceiver.handleEvent(new NotificationReceivedEvent());
@@ -70,6 +77,7 @@ public class NotificationReceiverTest {
     public void getDestinationNameTest() {
         NotificationReceiver notificationReceiver = new NotificationReceiver(gson, null, null, null);
 
+        assertEquals(NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE, notificationReceiver.getDestinationName());
     }
 
     private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) {

@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -288,6 +289,40 @@ public class DefaultNotificationAccessorTest {
 
         assertEquals(pageNumber, pageRequest.getPageNumber());
         assertEquals(pageSize, pageRequest.getPageSize());
+    }
+
+    @Test
+    public void getFirstPageOfNotificationsNotProcessedTest() {
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
+        Page<NotificationEntity> pageOfNotificationEntities = new PageImpl<>(List.of(notificationEntity));
+        ConfigurationModel configurationModel = createConfigurationModel();
+
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+
+        Mockito.when(notificationContentRepository.findNotProcessedNotifications(Mockito.any())).thenReturn(pageOfNotificationEntities);
+        Mockito.when(configurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
+
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, configurationAccessor);
+        AlertPagedModel<AlertNotificationModel> model = notificationManager.getFirstPageOfNotificationsNotProcessed();
+
+        List<AlertNotificationModel> alertNotificationModelList = model.getModels();
+        assertEquals(1, alertNotificationModelList.size());
+        testExpectedAlertNotificationModel(expectedAlertNotificationModel, alertNotificationModelList.get(0));
+    }
+
+    @Test
+    public void setNotificationsProcessedTest() {
+        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(), false);
+
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, configurationAccessor);
+        notificationManager.setNotificationsProcessed(List.of(alertNotificationModel));
+
+        Mockito.verify(notificationContentRepository).saveAll(Mockito.any());
     }
 
     private void testExpectedAlertNotificationModel(AlertNotificationModel expected, AlertNotificationModel actual) {

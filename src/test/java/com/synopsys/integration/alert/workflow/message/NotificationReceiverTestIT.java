@@ -58,7 +58,7 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
 
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
-        assertEquals(0, defaultNotificationAccessor.findNotificationsNotProcessed().getContent().size());
+        assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed().getModels().size());
 
         notificationReceiver.handleEvent(new NotificationReceivedEvent());
 
@@ -89,7 +89,7 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
         List<AlertNotificationModel> alertNotificationModels = defaultNotificationAccessor.findAll(pageRequest, false).getContent();
 
         assertModelsAreProcessed(alertNotificationModels);
-        assertEquals(0, defaultNotificationAccessor.findNotificationsNotProcessed().getContent().size());
+        assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed().getModels().size());
     }
 
     private void assertModelsAreProcessed(List<AlertNotificationModel> notificationModels) {

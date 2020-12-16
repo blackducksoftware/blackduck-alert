@@ -27,7 +27,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -39,6 +38,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 
@@ -68,13 +68,10 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
 
             int numPagesProcessed = 0;
 
-            logger.info("====== RECEIVED ====== Processing event for notifications."); //TODO: Delete this log
-            Page<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
-            logger.info("====== Initial total pages before loop: {} ======", pageOfAlertNotificationModels.getTotalPages()); //TODO delete this log
-
+            AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed();
             //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
-            while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getContent()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
-                List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getContent();
+            while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
+                List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
                 logger.info("====== SIZE OF NOTIFICATIONS ====== Sending {} notifications.", notifications.size()); //TODO clean up this log message
                 List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
                 logger.info("====== SENDING DISTRIBUTION EVENTS ====== Sending {} events for notifications.", distributionEvents.size()); //TODO clean up this log message, leave the sending events for notifications part
@@ -84,7 +81,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
                 notificationAccessor.setNotificationsProcessed(notifications);
                 logger.info("====== Setting Notifications to processed =====");
                 numPagesProcessed++;
-                pageOfAlertNotificationModels = notificationAccessor.findNotificationsNotProcessed();
+                pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed();
                 logger.info("====== New total pages: {} ======", pageOfAlertNotificationModels.getTotalPages()); //TODO bump to trace make it to "processing page from numPagesProcessed, and then new pages found getTotalPages".
             }
             if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {

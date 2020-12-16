@@ -174,17 +174,18 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return PageRequest.of(pageNumber, pageSize, Sort.by(sortingOrder));
     }
 
-    //TODO this needs unit tests
     @Override
-    public Page<AlertNotificationModel> findNotificationsNotProcessed() {
-        AlertPagedModel<AlertNotificationModel> test;
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed() {
+        int currentPage = 0;
+        int pageSize = 100;
         Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
-        PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(sortingOrder));
-        return notificationContentRepository.findNotProcessedNotifications(pageRequest)
-                   .map(this::toModel);
+        PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findNotProcessedNotifications(pageRequest)
+                                                               .map(this::toModel);
+        List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
     }
 
-    //TODO this needs unit tests
     @Override
     public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
         List<NotificationEntity> notificationEntities = notifications.stream()
