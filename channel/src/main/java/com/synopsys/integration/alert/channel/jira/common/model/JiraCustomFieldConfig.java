@@ -27,7 +27,9 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-public class JiraCustomFieldConfig {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class JiraCustomFieldConfig extends AlertSerializableModel {
     private final String fieldName;
     private final String fieldOriginalValue;
     private @Nullable String fieldReplacementValue;
