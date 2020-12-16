@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -59,7 +58,7 @@ public class UpdateChecker {
     private static final String QA_BUILD = "-SIGQA";
     private static final char VERSION_SEPARATOR = '.';
 
-    private final Logger logger = LoggerFactory.getLogger(UpdateChecker.class);
+    private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final Gson gson;
     private final AboutReader aboutReader;
     private final ProxyManager proxyManager;
@@ -111,10 +110,9 @@ public class UpdateChecker {
     }
 
     private IntHttpClient createHttpClient() {
-        IntLogger intLogger = new Slf4jIntLogger(logger);
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         Boolean alwaysTrustServerCert = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
-        return new IntHttpClient(intLogger, 120, alwaysTrustServerCert, proxyInfo);
+        return new IntHttpClient(logger, 120, alwaysTrustServerCert, proxyInfo);
     }
 
     private Optional<VersionDateModel> getLatestAvailableTag(DockerTagRetriever dockerTagRetriever, boolean isProduction) {
@@ -241,8 +239,7 @@ public class UpdateChecker {
                 return 1;
             }
         } catch (ParseException e) {
-            logger.debug("Could not parse the date strings with the format {}.", DOCKER_DATE_FORMAT);
-            logger.debug(e.getMessage(), e);
+            logger.debug(String.format("Could not parse the date strings with the format %s.", DOCKER_DATE_FORMAT), e);
         }
         return 0;
     }

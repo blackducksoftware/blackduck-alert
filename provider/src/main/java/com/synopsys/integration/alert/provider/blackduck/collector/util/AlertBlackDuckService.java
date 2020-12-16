@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector.util;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
@@ -37,10 +36,12 @@ import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
 public class AlertBlackDuckService {
-    private final Logger logger = LoggerFactory.getLogger(AlertBlackDuckService.class);
+    private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final BlackDuckApiClient blackDuckApiClient;
 
     public AlertBlackDuckService(BlackDuckApiClient blackDuckApiClient) {
@@ -51,8 +52,7 @@ public class AlertBlackDuckService {
         try {
             return Optional.of(blackDuckApiClient.getResponse(new HttpUrl(versionBomComponent.getComponentVersion()), ComponentVersionView.class));
         } catch (IntegrationException e) {
-            logger.error("Could not retrieve the Component Version: ", e.getMessage());
-            logger.debug(e.getMessage(), e);
+            logger.errorAndDebug("Could not retrieve the Component Version: " + e.getMessage(), e);
         }
         return Optional.empty();
     }
@@ -71,8 +71,7 @@ public class AlertBlackDuckService {
             ProjectVersionView projectVersionView = blackDuckApiClient.getResponse(new HttpUrl(projectVersionUrl), ProjectVersionView.class);
             return Optional.of(projectVersionView.getFirstLink(link).toString());
         } catch (IntegrationException e) {
-            logger.error("Could not retrieve the Project link: ", e.getMessage());
-            logger.debug(e.getMessage(), e);
+            logger.errorAndDebug("Could not retrieve the Project link: " + e.getMessage(), e);
         }
         return Optional.empty();
     }
@@ -83,8 +82,7 @@ public class AlertBlackDuckService {
                 return Optional.of(blackDuckApiClient.getResponse(new HttpUrl(bomComponentUrl), ProjectVersionComponentView.class));
             }
         } catch (IntegrationException e) {
-            logger.error("Could not retrieve the Bom component: ", e.getMessage());
-            logger.debug(e.getMessage(), e);
+            logger.errorAndDebug("Could not retrieve the Bom component: " + e.getMessage(), e);
         }
         return Optional.empty();
     }
@@ -96,8 +94,7 @@ public class AlertBlackDuckService {
                 return Optional.of(blackDuckApiClient.getResponse(new HttpUrl(policyUrl), PolicyRuleView.class));
             }
         } catch (IntegrationException e) {
-            logger.debug("Unable to get policy rule: {}", policyInfo.getPolicyName());
-            logger.debug("Cause:", e);
+            logger.debug(String.format("Unable to get policy rule: %s", policyInfo.getPolicyName()), e);
         }
         return Optional.empty();
     }
@@ -108,12 +105,11 @@ public class AlertBlackDuckService {
             ProjectVersionWrapper wrapper = new ProjectVersionWrapper();
             wrapper.setProjectVersionView(projectVersionView);
 
-            ProjectView projectView = blackDuckApiClient.getResponse(new HttpUrl(projectVersionView.getFirstLink(ProjectVersionView.PROJECT_LINK).toString()), ProjectView.class);
+            ProjectView projectView = blackDuckApiClient.getResponse(projectVersionView.getFirstLink(ProjectVersionView.PROJECT_LINK), ProjectView.class);
             wrapper.setProjectView(projectView);
             return Optional.of(wrapper);
         } catch (IntegrationException e) {
-            logger.error("Could not retrieve the Project Version: ", e.getMessage());
-            logger.debug(e.getMessage(), e);
+            logger.errorAndDebug("Could not retrieve the Project Version: " + e.getMessage(), e);
         }
         return Optional.empty();
     }

@@ -73,7 +73,7 @@ import com.synopsys.integration.rest.request.Request;
 public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     private static final int PROJECT_DESCRIPTION_MAX_CHARS = 256;
 
-    private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(BlackDuckProviderDataAccessor.class));
+    private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
 
@@ -91,8 +91,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 return getProjectsForProvider(providerConfigOptional.get());
             }
         } catch (IntegrationException e) {
-            logger.error(String.format("Could not get the project for the provider '%s'. %s", providerConfigName, e.getMessage()));
-            logger.debug(e.getMessage(), e);
+            logger.errorAndDebug(String.format("Could not get the project for the provider '%s'. %s", providerConfigName, e.getMessage()), e);
         }
         return List.of();
     }
@@ -126,8 +125,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 ProjectView projectView = blackDuckService.getResponse(new HttpUrl(projectHref), ProjectView.class);
                 return getEmailAddressesForProject(projectView, blackDuckServicesFactory.createProjectUsersService());
             } catch (IntegrationException e) {
-                logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
-                logger.debug(e.getMessage(), e);
+                logger.errorAndDebug(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()), e);
             }
         }
         return Set.of();
@@ -144,8 +142,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             try {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
             } catch (IntegrationException e) {
-                logger.error(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()));
-                logger.debug(e.getMessage(), e);
+                logger.errorAndDebug(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()), e);
             }
         }
         return List.of();
@@ -169,8 +166,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
             }
         } catch (IntegrationException e) {
-            logger.error(String.format("Could not get the project for the provider '%s'. %s", providerConfigName, e.getMessage()));
-            logger.debug(e.getMessage(), e);
+            logger.errorAndDebug(String.format("Could not get the project for the provider '%s'. %s", providerConfigName, e.getMessage()), e);
         }
         return List.of();
     }
@@ -184,8 +180,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         try {
             return Optional.of(retriever.get());
         } catch (IntegrationException e) {
-            logger.error(String.format("Could not get the requested projects. %s", e.getMessage()));
-            logger.debug(e.getMessage(), e);
+            logger.errorAndDebug(String.format("Could not get the requested projects. %s", e.getMessage()), e);
         }
         return Optional.empty();
     }
@@ -258,7 +253,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 UserView projectOwner = blackDuckService.getResponse(projectOwnerHttpUrl, UserView.class);
                 projectOwnerEmail = projectOwner.getEmail();
             } catch (IntegrationException e) {
-                logger.error(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
+                logger.errorAndDebug(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
             }
         }
 
