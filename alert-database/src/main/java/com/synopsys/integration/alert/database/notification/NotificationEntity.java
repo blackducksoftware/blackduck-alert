@@ -59,6 +59,8 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     private String notificationType;
     @Column(name = "content")
     private String content;
+    @Column(name = "processed")
+    private boolean processed;
 
     @OneToMany(mappedBy = "notificationContent")
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
@@ -68,7 +70,7 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
     }
 
     // Reserved for queries
-    public NotificationEntity(Long id, OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content) {
+    public NotificationEntity(Long id, OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content, boolean processed) {
         this.setId(id);
         this.createdAt = createdAt;
         this.provider = provider;
@@ -76,15 +78,17 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
+        this.processed = processed;
     }
 
-    public NotificationEntity(OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content) {
+    public NotificationEntity(OffsetDateTime createdAt, String provider, Long providerConfigId, OffsetDateTime providerCreationTime, String notificationType, String content, boolean processed) {
         this.createdAt = createdAt;
         this.provider = provider;
         this.providerConfigId = providerConfigId;
         this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
+        this.processed = processed;
     }
 
     @Override
@@ -119,6 +123,14 @@ public class NotificationEntity extends BaseEntity implements DatabaseEntity {
 
     public OffsetDateTime getProviderCreationTime() {
         return providerCreationTime;
+    }
+
+    public boolean getProcessed() {
+        return processed;
+    }
+
+    public void setProcessedToTrue() {
+        processed = true;
     }
 
     public List<AuditNotificationRelation> getAuditNotificationRelations() {

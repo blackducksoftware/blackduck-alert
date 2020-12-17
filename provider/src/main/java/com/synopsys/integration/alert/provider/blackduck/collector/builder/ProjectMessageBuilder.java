@@ -38,7 +38,6 @@ import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificati
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 @Component
 public class ProjectMessageBuilder extends BlackDuckMessageBuilder<ProjectNotificationView> {
@@ -52,7 +51,7 @@ public class ProjectMessageBuilder extends BlackDuckMessageBuilder<ProjectNotifi
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, ProjectNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, ProjectNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
         ProjectNotificationContent notificationContent = notificationView.getContent();
         ItemOperation projectLevelAction = operationUtil.getItemOperation(notificationContent.getOperationType());
 

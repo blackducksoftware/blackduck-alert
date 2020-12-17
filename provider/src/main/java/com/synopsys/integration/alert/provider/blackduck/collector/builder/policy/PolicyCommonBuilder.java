@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.model
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.ComponentBuilderUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.PolicyPriorityUtil;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.util.VulnerabilityUtil;
-import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertBlackDuckService;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
@@ -73,7 +73,7 @@ public class PolicyCommonBuilder {
         this.blackDuckIssueTrackerCallbackUtility = blackDuckIssueTrackerCallbackUtility;
     }
 
-    public List<ComponentItem> retrievePolicyItems(NotificationType notificationType, BlackDuckResponseCache blackDuckResponseCache, ComponentData componentData,
+    public List<ComponentItem> retrievePolicyItems(NotificationType notificationType, AlertBlackDuckService alertBlackDuckService, ComponentData componentData,
         Collection<PolicyInfo> policies, Long notificationId, ItemOperation operation, String bomComponentUrl, List<LinkableItem> customAttributes, Collection<String> policyFilter) {
         List<ComponentItem> componentItems = new LinkedList<>();
         for (PolicyInfo policyInfo : policies) {
@@ -86,7 +86,7 @@ public class PolicyCommonBuilder {
                 ComponentItemCallbackInfo nullableCallbackInfo = null;
 
                 List<LinkableItem> policyAttributes = new ArrayList<>();
-                Optional<ProjectVersionComponentView> optionalBomComponent = blackDuckResponseCache.getBomComponentView(bomComponentUrl);
+                Optional<ProjectVersionComponentView> optionalBomComponent = alertBlackDuckService.getBomComponentView(bomComponentUrl);
                 if (optionalBomComponent.isPresent()) {
                     ProjectVersionComponentView bomComponent = optionalBomComponent.get();
                     nullableCallbackInfo = blackDuckIssueTrackerCallbackUtility.createCallbackInfo(notificationType, bomComponent).orElse(null);
@@ -105,7 +105,7 @@ public class PolicyCommonBuilder {
                                                         .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
                                                         .applyAllComponentAttributes(policyAttributes)
                                                         .applyNotificationId(notificationId);
-                    ComponentBuilderUtil.applyComponentInformation(builder, blackDuckResponseCache, componentData);
+                    ComponentBuilderUtil.applyComponentInformation(builder, alertBlackDuckService, componentData);
                     componentItems.add(builder.build());
                 } catch (Exception ex) {
                     logger.info("Error building policy component for notification {}, operation {}, component {}, component version {}", notificationId, operation, componentData.getComponentName(), componentData.getComponentVersionName());
@@ -143,7 +143,7 @@ public class PolicyCommonBuilder {
     }
 
     public List<ComponentItem> createVulnerabilityPolicyComponentItems(Collection<ProjectVersionVulnerableBomComponentsView> vulnerableComponentViews, LinkableItem policyNameItem, LinkableItem policySeverity,
-        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckApiClient blackDuckApiClient, BlackDuckResponseCache blackDuckResponseCache) {
+        ComponentData componentData, @Nullable ComponentItemCallbackInfo callbackInfo, Long notificationId, BlackDuckApiClient blackDuckApiClient, AlertBlackDuckService blackDuckResponseCache) {
         Map<String, VulnerabilityView> vulnerabilityViews = VulnerabilityUtil.createVulnerabilityViewMap(logger, blackDuckApiClient, vulnerableComponentViews);
         List<ProjectVersionVulnerableBomComponentsItemsVulnerabilityWithRemediationView> notificationVulnerabilities = vulnerableComponentViews.stream()
                                                                                                                            .map(ProjectVersionVulnerableBomComponentsView::getVulnerabilityWithRemediation)

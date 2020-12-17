@@ -28,36 +28,31 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public interface JobAccessor {
-    @Deprecated(forRemoval = true)
-    List<ConfigurationJobModel> getAllJobs();
+    List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
 
-    List<ConfigurationJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
+    List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);
 
-    List<ConfigurationJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);
+    List<DistributionJobModel> getJobsById(Collection<UUID> jobIds);
 
-    List<ConfigurationJobModel> getJobsById(Collection<UUID> jobIds);
+    AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit);
 
-    AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit);
+    AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit, String searchTerm, Collection<String> descriptorsNamesToInclude);
 
-    AlertPagedModel<ConfigurationJobModel> getPageOfJobs(int pageOffset, int pageLimit, String searchTerm, Collection<String> descriptorsNamesToInclude);
+    Optional<DistributionJobModel> getJobById(UUID jobId);
 
-    Optional<ConfigurationJobModel> getJobById(UUID jobId);
+    Optional<DistributionJobModel> getJobByName(String jobName);
 
-    Optional<ConfigurationJobModel> getJobByName(String jobName);
+    DistributionJobModel createJob(DistributionJobRequestModel requestModel);
 
-    List<ConfigurationJobModel> getJobsByFrequency(FrequencyType frequency);
+    DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException;
 
-    ConfigurationJobModel createJob(Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
-
-    ConfigurationJobModel updateJob(UUID jobId, Collection<String> descriptorNames, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
-
-    void deleteJob(UUID jobId) throws AlertDatabaseConstraintException;
+    void deleteJob(UUID jobId);
 
 }

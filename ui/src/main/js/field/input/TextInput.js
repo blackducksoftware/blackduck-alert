@@ -5,9 +5,8 @@ import LabeledField from 'field/LabeledField';
 class TextInput extends Component {
     render() {
         const {
-            isSet, inputClass, id, readOnly, autoFocus, name, value, onChange
+            inputClass, id, readOnly, autoFocus, name, value, onChange
         } = this.props;
-        const placeholderText = (isSet) ? '********' : null;
 
         const field = (
             <div className="d-inline-flex flex-column p-2 col-sm-8">
@@ -20,7 +19,6 @@ class TextInput extends Component {
                     name={name}
                     value={value}
                     onChange={onChange}
-                    placeholder={placeholderText}
                 />
             </div>
         );

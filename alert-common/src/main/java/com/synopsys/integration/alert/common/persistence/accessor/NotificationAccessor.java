@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 
 public interface NotificationAccessor {
     List<AlertNotificationModel> saveAllNotifications(Collection<AlertNotificationModel> notifications);
@@ -41,6 +42,10 @@ public interface NotificationAccessor {
     List<AlertNotificationModel> findByCreatedAtBefore(OffsetDateTime date);
 
     List<AlertNotificationModel> findByCreatedAtBeforeDayOffset(int dayOffset);
+
+    AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize);
+
+    void setNotificationsProcessed(List<AlertNotificationModel> notifications);
 
     void deleteNotificationList(List<AlertNotificationModel> notifications);
 

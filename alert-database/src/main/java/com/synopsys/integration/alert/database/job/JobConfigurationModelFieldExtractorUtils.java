@@ -48,13 +48,6 @@ public class JobConfigurationModelFieldExtractorUtils {
     /**
      * This will not properly assign {@link BlackDuckProjectDetailsModel}
      */
-    public static DistributionJobModel convertToDistributionJobModel(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap, OffsetDateTime createdAt, @Nullable OffsetDateTime lastUpdated) {
-        return convertToDistributionJobModel(jobId, configuredFieldsMap, createdAt, lastUpdated, List.of());
-    }
-
-    /**
-     * This will not properly assign {@link BlackDuckProjectDetailsModel}
-     */
     public static DistributionJobModel convertToDistributionJobModel(
         UUID jobId,
         Map<String, ConfigurationFieldModel> configuredFieldsMap,

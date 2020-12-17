@@ -28,8 +28,9 @@ import com.synopsys.integration.alert.provider.blackduck.collector.builder.Messa
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyCommonBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.policy.PolicyOverrideMessageBuilder;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 
 public class PolicyOverrideMessageBuilderTest {
     private final Gson gson = new Gson();
@@ -54,13 +55,14 @@ public class PolicyOverrideMessageBuilderTest {
     }
 
     private void test(PolicyOverrideMessageBuilder policyOverrideMessageBuilder, PolicyOverrideNotificationView notification) {
-        BlackDuckBucket blackDuckBucket = new BlackDuckBucket();
-        BlackDuckServicesFactory blackDuckServicesFactory = BlackDuckMessageBuilderTestHelper.mockServicesFactory();
+        BlackDuckApiClient blackDuckApiClient = BlackDuckMessageBuilderTestHelper.mockBlackDuckApiClient();
+        ProjectService projectService = BlackDuckMessageBuilderTestHelper.mockProjectService(blackDuckApiClient);
+        BlackDuckServicesFactory blackDuckServicesFactory = BlackDuckMessageBuilderTestHelper.mockServicesFactory(blackDuckApiClient, projectService);
         Mockito.when(blackDuckServicesFactory.getBlackDuckHttpClient()).thenReturn(BlackDuckMessageBuilderTestHelper.mockHttpClient());
 
         DistributionJobModel job = Mockito.mock(DistributionJobModel.class);
         CommonMessageData commonMessageData = new CommonMessageData(1L, 1L, "provider", "providerConfigName", "providerUrl", DateUtils.createCurrentDateTimestamp(), job);
-        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(commonMessageData, notification, blackDuckBucket, blackDuckServicesFactory);
+        List<ProviderMessageContent> messageContentGroups = policyOverrideMessageBuilder.buildMessageContents(commonMessageData, notification, blackDuckServicesFactory);
         assertFalse(messageContentGroups.isEmpty());
         Set<String> categories = new HashSet<>();
         for (ProviderMessageContent messageContent : messageContentGroups) {
