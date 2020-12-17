@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -47,6 +48,7 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
     private final NotificationAccessor notificationAccessor;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private final BlackDuckValidator blackDuckValidator;
+    private final EventManager eventManager;
 
     @Autowired
     public BlackDuckTaskFactory(
@@ -55,7 +57,8 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         ProviderDataAccessor blackDuckDataAccessor,
         NotificationAccessor notificationAccessor,
         ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
-        BlackDuckValidator blackDuckValidator
+        BlackDuckValidator blackDuckValidator,
+        EventManager eventManager
     ) {
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.taskScheduler = taskScheduler;
@@ -63,11 +66,12 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         this.notificationAccessor = notificationAccessor;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
         this.blackDuckValidator = blackDuckValidator;
+        this.eventManager = eventManager;
     }
 
     @Override
     public List<ProviderTask> createTasks(ProviderProperties providerProperties) {
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationAccessor, providerTaskPropertiesAccessor, providerProperties, blackDuckValidator);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationAccessor, providerTaskPropertiesAccessor, providerProperties, blackDuckValidator, eventManager);
         BlackDuckDataSyncTask syncTask = new BlackDuckDataSyncTask(blackDuckProviderKey, taskScheduler, blackDuckDataAccessor, providerProperties);
         return List.of(accumulator, syncTask);
     }

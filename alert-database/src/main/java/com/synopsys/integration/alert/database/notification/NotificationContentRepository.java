@@ -43,8 +43,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     @Query(value = "SELECT entity FROM NotificationEntity entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
     Page<NotificationEntity> findAllSentNotifications(Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT "
-                       + "new NotificationEntity(notificationRow.id, notificationRow.createdAt, notificationRow.provider, notificationRow.providerConfigId, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content) "
+    @Query(value = "SELECT DISTINCT notificationRow "
                        + "FROM NotificationEntity notificationRow "
                        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
@@ -62,8 +61,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )")
     Page<NotificationEntity> findMatchingNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT "
-                       + "new NotificationEntity(notificationRow.id, notificationRow.createdAt , notificationRow.provider, notificationRow.providerConfigId, notificationRow.providerCreationTime, notificationRow.notificationType, notificationRow.content) "
+    @Query(value = "SELECT DISTINCT notificationRow "
                        + "FROM NotificationEntity notificationRow "
                        + "LEFT JOIN notificationRow.auditNotificationRelations relation ON notificationRow.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
@@ -84,4 +82,5 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + ")")
     Page<NotificationEntity> findMatchingSentNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+    Page<NotificationEntity> findByProcessedFalse(Pageable pageable);
 }
