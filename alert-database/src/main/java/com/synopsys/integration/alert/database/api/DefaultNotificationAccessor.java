@@ -66,7 +66,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository, AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository,
+    public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository,
+        AuditEntryRepository auditEntryRepository,
+        AuditNotificationRepository auditNotificationRepository,
         ConfigurationAccessor configurationAccessor) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
