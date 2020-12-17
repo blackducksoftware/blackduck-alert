@@ -17,7 +17,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -35,7 +35,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 class StaticJobAccessorV2Test {
     private DistributionJobRepository distributionJobRepository;
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
-    private JobAccessorV2 jobAccessor;
+    private JobAccessor jobAccessor;
 
     private final String jobName = "jobName";
 
@@ -48,7 +48,7 @@ class StaticJobAccessorV2Test {
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
-        jobAccessor = new StaticJobAccessorV2(distributionJobRepository, blackDuckJobDetailsAccessor, null, null, null, null, null, null, new BlackDuckProviderKey());
+        jobAccessor = new StaticJobAccessor(distributionJobRepository, blackDuckJobDetailsAccessor, null, null, null, null, null, null, new BlackDuckProviderKey());
     }
 
     @Test
@@ -58,7 +58,7 @@ class StaticJobAccessorV2Test {
         DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
-        Mockito.when(distributionJobRepository.findById(Mockito.any())).thenReturn(Optional.of(distributionJobEntity));
+        Mockito.when(distributionJobRepository.findById(jobId)).thenReturn(Optional.of(distributionJobEntity));
         Optional<DistributionJobModel> jobById = jobAccessor.getJobById(jobId);
 
         assertTrue(jobById.isPresent());
@@ -294,7 +294,7 @@ class StaticJobAccessorV2Test {
         UUID jobId = UUID.randomUUID();
         DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
-        
+
         Mockito.when(distributionJobRepository.findMatchingEnabledJob(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(List.of(distributionJobEntity));
 
         List<DistributionJobModel> matchingEnabledJobs = jobAccessor.getMatchingEnabledJobs(FrequencyType.DAILY, 3L, NotificationType.BOM_EDIT);

@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -198,7 +198,7 @@ public class DefaultAuditAccessorTest {
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
@@ -386,4 +386,5 @@ public class DefaultAuditAccessorTest {
             return savedAuditEntryEntity;
         });
     }
+
 }

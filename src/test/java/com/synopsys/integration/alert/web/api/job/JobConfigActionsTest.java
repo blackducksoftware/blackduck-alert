@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
@@ -79,7 +79,7 @@ public class JobConfigActionsTest {
     private AuthorizationManager authorizationManager;
     private DescriptorAccessor descriptorAccessor;
     private ConfigurationAccessor configurationAccessor;
-    private JobAccessorV2 jobAccessorV2;
+    private JobAccessor jobAccessor;
     private FieldModelProcessor fieldModelProcessor;
     private DescriptorProcessor descriptorProcessor;
     private ConfigurationFieldModelConverter configurationFieldModelConverter;
@@ -101,7 +101,7 @@ public class JobConfigActionsTest {
         authorizationManager = Mockito.mock(AuthorizationManager.class);
         descriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        jobAccessorV2 = Mockito.mock(JobAccessorV2.class);
+        jobAccessor = Mockito.mock(JobAccessor.class);
         fieldModelProcessor = Mockito.mock(FieldModelProcessor.class);
         descriptorProcessor = Mockito.mock(DescriptorProcessor.class);
         configurationFieldModelConverter = Mockito.mock(ConfigurationFieldModelConverter.class);
@@ -112,7 +112,7 @@ public class JobConfigActionsTest {
             authorizationManager,
             descriptorAccessor,
             configurationAccessor,
-            jobAccessorV2,
+            jobAccessor,
             fieldModelProcessor,
             descriptorProcessor,
             configurationFieldModelConverter,
@@ -141,7 +141,7 @@ public class JobConfigActionsTest {
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("Key", configurationFieldModel));
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.performAfterSaveAction(Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(jobAccessorV2.createJob(Mockito.any())).thenReturn(distributionJobModel);
+        Mockito.when(jobAccessor.createJob(Mockito.any())).thenReturn(distributionJobModel);
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.create(jobFieldModel);
 
@@ -170,7 +170,7 @@ public class JobConfigActionsTest {
         AlertPagedModel<DistributionJobModel> pageOfJobs = new AlertPagedModel<>(totalPages, pageNumber, pageSize, List.of(distributionJobModel));
 
         Mockito.when(descriptorAccessor.getRegisteredDescriptors()).thenReturn(List.of(registeredDescriptorModel));
-        Mockito.when(jobAccessorV2.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyCollection())).thenReturn(pageOfJobs);
+        Mockito.when(jobAccessor.getPageOfJobs(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyCollection())).thenReturn(pageOfJobs);
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         ActionResponse<JobPagedModel> jobPagedModelActionResponse = jobConfigActions.getPage(pageNumber, pageSize, "");
@@ -182,7 +182,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void getOneTest() {
-        Mockito.when(jobAccessorV2.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJobModel));
+        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJobModel));
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.getOne(jobId);
 
@@ -204,8 +204,8 @@ public class JobConfigActionsTest {
 
     @Test
     public void updateTest() throws Exception {
-        Mockito.when(jobAccessorV2.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
-        Mockito.when(jobAccessorV2.updateJob(Mockito.eq(distributionJobModel.getJobId()), Mockito.any())).thenReturn(distributionJobModel);
+        Mockito.when(jobAccessor.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
+        Mockito.when(jobAccessor.updateJob(Mockito.eq(distributionJobModel.getJobId()), Mockito.any())).thenReturn(distributionJobModel);
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(fieldModelProcessor.performBeforeUpdateAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.fillFieldModelWithExistingData(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(configurationFieldModel));
@@ -220,7 +220,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void updateServerErrorTest() throws Exception {
-        Mockito.when(jobAccessorV2.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
+        Mockito.when(jobAccessor.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert test")).when(fieldModelProcessor).performBeforeUpdateAction(Mockito.any());
 
@@ -233,12 +233,12 @@ public class JobConfigActionsTest {
 
     @Test
     public void deleteTest() throws Exception {
-        Mockito.when(jobAccessorV2.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJobModel));
+        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJobModel));
         Mockito.when(fieldModelProcessor.performBeforeDeleteAction(Mockito.any())).thenReturn(fieldModel);
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.delete(jobId);
 
-        Mockito.verify(jobAccessorV2).deleteJob(Mockito.any());
+        Mockito.verify(jobAccessor).deleteJob(Mockito.any());
         Mockito.verify(fieldModelProcessor, Mockito.times(2)).performAfterDeleteAction(Mockito.any());
 
         assertTrue(jobFieldModelActionResponse.isSuccessful());
@@ -248,7 +248,7 @@ public class JobConfigActionsTest {
 
     @Test
     public void deleteServerErrorTest() throws Exception {
-        Mockito.when(jobAccessorV2.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJobModel));
+        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJobModel));
         Mockito.doThrow(new AlertException("Exception for Alert test")).when(fieldModelProcessor).performBeforeDeleteAction(Mockito.any());
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.delete(jobId);
@@ -449,7 +449,7 @@ public class JobConfigActionsTest {
     @Test
     public void validateBadRequestTest() {
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
-        Mockito.when(jobAccessorV2.getJobByName(Mockito.anyString())).thenReturn(Optional.of(distributionJobModel));
+        Mockito.when(jobAccessor.getJobByName(Mockito.anyString())).thenReturn(Optional.of(distributionJobModel));
 
         ValidationActionResponse validationActionResponse = jobConfigActions.validate(jobFieldModel);
 

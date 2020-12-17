@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -67,7 +67,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
     @Autowired
     protected ProviderKey providerKey;
     @Autowired
-    protected JobAccessorV2 jobAccessor;
+    protected JobAccessor jobAccessor;
     @Autowired
     protected DefaultConfigurationAccessor configurationAccessor;
     @Autowired
@@ -207,7 +207,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
             List.of(),
             createDistributionJobDetails()
         );
-        
+
         return jobAccessor.createJob(requestModel);
     }
 
