@@ -5,6 +5,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':alert-database')
+    testImplementation project(':test-common')
 
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-tx'
@@ -12,4 +13,6 @@ dependencies {
     implementation 'jakarta.jms:jakarta.jms-api'
     implementation 'com.synopsys.integration:integration-rest'
     implementation 'com.synopsys.integration:integration-common'
+    implementation 'org.springframework.data:spring-data-jpa'
+    testImplementation 'org.mockito:mockito-core'
 }

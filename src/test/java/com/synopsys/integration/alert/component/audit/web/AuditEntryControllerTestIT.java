@@ -22,11 +22,16 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.component.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -65,6 +70,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
     @Autowired
     private JobAccessor jobAccessor;
+
     @Autowired
     // FIXME why is this class autowired twice?
     private ConfigurationAccessor configurationAccessor;
@@ -185,13 +191,12 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
         slackFields.add(providerConfigName);
 
-        SlackChannelKey slackChannelKey = new SlackChannelKey();
-        ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
-        ConfigurationJobModel configurationJobModel = jobAccessor.createJob(List.of(slackChannelKey.getUniversalKey()), configurationModel.getCopyOfFieldList());
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel();
+        DistributionJobModel jobModel = jobAccessor.createJob(jobRequestModel);
 
         NotificationEntity notificationEntity = mockNotificationContent.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
-        mockAuditEntryEntity.setCommonConfigId(configurationJobModel.getJobId());
+        mockAuditEntryEntity.setCommonConfigId(jobModel.getJobId());
         AuditEntryEntity auditEntity = mockAuditEntryEntity.createEntity();
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
@@ -201,6 +206,26 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    private DistributionJobRequestModel createJobRequestModel() {
+        SlackChannelKey slackChannelKey = new SlackChannelKey();
+        SlackJobDetailsModel details = new SlackJobDetailsModel("test_webhook", "#test-channel", null);
+        return new DistributionJobRequestModel(
+            true,
+            "Test Slack Job",
+            FrequencyType.REAL_TIME,
+            ProcessingType.DEFAULT,
+            slackChannelKey.getUniversalKey(),
+            mockNotificationContent.getProviderConfigId(),
+            false,
+            null,
+            List.of(),
+            List.of(),
+            List.of(),
+            List.of(),
+            details
+        );
     }
 
 }

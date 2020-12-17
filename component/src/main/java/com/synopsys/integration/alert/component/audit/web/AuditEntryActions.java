@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
@@ -64,7 +64,7 @@ public class AuditEntryActions {
     private final AuditDescriptorKey descriptorKey;
     private final NotificationAccessor notificationAccessor;
     private final AuditAccessor auditAccessor;
-    private final JobAccessorV2 jobAccessor;
+    private final JobAccessor jobAccessor;
     private final ChannelEventManager eventManager;
     private final NotificationProcessor notificationProcessor;
 
@@ -74,7 +74,7 @@ public class AuditEntryActions {
         AuditDescriptorKey descriptorKey,
         AuditAccessor auditAccessor,
         NotificationAccessor notificationAccessor,
-        JobAccessorV2 jobAccessor,
+        JobAccessor jobAccessor,
         ChannelEventManager eventManager,
         NotificationProcessor notificationProcessor
     ) {

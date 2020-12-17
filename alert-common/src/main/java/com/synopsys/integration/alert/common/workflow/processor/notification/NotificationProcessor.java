@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
@@ -65,12 +65,12 @@ public class NotificationProcessor {
 
     private final ProviderKey defaultProviderKey;
     private final ConfigurationAccessor configurationAccessor;
-    private final JobAccessorV2 jobAccessor;
+    private final JobAccessor jobAccessor;
     private final Map<String, Provider> providerKeyToProvider;
     private final NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(ProviderKey defaultProviderKey, ConfigurationAccessor configurationAccessor, JobAccessorV2 jobAccessor, List<Provider> providers,
+    public NotificationProcessor(ProviderKey defaultProviderKey, ConfigurationAccessor configurationAccessor, JobAccessor jobAccessor, List<Provider> providers,
         NotificationToDistributionEventConverter notificationToEventConverter) {
         this.defaultProviderKey = defaultProviderKey;
         this.configurationAccessor = configurationAccessor;

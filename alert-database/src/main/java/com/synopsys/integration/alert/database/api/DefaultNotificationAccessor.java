@@ -42,12 +42,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.event.NotificationEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -65,16 +64,16 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
-    private final EventManager eventManager;
 
     @Autowired
-    public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository, AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository,
-        ConfigurationAccessor configurationAccessor, EventManager eventManager) {
+    public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository,
+        AuditEntryRepository auditEntryRepository,
+        AuditNotificationRepository auditNotificationRepository,
+        ConfigurationAccessor configurationAccessor) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;
-        this.eventManager = eventManager;
     }
 
     @Override
@@ -88,14 +87,6 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                                                        .stream()
                                                        .map(this::toModel)
                                                        .collect(Collectors.toList());
-        notificationContentRepository.flush();
-        // TODO move this sendEvent call out of this class.  We can then remove the flush call since the save will be in a transaction.
-        if (!savedModels.isEmpty()) {
-            List<Long> notificationIds = savedModels.stream()
-                                             .map(AlertNotificationModel::getId)
-                                             .collect(Collectors.toList());
-            eventManager.sendEvent(new NotificationEvent(notificationIds));
-        }
         return savedModels;
     }
 
@@ -185,6 +176,26 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         return PageRequest.of(pageNumber, pageSize, Sort.by(sortingOrder));
     }
 
+    @Override
+    public AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize) {
+        int currentPage = 0;
+        Sort.Order sortingOrder = Sort.Order.asc("providerCreationTime");
+        PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(sortingOrder));
+        Page<AlertNotificationModel> pageOfNotifications = notificationContentRepository.findByProcessedFalse(pageRequest)
+                                                               .map(this::toModel);
+        List<AlertNotificationModel> alertNotificationModels = pageOfNotifications.getContent();
+        return new AlertPagedModel<>(pageOfNotifications.getTotalPages(), currentPage, pageSize, alertNotificationModels);
+    }
+
+    @Override
+    public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
+        List<NotificationEntity> notificationEntities = notifications.stream()
+                                                            .map(this::fromModel)
+                                                            .collect(Collectors.toList());
+        notificationEntities.forEach(NotificationEntity::setProcessedToTrue);
+        notificationContentRepository.saveAll(notificationEntities);
+    }
+
     private void deleteAuditEntries(Long notificationId) {
         List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
         List<Long> auditIdList = foundRelations
@@ -203,7 +214,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     private NotificationEntity fromModel(AlertNotificationModel model) {
-        return new NotificationEntity(model.getId(), model.getCreatedAt(), model.getProvider(), model.getProviderConfigId(), model.getProviderCreationTime(), model.getNotificationType(), model.getContent());
+        return new NotificationEntity(model.getId(), model.getCreatedAt(), model.getProvider(), model.getProviderConfigId(), model.getProviderCreationTime(), model.getNotificationType(), model.getContent(), model.getProcessed());
     }
 
     private AlertNotificationModel toModel(NotificationEntity entity) {
@@ -215,7 +226,15 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                                      .flatMap(ConfigurationFieldModel::getFieldValue)
                                      .orElse(providerConfigName);
         }
-        return new AlertNotificationModel(entity.getId(), providerConfigId, entity.getProvider(), providerConfigName, entity.getNotificationType(), entity.getContent(), entity.getCreatedAt(), entity.getProviderCreationTime());
+        return new AlertNotificationModel(entity.getId(),
+            providerConfigId,
+            entity.getProvider(),
+            providerConfigName,
+            entity.getNotificationType(),
+            entity.getContent(),
+            entity.getCreatedAt(),
+            entity.getProviderCreationTime(),
+            entity.getProcessed());
     }
 
 }

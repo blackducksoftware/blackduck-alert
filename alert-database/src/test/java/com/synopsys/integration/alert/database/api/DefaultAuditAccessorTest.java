@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -149,9 +149,9 @@ public class DefaultAuditAccessorTest {
 
         //At least two AlertNotificationModel are required for the comparator
         AlertNotificationModel alertNotificationModel = new AlertNotificationModel(1L, 1L, "provider-test", "providerConfigName-test", "notificationType-test", "{content: \"content is here...\"}", DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp());
+            DateUtils.createCurrentDateTimestamp(), false);
         AlertNotificationModel alertNotificationModel2 = new AlertNotificationModel(2L, 2L, "provider-test2", "providerConfigName-test2", "notificationType-test2", "{content: \"content is here2..\"}",
-            DateUtils.createCurrentDateTimestamp().minusSeconds(15), DateUtils.createCurrentDateTimestamp().minusSeconds(10));
+            DateUtils.createCurrentDateTimestamp().minusSeconds(15), DateUtils.createCurrentDateTimestamp().minusSeconds(10), false);
 
         Pageable auditPageable = Mockito.mock(Pageable.class);
         Mockito.when(auditPageable.getOffset()).thenReturn(pageNumber.longValue());
@@ -198,13 +198,13 @@ public class DefaultAuditAccessorTest {
 
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
         AlertNotificationModel alertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp());
+            DateUtils.createCurrentDateTimestamp(), false);
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, alertNotificationModel.getId());
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), timeCreated, timeLastSent, AuditEntryStatus.SUCCESS.name(), null, null);
 
@@ -386,4 +386,5 @@ public class DefaultAuditAccessorTest {
             return savedAuditEntryEntity;
         });
     }
+
 }

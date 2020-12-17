@@ -61,10 +61,6 @@ public class DescriptorConfigEntity extends BaseEntity implements DatabaseEntity
     private List<FieldValueEntity> fieldValueEntities;
 
     @OneToOne
-    @JoinColumn(name = "id", referencedColumnName = "config_id", insertable = false, updatable = false)
-    private ConfigGroupEntity configGroupEntity;
-
-    @OneToOne
     @JoinColumn(name = "descriptor_id", referencedColumnName = "id", insertable = false, updatable = false)
     private RegisteredDescriptorEntity registeredDescriptorEntity;
 
@@ -116,7 +112,4 @@ public class DescriptorConfigEntity extends BaseEntity implements DatabaseEntity
         return fieldValueEntities;
     }
 
-    public ConfigGroupEntity getConfigGroupEntity() {
-        return configGroupEntity;
-    }
 }

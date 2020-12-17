@@ -65,7 +65,7 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
         DistributionJobModel distributionJobModel = event.getDistributionJobModel();
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
-        MSTeamsJobDetailsModel asMSTeamsJobDetails = distributionJobDetails.getAsMSTeamsJobDetails();
+        MSTeamsJobDetailsModel asMSTeamsJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.MS_TEAMS);
         String webhook = Optional.ofNullable(asMSTeamsJobDetails.getWebhook())
                              .filter(StringUtils::isNotBlank)
                              .orElseThrow(() -> AlertFieldException.singleFieldError(MsTeamsDescriptor.KEY_WEBHOOK, "MS Teams missing the required webhook field - the distribution configuration is likely invalid."));

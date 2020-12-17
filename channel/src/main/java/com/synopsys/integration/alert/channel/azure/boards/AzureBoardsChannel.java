@@ -79,7 +79,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
         DistributionJobModel distributionJobModel = event.getDistributionJobModel();
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
-        IssueConfig issueConfig = createIssueConfig(distributionJobDetails.getAsAzureBoardsJobDetails());
+        IssueConfig issueConfig = createIssueConfig(distributionJobDetails.getAs(DistributionJobDetailsModel.AZURE));
         return new AzureBoardsContext(serviceConfig, issueConfig);
     }
 

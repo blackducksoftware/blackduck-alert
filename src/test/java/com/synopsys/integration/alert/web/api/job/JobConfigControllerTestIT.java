@@ -35,6 +35,8 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
@@ -72,7 +74,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testGetPage() throws Exception {
         int pageNumber = 0;
         int pageSize = 10;
-        addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        createAndSaveMockDistributionJob(-1L);
 
         String urlPath = REQUEST_URL + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
@@ -84,7 +86,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        DistributionJobModel distributionJobModel = createAndSaveMockDistributionJob(-1L);
         String configId = String.valueOf(distributionJobModel.getJobId());
 
         String urlPath = REQUEST_URL + "/" + configId;
@@ -98,7 +100,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        DistributionJobModel distributionJobModel = createAndSaveMockDistributionJob(-1L);
         String jobId = String.valueOf(distributionJobModel.getJobId());
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
@@ -124,7 +126,9 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), fieldValueModels);
+
+        DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(providerGlobalConfig.getConfigurationId());
+        DistributionJobModel distributionJobModel = addDistributionJob(jobRequestModel);
 
         String configId = String.valueOf(distributionJobModel.getJobId());
         String urlPath = REQUEST_URL + "/" + configId;
@@ -197,6 +201,25 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         request.contentType(MEDIA_TYPE);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    private DistributionJobRequestModel createDistributionJobRequestModel(Long blackDuckGlobalConfigId) {
+        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel("http://slack_webhook_url", "channelName", null);
+        return new DistributionJobRequestModel(
+            true,
+            "name",
+            FrequencyType.DAILY,
+            ProcessingType.DEFAULT,
+            slackChannelKey.getUniversalKey(),
+            blackDuckGlobalConfigId,
+            false,
+            null,
+            List.of("vulnerability"),
+            List.of(),
+            List.of(),
+            List.of(),
+            slackJobDetails
+        );
     }
 
     private JobFieldModel createTestJobFieldModel(String channelId, String providerId, ConfigurationModel providerGlobalConfig) {

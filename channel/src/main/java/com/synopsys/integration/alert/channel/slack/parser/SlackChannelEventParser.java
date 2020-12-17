@@ -65,7 +65,7 @@ public class SlackChannelEventParser {
     public List<Request> createRequests(DistributionEvent event) throws IntegrationException {
         DistributionJobModel distributionJobModel = event.getDistributionJobModel();
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
-        SlackJobDetailsModel slackJobDetails = distributionJobDetails.getAsSlackJobDetails();
+        SlackJobDetailsModel slackJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.SLACK);
 
         String webhook = slackJobDetails.getWebhook();
         String channelName = slackJobDetails.getChannelName();
