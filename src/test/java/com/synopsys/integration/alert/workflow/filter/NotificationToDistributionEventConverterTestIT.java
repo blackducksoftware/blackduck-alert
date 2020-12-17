@@ -21,8 +21,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -48,7 +47,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private DistributionJobModel createEmailConfig() {
         DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
-        jobBuilder.channelDescriptorName(new EmailChannelKey().getUniversalKey());
+        jobBuilder.channelDescriptorName(ChannelKey.EMAIL.getUniversalKey());
         EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
             "Alert unit test subject line",
             false,
@@ -62,7 +61,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private DistributionJobModel createSlackConfig() {
         DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
-        jobBuilder.channelDescriptorName(new SlackChannelKey().getUniversalKey());
+        jobBuilder.channelDescriptorName(ChannelKey.SLACK.getUniversalKey());
         SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel("IT Test Slack Webhook", "IT Test Slack Channel Name", "IT Test Slack Channel Username");
         jobBuilder.distributionJobDetails(slackJobDetails);
         return jobBuilder.build();

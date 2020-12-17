@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
@@ -49,15 +49,12 @@ public class SlackPerformanceTest {
     private final Gson gson = IntegrationPerformanceTestRunner.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
-    private static String SLACK_CHANNEL_KEY;
     private static String SLACK_CHANNEL_WEBHOOK;
     private static String SLACK_CHANNEL_NAME;
     private static String SLACK_CHANNEL_USERNAME;
 
     @BeforeAll
     public static void initTest() {
-        SLACK_CHANNEL_KEY = new SlackChannelKey().getUniversalKey();
-
         TestProperties testProperties = new TestProperties();
         SLACK_CHANNEL_WEBHOOK = testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
         SLACK_CHANNEL_NAME = testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
@@ -70,12 +67,12 @@ public class SlackPerformanceTest {
     public void testSlackJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
+        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKey.SLACK.getUniversalKey());
         IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, configurationManager);
 
         Map<String, FieldValueModel> slackJobFields = new HashMap<>();
         slackJobFields.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        slackJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_KEY), true));
+        slackJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(ChannelKey.SLACK.getUniversalKey()), true));
         slackJobFields.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(SLACK_PERFORMANCE_JOB_NAME), true));
         slackJobFields.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
         slackJobFields.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));

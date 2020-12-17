@@ -56,7 +56,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -71,9 +71,9 @@ public class EmailChannel extends NamedDistributionChannel {
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
 
     @Autowired
-    public EmailChannel(EmailChannelKey emailChannelKey, Gson gson, AlertProperties alertProperties, AuditAccessor auditAccessor,
+    public EmailChannel(Gson gson, AlertProperties alertProperties, AuditAccessor auditAccessor,
         EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser, EmailAttachmentFileCreator emailAttachmentFileCreator) {
-        super(emailChannelKey, gson, auditAccessor);
+        super(ChannelKey.EMAIL, gson, auditAccessor);
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.alertProperties = alertProperties;

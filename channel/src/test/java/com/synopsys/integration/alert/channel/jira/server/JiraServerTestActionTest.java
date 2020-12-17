@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueS
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
@@ -116,7 +115,7 @@ public class JiraServerTestActionTest {
         TransitionsResponseModel transitionsResponseModel = new TestTransitionResponsesModel();
         Mockito.when(issueService.getTransitions(Mockito.anyString())).thenReturn(transitionsResponseModel);
 
-        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, new JiraServerChannelKey(), null, null, null, null);
+        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, null, null, null, null);
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction(jiraServerChannel, gson, new TestIssueRequestCreator() {

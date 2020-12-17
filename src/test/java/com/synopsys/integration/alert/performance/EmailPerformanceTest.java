@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
@@ -61,7 +61,7 @@ public class EmailPerformanceTest {
 
     @BeforeAll
     public static void initTest() {
-        EMAIL_CHANNEL_KEY = new EmailChannelKey().getUniversalKey();
+        EMAIL_CHANNEL_KEY = ChannelKey.EMAIL.getUniversalKey();
 
         TestProperties testProperties = new TestProperties();
         EMAIL_SMTP_HOST = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);

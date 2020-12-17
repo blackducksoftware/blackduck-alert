@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
@@ -56,8 +56,6 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
     @Autowired
-    private SlackChannelKey slackChannelKey;
-    @Autowired
     private Gson gson;
 
     private MockMvc mockMvc;
@@ -72,7 +70,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testGetPage() throws Exception {
         int pageNumber = 0;
         int pageSize = 10;
-        addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        addDistributionJob(ChannelKey.SLACK.getUniversalKey(), Map.of());
 
         String urlPath = REQUEST_URL + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
@@ -84,7 +82,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testGetConfigById() throws Exception {
-        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        DistributionJobModel distributionJobModel = addDistributionJob(ChannelKey.SLACK.getUniversalKey(), Map.of());
         String configId = String.valueOf(distributionJobModel.getJobId());
 
         String urlPath = REQUEST_URL + "/" + configId;
@@ -98,7 +96,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
     public void testDeleteConfig() throws Exception {
-        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), Map.of());
+        DistributionJobModel distributionJobModel = addDistributionJob(ChannelKey.SLACK.getUniversalKey(), Map.of());
         String jobId = String.valueOf(distributionJobModel.getJobId());
         addGlobalConfiguration(blackDuckProviderKey, Map.of(
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
@@ -124,7 +122,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
-        DistributionJobModel distributionJobModel = addDistributionJob(slackChannelKey.getUniversalKey(), fieldValueModels);
+        DistributionJobModel distributionJobModel = addDistributionJob(ChannelKey.SLACK.getUniversalKey(), fieldValueModels);
 
         String configId = String.valueOf(distributionJobModel.getJobId());
         String urlPath = REQUEST_URL + "/" + configId;
@@ -200,7 +198,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     private JobFieldModel createTestJobFieldModel(String channelId, String providerId, ConfigurationModel providerGlobalConfig) {
-        String descriptorName = slackChannelKey.getUniversalKey();
+        String descriptorName = ChannelKey.SLACK.getUniversalKey();
         String context = ConfigContextEnum.DISTRIBUTION.name();
 
         FieldValueModel providerConfigField = new FieldValueModel(List.of(providerGlobalConfig.getConfigurationId().toString()), true);

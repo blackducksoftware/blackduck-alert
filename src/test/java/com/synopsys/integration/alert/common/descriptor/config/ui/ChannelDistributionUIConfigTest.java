@@ -8,13 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 
 public class ChannelDistributionUIConfigTest {
     @Test
     public void createCommonConfigFieldsTest() {
-        SlackChannelKey slackChannelKey = new SlackChannelKey();
-        ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig(slackChannelKey);
+        ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig();
         channelDistributionUIConfig.setConfigFields();
 
         List<ConfigField> commonConfigFields = channelDistributionUIConfig.getFields();

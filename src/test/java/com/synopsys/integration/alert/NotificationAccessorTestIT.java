@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -75,8 +75,6 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
     private FieldValueRepository fieldValueRepository;
     @Autowired
     private DefinedFieldRepository definedFieldRepository;
-    @Autowired
-    private EmailChannelKey emailChannelKey;
 
     @Autowired
     private ConfigurationAccessor configurationAccessor;
@@ -171,10 +169,10 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
     @Test
     public void testFindAllWithSearchEmpty() {
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, false);
         assertTrue(all.isEmpty());
 
-        all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, true);
+        all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, true);
         assertTrue(all.isEmpty());
     }
 
@@ -184,7 +182,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
         notificationContent = notificationContentRepository.save(notificationContent);
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, false);
         // Search term should not match anything in the saved notifications
         assertTrue(all.isEmpty());
 
@@ -215,7 +213,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
 
         UUID jobId = UUID.randomUUID();
 
-        RegisteredDescriptorEntity registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(emailChannelKey.getUniversalKey()).orElse(null);
+        RegisteredDescriptorEntity registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(ChannelKey.EMAIL.getUniversalKey()).orElse(null);
         ConfigContextEntity configContextEntity = configContextRepository.findFirstByContext(ConfigContextEnum.GLOBAL.name()).orElse(null);
 
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
@@ -227,7 +225,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
 
         DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
 
-        FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), emailChannelKey.getUniversalKey());
+        FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), ChannelKey.EMAIL.getUniversalKey());
         fieldValueRepository.save(fieldValueEntity);
 
         final String auditStatus = "audit status thing";
@@ -238,7 +236,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
         auditNotificationRepository.save(auditNotificationRelation);
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(emailChannelKey.getUniversalKey(), pageRequest, false);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, false);
         // Search term should match the channel name
         assertFalse(all.isEmpty());
     }

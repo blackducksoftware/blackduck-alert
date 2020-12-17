@@ -24,14 +24,13 @@ package com.synopsys.integration.alert.channel.slack.descriptor;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class SlackUIConfig extends ChannelDistributionUIConfig {
@@ -43,9 +42,8 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
     private static final String SLACK_CHANNEL_NAME_DESCRIPTION = "The name of the Slack channel.";
     private static final String SLACK_CHANNEL_USERNAME_DESCRIPTION = "The username to show as the message sender in the Slack channel.";
 
-    @Autowired
-    public SlackUIConfig(SlackChannelKey slackChannelKey) {
-        super(slackChannelKey, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL);
+    public SlackUIConfig() {
+        super(ChannelKey.SLACK, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL);
     }
 
     @Override

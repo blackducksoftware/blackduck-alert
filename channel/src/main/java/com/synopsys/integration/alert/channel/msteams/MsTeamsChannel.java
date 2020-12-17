@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -53,9 +53,9 @@ public class MsTeamsChannel extends NamedDistributionChannel implements AutoActi
     private final MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
-    public MsTeamsChannel(MsTeamsKey msTeamsKey, Gson gson, AuditAccessor auditAccessor, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
+    public MsTeamsChannel(Gson gson, AuditAccessor auditAccessor, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
         MsTeamsMessageParser msTeamsMessageParser) {
-        super(msTeamsKey, gson, auditAccessor);
+        super(ChannelKey.MS_TEAMS, gson, auditAccessor);
         this.restChannelUtility = restChannelUtility;
         this.msTeamsEventParser = msTeamsEventParser;
         this.msTeamsMessageParser = msTeamsMessageParser;

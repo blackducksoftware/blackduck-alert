@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {
@@ -42,8 +42,8 @@ public class SlackDescriptor extends ChannelDescriptor {
     public static final String SLACK_DESCRIPTION = "Configure Slack for Alert.";
 
     @Autowired
-    public SlackDescriptor(SlackChannelKey slackChannelKey, SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig) {
-        super(slackChannelKey, slackUIConfig, slackGlobalUIConfig);
+    public SlackDescriptor(SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig) {
+        super(ChannelKey.SLACK, slackUIConfig, slackGlobalUIConfig);
     }
 
 }
