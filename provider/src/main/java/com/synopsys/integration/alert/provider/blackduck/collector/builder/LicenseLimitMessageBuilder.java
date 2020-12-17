@@ -37,7 +37,6 @@ import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotif
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
 
 @Component
 public class LicenseLimitMessageBuilder extends BlackDuckMessageBuilder<LicenseLimitNotificationView> {
@@ -49,8 +48,7 @@ public class LicenseLimitMessageBuilder extends BlackDuckMessageBuilder<LicenseL
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, LicenseLimitNotificationView notificationView, BlackDuckBucket blackDuckBucket,
-        BlackDuckServicesFactory blackDuckServicesFactory) {
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, LicenseLimitNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
         LicenseLimitNotificationContent notificationContent = notificationView.getContent();
         try {
             String usageMessage = createUsageMessage(notificationContent);

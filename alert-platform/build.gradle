@@ -13,13 +13,13 @@ dependencies {
         api 'com.sun.mail:javax.mail:1.6.2'
         api 'javax.mail:javax.mail-api:1.6.2'
 
-        api 'com.synopsys.integration:blackduck-common:50.3.0'
-        api 'com.synopsys.integration:integration-rest:6.1.2'
-        api 'com.synopsys.integration:integration-common:24.1.0'
+        api 'com.synopsys.integration:integration-rest:7.0.0'
+        api 'com.synopsys.integration:integration-common:24.2.0'
+        api 'com.synopsys.integration:blackduck-common:51.0.0'
+        api 'com.synopsys.integration:int-jira-common:2.2.1'
 
         api 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
 
-        api 'com.synopsys.integration:int-jira-common:2.2.0'
         api 'com.google.cloud:libraries-bom:2.2.0'
         api 'com.google.api-client:google-api-client:1.30.9'
         api 'com.google.http-client:google-http-client-apache-v2:1.36.0'

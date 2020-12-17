@@ -30,9 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -40,13 +41,16 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -206,13 +210,12 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
 
         List<NotificationEntity> savedNotifications = notificationContentRepository.saveAll(notifications);
 
-        ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        fieldModel.setFieldValue("false");
-        ConfigurationJobModel configJob = jobAccessor.createJob(Set.of(new BlackDuckProviderKey().getUniversalKey()), Set.of(fieldModel));
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel();
+        DistributionJobModel jobModel = jobAccessor.createJob(jobRequestModel);
 
         for (NotificationEntity notification : savedNotifications) {
             MessageContentGroup messageContentGroup = createMessageGroup(notification.getId());
-            auditAccessor.createAuditEntry(Map.of(), configJob.getJobId(), messageContentGroup);
+            auditAccessor.createAuditEntry(Map.of(), jobModel.getJobId(), messageContentGroup);
         }
 
         auditEntryRepository.flush();
@@ -245,6 +248,25 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
                                              .applyAllComponentItems(List.of(componentItem))
                                              .build();
         return MessageContentGroup.singleton(content);
+    }
+
+    private DistributionJobRequestModel createJobRequestModel() {
+        SlackJobDetailsModel details = new SlackJobDetailsModel("test_webhook", "#test-channel", null);
+        return new DistributionJobRequestModel(
+            true,
+            "Test Slack Job",
+            FrequencyType.REAL_TIME,
+            ProcessingType.DEFAULT,
+            ChannelKey.SLACK.getUniversalKey(),
+            providerConfigModel.getConfigurationId(),
+            false,
+            null,
+            List.of(),
+            List.of(),
+            List.of(),
+            List.of(),
+            details
+        );
     }
 
 }

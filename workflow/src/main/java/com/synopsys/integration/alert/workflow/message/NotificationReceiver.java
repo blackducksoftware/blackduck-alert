@@ -28,20 +28,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.event.NotificationEvent;
+import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
-public class NotificationReceiver extends MessageReceiver<NotificationEvent> implements AlertEventListener {
+public class NotificationReceiver extends MessageReceiver<NotificationReceivedEvent> implements AlertEventListener {
+    private final static int MAX_NUMBER_PAGES_PROCESSED = 100;
     public static final String COMPONENT_NAME = "notification_receiver";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -51,32 +54,42 @@ public class NotificationReceiver extends MessageReceiver<NotificationEvent> imp
 
     @Autowired
     public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, ChannelEventManager eventManager) {
-        super(gson, NotificationEvent.class);
+        super(gson, NotificationReceivedEvent.class);
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
         this.eventManager = eventManager;
     }
 
     @Override
-    public void handleEvent(NotificationEvent event) {
-        if (NotificationEvent.NOTIFICATION_EVENT_TYPE.equals(event.getDestination())) {
-            if (null == event.getNotificationIds() || event.getNotificationIds().isEmpty()) {
-                logger.warn("Can not process a notification event without notification Id's.");
-                return;
-            }
-            logger.debug("Event {}", event);
-            logger.info("Processing event for {} notifications.", event.getNotificationIds().size());
-            List<AlertNotificationModel> notifications = notificationAccessor.findByIds(event.getNotificationIds());
+    public void handleEvent(NotificationReceivedEvent event) {
+        logger.debug("Event {}", event);
+        logger.info("Processing event for notifications.");
+
+        int numPagesProcessed = 0;
+        int pageSize = 100;
+
+        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
+        //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
+        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
+            List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
+            logger.info("Sending {} notifications.", notifications.size());
             List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
             logger.info("Sending {} events for notifications.", distributionEvents.size());
             eventManager.sendEvents(distributionEvents);
-        } else {
-            logger.warn("Received an event of type '{}', but this listener is for type '{}'.", event.getDestination(), NotificationEvent.NOTIFICATION_EVENT_TYPE);
+            notificationAccessor.setNotificationsProcessed(notifications);
+            numPagesProcessed++;
+            pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
+            logger.trace("Processing Page: {}. New pages found: {}",
+                numPagesProcessed,
+                pageOfAlertNotificationModels.getTotalPages());
+        }
+        if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
+            logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
         }
     }
 
     @Override
     public String getDestinationName() {
-        return NotificationEvent.NOTIFICATION_EVENT_TYPE;
+        return NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE;
     }
 }

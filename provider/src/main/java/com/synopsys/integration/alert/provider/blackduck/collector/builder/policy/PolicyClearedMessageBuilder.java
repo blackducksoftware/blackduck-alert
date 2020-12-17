@@ -43,16 +43,15 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.BlackDuckMessageBuilder;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
-import com.synopsys.integration.alert.provider.blackduck.collector.util.BlackDuckResponseCache;
+import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertBlackDuckService;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
-import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
@@ -67,14 +66,13 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
     }
 
     @Override
-    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationClearedNotificationView notificationView, BlackDuckBucket blackDuckBucket, BlackDuckServicesFactory blackDuckServicesFactory) {
-        long timeout = blackDuckServicesFactory.getBlackDuckHttpClient().getTimeoutInSeconds();
-        BlackDuckBucketService bucketService = blackDuckServicesFactory.createBlackDuckBucketService();
-        BlackDuckResponseCache responseCache = new BlackDuckResponseCache(bucketService, blackDuckBucket, timeout);
+    public List<ProviderMessageContent> buildMessageContents(CommonMessageData commonMessageData, RuleViolationClearedNotificationView notificationView, BlackDuckServicesFactory blackDuckServicesFactory) {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+        AlertBlackDuckService alertBlackDuckService = new AlertBlackDuckService(blackDuckApiClient);
         RuleViolationClearedNotificationContent violationContent = notificationView.getContent();
 
         String projectVersionUrl = violationContent.getProjectVersion();
-        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, blackDuckServicesFactory.getBlackDuckService(), logger::warn);
+        String projectUrl = getNullableProjectUrlFromProjectVersion(projectVersionUrl, blackDuckServicesFactory.getBlackDuckApiClient(), logger::warn);
         try {
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
@@ -89,7 +87,7 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
             for (Map.Entry<ComponentVersionStatus, Set<PolicyInfo>> componentToPolicyEntry : componentPolicies.entrySet()) {
                 ComponentVersionStatus componentVersionStatus = componentToPolicyEntry.getKey();
                 Set<PolicyInfo> policies = componentToPolicyEntry.getValue();
-                List<ComponentItem> componentItems = retrievePolicyItems(responseCache, componentVersionStatus, policies, commonMessageData.getNotificationId(), projectVersionUrl, policyFilter);
+                List<ComponentItem> componentItems = retrievePolicyItems(alertBlackDuckService, componentVersionStatus, policies, commonMessageData.getNotificationId(), projectVersionUrl, policyFilter);
                 items.addAll(componentItems);
             }
             messageContentBuilder.applyAllComponentItems(items);
@@ -101,13 +99,13 @@ public class PolicyClearedMessageBuilder extends BlackDuckMessageBuilder<RuleVio
         return List.of();
     }
 
-    private List<ComponentItem> retrievePolicyItems(BlackDuckResponseCache blackDuckResponseCache, ComponentVersionStatus componentVersionStatus,
+    private List<ComponentItem> retrievePolicyItems(AlertBlackDuckService alertBlackDuckService, ComponentVersionStatus componentVersionStatus,
         Set<PolicyInfo> policies, Long notificationId, String projectVersionUrl, Collection<String> policyFilter) {
         List<ComponentItem> componentItems = new LinkedList<>();
         String componentName = componentVersionStatus.getComponentName();
         String componentVersionName = componentVersionStatus.getComponentVersionName();
         ComponentData componentData = new ComponentData(componentName, componentVersionName, projectVersionUrl, ProjectVersionView.COMPONENTS_LINK);
-        componentItems.addAll(policyCommonBuilder.retrievePolicyItems(getNotificationType(), blackDuckResponseCache, componentData, policies, notificationId,
+        componentItems.addAll(policyCommonBuilder.retrievePolicyItems(getNotificationType(), alertBlackDuckService, componentData, policies, notificationId,
             ItemOperation.DELETE, componentVersionStatus.getBomComponent(), List.of(), policyFilter));
         return componentItems;
     }

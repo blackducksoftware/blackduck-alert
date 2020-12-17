@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssueHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
@@ -94,7 +95,8 @@ public class JiraServerRequestDelegator {
         JiraServerTransitionHandler jiraTransitionHandler = new JiraServerTransitionHandler(issueService);
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
         JiraCustomFieldResolver jiraCustomFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
-        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraCustomFieldResolver);
+        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
+        JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, jiraErrorMessageUtility, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator, jiraCustomFieldResolver);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
     }
 

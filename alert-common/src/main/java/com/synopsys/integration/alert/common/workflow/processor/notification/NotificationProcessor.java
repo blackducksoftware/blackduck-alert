@@ -33,7 +33,6 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,7 +42,7 @@ import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.provider.Provider;
@@ -57,19 +56,21 @@ import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageC
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class NotificationProcessor {
-    private final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
+    private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
 
     private final ProviderKey defaultProviderKey;
     private final ConfigurationAccessor configurationAccessor;
-    private final JobAccessorV2 jobAccessor;
+    private final JobAccessor jobAccessor;
     private final Map<String, Provider> providerKeyToProvider;
     private final NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(ProviderKey defaultProviderKey, ConfigurationAccessor configurationAccessor, JobAccessorV2 jobAccessor, List<Provider> providers,
+    public NotificationProcessor(ProviderKey defaultProviderKey, ConfigurationAccessor configurationAccessor, JobAccessor jobAccessor, List<Provider> providers,
         NotificationToDistributionEventConverter notificationToEventConverter) {
         this.defaultProviderKey = defaultProviderKey;
         this.configurationAccessor = configurationAccessor;
@@ -79,7 +80,7 @@ public class NotificationProcessor {
     }
 
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
-        logger.info("Notifications to Process: {}", notifications.size());
+        logger.info(String.format("Notifications to Process: %s", notifications.size()));
         return processNotifications(notifications, (id, notificationType) -> jobAccessor.getMatchingEnabledJobs(frequency, id, notificationType));
     }
 
@@ -90,7 +91,7 @@ public class NotificationProcessor {
     }
 
     private List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications, BiFunction<Long, NotificationType, List<DistributionJobModel>> getJobs) {
-        logger.info("Notifications to Process: {}", notifications.size());
+        logger.info(String.format("Notifications to Process: %s", notifications.size()));
         SetMap<NotificationFilterModel, AlertNotificationModel> notificationFilterMap = extractNotificationInformation(notifications);
 
         List<DistributionEvent> events = new ArrayList<>();
@@ -112,7 +113,7 @@ public class NotificationProcessor {
     public List<DistributionEvent> processNotificationsForJob(DistributionJobModel job, List<AlertNotificationModel> notifications) {
         // used in AuditEntryActions
         if (!job.isEnabled()) {
-            logger.debug("Skipping disabled distribution job: {}", job.getName());
+            logger.debug(String.format("Skipping disabled distribution job: %s", job.getName()));
             return List.of();
         }
         if (notifications.isEmpty()) {
@@ -127,8 +128,7 @@ public class NotificationProcessor {
             try {
                 statefulProvider = provider.createStatefulProvider(providerConfiguration);
             } catch (AlertException e) {
-                logger.error("Cannot create connection to Black Duck. {}", e.getMessage());
-                logger.debug(e.getMessage(), e);
+                logger.errorAndDebug("Cannot create connection to Black Duck. " + e.getMessage(), e);
                 return List.of();
             }
 
@@ -155,8 +155,7 @@ public class NotificationProcessor {
             try {
                 statefulProvider = provider.createStatefulProvider(providerConfiguration);
             } catch (AlertException e) {
-                logger.error("Cannot create connection to Black Duck. {}", e.getMessage());
-                logger.debug(e.getMessage(), e);
+                logger.errorAndDebug("Cannot create connection to Black Duck. " + e.getMessage(), e);
                 return List.of();
             }
             ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
@@ -165,7 +164,7 @@ public class NotificationProcessor {
 
             return processNotificationsForJobs(messageContentCollector, distributionFilter, matchingJobs, notifications);
         } else {
-            logger.warn("Could not find the provider config by the Id {}. Skipping {} notifications.", notificationFilterModel.getProviderConfigId(), notifications.size());
+            logger.warn(String.format("Could not find the provider config by the ID %s. Skipping %s notifications.", notificationFilterModel.getProviderConfigId(), notifications.size()));
         }
         return List.of();
     }
@@ -219,7 +218,7 @@ public class NotificationProcessor {
             List<MessageContentGroup> messageGroups = collector.createMessageContentGroups(job, cache, notifications);
             return notificationToEventConverter.convertToEvents(job, messageGroups);
         } catch (AlertException e) {
-            logger.error("Could not create distribution events", e);
+            logger.errorAndDebug("Could not create distribution events. " + e.getMessage(), e);
         }
         return List.of();
     }
