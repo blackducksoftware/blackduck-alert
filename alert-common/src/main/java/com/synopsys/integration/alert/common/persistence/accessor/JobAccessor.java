@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public interface JobAccessorV2 {
+public interface JobAccessor {
     List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
 
     List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);

@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -78,7 +78,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AboutReader aboutReader;
-    private final JobAccessorV2 jobAccessor;
+    private final JobAccessor jobAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final Gson gson;
@@ -93,7 +93,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     public PhoneHomeTask(
         TaskScheduler taskScheduler,
         AboutReader aboutReader,
-        JobAccessorV2 jobAccessor,
+        JobAccessor jobAccessor,
         ConfigurationAccessor configurationAccessor,
         TaskManager taskManager,
         ProxyManager proxyManager,

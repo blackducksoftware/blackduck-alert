@@ -17,7 +17,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -35,7 +35,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 class StaticJobAccessorV2Test {
     private DistributionJobRepository distributionJobRepository;
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
-    private JobAccessorV2 jobAccessor;
+    private JobAccessor jobAccessor;
 
     private final String jobName = "jobName";
 
@@ -48,7 +48,7 @@ class StaticJobAccessorV2Test {
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
-        jobAccessor = new StaticJobAccessorV2(distributionJobRepository, blackDuckJobDetailsAccessor, null, null, null, null, null, null, new BlackDuckProviderKey());
+        jobAccessor = new StaticJobAccessor(distributionJobRepository, blackDuckJobDetailsAccessor, null, null, null, null, null, null, new BlackDuckProviderKey());
     }
 
     @Test
