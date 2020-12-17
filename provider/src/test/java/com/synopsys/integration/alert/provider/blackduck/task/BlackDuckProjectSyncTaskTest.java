@@ -1,23 +1,15 @@
 package com.synopsys.integration.alert.provider.blackduck.task;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
-import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockProviderDataAccessor;
@@ -36,16 +28,7 @@ import com.synopsys.integration.rest.HttpUrl;
 public class BlackDuckProjectSyncTaskTest {
     @Test
     public void testRun() throws Exception {
-        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         MockProviderDataAccessor providerDataAccessor = new MockProviderDataAccessor();
-
-        Long providerConfigId = 1000L;
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-        configurationFieldModel.setFieldValues(List.of("project", "project2"));
-        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
-        configurationModel.put(configurationFieldModel);
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
-        Mockito.when(jobAccessor.getAllJobs()).thenReturn(List.of(configurationJobModel));
 
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         ProjectUsersService projectUsersService = Mockito.mock(ProjectUsersService.class);
@@ -54,6 +37,7 @@ public class BlackDuckProjectSyncTaskTest {
         Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
         Mockito.when(blackDuckServicesFactory.createProjectUsersService()).thenReturn(projectUsersService);
 
+        Long providerConfigId = 1000L;
         BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(blackDuckProperties.getConfigId()).thenReturn(providerConfigId);
         Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackDuckHttpClient.class)));
