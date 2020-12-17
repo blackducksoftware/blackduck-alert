@@ -22,82 +22,49 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.annotations.JsonAdapter;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @JsonAdapter(DistributionJobDetailsModelJsonAdapter.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
-    private final String channelDescriptorName;
+    public static final Class<AzureBoardsJobDetailsModel> AZURE = AzureBoardsJobDetailsModel.class;
+    public static final Class<EmailJobDetailsModel> EMAIL = EmailJobDetailsModel.class;
+    public static final Class<JiraCloudJobDetailsModel> JIRA_CLOUD = JiraCloudJobDetailsModel.class;
+    public static final Class<JiraServerJobDetailsModel> JIRA_SERVER = JiraServerJobDetailsModel.class;
+    public static final Class<MSTeamsJobDetailsModel> MS_TEAMS = MSTeamsJobDetailsModel.class;
+    public static final Class<SlackJobDetailsModel> SLACK = SlackJobDetailsModel.class;
 
-    /* package private */ DistributionJobDetailsModel() {
-        this.channelDescriptorName = null;
+    private static final Map<ChannelKey, Class<? extends DistributionJobDetailsModel>> detailsModels = new HashMap<>();
+
+    static {
+        detailsModels.put(ChannelKey.AZURE_BOARDS, AZURE);
+        detailsModels.put(ChannelKey.EMAIL, EMAIL);
+        detailsModels.put(ChannelKey.JIRA_CLOUD, JIRA_CLOUD);
+        detailsModels.put(ChannelKey.JIRA_SERVER, JIRA_SERVER);
+        detailsModels.put(ChannelKey.MS_TEAMS, MS_TEAMS);
+        detailsModels.put(ChannelKey.SLACK, SLACK);
     }
 
-    /* package private */ DistributionJobDetailsModel(String channelDescriptorName) {
-        this.channelDescriptorName = channelDescriptorName;
+    public static Class<? extends DistributionJobDetailsModel> getConcreteClass(ChannelKey channelKey) {
+        return detailsModels.get(channelKey);
     }
+
+    private final ChannelKey channelKey;
 
     public DistributionJobDetailsModel(ChannelKey channelKey) {
-        this(channelKey.getUniversalKey());
+        this.channelKey = channelKey;
     }
 
-    public boolean isAzureBoardsDetails() {
-        return isChannelDetails(new AzureBoardsChannelKey());
+    public boolean isA(ChannelKey channelKey) {
+        return this.channelKey.equals(channelKey);
     }
 
-    public AzureBoardsJobDetailsModel getAsAzureBoardsJobDetails() {
-        return (AzureBoardsJobDetailsModel) this;
-    }
-
-    public boolean isEmailDetails() {
-        return isChannelDetails(new EmailChannelKey());
-    }
-
-    public EmailJobDetailsModel getAsEmailJobDetails() {
-        return (EmailJobDetailsModel) this;
-    }
-
-    public boolean isJiraCloudDetails() {
-        return isChannelDetails(new JiraCloudChannelKey());
-    }
-
-    public JiraCloudJobDetailsModel getAsJiraCouldJobDetails() {
-        return (JiraCloudJobDetailsModel) this;
-    }
-
-    public boolean isJiraServerDetails() {
-        return isChannelDetails(new JiraServerChannelKey());
-    }
-
-    public JiraServerJobDetailsModel getAsJiraServerJobDetails() {
-        return (JiraServerJobDetailsModel) this;
-    }
-
-    public boolean isMSTeamsDetails() {
-        return isChannelDetails(new MsTeamsKey());
-    }
-
-    public MSTeamsJobDetailsModel getAsMSTeamsJobDetails() {
-        return (MSTeamsJobDetailsModel) this;
-    }
-
-    public boolean isSlackDetails() {
-        return isChannelDetails(new SlackChannelKey());
-    }
-
-    public SlackJobDetailsModel getAsSlackJobDetails() {
-        return (SlackJobDetailsModel) this;
-    }
-
-    private boolean isChannelDetails(ChannelKey channelKey) {
-        return this.channelDescriptorName.equals(channelKey.getUniversalKey());
+    public <T extends DistributionJobDetailsModel> T getAs(Class<T> clazz) {
+        return clazz.cast(this);
     }
 
 }

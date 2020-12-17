@@ -48,7 +48,7 @@ public class JiraCloudContextBuilder extends JiraContextBuilder<JiraCloudContext
         JiraCloudProperties jiraProperties = jiraCloudPropertiesFactory.createJiraProperties(globalFieldUtility);
 
         DistributionJobDetailsModel distributionJobDetails = jobModel.getDistributionJobDetails();
-        JiraCloudJobDetailsModel jiraCouldJobDetails = distributionJobDetails.getAsJiraCouldJobDetails();
+        JiraCloudJobDetailsModel jiraCouldJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD);
 
         JiraIssueConfig issueConfig = new JiraIssueConfig(
             jiraCouldJobDetails.getProjectNameOrKey(),

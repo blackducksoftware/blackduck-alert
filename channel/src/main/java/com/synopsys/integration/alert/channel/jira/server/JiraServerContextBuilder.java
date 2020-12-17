@@ -48,7 +48,7 @@ public class JiraServerContextBuilder extends JiraContextBuilder<JiraServerConte
         JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties(globalFieldUtility);
 
         DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
-        JiraServerJobDetailsModel jiraServerJobDetails = distributionJobDetails.getAsJiraServerJobDetails();
+        JiraServerJobDetailsModel jiraServerJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER);
 
         JiraIssueConfig issueConfig = new JiraIssueConfig(
             jiraServerJobDetails.getProjectNameOrKey(),

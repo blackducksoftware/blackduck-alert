@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActi
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -62,7 +63,7 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
 
     private DistributionJobModel creatUpdatedJobModelWithEmailAddresses(DistributionJobModel originalJobModel, @Nullable String destination) throws IntegrationException {
         Set<String> updateEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(originalJobModel, destination);
-        EmailJobDetailsModel originalEmailJobDetails = originalJobModel.getDistributionJobDetails().getAsEmailJobDetails();
+        EmailJobDetailsModel originalEmailJobDetails = originalJobModel.getDistributionJobDetails().getAs(DistributionJobDetailsModel.EMAIL);
 
         // For testing configuration, just use additional email addresses field
         List<String> originalAdditionalEmailAddresses = originalEmailJobDetails.getAdditionalEmailAddresses();

@@ -55,6 +55,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public final class JobFieldModelPopulationUtils {
     private static final String DEFAULT_PROVIDER_NAME = new BlackDuckProviderKey().getUniversalKey();
@@ -126,18 +127,18 @@ public final class JobFieldModelPopulationUtils {
         putField(channelFieldModel, ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
 
         DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
-        if (jobDetails.isAzureBoardsDetails()) {
-            populateAzureBoardsFields(channelFieldModel, jobDetails.getAsAzureBoardsJobDetails());
-        } else if (jobDetails.isEmailDetails()) {
-            populateEmailFields(channelFieldModel, jobDetails.getAsEmailJobDetails());
-        } else if (jobDetails.isJiraCloudDetails()) {
-            populateJiraCloudFields(channelFieldModel, jobDetails.getAsJiraCouldJobDetails());
-        } else if (jobDetails.isJiraServerDetails()) {
-            populateJiraServerFields(channelFieldModel, jobDetails.getAsJiraServerJobDetails());
-        } else if (jobDetails.isMSTeamsDetails()) {
-            populateMSTeamsField(channelFieldModel, jobDetails.getAsMSTeamsJobDetails());
-        } else if (jobDetails.isSlackDetails()) {
-            populateSlackFields(channelFieldModel, jobDetails.getAsSlackJobDetails());
+        if (jobDetails.isA(ChannelKey.AZURE_BOARDS)) {
+            populateAzureBoardsFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.AZURE));
+        } else if (jobDetails.isA(ChannelKey.EMAIL)) {
+            populateEmailFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.EMAIL));
+        } else if (jobDetails.isA(ChannelKey.JIRA_CLOUD)) {
+            populateJiraCloudFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD));
+        } else if (jobDetails.isA(ChannelKey.JIRA_SERVER)) {
+            populateJiraServerFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER));
+        } else if (jobDetails.isA(ChannelKey.MS_TEAMS)) {
+            populateMSTeamsField(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.MS_TEAMS));
+        } else if (jobDetails.isA(ChannelKey.SLACK)) {
+            populateSlackFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.SLACK));
         }
     }
 

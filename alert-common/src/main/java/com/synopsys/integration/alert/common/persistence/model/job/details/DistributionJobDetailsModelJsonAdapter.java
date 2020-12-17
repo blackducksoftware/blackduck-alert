@@ -32,46 +32,27 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public class DistributionJobDetailsModelJsonAdapter implements JsonSerializer<DistributionJobDetailsModel>, JsonDeserializer<DistributionJobDetailsModel> {
     @Override
     public JsonElement serialize(DistributionJobDetailsModel distributionJobDetailsModel, Type type, JsonSerializationContext context) {
-        if (distributionJobDetailsModel.isAzureBoardsDetails()) {
-            return context.serialize(distributionJobDetailsModel.getAsAzureBoardsJobDetails());
-        } else if (distributionJobDetailsModel.isEmailDetails()) {
-            return context.serialize(distributionJobDetailsModel.getAsEmailJobDetails());
-        } else if (distributionJobDetailsModel.isJiraCloudDetails()) {
-            return context.serialize(distributionJobDetailsModel.getAsJiraCouldJobDetails());
-        } else if (distributionJobDetailsModel.isJiraServerDetails()) {
-            return context.serialize(distributionJobDetailsModel.getAsJiraServerJobDetails());
-        } else if (distributionJobDetailsModel.isMSTeamsDetails()) {
-            return context.serialize(distributionJobDetailsModel.getAsMSTeamsJobDetails());
-        } else if (distributionJobDetailsModel.isSlackDetails()) {
-            return context.serialize(distributionJobDetailsModel.getAsSlackJobDetails());
-        } else {
-            return context.serialize(distributionJobDetailsModel);
-        }
+        return context.serialize(distributionJobDetailsModel);
     }
 
     @Override
     public DistributionJobDetailsModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
-        JsonPrimitive channelDescriptorName = jsonObject.getAsJsonPrimitive("channelDescriptorName");
-        DistributionJobDetailsModel distributionJobDetailsModel = new DistributionJobDetailsModel(channelDescriptorName.getAsString()) {};
-        if (distributionJobDetailsModel.isAzureBoardsDetails()) {
-            return context.deserialize(jsonObject, AzureBoardsJobDetailsModel.class);
-        } else if (distributionJobDetailsModel.isEmailDetails()) {
-            return context.deserialize(jsonObject, EmailJobDetailsModel.class);
-        } else if (distributionJobDetailsModel.isJiraCloudDetails()) {
-            return context.deserialize(jsonObject, JiraCloudJobDetailsModel.class);
-        } else if (distributionJobDetailsModel.isJiraServerDetails()) {
-            return context.deserialize(jsonObject, JiraServerJobDetailsModel.class);
-        } else if (distributionJobDetailsModel.isMSTeamsDetails()) {
-            return context.deserialize(jsonObject, MSTeamsJobDetailsModel.class);
-        } else if (distributionJobDetailsModel.isSlackDetails()) {
-            return context.deserialize(jsonObject, SlackJobDetailsModel.class);
-        } else {
-            throw new JsonParseException("Could not determine an appropriate sub-class for " + type);
+        MutableChannelKey mutableChannelKey = context.deserialize(jsonObject.getAsJsonObject("channelKey"), MutableChannelKey.class);
+        return context.deserialize(jsonObject, DistributionJobDetailsModel.getConcreteClass(mutableChannelKey.asChannelKey()));
+    }
+
+    private static final class MutableChannelKey {
+        public String universalKey;
+        public String displayName;
+
+        public ChannelKey asChannelKey() {
+            return new ChannelKey(universalKey, displayName);
         }
     }
 

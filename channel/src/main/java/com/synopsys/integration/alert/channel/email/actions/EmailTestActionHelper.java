@@ -60,7 +60,7 @@ public class EmailTestActionHelper {
         }
 
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
-        EmailJobDetailsModel emailJobDetails = distributionJobDetails.getAsEmailJobDetails();
+        EmailJobDetailsModel emailJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.EMAIL);
 
         Long providerConfigId = distributionJobModel.getBlackDuckGlobalConfigId();
         boolean onlyAdditionalEmails = emailJobDetails.isAdditionalEmailAddressesOnly();
