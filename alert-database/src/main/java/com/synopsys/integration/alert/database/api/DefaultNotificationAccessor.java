@@ -83,11 +83,10 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                                                       .map(this::fromModel)
                                                       .collect(Collectors.toList());
 
-        List<AlertNotificationModel> savedModels = notificationContentRepository.saveAll(entitiesToSave)
-                                                       .stream()
-                                                       .map(this::toModel)
-                                                       .collect(Collectors.toList());
-        return savedModels;
+        return notificationContentRepository.saveAll(entitiesToSave)
+                   .stream()
+                   .map(this::toModel)
+                   .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)

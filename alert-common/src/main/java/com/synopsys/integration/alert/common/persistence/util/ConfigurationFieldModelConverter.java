@@ -59,7 +59,7 @@ public class ConfigurationFieldModelConverter {
     private final DescriptorAccessor descriptorAccessor;
     private final Map<String, DescriptorKey> descriptorKeys;
 
-    private final String MISSING_REGISTERED_DESCRIPTOR_MESSAGE = "Expected to find registered descriptor but none was found.";
+    private static final String MISSING_REGISTERED_DESCRIPTOR_MESSAGE = "Expected to find registered descriptor but none was found.";
 
     @Autowired
     public ConfigurationFieldModelConverter(EncryptionUtility encryptionUtility, DescriptorAccessor descriptorAccessor, List<DescriptorKey> descriptorKeys) {

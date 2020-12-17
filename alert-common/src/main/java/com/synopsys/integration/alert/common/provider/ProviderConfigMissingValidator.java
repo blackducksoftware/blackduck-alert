@@ -35,13 +35,12 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.lifecycle.ProvidersMissingTask;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 
 @Component
 public class ProviderConfigMissingValidator extends BaseSystemValidator {
     public static final String MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT = "Black Duck configuration is invalid. Black Duck configurations missing.";
-    private final Logger logger = LoggerFactory.getLogger(ProvidersMissingTask.class);
+    private final Logger logger = LoggerFactory.getLogger(ProviderConfigMissingValidator.class);
     private final List<Provider> providers;
     private final ConfigurationAccessor configurationAccessor;
 

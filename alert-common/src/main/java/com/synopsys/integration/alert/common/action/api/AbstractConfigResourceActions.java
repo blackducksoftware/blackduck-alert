@@ -44,7 +44,7 @@ public abstract class AbstractConfigResourceActions implements ConfigResourceAct
     private final AuthorizationManager authorizationManager;
     private final DescriptorAccessor descriptorAccessor;
 
-    public AbstractConfigResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor) {
+    protected AbstractConfigResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor) {
         this.authorizationManager = authorizationManager;
         this.descriptorAccessor = descriptorAccessor;
     }
