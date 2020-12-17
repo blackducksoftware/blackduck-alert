@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -69,7 +69,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private JobAccessorV2 jobAccessor;
+    private JobAccessor jobAccessor;
 
     @Autowired
     // FIXME why is this class autowired twice?

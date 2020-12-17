@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
@@ -76,8 +76,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-// TODO rename this in a separate PR for ease of review
-public class StaticJobAccessorV2 implements JobAccessorV2 {
+public class StaticJobAccessor implements JobAccessor {
     private final DistributionJobRepository distributionJobRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
@@ -92,7 +91,7 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
     private final ProviderKey blackDuckProviderKey;
 
     @Autowired
-    public StaticJobAccessorV2(
+    public StaticJobAccessor(
         DistributionJobRepository distributionJobRepository,
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
         AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,

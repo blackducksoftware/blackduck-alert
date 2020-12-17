@@ -63,7 +63,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
@@ -94,7 +94,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JobConfigActions extends AbstractJobResourceActions {
     private final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
     private final ConfigurationAccessor configurationAccessor;
-    private final JobAccessorV2 jobAccessor;
+    private final JobAccessor jobAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final DescriptorProcessor descriptorProcessor;
     private final ConfigurationFieldModelConverter modelConverter;
@@ -106,7 +106,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         AuthorizationManager authorizationManager,
         DescriptorAccessor descriptorAccessor,
         ConfigurationAccessor configurationAccessor,
-        JobAccessorV2 jobAccessor,
+        JobAccessor jobAccessor,
         FieldModelProcessor fieldModelProcessor,
         DescriptorProcessor descriptorProcessor,
         ConfigurationFieldModelConverter modelConverter,

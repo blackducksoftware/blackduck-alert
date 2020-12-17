@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -109,7 +109,7 @@ public class AuditEntryActionsTest {
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         ChannelEventManager eventManager = Mockito.mock(ChannelEventManager.class);
-        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(null);
         MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         MockNotificationContent mockNotificationEntity = new MockNotificationContent();
@@ -155,7 +155,7 @@ public class AuditEntryActionsTest {
 
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(null);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
@@ -215,7 +215,7 @@ public class AuditEntryActionsTest {
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         //JobAccessor oldJobAccessor = Mockito.mock(JobAccessor.class);
-        JobAccessorV2 jobAccessor = Mockito.mock(JobAccessorV2.class);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());

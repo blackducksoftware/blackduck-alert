@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -66,7 +66,7 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     @Autowired
     private AuditAccessor auditAccessor;
     @Autowired
-    private JobAccessorV2 jobAccessor;
+    private JobAccessor jobAccessor;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
 

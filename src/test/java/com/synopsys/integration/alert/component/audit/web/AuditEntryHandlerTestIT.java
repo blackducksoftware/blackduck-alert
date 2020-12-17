@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.JobAccessorV2;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
@@ -90,7 +90,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Autowired
     private NotificationContentRepository notificationContentRepository;
     @Autowired
-    private JobAccessorV2 jobAccessor;
+    private JobAccessor jobAccessor;
     @Autowired
     private ConfigurationAccessor configurationAccessor;
     @Autowired
