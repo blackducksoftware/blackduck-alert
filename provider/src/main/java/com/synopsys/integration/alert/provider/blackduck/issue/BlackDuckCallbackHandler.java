@@ -59,15 +59,15 @@ public class BlackDuckCallbackHandler extends ProviderCallbackHandler {
         BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
         BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
 
-        BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckServicesFactory.getBlackDuckApiClient(), blackDuckServicesFactory.getRequestFactory());
+        BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckServicesFactory.getBlackDuckApiClient(), blackDuckServicesFactory.createProjectService());
 
         BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
-        blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(event.getCallbackUrl(), issueModel);
+        blackDuckProviderIssueHandler.createOrUpdateBlackDuckIssue(event.getCallbackUrl(), issueModel, event.getProviderContentKey());
     }
 
     private BlackDuckProviderIssueModel createBlackDuckIssueModel(ProviderCallbackEvent event) {
         String blackDuckIssueStatus = mapOperationToAlertStatus(event.getOperation());
-        return new BlackDuckProviderIssueModel(event.getChannelDestinationId(), blackDuckIssueStatus, event.getChannelActionSummary(), event.getChannelDestinationLink().orElse(null));
+        return new BlackDuckProviderIssueModel(event.getIssueId(), blackDuckIssueStatus, event.getIssueSummary(), event.getIssueUrl().orElse(null));
     }
 
     private String mapOperationToAlertStatus(IssueOperation issueOperation) {

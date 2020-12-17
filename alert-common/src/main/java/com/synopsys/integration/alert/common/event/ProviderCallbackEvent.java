@@ -33,11 +33,11 @@ public class ProviderCallbackEvent extends AlertEvent {
     private final String callbackUrl;
     private final String notificationType;
 
-    private final String channelDestinationId;
-    private final String channelDestinationLink;
+    private final String issueId;
+    private final String issueUrl;
 
     private final IssueOperation operation;
-    private final String channelActionSummary;
+    private final String issueSummary;
 
     private final ContentKey providerContentKey;
     private final ComponentItem componentItem;
@@ -46,20 +46,20 @@ public class ProviderCallbackEvent extends AlertEvent {
         ProviderKey providerKey,
         String callbackUrl,
         String notificationType,
-        String channelDestinationId,
-        String channelDestinationLink,
+        String issueId,
+        String issueUrl,
         IssueOperation operation,
-        String channelActionSummary,
+        String issueSummary,
         ContentKey providerContentKey,
         ComponentItem componentItem
     ) {
         super(providerKey.getUniversalKey());
         this.callbackUrl = callbackUrl;
         this.notificationType = notificationType;
-        this.channelDestinationId = channelDestinationId;
-        this.channelDestinationLink = channelDestinationLink;
+        this.issueId = issueId;
+        this.issueUrl = issueUrl;
         this.operation = operation;
-        this.channelActionSummary = channelActionSummary;
+        this.issueSummary = issueSummary;
         this.providerContentKey = providerContentKey;
         this.componentItem = componentItem;
     }
@@ -72,20 +72,20 @@ public class ProviderCallbackEvent extends AlertEvent {
         return notificationType;
     }
 
-    public String getChannelDestinationId() {
-        return channelDestinationId;
+    public String getIssueId() {
+        return issueId;
     }
 
-    public Optional<String> getChannelDestinationLink() {
-        return Optional.ofNullable(channelDestinationLink);
+    public Optional<String> getIssueUrl() {
+        return Optional.ofNullable(issueUrl);
     }
 
     public IssueOperation getOperation() {
         return operation;
     }
 
-    public String getChannelActionSummary() {
-        return channelActionSummary;
+    public String getIssueSummary() {
+        return issueSummary;
     }
 
     public ContentKey getProviderContentKey() {
