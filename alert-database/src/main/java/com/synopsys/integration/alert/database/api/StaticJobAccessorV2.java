@@ -72,6 +72,7 @@ import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAcce
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -226,23 +227,23 @@ public class StaticJobAccessorV2 implements JobAccessorV2 {
         savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
 
         DistributionJobDetailsModel distributionJobDetails = requestModel.getDistributionJobDetails();
-        if (distributionJobDetails.isAzureBoardsDetails()) {
-            AzureBoardsJobDetailsEntity savedAzureBoardsJobDetails = azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(savedJobId, distributionJobDetails.getAsAzureBoardsJobDetails());
+        if (distributionJobDetails.isA(ChannelKey.AZURE_BOARDS)) {
+            AzureBoardsJobDetailsEntity savedAzureBoardsJobDetails = azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.AZURE));
             savedJobEntity.setAzureBoardsJobDetails(savedAzureBoardsJobDetails);
-        } else if (distributionJobDetails.isEmailDetails()) {
-            EmailJobDetailsEntity savedEmailJobDetails = emailJobDetailsAccessor.saveEmailJobDetails(savedJobId, distributionJobDetails.getAsEmailJobDetails());
+        } else if (distributionJobDetails.isA(ChannelKey.EMAIL)) {
+            EmailJobDetailsEntity savedEmailJobDetails = emailJobDetailsAccessor.saveEmailJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.EMAIL));
             savedJobEntity.setEmailJobDetails(savedEmailJobDetails);
-        } else if (distributionJobDetails.isJiraCloudDetails()) {
-            JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAsJiraCouldJobDetails());
+        } else if (distributionJobDetails.isA(ChannelKey.JIRA_CLOUD)) {
+            JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD));
             savedJobEntity.setJiraCloudJobDetails(savedJiraCloudJobDetails);
-        } else if (distributionJobDetails.isJiraServerDetails()) {
-            JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAsJiraServerJobDetails());
+        } else if (distributionJobDetails.isA(ChannelKey.JIRA_SERVER)) {
+            JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER));
             savedJobEntity.setJiraServerJobDetails(savedJiraServerJobDetails);
-        } else if (distributionJobDetails.isMSTeamsDetails()) {
-            MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAsMSTeamsJobDetails());
+        } else if (distributionJobDetails.isA(ChannelKey.MS_TEAMS)) {
+            MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.MS_TEAMS));
             savedJobEntity.setMsTeamsJobDetails(savedMSTeamsJobDetails);
-        } else if (distributionJobDetails.isSlackDetails()) {
-            SlackJobDetailsEntity savedSlackJobDetails = slackJobDetailsAccessor.saveSlackJobDetails(savedJobId, distributionJobDetails.getAsSlackJobDetails());
+        } else if (distributionJobDetails.isA(ChannelKey.SLACK)) {
+            SlackJobDetailsEntity savedSlackJobDetails = slackJobDetailsAccessor.saveSlackJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.SLACK));
             savedJobEntity.setSlackJobDetails(savedSlackJobDetails);
         }
 

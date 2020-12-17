@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.persistence.model.job.details;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+
 public class EmailJobDetailsModel extends DistributionJobDetailsModel {
     private final String subjectLine;
     private final boolean projectOwnerOnly;
@@ -32,7 +34,7 @@ public class EmailJobDetailsModel extends DistributionJobDetailsModel {
     private final List<String> additionalEmailAddresses;
 
     public EmailJobDetailsModel(String subjectLine, boolean projectOwnerOnly, boolean additionalEmailAddressesOnly, String attachmentFileType, List<String> additionalEmailAddresses) {
-        super("channel_email");
+        super(ChannelKey.EMAIL);
         this.subjectLine = subjectLine;
         this.projectOwnerOnly = projectOwnerOnly;
         this.additionalEmailAddressesOnly = additionalEmailAddressesOnly;

@@ -54,6 +54,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
@@ -85,7 +86,7 @@ public class EmailChannel extends NamedDistributionChannel {
         ConfigurationModel globalConfig = event.getChannelGlobalConfig()
                                               .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing global config."));
         DistributionJobModel distributionJobModel = event.getDistributionJobModel();
-        EmailJobDetailsModel emailJobDetails = distributionJobModel.getDistributionJobDetails().getAsEmailJobDetails();
+        EmailJobDetailsModel emailJobDetails = distributionJobModel.getDistributionJobDetails().getAs(DistributionJobDetailsModel.EMAIL);
 
         Optional<String> host = globalConfig.getField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey())
                                     .flatMap(ConfigurationFieldModel::getFieldValue);

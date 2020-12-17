@@ -69,7 +69,7 @@ public class AzureBoardsDistributionTestAction extends ChannelDistributionTestAc
         @Nullable String destination
     ) throws IntegrationException {
         DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
-        AzureBoardsContext azureBoardsContext = azureBoardsContextFactory.fromConfig(channelGlobalConfig, distributionJobDetails.getAsAzureBoardsJobDetails());
+        AzureBoardsContext azureBoardsContext = azureBoardsContextFactory.fromConfig(channelGlobalConfig, distributionJobDetails.getAs(DistributionJobDetailsModel.AZURE));
         AzureBoardsTestIssueRequestCreator issueCreator = new AzureBoardsTestIssueRequestCreator(azureBoardsRequestCreator, azureBoardsMessageParser, customTopic, customMessage);
         AzureBoardsCreateIssueTestAction azureBoardsCreateIssueTestAction = new AzureBoardsCreateIssueTestAction((AzureBoardsChannel) getDistributionChannel(), gson, issueCreator, proxyManager);
         return azureBoardsCreateIssueTestAction.testConfig(azureBoardsContext);

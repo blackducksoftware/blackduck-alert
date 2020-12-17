@@ -24,6 +24,8 @@ package com.synopsys.integration.alert.common.persistence.model.job.details;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+
 public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
     private final boolean addComments;
     private final String issueCreatorEmail;
@@ -42,7 +44,7 @@ public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
         String reopenTransition,
         List<JiraJobCustomFieldModel> customFields
     ) {
-        super("channel_jira_cloud");
+        super(ChannelKey.JIRA_CLOUD);
         this.addComments = addComments;
         this.issueCreatorEmail = issueCreatorEmail;
         this.projectNameOrKey = projectNameOrKey;
