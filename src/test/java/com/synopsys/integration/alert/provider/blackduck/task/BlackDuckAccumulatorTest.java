@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -58,6 +59,7 @@ public class BlackDuckAccumulatorTest {
     private TaskScheduler taskScheduler;
     private ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private BlackDuckValidator blackDuckValidator;
+    private EventManager eventManager;
 
     @BeforeEach
     public void init() throws Exception {
@@ -90,6 +92,7 @@ public class BlackDuckAccumulatorTest {
 
         blackDuckValidator = Mockito.mock(BlackDuckValidator.class);
         Mockito.when(blackDuckValidator.validate(Mockito.any())).thenReturn(true);
+        eventManager = Mockito.mock(EventManager.class);
     }
 
     @AfterEach
@@ -328,7 +331,7 @@ public class BlackDuckAccumulatorTest {
     public void testWrite() {
         BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         OffsetDateTime creationDate = DateUtils.createCurrentDateTimestamp();
-        AlertNotificationModel content = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", creationDate, creationDate);
+        AlertNotificationModel content = new AlertNotificationModel(1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", creationDate, creationDate, false);
         List<AlertNotificationModel> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);
 
@@ -340,7 +343,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckAccumulator createAccumulator(BlackDuckProperties blackDuckProperties) {
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, taskScheduler, notificationManager, providerTaskPropertiesAccessor, blackDuckProperties, blackDuckValidator);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, taskScheduler, notificationManager, providerTaskPropertiesAccessor, blackDuckProperties, blackDuckValidator, eventManager);
         return accumulator;
     }
 

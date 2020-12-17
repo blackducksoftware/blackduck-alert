@@ -76,4 +76,5 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     )
     Page<NotificationEntity> findMatchingSentNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+    Page<NotificationEntity> findByProcessedFalse(Pageable pageable);
 }
