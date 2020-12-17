@@ -20,9 +20,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -33,18 +34,10 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.configuration.ConfigGroupEntity;
-import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
-import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
-import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.job.DistributionJobEntity;
+import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -63,18 +56,14 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
     private AuditNotificationRepository auditNotificationRepository;
     @Autowired
     private AuditEntryRepository auditEntryRepository;
+
     @Autowired
-    private ConfigGroupRepository configGroupRepository;
+    private DistributionJobRepository distributionJobRepository;
+
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
-    private RegisteredDescriptorRepository registeredDescriptorRepository;
-    @Autowired
-    private ConfigContextRepository configContextRepository;
-    @Autowired
     private FieldValueRepository fieldValueRepository;
-    @Autowired
-    private DefinedFieldRepository definedFieldRepository;
     @Autowired
     private EmailChannelKey emailChannelKey;
 
@@ -123,14 +112,12 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
         notificationContentRepository.flush();
         auditNotificationRepository.flush();
         auditEntryRepository.flush();
-        configGroupRepository.flush();
         descriptorConfigRepository.flush();
         fieldValueRepository.flush();
         notificationContentRepository.deleteAllInBatch();
         notificationContentRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
-        configGroupRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
     }
@@ -213,25 +200,12 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
         NotificationEntity notificationContent = createNotificationContent();
         notificationContent = notificationContentRepository.save(notificationContent);
 
-        UUID jobId = UUID.randomUUID();
-
-        RegisteredDescriptorEntity registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(emailChannelKey.getUniversalKey()).orElse(null);
-        ConfigContextEntity configContextEntity = configContextRepository.findFirstByContext(ConfigContextEnum.GLOBAL.name()).orElse(null);
-
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
-        DescriptorConfigEntity descriptorConfig = new DescriptorConfigEntity(registeredDescriptorEntity.getId(), configContextEntity.getId(), currentTime, currentTime);
-        descriptorConfig = descriptorConfigRepository.save(descriptorConfig);
-
-        ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(descriptorConfig.getId(), jobId);
-        configGroupRepository.save(configGroupEntity);
-
-        DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
-
-        FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), emailChannelKey.getUniversalKey());
-        fieldValueRepository.save(fieldValueEntity);
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(null, "job_name", true, FrequencyType.REAL_TIME.name(), ProcessingType.DEFAULT.name(), emailChannelKey.getUniversalKey(), currentTime, null);
+        DistributionJobEntity savedJob = distributionJobRepository.save(distributionJobEntity);
 
         final String auditStatus = "audit status thing";
-        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), auditStatus, "", "");
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(savedJob.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), auditStatus, "", "");
         auditEntryEntity = auditEntryRepository.save(auditEntryEntity);
 
         AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());

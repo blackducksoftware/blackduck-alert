@@ -20,7 +20,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
@@ -38,16 +37,11 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     @Autowired
     private FieldValueRepository fieldValueRepository;
 
-    @Autowired
-    private ConfigGroupRepository configGroupRepository;
-
     @BeforeEach
     @AfterEach
     public void initializeTest() {
-        configGroupRepository.flush();
         descriptorConfigRepository.flush();
         fieldValueRepository.flush();
-        configGroupRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
     }

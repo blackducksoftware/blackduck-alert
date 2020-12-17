@@ -6,4 +6,5 @@
     <include file="store-blackduck-project-href.xml" relativeToChangelogFile="true"/>
     <include file="jira-custom-fields.xml" relativeToChangelogFile="true"/>
     <include file="notification-content-processing-column.xml" relativeToChangelogFile="true"/>
+    <include file="remove-config-groups-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
