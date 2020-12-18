@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
@@ -82,7 +82,7 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
             getClass().getSimpleName() + " Test Job",
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
-            new SlackChannelKey().getUniversalKey(),
+            ChannelKey.SLACK.getUniversalKey(),
             blackDuckGlobalConfigId,
             false,
             null,

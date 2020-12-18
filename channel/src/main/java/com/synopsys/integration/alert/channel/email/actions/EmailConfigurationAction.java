@@ -26,13 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class EmailConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected EmailConfigurationAction(EmailChannelKey emailChannelKey, EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction) {
-        super(emailChannelKey);
+    protected EmailConfigurationAction(EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction) {
+        super(ChannelKey.EMAIL);
         addGlobalTestAction(emailGlobalTestAction);
         addDistributionTestAction(emailDistributionTestAction);
     }

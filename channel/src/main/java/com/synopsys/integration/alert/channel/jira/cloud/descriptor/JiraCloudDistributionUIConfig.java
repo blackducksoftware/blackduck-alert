@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.channel.jira.cloud.descriptor;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
@@ -32,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -52,9 +51,8 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
                                                                           + "Note: This must be in the 'To Do' status category.";
 
-    @Autowired
-    public JiraCloudDistributionUIConfig(JiraCloudChannelKey jiraChannelKey) {
-        super(jiraChannelKey, JiraCloudDescriptor.JIRA_LABEL, JiraCloudDescriptor.JIRA_URL);
+    public JiraCloudDistributionUIConfig() {
+        super(ChannelKey.JIRA_CLOUD, JiraCloudDescriptor.JIRA_LABEL, JiraCloudDescriptor.JIRA_URL);
     }
 
     @Override

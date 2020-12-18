@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SettingsKeyModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 
 @Component
@@ -63,17 +63,15 @@ public class UpdateEmailService {
     private final UserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
-    private final EmailChannelKey emailChannelKey;
 
     @Autowired
     public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor,
-        FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelKey emailChannelKey) {
+        FreemarkerTemplatingService freemarkerTemplatingService) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
-        this.emailChannelKey = emailChannelKey;
     }
 
     public void sendUpdateEmail(UpdateModel updateModel) {
@@ -88,7 +86,7 @@ public class UpdateEmailService {
                                                     .filter(StringUtils::isNotBlank);
         if (optionalEmailAddress.isPresent()) {
             try {
-                ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+                ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.EMAIL, ConfigContextEnum.GLOBAL)
                                                      .stream()
                                                      .findFirst()
                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));

@@ -68,7 +68,7 @@ import com.synopsys.integration.alert.database.configuration.repository.FieldVal
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
@@ -81,8 +81,6 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private AuditDescriptorKey auditDescriptorKey;
-    @Autowired
-    private SlackChannelKey slackChannelKey;
     @Autowired
     public AuditEntryRepository auditEntryRepository;
     @Autowired
@@ -204,7 +202,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Test
     public void getGetAuditInfoForJobIT() {
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(slackChannelKey, ConfigContextEnum.DISTRIBUTION, slackFields);
+        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(ChannelKey.SLACK, ConfigContextEnum.DISTRIBUTION, slackFields);
         UUID jobID = UUID.randomUUID();
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 
@@ -267,14 +265,13 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     private DistributionJobRequestModel createJobRequestModel() {
-        SlackChannelKey slackChannelKey = new SlackChannelKey();
         SlackJobDetailsModel details = new SlackJobDetailsModel("test_webhook", "#test-channel", null);
         return new DistributionJobRequestModel(
             true,
             "Test Slack Job",
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
-            slackChannelKey.getUniversalKey(),
+            ChannelKey.SLACK.getUniversalKey(),
             providerConfigModel.getConfigurationId(),
             false,
             null,

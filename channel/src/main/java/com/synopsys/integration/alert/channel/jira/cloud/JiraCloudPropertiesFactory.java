@@ -36,19 +36,15 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class JiraCloudPropertiesFactory {
-    private final Logger logger = LoggerFactory.getLogger(JiraCloudPropertiesFactory.class);
-
-    private final JiraCloudChannelKey jiraChannelKey;
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public JiraCloudPropertiesFactory(JiraCloudChannelKey jiraChannelKey, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
-        this.jiraChannelKey = jiraChannelKey;
+    public JiraCloudPropertiesFactory(ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
     }
@@ -78,7 +74,7 @@ public class JiraCloudPropertiesFactory {
         String accessToken = fieldAccessToken.getValue().orElse("");
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
+            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.JIRA_CLOUD, ConfigContextEnum.GLOBAL)
                        .stream()
                        .findFirst()
                        .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))

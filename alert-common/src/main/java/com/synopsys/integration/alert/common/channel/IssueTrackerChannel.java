@@ -46,7 +46,7 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
     private final IssueTrackerChannelKey channelKey;
     private final EventManager eventManager;
 
-    public IssueTrackerChannel(Gson gson, AuditAccessor auditAccessor, IssueTrackerChannelKey channelKey, EventManager eventManager) {
+    public IssueTrackerChannel(IssueTrackerChannelKey channelKey, Gson gson, AuditAccessor auditAccessor, EventManager eventManager) {
         super(gson, auditAccessor);
         this.channelKey = channelKey;
         this.eventManager = eventManager;

@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
@@ -53,16 +53,12 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
-    private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
-
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     private static final String EMAIL_TEST_PROVIDER_CONFIG_NAME = "emailTestProviderConfig";
     private static final String DEFAULT_TEST_EMAIL_ADDRESS = "noreply@blackducksoftware.com";
 
     @Autowired
     private EmailDescriptor emailDescriptor;
-    @Autowired
-    private EmailChannelKey emailChannelKey;
     @Autowired
     private Gson gson;
     @Autowired
@@ -97,7 +93,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
         Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
-        return Optional.of(configurationAccessor.createConfiguration(EMAIL_CHANNEL_KEY, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
+        return Optional.of(configurationAccessor.createConfiguration(ChannelKey.EMAIL, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
     }
 
     @Override
@@ -124,7 +120,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                                    .orElseThrow(() -> new AlertRuntimeException("Missing Email global config"));
 
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
-        DistributionEvent event = new DistributionEvent(EMAIL_CHANNEL_KEY.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
+        DistributionEvent event = new DistributionEvent(ChannelKey.EMAIL.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
             MessageContentGroup.singleton(content), distributionJobModel, emailGlobalConfig);
         return event;
     }
@@ -179,12 +175,12 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
     @Override
     public FieldModel createTestConfigDestination() {
-        return createFieldModel(new EmailChannelKey().getUniversalKey(), DEFAULT_TEST_EMAIL_ADDRESS);
+        return createFieldModel(ChannelKey.EMAIL.getUniversalKey(), DEFAULT_TEST_EMAIL_ADDRESS);
     }
 
     @Override
     public String getEventDestinationName() {
-        return EMAIL_CHANNEL_KEY.getUniversalKey();
+        return ChannelKey.EMAIL.getUniversalKey();
     }
 
     @Override
@@ -197,7 +193,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         TestAlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
-        EmailChannel emailChannel = new EmailChannel(emailChannelKey, gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
+        EmailChannel emailChannel = new EmailChannel(gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
 
         return new EmailDistributionTestAction(emailChannel, emailTestActionHelper);
     }

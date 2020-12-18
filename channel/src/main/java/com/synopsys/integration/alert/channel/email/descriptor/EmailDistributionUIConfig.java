@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
@@ -42,7 +41,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validation.
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -58,9 +57,8 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     private static final String DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
     private static final String DESCRIPTION_ATTACHMENT_FORMAT = "If a file type is selected, a file of that type, representing the message content, will be attached to the email.";
 
-    @Autowired
-    public EmailDistributionUIConfig(EmailChannelKey emailChannelKey) {
-        super(emailChannelKey, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL);
+    public EmailDistributionUIConfig() {
+        super(ChannelKey.EMAIL, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL);
     }
 
     @Override

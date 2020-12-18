@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class PasswordResetService {
@@ -56,15 +56,13 @@ public class PasswordResetService {
     private final UserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
-    private final EmailChannelKey emailChannelKey;
 
     @Autowired
-    public PasswordResetService(AlertProperties alertProperties, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelKey emailChannelKey) {
+    public PasswordResetService(AlertProperties alertProperties, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, FreemarkerTemplatingService freemarkerTemplatingService) {
         this.alertProperties = alertProperties;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
-        this.emailChannelKey = emailChannelKey;
     }
 
     public void resetPassword(String username) throws AlertException {
@@ -73,7 +71,7 @@ public class PasswordResetService {
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
             throw new AlertException("No email address configured for user: " + username);
         }
-        ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+        ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.EMAIL, ConfigContextEnum.GLOBAL)
                                              .stream()
                                              .findFirst()
                                              .orElseThrow(() -> new AlertException("No global email configuration found"));

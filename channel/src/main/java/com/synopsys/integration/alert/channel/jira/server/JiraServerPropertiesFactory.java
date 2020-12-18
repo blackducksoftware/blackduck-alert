@@ -23,8 +23,6 @@
 package com.synopsys.integration.alert.channel.jira.server;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,19 +34,15 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class JiraServerPropertiesFactory {
-    private final Logger logger = LoggerFactory.getLogger(JiraServerPropertiesFactory.class);
-
-    private final JiraServerChannelKey jiraChannelKey;
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public JiraServerPropertiesFactory(JiraServerChannelKey jiraChannelKey, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
-        this.jiraChannelKey = jiraChannelKey;
+    public JiraServerPropertiesFactory(ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
     }
@@ -76,7 +70,7 @@ public class JiraServerPropertiesFactory {
         String accessToken = fieldAccessToken.getValue().orElse("");
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(jiraChannelKey, ConfigContextEnum.GLOBAL)
+            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.JIRA_SERVER, ConfigContextEnum.GLOBAL)
                        .stream()
                        .findFirst()
                        .flatMap(configurationModel -> configurationModel.getField(JiraServerDescriptor.KEY_SERVER_PASSWORD))

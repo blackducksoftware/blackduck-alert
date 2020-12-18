@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
@@ -57,8 +57,6 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
-    @Autowired
-    private SlackChannelKey slackChannelKey;
     @Autowired
     private Gson gson;
 
@@ -210,7 +208,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             "name",
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
-            slackChannelKey.getUniversalKey(),
+            ChannelKey.SLACK.getUniversalKey(),
             blackDuckGlobalConfigId,
             false,
             null,
@@ -223,7 +221,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     private JobFieldModel createTestJobFieldModel(String channelId, String providerId, ConfigurationModel providerGlobalConfig) {
-        String descriptorName = slackChannelKey.getUniversalKey();
+        String descriptorName = ChannelKey.SLACK.getUniversalKey();
         String context = ConfigContextEnum.DISTRIBUTION.name();
 
         FieldValueModel providerConfigField = new FieldValueModel(List.of(providerGlobalConfig.getConfigurationId().toString()), true);
