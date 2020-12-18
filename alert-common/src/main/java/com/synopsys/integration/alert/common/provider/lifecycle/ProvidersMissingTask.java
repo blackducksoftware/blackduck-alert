@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 
 @Component
 public class ProvidersMissingTask extends StartupScheduledTask {
-    public ProviderConfigMissingValidator providerMissingValidator;
+    private ProviderConfigMissingValidator providerMissingValidator;
 
     @Autowired
     public ProvidersMissingTask(TaskScheduler taskScheduler, TaskManager taskManager, ProviderConfigMissingValidator providerMissingValidator) {

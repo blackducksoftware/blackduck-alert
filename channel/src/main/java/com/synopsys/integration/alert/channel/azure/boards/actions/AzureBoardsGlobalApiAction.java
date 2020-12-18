@@ -68,7 +68,7 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
         Optional<ConfigurationModel> configurationModel = existingConfig.stream()
                                                               .findFirst();
         return configurationModel
-                   .map((config) -> updateTokenFields(updatedFieldModel, config))
+                   .map(config -> updateTokenFields(updatedFieldModel, config))
                    .orElse(updatedFieldModel);
 
     }
@@ -78,7 +78,7 @@ public class AzureBoardsGlobalApiAction extends ApiAction {
         FieldModel updatedFieldModel = super.beforeUpdateAction(fieldModel);
         Optional<ConfigurationModel> existingConfig = configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()));
         return existingConfig
-                   .map((config) -> updateTokenFields(updatedFieldModel, config))
+                   .map(config -> updateTokenFields(updatedFieldModel, config))
                    .orElse(updatedFieldModel);
     }
 

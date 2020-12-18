@@ -62,7 +62,7 @@ public abstract class AbstractUploadAction {
     }
 
     public ActionResponse<ExistenceModel> uploadFileExists() {
-        if (!isTargetDefined()) {
+        if (isTargetUndefined()) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
         if (!authorizationManager.hasUploadReadPermission(target.getContext(), target.getDescriptorKey())) {
@@ -77,7 +77,7 @@ public abstract class AbstractUploadAction {
     }
 
     public ActionResponse<Void> uploadFile(Resource fileToUpload) {
-        if (!isTargetDefined()) {
+        if (isTargetUndefined()) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
         if (!authorizationManager.hasUploadWritePermission(target.getContext(), target.getDescriptorKey())) {
@@ -87,7 +87,7 @@ public abstract class AbstractUploadAction {
     }
 
     public ActionResponse<Void> deleteFile() {
-        if (!isTargetDefined()) {
+        if (isTargetUndefined()) {
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, META_DATA_MISSING);
         }
         if (!authorizationManager.hasUploadDeletePermission(target.getContext(), target.getDescriptorKey())) {
@@ -105,11 +105,8 @@ public abstract class AbstractUploadAction {
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
-    private boolean isTargetDefined() {
-        if (null == target) {
-            return false;
-        }
-        return true;
+    private boolean isTargetUndefined() {
+        return null == target;
     }
 
     private ActionResponse<Void> writeFile(Resource fileResource) {
