@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.FieldMappingField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
@@ -42,6 +43,7 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
     public static final String LABEL_ISSUE_TYPE = "Issue Type";
     public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
     public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
+    public static final String LABEL_FIELD_MAPPING = "Field Mapping";
 
     public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
     public static final String DESCRIPTION_ISSUE_CREATOR = "The email of the Jira Cloud user to assign as the issue creator field of the Jira issue.";
@@ -51,6 +53,7 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
                                                                              + "Note: This must be in the 'Done' status category.";
     public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
                                                                           + "Note: This must be in the 'To Do' status category.";
+    public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to map Jira fields to fields in processed notifications.";
 
     @Autowired
     public JiraCloudDistributionUIConfig(JiraCloudChannelKey jiraChannelKey) {
@@ -69,8 +72,9 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField resolveWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
         ConfigField openWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
                                        .applyRequiredRelatedField(resolveWorkflow.getKey());
+        ConfigField fieldMapping = new FieldMappingField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING);
 
-        return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow);
+        return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, fieldMapping);
     }
 
 }

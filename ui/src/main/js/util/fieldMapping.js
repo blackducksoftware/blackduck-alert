@@ -238,19 +238,6 @@ function buildOAuthEndpointField(items, field) {
     );
 }
 
-/*
-    <FieldMappingField
-        label="Test field"
-        fieldKey="TestField"
-        id="TestFieldId"
-        name="FieldMappingField"
-        description="Description"
-        label="Field Map Test"
-        leftSideMapping="Jira Field"
-        rightSideMapping="BD Field"
-    />
- */
-
 function buildFieldMappingField(items, field) {
     const { leftSideMapping, rightSideMapping, mappingTitle } = field
     return <FieldMappingField
