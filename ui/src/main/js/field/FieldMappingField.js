@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TableDisplay from 'field/TableDisplay';
+import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 
 class FieldMappingField extends Component {
     constructor(props) {
         super(props);
 
-        this.onFocusLeftHandClick = this.onFocusLeftHandClick.bind(this)
-        this.onFocusRightHandClick = this.onFocusRightHandClick.bind(this)
+        this.onFocusClick = this.onFocusClick.bind(this)
         this.createNewRow = this.createNewRow.bind(this)
         this.createColumns = this.createColumns.bind(this)
         this.retrieveData = this.retrieveData.bind(this)
@@ -22,15 +22,8 @@ class FieldMappingField extends Component {
         this.onDelete = this.onDelete.bind(this)
 
         this.state = ({
-            leftHandOptions: [
-                { value: 'LeftHandKey', label: 'Left hand' },
-                { value: 'JirafieldsKey', label: 'jira fields' },
-                { value: 'Option3Key', label: 'Option 3' }
-            ],
-            rightHandOptions: [
-                { value: 'RightHandKey', label: 'Right hand' },
-                { value: 'BDfieldsKey', label: 'bd fields' }
-            ],
+            leftHandOptions: [],
+            rightHandOptions: [],
             rowKeyPair: {
                 left: '',
                 right: ''
@@ -41,36 +34,68 @@ class FieldMappingField extends Component {
     }
 
     componentDidMount() {
-        this.onFocusLeftHandClick();
-        this.onFocusRightHandClick();
+        this.onFocusClick();
     }
 
     componentDidUpdate(prevProps) {
         const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
         const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
         if (oldValuesEmpty && !currentValuesEmpty) {
-            this.onFocusLeftHandClick();
-            this.onFocusRightHandClick();
+            this.onFocusClick();
         }
     }
 
-    onFocusLeftHandClick() {
-        // TODO retrieve left hand values
-        return this.state.leftHandOptions;
-    }
+    onFocusClick() {
+        const {
+            fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields
+        } = this.props;
 
-    onFocusRightHandClick() {
-        // TODO retrieve right hand values
-        return this.state.rightHandOptions;
-    }
+        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
+        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((data) => {
+                    const { leftSideOptions, rightSideOptions } = data;
+                    const leftSelectOptions = leftSideOptions.options.map((item) => {
+                        return {
+                            label: item.label,
+                            value: item.value
+                        };
+                    });
+                    const rightSelectOptions = rightSideOptions.options.map((item) => {
+                        return {
+                            label: item.label,
+                            value: item.value
+                        };
+                    });
 
-    onFocusClick(dataURL) {
-        // TODO retrieves data from backend depending on URL
+                    this.setState({
+                        leftHandOptions: leftSelectOptions,
+                        rightHandOptions: rightSelectOptions
+                    });
+                });
+            } else {
+                // FIXME implement
+                // response.json()
+                //     .then((data) => {
+                //         this.setState({
+                //             options: [],
+                //             fieldError: {
+                //                 severity: 'ERROR',
+                //                 fieldMessage: data.message
+                //             }
+                //         }, this.emptyFieldValue);
+                //     });
+            }
+        });
+
+
     }
 
     handleChange({ target }) {
         const { name, value } = target;
 
+        // FIXME Call the passed onChange which is the dynamic one and mix it with this to properly fill data
         this.setState({
             rowKeyPair: {
                 ...this.state.rowKeyPair,
@@ -165,11 +190,9 @@ class FieldMappingField extends Component {
     }
 
     onDelete(configsToDelete, callback) {
-        console.log(`delete: ${JSON.stringify(configsToDelete)}`)
         const { tableData } = this.state;
         if (configsToDelete) {
-            // FIXME being passed a nested array for some reason so must get the initial array
-            const filteredTable = tableData.filter((data) => configsToDelete[0].includes(data.id))
+            const filteredTable = tableData.filter((data) => configsToDelete.includes(data.id))
             this.setState({
                 tableData: filteredTable
             })
@@ -207,6 +230,8 @@ class FieldMappingField extends Component {
                 onConfigSave={this.saveModalData}
                 onConfigDelete={this.onDelete}
                 data={this.retrieveData()}
+                enableCopy={false}
+                tableSearchable={false}
                 autoRefresh={false}
                 tableRefresh={false}
                 clearModalFieldState={this.clearModal}
@@ -218,9 +243,11 @@ class FieldMappingField extends Component {
 FieldMappingField.propTypes = {
     id: PropTypes.string,
     currentConfig: PropTypes.object,
+    onChange: PropTypes.func.isRequired,
     fieldKey: PropTypes.string.isRequired,
     leftSideMapping: PropTypes.string.isRequired,
     rightSideMapping: PropTypes.string.isRequired,
+    endpoint: PropTypes.string.isRequired,
     newMappingTitle: PropTypes.string,
 };
 

@@ -239,11 +239,13 @@ function buildOAuthEndpointField(items, field) {
 }
 
 function buildFieldMappingField(items, field) {
-    const { leftSideMapping, rightSideMapping, mappingTitle } = field
+    const { leftSide, rightSide, mappingTitle, key, url } = field
     return <FieldMappingField
-        leftSideMapping={leftSideMapping}
-        rightSideMapping={rightSideMapping}
+        leftSideMapping={leftSide}
+        rightSideMapping={rightSide}
         newMappingTitle={mappingTitle}
+        fieldKey={key}
+        endpoint={url}
         {...items}
     />
 }
