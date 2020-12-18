@@ -316,11 +316,20 @@ class TableSelectInput extends Component {
         const projectsSelectRowProp = this.createRowSelectionProps();
 
         const assignDataFormat = (cell, row) => {
+            const cellContent = (row.missing && cell && cell !== '')
+                ? (
+                    <span className="missingData">
+                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                        {cell}
+                    </span>
+                )
+                : cell;
+
             if (cell) {
                 return (
                     <div title={cell.toString()}>
                         {' '}
-                        {cell}
+                        {cellContent}
                         {' '}
                     </div>
                 );
@@ -328,7 +337,7 @@ class TableSelectInput extends Component {
             return (
                 <div>
                     {' '}
-                    {cell}
+                    {cellContent}
                     {' '}
                 </div>
             );
