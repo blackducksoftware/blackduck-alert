@@ -1,24 +1,21 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import DynamicSelectInput from 'field/input/DynamicSelect';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TableDisplay from 'field/TableDisplay';
-import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
+import TextInput from "field/input/TextInput";
+import LabeledField from 'field/LabeledField';
+import { connect } from 'react-redux';
 
 class FieldMappingField extends Component {
     constructor(props) {
         super(props);
 
-        this.onFocusClick = this.onFocusClick.bind(this)
         this.createNewRow = this.createNewRow.bind(this)
         this.createColumns = this.createColumns.bind(this)
-        this.retrieveData = this.retrieveData.bind(this)
         this.onEdit = this.onEdit.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.saveModalData = this.saveModalData.bind(this)
         this.clearModal = this.clearModal.bind(this)
-        this.retrieveOptionLabel = this.retrieveOptionLabel.bind(this)
         this.onDelete = this.onDelete.bind(this)
 
         this.state = ({
@@ -29,73 +26,23 @@ class FieldMappingField extends Component {
                 right: ''
             },
             progress: false,
-            tableData: []
+            tableData: [],
+            id: 0
         });
     }
 
     componentDidMount() {
-        this.onFocusClick();
     }
 
     componentDidUpdate(prevProps) {
         const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
         const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
         if (oldValuesEmpty && !currentValuesEmpty) {
-            this.onFocusClick();
         }
-    }
-
-    onFocusClick() {
-        const {
-            fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields
-        } = this.props;
-
-        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
-        request.then((response) => {
-            if (response.ok) {
-                response.json().then((data) => {
-                    const { leftSideOptions, rightSideOptions } = data;
-                    const leftSelectOptions = leftSideOptions.options.map((item) => {
-                        return {
-                            label: item.label,
-                            value: item.value
-                        };
-                    });
-                    const rightSelectOptions = rightSideOptions.options.map((item) => {
-                        return {
-                            label: item.label,
-                            value: item.value
-                        };
-                    });
-
-                    this.setState({
-                        leftHandOptions: leftSelectOptions,
-                        rightHandOptions: rightSelectOptions
-                    });
-                });
-            } else {
-                // FIXME implement
-                // response.json()
-                //     .then((data) => {
-                //         this.setState({
-                //             options: [],
-                //             fieldError: {
-                //                 severity: 'ERROR',
-                //                 fieldMessage: data.message
-                //             }
-                //         }, this.emptyFieldValue);
-                //     });
-            }
-        });
-
-
     }
 
     handleChange({ target }) {
         const { name, value } = target;
-
-        // FIXME Call the passed onChange which is the dynamic one and mix it with this to properly fill data
         this.setState({
             rowKeyPair: {
                 ...this.state.rowKeyPair,
@@ -104,30 +51,21 @@ class FieldMappingField extends Component {
         });
     }
 
-    retrieveOptionLabel(key, options) {
-        return options.filter((option) => option.value == key)[0].label
-    }
-
     createNewRow() {
         const { leftSideMapping, rightSideMapping } = this.props;
-        const { rowKeyPair, leftHandOptions, rightHandOptions } = this.state;
-        const { left, right } = rowKeyPair;
+        const { left, right } = this.state.rowKeyPair;
         return (
             <div>
-                <DynamicSelectInput
-                    id={'left'}
+                <TextInput
+                    name={'left'}
                     onChange={this.handleChange}
-                    options={leftHandOptions}
                     label={leftSideMapping}
-                    multiSelect={false}
                     value={left}
                 />
-                <DynamicSelectInput
-                    id={'right'}
+                <TextInput
+                    name={'right'}
                     onChange={this.handleChange}
-                    options={rightHandOptions}
                     label={rightSideMapping}
-                    multiSelect={false}
                     value={right}
                 />
             </div>
@@ -158,19 +96,8 @@ class FieldMappingField extends Component {
         ];
     }
 
-    retrieveData() {
-        const { tableData, leftHandOptions, rightHandOptions } = this.state;
-
-        return tableData.map((data) => {
-            const leftLabel = this.retrieveOptionLabel(data.left, leftHandOptions)
-            const rightLabel = this.retrieveOptionLabel(data.right, rightHandOptions)
-            return { 'id': data.left, 'left': leftLabel, 'right': rightLabel }
-        });
-    }
-
+    // FIXME edit adds a new row
     onEdit(selectedRow, callback) {
-        console.log(`onEdit: ${JSON.stringify(selectedRow)}`)
-
         const entireRow = this.state.tableData.filter((row) => row.id == selectedRow.id)[0]
         this.setState({
             rowKeyPair: {
@@ -192,7 +119,7 @@ class FieldMappingField extends Component {
     onDelete(configsToDelete, callback) {
         const { tableData } = this.state;
         if (configsToDelete) {
-            const filteredTable = tableData.filter((data) => configsToDelete.includes(data.id))
+            const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.id))
             this.setState({
                 tableData: filteredTable
             })
@@ -201,17 +128,27 @@ class FieldMappingField extends Component {
     }
 
     saveModalData(callback) {
-        const { tableData, rowKeyPair } = this.state;
+        const { tableData, rowKeyPair, id } = this.state;
         const { left, right } = rowKeyPair;
 
         tableData.push({
-            id: left,
+            id,
             left,
             right
         })
 
         this.setState({
-            tableData
+            tableData,
+            id: id + 1
+        });
+
+        const { onChange, fieldKey } = this.props;
+        //TODO Function that adds content to the field model. If you want to save the data differently, modify this
+        onChange({
+            target: {
+                name: fieldKey,
+                value: tableData
+            }
         });
 
         callback(true)
@@ -220,22 +157,26 @@ class FieldMappingField extends Component {
 
     render() {
         const { newMappingTitle } = this.props;
-        return (
+        const { tableData } = this.state;
+        const table = (
             <TableDisplay
                 modalTitle={newMappingTitle}
                 columns={this.createColumns()}
                 newConfigFields={this.createNewRow}
-                refreshData={this.retrieveData}
+                refreshData={() => tableData}
                 onEditState={this.onEdit}
                 onConfigSave={this.saveModalData}
                 onConfigDelete={this.onDelete}
-                data={this.retrieveData()}
+                data={tableData}
                 enableCopy={false}
                 tableSearchable={false}
                 autoRefresh={false}
                 tableRefresh={false}
                 clearModalFieldState={this.clearModal}
             />
+        )
+        return (
+            <LabeledField field={table} {...this.props} />
         )
     }
 }
@@ -247,8 +188,7 @@ FieldMappingField.propTypes = {
     fieldKey: PropTypes.string.isRequired,
     leftSideMapping: PropTypes.string.isRequired,
     rightSideMapping: PropTypes.string.isRequired,
-    endpoint: PropTypes.string.isRequired,
-    newMappingTitle: PropTypes.string,
+    newMappingTitle: PropTypes.string
 };
 
 FieldMappingField.defaultProps = {
