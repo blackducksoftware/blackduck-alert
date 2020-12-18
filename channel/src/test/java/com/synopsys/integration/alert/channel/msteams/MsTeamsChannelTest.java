@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
@@ -28,9 +28,8 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
     public void sendMessageTestIT() throws IntegrationException {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         MsTeamsEventParser msTeamsEventParser = new MsTeamsEventParser(freemarkerTemplatingService);
-        MsTeamsKey msTeamsKey = new MsTeamsKey();
         MsTeamsMessageParser msTeamsMessageParser = new MsTeamsMessageParser(new MarkupEncoderUtil());
-        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(msTeamsKey, gson, auditAccessor, createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
+        MsTeamsChannel msTeamsChannel = new MsTeamsChannel(gson, auditAccessor, createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
@@ -38,7 +37,7 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
                                                 .distributionJobDetails(msTeamsJobDetailsModel)
                                                 .build();
 
-        DistributionEvent event = new DistributionEvent(msTeamsKey.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
+        DistributionEvent event = new DistributionEvent(ChannelKey.MS_TEAMS.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
 
         msTeamsChannel.sendAuditedMessage(event);
 

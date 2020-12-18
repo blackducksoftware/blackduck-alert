@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class MsTeamsDescriptor extends ChannelDescriptor {
@@ -37,8 +37,8 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     public static final String MSTEAMS_DESCRIPTION = "Configure MS Teams for Alert.";
 
     @Autowired
-    public MsTeamsDescriptor(MsTeamsKey msTeamsKey, MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
-        super(msTeamsKey, msTeamsUIConfig, msTeamsGlobalUIConfig);
+    public MsTeamsDescriptor(MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
+        super(ChannelKey.MS_TEAMS, msTeamsUIConfig, msTeamsGlobalUIConfig);
     }
 
 }

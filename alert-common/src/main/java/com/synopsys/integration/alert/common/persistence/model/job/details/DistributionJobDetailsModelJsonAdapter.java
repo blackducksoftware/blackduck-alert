@@ -29,7 +29,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
@@ -44,7 +43,11 @@ public class DistributionJobDetailsModelJsonAdapter implements JsonSerializer<Di
     public DistributionJobDetailsModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         MutableChannelKey mutableChannelKey = context.deserialize(jsonObject.getAsJsonObject("channelKey"), MutableChannelKey.class);
-        return context.deserialize(jsonObject, DistributionJobDetailsModel.getConcreteClass(mutableChannelKey.asChannelKey()));
+        Class<? extends DistributionJobDetailsModel> concreteClass = DistributionJobDetailsModel.getConcreteClass(mutableChannelKey.asChannelKey());
+        if (null != concreteClass) {
+            return context.deserialize(jsonObject, concreteClass);
+        }
+        throw new JsonParseException("Could not find a suitable class for deserialization");
     }
 
     private static final class MutableChannelKey {
@@ -54,6 +57,7 @@ public class DistributionJobDetailsModelJsonAdapter implements JsonSerializer<Di
         public ChannelKey asChannelKey() {
             return new ChannelKey(universalKey, displayName);
         }
+
     }
 
 }

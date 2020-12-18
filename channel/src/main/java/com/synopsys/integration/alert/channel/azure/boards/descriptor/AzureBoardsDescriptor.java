@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class AzureBoardsDescriptor extends ChannelDescriptor {
@@ -56,8 +56,8 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String DEFAULT_WORK_ITEM_TYPE = "Task";
 
     @Autowired
-    public AzureBoardsDescriptor(AzureBoardsChannelKey channelKey, AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig, AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig) {
-        super(channelKey, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig);
+    public AzureBoardsDescriptor(AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig, AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig) {
+        super(ChannelKey.AZURE_BOARDS, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig);
     }
 
 }

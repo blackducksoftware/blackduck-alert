@@ -20,21 +20,24 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-class StaticJobAccessorV2Test {
+class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
+    private SlackJobDetailsAccessor slackJobDetailsAccessor;
     private JobAccessor jobAccessor;
 
     private final String jobName = "jobName";
@@ -43,19 +46,20 @@ class StaticJobAccessorV2Test {
     public void init() {
         distributionJobRepository = Mockito.mock(DistributionJobRepository.class);
         blackDuckJobDetailsAccessor = Mockito.mock(BlackDuckJobDetailsAccessor.class);
+        slackJobDetailsAccessor = Mockito.mock(SlackJobDetailsAccessor.class);
 
         Mockito.when(blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
-        jobAccessor = new StaticJobAccessor(distributionJobRepository, blackDuckJobDetailsAccessor, null, null, null, null, null, null, new BlackDuckProviderKey());
+        jobAccessor = new StaticJobAccessor(distributionJobRepository, blackDuckJobDetailsAccessor, null, null, null, null, null, slackJobDetailsAccessor, new BlackDuckProviderKey());
     }
 
     @Test
     void getJobByIdTest() {
         UUID jobId = UUID.randomUUID();
 
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Mockito.when(distributionJobRepository.findById(jobId)).thenReturn(Optional.of(distributionJobEntity));
@@ -70,7 +74,7 @@ class StaticJobAccessorV2Test {
     @Test
     void getJobByNameTest() {
         UUID jobId = UUID.randomUUID();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Mockito.when(distributionJobRepository.findByName(Mockito.any())).thenReturn(Optional.of(distributionJobEntity));
@@ -85,13 +89,13 @@ class StaticJobAccessorV2Test {
     @Test
     void createJobTest() {
         UUID jobId = UUID.randomUUID();
-        DistributionJobDetailsModel distributionJobDetailsModel = new DistributionJobDetailsModel(new ChannelKey("test", "channel") {}) {};
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(null, null, null);
         DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
             true,
             jobName,
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
-            "channel.common.name",
+            ChannelKey.SLACK.getUniversalKey(),
             3L,
             true,
             "*",
@@ -99,9 +103,10 @@ class StaticJobAccessorV2Test {
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList(),
-            distributionJobDetailsModel
+            slackJobDetailsModel
         );
 
+        SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
         DistributionJobEntity distributionJobEntity = new DistributionJobEntity(
             jobId,
             distributionJobRequestModel.getName(),
@@ -112,6 +117,7 @@ class StaticJobAccessorV2Test {
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp()
         );
+        distributionJobEntity.setSlackJobDetails(slackJobDetailsEntity);
         BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = new BlackDuckJobDetailsEntity(
             jobId,
             distributionJobRequestModel.getBlackDuckGlobalConfigId(),
@@ -119,6 +125,7 @@ class StaticJobAccessorV2Test {
             distributionJobRequestModel.getProjectNamePattern().orElse(null)
         );
 
+        Mockito.when(slackJobDetailsAccessor.saveSlackJobDetails(Mockito.any(), Mockito.any())).thenReturn(slackJobDetailsEntity);
         Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
         Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
 
@@ -138,13 +145,13 @@ class StaticJobAccessorV2Test {
     @Test
     void updateJobTest() throws Exception {
         UUID jobId = UUID.randomUUID();
-        DistributionJobDetailsModel distributionJobDetailsModel = new DistributionJobDetailsModel(new ChannelKey("test", "channel") {}) {};
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(null, null, null);
         DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
             true,
             jobName,
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
-            "channel.common.name",
+            ChannelKey.SLACK.getUniversalKey(),
             3L,
             true,
             "*",
@@ -152,9 +159,10 @@ class StaticJobAccessorV2Test {
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList(),
-            distributionJobDetailsModel
+            slackJobDetailsModel
         );
 
+        SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
         DistributionJobEntity distributionJobEntity = new DistributionJobEntity(
             jobId,
             distributionJobRequestModel.getName(),
@@ -165,6 +173,7 @@ class StaticJobAccessorV2Test {
             DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp()
         );
+        distributionJobEntity.setSlackJobDetails(slackJobDetailsEntity);
         BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = new BlackDuckJobDetailsEntity(
             jobId,
             distributionJobRequestModel.getBlackDuckGlobalConfigId(),
@@ -172,6 +181,7 @@ class StaticJobAccessorV2Test {
             distributionJobRequestModel.getProjectNamePattern().orElse(null)
         );
 
+        Mockito.when(slackJobDetailsAccessor.saveSlackJobDetails(Mockito.any(), Mockito.any())).thenReturn(slackJobDetailsEntity);
         Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
         Mockito.when(distributionJobRepository.findById(Mockito.any())).thenReturn(Optional.of(distributionJobEntity));
         Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
@@ -188,7 +198,7 @@ class StaticJobAccessorV2Test {
     void getJobsByIdTest() {
         UUID jobId = UUID.randomUUID();
 
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Mockito.when(distributionJobRepository.findAllById(Mockito.any())).thenReturn(List.of(distributionJobEntity));
@@ -205,7 +215,7 @@ class StaticJobAccessorV2Test {
     void getPageOfJobsTest() {
         UUID jobId = UUID.randomUUID();
 
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
@@ -226,7 +236,7 @@ class StaticJobAccessorV2Test {
         ProviderKey providerKey = new BlackDuckProviderKey();
         UUID jobId = UUID.randomUUID();
 
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, providerKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
@@ -247,7 +257,7 @@ class StaticJobAccessorV2Test {
         ProviderKey providerKey = new BlackDuckProviderKey();
         UUID jobId = UUID.randomUUID();
 
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, providerKey.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Page<DistributionJobEntity> page = new PageImpl<>(List.of(distributionJobEntity));
@@ -276,7 +286,7 @@ class StaticJobAccessorV2Test {
     @Test
     void getMatchingEnabledJobsTest() {
         UUID jobId = UUID.randomUUID();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Mockito.when(distributionJobRepository.findMatchingEnabledJob(Mockito.any(), Mockito.any())).thenReturn(List.of(distributionJobEntity));
@@ -292,7 +302,7 @@ class StaticJobAccessorV2Test {
     @Test
     void getMatchingEnabledJobsWithFrequencyTest() {
         UUID jobId = UUID.randomUUID();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, null, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
         distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
 
         Mockito.when(distributionJobRepository.findMatchingEnabledJob(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(List.of(distributionJobEntity));
@@ -303,6 +313,13 @@ class StaticJobAccessorV2Test {
         DistributionJobModel distributionJobModel = matchingEnabledJobs.get(0);
         assertEquals(jobId, distributionJobModel.getJobId());
         assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    private DistributionJobEntity createSlackDistributionJobEntity(UUID jobId) {
+        SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, ChannelKey.SLACK.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        distributionJobEntity.setSlackJobDetails(slackJobDetailsEntity);
+        return distributionJobEntity;
     }
 
 }

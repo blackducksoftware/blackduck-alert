@@ -254,8 +254,8 @@ public class StaticJobAccessor implements JobAccessor {
     private DistributionJobModel convertToDistributionJobModel(DistributionJobEntity jobEntity) {
         UUID jobId = jobEntity.getJobId();
         DistributionJobDetailsModel distributionJobDetailsModel = null;
-        String channelDescriptorName = jobEntity.getChannelDescriptorName();
-        if ("channel_azure_boards".equals(channelDescriptorName)) {
+        ChannelKey channelKey = ChannelKey.getChannelKey(jobEntity.getChannelDescriptorName());
+        if (ChannelKey.AZURE_BOARDS.equals(channelKey)) {
             AzureBoardsJobDetailsEntity jobDetails = jobEntity.getAzureBoardsJobDetails();
             distributionJobDetailsModel = new AzureBoardsJobDetailsModel(
                 jobDetails.getAddComments(),
@@ -264,7 +264,7 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getWorkItemCompletedState(),
                 jobDetails.getWorkItemReopenState()
             );
-        } else if ("channel_email".equals(channelDescriptorName)) {
+        } else if (ChannelKey.EMAIL.equals(channelKey)) {
             EmailJobDetailsEntity jobDetails = jobEntity.getEmailJobDetails();
             List<String> additionalEmailAddresses = jobDetails.getEmailJobAdditionalEmailAddresses()
                                                         .stream()
@@ -277,7 +277,7 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getAttachmentFileType(),
                 additionalEmailAddresses
             );
-        } else if ("channel_jira_cloud".equals(channelDescriptorName)) {
+        } else if (ChannelKey.JIRA_CLOUD.equals(channelKey)) {
             JiraCloudJobDetailsEntity jobDetails = jobEntity.getJiraCloudJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
                                                              .stream()
@@ -292,7 +292,7 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getReopenTransition(),
                 customFields
             );
-        } else if ("channel_jira_server".equals(channelDescriptorName)) {
+        } else if (ChannelKey.JIRA_SERVER.equals(channelKey)) {
             JiraServerJobDetailsEntity jobDetails = jobEntity.getJiraServerJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
                                                              .stream()
@@ -307,10 +307,10 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getReopenTransition(),
                 customFields
             );
-        } else if ("msteamskey".equals(channelDescriptorName)) {
+        } else if (ChannelKey.MS_TEAMS.equals(channelKey)) {
             MSTeamsJobDetailsEntity jobDetails = jobEntity.getMsTeamsJobDetails();
             distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobDetails.getWebhook());
-        } else if ("channel_slack".equals(channelDescriptorName)) {
+        } else if (ChannelKey.SLACK.equals(channelKey)) {
             SlackJobDetailsEntity slackJobDetails = jobEntity.getSlackJobDetails();
             distributionJobDetailsModel = new SlackJobDetailsModel(
                 slackJobDetails.getWebhook(),
@@ -331,7 +331,7 @@ public class StaticJobAccessor implements JobAccessor {
                    .enabled(jobEntity.getEnabled())
                    .distributionFrequency(jobEntity.getDistributionFrequency())
                    .processingType(jobEntity.getProcessingType())
-                   .channelDescriptorName(channelDescriptorName)
+                   .channelDescriptorName(channelKey.getUniversalKey())
                    .createdAt(jobEntity.getCreatedAt())
                    .lastUpdated(jobEntity.getLastUpdated())
                    .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())

@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 //@ExtendWith(SpringExtension.class)
@@ -20,16 +19,10 @@ public class BeanContextTest extends AlertIntegrationTest {
     @Autowired
     DescriptorProcessor descriptorProcessor;
 
-    @Autowired
-    SlackChannelKey slackChannelKey;
-
-    @Autowired
-    MsTeamsKey msTeamsKey;
-
     @Test
     public void testContext() {
-        ConfigurationAction slackConfigurationAction = descriptorProcessor.retrieveConfigurationAction(slackChannelKey.getUniversalKey()).get();
-        ConfigurationAction msTeamsConfigurationAction = descriptorProcessor.retrieveConfigurationAction(msTeamsKey.getUniversalKey()).get();
+        ConfigurationAction slackConfigurationAction = descriptorProcessor.retrieveConfigurationAction(ChannelKey.SLACK.getUniversalKey()).get();
+        ConfigurationAction msTeamsConfigurationAction = descriptorProcessor.retrieveConfigurationAction(ChannelKey.MS_TEAMS.getUniversalKey()).get();
 
         assertNotNull(slackConfigurationAction);
         assertNotNull(msTeamsConfigurationAction);

@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 /**
  * This class is meant to be a very basic implementation of a {@link DataStore}.<br/>
@@ -48,18 +48,15 @@ import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
  * this implementation will have to be updated to not be specific to Azure Boards.
  */
 public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCredential> {
-    private final AzureBoardsChannelKey azureBoardsChannelKey;
     private final ConfigurationAccessor configurationAccessor;
 
     /**
      * @param dataStoreFactory      data store factory
      * @param id                    data store ID
-     * @param azureBoardsChannelKey Azure Boards Channel Key
      * @param configurationAccessor Alert interface to read/write to descriptor configurations
      */
-    protected AzureBoardsCredentialDataStore(AzureBoardsCredentialDataStoreFactory dataStoreFactory, String id, AzureBoardsChannelKey azureBoardsChannelKey, ConfigurationAccessor configurationAccessor) {
+    protected AzureBoardsCredentialDataStore(AzureBoardsCredentialDataStoreFactory dataStoreFactory, String id, ConfigurationAccessor configurationAccessor) {
         super(dataStoreFactory, id);
-        this.azureBoardsChannelKey = azureBoardsChannelKey;
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -142,7 +139,7 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
     }
 
     private ConfigurationModel retrieveConfiguration() {
-        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL)
+        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.AZURE_BOARDS, ConfigContextEnum.GLOBAL)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertRuntimeException("No Azure Boards global configuration exists. Cannot read data store."));

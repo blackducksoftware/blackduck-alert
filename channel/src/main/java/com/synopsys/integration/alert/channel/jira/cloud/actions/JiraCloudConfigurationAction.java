@@ -26,13 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class JiraCloudConfigurationAction extends ConfigurationAction {
     @Autowired
-    public JiraCloudConfigurationAction(JiraCloudChannelKey jiraChannelKey, JiraCloudGlobalTestAction globalTestAction, JiraCloudDistributionTestAction jiraDistributionTestAction) {
-        super(jiraChannelKey);
+    public JiraCloudConfigurationAction(JiraCloudGlobalTestAction globalTestAction, JiraCloudDistributionTestAction jiraDistributionTestAction) {
+        super(ChannelKey.JIRA_CLOUD);
         addGlobalTestAction(globalTestAction);
         addDistributionTestAction(jiraDistributionTestAction);
     }

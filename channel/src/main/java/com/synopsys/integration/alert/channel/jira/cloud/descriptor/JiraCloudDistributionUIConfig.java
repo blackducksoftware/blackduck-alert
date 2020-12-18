@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.channel.jira.cloud.descriptor;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
@@ -33,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.FieldMappingEndpointField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -55,9 +54,8 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
                                                                           + "Note: This must be in the 'To Do' status category.";
     public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to map Jira fields to fields in processed notifications.";
 
-    @Autowired
-    public JiraCloudDistributionUIConfig(JiraCloudChannelKey jiraChannelKey) {
-        super(jiraChannelKey, JiraCloudDescriptor.JIRA_LABEL, JiraCloudDescriptor.JIRA_URL);
+    public JiraCloudDistributionUIConfig() {
+        super(ChannelKey.JIRA_CLOUD, JiraCloudDescriptor.JIRA_LABEL, JiraCloudDescriptor.JIRA_URL);
     }
 
     @Override

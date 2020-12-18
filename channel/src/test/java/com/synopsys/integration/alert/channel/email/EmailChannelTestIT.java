@@ -32,8 +32,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -41,9 +40,6 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelTestIT extends AbstractChannelTest {
-    private static final BlackDuckProviderKey BLACK_DUCK_PROVIDER_KEY = new BlackDuckProviderKey();
-    private static final EmailChannelKey CHANNEL_KEY = new EmailChannelKey();
-
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() throws Exception {
@@ -53,7 +49,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
-        EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, testAlertProperties, auditAccessor, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
+        EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, auditAccessor, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
         ProviderMessageContent content = createMessageContent(getClass().getSimpleName());
         Set<String> emailAddresses = Set.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
         String subjectLine = "Integration test subject line";
@@ -71,7 +67,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         DistributionJobModel testJobModel = createTestJobModel(subjectLine, emailAddresses);
 
         DistributionEvent event = new DistributionEvent(
-            CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), testJobModel, emailGlobalConfig);
+            ChannelKey.EMAIL.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), testJobModel, emailGlobalConfig);
         emailChannel.sendAuditedMessage(event);
         Mockito.verify(auditAccessor).setAuditEntrySuccess(Mockito.any());
     }
@@ -80,7 +76,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
     public void sendEmailNullGlobalTest() throws Exception {
         EmailChannelMessageParser emailChannelMessageParser = new EmailChannelMessageParser();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(null, new MessageContentGroupCsvCreator(), gson);
-        EmailChannel emailChannel = new EmailChannel(CHANNEL_KEY, gson, null, null, null, null, emailChannelMessageParser, emailAttachmentFileCreator);
+        EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null, emailChannelMessageParser, emailAttachmentFileCreator);
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
@@ -89,7 +85,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
                                              .build();
         try {
             DistributionJobModel testJobModel = createTestJobModel("Null Global Test", List.of());
-            DistributionEvent event = new DistributionEvent(CHANNEL_KEY.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), testJobModel, null);
+            DistributionEvent event = new DistributionEvent(ChannelKey.EMAIL.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), testJobModel, null);
             emailChannel.sendMessage(event);
             fail("Expected exception to be thrown for null global config");
         } catch (IntegrationException e) {

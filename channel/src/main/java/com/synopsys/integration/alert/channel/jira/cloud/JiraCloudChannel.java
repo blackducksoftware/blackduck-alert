@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -48,9 +48,9 @@ public class JiraCloudChannel extends IssueTrackerChannel {
     private final JiraCloudContextBuilder jiraCloudContextBuilder;
 
     @Autowired
-    public JiraCloudChannel(JiraCloudChannelKey jiraChannelKey, Gson gson, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager,
+    public JiraCloudChannel(Gson gson, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager,
         JiraCloudContextBuilder jiraCloudContextBuilder) {
-        super(gson, auditAccessor, jiraChannelKey, eventManager);
+        super(ChannelKey.JIRA_CLOUD, gson, auditAccessor, eventManager);
         this.jiraContentConverter = jiraContentConverter;
         this.jiraCloudContextBuilder = jiraCloudContextBuilder;
     }

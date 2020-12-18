@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
@@ -49,13 +49,10 @@ public class MsTeamsPerformanceTest {
     private final Gson gson = IntegrationPerformanceTestRunner.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
-    private static String MSTEAMS_CHANNEL_KEY;
     private static String MSTEAMS_CHANNEL_WEBHOOK;
 
     @BeforeAll
     public static void initTest() {
-        MSTEAMS_CHANNEL_KEY = new MsTeamsKey().getUniversalKey();
-
         TestProperties testProperties = new TestProperties();
         MSTEAMS_CHANNEL_WEBHOOK = testProperties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK);
     }
@@ -66,12 +63,12 @@ public class MsTeamsPerformanceTest {
     public void testMsTeamsJob() throws Exception {
         AlertRequestUtility alertRequestUtility = IntegrationPerformanceTestRunner.createAlertRequestUtility(webApplicationContext);
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), MSTEAMS_CHANNEL_KEY);
+        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKey.MS_TEAMS.getUniversalKey());
         IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, configurationManager);
 
         Map<String, FieldValueModel> msTeamsJobFields = new HashMap<>();
         msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(MSTEAMS_CHANNEL_KEY), true));
+        msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(ChannelKey.MS_TEAMS.getUniversalKey()), true));
         msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(MS_TEAMS_PERFORMANCE_JOB_NAME), true));
         msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
         msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));

@@ -26,14 +26,12 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.workflow.startup.component.AlertStartupInitializer;
 import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
 
 public class AlertStartupInitializerTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();
-    private static final EmailChannelKey EMAIL_CHANNEL_KEY = new EmailChannelKey();
 
     //TODO these tests need to be re-written
 
@@ -45,7 +43,7 @@ public class AlertStartupInitializerTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
-        ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
+        ChannelDescriptor channelDescriptor = new EmailDescriptor(new EmailGlobalUIConfig(encryptionValidator), null);
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey());
         List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         List<ProviderDescriptor> providerDescriptors = List.of();
@@ -94,7 +92,7 @@ public class AlertStartupInitializerTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
-        ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
+        ChannelDescriptor channelDescriptor = new EmailDescriptor(new EmailGlobalUIConfig(encryptionValidator), null);
 
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
         List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
@@ -125,7 +123,7 @@ public class AlertStartupInitializerTest {
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
-        ChannelDescriptor channelDescriptor = new EmailDescriptor(EMAIL_CHANNEL_KEY, new EmailGlobalUIConfig(encryptionValidator), null);
+        ChannelDescriptor channelDescriptor = new EmailDescriptor(new EmailGlobalUIConfig(encryptionValidator), null);
         ConfigurationModel settingsModel = Mockito.mock(ConfigurationModel.class);
         ConfigurationFieldModel envOverrideField = Mockito.mock(ConfigurationFieldModel.class);
         ConfigurationModel slackModel = Mockito.mock(ConfigurationModel.class);

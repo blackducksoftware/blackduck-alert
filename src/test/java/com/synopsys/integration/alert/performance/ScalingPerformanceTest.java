@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.performance.utility.AlertRequestUtility;
 import com.synopsys.integration.alert.performance.utility.BlackDuckProviderService;
 import com.synopsys.integration.alert.performance.utility.ConfigurationManager;
@@ -52,15 +52,12 @@ public class ScalingPerformanceTest {
 
     private final String blackDuckProviderID = "-1";
 
-    private static String SLACK_CHANNEL_KEY;
     private static String SLACK_CHANNEL_WEBHOOK;
     private static String SLACK_CHANNEL_NAME;
     private static String SLACK_CHANNEL_USERNAME;
 
     @BeforeAll
     public static void initTest() {
-        SLACK_CHANNEL_KEY = new SlackChannelKey().getUniversalKey();
-
         TestProperties testProperties = new TestProperties();
         SLACK_CHANNEL_WEBHOOK = testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
         SLACK_CHANNEL_NAME = testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
@@ -80,7 +77,7 @@ public class ScalingPerformanceTest {
         logTimeElapsedWithMessage("Logging in took %s", startingTime, LocalDateTime.now());
 
         BlackDuckProviderService blackDuckProviderService = new BlackDuckProviderService(alertRequestUtility, gson);
-        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), SLACK_CHANNEL_KEY);
+        ConfigurationManager configurationManager = new ConfigurationManager(gson, alertRequestUtility, blackDuckProviderService.getBlackDuckProviderKey(), ChannelKey.SLACK.getUniversalKey());
 
         startingTime = LocalDateTime.now();
         // Create the Black Duck Global provider configuration
@@ -136,7 +133,7 @@ public class ScalingPerformanceTest {
             String jobName = String.format("%s #%s", SLACK_SCALING_PERFORMANCE_JOB_NAME, jobNumber);
             Map<String, FieldValueModel> slackKeyToValues = new HashMap<>();
             slackKeyToValues.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-            slackKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(SLACK_CHANNEL_KEY), true));
+            slackKeyToValues.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(ChannelKey.SLACK.getUniversalKey()), true));
             slackKeyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(jobName), true));
             slackKeyToValues.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
             slackKeyToValues.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderKey), true));

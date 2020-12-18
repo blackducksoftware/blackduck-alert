@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -68,7 +68,6 @@ public class AzureOAuthCallbackController {
     private final Logger logger = LoggerFactory.getLogger(AzureOAuthCallbackController.class);
     private final ResponseFactory responseFactory;
     private final Gson gson;
-    private final AzureBoardsChannelKey azureBoardsChannelKey;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
@@ -77,12 +76,10 @@ public class AzureOAuthCallbackController {
     private final AuthorizationManager authorizationManager;
 
     @Autowired
-    public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsChannelKey azureBoardsChannelKey,
-        AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
+    public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
         AzureRedirectUtil azureRedirectUtil, OAuthRequestValidator oAuthRequestValidator, AuthorizationManager authorizationManager) {
         this.responseFactory = responseFactory;
         this.gson = gson;
-        this.azureBoardsChannelKey = azureBoardsChannelKey;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
@@ -94,7 +91,7 @@ public class AzureOAuthCallbackController {
     @GetMapping
     public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
         logger.debug("Azure OAuth callback method called");
-        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), azureBoardsChannelKey.getUniversalKey())) {
+        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), ChannelKey.AZURE_BOARDS.getUniversalKey())) {
             logger.debug("Azure OAuth callback user does not have permission to call the controller.");
             return responseFactory.createForbiddenResponse();
         }
@@ -167,7 +164,7 @@ public class AzureOAuthCallbackController {
 
     private FieldUtility createFieldAccessor() {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(azureBoardsChannelKey, ConfigContextEnum.GLOBAL);
+        List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.AZURE_BOARDS, ConfigContextEnum.GLOBAL);
         azureChannelConfigs.stream()
             .findFirst()
             .map(ConfigurationModel::getCopyOfKeyToFieldMap)

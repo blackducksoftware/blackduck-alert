@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class JiraServerDescriptor extends ChannelDescriptor {
@@ -51,8 +51,8 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String JIRA_DESCRIPTION = "Configure the Jira Server instance that Alert will send issue updates to.";
 
     @Autowired
-    public JiraServerDescriptor(JiraServerChannelKey channelKey, JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig) {
-        super(channelKey, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
+    public JiraServerDescriptor(JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig) {
+        super(ChannelKey.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
     }
 
 }
