@@ -174,7 +174,8 @@ public class DistributionJobDetailsModelJsonAdapterTest {
 
     @Test
     public void deserializeThrowsJsonParseExceptionTest() {
-        DistributionJobDetailsModel baseModel = new Test_DistributionJobDetailsModel();
+        String testFieldValue = "a value";
+        DistributionJobDetailsModel baseModel = new Test_DistributionJobDetailsModel(testFieldValue);
         JsonElement jsonElement = gson.toJsonTree(baseModel);
         DistributionJobDetailsModelJsonAdapter deserializer = new DistributionJobDetailsModelJsonAdapter();
 
@@ -201,8 +202,16 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     }
 
     private static class Test_DistributionJobDetailsModel extends DistributionJobDetailsModel {
-        public Test_DistributionJobDetailsModel() {
-            super(new ChannelKey("unknown_channel_name_" + RandomUtils.nextInt(), "unknown") {});
+        private static final ChannelKey TEST_CHANNEL_KEY = new ChannelKey("unknown_channel_name_" + RandomUtils.nextInt(), "unknown");
+        private final String testField;
+
+        public Test_DistributionJobDetailsModel(String testField) {
+            super(TEST_CHANNEL_KEY);
+            this.testField = testField;
+        }
+
+        public String getTestField() {
+            return testField;
         }
 
     }
