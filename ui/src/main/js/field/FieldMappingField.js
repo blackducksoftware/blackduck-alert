@@ -31,6 +31,7 @@ class FieldMappingField extends Component {
         });
     }
 
+    // FIXME Verify if didMount and didUpdate are necessary now that we use text fields
     componentDidMount() {
     }
 
