@@ -136,8 +136,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
         List<JobFieldModel> jobFieldModels = new ArrayList<>(distributionJobModels.size());
         for (DistributionJobModel distributionJobModel : distributionJobModels) {
-            List<JobProviderProjectFieldModel> jobProviderProjects = JobFieldModelPopulationUtils.createJobProviderProjects(distributionJobModel);
-            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel, jobProviderProjects);
+            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
             jobFieldModels.add(jobFieldModel);
         }
 
@@ -165,8 +164,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             if (job.isPresent()) {
                 LinkedList<FieldModel> processedFieldModels = new LinkedList<>();
                 DistributionJobModel distributionJobModel = job.get();
-                List<JobProviderProjectFieldModel> jobProviderProjects = JobFieldModelPopulationUtils.createJobProviderProjects(distributionJobModel);
-                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel, jobProviderProjects);
+                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
                 for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
                     FieldModel preProcessedFieldModel = fieldModelProcessor.performBeforeDeleteAction(fieldModel);
                     processedFieldModels.add(preProcessedFieldModel);
@@ -219,8 +217,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(id);
             if (jobModel.isPresent()) {
                 DistributionJobModel previousJob = jobModel.get();
-                List<JobProviderProjectFieldModel> jobProviderProjects = JobFieldModelPopulationUtils.createJobProviderProjects(previousJob);
-                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(previousJob, jobProviderProjects);
+                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(previousJob);
 
                 Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
                 for (FieldModel previousJobFieldModel : jobFieldModel.getFieldModels()) {
@@ -325,8 +322,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         List<DistributionJobModel> distributionJobModels = jobAccessor.getJobsById(jobIdsToValidate);
         List<JobFieldModel> jobFieldModels = new LinkedList<>();
         for (DistributionJobModel distributionJobModel : distributionJobModels) {
-            List<JobProviderProjectFieldModel> jobProviderProjects = JobFieldModelPopulationUtils.createJobProviderProjects(distributionJobModel);
-            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel, jobProviderProjects);
+            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
             jobFieldModels.add(jobFieldModel);
         }
 

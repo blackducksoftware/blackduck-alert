@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultDescriptorAccessor;
@@ -252,8 +251,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testDistributionValidate() {
-        List<JobProviderProjectFieldModel> jobProviderProjects = JobFieldModelPopulationUtils.createJobProviderProjects(distributionJobModel);
-        JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel, jobProviderProjects);
+        JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
 
         Map<String, ConfigField> configFields = new HashMap<>();
         for (FieldModel singleFieldModelFromJob : jobFieldModel.getFieldModels()) {

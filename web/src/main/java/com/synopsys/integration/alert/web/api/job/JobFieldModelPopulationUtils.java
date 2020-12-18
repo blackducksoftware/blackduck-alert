@@ -67,6 +67,11 @@ public final class JobFieldModelPopulationUtils {
                    .collect(Collectors.toList());
     }
 
+    public static JobFieldModel createJobFieldModelWithDefaultProviderProjectState(DistributionJobModel jobModel) {
+        List<JobProviderProjectFieldModel> jobProviderProjects = createJobProviderProjects(jobModel);
+        return createJobFieldModel(jobModel, jobProviderProjects);
+    }
+
     public static JobFieldModel createJobFieldModel(DistributionJobModel jobModel, List<JobProviderProjectFieldModel> jobProviderProjects) {
         FieldModel providerFieldModel = new FieldModel(DEFAULT_PROVIDER_NAME, ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
         populateProviderFields(providerFieldModel, jobModel, jobProviderProjects);
