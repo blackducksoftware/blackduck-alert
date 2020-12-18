@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -60,19 +59,20 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 public final class JobFieldModelPopulationUtils {
     private static final String DEFAULT_PROVIDER_NAME = new BlackDuckProviderKey().getUniversalKey();
 
-    public static JobFieldModel createJobFieldModel(DistributionJobModel jobModel) {
+    public static List<JobProviderProjectFieldModel> createJobProviderProjects(DistributionJobModel jobModel) {
+        return Optional.ofNullable(jobModel.getProjectFilterDetails())
+                   .stream()
+                   .flatMap(List::stream)
+                   .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref(), false))
+                   .collect(Collectors.toList());
+    }
+
+    public static JobFieldModel createJobFieldModel(DistributionJobModel jobModel, List<JobProviderProjectFieldModel> jobProviderProjects) {
         FieldModel providerFieldModel = new FieldModel(DEFAULT_PROVIDER_NAME, ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
-        populateProviderFields(providerFieldModel, jobModel);
+        populateProviderFields(providerFieldModel, jobModel, jobProviderProjects);
 
         FieldModel channelFieldModel = new FieldModel(jobModel.getChannelDescriptorName(), ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
         populateChannelFields(channelFieldModel, jobModel);
-
-        // Temporary work-around
-        List<JobProviderProjectFieldModel> jobProviderProjects = Optional.ofNullable(jobModel.getProjectFilterDetails())
-                                                                     .stream()
-                                                                     .flatMap(List::stream)
-                                                                     .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref()))
-                                                                     .collect(Collectors.toList());
 
         String jobIdString = Optional.ofNullable(jobModel.getJobId())
                                  .map(UUID::toString)
@@ -80,7 +80,7 @@ public final class JobFieldModelPopulationUtils {
         return new JobFieldModel(jobIdString, Set.of(providerFieldModel, channelFieldModel), jobProviderProjects);
     }
 
-    public static void populateProviderFields(FieldModel providerFieldModel, DistributionJobModel jobModel) {
+    public static void populateProviderFields(FieldModel providerFieldModel, DistributionJobModel jobModel, List<JobProviderProjectFieldModel> jobProviderProjects) {
         String providerCommonConfigId = Optional.ofNullable(jobModel.getBlackDuckGlobalConfigId())
                                             .map(String::valueOf)
                                             .orElse(null);
@@ -97,9 +97,9 @@ public final class JobFieldModelPopulationUtils {
                 .ifPresent(pattern -> putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, pattern));
 
             // Convert to JSON for 6.4.0 while the dynamic ui still uses these as initial values on edit/copy
-            List<String> blackDuckProjectJson = jobModel.getProjectFilterDetails()
+            List<String> blackDuckProjectJson = jobProviderProjects
                                                     .stream()
-                                                    .map(BlackDuckProjectDetailsModel::toString)
+                                                    .map(JobProviderProjectFieldModel::toString)
                                                     .collect(Collectors.toList());
             if (!blackDuckProjectJson.isEmpty()) {
                 putField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, blackDuckProjectJson);

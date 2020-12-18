@@ -107,11 +107,12 @@ class TableSelectInput extends Component {
 
         const keyColumnHeader = columns.find((column) => column.isKey).header;
         const convertedValues = selectedData.map((selected) => {
-            let labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
+            const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
+            const isMissing = selected.missing !== undefined ? selected.missing : false;
             return {
                 label: labelToUse,
                 value: selected,
-                missing: false
+                missing: isMissing
             };
         });
         this.setState({
@@ -250,8 +251,15 @@ class TableSelectInput extends Component {
     }
 
     createDataList() {
-        const { data } = this.state;
-        return data.map((itemData) => Object.assign(itemData, { missing: false }));
+        const { data, selectedData } = this.state;
+        const dataList = data.map((itemData) => Object.assign(itemData, { missing: false }));
+        selectedData.forEach(selected => {
+            const missingAttribute = selected.missing;
+            if (missingAttribute !== undefined && missingAttribute) {
+                dataList.unshift(Object.assign(selected, { missing: true }));
+            }
+        });
+        return dataList;
     }
 
     createTable() {
@@ -330,10 +338,11 @@ class TableSelectInput extends Component {
         const okClicked = () => {
             const convertedValues = this.state.selectedData.map((selected) => {
                 const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
+                const isMissing = selected.missing !== undefined ? selected.missing : false;
                 return {
                     label: labelToUse,
                     value: selected,
-                    missing: false
+                    missing: isMissing
                 };
             });
             this.setState({
