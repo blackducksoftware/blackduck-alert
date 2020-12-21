@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -92,12 +93,13 @@ public class ConfigurationModelTest {
         ConfigurationModelMutable configurationModelMutable = configurationModel.createMutableCopy();
 
         assertEquals(configurationModel, configurationModelMutable);
-        assertTrue(configurationModel != configurationModelMutable);
+        assertNotSame(configurationModel, configurationModelMutable);
     }
 
     private ConfigurationModel createConfigurationModel() {
         Map<String, ConfigurationFieldModel> configuredFields = Map.of(fieldKey, configurationFieldModel);
         return new ConfigurationModel(descriptorId, configurationId, createdAt, lastUpdated, configContextEnum, configuredFields);
     }
+
 }
 

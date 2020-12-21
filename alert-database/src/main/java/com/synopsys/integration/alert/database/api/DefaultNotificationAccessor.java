@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,8 +56,6 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 @Component
 @Transactional
 public class DefaultNotificationAccessor implements NotificationAccessor {
-    private final Logger logger = LoggerFactory.getLogger(DefaultNotificationAccessor.class);
-
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
