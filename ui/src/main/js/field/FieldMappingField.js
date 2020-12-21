@@ -1,46 +1,42 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import TableDisplay from 'field/TableDisplay';
-import TextInput from "field/input/TextInput";
-import LabeledField from 'field/LabeledField';
 import { connect } from 'react-redux';
+import TableDisplay from 'field/TableDisplay';
+import TextInput from 'field/input/TextInput';
+import LabeledField from 'field/LabeledField';
 
 class FieldMappingField extends Component {
     constructor(props) {
         super(props);
 
-        this.createNewRow = this.createNewRow.bind(this)
-        this.createColumns = this.createColumns.bind(this)
-        this.onEdit = this.onEdit.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.saveModalData = this.saveModalData.bind(this)
-        this.clearModal = this.clearModal.bind(this)
-        this.onDelete = this.onDelete.bind(this)
+        this.createNewRow = this.createNewRow.bind(this);
+        this.createColumns = this.createColumns.bind(this);
+        this.onEdit = this.onEdit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.saveModalData = this.saveModalData.bind(this);
+        this.clearModal = this.clearModal.bind(this);
+        this.onDelete = this.onDelete.bind(this);
 
         this.state = ({
-            leftHandOptions: [],
-            rightHandOptions: [],
             rowKeyPair: {
                 left: '',
                 right: ''
             },
-            progress: false,
             tableData: [],
             id: 0
         });
     }
 
     // FIXME Verify if didMount and didUpdate are necessary now that we use text fields
-    componentDidMount() {
-    }
-
-    componentDidUpdate(prevProps) {
-        const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
-        const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
-        if (oldValuesEmpty && !currentValuesEmpty) {
-        }
-    }
+    // componentDidMount() {
+    // }
+    //
+    // componentDidUpdate(prevProps) {
+    //     const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
+    //     const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
+    //     if (oldValuesEmpty && !currentValuesEmpty) {
+    //     }
+    // }
 
     handleChange({ target }) {
         const { name, value } = target;
@@ -55,19 +51,22 @@ class FieldMappingField extends Component {
     createNewRow() {
         const { leftSideMapping, rightSideMapping } = this.props;
         const { left, right } = this.state.rowKeyPair;
+        const valueOptions = ['{{providerName}}', '{{projectName}}', '{{projectVersion}}', '{{componentName}}', '{{componentVersion}}'];
+
         return (
             <div>
                 <TextInput
-                    name={'left'}
+                    name="left"
                     onChange={this.handleChange}
                     label={leftSideMapping}
                     value={left}
                 />
                 <TextInput
-                    name={'right'}
+                    name="right"
                     onChange={this.handleChange}
                     label={rightSideMapping}
                     value={right}
+                    optionList={valueOptions}
                 />
             </div>
         );
@@ -99,13 +98,13 @@ class FieldMappingField extends Component {
 
     // FIXME edit adds a new row
     onEdit(selectedRow, callback) {
-        const entireRow = this.state.tableData.filter((row) => row.id == selectedRow.id)[0]
+        const entireRow = this.state.tableData.filter((row) => row.id === selectedRow.id)[0];
         this.setState({
             rowKeyPair: {
                 left: entireRow.left,
                 right: entireRow.right
             }
-        }, callback)
+        }, callback);
     }
 
     clearModal() {
@@ -120,10 +119,10 @@ class FieldMappingField extends Component {
     onDelete(configsToDelete, callback) {
         const { tableData } = this.state;
         if (configsToDelete) {
-            const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.id))
+            const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.id));
             this.setState({
                 tableData: filteredTable
-            })
+            });
         }
         callback();
     }
@@ -136,7 +135,7 @@ class FieldMappingField extends Component {
             id,
             left,
             right
-        })
+        });
 
         this.setState({
             tableData,
@@ -144,7 +143,7 @@ class FieldMappingField extends Component {
         });
 
         const { onChange, fieldKey } = this.props;
-        //TODO Function that adds content to the field model. If you want to save the data differently, modify this
+        // TODO Function that adds content to the field model. If you want to save the data differently, modify this
         onChange({
             target: {
                 name: fieldKey,
@@ -152,7 +151,7 @@ class FieldMappingField extends Component {
             }
         });
 
-        callback(true)
+        callback(true);
         return true;
     }
 
@@ -175,10 +174,10 @@ class FieldMappingField extends Component {
                 tableRefresh={false}
                 clearModalFieldState={this.clearModal}
             />
-        )
+        );
         return (
             <LabeledField field={table} {...this.props} />
-        )
+        );
     }
 }
 
@@ -195,12 +194,13 @@ FieldMappingField.propTypes = {
 FieldMappingField.defaultProps = {
     id: 'fieldMappingFieldId',
     currentConfig: {},
-    requiredRelatedFields: [],
-    newMappingTitle: 'Create new mapping',
+    newMappingTitle: 'Create new mapping'
 };
 
 const mapStateToProps = (state) => ({
     csrfToken: state.session.csrfToken
 });
 
-export default connect(mapStateToProps, null)(FieldMappingField);
+const mapDispatchToProps = (dispatch) => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FieldMappingField);
