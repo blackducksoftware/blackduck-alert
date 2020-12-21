@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtil;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtils;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
@@ -55,8 +55,7 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
     private final Gson gson;
 
     @Autowired
-    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson, DescriptorMap descriptorMap,
-        FieldValidationUtility fieldValidationUtility) {
+    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
         super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, authorizationManager, descriptorMap, fieldValidationUtility);
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.gson = gson;
@@ -75,9 +74,9 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
                     return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format(
                         "The marketplace listing of the '%s' app may not support your version of Jira. Please install the app manually or request a compatibility update. Error: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
                 }
-                createBadRequestIntegrationException(e);
+                return createBadRequestIntegrationException(e);
             }
-            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
+            boolean jiraPluginInstalled = JiraPluginCheckUtils.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
             if (!jiraPluginInstalled) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Unable to confirm Jira server successfully installed the '%s' plugin. Please verify the installation on you Jira server.", JiraConstants.JIRA_ALERT_APP_NAME));
             }

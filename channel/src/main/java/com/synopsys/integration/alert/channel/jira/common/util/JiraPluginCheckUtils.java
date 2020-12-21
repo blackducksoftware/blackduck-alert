@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
-public final class JiraPluginCheckUtil {
+public final class JiraPluginCheckUtils {
     public static boolean checkIsAppInstalledAndRetryIfNecessary(PluginManagerService pluginManagerService) throws IntegrationException, InterruptedException {
         long maxTimeForChecks = 5L;
         long checkAgain = 1L;
@@ -41,6 +41,10 @@ public final class JiraPluginCheckUtil {
             checkAgain++;
         }
         return false;
+    }
+
+    private JiraPluginCheckUtils() {
+        // This class should not be instantiated
     }
 
 }
