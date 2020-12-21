@@ -71,6 +71,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProj
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -101,6 +102,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final GlobalConfigExistsValidator globalConfigExistsValidator;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
 
+    private final ProviderProjectExistencePopulator providerProjectExistencePopulator;
+
     @Autowired
     public JobConfigActions(
         AuthorizationManager authorizationManager,
@@ -112,7 +115,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         ConfigurationFieldModelConverter modelConverter,
         GlobalConfigExistsValidator globalConfigExistsValidator,
         PKIXErrorResponseFactory pkixErrorResponseFactory,
-        DescriptorMap descriptorMap
+        DescriptorMap descriptorMap,
+        ProviderProjectExistencePopulator providerProjectExistencePopulator
     ) {
         super(authorizationManager, descriptorAccessor, descriptorMap);
         this.configurationAccessor = configurationAccessor;
@@ -122,6 +126,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.globalConfigExistsValidator = globalConfigExistsValidator;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.jobAccessor = jobAccessor;
+        this.providerProjectExistencePopulator = providerProjectExistencePopulator;
     }
 
     @Override
@@ -131,7 +136,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
         List<JobFieldModel> jobFieldModels = new ArrayList<>(distributionJobModels.size());
         for (DistributionJobModel distributionJobModel : distributionJobModels) {
-            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
+            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
             jobFieldModels.add(jobFieldModel);
         }
 
@@ -141,7 +146,15 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     @Override
     protected Optional<JobFieldModel> findJobFieldModel(UUID id) {
-        return jobAccessor.getJobById(id).map(JobFieldModelPopulationUtils::createJobFieldModel);
+        Optional<DistributionJobModel> optionalJob = jobAccessor.getJobById(id);
+        if (optionalJob.isPresent()) {
+            DistributionJobModel distributionJobModel = optionalJob.get();
+            List<JobProviderProjectFieldModel> jobProviderProjects = JobFieldModelPopulationUtils.createJobProviderProjects(distributionJobModel);
+            providerProjectExistencePopulator.populateJobProviderProjects(distributionJobModel.getBlackDuckGlobalConfigId(), jobProviderProjects);
+            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel, jobProviderProjects);
+            return Optional.of(jobFieldModel);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -151,7 +164,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             if (job.isPresent()) {
                 LinkedList<FieldModel> processedFieldModels = new LinkedList<>();
                 DistributionJobModel distributionJobModel = job.get();
-                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
+                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
                 for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
                     FieldModel preProcessedFieldModel = fieldModelProcessor.performBeforeDeleteAction(fieldModel);
                     processedFieldModels.add(preProcessedFieldModel);
@@ -183,7 +196,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             List<JobProviderProjectFieldModel> configuredProviderProjects = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of());
             DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, DateUtils.createCurrentDateTimestamp(), null);
             DistributionJobModel savedJob = jobAccessor.createJob(jobRequestModel);
-            JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
+            JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob, configuredProviderProjects);
 
             Set<FieldModel> updatedFieldModels = new HashSet<>();
             for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
@@ -204,7 +217,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
             Optional<DistributionJobModel> jobModel = jobAccessor.getJobById(id);
             if (jobModel.isPresent()) {
                 DistributionJobModel previousJob = jobModel.get();
-                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(previousJob);
+                JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(previousJob);
 
                 Map<String, FieldModel> descriptorAndContextToPreviousFieldModel = new HashMap<>();
                 for (FieldModel previousJobFieldModel : jobFieldModel.getFieldModels()) {
@@ -223,7 +236,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 List<JobProviderProjectFieldModel> configuredProviderProjects = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of());
                 DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, previousJob.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
                 DistributionJobModel savedJob = jobAccessor.updateJob(previousJob.getJobId(), jobRequestModel);
-                JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob);
+                JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob, configuredProviderProjects);
 
                 Set<FieldModel> updatedFieldModels = new HashSet<>();
                 for (FieldModel fieldModel : savedJobFieldModel.getFieldModels()) {
@@ -309,7 +322,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         List<DistributionJobModel> distributionJobModels = jobAccessor.getJobsById(jobIdsToValidate);
         List<JobFieldModel> jobFieldModels = new LinkedList<>();
         for (DistributionJobModel distributionJobModel : distributionJobModels) {
-            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
+            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
             jobFieldModels.add(jobFieldModel);
         }
 

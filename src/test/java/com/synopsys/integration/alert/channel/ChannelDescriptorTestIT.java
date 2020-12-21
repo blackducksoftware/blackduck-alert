@@ -251,7 +251,7 @@ public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testDistributionValidate() {
-        JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(distributionJobModel);
+        JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
 
         Map<String, ConfigField> configFields = new HashMap<>();
         for (FieldModel singleFieldModelFromJob : jobFieldModel.getFieldModels()) {

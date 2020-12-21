@@ -265,7 +265,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             bdFieldModel.setId(providerId);
         }
 
-        return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel), List.of(new JobProviderProjectFieldModel("project", "href")));
+        return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel), List.of(new JobProviderProjectFieldModel("project", "href", false)));
     }
 
 }
