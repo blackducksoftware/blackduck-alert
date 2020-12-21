@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -91,7 +91,7 @@ public class AzureOAuthCallbackController {
     @GetMapping
     public ResponseEntity<String> oauthCallback(HttpServletRequest request) {
         logger.debug("Azure OAuth callback method called");
-        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), ChannelKey.AZURE_BOARDS.getUniversalKey())) {
+        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL.name(), ChannelKeys.AZURE_BOARDS.getUniversalKey())) {
             logger.debug("Azure OAuth callback user does not have permission to call the controller.");
             return responseFactory.createForbiddenResponse();
         }
@@ -164,7 +164,7 @@ public class AzureOAuthCallbackController {
 
     private FieldUtility createFieldAccessor() {
         Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.AZURE_BOARDS, ConfigContextEnum.GLOBAL);
+        List<ConfigurationModel> azureChannelConfigs = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.AZURE_BOARDS, ConfigContextEnum.GLOBAL);
         azureChannelConfigs.stream()
             .findFirst()
             .map(ConfigurationModel::getCopyOfKeyToFieldMap)

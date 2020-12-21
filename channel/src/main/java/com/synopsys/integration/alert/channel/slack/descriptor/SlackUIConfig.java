@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.URLInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class SlackUIConfig extends ChannelDistributionUIConfig {
@@ -43,7 +43,7 @@ public class SlackUIConfig extends ChannelDistributionUIConfig {
     private static final String SLACK_CHANNEL_USERNAME_DESCRIPTION = "The username to show as the message sender in the Slack channel.";
 
     public SlackUIConfig() {
-        super(ChannelKey.SLACK, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL);
+        super(ChannelKeys.SLACK, SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL);
     }
 
     @Override

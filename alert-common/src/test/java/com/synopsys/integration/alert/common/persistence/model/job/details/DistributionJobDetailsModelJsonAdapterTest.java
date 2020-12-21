@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 public class DistributionJobDetailsModelJsonAdapterTest {
     private final Gson gson = new Gson();
@@ -96,7 +97,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     public void deserializeAzureBoardsJobDetailsModelTest() {
         AzureBoardsJobDetailsModel baseModel = new AzureBoardsJobDetailsModel(true, "project name", "task", "none", "alt");
 
-        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKey.AZURE_BOARDS)));
+        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.AZURE_BOARDS)));
 
         AzureBoardsJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.AZURE);
         assertEquals(baseModel.isAddComments(), jobDetails.isAddComments());
@@ -110,7 +111,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     public void deserializeEmailJobDetailsModelTest() {
         EmailJobDetailsModel baseModel = new EmailJobDetailsModel("alert subject", false, true, null, List.of("email 1", "email 2"));
 
-        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKey.EMAIL)));
+        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.EMAIL)));
 
         EmailJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.EMAIL);
         assertEquals(baseModel.getSubjectLine(), jobDetails.getSubjectLine());
@@ -124,7 +125,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     public void deserializeJiraCloudJobDetailsModelTest() {
         JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(true, "unknown", "JIRA-X", "bug", "done", "undone", List.of());
 
-        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKey.JIRA_CLOUD)));
+        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.JIRA_CLOUD)));
 
         JiraCloudJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.JIRA_CLOUD);
         assertEquals(baseModel.isAddComments(), jobDetails.isAddComments());
@@ -139,7 +140,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     public void deserializeJiraServerJobDetailsModelTest() {
         JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of());
 
-        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKey.JIRA_SERVER)));
+        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.JIRA_SERVER)));
 
         JiraServerJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.JIRA_SERVER);
         assertEquals(baseModel.isAddComments(), jobDetails.isAddComments());
@@ -154,7 +155,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     public void deserializeMSTeamsJobDetailsModelTest() {
         MSTeamsJobDetailsModel baseModel = new MSTeamsJobDetailsModel("webhook_url");
 
-        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKey.MS_TEAMS)));
+        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.MS_TEAMS)));
 
         MSTeamsJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.MS_TEAMS);
         assertEquals(baseModel.getWebhook(), jobDetails.getWebhook());
@@ -164,7 +165,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     public void deserializeSlackJobDetailsModelTest() {
         SlackJobDetailsModel baseModel = new SlackJobDetailsModel("slack_webhook_url", "a-cool-channel", "Channel Tester");
 
-        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKey.SLACK)));
+        DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.SLACK)));
 
         SlackJobDetailsModel jobDetails = deserializedModel.getAs(DistributionJobDetailsModel.SLACK);
         assertEquals(baseModel.getWebhook(), jobDetails.getWebhook());

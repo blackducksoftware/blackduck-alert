@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class MsTeamsDescriptor extends ChannelDescriptor {
@@ -38,7 +38,7 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
 
     @Autowired
     public MsTeamsDescriptor(MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig) {
-        super(ChannelKey.MS_TEAMS, msTeamsUIConfig, msTeamsGlobalUIConfig);
+        super(ChannelKeys.MS_TEAMS, msTeamsUIConfig, msTeamsGlobalUIConfig);
     }
 
 }

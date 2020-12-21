@@ -23,8 +23,6 @@
 package com.synopsys.integration.alert.channel.jira.cloud;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +34,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class JiraCloudPropertiesFactory {
@@ -74,7 +72,7 @@ public class JiraCloudPropertiesFactory {
         String accessToken = fieldAccessToken.getValue().orElse("");
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.JIRA_CLOUD, ConfigContextEnum.GLOBAL)
+            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.JIRA_CLOUD, ConfigContextEnum.GLOBAL)
                        .stream()
                        .findFirst()
                        .flatMap(configurationModel -> configurationModel.getField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN))

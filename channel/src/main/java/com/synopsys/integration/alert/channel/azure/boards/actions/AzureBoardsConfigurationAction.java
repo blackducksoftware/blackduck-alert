@@ -26,14 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class AzureBoardsConfigurationAction extends ConfigurationAction {
     @Autowired
     protected AzureBoardsConfigurationAction(AzureBoardsDistributionTestAction azureBoardsDistributionTestAction, AzureBoardsGlobalTestAction azureBoardsGlobalTestAction,
         AzureBoardsGlobalApiAction azureBoardsGlobalApiAction) {
-        super(ChannelKey.AZURE_BOARDS);
+        super(ChannelKeys.AZURE_BOARDS);
         addGlobalTestAction(azureBoardsGlobalTestAction);
         addGlobalApiAction(azureBoardsGlobalApiAction);
         addDistributionTestAction(azureBoardsDistributionTestAction);

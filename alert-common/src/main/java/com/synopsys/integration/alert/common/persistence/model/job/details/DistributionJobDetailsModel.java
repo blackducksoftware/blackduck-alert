@@ -28,6 +28,7 @@ import java.util.Map;
 import com.google.gson.annotations.JsonAdapter;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @JsonAdapter(DistributionJobDetailsModelJsonAdapter.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
@@ -41,12 +42,12 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
     private static final Map<ChannelKey, Class<? extends DistributionJobDetailsModel>> detailsModels = new HashMap<>();
 
     static {
-        detailsModels.put(ChannelKey.AZURE_BOARDS, AZURE);
-        detailsModels.put(ChannelKey.EMAIL, EMAIL);
-        detailsModels.put(ChannelKey.JIRA_CLOUD, JIRA_CLOUD);
-        detailsModels.put(ChannelKey.JIRA_SERVER, JIRA_SERVER);
-        detailsModels.put(ChannelKey.MS_TEAMS, MS_TEAMS);
-        detailsModels.put(ChannelKey.SLACK, SLACK);
+        detailsModels.put(ChannelKeys.AZURE_BOARDS, AZURE);
+        detailsModels.put(ChannelKeys.EMAIL, EMAIL);
+        detailsModels.put(ChannelKeys.JIRA_CLOUD, JIRA_CLOUD);
+        detailsModels.put(ChannelKeys.JIRA_SERVER, JIRA_SERVER);
+        detailsModels.put(ChannelKeys.MS_TEAMS, MS_TEAMS);
+        detailsModels.put(ChannelKeys.SLACK, SLACK);
     }
 
     public static Class<? extends DistributionJobDetailsModel> getConcreteClass(ChannelKey channelKey) {

@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
@@ -71,7 +71,7 @@ public class SlackChannelTest extends AbstractChannelTest {
             properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME)
         );
-        DistributionEvent event = new DistributionEvent(ChannelKey.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
+        DistributionEvent event = new DistributionEvent(ChannelKeys.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -345,7 +345,7 @@ public class SlackChannelTest extends AbstractChannelTest {
             "",
             "ChannelUsername"
         );
-        DistributionEvent event = new DistributionEvent(ChannelKey.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
+        DistributionEvent event = new DistributionEvent(ChannelKeys.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
         try {
             request = slackChannel.createRequests(event);
             fail();
@@ -358,7 +358,7 @@ public class SlackChannelTest extends AbstractChannelTest {
             "",
             "ChannelUsername"
         );
-        event = new DistributionEvent(ChannelKey.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
+        event = new DistributionEvent(ChannelKeys.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
 
         try {
             request = slackChannel.createRequests(event);
@@ -384,7 +384,7 @@ public class SlackChannelTest extends AbstractChannelTest {
             "ChannelUsername"
         );
 
-        DistributionEvent event = new DistributionEvent(ChannelKey.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
+        DistributionEvent event = new DistributionEvent(ChannelKeys.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
 
         slackChannel.sendMessage(event);
 
@@ -404,7 +404,7 @@ public class SlackChannelTest extends AbstractChannelTest {
             "ChannelUsername"
         );
 
-        DistributionEvent event = new DistributionEvent(ChannelKey.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), new MessageContentGroup(), testJobModel, null);
+        DistributionEvent event = new DistributionEvent(ChannelKeys.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), new MessageContentGroup(), testJobModel, null);
         SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         List<Request> requests = slackChannel.createRequests(event);
         assertTrue(requests.isEmpty(), "Expected no requests to be created");

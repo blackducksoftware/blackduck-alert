@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
@@ -45,7 +45,7 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Autowired
     public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig) {
-        super(ChannelKey.EMAIL, emailDistributionUIConfig, emailGlobalUIConfig);
+        super(ChannelKeys.EMAIL, emailDistributionUIConfig, emailGlobalUIConfig);
     }
 
 }

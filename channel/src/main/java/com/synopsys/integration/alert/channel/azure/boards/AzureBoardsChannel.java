@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -63,7 +63,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     public AzureBoardsChannel(Gson gson, AuditAccessor auditAccessor, EventManager eventManager, ProxyManager proxyManager,
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser,
         AzureRedirectUtil azureRedirectUtil) {
-        super(ChannelKey.AZURE_BOARDS, gson, auditAccessor, eventManager);
+        super(ChannelKeys.AZURE_BOARDS, gson, auditAccessor, eventManager);
         this.proxyManager = proxyManager;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureBoardsRequestCreator = azureBoardsRequestCreator;

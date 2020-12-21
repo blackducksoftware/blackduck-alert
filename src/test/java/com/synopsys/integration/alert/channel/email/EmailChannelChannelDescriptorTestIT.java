@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
@@ -93,7 +93,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
         Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
-        return Optional.of(configurationAccessor.createConfiguration(ChannelKey.EMAIL, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
+        return Optional.of(configurationAccessor.createConfiguration(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
     }
 
     @Override
@@ -120,7 +120,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
                                                    .orElseThrow(() -> new AlertRuntimeException("Missing Email global config"));
 
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
-        DistributionEvent event = new DistributionEvent(ChannelKey.EMAIL.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
+        DistributionEvent event = new DistributionEvent(ChannelKeys.EMAIL.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
             MessageContentGroup.singleton(content), distributionJobModel, emailGlobalConfig);
         return event;
     }
@@ -175,12 +175,12 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
     @Override
     public FieldModel createTestConfigDestination() {
-        return createFieldModel(ChannelKey.EMAIL.getUniversalKey(), DEFAULT_TEST_EMAIL_ADDRESS);
+        return createFieldModel(ChannelKeys.EMAIL.getUniversalKey(), DEFAULT_TEST_EMAIL_ADDRESS);
     }
 
     @Override
     public String getEventDestinationName() {
-        return ChannelKey.EMAIL.getUniversalKey();
+        return ChannelKeys.EMAIL.getUniversalKey();
     }
 
     @Override

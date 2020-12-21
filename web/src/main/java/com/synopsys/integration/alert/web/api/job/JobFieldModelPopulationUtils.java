@@ -57,7 +57,7 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldMappingFieldMode
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 public final class JobFieldModelPopulationUtils {
     private static final String DEFAULT_PROVIDER_NAME = new BlackDuckProviderKey().getUniversalKey();
@@ -130,17 +130,17 @@ public final class JobFieldModelPopulationUtils {
         putField(channelFieldModel, ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
 
         DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
-        if (jobDetails.isA(ChannelKey.AZURE_BOARDS)) {
+        if (jobDetails.isA(ChannelKeys.AZURE_BOARDS)) {
             populateAzureBoardsFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.AZURE));
-        } else if (jobDetails.isA(ChannelKey.EMAIL)) {
+        } else if (jobDetails.isA(ChannelKeys.EMAIL)) {
             populateEmailFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.EMAIL));
-        } else if (jobDetails.isA(ChannelKey.JIRA_CLOUD)) {
+        } else if (jobDetails.isA(ChannelKeys.JIRA_CLOUD)) {
             populateJiraCloudFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD), fieldMappings);
-        } else if (jobDetails.isA(ChannelKey.JIRA_SERVER)) {
+        } else if (jobDetails.isA(ChannelKeys.JIRA_SERVER)) {
             populateJiraServerFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER), fieldMappings);
-        } else if (jobDetails.isA(ChannelKey.MS_TEAMS)) {
+        } else if (jobDetails.isA(ChannelKeys.MS_TEAMS)) {
             populateMSTeamsField(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.MS_TEAMS));
-        } else if (jobDetails.isA(ChannelKey.SLACK)) {
+        } else if (jobDetails.isA(ChannelKeys.SLACK)) {
             populateSlackFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.SLACK));
         }
     }
@@ -214,9 +214,9 @@ public final class JobFieldModelPopulationUtils {
     private static List<JobFieldMappingFieldModel> extractFieldMappings(DistributionJobModel jobModel) {
         DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
         List<JiraJobCustomFieldModel> jiraCustomFields;
-        if (jobDetails.isA(ChannelKey.JIRA_CLOUD)) {
+        if (jobDetails.isA(ChannelKeys.JIRA_CLOUD)) {
             jiraCustomFields = jobDetails.getAs(JiraCloudJobDetailsModel.class).getCustomFields();
-        } else if (jobDetails.isA(ChannelKey.JIRA_SERVER)) {
+        } else if (jobDetails.isA(ChannelKeys.JIRA_SERVER)) {
             jiraCustomFields = jobDetails.getAs(JiraServerJobDetailsModel.class).getCustomFields();
         } else {
             return List.of();

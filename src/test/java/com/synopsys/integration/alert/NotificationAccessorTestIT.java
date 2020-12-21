@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -156,10 +156,10 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
     @Test
     public void testFindAllWithSearchEmpty() {
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, false);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKeys.EMAIL.getUniversalKey(), pageRequest, false);
         assertTrue(all.isEmpty());
 
-        all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, true);
+        all = notificationManager.findAllWithSearch(ChannelKeys.EMAIL.getUniversalKey(), pageRequest, true);
         assertTrue(all.isEmpty());
     }
 
@@ -169,7 +169,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
         notificationContent = notificationContentRepository.save(notificationContent);
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, false);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKeys.EMAIL.getUniversalKey(), pageRequest, false);
         // Search term should not match anything in the saved notifications
         assertTrue(all.isEmpty());
 
@@ -199,7 +199,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
         notificationContent = notificationContentRepository.save(notificationContent);
 
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(null, "job_name", true, FrequencyType.REAL_TIME.name(), ProcessingType.DEFAULT.name(), ChannelKey.EMAIL.getUniversalKey(), currentTime, null);
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(null, "job_name", true, FrequencyType.REAL_TIME.name(), ProcessingType.DEFAULT.name(), ChannelKeys.EMAIL.getUniversalKey(), currentTime, null);
         DistributionJobEntity savedJob = distributionJobRepository.save(distributionJobEntity);
 
         final String auditStatus = "audit status thing";
@@ -210,7 +210,7 @@ public class NotificationAccessorTestIT extends AlertIntegrationTest {
         auditNotificationRepository.save(auditNotificationRelation);
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKey.EMAIL.getUniversalKey(), pageRequest, false);
+        Page<AlertNotificationModel> all = notificationManager.findAllWithSearch(ChannelKeys.EMAIL.getUniversalKey(), pageRequest, false);
         // Search term should match the channel name
         assertFalse(all.isEmpty());
     }

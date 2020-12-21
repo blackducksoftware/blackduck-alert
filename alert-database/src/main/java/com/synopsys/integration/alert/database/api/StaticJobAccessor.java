@@ -73,6 +73,7 @@ import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEnti
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -228,22 +229,22 @@ public class StaticJobAccessor implements JobAccessor {
         savedJobEntity.setBlackDuckJobDetails(savedBlackDuckJobDetails);
 
         DistributionJobDetailsModel distributionJobDetails = requestModel.getDistributionJobDetails();
-        if (distributionJobDetails.isA(ChannelKey.AZURE_BOARDS)) {
+        if (distributionJobDetails.isA(ChannelKeys.AZURE_BOARDS)) {
             AzureBoardsJobDetailsEntity savedAzureBoardsJobDetails = azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.AZURE));
             savedJobEntity.setAzureBoardsJobDetails(savedAzureBoardsJobDetails);
-        } else if (distributionJobDetails.isA(ChannelKey.EMAIL)) {
+        } else if (distributionJobDetails.isA(ChannelKeys.EMAIL)) {
             EmailJobDetailsEntity savedEmailJobDetails = emailJobDetailsAccessor.saveEmailJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.EMAIL));
             savedJobEntity.setEmailJobDetails(savedEmailJobDetails);
-        } else if (distributionJobDetails.isA(ChannelKey.JIRA_CLOUD)) {
+        } else if (distributionJobDetails.isA(ChannelKeys.JIRA_CLOUD)) {
             JiraCloudJobDetailsEntity savedJiraCloudJobDetails = jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD));
             savedJobEntity.setJiraCloudJobDetails(savedJiraCloudJobDetails);
-        } else if (distributionJobDetails.isA(ChannelKey.JIRA_SERVER)) {
+        } else if (distributionJobDetails.isA(ChannelKeys.JIRA_SERVER)) {
             JiraServerJobDetailsEntity savedJiraServerJobDetails = jiraServerJobDetailsAccessor.saveJiraServerJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER));
             savedJobEntity.setJiraServerJobDetails(savedJiraServerJobDetails);
-        } else if (distributionJobDetails.isA(ChannelKey.MS_TEAMS)) {
+        } else if (distributionJobDetails.isA(ChannelKeys.MS_TEAMS)) {
             MSTeamsJobDetailsEntity savedMSTeamsJobDetails = msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.MS_TEAMS));
             savedJobEntity.setMsTeamsJobDetails(savedMSTeamsJobDetails);
-        } else if (distributionJobDetails.isA(ChannelKey.SLACK)) {
+        } else if (distributionJobDetails.isA(ChannelKeys.SLACK)) {
             SlackJobDetailsEntity savedSlackJobDetails = slackJobDetailsAccessor.saveSlackJobDetails(savedJobId, distributionJobDetails.getAs(DistributionJobDetailsModel.SLACK));
             savedJobEntity.setSlackJobDetails(savedSlackJobDetails);
         }
@@ -254,8 +255,8 @@ public class StaticJobAccessor implements JobAccessor {
     private DistributionJobModel convertToDistributionJobModel(DistributionJobEntity jobEntity) {
         UUID jobId = jobEntity.getJobId();
         DistributionJobDetailsModel distributionJobDetailsModel = null;
-        ChannelKey channelKey = ChannelKey.getChannelKey(jobEntity.getChannelDescriptorName());
-        if (ChannelKey.AZURE_BOARDS.equals(channelKey)) {
+        ChannelKey channelKey = ChannelKeys.getChannelKey(jobEntity.getChannelDescriptorName());
+        if (ChannelKeys.AZURE_BOARDS.equals(channelKey)) {
             AzureBoardsJobDetailsEntity jobDetails = jobEntity.getAzureBoardsJobDetails();
             distributionJobDetailsModel = new AzureBoardsJobDetailsModel(
                 jobDetails.getAddComments(),
@@ -264,7 +265,7 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getWorkItemCompletedState(),
                 jobDetails.getWorkItemReopenState()
             );
-        } else if (ChannelKey.EMAIL.equals(channelKey)) {
+        } else if (ChannelKeys.EMAIL.equals(channelKey)) {
             EmailJobDetailsEntity jobDetails = jobEntity.getEmailJobDetails();
             List<String> additionalEmailAddresses = jobDetails.getEmailJobAdditionalEmailAddresses()
                                                         .stream()
@@ -277,7 +278,7 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getAttachmentFileType(),
                 additionalEmailAddresses
             );
-        } else if (ChannelKey.JIRA_CLOUD.equals(channelKey)) {
+        } else if (ChannelKeys.JIRA_CLOUD.equals(channelKey)) {
             JiraCloudJobDetailsEntity jobDetails = jobEntity.getJiraCloudJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
                                                              .stream()
@@ -292,7 +293,7 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getReopenTransition(),
                 customFields
             );
-        } else if (ChannelKey.JIRA_SERVER.equals(channelKey)) {
+        } else if (ChannelKeys.JIRA_SERVER.equals(channelKey)) {
             JiraServerJobDetailsEntity jobDetails = jobEntity.getJiraServerJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
                                                              .stream()
@@ -307,10 +308,10 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getReopenTransition(),
                 customFields
             );
-        } else if (ChannelKey.MS_TEAMS.equals(channelKey)) {
+        } else if (ChannelKeys.MS_TEAMS.equals(channelKey)) {
             MSTeamsJobDetailsEntity jobDetails = jobEntity.getMsTeamsJobDetails();
             distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobDetails.getWebhook());
-        } else if (ChannelKey.SLACK.equals(channelKey)) {
+        } else if (ChannelKeys.SLACK.equals(channelKey)) {
             SlackJobDetailsEntity slackJobDetails = jobEntity.getSlackJobDetails();
             distributionJobDetailsModel = new SlackJobDetailsModel(
                 slackJobDetails.getWebhook(),

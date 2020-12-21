@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
@@ -208,7 +208,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             "name",
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
-            ChannelKey.SLACK.getUniversalKey(),
+            ChannelKeys.SLACK.getUniversalKey(),
             blackDuckGlobalConfigId,
             false,
             null,
@@ -221,7 +221,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     private JobFieldModel createTestJobFieldModel(String channelId, String providerId, ConfigurationModel providerGlobalConfig) {
-        String descriptorName = ChannelKey.SLACK.getUniversalKey();
+        String descriptorName = ChannelKeys.SLACK.getUniversalKey();
         String context = ConfigContextEnum.DISTRIBUTION.name();
 
         FieldValueModel providerConfigField = new FieldValueModel(List.of(providerGlobalConfig.getConfigurationId().toString()), true);

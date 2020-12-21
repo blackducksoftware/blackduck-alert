@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class JiraServerPropertiesFactory {
@@ -70,7 +70,7 @@ public class JiraServerPropertiesFactory {
         String accessToken = fieldAccessToken.getValue().orElse("");
         boolean accessTokenSet = fieldAccessToken.getIsSet();
         if (StringUtils.isBlank(accessToken) && accessTokenSet) {
-            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.JIRA_SERVER, ConfigContextEnum.GLOBAL)
+            return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.JIRA_SERVER, ConfigContextEnum.GLOBAL)
                        .stream()
                        .findFirst()
                        .flatMap(configurationModel -> configurationModel.getField(JiraServerDescriptor.KEY_SERVER_PASSWORD))

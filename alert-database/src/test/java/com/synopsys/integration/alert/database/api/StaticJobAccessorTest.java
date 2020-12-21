@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -95,7 +95,7 @@ class StaticJobAccessorTest {
             jobName,
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
-            ChannelKey.SLACK.getUniversalKey(),
+            ChannelKeys.SLACK.getUniversalKey(),
             3L,
             true,
             "*",
@@ -151,7 +151,7 @@ class StaticJobAccessorTest {
             jobName,
             FrequencyType.DAILY,
             ProcessingType.DEFAULT,
-            ChannelKey.SLACK.getUniversalKey(),
+            ChannelKeys.SLACK.getUniversalKey(),
             3L,
             true,
             "*",
@@ -317,7 +317,7 @@ class StaticJobAccessorTest {
 
     private DistributionJobEntity createSlackDistributionJobEntity(UUID jobId) {
         SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, ChannelKey.SLACK.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, ChannelKeys.SLACK.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
         distributionJobEntity.setSlackJobDetails(slackJobDetailsEntity);
         return distributionJobEntity;
     }

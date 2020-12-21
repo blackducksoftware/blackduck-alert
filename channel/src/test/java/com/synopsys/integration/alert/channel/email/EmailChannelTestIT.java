@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
@@ -67,7 +67,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         DistributionJobModel testJobModel = createTestJobModel(subjectLine, emailAddresses);
 
         DistributionEvent event = new DistributionEvent(
-            ChannelKey.EMAIL.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), testJobModel, emailGlobalConfig);
+            ChannelKeys.EMAIL.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(content), testJobModel, emailGlobalConfig);
         emailChannel.sendAuditedMessage(event);
         Mockito.verify(auditAccessor).setAuditEntrySuccess(Mockito.any());
     }
@@ -85,7 +85,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
                                              .build();
         try {
             DistributionJobModel testJobModel = createTestJobModel("Null Global Test", List.of());
-            DistributionEvent event = new DistributionEvent(ChannelKey.EMAIL.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), testJobModel, null);
+            DistributionEvent event = new DistributionEvent(ChannelKeys.EMAIL.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content), testJobModel, null);
             emailChannel.sendMessage(event);
             fail("Expected exception to be thrown for null global config");
         } catch (IntegrationException e) {

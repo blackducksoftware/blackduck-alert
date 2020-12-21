@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
@@ -37,7 +37,7 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
                                                 .distributionJobDetails(msTeamsJobDetailsModel)
                                                 .build();
 
-        DistributionEvent event = new DistributionEvent(ChannelKey.MS_TEAMS.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
+        DistributionEvent event = new DistributionEvent(ChannelKeys.MS_TEAMS.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
 
         msTeamsChannel.sendAuditedMessage(event);
 

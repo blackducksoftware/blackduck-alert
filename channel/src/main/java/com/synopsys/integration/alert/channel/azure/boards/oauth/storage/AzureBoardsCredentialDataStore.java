@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 /**
  * This class is meant to be a very basic implementation of a {@link DataStore}.<br/>
@@ -139,7 +139,7 @@ public class AzureBoardsCredentialDataStore extends AbstractDataStore<StoredCred
     }
 
     private ConfigurationModel retrieveConfiguration() {
-        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.AZURE_BOARDS, ConfigContextEnum.GLOBAL)
+        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.AZURE_BOARDS, ConfigContextEnum.GLOBAL)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertRuntimeException("No Azure Boards global configuration exists. Cannot read data store."));
