@@ -17,6 +17,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
 import JobCustomMessageModal from 'dynamic/JobCustomMessageModal';
 import StatusMessage from 'field/StatusMessage';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const KEY_ENABLED = 'channel.common.enabled';
 export const KEY_NAME = 'channel.common.name';
@@ -53,16 +54,18 @@ class DistributionConfiguration extends Component {
             providerConfig: {},
             configuredProviderProjects: [],
             currentChannel: defaultDescriptor,
-            currentProvider: {}
+            currentProvider: {},
+            loading: false
         };
-        this.loading = false;
     }
 
     componentDidMount() {
         const { jobId, getDistribution } = this.props;
         getDistribution(jobId);
         if (jobId) {
-            this.loading = true;
+            this.setState({
+                loading: true
+            })
         }
     }
 
@@ -77,8 +80,7 @@ class DistributionConfiguration extends Component {
         }
 
         if (!fetching && !inProgress) {
-            if (this.loading) {
-                this.loading = false;
+            if (this.state.loading) {
                 if (job && job.fieldModels) {
                     const channelModel = job.fieldModels.find((model) => FieldModelUtilities.hasKey(model, KEY_CHANNEL_NAME));
                     const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME);
@@ -93,8 +95,13 @@ class DistributionConfiguration extends Component {
                         providerConfig: providerModel,
                         configuredProviderProjects: job.configuredProviderProjects,
                         currentChannel: newChannel,
-                        currentProvider: newProvider
+                        currentProvider: newProvider,
+                        loading: false
                     });
+                } else {
+                    this.setState({
+                        loading: false
+                    })
                 }
             }
         }
@@ -299,7 +306,7 @@ class DistributionConfiguration extends Component {
 
     render() {
         const {
-            providerConfig, channelConfig, currentProvider, currentChannel, show
+            loading, providerConfig, channelConfig, currentProvider, currentChannel, show
         } = this.state;
         const { jobModificationState, fieldErrors } = this.props;
         const selectedProvider = (currentProvider) ? currentProvider.name : null;
@@ -318,9 +325,13 @@ class DistributionConfiguration extends Component {
             >
                 <Modal size="lg" show={show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>{modalTitle}</Modal.Title>
+                        <Modal.Title>
+                            {modalTitle}&nbsp;{loading && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
+                        </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+                        {loading && 'Loading...'}
+                        {!loading &&
                         <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                             <FieldsPanel
                                 descriptorFields={commonFields}
@@ -342,7 +353,7 @@ class DistributionConfiguration extends Component {
                                 />
                             )}
                             {currentChannel && selectedProvider && this.renderProviderForm()}
-                        </form>
+                        </form>}
                     </Modal.Body>
                 </Modal>
             </div>
