@@ -28,6 +28,10 @@ import java.util.Map;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 public final class AlertFieldStatusConverter {
+    private AlertFieldStatusConverter() {
+        // This class should not be instantiated
+    }
+
     public static Map<String, AlertFieldStatus> convertToMap(List<AlertFieldStatus> statusList) {
         return DataStructureUtils.mapToValues(statusList, AlertFieldStatus::getFieldName);
     }

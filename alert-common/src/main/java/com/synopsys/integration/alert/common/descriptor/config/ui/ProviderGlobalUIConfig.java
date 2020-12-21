@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -45,7 +42,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class ProviderGlobalUIConfig extends UIConfig {
     private static final String ERROR_DUPLICATE_PROVIDER_NAME = "A provider configuration with this name already exists.";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final ProviderKey providerKey;
     private final ConfigurationAccessor configurationAccessor;
 

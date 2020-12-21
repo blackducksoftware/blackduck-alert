@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class UrlUtils {
+public final class UrlUtils {
     public static String formatProviderUrl(String originalUrl) {
         String correctedUrl = "";
         if (StringUtils.isNotBlank(originalUrl)) {
@@ -35,4 +35,9 @@ public class UrlUtils {
         }
         return correctedUrl;
     }
+
+    private UrlUtils() {
+        // This class should not be instantiated
+    }
+
 }

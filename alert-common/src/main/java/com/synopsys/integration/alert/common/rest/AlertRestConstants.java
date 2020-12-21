@@ -22,10 +22,14 @@
  */
 package com.synopsys.integration.alert.common.rest;
 
-public class AlertRestConstants {
+public final class AlertRestConstants {
     public static final String BASE_PATH = "/api";
     public static final String CALLBACKS_PATH = BASE_PATH + "/callbacks";
     public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/oauth";
     public static final String CONFIGURATION_PATH = AlertRestConstants.BASE_PATH + "/configuration";
+
+    private AlertRestConstants() {
+        // This class should not be instantiated
+    }
 
 }
