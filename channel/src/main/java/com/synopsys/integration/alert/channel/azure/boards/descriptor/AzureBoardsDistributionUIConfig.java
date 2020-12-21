@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class AzureBoardsDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -47,7 +47,7 @@ public class AzureBoardsDistributionUIConfig extends ChannelDistributionUIConfig
     private static final String DESCRIPTION_WORK_ITEM_REOPEN_STATE = "The state a work item should result in if Alert receives an ADD operation and the work item is in a completed state.";
 
     public AzureBoardsDistributionUIConfig() {
-        super(ChannelKey.AZURE_BOARDS, AzureBoardsDescriptor.AZURE_BOARDS_LABEL, AzureBoardsDescriptor.AZURE_BOARDS_URL);
+        super(ChannelKeys.AZURE_BOARDS, AzureBoardsDescriptor.AZURE_BOARDS_LABEL, AzureBoardsDescriptor.AZURE_BOARDS_URL);
     }
 
     @Override

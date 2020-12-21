@@ -68,7 +68,7 @@ import com.synopsys.integration.alert.database.configuration.repository.FieldVal
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
@@ -202,7 +202,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Test
     public void getGetAuditInfoForJobIT() {
         Collection<ConfigurationFieldModel> slackFields = MockConfigurationModelFactory.createSlackDistributionFields();
-        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(ChannelKey.SLACK, ConfigContextEnum.DISTRIBUTION, slackFields);
+        ConfigurationModel configurationModel = configurationAccessor.createConfiguration(ChannelKeys.SLACK, ConfigContextEnum.DISTRIBUTION, slackFields);
         UUID jobID = UUID.randomUUID();
         ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 
@@ -271,7 +271,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
             "Test Slack Job",
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
-            ChannelKey.SLACK.getUniversalKey(),
+            ChannelKeys.SLACK.getUniversalKey(),
             providerConfigModel.getConfigurationId(),
             false,
             null,

@@ -22,13 +22,13 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 public class MSTeamsJobDetailsModel extends DistributionJobDetailsModel {
     private final String webhook;
 
     public MSTeamsJobDetailsModel(String webhook) {
-        super(ChannelKey.MS_TEAMS);
+        super(ChannelKeys.MS_TEAMS);
         this.webhook = webhook;
     }
 

@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class PasswordResetService {
@@ -71,7 +71,7 @@ public class PasswordResetService {
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
             throw new AlertException("No email address configured for user: " + username);
         }
-        ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKey.EMAIL, ConfigContextEnum.GLOBAL)
+        ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL)
                                              .stream()
                                              .findFirst()
                                              .orElseThrow(() -> new AlertException("No global email configuration found"));

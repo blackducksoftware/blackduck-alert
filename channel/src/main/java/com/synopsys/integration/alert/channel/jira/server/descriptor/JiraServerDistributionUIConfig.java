@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -51,7 +51,7 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
                                                                            + "Note: This must be in the 'To Do' status category.";
 
     public JiraServerDistributionUIConfig() {
-        super(ChannelKey.JIRA_SERVER, JiraServerDescriptor.JIRA_LABEL, JiraServerDescriptor.JIRA_URL);
+        super(ChannelKeys.JIRA_SERVER, JiraServerDescriptor.JIRA_LABEL, JiraServerDescriptor.JIRA_URL);
     }
 
     @Override

@@ -22,7 +22,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 public class SlackJobDetailsModel extends DistributionJobDetailsModel {
     private final String webhook;
@@ -30,7 +30,7 @@ public class SlackJobDetailsModel extends DistributionJobDetailsModel {
     private final String channelUsername;
 
     public SlackJobDetailsModel(String webhook, String channelName, String channelUsername) {
-        super(ChannelKey.SLACK);
+        super(ChannelKeys.SLACK);
         this.webhook = webhook;
         this.channelName = channelName;
         this.channelUsername = channelUsername;

@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
@@ -59,7 +59,7 @@ public class EmailGlobalTestActionTest {
         EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig(encryptionValidator);
         uiConfig.setConfigFields();
 
-        FieldModel fieldModel = new FieldModel(ChannelKey.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
+        FieldModel fieldModel = new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), Map.of());
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
@@ -82,7 +82,7 @@ public class EmailGlobalTestActionTest {
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), "notInt");
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "notInt");
 
-        FieldModel fieldModel = new FieldModel(ChannelKey.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
+        FieldModel fieldModel = new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
@@ -106,7 +106,7 @@ public class EmailGlobalTestActionTest {
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), "25");
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "30");
 
-        FieldModel fieldModel = new FieldModel(ChannelKey.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
+        FieldModel fieldModel = new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), fields);
         Map<String, ConfigField> configFieldMap = DataStructureUtils.mapToValues(uiConfig.getFields(), ConfigField::getKey);
         FieldValidationUtility fieldValidationAction = new FieldValidationUtility();
         List<AlertFieldStatus> fieldErrors = fieldValidationAction.validateConfig(configFieldMap, fieldModel);
@@ -216,7 +216,7 @@ public class EmailGlobalTestActionTest {
             addresses = List.of(emailAddress);
         }
 
-        String descriptorName = ChannelKey.EMAIL.getUniversalKey();
+        String descriptorName = ChannelKeys.EMAIL.getUniversalKey();
         String context = ConfigContextEnum.GLOBAL.name();
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(TestAction.KEY_DESTINATION_NAME, new FieldValueModel(addresses, false));

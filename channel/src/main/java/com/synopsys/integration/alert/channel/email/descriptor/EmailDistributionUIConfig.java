@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validation.
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
@@ -58,7 +58,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     private static final String DESCRIPTION_ATTACHMENT_FORMAT = "If a file type is selected, a file of that type, representing the message content, will be attached to the email.";
 
     public EmailDistributionUIConfig() {
-        super(ChannelKey.EMAIL, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL);
+        super(ChannelKeys.EMAIL, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL);
     }
 
     @Override

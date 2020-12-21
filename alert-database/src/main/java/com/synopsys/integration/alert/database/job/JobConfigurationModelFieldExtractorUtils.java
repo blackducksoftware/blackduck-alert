@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.MSTea
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldMappingFieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Deprecated
 public class JobConfigurationModelFieldExtractorUtils {
@@ -82,8 +83,8 @@ public class JobConfigurationModelFieldExtractorUtils {
                                                              .collect(Collectors.toList());
 
         DistributionJobDetailsModel jobDetails = null;
-        ChannelKey channelKey = ChannelKey.getChannelKey(channelDescriptorName);
-        if (ChannelKey.AZURE_BOARDS.equals(channelKey)) {
+        ChannelKey channelKey = ChannelKeys.getChannelKey(channelDescriptorName);
+        if (ChannelKeys.AZURE_BOARDS.equals(channelKey)) {
             jobDetails = new AzureBoardsJobDetailsModel(
                 extractFieldValue("channel.azure.boards.work.item.comment", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
                 extractFieldValueOrEmptyString("channel.azure.boards.project", configuredFieldsMap),
@@ -91,7 +92,7 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("channel.azure.boards.work.item.completed.state", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.azure.boards.work.item.reopen.state", configuredFieldsMap)
             );
-        } else if (ChannelKey.EMAIL.equals(channelKey)) {
+        } else if (ChannelKeys.EMAIL.equals(channelKey)) {
             jobDetails = new EmailJobDetailsModel(
                 extractFieldValueOrEmptyString("email.subject.line", configuredFieldsMap),
                 extractFieldValue("project.owner.only", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
@@ -99,7 +100,7 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("email.attachment.format", configuredFieldsMap),
                 extractFieldValues("email.additional.addresses", configuredFieldsMap)
             );
-        } else if (ChannelKey.JIRA_CLOUD.equals(channelKey)) {
+        } else if (ChannelKeys.JIRA_CLOUD.equals(channelKey)) {
             jobDetails = new JiraCloudJobDetailsModel(
                 extractFieldValue("channel.jira.cloud.add.comments", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
                 extractFieldValueOrEmptyString("channel.jira.cloud.issue.creator", configuredFieldsMap),
@@ -109,7 +110,7 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("channel.jira.cloud.reopen.workflow", configuredFieldsMap),
                 jiraCustomFields
             );
-        } else if (ChannelKey.JIRA_SERVER.equals(channelKey)) {
+        } else if (ChannelKeys.JIRA_SERVER.equals(channelKey)) {
             jobDetails = new JiraServerJobDetailsModel(
                 extractFieldValue("channel.jira.server.add.comments", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
                 extractFieldValueOrEmptyString("channel.jira.server.issue.creator", configuredFieldsMap),
@@ -119,9 +120,9 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("channel.jira.server.reopen.workflow", configuredFieldsMap),
                 jiraCustomFields
             );
-        } else if (ChannelKey.MS_TEAMS.equals(channelKey)) {
+        } else if (ChannelKeys.MS_TEAMS.equals(channelKey)) {
             jobDetails = new MSTeamsJobDetailsModel(extractFieldValueOrEmptyString("channel.msteams.webhook", configuredFieldsMap));
-        } else if (ChannelKey.SLACK.equals(channelKey)) {
+        } else if (ChannelKeys.SLACK.equals(channelKey)) {
             jobDetails = new SlackJobDetailsModel(
                 extractFieldValueOrEmptyString("channel.slack.webhook", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.slack.channel.name", configuredFieldsMap),

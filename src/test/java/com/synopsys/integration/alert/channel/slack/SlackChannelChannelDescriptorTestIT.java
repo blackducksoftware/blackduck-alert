@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.rest.RestConstants;
@@ -82,7 +82,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
         DistributionEvent event = new DistributionEvent(
-            ChannelKey.SLACK.getUniversalKey(),
+            ChannelKeys.SLACK.getUniversalKey(),
             createdAt,
             1L,
             ProcessingType.DEFAULT.name(),
@@ -117,12 +117,12 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
     @Override
     public FieldModel createTestConfigDestination() {
-        return createFieldModel(ChannelKey.SLACK.getUniversalKey(), "");
+        return createFieldModel(ChannelKeys.SLACK.getUniversalKey(), "");
     }
 
     @Override
     public String getEventDestinationName() {
-        return ChannelKey.SLACK.getUniversalKey();
+        return ChannelKeys.SLACK.getUniversalKey();
     }
 
     @Override

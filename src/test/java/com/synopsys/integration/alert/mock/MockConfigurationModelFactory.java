@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
@@ -40,7 +40,7 @@ public class MockConfigurationModelFactory {
         fields.add(username);
         fields.add(webhook);
 
-        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", ChannelKey.SLACK.getUniversalKey());
+        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", ChannelKeys.SLACK.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
     }
@@ -62,7 +62,7 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", ChannelKey.EMAIL.getUniversalKey());
+        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", ChannelKeys.EMAIL.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
     }
@@ -78,7 +78,7 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", ChannelKey.EMAIL.getUniversalKey());
+        Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", ChannelKeys.EMAIL.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
     }

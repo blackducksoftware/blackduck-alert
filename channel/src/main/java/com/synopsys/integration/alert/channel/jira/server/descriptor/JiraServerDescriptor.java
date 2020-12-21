@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class JiraServerDescriptor extends ChannelDescriptor {
@@ -52,7 +52,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
 
     @Autowired
     public JiraServerDescriptor(JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig) {
-        super(ChannelKey.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
+        super(ChannelKeys.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
     }
 
 }
