@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -39,22 +40,22 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldMappingFieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Deprecated
 public class JobConfigurationModelFieldExtractorUtils {
-    /**
-     * This will not properly assign {@link BlackDuckProjectDetailsModel}
-     */
     public static DistributionJobModel convertToDistributionJobModel(
         UUID jobId,
         Map<String, ConfigurationFieldModel> configuredFieldsMap,
         OffsetDateTime createdAt,
         @Nullable OffsetDateTime lastUpdated,
-        List<BlackDuckProjectDetailsModel> projectFilterDetails
+        List<BlackDuckProjectDetailsModel> projectFilterDetails,
+        List<JobFieldMappingFieldModel> fieldMappings
     ) {
         String channelDescriptorName = extractFieldValueOrEmptyString("channel.common.channel.name", configuredFieldsMap);
         DistributionJobModelBuilder builder = DistributionJobModel.builder()
@@ -74,6 +75,11 @@ public class JobConfigurationModelFieldExtractorUtils {
                                                   .policyFilterPolicyNames(extractFieldValues("blackduck.policy.notification.filter", configuredFieldsMap))
                                                   .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap))
                                                   .projectFilterDetails(projectFilterDetails);
+
+        List<JiraJobCustomFieldModel> jiraCustomFields = fieldMappings
+                                                             .stream()
+                                                             .map(mapping -> new JiraJobCustomFieldModel(mapping.getFieldKey(), mapping.getFieldValue()))
+                                                             .collect(Collectors.toList());
 
         DistributionJobDetailsModel jobDetails = null;
         ChannelKey channelKey = ChannelKey.getChannelKey(channelDescriptorName);
@@ -101,8 +107,7 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("channel.jira.cloud.issue.type", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.cloud.resolve.workflow", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.cloud.reopen.workflow", configuredFieldsMap),
-                // FIXME add custom fields
-                List.of()
+                jiraCustomFields
             );
         } else if (ChannelKey.JIRA_SERVER.equals(channelKey)) {
             jobDetails = new JiraServerJobDetailsModel(
@@ -112,8 +117,7 @@ public class JobConfigurationModelFieldExtractorUtils {
                 extractFieldValueOrEmptyString("channel.jira.server.issue.type", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.server.resolve.workflow", configuredFieldsMap),
                 extractFieldValueOrEmptyString("channel.jira.server.reopen.workflow", configuredFieldsMap),
-                // FIXME add custom fields
-                List.of()
+                jiraCustomFields
             );
         } else if (ChannelKey.MS_TEAMS.equals(channelKey)) {
             jobDetails = new MSTeamsJobDetailsModel(extractFieldValueOrEmptyString("channel.msteams.webhook", configuredFieldsMap));

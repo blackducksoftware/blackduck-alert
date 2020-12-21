@@ -79,7 +79,7 @@ public final class JobFieldModelPopulationUtils {
         FieldModel providerFieldModel = new FieldModel(DEFAULT_PROVIDER_NAME, ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
         populateProviderFields(providerFieldModel, jobModel, jobProviderProjects);
 
-        List<JobFieldMappingFieldModel> fieldMappings = retrieveFieldMappings(jobModel);
+        List<JobFieldMappingFieldModel> fieldMappings = extractFieldMappings(jobModel);
 
         FieldModel channelFieldModel = new FieldModel(jobModel.getChannelDescriptorName(), ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
         populateChannelFields(channelFieldModel, jobModel, fieldMappings);
@@ -211,7 +211,7 @@ public final class JobFieldModelPopulationUtils {
         }
     }
 
-    private static List<JobFieldMappingFieldModel> retrieveFieldMappings(DistributionJobModel jobModel) {
+    private static List<JobFieldMappingFieldModel> extractFieldMappings(DistributionJobModel jobModel) {
         DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
         List<JiraJobCustomFieldModel> jiraCustomFields;
         if (jobDetails.isA(ChannelKey.JIRA_CLOUD)) {
