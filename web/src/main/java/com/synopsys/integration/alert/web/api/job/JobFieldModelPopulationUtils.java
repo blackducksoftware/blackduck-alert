@@ -46,11 +46,14 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldMappingFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -76,13 +79,15 @@ public final class JobFieldModelPopulationUtils {
         FieldModel providerFieldModel = new FieldModel(DEFAULT_PROVIDER_NAME, ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
         populateProviderFields(providerFieldModel, jobModel, jobProviderProjects);
 
+        List<JobFieldMappingFieldModel> fieldMappings = extractFieldMappings(jobModel);
+
         FieldModel channelFieldModel = new FieldModel(jobModel.getChannelDescriptorName(), ConfigContextEnum.DISTRIBUTION.name(), new HashMap<>());
-        populateChannelFields(channelFieldModel, jobModel);
+        populateChannelFields(channelFieldModel, jobModel, fieldMappings);
 
         String jobIdString = Optional.ofNullable(jobModel.getJobId())
                                  .map(UUID::toString)
                                  .orElse(null);
-        return new JobFieldModel(jobIdString, Set.of(providerFieldModel, channelFieldModel), jobProviderProjects);
+        return new JobFieldModel(jobIdString, Set.of(providerFieldModel, channelFieldModel), jobProviderProjects, fieldMappings);
     }
 
     public static void populateProviderFields(FieldModel providerFieldModel, DistributionJobModel jobModel, List<JobProviderProjectFieldModel> jobProviderProjects) {
@@ -101,14 +106,7 @@ public final class JobFieldModelPopulationUtils {
                 .filter(StringUtils::isNotBlank)
                 .ifPresent(pattern -> putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, pattern));
 
-            // Convert to JSON for 6.4.0 while the dynamic ui still uses these as initial values on edit/copy
-            List<String> blackDuckProjectJson = jobProviderProjects
-                                                    .stream()
-                                                    .map(JobProviderProjectFieldModel::toString)
-                                                    .collect(Collectors.toList());
-            if (!blackDuckProjectJson.isEmpty()) {
-                putField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, blackDuckProjectJson);
-            }
+            putJsonField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, jobProviderProjects);
         }
 
         List<String> blackDuckPolicyNames = jobModel.getPolicyFilterPolicyNames();
@@ -122,7 +120,7 @@ public final class JobFieldModelPopulationUtils {
         }
     }
 
-    public static void populateChannelFields(FieldModel channelFieldModel, DistributionJobModel jobModel) {
+    public static void populateChannelFields(FieldModel channelFieldModel, DistributionJobModel jobModel, List<JobFieldMappingFieldModel> fieldMappings) {
         String channelDescriptorName = jobModel.getChannelDescriptorName();
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_ENABLED, Boolean.toString(jobModel.isEnabled()));
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_NAME, jobModel.getName());
@@ -137,9 +135,9 @@ public final class JobFieldModelPopulationUtils {
         } else if (jobDetails.isA(ChannelKey.EMAIL)) {
             populateEmailFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.EMAIL));
         } else if (jobDetails.isA(ChannelKey.JIRA_CLOUD)) {
-            populateJiraCloudFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD));
+            populateJiraCloudFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_CLOUD), fieldMappings);
         } else if (jobDetails.isA(ChannelKey.JIRA_SERVER)) {
-            populateJiraServerFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER));
+            populateJiraServerFields(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.JIRA_SERVER), fieldMappings);
         } else if (jobDetails.isA(ChannelKey.MS_TEAMS)) {
             populateMSTeamsField(channelFieldModel, jobDetails.getAs(DistributionJobDetailsModel.MS_TEAMS));
         } else if (jobDetails.isA(ChannelKey.SLACK)) {
@@ -171,7 +169,7 @@ public final class JobFieldModelPopulationUtils {
         }
     }
 
-    private static void populateJiraCloudFields(FieldModel channelFieldModel, JiraCloudJobDetailsModel jiraCloudJobDetails) {
+    private static void populateJiraCloudFields(FieldModel channelFieldModel, JiraCloudJobDetailsModel jiraCloudJobDetails, List<JobFieldMappingFieldModel> fieldMappings) {
         if (null != jiraCloudJobDetails) {
             putField(channelFieldModel, JiraCloudDescriptor.KEY_ADD_COMMENTS, Boolean.toString(jiraCloudJobDetails.isAddComments()));
             putField(channelFieldModel, JiraCloudDescriptor.KEY_ISSUE_CREATOR, jiraCloudJobDetails.getIssueCreatorEmail());
@@ -179,10 +177,13 @@ public final class JobFieldModelPopulationUtils {
             putField(channelFieldModel, JiraCloudDescriptor.KEY_ISSUE_TYPE, jiraCloudJobDetails.getIssueType());
             putField(channelFieldModel, JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, jiraCloudJobDetails.getResolveTransition());
             putField(channelFieldModel, JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, jiraCloudJobDetails.getReopenTransition());
+
+            // FIXME add Jira Cloud field name
+            putJsonField(channelFieldModel, "FIXME", fieldMappings);
         }
     }
 
-    private static void populateJiraServerFields(FieldModel channelFieldModel, JiraServerJobDetailsModel jiraServerJobDetails) {
+    private static void populateJiraServerFields(FieldModel channelFieldModel, JiraServerJobDetailsModel jiraServerJobDetails, List<JobFieldMappingFieldModel> fieldMappings) {
         if (null != jiraServerJobDetails) {
             putField(channelFieldModel, JiraServerDescriptor.KEY_ADD_COMMENTS, Boolean.toString(jiraServerJobDetails.isAddComments()));
             putField(channelFieldModel, JiraServerDescriptor.KEY_ISSUE_CREATOR, jiraServerJobDetails.getIssueCreatorUsername());
@@ -190,6 +191,9 @@ public final class JobFieldModelPopulationUtils {
             putField(channelFieldModel, JiraServerDescriptor.KEY_ISSUE_TYPE, jiraServerJobDetails.getIssueType());
             putField(channelFieldModel, JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, jiraServerJobDetails.getResolveTransition());
             putField(channelFieldModel, JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, jiraServerJobDetails.getReopenTransition());
+
+            // FIXME add Jira Server field name
+            putJsonField(channelFieldModel, "FIXME", fieldMappings);
         }
     }
 
@@ -207,6 +211,24 @@ public final class JobFieldModelPopulationUtils {
         }
     }
 
+    private static List<JobFieldMappingFieldModel> extractFieldMappings(DistributionJobModel jobModel) {
+        DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
+        List<JiraJobCustomFieldModel> jiraCustomFields;
+        if (jobDetails.isA(ChannelKey.JIRA_CLOUD)) {
+            jiraCustomFields = jobDetails.getAs(JiraCloudJobDetailsModel.class).getCustomFields();
+        } else if (jobDetails.isA(ChannelKey.JIRA_SERVER)) {
+            jiraCustomFields = jobDetails.getAs(JiraServerJobDetailsModel.class).getCustomFields();
+        } else {
+            return List.of();
+        }
+
+        return Optional.ofNullable(jiraCustomFields)
+                   .stream()
+                   .flatMap(List::stream)
+                   .map(jiraCustomField -> new JobFieldMappingFieldModel(jiraCustomField.getFieldName(), jiraCustomField.getFieldValue()))
+                   .collect(Collectors.toList());
+    }
+
     private static void putField(FieldModel fieldModel, String key, String value) {
         if (null != value) {
             putField(fieldModel, key, List.of(value));
@@ -216,6 +238,17 @@ public final class JobFieldModelPopulationUtils {
     private static void putField(FieldModel fieldModel, String key, List<String> values) {
         FieldValueModel fieldValueModel = new FieldValueModel(values, true);
         fieldModel.putField(key, fieldValueModel);
+    }
+
+    private static <T extends AlertSerializableModel> void putJsonField(FieldModel fieldModel, String fieldName, List<T> fields) {
+        // Convert to JSON for 6.4.0 while the dynamic ui still uses these as initial values on edit/copy
+        List<String> fieldJson = fields
+                                     .stream()
+                                     .map(AlertSerializableModel::toString)
+                                     .collect(Collectors.toList());
+        if (!fieldJson.isEmpty()) {
+            putField(fieldModel, fieldName, fieldJson);
+        }
     }
 
 }

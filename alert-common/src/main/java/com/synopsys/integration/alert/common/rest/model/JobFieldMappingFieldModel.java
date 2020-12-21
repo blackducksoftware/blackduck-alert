@@ -20,13 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.common.rest.model;
 
-import java.util.List;
+public class JobFieldMappingFieldModel extends AlertSerializableModel {
+    private String fieldKey;
+    private String fieldValue;
 
-import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
+    public JobFieldMappingFieldModel() {
+    }
 
-public interface ProviderProjectExistencePopulator {
-    void populateJobProviderProjects(Long providerGlobalConfigId, List<JobProviderProjectFieldModel> configuredProviderProjects);
+    public JobFieldMappingFieldModel(String fieldKey, String fieldValue) {
+        this.fieldKey = fieldKey;
+        this.fieldValue = fieldValue;
+    }
+
+    public String getFieldKey() {
+        return fieldKey;
+    }
+
+    public String getFieldValue() {
+        return fieldValue;
+    }
 
 }

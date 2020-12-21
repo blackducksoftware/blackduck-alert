@@ -76,6 +76,7 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.model.JobFieldMappingFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldStatuses;
 import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
@@ -194,7 +195,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
             }
 
             List<JobProviderProjectFieldModel> configuredProviderProjects = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of());
-            DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, DateUtils.createCurrentDateTimestamp(), null);
+            List<JobFieldMappingFieldModel> fieldMappingModels = Optional.ofNullable(resource.getFieldMappings()).orElse(List.of());
+            DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, fieldMappingModels, DateUtils.createCurrentDateTimestamp(), null);
             DistributionJobModel savedJob = jobAccessor.createJob(jobRequestModel);
             JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob, configuredProviderProjects);
 
@@ -234,7 +236,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 }
 
                 List<JobProviderProjectFieldModel> configuredProviderProjects = Optional.ofNullable(resource.getConfiguredProviderProjects()).orElse(List.of());
-                DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, previousJob.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
+                List<JobFieldMappingFieldModel> fieldMappingModels = Optional.ofNullable(resource.getFieldMappings()).orElse(List.of());
+                DistributionJobRequestModel jobRequestModel = createDistributionJobRequestModel(configurationFieldModels, configuredProviderProjects, fieldMappingModels, previousJob.getCreatedAt(), DateUtils.createCurrentDateTimestamp());
                 DistributionJobModel savedJob = jobAccessor.updateJob(previousJob.getJobId(), jobRequestModel);
                 JobFieldModel savedJobFieldModel = JobFieldModelPopulationUtils.createJobFieldModel(savedJob, configuredProviderProjects);
 
@@ -379,7 +382,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                                   .stream()
                                                                                   .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                                   .collect(Collectors.toList());
-                    DistributionJobModel testJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails);
+                    List<JobFieldMappingFieldModel> fieldMappingModels = Optional.ofNullable(resource.getFieldMappings()).orElse(List.of());
+                    DistributionJobModel testJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails, fieldMappingModels);
 
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
                         testJobModel,
@@ -425,6 +429,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private DistributionJobRequestModel createDistributionJobRequestModel(
         Collection<ConfigurationFieldModel> configFieldModels,
         List<JobProviderProjectFieldModel> jobProjects,
+        List<JobFieldMappingFieldModel> fieldMappingModels,
         OffsetDateTime createdAt,
         @Nullable OffsetDateTime lastUpdated
     ) {
@@ -433,7 +438,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                       .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                       .collect(Collectors.toList());
         Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
-        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails);
+        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails, fieldMappingModels);
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),
             fromResource.getName(),
