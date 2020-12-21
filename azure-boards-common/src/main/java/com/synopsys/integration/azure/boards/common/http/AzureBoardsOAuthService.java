@@ -30,14 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
-import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.Base64;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -76,25 +70,6 @@ public class AzureBoardsOAuthService {
         } catch (IOException e) {
             throw new IntegrationException(e);
         }
-    }
-
-    private AuthorizationCodeFlow initializeFlow(String clientId) throws IOException {
-        return new AuthorizationCodeFlow.Builder(
-            BearerToken.authorizationHeaderAccessMethod(),
-            new NetHttpTransport.Builder().setProxy(proxy).build(),
-            JacksonFactory.getDefaultInstance(),
-            new GenericUrl(),
-            null,
-            clientId,
-            encode(authorizationServerUrl)
-        )
-                   .setCredentialDataStore(StoredCredential.getDefaultDataStore(dataStoreFactory))
-                   .build();
-    }
-
-    private String encode(String str) {
-        byte[] encodedBytes = Base64.encodeBase64(str.getBytes());
-        return new String(encodedBytes);
     }
 
     private String sanitizeUrl(String url) {

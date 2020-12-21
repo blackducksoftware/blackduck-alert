@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
-public class AzureBoardsSearchPropertiesUtil {
+public final class AzureBoardsSearchPropertiesUtils {
     private static final char URL_DELIMITER = '|';
 
     public static String createProviderKey(String providerName, String providerUrl) {
@@ -52,6 +52,10 @@ public class AzureBoardsSearchPropertiesUtil {
                 linkableItemBuilder.append(url);
             });
         return linkableItemBuilder.toString();
+    }
+
+    private AzureBoardsSearchPropertiesUtils() {
+        // This class should not be instantiated
     }
 
 }

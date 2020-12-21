@@ -75,4 +75,8 @@ public final class WorkItemResponseFields {
         }
     }
 
+    private WorkItemResponseFields() {
+        // This class should not be instantiated
+    }
+
 }
