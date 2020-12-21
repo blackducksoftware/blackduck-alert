@@ -12,7 +12,7 @@ class TextInput extends Component {
         let dataListOptions = null;
         if (optionList) {
             listId = 'listOptions';
-            const dataListOptionObjects = optionList.map((currentOption) => (<option value={currentOption} />));
+            const dataListOptionObjects = optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
             dataListOptions = (
                 <datalist id={listId}>
                     {dataListOptionObjects}

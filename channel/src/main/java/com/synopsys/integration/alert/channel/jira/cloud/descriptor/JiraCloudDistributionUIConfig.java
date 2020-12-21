@@ -22,16 +22,27 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.descriptor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.FieldMappingEndpointField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
@@ -54,8 +65,12 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
                                                                           + "Note: This must be in the 'To Do' status category.";
     public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to map Jira fields to fields in processed notifications.";
 
-    public JiraCloudDistributionUIConfig() {
+    private final Gson gson;
+
+    @Autowired
+    public JiraCloudDistributionUIConfig(Gson gson) {
         super(ChannelKey.JIRA_CLOUD, JiraCloudDescriptor.JIRA_LABEL, JiraCloudDescriptor.JIRA_URL);
+        this.gson = gson;
     }
 
     @Override
@@ -70,10 +85,31 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField resolveWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
         ConfigField openWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
                                        .applyRequiredRelatedField(resolveWorkflow.getKey());
-        ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Notification content")
-                                       .applyNewMappingTitle("Create Jira Field Mapping");
+        ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
+                                       .applyNewMappingTitle("Create Jira Field Mapping")
+                                       .applyValidationFunctions(this::validateFieldMapping);
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, fieldMapping);
+    }
+
+    private ValidationResult validateFieldMapping(FieldValueModel fieldToValidate, FieldModel fieldModel) {
+        Collection<String> fieldMappingStrings = fieldToValidate.getValues();
+        List<JiraJobCustomFieldModel> customFields = fieldMappingStrings.stream()
+                                                         .map(fieldMappingString -> gson.fromJson(fieldMappingString, JiraJobCustomFieldModel.class))
+                                                         .collect(Collectors.toList());
+        Set<String> fieldNames = new HashSet();
+        List<String> errorList = new ArrayList<>();
+        for (JiraJobCustomFieldModel jiraJobCustomFieldModel : customFields) {
+            String currentFieldName = jiraJobCustomFieldModel.getFieldName();
+            if (fieldNames.contains(currentFieldName)) {
+                errorList.add("Duplicate field name: " + currentFieldName);
+            }
+            fieldNames.add(currentFieldName);
+        }
+        if (!errorList.isEmpty()) {
+            return ValidationResult.errors(errorList);
+        }
+        return ValidationResult.success();
     }
 
 }

@@ -26,6 +26,8 @@ export const KEY_PROVIDER_NAME = 'channel.common.provider.name';
 export const KEY_FREQUENCY = 'channel.common.frequency';
 export const KEY_PROVIDER_CONFIG_ID = 'provider.common.config.id';
 export const KEY_PROVIDER_CONFIGURED_PROJECT = 'channel.common.configured.project';
+export const KEY_JIRA_SERVER_FIELD_MAPPING = 'channel.jira.server.field.mapping';
+export const KEY_JIRA_CLOUD_FIELD_MAPPING = 'channel.jira.cloud.field.mapping';
 
 export const COMMON_KEYS = [KEY_ENABLED, KEY_NAME, KEY_CHANNEL_NAME, KEY_PROVIDER_NAME, KEY_FREQUENCY];
 

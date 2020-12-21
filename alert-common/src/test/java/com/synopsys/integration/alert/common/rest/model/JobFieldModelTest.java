@@ -24,7 +24,7 @@ public class JobFieldModelTest {
         FieldModel testFieldModel = Mockito.mock(FieldModel.class);
 
         Set<FieldModel> fieldModels = Set.of(testFieldModel);
-        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels, List.of(), List.of());
+        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels, List.of());
         testJobFieldModel.setJobId(newJobId);
 
         assertEquals(newJobId, testJobFieldModel.getJobId());
@@ -38,7 +38,7 @@ public class JobFieldModelTest {
 
         Set<FieldModel> fieldModels = Set.of(testFieldModel);
         Set<FieldModel> newFieldModels = Set.of(testFieldModel, newTestFieldModel);
-        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels, List.of(), List.of());
+        JobFieldModel testJobFieldModel = new JobFieldModel(testJobId, fieldModels, List.of());
         testJobFieldModel.setFieldModels(newFieldModels);
 
         assertEquals(newFieldModels, testJobFieldModel.getFieldModels());

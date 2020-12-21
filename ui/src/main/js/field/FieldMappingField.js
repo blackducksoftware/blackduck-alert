@@ -17,26 +17,27 @@ class FieldMappingField extends Component {
         this.clearModal = this.clearModal.bind(this);
         this.onDelete = this.onDelete.bind(this);
 
+        let currentId = 0;
+        let fieldMappings = [];
+        const { storedMappings } = props;
+        if (storedMappings) {
+            fieldMappings = storedMappings.map((mapping) => JSON.parse(mapping));
+            fieldMappings.forEach((parsedMapping) => {
+                parsedMapping.id = currentId;
+                currentId = currentId + 1;
+            });
+        }
+
         this.state = ({
             rowKeyPair: {
-                left: '',
-                right: ''
+                fieldName: '',
+                fieldValue: ''
             },
-            tableData: [],
-            id: 0
+            tableData: fieldMappings,
+            id: currentId,
+            modalError: null
         });
     }
-
-    // FIXME Verify if didMount and didUpdate are necessary now that we use text fields
-    // componentDidMount() {
-    // }
-    //
-    // componentDidUpdate(prevProps) {
-    //     const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
-    //     const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
-    //     if (oldValuesEmpty && !currentValuesEmpty) {
-    //     }
-    // }
 
     handleChange({ target }) {
         const { name, value } = target;
@@ -50,22 +51,22 @@ class FieldMappingField extends Component {
 
     createNewRow() {
         const { leftSideMapping, rightSideMapping } = this.props;
-        const { left, right } = this.state.rowKeyPair;
+        const { fieldName, fieldValue } = this.state.rowKeyPair;
         const valueOptions = ['{{providerName}}', '{{projectName}}', '{{projectVersion}}', '{{componentName}}', '{{componentVersion}}'];
 
         return (
             <div>
                 <TextInput
-                    name="left"
+                    name="fieldName"
                     onChange={this.handleChange}
                     label={leftSideMapping}
-                    value={left}
+                    value={fieldName}
                 />
                 <TextInput
-                    name="right"
+                    name="fieldValue"
                     onChange={this.handleChange}
                     label={rightSideMapping}
-                    value={right}
+                    value={fieldValue}
                     optionList={valueOptions}
                 />
             </div>
@@ -82,13 +83,13 @@ class FieldMappingField extends Component {
                 hidden: true
             },
             {
-                header: 'left',
+                header: 'fieldName',
                 headerLabel: leftSideMapping,
                 isKey: false,
                 hidden: false
             },
             {
-                header: 'right',
+                header: 'fieldValue',
                 headerLabel: rightSideMapping,
                 isKey: false,
                 hidden: false
@@ -96,13 +97,12 @@ class FieldMappingField extends Component {
         ];
     }
 
-    // FIXME edit adds a new row
     onEdit(selectedRow, callback) {
         const entireRow = this.state.tableData.filter((row) => row.id === selectedRow.id)[0];
         this.setState({
             rowKeyPair: {
-                left: entireRow.left,
-                right: entireRow.right
+                fieldName: entireRow.fieldName,
+                fieldValue: entireRow.fieldValue
             }
         }, callback);
     }
@@ -110,13 +110,14 @@ class FieldMappingField extends Component {
     clearModal() {
         this.setState({
             rowKeyPair: {
-                left: '',
-                right: ''
+                fieldName: '',
+                fieldValue: ''
             }
         });
     }
 
     onDelete(configsToDelete, callback) {
+        // FIXME this is not correctly deleting the entries
         const { tableData } = this.state;
         if (configsToDelete) {
             const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.id));
@@ -129,25 +130,26 @@ class FieldMappingField extends Component {
 
     saveModalData(callback) {
         const { tableData, rowKeyPair, id } = this.state;
-        const { left, right } = rowKeyPair;
+        const { fieldName, fieldValue } = rowKeyPair;
 
         tableData.push({
             id,
-            left,
-            right
+            fieldName,
+            fieldValue
         });
 
         this.setState({
             tableData,
-            id: id + 1
+            id: id + 1,
+            modalError: null
         });
 
-        const { onChange, fieldKey } = this.props;
-        // TODO Function that adds content to the field model. If you want to save the data differently, modify this
+        const { onChange, fieldMappingKey } = this.props;
+        const fieldMappingValue = tableData.map((mappingEntry) => JSON.stringify(mappingEntry));
         onChange({
             target: {
-                name: fieldKey,
-                value: tableData
+                name: fieldMappingKey,
+                value: fieldMappingValue
             }
         });
 
@@ -157,7 +159,7 @@ class FieldMappingField extends Component {
 
     render() {
         const { newMappingTitle } = this.props;
-        const { tableData } = this.state;
+        const { tableData, modalError } = this.state;
         const table = (
             <TableDisplay
                 modalTitle={newMappingTitle}
@@ -173,6 +175,7 @@ class FieldMappingField extends Component {
                 autoRefresh={false}
                 tableRefresh={false}
                 clearModalFieldState={this.clearModal}
+                errorDialogMessage={modalError}
             />
         );
         return (
@@ -183,9 +186,9 @@ class FieldMappingField extends Component {
 
 FieldMappingField.propTypes = {
     id: PropTypes.string,
-    currentConfig: PropTypes.object,
     onChange: PropTypes.func.isRequired,
-    fieldKey: PropTypes.string.isRequired,
+    storedMappings: PropTypes.array,
+    fieldMappingKey: PropTypes.string.isRequired,
     leftSideMapping: PropTypes.string.isRequired,
     rightSideMapping: PropTypes.string.isRequired,
     newMappingTitle: PropTypes.string
@@ -193,7 +196,7 @@ FieldMappingField.propTypes = {
 
 FieldMappingField.defaultProps = {
     id: 'fieldMappingFieldId',
-    currentConfig: {},
+    storedMappings: [],
     newMappingTitle: 'Create new mapping'
 };
 
@@ -201,6 +204,4 @@ const mapStateToProps = (state) => ({
     csrfToken: state.session.csrfToken
 });
 
-const mapDispatchToProps = (dispatch) => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(FieldMappingField);
+export default connect(mapStateToProps, null)(FieldMappingField);
