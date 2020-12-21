@@ -29,12 +29,13 @@ public class JobFieldModel extends AlertSerializableModel {
     private String jobId;
     private Set<FieldModel> fieldModels;
     private List<JobProviderProjectFieldModel> configuredProviderProjects;
+    private List<JobFieldMappingFieldModel> fieldMappings;
 
     public JobFieldModel() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
-    public JobFieldModel(String jobId, Set<FieldModel> fieldModels, List<JobProviderProjectFieldModel> configuredProviderProjects) {
+    public JobFieldModel(String jobId, Set<FieldModel> fieldModels, List<JobProviderProjectFieldModel> configuredProviderProjects, List<JobFieldMappingFieldModel> fieldMappings) {
         this.jobId = jobId;
         this.fieldModels = fieldModels;
         this.configuredProviderProjects = configuredProviderProjects;
@@ -62,6 +63,14 @@ public class JobFieldModel extends AlertSerializableModel {
 
     public void setConfiguredProviderProjects(List<JobProviderProjectFieldModel> configuredProviderProjects) {
         this.configuredProviderProjects = configuredProviderProjects;
+    }
+
+    public List<JobFieldMappingFieldModel> getFieldMappings() {
+        return fieldMappings;
+    }
+
+    public void setFieldMappings(List<JobFieldMappingFieldModel> fieldMappings) {
+        this.fieldMappings = fieldMappings;
     }
 
 }

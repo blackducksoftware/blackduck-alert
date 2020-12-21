@@ -22,34 +22,24 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
-public class JobProviderProjectFieldModel extends AlertSerializableModel {
-    private String name;
-    private String href;
-    private Boolean missing;
+public class JobFieldMappingFieldModel extends AlertSerializableModel {
+    private String fieldKey;
+    private String fieldValue;
 
-    public JobProviderProjectFieldModel() {
+    public JobFieldMappingFieldModel() {
     }
 
-    public JobProviderProjectFieldModel(String name, String href, Boolean missing) {
-        this.name = name;
-        this.href = href;
-        this.missing = missing;
+    public JobFieldMappingFieldModel(String fieldKey, String fieldValue) {
+        this.fieldKey = fieldKey;
+        this.fieldValue = fieldValue;
     }
 
-    public String getName() {
-        return name;
+    public String getFieldKey() {
+        return fieldKey;
     }
 
-    public String getHref() {
-        return href;
-    }
-
-    public Boolean getMissing() {
-        return missing;
-    }
-
-    public void setMissing(Boolean missing) {
-        this.missing = missing;
+    public String getFieldValue() {
+        return fieldValue;
     }
 
 }

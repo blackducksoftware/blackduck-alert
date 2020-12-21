@@ -68,7 +68,7 @@ public class ConfigurationManager {
 
         FieldModel jobConfiguration = new FieldModel(channelKey, ConfigContextEnum.DISTRIBUTION.name(), channelFields);
 
-        JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobConfiguration, jobProviderConfiguration), List.of(new JobProviderProjectFieldModel(blackDuckProjectName, "href")));
+        JobFieldModel jobFieldModel = new JobFieldModel(null, Set.of(jobConfiguration, jobProviderConfiguration), List.of(new JobProviderProjectFieldModel(blackDuckProjectName, "href", false)), List.of());
 
         String jobConfigBody = gson.toJson(jobFieldModel);
 

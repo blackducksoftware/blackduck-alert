@@ -50,6 +50,7 @@ import com.synopsys.integration.alert.common.persistence.model.RegisteredDescrip
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -94,9 +95,11 @@ public class JobConfigActionsTest {
         this.fieldModel = createFieldModel();
         this.distributionJobModel = createMockDistributionJobModel();
         this.jobId = distributionJobModel.getJobId();
-        this.jobFieldModel = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of());
+        this.jobFieldModel = new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel), List.of(), List.of());
         this.configurationFieldModel = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
         this.configurationFieldModel.setFieldValue(FIELD_VALUE);
+
+        ProviderProjectExistencePopulator providerProjectExistencePopulator = (id, list) -> {};
 
         authorizationManager = Mockito.mock(AuthorizationManager.class);
         descriptorAccessor = Mockito.mock(DescriptorAccessor.class);
@@ -118,7 +121,8 @@ public class JobConfigActionsTest {
             configurationFieldModelConverter,
             globalConfigExistsValidator,
             pkixErrorResponseFactory,
-            descriptorMap
+            descriptorMap,
+            providerProjectExistencePopulator
         );
 
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);

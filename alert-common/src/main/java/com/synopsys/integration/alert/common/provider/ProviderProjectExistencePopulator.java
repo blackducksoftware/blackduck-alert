@@ -20,36 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.provider;
 
-public class JobProviderProjectFieldModel extends AlertSerializableModel {
-    private String name;
-    private String href;
-    private Boolean missing;
+import java.util.List;
 
-    public JobProviderProjectFieldModel() {
-    }
+import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 
-    public JobProviderProjectFieldModel(String name, String href, Boolean missing) {
-        this.name = name;
-        this.href = href;
-        this.missing = missing;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getHref() {
-        return href;
-    }
-
-    public Boolean getMissing() {
-        return missing;
-    }
-
-    public void setMissing(Boolean missing) {
-        this.missing = missing;
-    }
+public interface ProviderProjectExistencePopulator {
+    void populateJobProviderProjects(Long providerGlobalConfigId, List<JobProviderProjectFieldModel> configuredProviderProjects);
 
 }
