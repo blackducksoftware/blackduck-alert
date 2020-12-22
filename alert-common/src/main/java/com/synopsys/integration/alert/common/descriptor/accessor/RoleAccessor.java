@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.descriptor.accessor;
 import java.util.Collection;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -37,13 +37,11 @@ public interface RoleAccessor {
 
     boolean doesRoleNameExist(String name);
 
-    UserRoleModel createRole(String roleName) throws AlertDatabaseConstraintException;
+    UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix);
 
-    UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
+    void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException;
 
-    void updateRoleName(Long roleId, String roleName) throws AlertDatabaseConstraintException;
-
-    PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException;
+    PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertConfigurationException;
 
     void deleteRole(Long roleId) throws AlertForbiddenOperationException;
 

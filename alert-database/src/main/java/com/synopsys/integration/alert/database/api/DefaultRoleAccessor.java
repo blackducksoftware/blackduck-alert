@@ -34,14 +34,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
@@ -101,25 +101,19 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
-    public UserRoleModel createRole(String roleName) throws AlertDatabaseConstraintException {
-        RoleEntity dbRole = createRole(roleName, true);
-        return UserRoleModel.of(dbRole.getRoleName(), dbRole.getCustom());
-    }
-
-    @Override
-    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) {
         RoleEntity roleEntity = createRole(roleName, true);
         List<PermissionMatrixRelation> permissions = updateRoleOperations(roleEntity, permissionMatrix);
         return new UserRoleModel(roleEntity.getId(), roleEntity.getRoleName(), roleEntity.getCustom(), createModelFromPermission(permissions));
     }
 
     @Override
-    public void updateRoleName(Long roleId, String roleName) throws AlertDatabaseConstraintException {
+    public void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException {
         Optional<RoleEntity> foundRole = roleRepository.findById(roleId);
         if (foundRole.isPresent()) {
             RoleEntity roleEntity = foundRole.get();
             if (BooleanUtils.isFalse(roleEntity.getCustom())) {
-                throw new AlertDatabaseConstraintException("Cannot update the existing role '" + foundRole.get().getRoleName() + "' to '" + roleName + "' because it is not a custom role");
+                throw new AlertForbiddenOperationException("Cannot update the existing role '" + foundRole.get().getRoleName() + "' to '" + roleName + "' because it is not a custom role");
             }
             RoleEntity updatedEntity = new RoleEntity(roleName, true);
             updatedEntity.setId(roleEntity.getId());
@@ -128,9 +122,9 @@ public class DefaultRoleAccessor implements RoleAccessor {
     }
 
     @Override
-    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertConfigurationException {
         RoleEntity roleEntity = roleRepository.findByRoleName(roleName)
-                                    .orElseThrow(() -> new AlertDatabaseConstraintException("No role exists with name: " + roleName));
+                                    .orElseThrow(() -> new AlertConfigurationException("No role exists with name: " + roleName));
         List<PermissionMatrixRelation> permissions = updateRoleOperations(roleEntity, permissionMatrix);
         return createModelFromPermission(permissions);
     }
@@ -177,15 +171,12 @@ public class DefaultRoleAccessor implements RoleAccessor {
         return this.createModelFromPermission(permissions);
     }
 
-    private RoleEntity createRole(String roleName, Boolean custom) throws AlertDatabaseConstraintException {
-        if (StringUtils.isBlank(roleName)) {
-            throw new AlertDatabaseConstraintException("The field roleName must not be blank");
-        }
+    private RoleEntity createRole(String roleName, Boolean custom) {
         RoleEntity roleEntity = new RoleEntity(roleName, custom);
         return roleRepository.save(roleEntity);
     }
 
-    private List<PermissionMatrixRelation> updateRoleOperations(RoleEntity roleEntity, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+    private List<PermissionMatrixRelation> updateRoleOperations(RoleEntity roleEntity, PermissionMatrixModel permissionMatrix) {
         List<PermissionMatrixRelation> oldPermissionsForRole = permissionMatrixRepository.findAllByRoleId(roleEntity.getId());
         if (!oldPermissionsForRole.isEmpty()) {
             permissionMatrixRepository.deleteAll(oldPermissionsForRole);
@@ -196,9 +187,9 @@ public class DefaultRoleAccessor implements RoleAccessor {
         for (Map.Entry<PermissionKey, Integer> permission : permissions.entrySet()) {
             PermissionKey permissionKey = permission.getKey();
             ConfigContextEntity dbContext = configContextRepository.findFirstByContext(permissionKey.getContext())
-                                                .orElseThrow(() -> new AlertDatabaseConstraintException("Illegal context specified for permission"));
+                                                .orElseThrow(() -> new AlertRuntimeException("Invalid context specified for permission"));
             RegisteredDescriptorEntity registeredDescriptor = registeredDescriptorRepository.findFirstByName(permissionKey.getDescriptorName())
-                                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("Illegal descriptor name specified for permission"));
+                                                                  .orElseThrow(() -> new AlertRuntimeException("Invalid descriptor name specified for permission"));
 
             int accessOperations = permission.getValue();
             PermissionMatrixRelation permissionMatrixRelation = new PermissionMatrixRelation(roleEntity.getId(), dbContext.getId(), registeredDescriptor.getId(), accessOperations);

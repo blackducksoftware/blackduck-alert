@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -172,18 +172,18 @@ public class AuthorizationManager {
                    .anyMatch(name -> permissionCache.containsKey(name) && permissionCache.get(name).hasPermissions(permissionKey, operations));
     }
 
-    public void updateRoleName(Long roleId, String roleName) throws AlertDatabaseConstraintException {
+    public void updateRoleName(Long roleId, String roleName) throws AlertForbiddenOperationException {
         roleAccessor.updateRoleName(roleId, roleName);
         loadPermissionsIntoCache();
     }
 
-    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+    public UserRoleModel createRoleWithPermissions(String roleName, PermissionMatrixModel permissionMatrix) {
         UserRoleModel roleWithPermissions = roleAccessor.createRoleWithPermissions(roleName, permissionMatrix);
         updateRoleInCache(roleWithPermissions.getName(), roleWithPermissions.getPermissions());
         return roleWithPermissions;
     }
 
-    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertDatabaseConstraintException {
+    public PermissionMatrixModel updatePermissionsForRole(String roleName, PermissionMatrixModel permissionMatrix) throws AlertConfigurationException {
         PermissionMatrixModel permissionMatrixModel = roleAccessor.updatePermissionsForRole(roleName, permissionMatrix);
         updateRoleInCache(roleName, permissionMatrixModel);
         return permissionMatrixModel;
@@ -254,4 +254,5 @@ public class AuthorizationManager {
     private void updateRoleInCache(String roleName, PermissionMatrixModel permissions) {
         permissionCache.put(roleName, permissions);
     }
+
 }
