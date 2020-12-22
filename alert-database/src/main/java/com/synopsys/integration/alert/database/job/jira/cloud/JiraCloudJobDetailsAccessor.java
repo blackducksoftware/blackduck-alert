@@ -59,7 +59,6 @@ public class JiraCloudJobDetailsAccessor {
             jiraCloudJobDetails.getReopenTransition()
         );
         JiraCloudJobDetailsEntity savedJobDetails = jiraCloudJobDetailsRepository.save(jiraCloudJobDetailsToSave);
-
         jiraCloudJobCustomFieldRepository.deleteByJobId(jobId);
         List<JiraCloudJobCustomFieldEntity> customFieldsToSave = jiraCloudJobDetails.getCustomFields()
                                                                      .stream()
@@ -68,6 +67,8 @@ public class JiraCloudJobDetailsAccessor {
         if (!customFieldsToSave.isEmpty()) {
             List<JiraCloudJobCustomFieldEntity> savedCustomFields = jiraCloudJobCustomFieldRepository.saveAll(customFieldsToSave);
             savedJobDetails.setJobCustomFields(savedCustomFields);
+        } else {
+            savedJobDetails.setJobCustomFields(List.of());
         }
         return savedJobDetails;
     }

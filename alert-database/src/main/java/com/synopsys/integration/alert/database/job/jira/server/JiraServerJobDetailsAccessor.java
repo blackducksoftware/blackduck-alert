@@ -69,6 +69,8 @@ public class JiraServerJobDetailsAccessor {
         if (!customFieldsToSave.isEmpty()) {
             List<JiraServerJobCustomFieldEntity> savedJobCustomFields = jiraServerJobCustomFieldRepository.saveAll(customFieldsToSave);
             savedJobDetails.setJobCustomFields(savedJobCustomFields);
+        } else {
+            savedJobDetails.setJobCustomFields(List.of());
         }
         return savedJobDetails;
     }
