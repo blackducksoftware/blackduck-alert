@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.common.provider;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +38,7 @@ import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 @Component
 public class ProviderConfigMissingValidator extends BaseSystemValidator {
     public static final String MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT = "Black Duck configuration is invalid. Black Duck configurations missing.";
-    private final Logger logger = LoggerFactory.getLogger(ProviderConfigMissingValidator.class);
+
     private final List<Provider> providers;
     private final ConfigurationAccessor configurationAccessor;
 

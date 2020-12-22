@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +39,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 @Component
 public class GlobalConfigExistsValidator {
     public static final String GLOBAL_CONFIG_MISSING = "%s global configuration missing.";
-    private final Logger logger = LoggerFactory.getLogger(GlobalConfigExistsValidator.class);
+
     private final ConfigurationAccessor configurationAccessor;
     private final List<Descriptor> descriptors;
 

@@ -136,9 +136,7 @@ public class FieldModelProcessor {
             List<ConfigField> fieldsFromModel = descriptorProcessor.retrieveUIConfigFields(singleFieldModelFromJob.getContext(), singleFieldModelFromJob.getDescriptorName());
             for (ConfigField fieldFromModel : fieldsFromModel) {
                 String fieldKey = fieldFromModel.getKey();
-                if (!configFields.containsKey(fieldKey)) {
-                    configFields.put(fieldKey, fieldFromModel);
-                }
+                configFields.putIfAbsent(fieldKey, fieldFromModel);
             }
         }
         return fieldValidationAction.validateConfig(configFields, fieldModels);

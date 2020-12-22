@@ -31,11 +31,12 @@ import com.synopsys.integration.alert.common.rest.api.AbstractFunctionController
 
 @RestController
 @RequestMapping(EmailAddressFunctionController.EMAIL_ADDRESS_FUNCTION_URL)
-public class EmailAddressFunctionController extends AbstractFunctionController {
+public class EmailAddressFunctionController extends AbstractFunctionController<EmailAddressOptions> {
     public static final String EMAIL_ADDRESS_FUNCTION_URL = AbstractFunctionController.API_FUNCTION_URL + "/" + EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES;
 
     @Autowired
     public EmailAddressFunctionController(EmailCustomFunctionAction functionAction) {
         super(functionAction);
     }
+
 }

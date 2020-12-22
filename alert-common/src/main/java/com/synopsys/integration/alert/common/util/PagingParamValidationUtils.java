@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 
-public class PagingParamValidationUtils {
+public final class PagingParamValidationUtils {
     // TODO find a good home for this
     public static <T> Optional<ActionResponse<T>> createErrorActionResponseIfInvalid(Integer pageNumber, Integer pageSize) {
         StringBuilder messageBuilder = new StringBuilder();
@@ -45,6 +45,10 @@ public class PagingParamValidationUtils {
             return Optional.empty();
         }
         return Optional.of(new ActionResponse<>(HttpStatus.BAD_REQUEST, errorMessage));
+    }
+
+    private PagingParamValidationUtils() {
+        // This class should not be instantiated
     }
 
 }

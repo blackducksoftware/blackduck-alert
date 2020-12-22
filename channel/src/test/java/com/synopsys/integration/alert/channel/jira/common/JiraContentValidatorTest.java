@@ -18,9 +18,9 @@ public class JiraContentValidatorTest {
     public void testValidLengths() throws Exception {
         JiraContentValidator validator = new JiraContentValidator();
 
-        assertEquals(JiraContentValidator.TITLE_LENGTH, validator.getTitleLength());
-        assertEquals(JiraContentValidator.CONTENT_LENGTH, validator.getDescriptionLength());
-        assertEquals(JiraContentValidator.CONTENT_LENGTH, validator.getCommentLength());
+        assertEquals(JiraContentValidator.TITLE_LENGTH, validator.getTitleLengthLimit());
+        assertEquals(JiraContentValidator.CONTENT_LENGTH, validator.getDescriptionLengthLimit());
+        assertEquals(JiraContentValidator.CONTENT_LENGTH, validator.getCommentLengthLimit());
         IssueContentModel issueContentModel = createContentModel(false);
         assertTrue(validator.validateContentLength(issueContentModel));
 

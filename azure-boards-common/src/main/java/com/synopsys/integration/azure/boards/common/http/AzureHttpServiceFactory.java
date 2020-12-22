@@ -70,4 +70,8 @@ public class AzureHttpServiceFactory {
         return new ApacheHttpTransport(httpClient);
     }
 
+    private AzureHttpServiceFactory() {
+        // This class should not be instantiated
+    }
+
 }

@@ -22,7 +22,6 @@
  */
 package com.synopsys.integration.alert.common.workflow.task;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -100,12 +99,12 @@ public class TaskManager {
      * @param <T>               A class that extends ScheduledTask
      * @return All tasks assignable to the 'classOrSuperclass' parameter
      */
-    public <T extends ScheduledTask> Collection<T> getTasksByClass(Class<T> classOrSuperclass) {
-        List<?> taskList = scheduledTaskMap.values()
-                               .stream()
-                               .filter(task -> classOrSuperclass.isAssignableFrom(task.getClass()))
-                               .collect(Collectors.toList());
-        return new ArrayList(taskList);
+    public <T extends ScheduledTask> List<T> getTasksByClass(Class<T> classOrSuperclass) {
+        return scheduledTaskMap.values()
+                   .stream()
+                   .filter(task -> classOrSuperclass.isAssignableFrom(task.getClass()))
+                   .map(classOrSuperclass::cast)
+                   .collect(Collectors.toList());
     }
 
     public final Optional<String> getNextRunTime(String taskName) {

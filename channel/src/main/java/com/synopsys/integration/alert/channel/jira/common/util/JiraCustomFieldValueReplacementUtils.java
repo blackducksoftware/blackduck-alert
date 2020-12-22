@@ -67,4 +67,8 @@ public final class JiraCustomFieldValueReplacementUtils {
                    .or(() -> Optional.of(DEFAULT_REPLACEMENT));
     }
 
+    private JiraCustomFieldValueReplacementUtils() {
+        // This class should not be instantiated
+    }
+
 }

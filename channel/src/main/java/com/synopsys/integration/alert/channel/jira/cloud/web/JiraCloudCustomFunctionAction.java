@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtil;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtils;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -72,7 +72,7 @@ public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> 
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, "The Jira Cloud server responded with error code: " + statusCode);
             }
 
-            boolean jiraPluginInstalled = JiraPluginCheckUtil.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
+            boolean jiraPluginInstalled = JiraPluginCheckUtils.checkIsAppInstalledAndRetryIfNecessary(jiraAppService);
             if (!jiraPluginInstalled) {
                 return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format(
                     "Unable to confirm successful installation of the Jira Cloud '%s' plugin. Please verify the installation on your Jira Cloud server.", JiraConstants.JIRA_ALERT_APP_NAME));

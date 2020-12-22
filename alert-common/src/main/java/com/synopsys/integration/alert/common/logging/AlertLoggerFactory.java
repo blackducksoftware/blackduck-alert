@@ -25,8 +25,12 @@ package com.synopsys.integration.alert.common.logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AlertLoggerFactory {
+public final class AlertLoggerFactory {
     public static final String ALERT_AUDIT_LOGGER = "Alert Audit";
+
+    private AlertLoggerFactory() {
+        // This class should not be instantiated
+    }
 
     public static Logger getLogger(Class<?> clazz) {
         Logger logger = LoggerFactory.getLogger(clazz);
@@ -41,4 +45,5 @@ public class AlertLoggerFactory {
 
         return new AlertCompositeLogger(auditLogger, logger);
     }
+
 }

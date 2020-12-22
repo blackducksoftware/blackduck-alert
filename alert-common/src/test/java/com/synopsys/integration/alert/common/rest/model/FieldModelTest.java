@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -244,7 +245,7 @@ public class FieldModelTest {
         FieldModel newTestFieldModel = testFieldModel.fill(testFieldModel);
 
         assertEquals(testFieldModel, newTestFieldModel);
-        assertFalse(testFieldModel == newTestFieldModel);
+        assertNotSame(testFieldModel, newTestFieldModel);
         assertEquals(descriptor, newTestFieldModel.getDescriptorName());
         assertEquals(context, newTestFieldModel.getContext());
         assertTrue(newTestFieldModel.getKeyToValues().containsKey(key));
@@ -311,4 +312,5 @@ public class FieldModelTest {
         assertTrue(testCombinedFieldModel.getKeyToValues().containsKey(key));
         assertEquals(testFieldValueModel, testCombinedFieldModel.getFieldValueModel(key).get());
     }
+
 }

@@ -27,9 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -41,7 +38,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DefaultDescriptorGlobalConfigUtility {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ConfigurationAccessor configurationAccessor;
     private final ApiAction apiAction;
     private final ConfigurationFieldModelConverter configurationFieldModelConverter;
