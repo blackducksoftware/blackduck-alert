@@ -2,15 +2,12 @@ package com.synopsys.integration.alert.database.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.mock.MockProviderTaskPropertiesRepository;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesEntity;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesRepository;
@@ -21,7 +18,7 @@ public class DefaultProviderTaskPropertiesAccessorTest {
     private final String propertyName = "propertyName-test";
     private final String value = "value-test";
 
-    private ProviderTaskPropertiesRepository providerTaskPropertiesRepository = new MockProviderTaskPropertiesRepository(providerConfigId, taskName, propertyName, value);
+    private final ProviderTaskPropertiesRepository providerTaskPropertiesRepository = new MockProviderTaskPropertiesRepository(providerConfigId, taskName, propertyName, value);
 
     @Test
     public void getTaskPropertyTest() {
@@ -43,7 +40,7 @@ public class DefaultProviderTaskPropertiesAccessorTest {
     }
 
     @Test
-    public void setTaskPropertyTest() throws Exception {
+    public void setTaskPropertyTest() {
         final Long newConfigId = 2L;
         final String newTaskName = "taskName-new";
         final String newPropertyName = "propertyName-new";
@@ -62,15 +59,4 @@ public class DefaultProviderTaskPropertiesAccessorTest {
         assertEquals(newValue, providerTaskPropertiesEntity.getValue());
     }
 
-    @Test
-    public void setTaskPropertyExceptionTest() throws Exception {
-        DefaultProviderTaskPropertiesAccessor providerTaskPropertiesAccessor = new DefaultProviderTaskPropertiesAccessor(providerTaskPropertiesRepository);
-
-        try {
-            providerTaskPropertiesAccessor.setTaskProperty(null, "", "", "");
-            fail();
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
 }

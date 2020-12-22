@@ -1,17 +1,16 @@
 package com.synopsys.integration.alert.provider.blackduck.task;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
@@ -85,7 +83,7 @@ public class BlackDuckAccumulatorTest {
             }
 
             @Override
-            public void setTaskProperty(Long configId, String taskName, String propertyKey, String propertyValue) throws AlertDatabaseConstraintException {
+            public void setTaskProperty(Long configId, String taskName, String propertyKey, String propertyValue) {
                 properties.put(taskName + propertyKey, propertyValue);
             }
         };
@@ -136,7 +134,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void testCreateDateRangeWithExistingFile() throws Exception {
+    public void testCreateDateRangeWithExistingFile() {
         BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
         OffsetDateTime expectedStartDate = ZonedDateTime.now(ZoneOffset.UTC)
                                                .withSecond(0)
@@ -172,7 +170,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void testAccumulate() throws Exception {
+    public void testAccumulate() {
         BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
@@ -183,18 +181,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void testAccumulateException() throws Exception {
-        BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
-        BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        Mockito.doThrow(new AlertDatabaseConstraintException("can't write last search file")).when(spiedAccumulator).saveNextSearchStart(Mockito.anyString());
-        spiedAccumulator.accumulate();
-        assertFalse(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
-        Mockito.verify(spiedAccumulator).createDateRange();
-        Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
-    }
-
-    @Test
-    public void testAccumulateGetNextRunHasValue() throws Exception {
+    public void testAccumulateGetNextRunHasValue() {
         BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.when(spiedAccumulator.getMillisecondsToNextRun()).thenReturn(Optional.of(Long.MAX_VALUE));
@@ -214,7 +201,7 @@ public class BlackDuckAccumulatorTest {
         notificationView.setCreatedAt(new Date());
         notificationView.setContentType("content_type");
         notificationView.setType(NotificationType.RULE_VIOLATION);
-        List<NotificationView> notificationViewList = Arrays.asList(notificationView);
+        List<NotificationView> notificationViewList = List.of(notificationView);
 
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
 
@@ -242,7 +229,7 @@ public class BlackDuckAccumulatorTest {
         notificationView.setCreatedAt(new Date());
         notificationView.setContentType("content_type");
         notificationView.setType(NotificationType.RULE_VIOLATION);
-        List<NotificationView> notificationViewList = Arrays.asList(notificationView);
+        List<NotificationView> notificationViewList = List.of(notificationView);
 
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(mockedBlackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("https://localhost:443/alert"));
@@ -293,7 +280,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void testReadException() throws Exception {
+    public void testReadException() {
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         BlackDuckHttpClient blackDuckHttpClient = Mockito.mock(BlackDuckHttpClient.class);
         Mockito.doReturn(Optional.of(blackDuckHttpClient)).when(mockedBlackDuckProperties).createBlackDuckHttpClientAndLogErrors(Mockito.any());
@@ -307,7 +294,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     @Test
-    public void testProcess() throws Exception {
+    public void testProcess() {
         BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties);
         NotificationView notificationView = new NotificationView();
@@ -343,8 +330,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckAccumulator createAccumulator(BlackDuckProperties blackDuckProperties) {
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, taskScheduler, notificationManager, providerTaskPropertiesAccessor, blackDuckProperties, blackDuckValidator, eventManager);
-        return accumulator;
+        return new BlackDuckAccumulator(BLACK_DUCK_PROVIDER_KEY, taskScheduler, notificationManager, providerTaskPropertiesAccessor, blackDuckProperties, blackDuckValidator, eventManager);
     }
 
 }

@@ -32,7 +32,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -89,8 +88,6 @@ public class LastSearchDataMigration extends StartupComponent {
                 }
             } catch (IOException ex) {
                 logger.error("Error with last search text file.", ex);
-            } catch (AlertDatabaseConstraintException ex) {
-                logger.error("Error writing provider property for default provider configuration.", ex);
             }
         } else {
             logger.info("Last search text file does not exist; no migration necessary.");

@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesEntity;
 import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropertiesRepository;
@@ -37,7 +36,7 @@ import com.synopsys.integration.alert.database.provider.task.ProviderTaskPropert
 @Component
 @Transactional
 public class DefaultProviderTaskPropertiesAccessor implements ProviderTaskPropertiesAccessor {
-    private ProviderTaskPropertiesRepository providerTaskPropertiesRepository;
+    private final ProviderTaskPropertiesRepository providerTaskPropertiesRepository;
 
     @Autowired
     public DefaultProviderTaskPropertiesAccessor(ProviderTaskPropertiesRepository providerTaskPropertiesRepository) {
@@ -53,10 +52,7 @@ public class DefaultProviderTaskPropertiesAccessor implements ProviderTaskProper
     }
 
     @Override
-    public void setTaskProperty(Long configId, String taskName, String propertyKey, String propertyValue) throws AlertDatabaseConstraintException {
-        if (null == configId || StringUtils.isBlank(taskName) || StringUtils.isBlank(propertyKey) || StringUtils.isBlank(propertyValue)) {
-            throw new AlertDatabaseConstraintException("All fields are required to save a task property");
-        }
+    public void setTaskProperty(Long configId, String taskName, String propertyKey, String propertyValue) {
         ProviderTaskPropertiesEntity taskPropertyToSave = new ProviderTaskPropertiesEntity(configId, taskName, propertyKey, propertyValue);
         providerTaskPropertiesRepository.save(taskPropertyToSave);
     }
