@@ -100,7 +100,6 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
                                                          .collect(Collectors.toList());
         Set<String> fieldNames = new HashSet();
         List<String> duplicateNameList = new ArrayList<>();
-
         for (JiraJobCustomFieldModel jiraJobCustomFieldModel : customFields) {
             String currentFieldName = jiraJobCustomFieldModel.getFieldName();
             if (fieldNames.contains(currentFieldName)) {

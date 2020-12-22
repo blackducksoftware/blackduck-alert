@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -97,16 +98,18 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
                                                          .map(fieldMappingString -> gson.fromJson(fieldMappingString, JiraJobCustomFieldModel.class))
                                                          .collect(Collectors.toList());
         Set<String> fieldNames = new HashSet();
-        List<String> errorList = new ArrayList<>();
+        List<String> duplicateNameList = new ArrayList<>();
         for (JiraJobCustomFieldModel jiraJobCustomFieldModel : customFields) {
             String currentFieldName = jiraJobCustomFieldModel.getFieldName();
             if (fieldNames.contains(currentFieldName)) {
-                errorList.add("Duplicate field name: " + currentFieldName);
+                duplicateNameList.add(currentFieldName);
             }
             fieldNames.add(currentFieldName);
         }
-        if (!errorList.isEmpty()) {
-            return ValidationResult.errors(errorList);
+        if (!duplicateNameList.isEmpty()) {
+            String duplicateNames = StringUtils.join(duplicateNameList, ", ");
+            String error = String.format("Duplicate field name(s): %s", duplicateNames);
+            return ValidationResult.errors(error);
         }
         return ValidationResult.success();
     }
