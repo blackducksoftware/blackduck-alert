@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -78,18 +78,11 @@ public abstract class AbstractJobResourceActions {
     protected abstract ValidationActionResponse validateWithoutChecks(JobFieldModel resource);
 
     private Set<String> getDescriptorNames() {
-        Set<String> descriptorNames = Set.of();
-        try {
-            descriptorNames = descriptorAccessor.getRegisteredDescriptors()
-                                  .stream()
-                                  .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
-                                  .map(RegisteredDescriptorModel::getName)
-                                  .collect(Collectors.toSet());
-        } catch (AlertDatabaseConstraintException ex) {
-            // ignore or add a logger.
-        }
-
-        return descriptorNames;
+        return descriptorAccessor.getRegisteredDescriptors()
+                   .stream()
+                   .filter(descriptor -> ALLOWED_JOB_DESCRIPTOR_TYPES.contains(descriptor.getType()))
+                   .map(RegisteredDescriptorModel::getName)
+                   .collect(Collectors.toSet());
     }
 
     public final ActionResponse<JobFieldModel> create(JobFieldModel resource) {
@@ -237,7 +230,7 @@ public abstract class AbstractJobResourceActions {
 
     private boolean checkContextAndDescriptorKey(FieldModel fieldModel, BiFunction<ConfigContextEnum, DescriptorKey, Boolean> permissionChecker) {
         ConfigContextEnum configContextEnum = ConfigContextEnum.valueOf(fieldModel.getContext());
-        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new RuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));
+        DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new AlertRuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));
         return permissionChecker.apply(configContextEnum, descriptorKey);
     }
 

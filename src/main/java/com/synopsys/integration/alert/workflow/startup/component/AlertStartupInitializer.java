@@ -115,7 +115,6 @@ public class AlertStartupInitializer extends StartupComponent {
                 Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorKey, fieldsForDescriptor, existingConfiguredFields);
                 logConfiguration(configurationModels);
                 updateConfigurationFields(descriptorKey, foundConfigurationModels, configurationModels);
-
             } catch (IllegalArgumentException | SecurityException | AlertException ex) {
                 logger.error("error initializing descriptor", ex);
             } finally {

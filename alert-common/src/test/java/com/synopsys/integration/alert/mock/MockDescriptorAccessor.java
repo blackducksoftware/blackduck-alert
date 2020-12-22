@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
@@ -28,32 +27,32 @@ public class MockDescriptorAccessor implements DescriptorAccessor {
     }
 
     @Override
-    public List<RegisteredDescriptorModel> getRegisteredDescriptors() throws AlertDatabaseConstraintException {
+    public List<RegisteredDescriptorModel> getRegisteredDescriptors() {
         return null;
     }
 
     @Override
-    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
+    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey) {
         return Optional.empty();
     }
 
     @Override
-    public List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(DescriptorType descriptorType) throws AlertDatabaseConstraintException {
+    public List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(DescriptorType descriptorType) {
         return null;
     }
 
     @Override
-    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(Long descriptorId) throws AlertDatabaseConstraintException {
+    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(Long descriptorId) {
         return Optional.empty();
     }
 
     @Override
-    public List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, ConfigContextEnum context) {
         return createDefinedFields(context);
     }
 
     @Override
-    public List<DefinedFieldModel> getFieldsForDescriptorById(Long descriptorId, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<DefinedFieldModel> getFieldsForDescriptorById(Long descriptorId, ConfigContextEnum context) {
         return createDefinedFields(context);
     }
 

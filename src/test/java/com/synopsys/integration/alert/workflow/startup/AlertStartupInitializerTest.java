@@ -44,7 +44,8 @@ public class AlertStartupInitializerTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         ChannelDescriptor channelDescriptor = new EmailDescriptor(new EmailGlobalUIConfig(encryptionValidator), null);
-        List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey());
+        SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
+        List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), settingsDescriptorKey);
         List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         List<ProviderDescriptor> providerDescriptors = List.of();
         List<ComponentDescriptor> componentDescriptors = List.of();
@@ -55,10 +56,10 @@ public class AlertStartupInitializerTest {
 
         FieldModelProcessor fieldModelProcessor = new FieldModelProcessor(modelConverter, new FieldValidationUtility(), new DescriptorProcessor(descriptorMap, baseConfigurationAccessor, List.of(), List.of()));
         SettingsUtility settingsUtility = Mockito.mock(SettingsUtility.class);
-        Mockito.when(settingsUtility.getKey()).thenReturn(new SettingsDescriptorKey());
+        Mockito.when(settingsUtility.getKey()).thenReturn(settingsDescriptorKey);
         AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environmentVariableUtility, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter, fieldModelProcessor, settingsUtility);
         initializer.initializeComponent();
-        Mockito.verify(baseDescriptorAccessor, Mockito.times(3)).getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
+        Mockito.verify(baseDescriptorAccessor, Mockito.times(4)).getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
         Mockito.verify(baseConfigurationAccessor, Mockito.times(2)).getConfigurationsByDescriptorKeyAndContext(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class));
     }
 

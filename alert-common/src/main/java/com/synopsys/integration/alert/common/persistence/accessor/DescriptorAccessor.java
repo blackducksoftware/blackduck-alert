@@ -27,23 +27,21 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public interface DescriptorAccessor {
+    List<RegisteredDescriptorModel> getRegisteredDescriptors();
 
-    List<RegisteredDescriptorModel> getRegisteredDescriptors() throws AlertDatabaseConstraintException;
+    Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey);
 
-    Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException;
+    List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(DescriptorType descriptorType);
 
-    List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(DescriptorType descriptorType) throws AlertDatabaseConstraintException;
+    Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(Long descriptorId);
 
-    Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(Long descriptorId) throws AlertDatabaseConstraintException;
+    List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, ConfigContextEnum context);
 
-    List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException;
-
-    List<DefinedFieldModel> getFieldsForDescriptorById(Long descriptorId, ConfigContextEnum context) throws AlertDatabaseConstraintException;
+    List<DefinedFieldModel> getFieldsForDescriptorById(Long descriptorId, ConfigContextEnum context);
 
 }
