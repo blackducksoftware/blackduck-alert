@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 
 public interface CustomCertificateAccessor {
@@ -33,9 +33,10 @@ public interface CustomCertificateAccessor {
 
     Optional<CustomCertificateModel> getCertificate(Long id);
 
-    CustomCertificateModel storeCertificate(CustomCertificateModel certificateModel) throws AlertDatabaseConstraintException;
+    CustomCertificateModel storeCertificate(CustomCertificateModel certificateModel) throws AlertConfigurationException;
 
-    void deleteCertificate(String certificateAlias) throws AlertDatabaseConstraintException;
+    void deleteCertificate(String certificateAlias);
 
-    void deleteCertificate(Long certificateId) throws AlertDatabaseConstraintException;
+    void deleteCertificate(Long certificateId);
+
 }
