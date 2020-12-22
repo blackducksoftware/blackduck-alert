@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -67,14 +67,14 @@ public class PasswordResetService {
 
     public void resetPassword(String username) throws AlertException {
         UserModel userModel = userAccessor.getUser(username)
-                                  .orElseThrow(() -> new AlertDatabaseConstraintException("No user exists for the username: " + username));
+                                  .orElseThrow(() -> new AlertConfigurationException("No user exists for the username: " + username));
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
-            throw new AlertException("No email address configured for user: " + username);
+            throw new AlertConfigurationException("No email address configured for user: " + username);
         }
         ConfigurationModel emailConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL)
                                              .stream()
                                              .findFirst()
-                                             .orElseThrow(() -> new AlertException("No global email configuration found"));
+                                             .orElseThrow(() -> new AlertConfigurationException("No global email configuration found"));
         FieldUtility fieldUtility = new FieldUtility(emailConfig.getCopyOfKeyToFieldMap());
         EmailProperties emailProperties = new EmailProperties(fieldUtility);
         String alertServerUrl = alertProperties.getServerUrl().orElse(null);

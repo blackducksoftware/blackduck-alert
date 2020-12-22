@@ -37,7 +37,6 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -95,22 +94,18 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     public void accumulate() {
-        try {
-            DateRange dateRange = createDateRange();
-            OffsetDateTime nextSearchStartTime = accumulate(dateRange);
-            String nextSearchStartString = formatDate(nextSearchStartTime);
-            logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
-            saveNextSearchStart(nextSearchStartString);
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error("Error occurred accumulating data! ", e);
-        }
+        DateRange dateRange = createDateRange();
+        OffsetDateTime nextSearchStartTime = accumulate(dateRange);
+        String nextSearchStartString = formatDate(nextSearchStartTime);
+        logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
+        saveNextSearchStart(nextSearchStartString);
     }
 
     protected Optional<String> getNextSearchStart() {
         return providerTaskPropertiesAccessor.getTaskProperty(getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
     }
 
-    protected void saveNextSearchStart(String nextSearchStart) throws AlertDatabaseConstraintException {
+    protected void saveNextSearchStart(String nextSearchStart) {
         providerTaskPropertiesAccessor.setTaskProperty(getProviderProperties().getConfigId(), getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, nextSearchStart);
     }
 

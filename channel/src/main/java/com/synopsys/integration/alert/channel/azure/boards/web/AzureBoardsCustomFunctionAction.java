@@ -49,7 +49,6 @@ import com.synopsys.integration.alert.common.action.api.ConfigResourceActions;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -151,17 +150,12 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     }
 
     private FieldUtility createFieldAccessor(FieldModel fieldModel) {
-        Map<String, ConfigurationFieldModel> fields = new HashMap<>();
-        try {
-            fields.putAll(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
-            // check if a configuration exists because the client id is a sensitive field and won't have a value in the field model if updating.
-            if (StringUtils.isNotBlank(fieldModel.getId())) {
-                configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()))
-                    .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                    .ifPresent(fields::putAll);
-            }
-        } catch (AlertDatabaseConstraintException ex) {
-            logger.error("Error creating field accessor for Azure authentication", ex);
+        Map<String, ConfigurationFieldModel> fields = new HashMap<>(modelConverter.convertToConfigurationFieldModelMap(fieldModel));
+        // check if a configuration exists because the client id is a sensitive field and won't have a value in the field model if updating.
+        if (StringUtils.isNotBlank(fieldModel.getId())) {
+            configurationAccessor.getConfigurationById(Long.valueOf(fieldModel.getId()))
+                .map(ConfigurationModel::getCopyOfKeyToFieldMap)
+                .ifPresent(fields::putAll);
         }
         return new FieldUtility(fields);
     }

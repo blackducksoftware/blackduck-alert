@@ -38,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -143,9 +143,9 @@ public class DefaultProviderDataAccessor {
         updateUserProjectRelations(providerConfigId, projectToUserData);
     }
 
-    private void mapUsersToProjectByEmail(Long providerConfigId, String projectHref, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+    private void mapUsersToProjectByEmail(Long providerConfigId, String projectHref, Collection<String> emailAddresses) throws AlertConfigurationException {
         ProviderProjectEntity project = providerProjectRepository.findFirstByHref(projectHref)
-                                            .orElseThrow(() -> new AlertDatabaseConstraintException("A project with the following href did not exist: " + projectHref));
+                                            .orElseThrow(() -> new AlertConfigurationException("A project with the following href did not exist: " + projectHref));
         Long projectId = project.getId();
         List<ProviderUserProjectRelation> userRelationsToRemove = providerUserProjectRelationRepository.findByProviderProjectId(projectId);
         List<ProviderUserProjectRelation> userRelationsToAdd = new LinkedList<>();
@@ -268,7 +268,7 @@ public class DefaultProviderDataAccessor {
         for (Map.Entry<ProviderProject, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
                 mapUsersToProjectByEmail(providerConfigId, projectToEmail.getKey().getHref(), projectToEmail.getValue());
-            } catch (AlertDatabaseConstraintException e) {
+            } catch (AlertConfigurationException e) {
                 logger.error("Problem mapping users to projects", e);
             }
         }

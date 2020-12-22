@@ -1,8 +1,8 @@
 package com.synopsys.integration.alert.component.audit.web;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -27,13 +27,11 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -47,7 +45,6 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
-import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.test.common.OutputLogger;
 
@@ -100,7 +97,7 @@ public class AuditEntryActionsTest {
     }
 
     @Test
-    public void testResendNotificationException() throws AlertDatabaseConstraintException {
+    public void testResendNotificationException() {
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         AuditDescriptorKey auditDescriptorKey = new AuditDescriptorKey();
@@ -124,7 +121,7 @@ public class AuditEntryActionsTest {
     }
 
     @Test
-    public void testPagedRequest() throws AlertDatabaseConstraintException {
+    public void testPagedRequest() {
         int totalPages = 2;
         int currentPage = 0;
         int pageSize = 2;
@@ -161,8 +158,6 @@ public class AuditEntryActionsTest {
                                                      .createEntity();
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
-        ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", FrequencyType.REAL_TIME.name(),
-            "false", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), ProcessingType.DEFAULT.name());
         DistributionJobModel distributionJob = DistributionJobModel.builder()
                                                    .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name")
                                                    .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of()).processingType(ProcessingType.DEFAULT).build();
@@ -189,7 +184,7 @@ public class AuditEntryActionsTest {
     }
 
     @Test
-    public void testPagedRequestEmptyList() throws AlertDatabaseConstraintException {
+    public void testPagedRequestEmptyList() {
         int totalPages = 1;
         int currentPage = 1;
         int pageSize = 1;
@@ -212,16 +207,12 @@ public class AuditEntryActionsTest {
 
         NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        //JobAccessor oldJobAccessor = Mockito.mock(JobAccessor.class);
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
                                                      .createEntity();
-
-        ConfigurationModel configuration = MockConfigurationModelFactory.createCommonConfigModel(1L, 2L, "distributionType", "name", "providerName", FrequencyType.REAL_TIME.name(),
-            "false", "projectNamePattern", Collections.emptyList(), Collections.emptyList(), ProcessingType.DEFAULT.name());
         DistributionJobModel distributionJob = DistributionJobModel.builder()
                                                    .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name")
                                                    .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of()).processingType(ProcessingType.DEFAULT).build();

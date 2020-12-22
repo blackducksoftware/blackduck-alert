@@ -7,7 +7,7 @@ import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataManager;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
@@ -47,7 +47,7 @@ public class SAMLStartupComponentTest {
         MetadataManager metadataManager = Mockito.mock(MetadataManager.class);
         MetadataGenerator metadataGenerator = Mockito.mock(MetadataGenerator.class);
         FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
-        Mockito.when(context.getCurrentConfiguration()).thenThrow(new AlertDatabaseConstraintException("Test exception"));
+        Mockito.when(context.getCurrentConfiguration()).thenThrow(new AlertConfigurationException("Test exception"));
 
         SAMLManager samlManager = new SAMLManager(parserPool, extendedMetadata, metadataManager, metadataGenerator, filePersistenceUtil, context);
         SAMLStartupComponent startupComponent = new SAMLStartupComponent(samlManager);
@@ -58,4 +58,5 @@ public class SAMLStartupComponentTest {
         Mockito.verify(metadataManager, Mockito.times(0)).setProviders(Mockito.anyList());
         Mockito.verify(metadataManager, Mockito.times(0)).afterPropertiesSet();
     }
+
 }

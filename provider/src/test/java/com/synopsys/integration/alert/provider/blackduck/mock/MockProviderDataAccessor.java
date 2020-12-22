@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
@@ -172,12 +172,12 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
         for (Map.Entry<ProviderProject, Set<String>> projectToEmail : projectToEmailAddresses.entrySet()) {
             try {
                 mapUsersToProjectByEmail(projectToEmail.getKey(), projectToEmail.getValue());
-            } catch (AlertDatabaseConstraintException ignored) {
+            } catch (AlertConfigurationException ignored) {
             }
         }
     }
 
-    private void mapUsersToProjectByEmail(ProviderProject project, Collection<String> emailAddresses) throws AlertDatabaseConstraintException {
+    private void mapUsersToProjectByEmail(ProviderProject project, Collection<String> emailAddresses) throws AlertConfigurationException {
         Set<ProviderUserModel> applicableUsers = providerUsers
                                                      .values()
                                                      .stream()

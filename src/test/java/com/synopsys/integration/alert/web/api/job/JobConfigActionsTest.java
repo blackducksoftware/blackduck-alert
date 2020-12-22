@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
@@ -226,7 +226,7 @@ public class JobConfigActionsTest {
     public void updateServerErrorTest() throws Exception {
         Mockito.when(jobAccessor.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
-        Mockito.doThrow(new AlertDatabaseConstraintException("Exception for Alert test")).when(fieldModelProcessor).performBeforeUpdateAction(Mockito.any());
+        Mockito.doThrow(new AlertConfigurationException("Exception for Alert test")).when(fieldModelProcessor).performBeforeUpdateAction(Mockito.any());
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.update(jobId, jobFieldModel);
 
