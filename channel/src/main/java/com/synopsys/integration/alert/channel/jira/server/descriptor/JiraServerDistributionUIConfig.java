@@ -65,7 +65,7 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
                                                                               + "Note: This must be in the 'Done' status category.";
     private static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
                                                                            + "Note: This must be in the 'To Do' status category.";
-    public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to map Jira fields to fields in processed notifications.";
+    public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to provide static values to Jira fields or map them to information from the notifications.";
 
     private final Gson gson;
 
@@ -87,7 +87,8 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
                                        .applyRequiredRelatedField(resolveWorkflow.getKey());
         ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
                                        .applyNewMappingTitle("Create Jira Field Mapping")
-                                       .applyValidationFunctions(this::validateFieldMapping);
+                                       .applyValidationFunctions(this::validateFieldMapping)
+                                       .applyPanel("Advanced");
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, fieldMapping);
     }
