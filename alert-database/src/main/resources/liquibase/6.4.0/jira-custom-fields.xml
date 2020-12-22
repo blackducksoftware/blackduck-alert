@@ -76,4 +76,33 @@
         />
     </changeSet>
 
+    <changeSet author="jrichard" id="add-defined-field-field-mapping">
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.jira.cloud.field.mapping</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+        <insert schemaName="ALERT" tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY">channel.jira.server.field.mapping</column>
+            <column name="SENSITIVE">false</column>
+        </insert>
+
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_cloud')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.field.mapping')"/>
+        </insert>
+        <insert schemaName="ALERT" tableName="DESCRIPTOR_FIELDS">
+            <column name="DESCRIPTOR_ID" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.field.mapping')"/>
+        </insert>
+
+        <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.cloud.field.mapping')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+          <insert schemaName="ALERT" tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" valueComputed="GET_FIELD_ID('channel.jira.server.field.mapping')"/>
+            <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('DISTRIBUTION')"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

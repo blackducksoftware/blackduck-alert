@@ -36,7 +36,8 @@ public enum FieldType {
     ENDPOINT_SELECT("EndpointSelectField"),
     TABLE_SELECT_INPUT("TableSelectInput"),
     UPLOAD_FILE_BUTTON("UploadFileButtonField"),
-    OAUTH_ENDPOINT_BUTTON("OAuthEndpointButtonField");
+    OAUTH_ENDPOINT_BUTTON("OAuthEndpointButtonField"),
+    FIELD_MAPPING_INPUT("FieldMappingField");
 
     private final String fieldTypeName;
 

@@ -5,8 +5,20 @@ import LabeledField from 'field/LabeledField';
 class TextInput extends Component {
     render() {
         const {
-            inputClass, id, readOnly, autoFocus, name, value, onChange
+            inputClass, id, readOnly, autoFocus, name, value, onChange, optionList
         } = this.props;
+
+        let listId = null;
+        let dataListOptions = null;
+        if (optionList) {
+            listId = 'listOptions';
+            const dataListOptionObjects = optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
+            dataListOptions = (
+                <datalist id={listId}>
+                    {dataListOptionObjects}
+                </datalist>
+            );
+        }
 
         const field = (
             <div className="d-inline-flex flex-column p-2 col-sm-8">
@@ -19,7 +31,9 @@ class TextInput extends Component {
                     name={name}
                     value={value}
                     onChange={onChange}
+                    list={listId}
                 />
+                {dataListOptions}
             </div>
         );
 
@@ -37,7 +51,8 @@ TextInput.propTypes = {
     inputClass: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    optionList: PropTypes.array
 };
 
 TextInput.defaultProps = {
@@ -48,7 +63,8 @@ TextInput.defaultProps = {
     autoFocus: false,
     inputClass: 'form-control',
     name: 'name',
-    onChange: () => true
+    onChange: () => true,
+    optionList: null
 };
 
 export default TextInput;

@@ -39,6 +39,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String KEY_ISSUE_TYPE = JIRA_SERVER_CHANNEL_PREFIX + "issue.type";
     public static final String KEY_RESOLVE_WORKFLOW_TRANSITION = JIRA_SERVER_CHANNEL_PREFIX + "resolve.workflow";
     public static final String KEY_OPEN_WORKFLOW_TRANSITION = JIRA_SERVER_CHANNEL_PREFIX + "reopen.workflow";
+    public static final String KEY_FIELD_MAPPING = JIRA_SERVER_CHANNEL_PREFIX + "field.mapping";
 
     public static final String KEY_SERVER_URL = JIRA_SERVER_PREFIX + "url";
     public static final String KEY_SERVER_USERNAME = JIRA_SERVER_PREFIX + "username";
