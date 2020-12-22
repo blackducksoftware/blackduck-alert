@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.component.users.web.user;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -165,7 +165,7 @@ public class UserActionsTest {
 
     @Test
     public void testCreateWithoutChecksDatabaseError() throws Exception {
-        Mockito.when(userAccessor.addUser(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenThrow(new AlertDatabaseConstraintException("Exception for test"));
+        Mockito.when(userAccessor.addUser(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenThrow(new AlertConfigurationException("Exception for test"));
 
         Set<String> roleNames = roles
                                     .stream()
@@ -204,7 +204,7 @@ public class UserActionsTest {
         UserModel userModel = UserModel.existingUser(id, name, password, emailAddress, authenticationType, roles, true);
 
         Mockito.when(userAccessor.getUser(id)).thenReturn(Optional.of(userModel));
-        Mockito.when(userAccessor.updateUser(Mockito.any(), Mockito.anyBoolean())).thenThrow(new AlertDatabaseConstraintException("Exception for test"));
+        Mockito.when(userAccessor.updateUser(Mockito.any(), Mockito.anyBoolean())).thenThrow(new AlertConfigurationException("Exception for test"));
 
         Set<String> roleNames = roles
                                     .stream()
@@ -325,4 +325,5 @@ public class UserActionsTest {
         assertEquals(name, userConfig.getUsername());
         assertEquals(emailAddress, userConfig.getEmailAddress());
     }
+
 }
