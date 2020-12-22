@@ -24,12 +24,13 @@ class FieldMappingField extends Component {
             fieldMappings = storedMappings.map((mapping) => JSON.parse(mapping));
             fieldMappings.forEach((parsedMapping) => {
                 parsedMapping.id = currentId;
-                currentId = currentId + 1;
+                currentId += 1;
             });
         }
 
         this.state = ({
-            rowKeyPair: {
+            fieldMappingRow: {
+                rowId: -1,
                 fieldName: '',
                 fieldValue: ''
             },
@@ -42,8 +43,8 @@ class FieldMappingField extends Component {
     handleChange({ target }) {
         const { name, value } = target;
         this.setState({
-            rowKeyPair: {
-                ...this.state.rowKeyPair,
+            fieldMappingRow: {
+                ...this.state.fieldMappingRow,
                 [name]: value
             }
         });
@@ -51,7 +52,7 @@ class FieldMappingField extends Component {
 
     createNewRow() {
         const { leftSideMapping, rightSideMapping } = this.props;
-        const { fieldName, fieldValue } = this.state.rowKeyPair;
+        const { fieldName, fieldValue } = this.state.fieldMappingRow;
         const valueOptions = ['{{providerName}}', '{{projectName}}', '{{projectVersion}}', '{{componentName}}', '{{componentVersion}}'];
 
         return (
@@ -100,7 +101,8 @@ class FieldMappingField extends Component {
     onEdit(selectedRow, callback) {
         const entireRow = this.state.tableData.filter((row) => row.id === selectedRow.id)[0];
         this.setState({
-            rowKeyPair: {
+            fieldMappingRow: {
+                rowId: entireRow.id,
                 fieldName: entireRow.fieldName,
                 fieldValue: entireRow.fieldValue
             }
@@ -109,7 +111,8 @@ class FieldMappingField extends Component {
 
     clearModal() {
         this.setState({
-            rowKeyPair: {
+            fieldMappingRow: {
+                rowId: -1,
                 fieldName: '',
                 fieldValue: ''
             }
@@ -136,18 +139,25 @@ class FieldMappingField extends Component {
     }
 
     saveModalData(callback) {
-        const { tableData, rowKeyPair, id } = this.state;
-        const { fieldName, fieldValue } = rowKeyPair;
-
-        tableData.push({
-            id,
-            fieldName,
-            fieldValue
-        });
+        const { tableData, fieldMappingRow, id } = this.state;
+        const { rowId, fieldName, fieldValue } = fieldMappingRow;
+        let currentId = id;
+        const mappingIndex = tableData.findIndex((mapping) => mapping.id === rowId);
+        if (mappingIndex >= 0) {
+            tableData[mappingIndex].fieldName = fieldName;
+            tableData[mappingIndex].fieldValue = fieldValue;
+        } else {
+            tableData.push({
+                id,
+                fieldName,
+                fieldValue
+            });
+            currentId += 1;
+        }
 
         this.setState({
             tableData,
-            id: id + 1,
+            id: currentId,
             modalError: null
         });
 
