@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.database.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +10,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
@@ -30,10 +26,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DefaultDescriptorAccessorTest {
-    private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
-
     @Test
-    public void getRegisteredDescriptorsTest() throws Exception {
+    public void getRegisteredDescriptorsTest() {
         final String name = "name-test";
         final Long typeId = 1L;
         final DescriptorType descriptorType = DescriptorType.CHANNEL;
@@ -58,7 +52,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     @Test
-    public void getRegisteredDescriptorByKeyTest() throws Exception {
+    public void getRegisteredDescriptorByKeyTest() {
         final String name = "name-test";
         final Long typeId = 1L;
         final DescriptorType descriptorType = DescriptorType.CHANNEL;
@@ -88,20 +82,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     @Test
-    public void descriptorKeyFailureTest() throws Exception {
-        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(null, null, null, null);
-        DescriptorKey descriptorKey = createDescriptorKey("");
-
-        try {
-            descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey);
-            fail();
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @Test
-    public void getRegisteredDescriptorsByTypeTest() throws Exception {
+    public void getRegisteredDescriptorsByTypeTest() {
         final String name = "name-test";
         final Long typeId = 1L;
         final DescriptorType descriptorType = DescriptorType.CHANNEL;
@@ -128,7 +109,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     @Test
-    public void getRegisteredDescriptorsByTypeMissingDescriptorTypeTest() throws Exception {
+    public void getRegisteredDescriptorsByTypeMissingDescriptorTypeTest() {
         final String name = "name-test";
         final Long typeId = 1L;
         final DescriptorType descriptorType = DescriptorType.CHANNEL;
@@ -156,20 +137,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     @Test
-    public void descriptorTypeFailureTest() throws Exception {
-        DefaultDescriptorAccessor descriptorAccessor = new DefaultDescriptorAccessor(null, null, null, null);
-        DescriptorType descriptorType = null;
-
-        try {
-            descriptorAccessor.getRegisteredDescriptorsByType(descriptorType);
-            fail();
-        } catch (AlertDatabaseConstraintException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    @Test
-    public void getRegisteredDescriptorByIdTest() throws Exception {
+    public void getRegisteredDescriptorByIdTest() {
         final String name = "name-test";
         final Long typeId = 1L;
         final DescriptorType descriptorType = DescriptorType.CHANNEL;
@@ -197,7 +165,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     @Test
-    public void getFieldsForDescriptorTest() throws Exception {
+    public void getFieldsForDescriptorTest() {
         final String name = "name-test";
         final Long typeId = 1L;
         final ConfigContextEnum configContextEnum = ConfigContextEnum.GLOBAL;
@@ -244,7 +212,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     @Test
-    public void getFieldsForDescriptorByIdTest() throws Exception {
+    public void getFieldsForDescriptorByIdTest() {
         final String name = "name-test";
         final Long typeId = 1L;
         final ConfigContextEnum configContextEnum = ConfigContextEnum.GLOBAL;
@@ -279,8 +247,7 @@ public class DefaultDescriptorAccessorTest {
     }
 
     private DescriptorKey createDescriptorKey(String key) {
-        DescriptorKey testDescriptorKey = new DescriptorKey(key, key) {};
-        return testDescriptorKey;
+        return new DescriptorKey(key, key) {};
     }
 
 }

@@ -28,14 +28,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
@@ -66,7 +65,7 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
     }
 
     @Override
-    public List<RegisteredDescriptorModel> getRegisteredDescriptors() throws AlertDatabaseConstraintException {
+    public List<RegisteredDescriptorModel> getRegisteredDescriptors() {
         List<RegisteredDescriptorEntity> allDescriptors = registeredDescriptorRepository.findAll();
         List<RegisteredDescriptorModel> descriptorModels = new ArrayList<>();
         for (RegisteredDescriptorEntity entity : allDescriptors) {
@@ -77,24 +76,13 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
     }
 
     @Override
-    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
-        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
-        }
-
-        Optional<RegisteredDescriptorEntity> descriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey());
-        if (descriptorEntity.isPresent()) {
-            return Optional.of(createRegisteredDescriptorModel(descriptorEntity.get()));
-        }
-        return Optional.empty();
+    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorByKey(DescriptorKey descriptorKey) {
+        return registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey())
+                   .map(this::createRegisteredDescriptorModel);
     }
 
     @Override
-    public List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(DescriptorType descriptorType) throws AlertDatabaseConstraintException {
-        if (null == descriptorType) {
-            throw new AlertDatabaseConstraintException("Descriptor type cannot be null");
-        }
-
+    public List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(DescriptorType descriptorType) {
         Long typeId = saveDescriptorTypeAndReturnId(descriptorType);
         Collection<RegisteredDescriptorEntity> allDescriptors = registeredDescriptorRepository.findByTypeId(typeId);
         List<RegisteredDescriptorModel> descriptorModels = new ArrayList<>();
@@ -106,26 +94,26 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
     }
 
     @Override
-    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(Long descriptorId) throws AlertDatabaseConstraintException {
+    public Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(Long descriptorId) {
         RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
         return Optional.of(createRegisteredDescriptorModel(descriptor));
     }
 
     @Override
-    public List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<DefinedFieldModel> getFieldsForDescriptor(DescriptorKey descriptorKey, ConfigContextEnum context) {
         RegisteredDescriptorEntity descriptor = findDescriptorByKey(descriptorKey);
         Long contextId = saveContextAndReturnId(context);
         return getFieldsForDescriptorId(descriptor.getId(), contextId, context);
     }
 
     @Override
-    public List<DefinedFieldModel> getFieldsForDescriptorById(Long descriptorId, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    public List<DefinedFieldModel> getFieldsForDescriptorById(Long descriptorId, ConfigContextEnum context) {
         RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
         Long contextId = saveContextAndReturnId(context);
         return getFieldsForDescriptorId(descriptor.getId(), contextId, context);
     }
 
-    private RegisteredDescriptorModel createRegisteredDescriptorModel(RegisteredDescriptorEntity registeredDescriptorEntity) throws AlertDatabaseConstraintException {
+    private RegisteredDescriptorModel createRegisteredDescriptorModel(RegisteredDescriptorEntity registeredDescriptorEntity) {
         Long id = registeredDescriptorEntity.getId();
         String name = registeredDescriptorEntity.getName();
 
@@ -134,18 +122,14 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
         return new RegisteredDescriptorModel(id, name, descriptorType);
     }
 
-    private String getDescriptorTypeById(Long id) throws AlertDatabaseConstraintException {
+    private String getDescriptorTypeById(Long id) {
         return descriptorTypeRepository
                    .findById(id)
                    .map(DescriptorTypeEntity::getType)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("No descriptor type with that id exists"));
+                   .orElseThrow(() -> new AlertRuntimeException("No descriptor type with that id exists"));
     }
 
-    private Long saveDescriptorTypeAndReturnId(DescriptorType descriptorType) throws AlertDatabaseConstraintException {
-        if (descriptorType == null) {
-            throw new AlertDatabaseConstraintException("The descriptor type cannot be empty");
-        }
-
+    private Long saveDescriptorTypeAndReturnId(DescriptorType descriptorType) {
         String descriptorTypeString = descriptorType.name();
         Optional<Long> optionalDescriptorType = descriptorTypeRepository
                                                     .findFirstByType(descriptorTypeString)
@@ -158,10 +142,7 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
         return savedDescriptorTypeEntity.getId();
     }
 
-    private Long saveContextAndReturnId(ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        if (context == null) {
-            throw new AlertDatabaseConstraintException("The context cannot be empty");
-        }
+    private Long saveContextAndReturnId(ConfigContextEnum context) {
         String contextString = context.name();
         Optional<Long> optionalConfigContextId = configContextRepository
                                                      .findFirstByContext(contextString)
@@ -174,22 +155,16 @@ public class DefaultDescriptorAccessor implements DescriptorAccessor {
         return savedContextEntity.getId();
     }
 
-    private RegisteredDescriptorEntity findDescriptorByKey(DescriptorKey descriptorKey) throws AlertDatabaseConstraintException {
-        if (null == descriptorKey || StringUtils.isBlank(descriptorKey.getUniversalKey())) {
-            throw new AlertDatabaseConstraintException(String.format("DescriptorKey is not valid. %s", descriptorKey));
-        }
+    private RegisteredDescriptorEntity findDescriptorByKey(DescriptorKey descriptorKey) {
         return registeredDescriptorRepository
                    .findFirstByName(descriptorKey.getUniversalKey())
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that name did not exist"));
+                   .orElseThrow(() -> new AlertRuntimeException("A descriptor with that name did not exist"));
     }
 
-    private RegisteredDescriptorEntity findDescriptorById(Long id) throws AlertDatabaseConstraintException {
-        if (id == null) {
-            throw new AlertDatabaseConstraintException("The descriptor id cannot be null");
-        }
+    private RegisteredDescriptorEntity findDescriptorById(Long id) {
         return registeredDescriptorRepository
                    .findById(id)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that id did not exist"));
+                   .orElseThrow(() -> new AlertRuntimeException("A descriptor with that id did not exist"));
     }
 
     private List<DefinedFieldModel> getFieldsForDescriptorId(Long descriptorId, Long contextId, ConfigContextEnum context) {
