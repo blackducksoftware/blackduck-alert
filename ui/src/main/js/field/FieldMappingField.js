@@ -117,12 +117,19 @@ class FieldMappingField extends Component {
     }
 
     onDelete(configsToDelete, callback) {
-        // FIXME this is not correctly deleting the entries
         const { tableData } = this.state;
         if (configsToDelete) {
             const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.id));
             this.setState({
                 tableData: filteredTable
+            });
+            const { onChange, fieldMappingKey } = this.props;
+            const fieldMappingValue = filteredTable.map((mappingEntry) => JSON.stringify(mappingEntry));
+            onChange({
+                target: {
+                    name: fieldMappingKey,
+                    value: fieldMappingValue
+                }
             });
         }
         callback();
