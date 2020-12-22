@@ -44,6 +44,8 @@ public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_STRING_VALUE = "string";
     private static final String CUSTOM_FIELD_TYPE_ARRAY_VALUE = "array";
     private static final String CUSTOM_FIELD_TYPE_OPTION_VALUE = "option";
+    private static final String CUSTOM_FIELD_TYPE_PRIORITY_VALUE = "priority";
+    private static final String CUSTOM_FIELD_TYPE_USER_VALUE = "user";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -93,9 +95,10 @@ public class JiraCustomFieldResolver {
                 jsonArray.add(innerFieldValue);
                 return jsonArray;
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("value", innerFieldValue);
-                return jsonObject;
+                return createJsonObject("value", innerFieldValue);
+            case CUSTOM_FIELD_TYPE_PRIORITY_VALUE:
+            case CUSTOM_FIELD_TYPE_USER_VALUE:
+                return createJsonObject("name", innerFieldValue);
             default:
                 throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
         }
@@ -111,6 +114,12 @@ public class JiraCustomFieldResolver {
             fieldCache.put(fieldModel.getName(), fieldModel);
         }
         isCachePopulated = true;
+    }
+
+    private JsonObject createJsonObject(String key, String value) {
+        JsonObject objectWithName = new JsonObject();
+        objectWithName.addProperty(key, value);
+        return objectWithName;
     }
 
 }
