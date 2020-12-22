@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -85,10 +84,10 @@ public class JiraServerDistributionUIConfig extends ChannelDistributionUIConfig 
         ConfigField resolveWorkflow = new TextInputConfigField(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
         ConfigField openWorkflow = new TextInputConfigField(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
                                        .applyRequiredRelatedField(resolveWorkflow.getKey());
-        ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
+        ConfigField fieldMapping = new FieldMappingEndpointField(JiraServerDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
                                        .applyNewMappingTitle("Create Jira Field Mapping")
                                        .applyValidationFunctions(this::validateFieldMapping)
-                                       .applyPanel("Advanced");
+                                       .applyPanel("Advanced Jira Configuration");
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, fieldMapping);
     }

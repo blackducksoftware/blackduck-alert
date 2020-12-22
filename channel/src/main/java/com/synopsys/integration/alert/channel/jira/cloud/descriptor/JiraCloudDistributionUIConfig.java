@@ -89,7 +89,7 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
                                        .applyNewMappingTitle("Create Jira Field Mapping")
                                        .applyValidationFunctions(this::validateFieldMapping)
-                                       .applyPanel("Advanced");
+                                       .applyPanel("Advanced Jira Configuration");
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, fieldMapping);
     }
