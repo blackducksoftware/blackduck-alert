@@ -383,7 +383,7 @@ class TableSelectInput extends Component {
         ));
 
         // Need to add this column to the array as you can't display tableColumns dynamically and statically https://github.com/AllenFang/react-bootstrap-table/issues/1814
-        tableColumns.push(<TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>);
+        tableColumns.push(<TableHeaderColumn key="missingHeaderKey" dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>);
 
         const { paged, searchable, fieldKey } = this.props;
 

@@ -20,26 +20,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest.model;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-public class JobFieldMappingFieldModel extends AlertSerializableModel {
-    private String fieldKey;
-    private String fieldValue;
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-    public JobFieldMappingFieldModel() {
+public class FieldMappingEndpointField extends ConfigField {
+    private String leftSide;
+    private String rightSide;
+    private String newMappingTitle;
+
+    public FieldMappingEndpointField(String key, String label, String description, String leftSide, String rightSide) {
+        super(key, label, description, FieldType.FIELD_MAPPING_INPUT);
+        this.leftSide = leftSide;
+        this.rightSide = rightSide;
     }
 
-    public JobFieldMappingFieldModel(String fieldKey, String fieldValue) {
-        this.fieldKey = fieldKey;
-        this.fieldValue = fieldValue;
+    public FieldMappingEndpointField applyNewMappingTitle(String title) {
+        this.newMappingTitle = title;
+        return this;
     }
 
-    public String getFieldKey() {
-        return fieldKey;
+    public String getLeftSide() {
+        return leftSide;
     }
 
-    public String getFieldValue() {
-        return fieldValue;
+    public String getRightSide() {
+        return rightSide;
     }
 
+    public String getNewMappingTitle() {
+        return newMappingTitle;
+    }
 }

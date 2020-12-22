@@ -408,6 +408,7 @@ class TableDisplay extends Component {
     createIconTableHeader(dataFormat, text) {
         return (
             <TableHeaderColumn
+                key={`${text}Key`}
                 dataField=""
                 width="48"
                 columnClassName="tableCell"

@@ -13,6 +13,7 @@ import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
 import UploadFileButtonField from 'field/UploadFileButtonField';
 import OAuthEndpointButtonField from 'field/OAuthEndpointButtonField';
+import FieldMappingField from 'field/FieldMappingField';
 
 function extractFirstValue(items) {
     const { value } = items;
@@ -151,10 +152,9 @@ function buildCounterField(items, field) {
 function buildEndpointField(items, field) {
     const { value } = items;
     const {
-        buttonLabel, url, successBox, subFields, key, requiredRelatedFields
+        buttonLabel, url, successBox, subFields, key, requiredRelatedFields, readOnly
     } = field;
     const checkedValue = convertStringToBoolean(value);
-    const { readOnly } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(items, {
         value: checkedValue,
@@ -192,9 +192,8 @@ function buildTableSelectInput(items, field) {
 
 function buildUploadFileButtonField(items, field) {
     const {
-        buttonLabel, url, successBox, subFields, key
+        buttonLabel, url, successBox, subFields, key, readOnly, accept, multiple
     } = field;
-    const { readOnly, accept, multiple } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(items, {
         className: 'form-control',
@@ -217,10 +216,9 @@ function buildUploadFileButtonField(items, field) {
 function buildOAuthEndpointField(items, field) {
     const { value } = items;
     const {
-        buttonLabel, url, successBox, subFields, key, requiredRelatedFields
+        buttonLabel, url, successBox, subFields, key, requiredRelatedFields, readOnly
     } = field;
     const checkedValue = convertStringToBoolean(value);
-    const { readOnly } = field;
     const isReadOnly = convertStringToBoolean(readOnly);
     Object.assign(items, {
         value: checkedValue,
@@ -240,6 +238,19 @@ function buildOAuthEndpointField(items, field) {
     );
 }
 
+function buildFieldMappingField(items, field) {
+    const { value } = items
+    const { leftSide, rightSide, mappingTitle, key } = field
+    return <FieldMappingField
+        storedMappings={value}
+        leftSideMapping={leftSide}
+        rightSideMapping={rightSide}
+        newMappingTitle={mappingTitle}
+        fieldMappingKey={key}
+        {...items}
+    />
+}
+
 export const FIELDS = {
     TextInput: buildTextInput,
     TextArea: buildTextArea,
@@ -254,7 +265,8 @@ export const FIELDS = {
     TableSelectInput: buildTableSelectInput,
     EndpointButtonField: buildEndpointField,
     UploadFileButtonField: buildUploadFileButtonField,
-    OAuthEndpointButtonField: buildOAuthEndpointField
+    OAuthEndpointButtonField: buildOAuthEndpointField,
+    FieldMappingField: buildFieldMappingField
 };
 
 export function getField(fieldType, props, field) {
