@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -65,7 +64,7 @@ public class ConfigurationFieldModelConverter {
         this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, DescriptorKey::getUniversalKey);
     }
 
-    public final FieldUtility convertToFieldAccessor(FieldModel fieldModel) throws AlertDatabaseConstraintException {
+    public final FieldUtility convertToFieldAccessor(FieldModel fieldModel) {
         Map<String, ConfigurationFieldModel> fields = convertToConfigurationFieldModelMap(fieldModel);
         return new FieldUtility(fields);
     }
@@ -92,7 +91,7 @@ public class ConfigurationFieldModelConverter {
         return configurationModel;
     }
 
-    public final Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(FieldModel fieldModel) throws AlertDatabaseConstraintException {
+    public final Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(FieldModel fieldModel) {
         ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         String descriptorName = fieldModel.getDescriptorName();
         DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertRuntimeException("Could not find a Descriptor with the name: " + descriptorName));
@@ -131,7 +130,7 @@ public class ConfigurationFieldModelConverter {
             configurationModel.getCreatedAt(), configurationModel.getLastUpdated(), fields);
     }
 
-    public ConfigurationModel convertToConfigurationModel(FieldModel fieldModel) throws AlertDatabaseConstraintException {
+    public ConfigurationModel convertToConfigurationModel(FieldModel fieldModel) {
         String descriptorName = fieldModel.getDescriptorName();
         DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertRuntimeException("Could not find a Descriptor with the name: " + descriptorName));
 

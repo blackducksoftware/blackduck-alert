@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueS
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -61,7 +60,7 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
     }
 
     @Override
-    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) throws AlertDatabaseConstraintException {
+    public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         String providerName = fieldModel.getDescriptorName();
         Optional<DescriptorKey> descriptorKey = descriptorMap.getDescriptorKey(providerName);
         List<LabelValueSelectOption> options = List.of();
