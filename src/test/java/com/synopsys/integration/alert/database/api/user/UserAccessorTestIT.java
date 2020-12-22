@@ -21,13 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.user.AuthenticationTypeEntity;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -52,7 +51,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testGetUsers() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testGetUsers() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName_1 = "testUser_1";
         String password_1 = "testPassword_1";
         String email_1 = "testEmail_1";
@@ -86,7 +85,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAddUser() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testAddUser() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -101,7 +100,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testUpdateUser() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testUpdateUser() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -129,7 +128,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testChangeUserPassword() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testChangeUserPassword() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -157,7 +156,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testChangeUserEmailAddress() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testChangeUserEmailAddress() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -171,13 +170,10 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         assertTrue(userAccessor.changeUserEmailAddress(userModel.getName(), "new_test_email"));
         Optional<UserModel> foundModel = userAccessor.getUser(userName);
         assertTrue(foundModel.isPresent());
-        if (foundModel.isPresent()) {
-            UserModel updatedModel = foundModel.get();
-            assertEquals(userModel.getName(), updatedModel.getName());
-            assertNotEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
-        } else {
-            fail();
-        }
+
+        UserModel updatedModel = foundModel.get();
+        assertEquals(userModel.getName(), updatedModel.getName());
+        assertNotEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
 
         userAccessor.deleteUser(userName);
 
@@ -185,7 +181,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testExternalUserUpdateRoles() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testExternalUserUpdateRoles() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -201,11 +197,11 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testExternalUserUpdateNameException() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testExternalUserUpdateNameException() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
-        List<AuthenticationTypeEntity> authTypes = authenticationTypeRepository.findAll();
+
         UserModel userModel = UserModel.newUser(userName, password, email, AuthenticationType.LDAP, Collections.emptySet(), true);
         userModel = userAccessor.addUser(userModel, false);
         UserModel updatedUser = UserModel.existingUser(userModel.getId(), userName + "_updated", null, email, AuthenticationType.LDAP, Collections.emptySet(), true);
@@ -214,7 +210,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testExternalUserUpdateEmailException() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testExternalUserUpdateEmailException() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -226,7 +222,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testExternalUserUpdatePasswordException() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testExternalUserUpdatePasswordException() throws AlertForbiddenOperationException, AlertConfigurationException {
         String userName = "testUser";
         String password = "testPassword";
         String email = "testEmail";
@@ -242,8 +238,9 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         try {
             userAccessor.updateUser(updatedUser, true);
             fail();
-        } catch (AlertDatabaseConstraintException ex) {
+        } catch (AlertForbiddenOperationException | AlertConfigurationException ex) {
             assertTrue(ex.getMessage().contains(exceptionMessage));
         }
     }
+
 }

@@ -28,7 +28,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
@@ -37,7 +38,7 @@ import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 public class AuthenticationEventListener extends MessageReceiver<AlertAuthenticationEvent> implements AlertEventListener {
     public static final String DESTINATION_NAME = "AuthenticationEventListener";
 
-    private UserAccessor userAccessor;
+    private final UserAccessor userAccessor;
 
     public AuthenticationEventListener(Gson gson, UserAccessor userAccessor) {
         super(gson, AlertAuthenticationEvent.class);
@@ -58,13 +59,21 @@ public class AuthenticationEventListener extends MessageReceiver<AlertAuthentica
                 if (userModel.isPresent() && user.isExternal()) {
                     UserModel model = userModel.get();
                     UserModel updatedUser = UserModel.existingUser(
-                        model.getId(), user.getName(), user.getPassword(), user.getEmailAddress(),
-                        user.getAuthenticationType(), user.getRoles(), user.isEnabled());
+                        model.getId(),
+                        user.getName(),
+                        user.getPassword(),
+                        user.getEmailAddress(),
+                        user.getAuthenticationType(),
+                        user.getRoles(),
+                        user.isEnabled()
+                    );
                     userAccessor.updateUser(updatedUser, true);
                 } else {
                     userAccessor.addUser(user, true);
                 }
-            } catch (AlertDatabaseConstraintException ignored) {
+            } catch (AlertForbiddenOperationException ignored) {
+                // Cannot update an external user's credentials
+            } catch (AlertConfigurationException ignored) {
                 // User already exists. Nothing to do.
             }
         }

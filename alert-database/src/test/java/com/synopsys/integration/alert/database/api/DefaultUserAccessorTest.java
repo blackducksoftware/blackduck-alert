@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
@@ -153,8 +153,8 @@ public class DefaultUserAccessorTest {
 
         try {
             defaultUserAccessor.addUser(username, password, emailAddress);
-            fail("User with the same name that already exists in the userRepository did not throw expected AlertForbiddenOperationException.");
-        } catch (AlertDatabaseConstraintException e) {
+            fail("User with the same name that already exists in the userRepository did not throw expected " + AlertConfigurationException.class.getSimpleName());
+        } catch (AlertConfigurationException e) {
             assertNotNull(e);
         }
     }
@@ -183,44 +183,6 @@ public class DefaultUserAccessorTest {
         Mockito.verify(roleAccessor).updateUserRoles(Mockito.eq(userEntity.getId()), Mockito.any());
 
         testUserModel(userEntity.getId(), username, emailAddress, roleName, newUserModel);
-    }
-
-    @Test
-    public void updateUserNullTest() {
-        UserRoleModel roles = createUserRoleModel(1L, "roleName", true);
-        UserModel userModel = UserModel.newUser(username, password, emailAddress, AuthenticationType.DATABASE, Set.of(roles), true);
-
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
-
-        try {
-            defaultUserAccessor.updateUser(userModel, false);
-            fail("Null userId did not throw expected AlertForbiddenOperationException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void updateUserAuthenticationTypeEmptyTest() {
-        final String roleName = "userName";
-        AuthenticationType authenticationType = AuthenticationType.DATABASE;
-
-        UserEntity userEntity = new UserEntity(username, password, emailAddress, 2L);
-        userEntity.setId(1L);
-        UserRoleModel roles = createUserRoleModel(1L, roleName, true);
-        UserModel userModel = UserModel.existingUser(1L, username, password, emailAddress, authenticationType, Set.of(roles), true);
-
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(userEntity));
-        Mockito.when(authenticationTypeAccessor.getAuthenticationType(Mockito.any())).thenReturn(Optional.empty());
-
-        DefaultUserAccessor defaultUserAccessor = new DefaultUserAccessor(userRepository, userRoleRepository, defaultPasswordEncoder, roleAccessor, authenticationTypeAccessor);
-
-        try {
-            defaultUserAccessor.updateUser(userModel, false);
-            fail("Null userId did not throw expected AlertForbiddenOperationException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
     }
 
     @Test
@@ -271,9 +233,11 @@ public class DefaultUserAccessorTest {
 
         try {
             defaultUserAccessor.updateUser(userModel, false);
-            fail("External user with  did not throw expected AlertForbiddenOperationException.");
-        } catch (AlertDatabaseConstraintException e) {
+            fail("External user with ? did not throw expected " + AlertForbiddenOperationException.class.getSimpleName());
+        } catch (AlertForbiddenOperationException e) {
             assertNotNull(e);
+        } catch (AlertConfigurationException wrongException) {
+            fail("Wrong exception thrown");
         }
     }
 
@@ -404,4 +368,5 @@ public class DefaultUserAccessorTest {
         assertEquals(expectedEmailAddress, userModel.getEmailAddress());
         assertTrue(userModel.getRoleNames().contains(expectedRoleName));
     }
+
 }

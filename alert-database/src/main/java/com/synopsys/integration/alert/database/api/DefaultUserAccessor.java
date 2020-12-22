@@ -35,8 +35,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuthenticationTypeDetails;
@@ -48,9 +49,11 @@ import com.synopsys.integration.alert.database.user.UserRoleRelation;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 @Component
+// FIXME update the usage of @Transactional within this class
 @Transactional
 public class DefaultUserAccessor implements UserAccessor {
     private static final Set<Long> RESERVED_USER_IDS = Set.of(UserAccessor.DEFAULT_ADMIN_USER_ID, UserAccessor.DEFAULT_JOB_MANAGER_ID, UserAccessor.DEFAULT_ALERT_USER_ID);
+
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder defaultPasswordEncoder;
@@ -84,21 +87,21 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
-    public UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException {
+    public UserModel addUser(String userName, String password, String emailAddress) throws AlertConfigurationException {
         return addUser(UserModel.newUser(userName, password, emailAddress, AuthenticationType.DATABASE, Collections.emptySet(), true), false);
     }
 
     @Override
-    public UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException {
+    public UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertConfigurationException {
         String username = user.getName();
         Optional<UserEntity> userWithSameUsername = userRepository.findByUserName(username);
         if (userWithSameUsername.isPresent()) {
-            throw new AlertDatabaseConstraintException(String.format("A user with username '%s' is already present", username));
+            throw new AlertConfigurationException(String.format("A user with username '%s' is already present", username));
         }
 
         String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
         AuthenticationTypeDetails authenticationType = authenticationTypeAccessor.getAuthenticationTypeDetails(user.getAuthenticationType())
-                                                           .orElseThrow(() -> new AlertDatabaseConstraintException("Cannot find Authentication Type."));
+                                                           .orElseThrow(() -> new AlertRuntimeException("Cannot find Authentication Type."));
         UserEntity newEntity = new UserEntity(username, password, user.getEmailAddress(), authenticationType.getId());
         UserEntity savedEntity = userRepository.save(newEntity);
         UserModel model = createModel(savedEntity);
@@ -109,26 +112,22 @@ public class DefaultUserAccessor implements UserAccessor {
     }
 
     @Override
-    public UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException {
+    public UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertConfigurationException, AlertForbiddenOperationException {
         Long userId = user.getId();
-        if (null == userId) {
-            throw new AlertDatabaseConstraintException("A user id must be specified");
-        }
-
         UserEntity existingUser = userRepository.findById(userId)
-                                      .orElseThrow(() -> new AlertDatabaseConstraintException(String.format("No user found with id '%s'", userId)));
+                                      .orElseThrow(() -> new AlertConfigurationException(String.format("No user found with id '%s'", userId)));
         Long existingUserId = existingUser.getId();
         UserEntity savedEntity = existingUser;
         // if it isn't an external user then update username, password, and email.
         Optional<AuthenticationType> authenticationType = authenticationTypeAccessor.getAuthenticationType(existingUser.getAuthenticationType());
-        if (!authenticationType.isPresent()) {
-            throw new AlertDatabaseConstraintException("Unknown Authentication Type, user not updated.");
+        if (authenticationType.isEmpty()) {
+            throw new AlertRuntimeException("Unknown Authentication Type, user not updated.");
         } else if (AuthenticationType.DATABASE != authenticationType.get()) {
             boolean isUserNameInvalid = !StringUtils.equals(existingUser.getUserName(), user.getName());
             boolean isEmailInvalid = !StringUtils.equals(existingUser.getEmailAddress(), user.getEmailAddress());
             boolean isPasswordSet = StringUtils.isNotBlank(user.getPassword());
             if (isUserNameInvalid || isEmailInvalid || isPasswordSet) {
-                throw new AlertDatabaseConstraintException("An external user cannot change its credentials.");
+                throw new AlertForbiddenOperationException("An external user cannot change its credentials.");
             }
         } else {
             String password = passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword());
@@ -156,7 +155,8 @@ public class DefaultUserAccessor implements UserAccessor {
     public boolean changeUserPassword(String username, String newPassword) {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
-            return changeUserPassword(entity.get(), newPassword);
+            changeUserPassword(entity.get(), newPassword);
+            return true;
         }
         return false;
     }
@@ -165,7 +165,8 @@ public class DefaultUserAccessor implements UserAccessor {
     public boolean changeUserEmailAddress(String username, String emailAddress) {
         Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
-            return changeUserEmailAddress(entity.get(), emailAddress);
+            changeUserEmailAddress(entity.get(), emailAddress);
+            return true;
         }
         return false;
     }
@@ -188,16 +189,16 @@ public class DefaultUserAccessor implements UserAccessor {
         }
     }
 
-    private boolean changeUserPassword(UserEntity oldEntity, String newPassword) {
+    private void changeUserPassword(UserEntity oldEntity, String newPassword) {
         UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress(), oldEntity.getAuthenticationType());
         updatedEntity.setId(oldEntity.getId());
-        return userRepository.save(updatedEntity) != null;
+        userRepository.save(updatedEntity);
     }
 
-    private boolean changeUserEmailAddress(UserEntity oldEntity, String emailAddress) {
+    private void changeUserEmailAddress(UserEntity oldEntity, String emailAddress) {
         UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress, oldEntity.getAuthenticationType());
         updatedEntity.setId(oldEntity.getId());
-        return userRepository.save(updatedEntity) != null;
+        userRepository.save(updatedEntity);
     }
 
     private void deleteUserEntity(UserEntity userEntity) throws AlertForbiddenOperationException {
@@ -218,4 +219,5 @@ public class DefaultUserAccessor implements UserAccessor {
         AuthenticationType authenticationType = authenticationTypeAccessor.getAuthenticationType(user.getAuthenticationType()).orElse(null);
         return UserModel.existingUser(user.getId(), user.getUserName(), user.getPassword(), user.getEmailAddress(), authenticationType, roles, user.isEnabled());
     }
+
 }

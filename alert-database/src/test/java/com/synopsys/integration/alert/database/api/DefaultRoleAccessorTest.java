@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.PermissionMatrixModel;
@@ -34,7 +33,6 @@ import com.synopsys.integration.alert.database.user.RoleRepository;
 import com.synopsys.integration.alert.database.user.UserRoleRepository;
 
 public class DefaultRoleAccessorTest {
-
     private RoleRepository roleRepository;
     private UserRoleRepository userRoleRepository;
     private PermissionMatrixRepository permissionMatrixRepository;
@@ -91,32 +89,7 @@ public class DefaultRoleAccessorTest {
     }
 
     @Test
-    public void createRoleTest() throws Exception {
-        final String roleName = "roleName";
-
-        Mockito.when(roleRepository.save(Mockito.any())).thenReturn(new RoleEntity(roleName, true));
-
-        DefaultRoleAccessor authorizationUtility = new DefaultRoleAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
-        UserRoleModel userRoleModel = authorizationUtility.createRole(roleName);
-
-        UserRoleModel expectedUserRoleModel = createUserRoleModel(null, roleName, true);
-
-        assertEquals(expectedUserRoleModel, userRoleModel);
-    }
-
-    @Test
-    public void createRoleNullTest() throws Exception {
-        DefaultRoleAccessor authorizationUtility = new DefaultRoleAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
-        try {
-            authorizationUtility.createRole("");
-            fail("Blank roleName did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
-    }
-
-    @Test
-    public void createRoleWithPermissions() throws Exception {
+    public void createRoleWithPermissions() {
         final String roleName = "roleName";
         final String contextString = "context-test";
         final String descriptorName = "descriptorName";
@@ -160,23 +133,6 @@ public class DefaultRoleAccessorTest {
         authorizationUtility.updateRoleName(roleId, roleName);
 
         Mockito.verify(roleRepository).save(Mockito.any());
-    }
-
-    @Test
-    public void updateRoleNameCustomFalseTest() throws Exception {
-        DefaultRoleAccessor authorizationUtility = new DefaultRoleAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
-
-        RoleEntity roleEntity = new RoleEntity(DefaultUserRole.ALERT_USER.name(), false);
-        roleEntity.setId(1L);
-
-        Mockito.when(roleRepository.findById(Mockito.any())).thenReturn(Optional.of(roleEntity));
-
-        try {
-            authorizationUtility.updateRoleName(1L, "roleName");
-            fail("Custom parameter of roleEntity set to 'false' did not throw expected AlertDatabaseConstraintException.");
-        } catch (AlertDatabaseConstraintException e) {
-            assertNotNull(e);
-        }
     }
 
     @Test
@@ -226,7 +182,7 @@ public class DefaultRoleAccessorTest {
     }
 
     @Test
-    public void deleteRoleCustomFalseTest() throws Exception {
+    public void deleteRoleCustomFalseTest() {
         DefaultRoleAccessor authorizationUtility = new DefaultRoleAccessor(roleRepository, userRoleRepository, permissionMatrixRepository, registeredDescriptorRepository, configContextRepository);
 
         RoleEntity roleEntity = new RoleEntity("name", false);
@@ -355,7 +311,4 @@ public class DefaultRoleAccessorTest {
         return new UserRoleModel(id, name, custom, permissionMatrixModel);
     }
 
-    private UserRoleModel createUserRoleModel(Long id, String name, Boolean custom, PermissionMatrixModel permissionMatrixModel) {
-        return new UserRoleModel(id, name, custom, permissionMatrixModel);
-    }
 }

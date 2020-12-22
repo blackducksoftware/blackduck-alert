@@ -11,9 +11,9 @@
  */
 package com.synopsys.integration.alert.component.authentication.web;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
@@ -104,7 +103,7 @@ public class AuthenticationActionsTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAuthenticateDBUserRoleFailIT() throws AlertDatabaseConstraintException, AlertForbiddenOperationException {
+    public void testAuthenticateDBUserRoleFailIT() throws AlertForbiddenOperationException, AlertConfigurationException {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         // add a user test then delete a user.
@@ -178,8 +177,8 @@ public class AuthenticationActionsTestIT extends AlertIntegrationTest {
         session.setMaxInactiveInterval(30);
         ActionResponse<Void> response = authenticationActions.logout(servletRequest, servletResponse);
         assertTrue(response.isSuccessful());
-        assertTrue("Expected the session to be invalid", session.isInvalid());
-        assertTrue("Expected the response to contain a Location header", servletResponse.containsHeader("Location"));
+        assertTrue(session.isInvalid(), "Expected the session to be invalid");
+        assertTrue(servletResponse.containsHeader("Location"), "Expected the response to contain a Location header");
     }
 
     @Test

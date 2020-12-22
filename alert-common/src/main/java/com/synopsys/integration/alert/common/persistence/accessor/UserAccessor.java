@@ -26,14 +26,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 public interface UserAccessor {
-    public static final Long DEFAULT_ADMIN_USER_ID = 1L;
-    public static final Long DEFAULT_JOB_MANAGER_ID = 2L;
-    public static final Long DEFAULT_ALERT_USER_ID = 3L;
+    Long DEFAULT_ADMIN_USER_ID = 1L;
+    Long DEFAULT_JOB_MANAGER_ID = 2L;
+    Long DEFAULT_ALERT_USER_ID = 3L;
 
     List<UserModel> getUsers();
 
@@ -41,11 +41,11 @@ public interface UserAccessor {
 
     Optional<UserModel> getUser(String username);
 
-    UserModel addUser(String userName, String password, String emailAddress) throws AlertDatabaseConstraintException;
+    UserModel addUser(String userName, String password, String emailAddress) throws AlertConfigurationException;
 
-    UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
+    UserModel addUser(UserModel user, boolean passwordEncoded) throws AlertConfigurationException;
 
-    UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertDatabaseConstraintException;
+    UserModel updateUser(UserModel user, boolean passwordEncoded) throws AlertConfigurationException, AlertForbiddenOperationException;
 
     boolean assignRoles(String username, Set<Long> roleIds);
 

@@ -67,7 +67,7 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
     private final ActionMessageCreator actionMessageCreator = new ActionMessageCreator();
 
     @Autowired
-    public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, RoleAccessor roleAccessor, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, List<DescriptorKey> descriptorKeys) {
+    public RoleActions(UserManagementDescriptorKey userManagementDescriptorKey, RoleAccessor roleAccessor, AuthorizationManager authorizationManager, DescriptorMap descriptorMap) {
         super(userManagementDescriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.roleAccessor = roleAccessor;
         this.authorizationManager = authorizationManager;
@@ -76,18 +76,13 @@ public class RoleActions extends AbstractResourceActions<RolePermissionModel, Us
 
     @Override
     protected ActionResponse<RolePermissionModel> createWithoutChecks(RolePermissionModel resource) {
-        try {
-            String roleName = resource.getRoleName();
-            Set<PermissionModel> permissions = resource.getPermissions();
-            PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
-            logger.debug(actionMessageCreator.createStartMessage("role", roleName));
-            UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
-            logger.debug(actionMessageCreator.createSuccessMessage("Role", roleName));
-            return new ActionResponse<>(HttpStatus.OK, convertDatabaseModelToRestModel(userRoleModel));
-        } catch (AlertException ex) {
-            logger.error(actionMessageCreator.createErrorMessage("role", resource.getRoleName()));
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("There was an issue creating the role. %s", ex.getMessage()));
-        }
+        String roleName = resource.getRoleName();
+        Set<PermissionModel> permissions = resource.getPermissions();
+        PermissionMatrixModel permissionMatrixModel = PermissionModelUtil.convertToPermissionMatrixModel(permissions);
+        logger.debug(actionMessageCreator.createStartMessage("role", roleName));
+        UserRoleModel userRoleModel = authorizationManager.createRoleWithPermissions(roleName, permissionMatrixModel);
+        logger.debug(actionMessageCreator.createSuccessMessage("Role", roleName));
+        return new ActionResponse<>(HttpStatus.OK, convertDatabaseModelToRestModel(userRoleModel));
     }
 
     @Override
