@@ -66,12 +66,8 @@ public class JiraServerJobDetailsAccessor {
                                                                       .stream()
                                                                       .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))
                                                                       .collect(Collectors.toList());
-        if (!customFieldsToSave.isEmpty()) {
-            List<JiraServerJobCustomFieldEntity> savedJobCustomFields = jiraServerJobCustomFieldRepository.saveAll(customFieldsToSave);
-            savedJobDetails.setJobCustomFields(savedJobCustomFields);
-        } else {
-            savedJobDetails.setJobCustomFields(List.of());
-        }
+        List<JiraServerJobCustomFieldEntity> savedJobCustomFields = jiraServerJobCustomFieldRepository.saveAll(customFieldsToSave);
+        savedJobDetails.setJobCustomFields(savedJobCustomFields);
         return savedJobDetails;
     }
 
