@@ -87,7 +87,7 @@ public class JiraCustomFieldResolver {
         String innerFieldValue = extractUsableInnerValue(jiraCustomFieldConfig);
         switch (fieldType) {
             case CUSTOM_FIELD_TYPE_STRING_VALUE:
-                return jiraCustomFieldConfig;
+                return innerFieldValue;
             case CUSTOM_FIELD_TYPE_ARRAY_VALUE:
                 JsonArray jsonArray = new JsonArray();
                 jsonArray.add(innerFieldValue);
