@@ -31,8 +31,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +52,6 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class ConfigurationFieldModelConverter {
-    private final Logger logger = LoggerFactory.getLogger(ConfigurationFieldModelConverter.class);
     private final EncryptionUtility encryptionUtility;
     private final DescriptorAccessor descriptorAccessor;
     private final Map<String, DescriptorKey> descriptorKeys;
@@ -98,7 +95,7 @@ public class ConfigurationFieldModelConverter {
     public final Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(FieldModel fieldModel) throws AlertDatabaseConstraintException {
         ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         String descriptorName = fieldModel.getDescriptorName();
-        DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
+        DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertRuntimeException("Could not find a Descriptor with the name: " + descriptorName));
 
         List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorKey, context);
         Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
@@ -136,7 +133,7 @@ public class ConfigurationFieldModelConverter {
 
     public ConfigurationModel convertToConfigurationModel(FieldModel fieldModel) throws AlertDatabaseConstraintException {
         String descriptorName = fieldModel.getDescriptorName();
-        DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertDatabaseConstraintException("Could not find a Descriptor with the name: " + descriptorName));
+        DescriptorKey descriptorKey = getDescriptorKey(descriptorName).orElseThrow(() -> new AlertRuntimeException("Could not find a Descriptor with the name: " + descriptorName));
 
         long descriptorId = descriptorAccessor.getRegisteredDescriptorByKey(descriptorKey).map(RegisteredDescriptorModel::getId).orElse(0L);
         long configId = Long.parseLong(fieldModel.getId());
@@ -168,14 +165,9 @@ public class ConfigurationFieldModelConverter {
     }
 
     private String getDescriptorName(ConfigurationModel configurationModel) {
-        try {
-            return descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
-                       .map(RegisteredDescriptorModel::getName)
-                       .orElseThrow(() -> new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE));
-        } catch (AlertDatabaseConstraintException e) {
-            logger.debug(e.getMessage());
-            throw new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE);
-        }
+        return descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
+                   .map(RegisteredDescriptorModel::getName)
+                   .orElseThrow(() -> new AlertRuntimeException(MISSING_REGISTERED_DESCRIPTOR_MESSAGE));
     }
 
 }

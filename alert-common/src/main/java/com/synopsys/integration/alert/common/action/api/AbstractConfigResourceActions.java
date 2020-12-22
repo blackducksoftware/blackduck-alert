@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -87,18 +86,14 @@ public abstract class AbstractConfigResourceActions implements ConfigResourceAct
 
     @Override
     public final ActionResponse<MultiFieldModel> getAll() {
-        try {
-            Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
-                                              .stream()
-                                              .map(RegisteredDescriptorModel::getName)
-                                              .collect(Collectors.toSet());
-            if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION, ConfigContextEnum.GLOBAL), descriptorNames)) {
-                return ActionResponse.createForbiddenResponse();
-            }
-            return readAllWithoutChecks();
-        } catch (AlertException ex) {
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error reading configurations: %s", ex.getMessage()));
+        Set<String> descriptorNames = descriptorAccessor.getRegisteredDescriptors()
+                                          .stream()
+                                          .map(RegisteredDescriptorModel::getName)
+                                          .collect(Collectors.toSet());
+        if (!authorizationManager.anyReadPermission(List.of(ConfigContextEnum.DISTRIBUTION, ConfigContextEnum.GLOBAL), descriptorNames)) {
+            return ActionResponse.createForbiddenResponse();
         }
+        return readAllWithoutChecks();
     }
 
     @Override
