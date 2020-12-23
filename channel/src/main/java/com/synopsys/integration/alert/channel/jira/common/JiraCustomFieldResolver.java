@@ -97,8 +97,14 @@ public class JiraCustomFieldResolver {
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
                 return createJsonObject("value", innerFieldValue);
             case CUSTOM_FIELD_TYPE_PRIORITY_VALUE:
-            case CUSTOM_FIELD_TYPE_USER_VALUE:
                 return createJsonObject("name", innerFieldValue);
+            case CUSTOM_FIELD_TYPE_USER_VALUE:
+                // "name" is used for Jira Server (ignored on Jira Cloud)
+                JsonObject createUserObject = createJsonObject("name", innerFieldValue);
+                // "accountId" is used for Jira Cloud (ignored on Jira Server)
+                createUserObject.addProperty("accountId", innerFieldValue);
+                // TODO consider separating this functionality depending on which Jira channel is being used
+                return createUserObject;
             default:
                 throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
         }
