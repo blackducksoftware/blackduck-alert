@@ -114,7 +114,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             FieldUtility fieldUtility = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldUtility.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("client id not found."));
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("App ID not found."));
             }
             Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
