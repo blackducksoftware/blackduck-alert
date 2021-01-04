@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.workflow.message;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 
@@ -68,9 +70,13 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
         int numPagesProcessed = 0;
         int pageSize = 100;
 
+        //TODO: Addition in 6.4.0 to set a 2 hour timeout, this should be removed once we properly handle sending messages to channels
+        OffsetDateTime timeLimit = DateUtils.createCurrentDateTimestamp().plusHours(2);
+        boolean hasNotTimedOut = true;
+
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
         //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
-        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED) {
+        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED && hasNotTimedOut) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Sending {} notifications.", notifications.size());
             List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
@@ -82,9 +88,13 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
             logger.trace("Processing Page: {}. New pages found: {}",
                 numPagesProcessed,
                 pageOfAlertNotificationModels.getTotalPages());
+            hasNotTimedOut = DateUtils.createCurrentDateTimestamp().isBefore(timeLimit);
         }
         if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
             logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
+        }
+        if (!hasNotTimedOut) {
+            logger.warn("Receiver has timed out after 2 hours.");
         }
     }
 
