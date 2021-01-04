@@ -1,7 +1,7 @@
 /**
  * channel
  *
- * Copyright (c) 2020 Synopsys, Inc.
+ * Copyright (c) 2021 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -41,6 +41,7 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
 
     public static final String KEY_AZURE_BOARDS_URL = AZURE_BOARDS_PREFIX + "url";
     public static final String KEY_ORGANIZATION_NAME = AZURE_BOARDS_PREFIX + "organization.name";
+    // Within OAuth this field is called client_id, but in Azure it is referred to as App ID
     public static final String KEY_CLIENT_ID = AZURE_BOARDS_PREFIX + "client.id";
     public static final String KEY_CLIENT_SECRET = AZURE_BOARDS_PREFIX + "client.secret";
     public static final String KEY_OAUTH_USER_EMAIL = AZURE_BOARDS_PREFIX + "oauth.user.email";

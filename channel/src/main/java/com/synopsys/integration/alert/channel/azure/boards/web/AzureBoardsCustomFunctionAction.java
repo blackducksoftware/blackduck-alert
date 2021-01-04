@@ -1,7 +1,7 @@
 /**
  * channel
  *
- * Copyright (c) 2020 Synopsys, Inc.
+ * Copyright (c) 2021 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -115,7 +115,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             FieldUtility fieldUtility = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldUtility.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("client id not found."));
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("App ID not found."));
             }
             Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
