@@ -72,11 +72,11 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
 
         //TODO: Addition in 6.4.0 to set a 2 hour timeout, this should be removed once we properly handle sending messages to channels
         OffsetDateTime timeLimit = DateUtils.createCurrentDateTimestamp().plusHours(2);
-        boolean hasNotTimedOut = true;
+        boolean hasTimedOut = false;
 
         AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
         //TODO: Once we create a way of handling channel events in parallel, we can remove the MAX_NUMBER_PAGES_PROCESSED.
-        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED && hasNotTimedOut) {
+        while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels()) && numPagesProcessed < MAX_NUMBER_PAGES_PROCESSED && !hasTimedOut) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Sending {} notifications.", notifications.size());
             List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(FrequencyType.REAL_TIME, notifications);
@@ -88,12 +88,13 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
             logger.trace("Processing Page: {}. New pages found: {}",
                 numPagesProcessed,
                 pageOfAlertNotificationModels.getTotalPages());
-            hasNotTimedOut = DateUtils.createCurrentDateTimestamp().isBefore(timeLimit);
+            hasTimedOut = DateUtils.createCurrentDateTimestamp().isAfter(timeLimit);
         }
         if (numPagesProcessed == MAX_NUMBER_PAGES_PROCESSED) {
             logger.warn("Receiver reached upper page limit of pages processed: {}, exiting.", MAX_NUMBER_PAGES_PROCESSED);
         }
-        if (!hasNotTimedOut) {
+        //TODO: this check should be removed once we properly handle sending messages to channels
+        if (hasTimedOut) {
             logger.warn("Receiver has timed out after 2 hours.");
         }
     }
