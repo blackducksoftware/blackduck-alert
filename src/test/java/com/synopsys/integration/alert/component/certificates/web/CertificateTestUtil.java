@@ -15,9 +15,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
-@AlertIntegrationTest
 public class CertificateTestUtil {
     public static final String CERTIFICATE_FILE_PATH = "certificates/selfsigned.cert.pem";
     public static final String TEST_ALIAS = "test-alias";
