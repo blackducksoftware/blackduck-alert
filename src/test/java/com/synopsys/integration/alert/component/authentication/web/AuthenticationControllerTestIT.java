@@ -38,8 +38,10 @@ import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-public class AuthenticationControllerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class AuthenticationControllerTestIT {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String loginUrl = AlertRestConstants.BASE_PATH + "/login";
     private final String logoutUrl = AlertRestConstants.BASE_PATH + "/logout";
@@ -62,7 +64,7 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testLogout() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN));
         mockMvc.perform(request).andExpect(ResultMatcher.matchAll(
             MockMvcResultMatchers.redirectedUrl("/"),
             MockMvcResultMatchers.status().isNoContent()

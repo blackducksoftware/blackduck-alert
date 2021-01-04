@@ -33,8 +33,9 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import junit.framework.AssertionFailedError;
 
 @Transactional
+@AlertIntegrationTest
 @TestPropertySource(locations = "classpath:certificates/spring-certificate-test.properties")
-public class CertificateActionsTestIT extends AlertIntegrationTest {
+public class CertificateActionsTestIT {
 
     @Autowired
     private CustomCertificateRepository customCertificateRepository;

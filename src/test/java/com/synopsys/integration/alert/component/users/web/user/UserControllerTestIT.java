@@ -29,10 +29,12 @@ import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 import junit.framework.AssertionFailedError;
 
-public class UserControllerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class UserControllerTestIT {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     private UserRepository userRepository;
@@ -67,7 +69,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testCreate() throws Exception {
         Set<String> roleNames = roles
                                     .stream()
@@ -77,7 +79,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
 
         String url = UserController.USER_BASE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(userConfig))
                                                     .contentType(contentType);
@@ -85,19 +87,19 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetOne() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
 
         String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testUpdate() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
         Set<String> roleNames = roles
@@ -108,7 +110,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
 
         String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(updatedUserConfig))
                                                     .contentType(contentType);
@@ -116,34 +118,34 @@ public class UserControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testDelete() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
 
         String url = UserController.USER_BASE_PATH + String.format("/%s", userConfig.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetAll() throws Exception {
         String url = UserController.USER_BASE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testValidate() throws Exception {
         UserConfig userConfig = createDefaultUserConfig().orElseThrow(AssertionFailedError::new);
         String url = UserController.USER_BASE_PATH + "/validate";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(userConfig))
                                                     .contentType(contentType);
@@ -159,7 +161,7 @@ public class UserControllerTestIT extends AlertIntegrationTest {
 
         String url = UserController.USER_BASE_PATH;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(userConfig))
                                                     .contentType(contentType);
@@ -170,4 +172,5 @@ public class UserControllerTestIT extends AlertIntegrationTest {
         UserConfig newUserConfig = gson.fromJson(response, userConfigType.getType());
         return Optional.of(newUserConfig);
     }
+
 }

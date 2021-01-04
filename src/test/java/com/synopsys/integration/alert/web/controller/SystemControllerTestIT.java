@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.web.controller;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,11 +20,13 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.web.api.system.SystemActions;
 
-public class SystemControllerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class SystemControllerTestIT {
     private static final String SYSTEM_MESSAGE_BASE_URL = AlertRestConstants.BASE_PATH + "/system/messages";
-    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
     private final Gson gson = new Gson();
 
     @Autowired
@@ -47,11 +49,12 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetMessages() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(SYSTEM_MESSAGE_BASE_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
+
 }

@@ -21,8 +21,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.component.authentication.web.SAMLMetadataUploadFunctionController;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-public class SAMLMetadataUploadFunctionControllerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class SAMLMetadataUploadFunctionControllerTestIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
@@ -47,7 +49,7 @@ public class SAMLMetadataUploadFunctionControllerTestIT extends AlertIntegration
         MockMultipartFile file = new MockMultipartFile("file", "testMetadata.xml", "text/xml", xmlContent.getBytes());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.multipart(new URI(url))
                                                     .file(file)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
@@ -55,7 +57,7 @@ public class SAMLMetadataUploadFunctionControllerTestIT extends AlertIntegration
     public void exists() throws Exception {
         String url = SAMLMetadataUploadFunctionController.SAML_UPLOAD_URL + "/exists";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -63,8 +65,9 @@ public class SAMLMetadataUploadFunctionControllerTestIT extends AlertIntegration
     public void deleteFile() throws Exception {
         String url = SAMLMetadataUploadFunctionController.SAML_UPLOAD_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
+
 }

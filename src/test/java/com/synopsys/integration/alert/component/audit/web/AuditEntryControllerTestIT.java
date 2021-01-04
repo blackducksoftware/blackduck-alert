@@ -48,9 +48,11 @@ import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 @Transactional
-public class AuditEntryControllerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class AuditEntryControllerTestIT {
     private final String auditUrl = AlertRestConstants.BASE_PATH + "/audit";
     @Autowired
     NotificationContentRepository notificationRepository;
@@ -121,16 +123,16 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetConfig() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetConfigWithId() throws Exception {
         AuditEntryEntity entity = mockAuditEntryEntity.createEntity();
         entity = auditEntryRepository.save(entity);
@@ -142,25 +144,25 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
         String getUrl = auditUrl + "/" + notificationContent.getId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetAuditInfoForJob() throws Exception {
         AuditEntryEntity entity = mockAuditEntryEntity.createEntity();
         entity = auditEntryRepository.save(entity);
         String getUrl = auditUrl + "/job/" + entity.getCommonConfigId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testResendNotification() throws Exception {
         List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
         ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
@@ -178,13 +180,13 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
         String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testResendJobConfig() throws Exception {
         List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
         ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
@@ -202,7 +204,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
         String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/job/" + auditEntity.getCommonConfigId();
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }

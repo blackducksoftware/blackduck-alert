@@ -55,9 +55,11 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
-public class AuthenticationActionsTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class AuthenticationActionsTestIT {
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
     private final TestProperties properties = new TestProperties();
     @Autowired
@@ -117,7 +119,7 @@ public class AuthenticationActionsTestIT extends AlertIntegrationTest {
         Optional<UserModel> userModel = userAccessor.getUser(userName);
         assertTrue(userModel.isPresent());
         UserModel model = userModel.get();
-        assertFalse(model.hasRole(AlertIntegrationTest.ROLE_ALERT_ADMIN));
+        assertFalse(model.hasRole(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN));
         assertTrue(model.getRoles().isEmpty());
 
         userAccessor.deleteUser(userName);

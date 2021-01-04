@@ -23,10 +23,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorController;
 
-public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
-
+@AlertIntegrationTest
+public class DescriptorControllerSpeedTestIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -44,13 +45,13 @@ public class DescriptorControllerSpeedTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testDescriptorEndpoint() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(DescriptorController.BASE_PATH)
                                                     .with(
                                                         SecurityMockMvcRequestPostProcessors
                                                             .user("admin")
-                                                            .roles(AlertIntegrationTest.ROLE_ALERT_ADMIN)
+                                                            .roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
                                                     )
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
 

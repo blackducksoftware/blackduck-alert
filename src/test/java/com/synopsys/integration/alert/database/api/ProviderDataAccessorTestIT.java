@@ -38,7 +38,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
-public class ProviderDataAccessorTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class ProviderDataAccessorTestIT {
     private static final String PROVIDER_CONFIG_NAME = "Test Black Duck configuration";
 
     @Autowired

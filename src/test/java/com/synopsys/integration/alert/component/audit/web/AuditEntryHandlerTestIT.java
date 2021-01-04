@@ -77,7 +77,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Transactional
-public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class AuditEntryHandlerTestIT {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private AuditDescriptorKey auditDescriptorKey;

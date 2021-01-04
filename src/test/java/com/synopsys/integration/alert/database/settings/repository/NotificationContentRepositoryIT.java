@@ -58,7 +58,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.rest.RestConstants;
 
 @Transactional
-public class NotificationContentRepositoryIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class NotificationContentRepositoryIT {
     @Autowired
     private NotificationContentRepository notificationContentRepository;
     @Autowired

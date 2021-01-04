@@ -15,7 +15,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 //@TestPropertySource(locations = "classpath:spring-test.properties")
 //@WebAppConfiguration
 //TODO the AlertIntegrationTest is wiring components correctly to avoid an exception wiring a JMX MBean for 'datasource' need to figure out why extending AlertIntegrationTest solves this.  I suspect the dependsOn solves the autowiring issue.
-public class BeanContextTest extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class BeanContextTest {
     @Autowired
     DescriptorProcessor descriptorProcessor;
 

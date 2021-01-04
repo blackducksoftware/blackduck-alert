@@ -17,9 +17,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-public class AboutControllerTestIT extends AlertIntegrationTest {
-
+@AlertIntegrationTest
+public class AboutControllerTestIT {
     @Autowired
     protected WebApplicationContext webApplicationContext;
 
@@ -27,13 +28,14 @@ public class AboutControllerTestIT extends AlertIntegrationTest {
     protected HttpSessionCsrfTokenRepository csrfTokenRepository;
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testGetControllerPath() throws Exception {
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
         String url = AlertRestConstants.BASE_PATH + "/about";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
+
 }

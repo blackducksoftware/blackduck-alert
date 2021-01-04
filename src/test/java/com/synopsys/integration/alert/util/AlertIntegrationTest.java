@@ -1,5 +1,11 @@
 package com.synopsys.integration.alert.util;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -20,6 +26,9 @@ import com.synopsys.integration.alert.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.test.common.TestTags;
 
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
 @ExtendWith(SpringExtension.class)
@@ -30,7 +39,5 @@ import com.synopsys.integration.alert.test.common.TestTags;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("alertdb")
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public abstract class AlertIntegrationTest {
-    public static final String ROLE_ALERT_ADMIN = "ALERT_ADMIN";
-
+public @interface AlertIntegrationTest {
 }

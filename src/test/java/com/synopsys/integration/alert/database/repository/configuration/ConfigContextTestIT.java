@@ -23,7 +23,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class ConfigContextTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class ConfigContextTestIT {
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;
     @Autowired
@@ -83,4 +84,5 @@ public class ConfigContextTestIT extends AlertIntegrationTest {
         configContextRepository.flush();
         assertEquals(0, descriptorConfigRepository.findAll().size());
     }
+
 }
