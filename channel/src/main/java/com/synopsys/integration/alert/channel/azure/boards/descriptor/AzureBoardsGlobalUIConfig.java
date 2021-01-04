@@ -40,13 +40,13 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 public class AzureBoardsGlobalUIConfig extends UIConfig {
     public static final String LABEL_AZURE_BOARDS_URL = "URL";
     public static final String LABEL_ORGANIZATION_NAME = "Organization Name";
-    public static final String LABEL_CLIENT_ID = "Client Id";
+    public static final String LABEL_CLIENT_ID = "App ID";
     public static final String LABEL_CLIENT_SECRET = "Client Secret";
     public static final String LABEL_OAUTH = "Microsoft OAuth";
 
     public static final String DESCRIPTION_AZURE_BOARDS_URL = "If your Azure DevOps instance is \"on-prem\", this field can be used to set that address.";
     public static final String DESCRIPTION_ORGANIZATION_NAME = "The name of the Azure DevOps organization.";
-    public static final String DESCRIPTION_CLIENT_ID = "The Client Id created for Alert when registering your Azure DevOps Application.";
+    public static final String DESCRIPTION_CLIENT_ID = "The App ID created for Alert when registering your Azure DevOps Client Application.";
     public static final String DESCRIPTION_CLIENT_SECRET = "The Client secret created for Alert when registering your Azure DevOps Application.";
     public static final String DESCRIPTION_OAUTH = "This will redirect you to Microsoft's OAuth login.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application.";
 
