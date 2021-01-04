@@ -19,7 +19,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class DescriptorFieldRepositoryTestIT {
     public static final String DESCRIPTOR_NAME_1 = "name1";
     public static final String DESCRIPTOR_NAME_2 = "name2";
     public static final String FIELD_KEY_1 = "field1";
@@ -110,4 +111,5 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
         List<DescriptorFieldRelation> foundList2 = descriptorFieldRepository.findByFieldId(savedFieldEntity2.getId());
         assertEquals(1, foundList2.size());
     }
+
 }

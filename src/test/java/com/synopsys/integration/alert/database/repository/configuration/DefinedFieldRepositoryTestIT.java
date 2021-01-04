@@ -20,7 +20,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class DefinedFieldRepositoryTestIT {
     public static final String FIELD_KEY_1 = "Test Key 1";
     public static final String FIELD_KEY_2 = "Test Key 2";
 
@@ -85,4 +86,5 @@ public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
         definedFieldRepository.flush();
         assertEquals(0, descriptorFieldRepository.findAll().size());
     }
+
 }

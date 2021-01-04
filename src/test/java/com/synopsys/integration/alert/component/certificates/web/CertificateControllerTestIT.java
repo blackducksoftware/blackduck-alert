@@ -32,12 +32,14 @@ import com.synopsys.integration.alert.component.certificates.CertificatesDescrip
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 import junit.framework.AssertionFailedError;
 
 @Transactional
+@AlertIntegrationTest
 @TestPropertySource(locations = "classpath:certificates/spring-certificate-test.properties")
-public class CertificateControllerTestIT extends AlertIntegrationTest {
+public class CertificateControllerTestIT {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     private CustomCertificateRepository customCertificateRepository;
@@ -82,36 +84,36 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void readAllTest() throws Exception {
         String url = CertificatesController.API_BASE_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void readSingleTest() throws Exception {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
 
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void createTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
         CertificateModel certificateModel = new CertificateModel(CertificateTestUtil.TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
         String url = CertificatesController.API_BASE_URL;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(certificateModel))
                                                     .contentType(contentType);
@@ -119,14 +121,14 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void updateTest() throws Exception {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
         CertificateModel updatedCertificate = new CertificateModel(expectedCertificate.getId(), "new-alias", expectedCertificate.getCertificateContent(), expectedCertificate.getLastUpdated());
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf())
                                                     .content(gson.toJson(updatedCertificate))
                                                     .contentType(contentType);
@@ -134,13 +136,13 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void deleteTest() throws Exception {
         CertificateModel expectedCertificate = certTestUtil.createCertificate(certificateActions)
                                                    .orElseThrow(AssertionFailedError::new);
         String url = CertificatesController.API_BASE_URL + String.format("/%s", expectedCertificate.getId());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(new URI(url))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
@@ -203,4 +205,5 @@ public class CertificateControllerTestIT extends AlertIntegrationTest {
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isForbidden());
     }
+
 }

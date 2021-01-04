@@ -25,7 +25,8 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public class NotificationToDistributionEventConverterTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class NotificationToDistributionEventConverterTestIT {
     @Autowired
     private DescriptorMap descriptorMap;
     @Autowired

@@ -34,7 +34,8 @@ import com.synopsys.integration.alert.web.api.config.ConfigActions;
 
 import junit.framework.AssertionFailedError;
 
-public class ConfigActionTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class ConfigActionTestIT {
     @Autowired
     private ConfigurationAccessor configurationAccessor;
     @Autowired

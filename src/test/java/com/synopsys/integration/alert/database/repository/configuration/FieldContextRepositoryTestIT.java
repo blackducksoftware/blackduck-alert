@@ -19,7 +19,8 @@ import com.synopsys.integration.alert.database.configuration.repository.FieldCon
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class FieldContextRepositoryTestIT {
     public static final String CONTEXT_NAME = "TEST_CONTEXT";
     public static final String FIELD_KEY_1 = "field1";
     public static final String FIELD_KEY_2 = "field2";
@@ -106,4 +107,5 @@ public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
         List<FieldContextRelation> foundList2 = fieldContextRepository.findByFieldId(savedFieldEntity2.getId());
         assertEquals(1, foundList2.size());
     }
+
 }

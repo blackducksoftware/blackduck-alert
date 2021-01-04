@@ -26,10 +26,12 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.rest.RestConstants;
 
 @Transactional
-public class SystemMessageAccessorTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class SystemMessageAccessorTestIT {
     public static final String SEVERITY = "severity";
     public static final String TYPE = "type";
     private static final int MESSAGE_COUNT = 5;
+
     @Autowired
     private DefaultSystemMessageAccessor defaultSystemMessageUtility;
     @Autowired

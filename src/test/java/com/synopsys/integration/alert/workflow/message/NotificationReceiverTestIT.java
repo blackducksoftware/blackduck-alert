@@ -21,7 +21,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 //TODO: This class depends on AlertIntegrationTest which cannot be moved into test-common yet due to it's dependencies.
 //  Move this class into the workflow subproject once the dependencies are resolved
-public class NotificationReceiverTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class NotificationReceiverTestIT {
 
     @Autowired
     private NotificationContentRepository notificationContentRepository;
@@ -99,4 +100,5 @@ public class NotificationReceiverTestIT extends AlertIntegrationTest {
             assertTrue(notificationModel.getProcessed());
         }
     }
+
 }

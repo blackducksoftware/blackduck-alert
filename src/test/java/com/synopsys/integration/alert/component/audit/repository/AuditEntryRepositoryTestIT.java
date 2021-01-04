@@ -29,7 +29,8 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
-public class AuditEntryRepositoryTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class AuditEntryRepositoryTestIT {
     @Autowired
     private AuditEntryRepository auditEntryRepository;
 

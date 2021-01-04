@@ -26,7 +26,8 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
-public class DescriptorAccessorTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class DescriptorAccessorTestIT {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
 
     @Autowired

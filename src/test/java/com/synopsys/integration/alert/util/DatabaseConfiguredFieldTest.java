@@ -25,7 +25,8 @@ import com.synopsys.integration.alert.database.configuration.repository.FieldVal
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
+@AlertIntegrationTest
+public abstract class DatabaseConfiguredFieldTest {
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired

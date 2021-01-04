@@ -57,7 +57,8 @@ import com.synopsys.integration.alert.web.api.job.JobFieldModelPopulationUtils;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
-public abstract class ChannelDescriptorTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public abstract class ChannelDescriptorTestIT {
     protected Gson gson;
     protected DistributionEvent channelEvent;
 

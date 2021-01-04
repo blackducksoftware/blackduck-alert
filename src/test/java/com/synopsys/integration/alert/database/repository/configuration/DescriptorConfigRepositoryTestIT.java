@@ -21,7 +21,8 @@ import com.synopsys.integration.alert.database.configuration.repository.Register
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class DescriptorConfigRepositoryTestIT {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
     public static final String CONTEXT_NAME = "TEST_CONTEXT";
 

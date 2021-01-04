@@ -24,8 +24,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-public class HomeControllerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class HomeControllerTestIT {
     private static final String HOME_VERIFY_URL = AlertRestConstants.BASE_PATH + "/verify";
     private static final String HOME_URL = "/";
     private static final String HOME_SAML_VERIFY_URL = AlertRestConstants.BASE_PATH + "/verify/saml";
@@ -43,13 +45,13 @@ public class HomeControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testVerify() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         MockHttpSession session = new MockHttpSession();
         ServletContext servletContext = webApplicationContext.getServletContext();
 
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL).with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN));
         request.session(session);
         HttpServletRequest httpServletRequest = request.buildRequest(servletContext);
         CsrfToken csrfToken = csrfTokenRepository.generateToken(httpServletRequest);
@@ -59,31 +61,31 @@ public class HomeControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testVerifyNoToken() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", UUID.randomUUID().toString());
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.headers(headers);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testVerifyMissingCSRFToken() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = AlertIntegrationTest.ROLE_ALERT_ADMIN)
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testVerifyNullStringCSRFToken() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_VERIFY_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", "null");
@@ -102,4 +104,5 @@ public class HomeControllerTestIT extends AlertIntegrationTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(HOME_URL);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
+
 }

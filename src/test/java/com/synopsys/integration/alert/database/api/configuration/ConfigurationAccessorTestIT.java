@@ -37,7 +37,8 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DescriptorMocker;
 
 @Transactional
-public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class ConfigurationAccessorTestIT {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
     public static final String FIELD_KEY_INSENSITIVE = "testInsensitiveField";
     public static final String FIELD_KEY_SENSITIVE = "testSensitiveField";

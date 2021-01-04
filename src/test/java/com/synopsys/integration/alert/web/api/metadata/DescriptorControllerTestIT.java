@@ -18,8 +18,10 @@ import org.springframework.web.context.WebApplicationContext;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-public class DescriptorControllerTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class DescriptorControllerTestIT {
     @Autowired
     protected WebApplicationContext webApplicationContext;
 
@@ -35,7 +37,7 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
     @Test
     public void getDescriptorsWithNoParametersTest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(DescriptorController.BASE_PATH))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -43,7 +45,7 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
     @Test
     public void getDescriptorsWithNameOnlyTest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(DescriptorController.BASE_PATH))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         String componentName = DescriptorType.CHANNEL.name().toLowerCase() + "_2";
         request.requestAttr("name", componentName);
@@ -54,7 +56,7 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
     @Test
     public void getDescriptorsWithTypeOnlyTest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(DescriptorController.BASE_PATH))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.requestAttr("type", DescriptorType.CHANNEL.name());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
@@ -63,7 +65,7 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
     @Test
     public void getDescriptorsWithContextOnlyTest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(DescriptorController.BASE_PATH))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.requestAttr("context", ConfigContextEnum.GLOBAL.name());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
@@ -73,7 +75,7 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
     @Test
     public void getDescriptorsWithNameAndContextTest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(DescriptorController.BASE_PATH))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         String descriptorName = DescriptorType.CHANNEL.name().toLowerCase() + "_4";
         request.requestAttr("name", descriptorName);
@@ -84,7 +86,7 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
     @Test
     public void getDescriptorsWithTypeAndContextTest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(DescriptorController.BASE_PATH))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.requestAttr("type", DescriptorType.CHANNEL.name());
         request.requestAttr("context", ConfigContextEnum.GLOBAL.name());
@@ -94,7 +96,7 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
     @Test
     public void getDescriptorsWithAllParametersTest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(new URI(DescriptorController.BASE_PATH))
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         String descriptorName = DescriptorType.CHANNEL.name().toLowerCase() + "_4";
         request.requestAttr("name", descriptorName);
@@ -102,4 +104,5 @@ public class DescriptorControllerTestIT extends AlertIntegrationTest {
         request.requestAttr("context", ConfigContextEnum.GLOBAL.name());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
+
 }

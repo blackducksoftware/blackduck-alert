@@ -20,7 +20,8 @@ import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional
-public class DefaultTestIT extends AlertIntegrationTest {
+@AlertIntegrationTest
+public class DefaultTestIT {
     @Autowired
     private SystemStatusRepository systemStatusRepository;
 
@@ -76,4 +77,5 @@ public class DefaultTestIT extends AlertIntegrationTest {
 
         assertEquals(expectedDate, defaultSystemStatusUtility.getStartupTime());
     }
+
 }

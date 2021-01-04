@@ -29,9 +29,10 @@ import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
-public class UserAccessorTestIT extends AlertIntegrationTest {
-
+@AlertIntegrationTest
+public class UserAccessorTestIT {
     @Autowired
     private DefaultUserAccessor userAccessor;
     @Autowired
@@ -112,7 +113,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
         assertTrue(userModel.getRoles().isEmpty());
 
         String another_role = "ANOTHER_ROLE";
-        String admin_role = AlertIntegrationTest.ROLE_ALERT_ADMIN;
+        String admin_role = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN;
         Set<String> roleNames = new LinkedHashSet<>(Arrays.asList(admin_role, another_role));
         Set<UserRoleModel> roles = roleNames.stream().map(UserRoleModel::of).collect(Collectors.toSet());
         UserModel updatedModel = userAccessor.updateUser(UserModel.existingUser(userModel.getId(), userModel.getName(), userModel.getPassword(), userModel.getEmailAddress(), AuthenticationType.DATABASE, roles, true), true);

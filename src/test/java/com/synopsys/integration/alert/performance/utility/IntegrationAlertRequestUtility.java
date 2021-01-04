@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.RestConstants;
@@ -19,7 +19,7 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     private final IntLogger intLogger;
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
 
     public IntegrationAlertRequestUtility(IntLogger intLogger, MockMvc mockMvc) {
         this.intLogger = intLogger;
@@ -53,7 +53,7 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
                                                     .with(
                                                         SecurityMockMvcRequestPostProcessors
                                                             .user("admin")
-                                                            .roles(AlertIntegrationTest.ROLE_ALERT_ADMIN)
+                                                            .roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
                                                     )
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());
         try {
@@ -73,4 +73,5 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
             throw new IntegrationException(e.getMessage(), e);
         }
     }
+
 }
