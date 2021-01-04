@@ -1,7 +1,7 @@
 /**
  * alert-common
  *
- * Copyright (c) 2020 Synopsys, Inc.
+ * Copyright (c) 2021 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -27,6 +27,4 @@ import java.io.Serializable;
 import com.synopsys.integration.util.Stringable;
 
 public abstract class AlertSerializableModel extends Stringable implements Serializable {
-    // TODO consider adding no-args constructor here for serialization
-
 }
