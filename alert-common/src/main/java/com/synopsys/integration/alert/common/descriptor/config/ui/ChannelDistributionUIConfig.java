@@ -34,7 +34,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.EndpointSelectField;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_COMMON_CHANNEL_PREFIX = "channel.common.";
@@ -58,10 +60,12 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     private static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
     private final ChannelKey channelKey;
+    private final ProviderKey defaultProviderKey;
 
     public ChannelDistributionUIConfig(ChannelKey channelKey, String label, String urlName) {
         super(label, "Channel distribution setup.", urlName);
         this.channelKey = channelKey;
+        this.defaultProviderKey = new BlackDuckProviderKey();
     }
 
     @Override
@@ -79,7 +83,8 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
         ConfigField frequency = new SelectConfigField(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, frequencyOptions).applyRequired(true);
         ConfigField providerName = new EndpointSelectField(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME)
                                        .applyClearable(false)
-                                       .applyRequired(true);
+                                       .applyRequired(true)
+                                       .applyDefaultValue(defaultProviderKey.getUniversalKey());
 
         List<ConfigField> configFields = List.of(enabled, channelNameField, name, frequency, providerName);
         List<ConfigField> channelDistributionFields = createChannelDistributionFields();
