@@ -86,7 +86,7 @@ public class AzureBoardsTestIssueRequestCreator implements TestIssueRequestCreat
             ContentKey providerContentKey = providerMessageContent.getContentKey();
             String providerName = providerMessageContent.getProvider().getValue();
             String providerUrl = providerMessageContent.getProvider().getUrl()
-                                     .map(UrlUtils::formatProviderUrl)
+                                     .map(UrlUtils::appendTrailingSlashIfNoneExists)
                                      .orElse("");
 
             LinkableItem topicItem = providerMessageContent.getTopic();
