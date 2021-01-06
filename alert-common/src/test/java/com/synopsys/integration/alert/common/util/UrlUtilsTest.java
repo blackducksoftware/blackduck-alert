@@ -3,6 +3,8 @@ package com.synopsys.integration.alert.common.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class UrlUtilsTest {
     @Test
@@ -32,15 +34,10 @@ public class UrlUtilsTest {
         assertEquals("", formattedUrl);
     }
 
-    @Test
-    public void emptyStringArgTest() {
-        String formattedUrl = UrlUtils.appendTrailingSlashIfNoneExists("");
-        assertEquals("", formattedUrl);
-    }
-
-    @Test
-    public void blankStringArgTest() {
-        String formattedUrl = UrlUtils.appendTrailingSlashIfNoneExists("       ");
+    @ParameterizedTest
+    @ValueSource(strings = { "", " ", "     " })
+    public void blankStringArgTest(String urlArg) {
+        String formattedUrl = UrlUtils.appendTrailingSlashIfNoneExists(urlArg);
         assertEquals("", formattedUrl);
     }
 
