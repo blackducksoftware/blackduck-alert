@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.util;
 import org.apache.commons.lang3.StringUtils;
 
 public final class UrlUtils {
-    public static String formatProviderUrl(String originalUrl) {
+    public static String appendTrailingSlashIfNoneExists(String originalUrl) {
         String correctedUrl = "";
         if (StringUtils.isNotBlank(originalUrl)) {
             correctedUrl = originalUrl.trim();
