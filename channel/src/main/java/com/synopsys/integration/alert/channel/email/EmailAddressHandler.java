@@ -67,7 +67,7 @@ public class EmailAddressHandler {
                 Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigId, optionalHref.get(), projectOwnerOnly);
                 emailAddresses.addAll(projectEmailAddresses);
             } else {
-                logger.warn("The topic '{}' did not have an href, cannot get emails", contentGroup.getCommonProject().getName());
+                logger.warn("The project '{}' did not have an href, cannot get emails", contentGroup.getCommonProject().getValue());
             }
         }
 

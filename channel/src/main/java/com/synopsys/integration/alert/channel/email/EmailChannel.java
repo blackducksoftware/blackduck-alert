@@ -125,7 +125,7 @@ public class EmailChannel extends NamedDistributionChannel {
         String providerUrl = commonProvider.getUrl().orElse("#");
 
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", providerName, projectName);
+            String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Project: %s", providerName, projectName);
             throw new AlertException(errorMessage);
         }
         HashMap<String, Object> model = new HashMap<>();
