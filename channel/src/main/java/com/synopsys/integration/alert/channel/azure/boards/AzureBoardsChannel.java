@@ -42,7 +42,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
@@ -72,9 +71,9 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     }
 
     @Override
-    protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
+    protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) throws AlertConfigurationException {
         ConfigurationModel globalConfig = event.getChannelGlobalConfig()
-                                              .orElseThrow(() -> new AlertRuntimeException(new AlertConfigurationException("Missing Azure Boards global configuration")));
+                                              .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
         AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), globalConfig);
 
         DistributionJobModel distributionJobModel = event.getDistributionJobModel();

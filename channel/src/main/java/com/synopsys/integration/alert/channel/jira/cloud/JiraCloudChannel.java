@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
@@ -56,9 +55,9 @@ public class JiraCloudChannel extends IssueTrackerChannel {
     }
 
     @Override
-    protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) {
+    protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) throws AlertConfigurationException {
         ConfigurationModel globalConfig = event.getChannelGlobalConfig()
-                                              .orElseThrow(() -> new AlertRuntimeException(new AlertConfigurationException("Missing Jira Cloud global configuration")));
+                                              .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
         return jiraCloudContextBuilder.build(globalConfig, event.getDistributionJobModel());
     }
 

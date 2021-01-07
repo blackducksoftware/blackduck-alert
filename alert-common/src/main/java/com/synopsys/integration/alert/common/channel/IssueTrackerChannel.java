@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -88,7 +89,7 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
      */
     public abstract IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException;
 
-    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event);
+    protected abstract IssueTrackerContext getIssueTrackerContext(DistributionEvent event) throws AlertConfigurationException;
 
     protected abstract List<IssueTrackerRequest> createRequests(IssueTrackerContext context, DistributionEvent event) throws IntegrationException;
 
