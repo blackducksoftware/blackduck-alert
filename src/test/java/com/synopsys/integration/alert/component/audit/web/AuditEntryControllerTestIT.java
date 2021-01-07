@@ -2,8 +2,6 @@ package com.synopsys.integration.alert.component.audit.web;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +25,6 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
@@ -164,16 +161,12 @@ public class AuditEntryControllerTestIT {
     @Test
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testResendNotification() throws Exception {
-        List<ConfigurationFieldModel> slackFields = new ArrayList<>(MockConfigurationModelFactory.createSlackDistributionFields());
-        ConfigurationFieldModel providerConfigName = providerConfigModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(null);
-        slackFields.add(providerConfigName);
-
-        ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(ChannelKeys.SLACK, ConfigContextEnum.DISTRIBUTION, slackFields);
-        ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel();
+        DistributionJobModel job = jobAccessor.createJob(jobRequestModel);
 
         NotificationEntity notificationEntity = mockNotificationContent.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
-        mockAuditEntryEntity.setCommonConfigId(configurationJobModel.getJobId());
+        mockAuditEntryEntity.setCommonConfigId(job.getJobId());
         AuditEntryEntity auditEntity = mockAuditEntryEntity.createEntity();
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));

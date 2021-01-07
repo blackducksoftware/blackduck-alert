@@ -42,7 +42,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -147,7 +146,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         return Optional.empty();
     }
 
-    private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) throws IntegrationException {
+    private Optional<BlackDuckProperties> createBlackDuckProperties(FieldModel fieldModel) {
         FieldUtility fieldUtility = fieldModelConverter.convertToFieldAccessor(fieldModel);
         Long providerConfigId = fieldUtility.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).orElse(null);
         if (null == providerConfigId) {
@@ -155,9 +154,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         }
 
         return configurationAccessor.getConfigurationById(providerConfigId)
-                   .map(ConfigurationModel::getCopyOfKeyToFieldMap)
-                   .map(FieldUtility::new)
-                   .map(accessor -> blackDuckPropertiesFactory.createProperties(providerConfigId, accessor));
+                   .map(blackDuckPropertiesFactory::createProperties);
     }
 
 }

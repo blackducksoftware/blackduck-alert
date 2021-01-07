@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 import org.mockito.Mockito;
 
@@ -15,14 +13,10 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -43,12 +37,6 @@ public class MockConfigurationModelFactory {
         Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", ChannelKeys.SLACK.getUniversalKey());
         fields.addAll(commonFields);
         return fields;
-    }
-
-    public static ConfigurationJobModel createDistributionJob(Collection<ConfigurationFieldModel> configurationFieldModels) {
-        ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(1L, 1L, null, null, ConfigContextEnum.DISTRIBUTION);
-        configurationFieldModels.forEach(configurationModel::put);
-        return new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
     }
 
     public static List<ConfigurationFieldModel> createEmailDistributionFieldsProjectOwnerOnly() {
@@ -148,19 +136,6 @@ public class MockConfigurationModelFactory {
         Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fieldList));
 
         return configurationModel;
-    }
-
-    public static ConfigurationJobModel createCommonJobConfigModel(UUID uuid, Long id, Long descriptorId, String distributionType, String name, String providerName, String frequency,
-        String filterByProject, String projectNamePattern, List<String> configuredProjects, List<String> notificationTypes, String formatType) {
-        ConfigurationJobModel configurationJobModel = Mockito.mock(ConfigurationJobModel.class);
-        Mockito.when(configurationJobModel.getJobId()).thenReturn(uuid);
-
-        ConfigurationModel configurationModel = createCommonConfigModel(id, descriptorId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
-        Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapFieldKeyToFields(configurationModel.getCopyOfFieldList());
-        FieldUtility fieldUtility = new FieldUtility(fieldModelMap);
-        Mockito.when(configurationJobModel.getFieldUtility()).thenReturn(fieldUtility);
-
-        return configurationJobModel;
     }
 
     private static void mockField(List<ConfigurationFieldModel> fieldList, ConfigurationModel configurationModel, String key, String value) {

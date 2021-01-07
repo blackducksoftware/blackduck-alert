@@ -23,9 +23,12 @@
 package com.synopsys.integration.alert.common.provider.state;
 
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
@@ -42,17 +45,30 @@ public class StatefulProvider {
     private final ProviderDistributionFilter distributionFilter;
     private final ProviderMessageContentCollector messageContentCollector;
 
-    public static StatefulProvider create(ProviderKey providerKey, ConfigurationModel configurationModel,
-        List<ProviderTask> tasks, ProviderProperties properties, ProviderDistributionFilter distributionFilter, ProviderMessageContentCollector messageContentCollector) {
-        FieldUtility fieldUtility = new FieldUtility(configurationModel.getCopyOfKeyToFieldMap());
-        boolean configEnabled = fieldUtility.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
-        String configName = fieldUtility.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(ProviderProperties.UNKNOWN_CONFIG_NAME);
-
+    public static StatefulProvider create(
+        ProviderKey providerKey,
+        ConfigurationModel configurationModel,
+        List<ProviderTask> tasks,
+        ProviderProperties properties,
+        ProviderDistributionFilter distributionFilter,
+        ProviderMessageContentCollector messageContentCollector
+    ) {
+        Map<String, ConfigurationFieldModel> keyToFieldMap = configurationModel.getCopyOfKeyToFieldMap();
+        Boolean configEnabled = MapUtils.getBoolean(keyToFieldMap, ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED, false);
+        String configName = MapUtils.getString(keyToFieldMap, ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderProperties.UNKNOWN_CONFIG_NAME);
         return new StatefulProvider(providerKey, configurationModel.getConfigurationId(), configName, configEnabled, tasks, properties, distributionFilter, messageContentCollector);
     }
 
-    private StatefulProvider(ProviderKey key, Long configId, String configName, boolean configEnabled,
-        List<ProviderTask> tasks, ProviderProperties properties, ProviderDistributionFilter distributionFilter, ProviderMessageContentCollector messageContentCollector) {
+    private StatefulProvider(
+        ProviderKey key,
+        Long configId,
+        String configName,
+        boolean configEnabled,
+        List<ProviderTask> tasks,
+        ProviderProperties properties,
+        ProviderDistributionFilter distributionFilter,
+        ProviderMessageContentCollector messageContentCollector
+    ) {
         this.key = key;
         this.configId = configId;
         this.configName = configName;
