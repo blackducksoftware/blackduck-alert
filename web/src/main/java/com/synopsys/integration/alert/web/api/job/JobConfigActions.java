@@ -349,7 +349,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
             FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(resource, otherJobModels);
 
             if (null != channelFieldModel) {
-                Optional<ChannelDistributionTestAction> optionalChannelDistributionTestAction = descriptorProcessor.retrieveChannelDistributionTestAction(channelFieldModel.getDescriptorName());
+                String descriptorName = channelFieldModel.getDescriptorName();
+                Optional<ChannelDistributionTestAction> optionalChannelDistributionTestAction = descriptorProcessor.retrieveChannelDistributionTestAction(descriptorName);
                 if (optionalChannelDistributionTestAction.isPresent()) {
                     ChannelDistributionTestAction channelDistributionTestAction = optionalChannelDistributionTestAction.get();
                     Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
@@ -379,7 +380,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                                   .stream()
                                                                                   .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                                   .collect(Collectors.toList());
-                    DistributionJobModel testJobModel = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails);
+                    DistributionJobModel testJobModel = descriptorProcessor.retrieveJobDetailsProcessor(descriptorName)
+                                                            .map(jobDetailsProcessor -> jobDetailsProcessor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
+                                                            .orElse(JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails));
 
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
                         testJobModel,
@@ -392,7 +395,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
                     return new ValidationActionResponse(HttpStatus.OK, responseModel);
                 } else {
-                    String descriptorName = channelFieldModel.getDescriptorName();
                     logger.error("Test action did not exist: {}", descriptorName);
                     responseModel = ValidationResponseModel.generalError("Test functionality not implemented for " + descriptorName);
                     return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, responseModel);
@@ -433,7 +435,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                       .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                       .collect(Collectors.toList());
         Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
-        DistributionJobModel fromResource = JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails);
+        String descriptorName = Optional.ofNullable(configuredFieldsMap.get(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+        DistributionJobModel fromResource = descriptorProcessor.retrieveJobDetailsProcessor(descriptorName)
+                                                .map(jobDetailsProcessor -> jobDetailsProcessor.convertToJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails))
+                                                .orElse(JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails));
+
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),
             fromResource.getName(),

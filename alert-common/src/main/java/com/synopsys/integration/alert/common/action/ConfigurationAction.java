@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class ConfigurationAction {
@@ -38,6 +39,9 @@ public abstract class ConfigurationAction {
     // FIXME there needs to be a better distinction between a global TestAction and a distribution TestAction
     //  for 6.4.0, this will have to suffice to avoid additional scope-creep of re-architecting TestActions
     private ChannelDistributionTestAction channelDistributionTestAction;
+
+    // TODO This Should probably receive the same fix as the channelDistributionTestAction object as well.
+    private JobDetailsProcessor jobDetailsProcessor;
 
     protected ConfigurationAction(DescriptorKey descriptorKey) {
         this.descriptorKey = descriptorKey;
@@ -73,6 +77,14 @@ public abstract class ConfigurationAction {
 
     public TestAction getTestAction(ConfigContextEnum context) {
         return testActionMap.get(context);
+    }
+
+    public void addJobDetailsProcessor(JobDetailsProcessor jobDetailsProcessor) {
+        this.jobDetailsProcessor = jobDetailsProcessor;
+    }
+
+    public Optional<JobDetailsProcessor> getJobDetailsProcessor() {
+        return Optional.ofNullable(jobDetailsProcessor);
     }
 
     public Optional<ChannelDistributionTestAction> getChannelDistributionTestAction() {
