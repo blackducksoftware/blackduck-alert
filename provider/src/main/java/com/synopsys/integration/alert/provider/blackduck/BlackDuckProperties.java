@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -57,11 +58,11 @@ public class BlackDuckProperties extends ProviderProperties {
     private final String apiToken;
 
     public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationModel configurationModel) {
-        this(configId, gson, alertProperties, proxyManager, createFieldAccessor(configurationModel));
+        this(configId, gson, alertProperties, proxyManager, createFieldUtility(configurationModel));
     }
 
     public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, FieldUtility fieldUtility) {
-        super(configId, fieldUtility);
+        super(configId, fieldUtility.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED), fieldUtility.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(UNKNOWN_CONFIG_NAME));
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
@@ -75,7 +76,7 @@ public class BlackDuckProperties extends ProviderProperties {
         this.apiToken = fieldUtility.getStringOrNull(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
     }
 
-    private static FieldUtility createFieldAccessor(ConfigurationModel configurationModel) {
+    private static FieldUtility createFieldUtility(ConfigurationModel configurationModel) {
         return Optional.ofNullable(configurationModel)
                    .map(config -> new FieldUtility(config.getCopyOfKeyToFieldMap()))
                    .orElse(new FieldUtility(Map.of()));
