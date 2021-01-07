@@ -81,11 +81,11 @@ public abstract class ChannelMessageParser {
     }
 
     public String getCommonTopic(MessageContentGroup messageContent, @Nullable ItemOperation nullableTopLevelAction) {
-        LinkableItem commonTopic = messageContent.getCommonTopic();
+        LinkableItem commonProject = messageContent.getCommonProject();
         if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
-            commonTopic = new LinkableItem(commonTopic.getName(), commonTopic.getValue());
+            commonProject = new LinkableItem(commonProject.getName(), commonProject.getValue());
         }
-        return createLinkableItemString(commonTopic, true) + getLineSeparator();
+        return createLinkableItemString(commonProject, true) + getLineSeparator();
     }
 
     public String getComponentSubTopic(ProviderMessageContent messageContent, @Nullable ItemOperation nullableTopLevelAction) {

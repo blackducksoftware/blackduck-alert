@@ -46,14 +46,14 @@ public class MessageContentGroupCsvCreator {
 
     public String createCsvString(MessageContentGroup messageContentGroup) {
         LinkableItem commonProvider = messageContentGroup.getCommonProvider();
-        LinkableItem commonTopic = messageContentGroup.getCommonTopic();
+        LinkableItem commonProject = messageContentGroup.getCommonProject();
         List<ProviderMessageContent> contents = messageContentGroup.getSubContent();
 
         StringBuilder csvBuilder = new StringBuilder();
-        List<String> columnNames = createColumnNames(commonTopic, contents);
+        List<String> columnNames = createColumnNames(commonProject, contents);
         appendLine(csvBuilder, columnNames);
 
-        List<List<String>> rowValues = createRowValues(commonProvider, commonTopic, contents);
+        List<List<String>> rowValues = createRowValues(commonProvider, commonProject, contents);
         for (List<String> row : rowValues) {
             appendLine(csvBuilder, row);
         }
@@ -61,12 +61,13 @@ public class MessageContentGroupCsvCreator {
         return csvBuilder.toString();
     }
 
+    // TODO to change these columns would be a breaking change to our API
     // Provider | Provider Config Name | Topic Name | Sub Topic Name | Component Name | Sub Component Name | Component URL | Operation | Category | Category Name | Category Grouping Attribute Name | Additional Attributes | Item URL
-    private List<String> createColumnNames(LinkableItem commonTopic, List<ProviderMessageContent> contents) {
+    private List<String> createColumnNames(LinkableItem commonProject, List<ProviderMessageContent> contents) {
         List<String> columnNames = new ArrayList<>();
         columnNames.add("Provider");
         columnNames.add("Provider Config");
-        columnNames.add(commonTopic.getName());
+        columnNames.add(commonProject.getName());
 
         String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getProjectVersion);
         columnNames.add(subTopicNamesCombined);
