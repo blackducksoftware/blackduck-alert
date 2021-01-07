@@ -31,10 +31,11 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class EmailConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected EmailConfigurationAction(EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction) {
+    protected EmailConfigurationAction(EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction, EmailJobDetailsProcessor emailJobDetailsProcessor) {
         super(ChannelKeys.EMAIL);
         addGlobalTestAction(emailGlobalTestAction);
         addDistributionTestAction(emailDistributionTestAction);
+        addJobDetailsProcessor(emailJobDetailsProcessor);
     }
 
 }

@@ -20,28 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards.actions;
+package com.synopsys.integration.alert.channel.msteams.actions;
 
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
 
 @Component
-public class AzureBoardsJobDetailsProcessor extends JobDetailsProcessor {
+public class MsTeamsJobDetailsProcessor extends JobDetailsProcessor {
 
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-        return new AzureBoardsJobDetailsModel(
-            extractFieldValue("channel.azure.boards.work.item.comment", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValueOrEmptyString("channel.azure.boards.project", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.azure.boards.work.item.type", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.azure.boards.work.item.completed.state", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.azure.boards.work.item.reopen.state", configuredFieldsMap)
-        );
+        return new MSTeamsJobDetailsModel(extractFieldValueOrEmptyString("channel.msteams.webhook", configuredFieldsMap));
     }
 }

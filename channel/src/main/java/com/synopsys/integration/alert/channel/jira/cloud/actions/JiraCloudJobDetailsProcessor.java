@@ -20,28 +20,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.azure.boards.actions;
+package com.synopsys.integration.alert.channel.jira.cloud.actions;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.common.action.JiraJobDetailsProcessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
-public class AzureBoardsJobDetailsProcessor extends JobDetailsProcessor {
+public class JiraCloudJobDetailsProcessor extends JiraJobDetailsProcessor {
+
+    @Autowired
+    public JiraCloudJobDetailsProcessor(Gson gson) {
+        super(gson);
+    }
 
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-        return new AzureBoardsJobDetailsModel(
-            extractFieldValue("channel.azure.boards.work.item.comment", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValueOrEmptyString("channel.azure.boards.project", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.azure.boards.work.item.type", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.azure.boards.work.item.completed.state", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.azure.boards.work.item.reopen.state", configuredFieldsMap)
+        return new JiraCloudJobDetailsModel(
+            extractFieldValue("channel.jira.cloud.add.comments", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            extractFieldValueOrEmptyString("channel.jira.cloud.issue.creator", configuredFieldsMap),
+            extractFieldValueOrEmptyString("channel.jira.cloud.project.name", configuredFieldsMap),
+            extractFieldValueOrEmptyString("channel.jira.cloud.issue.type", configuredFieldsMap),
+            extractFieldValueOrEmptyString("channel.jira.cloud.resolve.workflow", configuredFieldsMap),
+            extractFieldValueOrEmptyString("channel.jira.cloud.reopen.workflow", configuredFieldsMap),
+            extractJiraFieldMappings("channel.jira.cloud.field.mapping", configuredFieldsMap)
         );
     }
 }

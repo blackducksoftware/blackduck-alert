@@ -31,10 +31,11 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class JiraServerConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected JiraServerConfigurationAction(JiraServerDistributionTestAction jiraServerDistributionTestAction, JiraServerGlobalTestAction jiraServerGlobalTestAction) {
+    protected JiraServerConfigurationAction(JiraServerDistributionTestAction jiraServerDistributionTestAction, JiraServerGlobalTestAction jiraServerGlobalTestAction, JiraServerJobDetailsProcessor jiraServerJobDetailsProcessor) {
         super(ChannelKeys.JIRA_SERVER);
         addDistributionTestAction(jiraServerDistributionTestAction);
         addGlobalTestAction(jiraServerGlobalTestAction);
+        addJobDetailsProcessor(jiraServerJobDetailsProcessor);
     }
 
 }

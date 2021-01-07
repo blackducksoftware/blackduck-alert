@@ -20,22 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.actions;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+package com.synopsys.integration.alert.channel.msteams.actions;
 
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
-@Component
-public class JiraCloudConfigurationAction extends ConfigurationAction {
-    @Autowired
-    public JiraCloudConfigurationAction(JiraCloudGlobalTestAction globalTestAction, JiraCloudDistributionTestAction jiraDistributionTestAction, JiraCloudJobDetailsProcessor jiraCloudJobDetailsProcessor) {
-        super(ChannelKeys.JIRA_CLOUD);
-        addGlobalTestAction(globalTestAction);
-        addDistributionTestAction(jiraDistributionTestAction);
-        addJobDetailsProcessor(jiraCloudJobDetailsProcessor);
-    }
+public class MsTeamsConfigurationAction extends ConfigurationAction {
 
+    protected MsTeamsConfigurationAction(MsTeamsJobDetailsProcessor msTeamsJobDetailsProcessor) {
+        super(ChannelKeys.MS_TEAMS);
+        addJobDetailsProcessor(msTeamsJobDetailsProcessor);
+    }
 }

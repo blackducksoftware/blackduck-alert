@@ -20,26 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.actions;
+package com.synopsys.integration.alert.channel.jira.common.action;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
-
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
 
-@Component
-public class SlackJobDetailsProcessor extends JobDetailsProcessor {
+public abstract class JiraJobDetailsProcessor extends JobDetailsProcessor {
+    private Gson gson;
 
-    @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-        return new SlackJobDetailsModel(
-            extractFieldValueOrEmptyString("channel.slack.webhook", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.slack.channel.name", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.slack.channel.username", configuredFieldsMap)
-        );
+    public JiraJobDetailsProcessor(Gson gson) {
+        this.gson = gson;
+    }
+
+    protected List<JiraJobCustomFieldModel> extractJiraFieldMappings(String fieldKey, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+        List<String> fieldMappingStrings = extractFieldValues(fieldKey, configuredFieldsMap);
+        return fieldMappingStrings.stream()
+                   .map(fieldMappingString -> gson.fromJson(fieldMappingString, JiraJobCustomFieldModel.class))
+                   .collect(Collectors.toList());
     }
 }
