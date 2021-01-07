@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.SettingsKeyAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -90,8 +89,7 @@ public class UpdateEmailService {
                                                      .stream()
                                                      .findFirst()
                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
-                FieldUtility fieldUtility = new FieldUtility(emailConfig.getCopyOfKeyToFieldMap());
-                EmailProperties emailProperties = new EmailProperties(fieldUtility);
+                EmailProperties emailProperties = new EmailProperties(emailConfig);
 
                 String alertServerUrl = alertProperties.getServerUrl().orElse(null);
                 Map<String, Object> templateFields = new HashMap<>();
