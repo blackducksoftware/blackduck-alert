@@ -98,8 +98,8 @@ public abstract class AbstractChannelTest {
         ProviderMessageContent.Builder providerBuilder = new ProviderMessageContent.Builder();
         providerBuilder
             .applyProvider("testProvider", 1L, "testProviderConfig")
-            .applyTopic("Topic", testName, "https://google.com")
-            .applySubTopic(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+            .applyProject("Topic", testName, "https://google.com")
+            .applyProjectVersion(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
             .applyAllComponentItems(items);
 
         return providerBuilder.build();

@@ -80,8 +80,8 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "topic")
-                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .applyProject("testTopic", "topic")
+                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
                                              .build();
         try {
             DistributionJobModel testJobModel = createTestJobModel("Null Global Test", List.of());

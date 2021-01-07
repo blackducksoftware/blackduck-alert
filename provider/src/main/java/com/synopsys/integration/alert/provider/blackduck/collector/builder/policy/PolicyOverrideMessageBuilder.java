@@ -72,8 +72,8 @@ public class PolicyOverrideMessageBuilder extends BlackDuckMessageBuilder<Policy
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, overrideContent.getProjectName(), projectUrl)
-                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), projectVersionUrl);
+                .applyProject(MessageBuilderConstants.LABEL_PROJECT_NAME, overrideContent.getProjectName(), projectUrl)
+                .applyProjectVersion(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, overrideContent.getProjectVersionName(), projectVersionUrl);
 
             List<PolicyInfo> policies = overrideContent.getPolicyInfos();
             DistributionJobModel job = commonMessageData.getJob();

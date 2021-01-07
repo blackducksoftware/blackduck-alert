@@ -59,7 +59,7 @@ public class ProjectMessageBuilder extends BlackDuckMessageBuilder<ProjectNotifi
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
+                .applyProject(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
                 .applyAction(projectLevelAction);
 
             return List.of(messageContentBuilder.build());

@@ -29,9 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -90,7 +89,7 @@ public abstract class ChannelMessageParser {
     }
 
     public String getComponentSubTopic(ProviderMessageContent messageContent, @Nullable ItemOperation nullableTopLevelAction) {
-        Optional<LinkableItem> optionalSubTopic = messageContent.getSubTopic();
+        Optional<LinkableItem> optionalSubTopic = messageContent.getProjectVersion();
         if (optionalSubTopic.isPresent()) {
             LinkableItem subTopic = optionalSubTopic.get();
             if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
@@ -107,7 +106,7 @@ public abstract class ChannelMessageParser {
             messageContent
                 .getAction()
                 .map(ItemOperation::name)
-                .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
+                .map(action -> String.format("%s Action: %s%s", messageContent.getProject().getName(), action, getLineSeparator()))
                 .ifPresent(messagePieces::add);
         } else {
             SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();

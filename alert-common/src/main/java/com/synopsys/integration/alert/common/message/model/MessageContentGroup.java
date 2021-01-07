@@ -48,19 +48,19 @@ public class MessageContentGroup extends AlertSerializableModel {
     }
 
     public boolean applies(ProviderMessageContent message) {
-        return null == commonTopic || commonTopic.getValue().equals(message.getTopic().getValue());
+        return null == commonTopic || commonTopic.getValue().equals(message.getProject().getValue());
     }
 
     public void add(ProviderMessageContent message) {
         if (null == commonTopic) {
             comonProvider = message.getProvider();
-            commonTopic = message.getTopic();
-        } else if (!commonTopic.getValue().equals(message.getTopic().getValue())) {
-            throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), message.getTopic().getValue()));
+            commonTopic = message.getProject();
+        } else if (!commonTopic.getValue().equals(message.getProject().getValue())) {
+            throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), message.getProject().getValue()));
         }
 
-        if (commonTopic.getUrl().isEmpty() && message.getTopic().getUrl().isPresent()) {
-            commonTopic = message.getTopic();
+        if (commonTopic.getUrl().isEmpty() && message.getProject().getUrl().isPresent()) {
+            commonTopic = message.getProject();
         }
 
         subContent.add(message);

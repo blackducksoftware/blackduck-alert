@@ -30,8 +30,8 @@ public class ChannelEventManagerTest {
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "topic")
-                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .applyProject("testTopic", "topic")
+                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
                                              .build();
         DistributionJobModel emptyJob = DistributionJobModel.builder().build();
         DistributionEvent event = new DistributionEvent("destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
@@ -49,8 +49,8 @@ public class ChannelEventManagerTest {
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "topic")
-                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .applyProject("testTopic", "topic")
+                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
                                              .build();
         AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);

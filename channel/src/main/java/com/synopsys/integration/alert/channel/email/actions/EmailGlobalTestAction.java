@@ -32,9 +32,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
-import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -80,7 +80,7 @@ public class EmailGlobalTestAction extends TestAction {
 
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder()
                                                      .applyProvider("Test Provider", ProviderProperties.UNKNOWN_CONFIG_ID, "Test Provider Config")
-                                                     .applyTopic("Message Content", "Test from Alert")
+                                                     .applyProject("Message Content", "Test from Alert")
                                                      .applyAllComponentItems(List.of(componentBuilder.build()));
 
         ProviderMessageContent messageContent = builder.build();

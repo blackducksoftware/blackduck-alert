@@ -68,7 +68,7 @@ public class MessageContentGroupCsvCreator {
         columnNames.add("Provider Config");
         columnNames.add(commonTopic.getName());
 
-        String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getSubTopic);
+        String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getProjectVersion);
         columnNames.add(subTopicNamesCombined);
 
         List<ComponentItem> allComponentItems = contents
@@ -106,7 +106,7 @@ public class MessageContentGroupCsvCreator {
     private List<List<String>> createRowValues(LinkableItem commonProvider, LinkableItem commonTopic, List<ProviderMessageContent> contents) {
         List<List<String>> rows = new ArrayList<>();
         for (ProviderMessageContent message : contents) {
-            String subTopicValue = createOptionalValueString(message.getSubTopic(), LinkableItem::getValue);
+            String subTopicValue = createOptionalValueString(message.getProjectVersion(), LinkableItem::getValue);
             for (ComponentItem componentItem : message.getComponentItems()) {
                 List<String> columnValues = createColumnValues(commonProvider.getName(), commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
                 rows.add(columnValues);
