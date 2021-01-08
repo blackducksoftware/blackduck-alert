@@ -22,11 +22,16 @@
  */
 package com.synopsys.integration.alert.channel.msteams.actions;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
+@Component
 public class MsTeamsConfigurationAction extends ConfigurationAction {
 
+    @Autowired
     protected MsTeamsConfigurationAction(MsTeamsJobDetailsProcessor msTeamsJobDetailsProcessor) {
         super(ChannelKeys.MS_TEAMS);
         addJobDetailsProcessor(msTeamsJobDetailsProcessor);
