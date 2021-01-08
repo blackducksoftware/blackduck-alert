@@ -29,11 +29,18 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
     private static final String[] EXCLUDED_FIELDS = { "collapsible", "isNumericValue" };
 
+    @Deprecated(since = "6.5.0")
+    private static final String LABEL_SERIALIZATION_NAME = "name";
+
+    @JsonProperty(LABEL_SERIALIZATION_NAME)
+    @SerializedName(LABEL_SERIALIZATION_NAME)
     private final String label;
     private final String value;
     private final String url;

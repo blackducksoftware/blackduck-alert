@@ -28,12 +28,23 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageContentGroup extends AlertSerializableModel {
     private final List<ProviderMessageContent> subContent;
 
-    private LinkableItem comonProvider;
+    @Deprecated(since = "6.5.0")
+    private static final String COMMON_PROVIDER_TYPO_SERIALIZATION_NAME = "comonProvider";
+    @Deprecated(since = "6.5.0")
+    private static final String COMMON_PROJECT_SERIALIZATION_NAME = "commonTopic";
+
+    @JsonProperty(COMMON_PROVIDER_TYPO_SERIALIZATION_NAME)
+    @SerializedName(COMMON_PROVIDER_TYPO_SERIALIZATION_NAME)
+    private LinkableItem commonProvider;
+    @JsonProperty(COMMON_PROJECT_SERIALIZATION_NAME)
+    @SerializedName(COMMON_PROJECT_SERIALIZATION_NAME)
     private LinkableItem commonProject;
 
     public static MessageContentGroup singleton(ProviderMessageContent message) {
@@ -53,7 +64,7 @@ public class MessageContentGroup extends AlertSerializableModel {
 
     public void add(ProviderMessageContent message) {
         if (null == commonProject) {
-            comonProvider = message.getProvider();
+            commonProvider = message.getProvider();
             commonProject = message.getProject();
         } else if (!commonProject.getValue().equals(message.getProject().getValue())) {
             throw new IllegalArgumentException(String.format("The project of this message content did not match the group project. Expected: %s. Actual: %s.", commonProject.getValue(), message.getProject().getValue()));
@@ -75,7 +86,7 @@ public class MessageContentGroup extends AlertSerializableModel {
     }
 
     public LinkableItem getCommonProvider() {
-        return comonProvider;
+        return commonProvider;
     }
 
     public LinkableItem getCommonProject() {

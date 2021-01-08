@@ -32,6 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -42,15 +44,24 @@ import com.synopsys.integration.builder.Buildable;
 public class ComponentItem extends AlertSerializableModel implements Buildable {
     private static final String[] EXCLUDED_COMPARISON_FIELDS = { "notificationIds" };
 
+    @Deprecated(since = "6.5.0")
+    private static final String COMPONENT_VERSION_SERIALIZATION_NAME = "subComponent";
+    @Deprecated(since = "6.5.0")
+    private static final String SEVERITY_SERIALIZATION_NAME = "categoryGroupingAttribute";
+
     private final String category;
     private final ItemOperation operation;
     private final ComponentItemPriority priority;
 
     private final LinkableItem component;
+    @JsonProperty(COMPONENT_VERSION_SERIALIZATION_NAME)
+    @SerializedName(COMPONENT_VERSION_SERIALIZATION_NAME)
     private final LinkableItem componentVersion;
     private final ComponentItemCallbackInfo callbackInfo;
 
     private final LinkableItem categoryItem;
+    @JsonProperty(SEVERITY_SERIALIZATION_NAME)
+    @SerializedName(SEVERITY_SERIALIZATION_NAME)
     private final LinkableItem severity;
     private final boolean collapseOnCategory;
 

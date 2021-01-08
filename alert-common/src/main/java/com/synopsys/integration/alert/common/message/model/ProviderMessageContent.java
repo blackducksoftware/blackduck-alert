@@ -30,6 +30,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -39,8 +41,17 @@ import com.synopsys.integration.datastructure.SetMap;
 public class ProviderMessageContent extends AlertSerializableModel implements Buildable {
     private static final long serialVersionUID = -9019185621384719085L;
 
+    @Deprecated(since = "6.5.0")
+    private static final String PROJECT_SERIALIZATION_NAME = "topic";
+    @Deprecated(since = "6.5.0")
+    private static final String SUB_PROJECT_SERIALIZATION_NAME = "subTopic";
+
     private final LinkableItem provider;
+    @JsonProperty(PROJECT_SERIALIZATION_NAME)
+    @SerializedName(PROJECT_SERIALIZATION_NAME)
     private final LinkableItem project;
+    @JsonProperty(SUB_PROJECT_SERIALIZATION_NAME)
+    @SerializedName(SUB_PROJECT_SERIALIZATION_NAME)
     private final LinkableItem projectVersion;
     private final ContentKey contentKey;
 
