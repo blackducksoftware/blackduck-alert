@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.action;
+package com.synopsys.integration.alert.channel.jira.common.actions;
 
 import java.util.List;
 import java.util.Map;
