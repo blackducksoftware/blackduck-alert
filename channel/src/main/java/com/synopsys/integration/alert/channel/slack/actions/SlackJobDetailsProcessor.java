@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
@@ -37,9 +38,9 @@ public class SlackJobDetailsProcessor extends JobDetailsProcessor {
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new SlackJobDetailsModel(
-            extractFieldValueOrEmptyString("channel.slack.webhook", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.slack.channel.name", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.slack.channel.username", configuredFieldsMap)
+            extractFieldValueOrEmptyString(SlackDescriptor.KEY_WEBHOOK, configuredFieldsMap),
+            extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_NAME, configuredFieldsMap),
+            extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_USERNAME, configuredFieldsMap)
         );
     }
 }

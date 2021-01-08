@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.actions.JiraJobDetailsProcessor;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
@@ -44,13 +45,13 @@ public class JiraServerJobDetailsProcessor extends JiraJobDetailsProcessor {
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new JiraServerJobDetailsModel(
-            extractFieldValue("channel.jira.server.add.comments", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValueOrEmptyString("channel.jira.server.issue.creator", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.server.project.name", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.server.issue.type", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.server.resolve.workflow", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.server.reopen.workflow", configuredFieldsMap),
-            extractJiraFieldMappings("channel.jira.server.field.mapping", configuredFieldsMap)
+            extractFieldValue(JiraServerDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_TYPE, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, configuredFieldsMap),
+            extractJiraFieldMappings(JiraServerDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap)
         );
     }
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -37,11 +38,11 @@ public class EmailJobDetailsProcessor extends JobDetailsProcessor {
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new EmailJobDetailsModel(
-            extractFieldValueOrEmptyString("email.subject.line", configuredFieldsMap),
-            extractFieldValue("project.owner.only", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValue("email.additional.addresses.only", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValueOrEmptyString("email.attachment.format", configuredFieldsMap),
-            extractFieldValues("email.additional.addresses", configuredFieldsMap)
+            extractFieldValueOrEmptyString(EmailDescriptor.KEY_SUBJECT_LINE, configuredFieldsMap),
+            extractFieldValue(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            extractFieldValue(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            extractFieldValueOrEmptyString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, configuredFieldsMap),
+            extractFieldValues(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, configuredFieldsMap)
         );
     }
 }

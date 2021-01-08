@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.actions.JiraJobDetailsProcessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -44,13 +45,13 @@ public class JiraCloudJobDetailsProcessor extends JiraJobDetailsProcessor {
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new JiraCloudJobDetailsModel(
-            extractFieldValue("channel.jira.cloud.add.comments", configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValueOrEmptyString("channel.jira.cloud.issue.creator", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.cloud.project.name", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.cloud.issue.type", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.cloud.resolve.workflow", configuredFieldsMap),
-            extractFieldValueOrEmptyString("channel.jira.cloud.reopen.workflow", configuredFieldsMap),
-            extractJiraFieldMappings("channel.jira.cloud.field.mapping", configuredFieldsMap)
+            extractFieldValue(JiraCloudDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_TYPE, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, configuredFieldsMap),
+            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, configuredFieldsMap),
+            extractJiraFieldMappings(JiraCloudDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap)
         );
     }
 }
