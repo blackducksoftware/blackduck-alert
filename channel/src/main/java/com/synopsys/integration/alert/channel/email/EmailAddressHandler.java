@@ -62,12 +62,12 @@ public class EmailAddressHandler {
         boolean useOnlyAdditionalEmailAddresses = emailJobDetailsModel.isAdditionalEmailAddressesOnly();
 
         if (!useOnlyAdditionalEmailAddresses) {
-            Optional<String> optionalHref = contentGroup.getCommonTopic().getUrl();
+            Optional<String> optionalHref = contentGroup.getCommonProject().getUrl();
             if (optionalHref.isPresent()) {
                 Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigId, optionalHref.get(), projectOwnerOnly);
                 emailAddresses.addAll(projectEmailAddresses);
             } else {
-                logger.warn("The topic '{}' did not have an href, cannot get emails", contentGroup.getCommonTopic().getName());
+                logger.warn("The project '{}' did not have an href, cannot get emails", contentGroup.getCommonProject().getValue());
             }
         }
 
@@ -129,7 +129,7 @@ public class EmailAddressHandler {
     private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, DistributionJobModel distributionJobModel, Long providerConfigId, boolean projectOwnerOnly) {
         boolean hasSubTopic = messages
                                   .stream()
-                                  .map(ProviderMessageContent::getSubTopic)
+                                  .map(ProviderMessageContent::getProjectVersion)
                                   .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
             boolean filterByProject = distributionJobModel.isFilterByProject();

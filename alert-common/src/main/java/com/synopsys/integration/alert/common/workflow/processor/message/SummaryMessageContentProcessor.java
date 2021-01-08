@@ -120,7 +120,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
 
             String groupString = componentItem
                                      .getCategoryGroupingAttribute()
-                                     .map(item -> item.getName() + item.getValue())
+                                     .map(item -> item.getLabel() + item.getValue())
                                      .orElse("DEFAULT_GROUPING_STRING");
             keyBuilder.append(groupString);
 
@@ -162,7 +162,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                 summarizedItems.add(summarizedItem);
             } catch (AlertException e) {
                 logger.warn("Failed to summarize ComponentItem. Category: {}, Operation: {}, {}: {}",
-                    arbitraryComponent.getCategory(), arbitraryComponent.getOperation(), arbitraryComponent.getComponent().getName(), arbitraryComponent.getComponent().getValue());
+                    arbitraryComponent.getCategory(), arbitraryComponent.getOperation(), arbitraryComponent.getComponent().getLabel(), arbitraryComponent.getComponent().getValue());
             }
         }
         return summarizedItems;

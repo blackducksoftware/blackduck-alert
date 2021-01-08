@@ -57,18 +57,18 @@ public abstract class AbstractMessageCombiner implements MessageCombiner {
 
     public ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
         LinkableItem provider = oldMessage.getProvider();
-        LinkableItem topic = oldMessage.getTopic();
-        Optional<LinkableItem> optionalSubTopic = oldMessage.getSubTopic();
-        String subTopicName = optionalSubTopic.map(LinkableItem::getName).orElse(null);
+        LinkableItem topic = oldMessage.getProject();
+        Optional<LinkableItem> optionalSubTopic = oldMessage.getProjectVersion();
+        String subTopicName = optionalSubTopic.map(LinkableItem::getLabel).orElse(null);
         String subTopicValue = optionalSubTopic.map(LinkableItem::getValue).orElse(null);
         String subTopicUrl = optionalSubTopic.flatMap(LinkableItem::getUrl).orElse(null);
         ItemOperation action = oldMessage.getAction().orElse(null);
         Long notificationId = oldMessage.getNotificationId().orElse(null);
 
         return new ProviderMessageContent.Builder()
-                   .applyProvider(provider.getName(), oldMessage.getProviderConfigId(), provider.getValue(), provider.getUrl().orElse(null))
-                   .applyTopic(topic.getName(), topic.getValue(), topic.getUrl().orElse(null))
-                   .applySubTopic(subTopicName, subTopicValue, subTopicUrl)
+                   .applyProvider(provider.getLabel(), oldMessage.getProviderConfigId(), provider.getValue(), provider.getUrl().orElse(null))
+                   .applyProject(topic.getLabel(), topic.getValue(), topic.getUrl().orElse(null))
+                   .applyProjectVersion(subTopicName, subTopicValue, subTopicUrl)
                    .applyAction(action)
                    .applyNotificationId(notificationId)
                    .applyAllComponentItems(componentItems)

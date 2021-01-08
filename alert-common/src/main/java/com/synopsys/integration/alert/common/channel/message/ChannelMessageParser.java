@@ -29,9 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -82,19 +81,19 @@ public abstract class ChannelMessageParser {
     }
 
     public String getCommonTopic(MessageContentGroup messageContent, @Nullable ItemOperation nullableTopLevelAction) {
-        LinkableItem commonTopic = messageContent.getCommonTopic();
+        LinkableItem commonProject = messageContent.getCommonProject();
         if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
-            commonTopic = new LinkableItem(commonTopic.getName(), commonTopic.getValue());
+            commonProject = new LinkableItem(commonProject.getLabel(), commonProject.getValue());
         }
-        return createLinkableItemString(commonTopic, true) + getLineSeparator();
+        return createLinkableItemString(commonProject, true) + getLineSeparator();
     }
 
     public String getComponentSubTopic(ProviderMessageContent messageContent, @Nullable ItemOperation nullableTopLevelAction) {
-        Optional<LinkableItem> optionalSubTopic = messageContent.getSubTopic();
+        Optional<LinkableItem> optionalSubTopic = messageContent.getProjectVersion();
         if (optionalSubTopic.isPresent()) {
             LinkableItem subTopic = optionalSubTopic.get();
             if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
-                subTopic = new LinkableItem(subTopic.getName(), subTopic.getValue());
+                subTopic = new LinkableItem(subTopic.getLabel(), subTopic.getValue());
             }
             return createLinkableItemString(subTopic, true);
         }
@@ -107,7 +106,7 @@ public abstract class ChannelMessageParser {
             messageContent
                 .getAction()
                 .map(ItemOperation::name)
-                .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getName(), action, getLineSeparator()))
+                .map(action -> String.format("%s Action: %s%s", messageContent.getProject().getLabel(), action, getLineSeparator()))
                 .ifPresent(messagePieces::add);
         } else {
             SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
@@ -163,7 +162,7 @@ public abstract class ChannelMessageParser {
     }
 
     protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
-        String name = encodeString(linkableItem.getName());
+        String name = encodeString(linkableItem.getLabel());
         String value = encodeString(linkableItem.getValue());
         Optional<String> optionalUrl = linkableItem.getUrl();
 
@@ -185,7 +184,7 @@ public abstract class ChannelMessageParser {
                                                          .stream()
                                                          .map(ComponentItem::getComponentAttributes)
                                                          .flatMap(Set::stream)
-                                                         .collect(SetMap::createLinked, (map, item) -> map.add(item.getName(), item), SetMap::combine);
+                                                         .collect(SetMap::createLinked, (map, item) -> map.add(item.getLabel(), item), SetMap::combine);
         List<String> attributeStrings = new LinkedList<>();
         for (Set<LinkableItem> similarAttributes : attributesMap.values()) {
             Optional<LinkableItem> optionalAttribute = getArbitraryElement(similarAttributes);
@@ -194,7 +193,7 @@ public abstract class ChannelMessageParser {
                 if (attribute.isCollapsible()) {
                     List<String> valuePieces = createLinkableItemValuesPieces(similarAttributes);
                     String valueString = String.join("", valuePieces);
-                    String similarAttributesString = String.format("%s%s: %s", LIST_ITEM_PREFIX, attribute.getName(), valueString);
+                    String similarAttributesString = String.format("%s%s: %s", LIST_ITEM_PREFIX, attribute.getLabel(), valueString);
                     attributeStrings.add(similarAttributesString);
                     attributeStrings.add(getLineSeparator());
                 } else {
@@ -249,9 +248,9 @@ public abstract class ChannelMessageParser {
                 String categoryItemNameString;
                 if (optionalGroupingAttribute.isPresent()) {
                     LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
-                    categoryItemNameString = groupedCategoryItem.getName();
+                    categoryItemNameString = groupedCategoryItem.getLabel();
                 } else {
-                    categoryItemNameString = categoryItem.getName();
+                    categoryItemNameString = categoryItem.getLabel();
                 }
                 componentItemPieces.add(encodeString(categoryItemNameString + ": "));
 
@@ -287,7 +286,7 @@ public abstract class ChannelMessageParser {
         SetMap<String, ComponentItem> groupedAndPrioritizedItems = SetMap.createLinked();
         for (ComponentItem componentItem : componentItems) {
             String groupingString = componentItem.getCategoryGroupingAttribute()
-                                        .map(item -> item.getName() + item.getValue())
+                                        .map(item -> item.getLabel() + item.getValue())
                                         .orElse("DEFAULT_GROUPING_STRING");
             String priorityAndGroupingKey = componentItem.getPriority().name() + groupingString;
             Set<ComponentItem> updatedSet = groupedAndPrioritizedItems.add(priorityAndGroupingKey, componentItem);
@@ -297,7 +296,7 @@ public abstract class ChannelMessageParser {
     }
 
     private LinkableItem createGroupedCategoryItem(LinkableItem categoryItem, LinkableItem categoryGroupingAttribute) {
-        String groupedCategoryName = String.format("%s (%s)", categoryItem.getName(), categoryGroupingAttribute.getValue());
+        String groupedCategoryName = String.format("%s (%s)", categoryItem.getLabel(), categoryGroupingAttribute.getValue());
         return new LinkableItem(groupedCategoryName, categoryItem.getValue(), categoryItem.getUrl().orElse(null));
     }
 

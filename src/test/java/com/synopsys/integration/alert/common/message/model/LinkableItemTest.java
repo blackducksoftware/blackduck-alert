@@ -13,9 +13,9 @@ public class LinkableItemTest {
         final String name = "itemName";
         final String value = "itemValue";
         final String url = "item URL";
-        final LinkableItem item = new LinkableItem(name, value, url);
+        LinkableItem item = new LinkableItem(name, value, url);
 
-        assertEquals(name, item.getName());
+        assertEquals(name, item.getLabel());
         assertEquals(value, item.getValue());
         assertTrue(item.getUrl().isPresent());
         assertEquals(url, item.getUrl().get());
@@ -25,10 +25,11 @@ public class LinkableItemTest {
     public void testLinkableItemFieldsMissingUrl() {
         final String name = "itemName";
         final String value = "itemValue";
-        final LinkableItem item = new LinkableItem(name, value);
+        LinkableItem item = new LinkableItem(name, value);
 
-        assertEquals(name, item.getName());
+        assertEquals(name, item.getLabel());
         assertEquals(value, item.getValue());
         assertFalse(item.getUrl().isPresent());
     }
+
 }

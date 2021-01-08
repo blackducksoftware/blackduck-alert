@@ -91,12 +91,12 @@ public class SlackChannelTest extends AbstractChannelTest {
         Mockito.when(event.getDistributionJobModel()).thenReturn(testJobModel);
 
         ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
-        Mockito.when(content.getTopic()).thenReturn(new LinkableItem("topic", "topicVal"));
+        Mockito.when(content.getProject()).thenReturn(new LinkableItem("topic", "topicVal"));
 
         MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         LinkableItem topicItem = Mockito.mock(LinkableItem.class);
         Mockito.when(topicItem.getValue()).thenReturn("Value");
-        Mockito.when(content.getTopic()).thenReturn(topicItem);
+        Mockito.when(content.getProject()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
         try {
             slackChannel.createRequests(event);
@@ -116,12 +116,12 @@ public class SlackChannelTest extends AbstractChannelTest {
         Mockito.when(event.getDistributionJobModel()).thenReturn(testJobModel);
 
         ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
-        Mockito.when(content.getTopic()).thenReturn(new LinkableItem("topic", "topicVal"));
+        Mockito.when(content.getProject()).thenReturn(new LinkableItem("topic", "topicVal"));
 
         MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         LinkableItem topicItem = Mockito.mock(LinkableItem.class);
         Mockito.when(topicItem.getValue()).thenReturn("Value");
-        Mockito.when(content.getTopic()).thenReturn(topicItem);
+        Mockito.when(content.getProject()).thenReturn(topicItem);
         Mockito.when(event.getContent()).thenReturn(contentGroup);
 
         SlackChannel slackChannel = createSlackChannel();
@@ -136,7 +136,7 @@ public class SlackChannelTest extends AbstractChannelTest {
     @Test
     public void testCreateRequestMissingContent() {
         ProviderMessageContent content = Mockito.mock(ProviderMessageContent.class);
-        Mockito.when(content.getTopic()).thenReturn(Mockito.mock(LinkableItem.class));
+        Mockito.when(content.getProject()).thenReturn(Mockito.mock(LinkableItem.class));
         DistributionEvent event = Mockito.mock(DistributionEvent.class);
         DistributionJobModel testJobModel = createTestJobModel(
             TEST_WEBHOOK_URL,
@@ -171,7 +171,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyProject("Message Content", "Slack Unit Test from Alert")
                                              .applyComponentItem(componentItem)
                                              .build();
         DistributionEvent event = Mockito.mock(DistributionEvent.class);
@@ -209,7 +209,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyProject("Message Content", "Slack Unit Test from Alert")
                                              .applyComponentItem(componentItem)
                                              .build();
         DistributionEvent event = Mockito.mock(DistributionEvent.class);
@@ -257,7 +257,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyProject("Message Content", "Slack Unit Test from Alert")
                                              .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
                                              .build();
         DistributionEvent event = Mockito.mock(DistributionEvent.class);
@@ -304,7 +304,7 @@ public class SlackChannelTest extends AbstractChannelTest {
 
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("Message Content", "Slack Unit Test from Alert")
+                                             .applyProject("Message Content", "Slack Unit Test from Alert")
                                              .applyAllComponentItems(List.of(componentItem_1, componentItem_2))
                                              .build();
         DistributionEvent event = Mockito.mock(DistributionEvent.class);
@@ -336,8 +336,8 @@ public class SlackChannelTest extends AbstractChannelTest {
         LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
                                                     .applyProvider("testProvider", 1L, "testProviderConfig")
-                                                    .applyTopic("testTopic", "")
-                                                    .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                                    .applyProject("testTopic", "")
+                                                    .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                                     .build();
 
         DistributionJobModel testJobModel = createTestJobModel(

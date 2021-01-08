@@ -62,7 +62,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         List<String> descriptionComments = new ArrayList<>();
         String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, descriptionComments);
         description.append(additionalDescriptionInfo);
-        List<String> operationComments = createOperationComment(providerName, topic.getName(), issueOperation, componentItems);
+        List<String> operationComments = createOperationComment(providerName, topic.getLabel(), issueOperation, componentItems);
         return IssueContentModel.of(title, description.toString(), descriptionComments, operationComments);
     }
 
@@ -141,7 +141,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
     }
 
     private String createTitlePartStringPrefixedWithComma(LinkableItem linkableItem) {
-        return String.format(", %s: %s", linkableItem.getName(), linkableItem.getValue());
+        return String.format(", %s: %s", linkableItem.getLabel(), linkableItem.getValue());
     }
 
 }

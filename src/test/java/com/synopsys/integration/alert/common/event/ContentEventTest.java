@@ -30,8 +30,8 @@ public class ContentEventTest {
         LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "topic")
-                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .applyProject("testTopic", "topic")
+                                             .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                              .build();
         MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER_CONFIG_ID, null, contentGroup);

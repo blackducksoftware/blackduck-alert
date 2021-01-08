@@ -26,9 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,14 +122,14 @@ public abstract class IssueTrackerRequestCreator {
     protected String createAdditionalTrackingKey(ComponentItem componentItem) {
         if (null != componentItem && !componentItem.collapseOnCategory()) {
             LinkableItem categoryItem = componentItem.getCategoryItem();
-            return categoryItem.getName() + categoryItem.getValue();
+            return categoryItem.getLabel() + categoryItem.getValue();
         }
         return StringUtils.EMPTY;
     }
 
     private List<IssueTrackerRequest> createRequestsPerComponent(IssueConfig issueConfig, ProviderMessageContent messageContent) throws IntegrationException {
-        LinkableItem topic = messageContent.getTopic();
-        LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
+        LinkableItem topic = messageContent.getProject();
+        LinkableItem nullableSubTopic = messageContent.getProjectVersion().orElse(null);
 
         ContentKey providerContentKey = messageContent.getContentKey();
         String providerUrl = messageContent.getProvider().getUrl()

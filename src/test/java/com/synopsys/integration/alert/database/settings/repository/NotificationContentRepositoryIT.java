@@ -245,7 +245,7 @@ public class NotificationContentRepositoryIT {
                                           .build();
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "")
+                                             .applyProject("testTopic", "")
                                              .applyAllComponentItems(List.of(componentItem))
                                              .build();
         return MessageContentGroup.singleton(content);
