@@ -31,6 +31,8 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -46,13 +48,13 @@ public abstract class JobDetailsProcessor {
         @Nullable OffsetDateTime lastUpdated,
         List<BlackDuckProjectDetailsModel> projectFilterDetails
     ) {
-        String channelDescriptorName = extractFieldValueOrEmptyString("channel.common.channel.name", configuredFieldsMap);
+        String channelDescriptorName = extractFieldValueOrEmptyString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, configuredFieldsMap);
         DistributionJobModelBuilder builder = DistributionJobModel.builder()
                                                   .jobId(jobId)
-                                                  .enabled(extractFieldValue("channel.common.enabled", configuredFieldsMap).map(Boolean::valueOf).orElse(true))
-                                                  .name(extractFieldValueOrEmptyString("channel.common.name", configuredFieldsMap))
-                                                  .distributionFrequency(extractFieldValueOrEmptyString("channel.common.frequency", configuredFieldsMap))
-                                                  .processingType(extractFieldValueOrEmptyString("provider.distribution.processing.type", configuredFieldsMap))
+                                                  .enabled(extractFieldValue(ChannelDistributionUIConfig.KEY_ENABLED, configuredFieldsMap).map(Boolean::valueOf).orElse(true))
+                                                  .name(extractFieldValueOrEmptyString(ChannelDistributionUIConfig.KEY_NAME, configuredFieldsMap))
+                                                  .distributionFrequency(extractFieldValueOrEmptyString(ChannelDistributionUIConfig.KEY_FREQUENCY, configuredFieldsMap))
+                                                  .processingType(extractFieldValueOrEmptyString(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, configuredFieldsMap))
                                                   .channelDescriptorName(channelDescriptorName)
                                                   .createdAt(createdAt)
                                                   .lastUpdated(lastUpdated)
