@@ -62,12 +62,12 @@ public class EmailAddressHandler {
         boolean useOnlyAdditionalEmailAddresses = emailJobDetailsModel.isAdditionalEmailAddressesOnly();
 
         if (!useOnlyAdditionalEmailAddresses) {
-            Optional<String> optionalHref = contentGroup.getCommonTopic().getUrl();
+            Optional<String> optionalHref = contentGroup.getCommonProject().getUrl();
             if (optionalHref.isPresent()) {
                 Set<String> projectEmailAddresses = collectProviderEmailsFromProject(providerConfigId, optionalHref.get(), projectOwnerOnly);
                 emailAddresses.addAll(projectEmailAddresses);
             } else {
-                logger.warn("The topic '{}' did not have an href, cannot get emails", contentGroup.getCommonTopic().getName());
+                logger.warn("The project '{}' did not have an href, cannot get emails", contentGroup.getCommonProject().getValue());
             }
         }
 
