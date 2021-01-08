@@ -43,7 +43,7 @@ public final class AzureBoardsSearchPropertiesUtils {
         }
 
         StringBuilder linkableItemBuilder = new StringBuilder();
-        linkableItemBuilder.append(linkableItem.getName());
+        linkableItemBuilder.append(linkableItem.getLabel());
         linkableItemBuilder.append(':');
         linkableItemBuilder.append(linkableItem.getValue());
         linkableItem.getUrl()

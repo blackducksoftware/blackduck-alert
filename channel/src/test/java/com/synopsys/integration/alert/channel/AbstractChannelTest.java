@@ -99,7 +99,7 @@ public abstract class AbstractChannelTest {
         providerBuilder
             .applyProvider("testProvider", 1L, "testProviderConfig")
             .applyProject("Topic", testName, "https://google.com")
-            .applyProjectVersion(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+            .applyProjectVersion(subTopic.getLabel(), subTopic.getValue(), subTopic.getUrl().orElse(null))
             .applyAllComponentItems(items);
 
         return providerBuilder.build();

@@ -83,7 +83,7 @@ public class MessageContentGroup extends AlertSerializableModel {
     }
 
     public boolean isEmpty() {
-        return subContent.isEmpty() || StringUtils.isBlank(commonProject.getName()) || StringUtils.isBlank(commonProject.getValue());
+        return subContent.isEmpty() || StringUtils.isBlank(commonProject.getLabel()) || StringUtils.isBlank(commonProject.getValue());
     }
 
 }

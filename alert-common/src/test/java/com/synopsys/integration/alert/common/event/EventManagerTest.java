@@ -27,7 +27,7 @@ public class EventManagerTest {
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("1", 1L, "providerConfig")
                                              .applyProject("testTopic", "topic")
-                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
+                                             .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                              .build();
 
         DistributionJobModel emptyJob = DistributionJobModel.builder().build();
@@ -46,7 +46,7 @@ public class EventManagerTest {
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("1", 1L, "providerConfig")
                                              .applyProject("testTopic", "topic")
-                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
+                                             .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                              .build();
         AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), 1L, "FORMAT", MessageContentGroup.singleton(content));
         eventManager.sendEvent(dbStoreEvent);

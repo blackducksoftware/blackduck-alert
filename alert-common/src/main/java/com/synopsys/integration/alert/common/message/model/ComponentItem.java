@@ -198,7 +198,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     }
 
     private void appendLinkableItem(StringBuilder stringBuilder, LinkableItem linkableItem) {
-        stringBuilder.append(linkableItem.getName());
+        stringBuilder.append(linkableItem.getLabel());
         stringBuilder.append(linkableItem.getValue());
         linkableItem.getUrl().ifPresent(stringBuilder::append);
     }
@@ -277,7 +277,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
         public Builder applyComponentData(LinkableItem component) {
             if (null != component) {
-                this.componentName = component.getName();
+                this.componentName = component.getLabel();
                 this.componentValue = component.getValue();
                 this.componentUrl = component.getUrl().orElse(null);
             }
@@ -304,7 +304,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
         public Builder applySubComponent(LinkableItem subComponent) {
             if (null != subComponent) {
-                this.subComponentName = subComponent.getName();
+                this.subComponentName = subComponent.getLabel();
                 this.subComponentValue = subComponent.getValue();
                 this.subComponentUrl = subComponent.getUrl().orElse(null);
             }
@@ -345,7 +345,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
         public Builder applyCategoryItem(LinkableItem categoryItem) {
             if (null != categoryItem) {
-                this.categoryItemName = categoryItem.getName();
+                this.categoryItemName = categoryItem.getLabel();
                 this.categoryItemValue = categoryItem.getValue();
                 this.categoryItemUrl = categoryItem.getUrl().orElse(null);
             }
@@ -360,7 +360,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
         public Builder applyCategoryGroupingAttribute(LinkableItem categoryGroupingAttribute) {
             if (null != categoryGroupingAttribute) {
-                this.categoryGroupingAttributeName = categoryGroupingAttribute.getName();
+                this.categoryGroupingAttributeName = categoryGroupingAttribute.getLabel();
                 this.categoryGroupingAttributeValue = categoryGroupingAttribute.getValue();
             }
             return this;

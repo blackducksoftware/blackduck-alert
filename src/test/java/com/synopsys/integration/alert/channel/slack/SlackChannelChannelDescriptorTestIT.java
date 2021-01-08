@@ -77,7 +77,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
                                              .applyProject("testTopic", "")
-                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
+                                             .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                              .build();
 
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);

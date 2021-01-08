@@ -31,7 +31,7 @@ public class ContentEventTest {
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
                                              .applyProject("testTopic", "topic")
-                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
+                                             .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                              .build();
         MessageContentGroup contentGroup = MessageContentGroup.singleton(content);
         ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER_CONFIG_ID, null, contentGroup);

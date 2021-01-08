@@ -113,7 +113,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
                                              .applyProject("testTopic", UNIT_TEST_PROJECT_NAME)
-                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
+                                             .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                              .build();
 
         ConfigurationModel emailGlobalConfig = optionalChannelGlobalConfig

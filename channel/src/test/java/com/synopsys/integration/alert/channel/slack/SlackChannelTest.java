@@ -337,7 +337,7 @@ public class SlackChannelTest extends AbstractChannelTest {
         ProviderMessageContent messageContent = new ProviderMessageContent.Builder()
                                                     .applyProvider("testProvider", 1L, "testProviderConfig")
                                                     .applyProject("testTopic", "")
-                                                    .applyProjectVersion(subTopic.getName(), subTopic.getValue())
+                                                    .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                                     .build();
 
         DistributionJobModel testJobModel = createTestJobModel(

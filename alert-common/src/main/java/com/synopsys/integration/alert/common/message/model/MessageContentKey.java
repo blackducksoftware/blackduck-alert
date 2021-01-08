@@ -30,32 +30,32 @@ public final class MessageContentKey extends AlertSerializableModel {
     private static final String SEPARATOR = "_";
     private final String key;
 
-    public static MessageContentKey from(final String topicName, final String topicValue) {
-        final String partialKey = String.format("%s%s%s", topicName, SEPARATOR, topicValue);
+    public static MessageContentKey from(String topicName, String topicValue) {
+        String partialKey = String.format("%s%s%s", topicName, SEPARATOR, topicValue);
         return new MessageContentKey(partialKey);
     }
 
-    public static MessageContentKey from(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
+    public static MessageContentKey from(String topicName, String topicValue, String subTopicName, String subTopicValue) {
         if (subTopicName == null || subTopicValue == null) {
             return from(topicName, topicValue);
         }
-        final String fullKey = String.format("%s_%s_%s_%s", topicName, topicValue, subTopicName, subTopicValue);
+        String fullKey = String.format("%s_%s_%s_%s", topicName, topicValue, subTopicName, subTopicValue);
         return new MessageContentKey(fullKey);
     }
 
-    public static MessageContentKey from(final String topicName, final String topicValue, final Set<LinkableItem> subTopics) {
+    public static MessageContentKey from(String topicName, String topicValue, Set<LinkableItem> subTopics) {
         if (null == subTopics || subTopics.isEmpty()) {
             return from(topicName, topicValue);
         }
 
-        final StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         builder.append(topicName);
         builder.append(SEPARATOR);
         builder.append(topicValue);
 
-        for (final LinkableItem subTopic : subTopics) {
+        for (LinkableItem subTopic : subTopics) {
             builder.append(SEPARATOR);
-            builder.append(subTopic.getName());
+            builder.append(subTopic.getLabel());
             builder.append(SEPARATOR);
             builder.append(subTopic.getValue());
         }
@@ -63,7 +63,7 @@ public final class MessageContentKey extends AlertSerializableModel {
         return new MessageContentKey(builder.toString());
     }
 
-    private MessageContentKey(final String key) {
+    private MessageContentKey(String key) {
         this.key = key;
     }
 

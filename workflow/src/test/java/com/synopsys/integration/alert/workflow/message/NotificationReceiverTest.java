@@ -94,7 +94,7 @@ public class NotificationReceiverTest {
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", providerConfigId, "testProviderConfig")
                                              .applyProject("testTopic", "topic")
-                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
+                                             .applyProjectVersion(subTopic.getLabel(), subTopic.getValue())
                                              .build();
         DistributionJobModel emptyJob = DistributionJobModel.builder().build();
         return new DistributionEvent("destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
