@@ -112,8 +112,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
-                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .applyProject("testTopic", UNIT_TEST_PROJECT_NAME)
+                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
                                              .build();
 
         ConfigurationModel emailGlobalConfig = optionalChannelGlobalConfig

@@ -40,8 +40,8 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     private static final long serialVersionUID = -9019185621384719085L;
 
     private final LinkableItem provider;
-    private final LinkableItem topic;
-    private final LinkableItem subTopic;
+    private final LinkableItem project;
+    private final LinkableItem projectVersion;
     private final ContentKey contentKey;
 
     private final ItemOperation action;
@@ -51,11 +51,11 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
     private final OffsetDateTime providerCreationTime;
     private final Long providerConfigId;
 
-    private ProviderMessageContent(LinkableItem provider, LinkableItem topic, LinkableItem subTopic, ContentKey contentKey, ItemOperation action, Long notificationId, Set<ComponentItem> componentItems,
+    private ProviderMessageContent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, ContentKey contentKey, ItemOperation action, Long notificationId, Set<ComponentItem> componentItems,
         OffsetDateTime providerCreationTime, Long providerConfigId) {
         this.provider = provider;
-        this.topic = topic;
-        this.subTopic = subTopic;
+        this.project = project;
+        this.projectVersion = projectVersion;
         this.contentKey = contentKey;
         this.action = action;
         this.notificationId = notificationId;
@@ -68,12 +68,12 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         return provider;
     }
 
-    public LinkableItem getTopic() {
-        return topic;
+    public LinkableItem getProject() {
+        return project;
     }
 
-    public Optional<LinkableItem> getSubTopic() {
-        return Optional.ofNullable(subTopic);
+    public Optional<LinkableItem> getProjectVersion() {
+        return Optional.ofNullable(projectVersion);
     }
 
     public ContentKey getContentKey() {
@@ -132,34 +132,34 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
         private String providerName;
         private String providerConfigName;
         private String providerUrl;
-        private String topicName;
-        private String topicValue;
-        private String topicUrl;
-        private String subTopicName;
-        private String subTopicValue;
-        private String subTopicUrl;
+        private String projectLabel;
+        private String projectName;
+        private String projectUrl;
+        private String projectVersionLabel;
+        private String projectVersionName;
+        private String projectVersionUrl;
         private ItemOperation action;
         private Long notificationId;
         private OffsetDateTime providerCreationTime;
         private Long providerConfigId;
 
         public ProviderMessageContent build() throws AlertException {
-            if (null == providerName || null == providerConfigId || null == providerConfigName || null == topicName || null == topicValue) {
+            if (null == providerName || null == providerConfigId || null == providerConfigName || null == projectLabel || null == projectName) {
                 throw new AlertException("Missing required field(s)");
             }
 
             LinkableItem provider = new LinkableItem(providerName, providerConfigName, providerUrl);
-            LinkableItem topic = new LinkableItem(topicName, topicValue, topicUrl);
-            LinkableItem subTopic = null;
-            if (StringUtils.isNotBlank(subTopicName) && StringUtils.isNotBlank(subTopicValue)) {
-                subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
+            LinkableItem projectItem = new LinkableItem(projectLabel, projectName, projectUrl);
+            LinkableItem projectVersionItem = null;
+            if (StringUtils.isNotBlank(projectVersionLabel) && StringUtils.isNotBlank(projectVersionName)) {
+                projectVersionItem = new LinkableItem(projectVersionLabel, projectVersionName, projectVersionUrl);
             }
-            ContentKey key = ContentKey.of(providerName, providerConfigId, topicName, topicValue, subTopicName, subTopicValue, action);
-            return new ProviderMessageContent(provider, topic, subTopic, key, action, notificationId, componentItems, providerCreationTime, providerConfigId);
+            ContentKey key = ContentKey.of(providerName, providerConfigId, projectLabel, projectName, projectVersionLabel, projectVersionName, action);
+            return new ProviderMessageContent(provider, projectItem, projectVersionItem, key, action, notificationId, componentItems, providerCreationTime, providerConfigId);
         }
 
         public ContentKey getCurrentContentKey() {
-            return ContentKey.of(providerName, providerConfigId, topicName, topicValue, subTopicName, subTopicValue, action);
+            return ContentKey.of(providerName, providerConfigId, projectLabel, projectName, projectVersionLabel, projectVersionName, action);
         }
 
         public Builder applyCommonData(CommonMessageData commonMessageData) {
@@ -188,39 +188,39 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
             return this;
         }
 
-        public Builder applyTopic(String topicName, String topicValue) {
-            this.topicName = topicName;
-            this.topicValue = topicValue;
+        public Builder applyProject(String projectLabel, String projectName) {
+            this.projectLabel = projectLabel;
+            this.projectName = projectName;
             return this;
         }
 
-        public Builder applyTopic(String topicName, String topicValue, String topicUrl) {
-            this.topicName = topicName;
-            this.topicValue = topicValue;
-            this.topicUrl = topicUrl;
+        public Builder applyProject(String projectLabel, String projectName, String projectUrl) {
+            this.projectLabel = projectLabel;
+            this.projectName = projectName;
+            this.projectUrl = projectUrl;
             return this;
         }
 
-        public Builder applyTopicUrl(String topicUrl) {
-            this.topicUrl = topicUrl;
+        public Builder applyProjectUrl(String projectUrl) {
+            this.projectUrl = projectUrl;
             return this;
         }
 
-        public Builder applySubTopic(String subTopicName, String subTopicValue) {
-            this.subTopicName = subTopicName;
-            this.subTopicValue = subTopicValue;
+        public Builder applyProjectVersion(String projectVersionLabel, String projectVersionName) {
+            this.projectVersionLabel = projectVersionLabel;
+            this.projectVersionName = projectVersionName;
             return this;
         }
 
-        public Builder applySubTopic(String subTopicName, String subTopicValue, String subTopicUrl) {
-            this.subTopicName = subTopicName;
-            this.subTopicValue = subTopicValue;
-            this.subTopicUrl = subTopicUrl;
+        public Builder applyProjectVersion(String projectVersionLabel, String projectVersionName, String projectVersionUrl) {
+            this.projectVersionLabel = projectVersionLabel;
+            this.projectVersionName = projectVersionName;
+            this.projectVersionUrl = projectVersionUrl;
             return this;
         }
 
-        public Builder applySubTopicUrl(String subTopicUrl) {
-            this.subTopicUrl = subTopicUrl;
+        public Builder applyProjectVersionUrl(String projectVersionUrl) {
+            this.projectVersionUrl = projectVersionUrl;
             return this;
         }
 

@@ -114,7 +114,7 @@ public class EmailChannel extends NamedDistributionChannel {
             //subTopic is assumed to be a BlackDuck project version
             subTopicValue = messageContent.getSubContent()
                                 .stream()
-                                .map(ProviderMessageContent::getSubTopic)
+                                .map(ProviderMessageContent::getProjectVersion)
                                 .flatMap(Optional::stream)
                                 .map(LinkableItem::getValue)
                                 .collect(Collectors.joining(", "));

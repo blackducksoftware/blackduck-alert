@@ -76,8 +76,8 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         ProviderMessageContent content = new ProviderMessageContent.Builder()
                                              .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "")
-                                             .applySubTopic(subTopic.getName(), subTopic.getValue())
+                                             .applyProject("testTopic", "")
+                                             .applyProjectVersion(subTopic.getName(), subTopic.getValue())
                                              .build();
 
         String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
