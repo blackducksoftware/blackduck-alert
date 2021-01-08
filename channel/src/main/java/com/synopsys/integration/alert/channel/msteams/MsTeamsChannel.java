@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
+import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
@@ -46,7 +47,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
-public class MsTeamsChannel extends NamedDistributionChannel {
+public class MsTeamsChannel extends NamedDistributionChannel implements AutoActionable {
     private final RestChannelUtility restChannelUtility;
     private final MsTeamsEventParser msTeamsEventParser;
     private final MsTeamsMessageParser msTeamsMessageParser;
