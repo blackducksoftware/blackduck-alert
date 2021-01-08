@@ -24,9 +24,9 @@ public class MessageContentGroupCsvCreatorTest {
         componentItemBuilder.applyOperation(ItemOperation.INFO);
         componentItemBuilder.applyCategory("Example Category");
         componentItemBuilder.applyComponentData("Example Component Name", "Example Component Value", "https://google.com");
-        componentItemBuilder.applySubComponent("Example SubComponent Name", "Example SubComponent Value", "https://google.com");
+        componentItemBuilder.applyComponentVersion("Example SubComponent Name", "Example SubComponent Value", "https://google.com");
         componentItemBuilder.applyCategoryItem("Example Category Item Name", "Example Category Item Value");
-        componentItemBuilder.applyCategoryGroupingAttribute("Example Category Grouping Attribute Name", "Example Category Grouping Attribute Value");
+        componentItemBuilder.applySeverity("Example Category Grouping Attribute Name", "Example Category Grouping Attribute Value");
 
         providerMessageBuilder.applyComponentItem(componentItemBuilder.build());
         messageContentGroup.add(providerMessageBuilder.build());
