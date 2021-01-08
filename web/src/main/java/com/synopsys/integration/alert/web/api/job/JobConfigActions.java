@@ -86,7 +86,6 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
-import com.synopsys.integration.alert.database.job.JobConfigurationModelFieldExtractorUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -382,7 +381,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                                   .collect(Collectors.toList());
                     DistributionJobModel testJobModel = descriptorProcessor.retrieveJobDetailsProcessor(descriptorName)
                                                             .map(jobDetailsProcessor -> jobDetailsProcessor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
-                                                            .orElse(JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails));
+                                                            .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
                         testJobModel,
@@ -429,7 +428,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         List<JobProviderProjectFieldModel> jobProjects,
         OffsetDateTime createdAt,
         @Nullable OffsetDateTime lastUpdated
-    ) {
+    ) throws AlertException {
         List<BlackDuckProjectDetailsModel> projectFilterDetails = jobProjects
                                                                       .stream()
                                                                       .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
@@ -438,7 +437,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         String descriptorName = Optional.ofNullable(configuredFieldsMap.get(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
         DistributionJobModel fromResource = descriptorProcessor.retrieveJobDetailsProcessor(descriptorName)
                                                 .map(jobDetailsProcessor -> jobDetailsProcessor.convertToJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails))
-                                                .orElse(JobConfigurationModelFieldExtractorUtils.convertToDistributionJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails));
+                                                .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),

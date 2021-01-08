@@ -48,7 +48,9 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
@@ -62,6 +64,7 @@ import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -146,6 +149,7 @@ public class JobConfigActionsTest {
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.performAfterSaveAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(jobAccessor.createJob(Mockito.any())).thenReturn(distributionJobModel);
+        Mockito.when(descriptorProcessor.retrieveJobDetailsProcessor(Mockito.anyString())).thenReturn(Optional.of(createJobDetailsProcessor()));
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.create(jobFieldModel);
 
@@ -214,6 +218,7 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.performBeforeUpdateAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.fillFieldModelWithExistingData(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(configurationFieldModel));
         Mockito.when(fieldModelProcessor.performAfterUpdateAction(Mockito.any(), Mockito.any())).thenReturn(fieldModel);
+        Mockito.when(descriptorProcessor.retrieveJobDetailsProcessor(Mockito.anyString())).thenReturn(Optional.of(createJobDetailsProcessor()));
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.update(jobId, jobFieldModel);
 
@@ -272,6 +277,7 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
+        Mockito.when(descriptorProcessor.retrieveJobDetailsProcessor(Mockito.anyString())).thenReturn(Optional.of(createJobDetailsProcessor()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("testKey", configurationFieldModel));
 
         ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
@@ -604,6 +610,15 @@ public class JobConfigActionsTest {
         };
     }
 
+    private JobDetailsProcessor createJobDetailsProcessor() {
+        return new JobDetailsProcessor() {
+            @Override
+            protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+                return new DistributionJobDetailsModel(createChannelKey()) {};
+            }
+        };
+    }
+
     private TestAction createTestActionWithErrors() {
         TestAction testAction = new TestAction() {
             @Override
@@ -628,6 +643,10 @@ public class JobConfigActionsTest {
 
     private DescriptorKey createDescriptorKey() {
         return new DescriptorKey("universal_key", "Universal Key") {};
+    }
+
+    private ChannelKey createChannelKey() {
+        return new ChannelKey("channel_key", "Channel Key");
     }
 
     private Descriptor createDescriptor(DescriptorType descriptorType) {
