@@ -37,12 +37,13 @@ public class JiraIssuePropertiesUtil {
     public static IssueSearchProperties create(String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
         Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
         String category = componentItem != null ? componentItem.getCategory() : null;
-        String subTopicName = nullableSubTopic != null ? nullableSubTopic.getName() : null;
+        String subTopicName = nullableSubTopic != null ? nullableSubTopic.getLabel() : null;
         String subTopicValue = nullableSubTopic != null ? nullableSubTopic.getValue() : null;
-        String componentName = componentItem != null ? componentItem.getComponent().getName() : null;
+        String componentName = componentItem != null ? componentItem.getComponent().getLabel() : null;
         String componentValue = componentItem != null ? componentItem.getComponent().getValue() : null;
 
-        return new JiraIssueSearchProperties(providerName, providerUrl, topic.getName(), topic.getValue(), subTopicName, subTopicValue,
-            category, componentName, componentValue, subComponent.map(LinkableItem::getName).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
+        return new JiraIssueSearchProperties(providerName, providerUrl, topic.getLabel(), topic.getValue(), subTopicName, subTopicValue,
+            category, componentName, componentValue, subComponent.map(LinkableItem::getLabel).orElse(null), subComponent.map(LinkableItem::getValue).orElse(null), trackingKey);
     }
+
 }

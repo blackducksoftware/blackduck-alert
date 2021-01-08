@@ -368,7 +368,7 @@ public class DefaultAuditAccessorTest {
         return new ProviderMessageContent.Builder()
                    .applyProvider("provider", 1L, "providerConfig")
                    .applyProject("Topic", "audit utility test", "https://google.com")
-                   .applyProjectVersion(subTopic.getName(), subTopic.getValue(), subTopic.getUrl().orElse(null))
+                   .applyProjectVersion(subTopic.getLabel(), subTopic.getValue(), subTopic.getUrl().orElse(null))
                    .applyAllComponentItems(List.of(componentItem_1, componentItem_2, componentItem_3))
                    .build();
     }

@@ -26,11 +26,11 @@ public class DigestMessageContentProcessorTest extends ProcessorTest {
         messageGroups.forEach(group -> assertEquals(1, group.getSubContent().size()));
 
         MessageContentGroup firstGroup = messageGroups.get(0);
-        assertEquals("Topic One", firstGroup.getCommonProject().getName());
+        assertEquals("Topic One", firstGroup.getCommonProject().getLabel());
         assertEquals(1, firstGroup.getSubContent().get(0).getComponentItems().size());
 
         MessageContentGroup secondGroup = messageGroups.get(1);
-        assertEquals("Topic Two", secondGroup.getCommonProject().getName());
+        assertEquals("Topic Two", secondGroup.getCommonProject().getLabel());
         assertEquals(1, secondGroup.getSubContent().get(0).getComponentItems().size());
     }
 

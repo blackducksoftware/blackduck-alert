@@ -34,27 +34,27 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
     private static final String[] EXCLUDED_FIELDS = { "collapsible", "isNumericValue" };
 
-    private final String name;
+    private final String label;
     private final String value;
     private final String url;
 
     private boolean collapsible;
     private boolean isNumericValue;
 
-    public LinkableItem(String name, String value) {
-        this(name, value, null);
+    public LinkableItem(String label, String value) {
+        this(label, value, null);
     }
 
-    public LinkableItem(String name, String value, String url) {
-        this.name = name;
+    public LinkableItem(String label, String value, String url) {
+        this.label = label;
         this.value = value;
         this.url = url;
         this.collapsible = false;
         this.isNumericValue = false;
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
     public String getValue() {
@@ -86,7 +86,7 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     @Override
     public int compareTo(LinkableItem otherItem) {
-        if (!this.getName().equals(otherItem.getName())) {
+        if (!this.getLabel().equals(otherItem.getLabel())) {
             if (!this.isCollapsible() && otherItem.isCollapsible()) {
                 return -1;
             } else if (this.isCollapsible() && !otherItem.isCollapsible()) {

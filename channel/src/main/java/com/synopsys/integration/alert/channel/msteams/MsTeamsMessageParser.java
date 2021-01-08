@@ -47,7 +47,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
         '_', "\\_"
     );
 
-    private MarkupEncoderUtil markupEncoderUtil;
+    private final MarkupEncoderUtil markupEncoderUtil;
 
     @Autowired
     public MsTeamsMessageParser(MarkupEncoderUtil markupEncoderUtil) {
@@ -89,7 +89,7 @@ public class MsTeamsMessageParser extends ChannelMessageParser {
         String itemUrl = linkableItem.getUrl().orElse("");
         if (StringUtils.isNotBlank(itemUrl) && itemUrl.contains(" ")) {
             String encodedUrl = itemUrl.replace(" ", "%20");
-            LinkableItem newItem = new LinkableItem(linkableItem.getName(), linkableItem.getValue(), encodedUrl);
+            LinkableItem newItem = new LinkableItem(linkableItem.getLabel(), linkableItem.getValue(), encodedUrl);
             return super.createLinkableItemValueString(newItem);
         }
 

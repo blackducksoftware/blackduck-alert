@@ -70,11 +70,11 @@ public class TopLevelActionCombiner implements MessageCombiner {
 
     private String flattenProviderAndTopic(ProviderMessageContent message) {
         LinkableItem topic = message.getProject();
-        return message.getProvider().getValue() + topic.getName() + topic.getValue();
+        return message.getProvider().getValue() + topic.getLabel() + topic.getValue();
     }
 
     private String flattenSubTopic(LinkableItem subTopic) {
-        return subTopic.getName() + subTopic.getValue();
+        return subTopic.getLabel() + subTopic.getValue();
     }
 
     private boolean updateCache(ProviderMessageContent currentMessage, List<ProviderMessageContent> cachedMessages) {

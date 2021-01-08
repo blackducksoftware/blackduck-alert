@@ -122,7 +122,7 @@ public abstract class IssueTrackerRequestCreator {
     protected String createAdditionalTrackingKey(ComponentItem componentItem) {
         if (null != componentItem && !componentItem.collapseOnCategory()) {
             LinkableItem categoryItem = componentItem.getCategoryItem();
-            return categoryItem.getName() + categoryItem.getValue();
+            return categoryItem.getLabel() + categoryItem.getValue();
         }
         return StringUtils.EMPTY;
     }

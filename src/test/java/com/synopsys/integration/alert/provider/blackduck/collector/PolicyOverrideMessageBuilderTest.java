@@ -68,7 +68,7 @@ public class PolicyOverrideMessageBuilderTest {
         for (ProviderMessageContent messageContent : messageContentGroups) {
             for (ComponentItem componentItem : messageContent.getComponentItems()) {
                 categories.add(componentItem.getCategory());
-                assertTrue(componentItem.getComponentAttributes().stream().anyMatch(item -> item.getName().equals(MessageBuilderConstants.LABEL_POLICY_OVERRIDE_BY)));
+                assertTrue(componentItem.getComponentAttributes().stream().anyMatch(item -> item.getLabel().equals(MessageBuilderConstants.LABEL_POLICY_OVERRIDE_BY)));
             }
         }
 

@@ -67,7 +67,7 @@ public class MessageContentGroupCsvCreator {
         List<String> columnNames = new ArrayList<>();
         columnNames.add("Provider");
         columnNames.add("Provider Config");
-        columnNames.add(commonProject.getName());
+        columnNames.add(commonProject.getLabel());
 
         String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getProjectVersion);
         columnNames.add(subTopicNamesCombined);
@@ -109,7 +109,7 @@ public class MessageContentGroupCsvCreator {
         for (ProviderMessageContent message : contents) {
             String subTopicValue = createOptionalValueString(message.getProjectVersion(), LinkableItem::getValue);
             for (ComponentItem componentItem : message.getComponentItems()) {
-                List<String> columnValues = createColumnValues(commonProvider.getName(), commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
+                List<String> columnValues = createColumnValues(commonProvider.getLabel(), commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
                 rows.add(columnValues);
             }
         }
@@ -153,7 +153,7 @@ public class MessageContentGroupCsvCreator {
                                                .stream()
                                                .map(linkableItemMapper)
                                                .flatMap(Optional::stream)
-                                               .map(LinkableItem::getName)
+                                               .map(LinkableItem::getLabel)
                                                .collect(Collectors.toSet());
         return createColumnNameString(columnNameCandidates);
     }
@@ -162,7 +162,7 @@ public class MessageContentGroupCsvCreator {
         Set<String> columnNameCandidates = objects
                                                .stream()
                                                .map(linkableItemMapper)
-                                               .map(LinkableItem::getName)
+                                               .map(LinkableItem::getLabel)
                                                .collect(Collectors.toSet());
         return createColumnNameString(columnNameCandidates);
     }
@@ -184,7 +184,7 @@ public class MessageContentGroupCsvCreator {
     private String createFlattenedItemsString(Collection<LinkableItem> items) {
         String flattenedString = items
                                      .stream()
-                                     .map(item -> String.format("%s: %s", item.getName(), item.getValue()))
+                                     .map(item -> String.format("%s: %s", item.getLabel(), item.getValue()))
                                      .collect(Collectors.joining(MULTI_VALUE_CELL_DELIMITER));
         if (StringUtils.isNotBlank(flattenedString)) {
             return flattenedString;
