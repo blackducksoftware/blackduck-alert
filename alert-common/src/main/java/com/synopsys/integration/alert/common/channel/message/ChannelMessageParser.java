@@ -243,11 +243,11 @@ public abstract class ChannelMessageParser {
             if (optionalGroupedItem.isPresent()) {
                 ComponentItem groupedItem = optionalGroupedItem.get();
                 LinkableItem categoryItem = groupedItem.getCategoryItem();
-                Optional<LinkableItem> optionalGroupingAttribute = groupedItem.getSeverity();
+                Optional<LinkableItem> optionalSeverity = groupedItem.getSeverity();
 
                 String categoryItemNameString;
-                if (optionalGroupingAttribute.isPresent()) {
-                    LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
+                if (optionalSeverity.isPresent()) {
+                    LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalSeverity.get());
                     categoryItemNameString = groupedCategoryItem.getLabel();
                 } else {
                     categoryItemNameString = categoryItem.getLabel();
@@ -269,10 +269,10 @@ public abstract class ChannelMessageParser {
         List<String> componentItemPieces = new LinkedList<>();
         for (ComponentItem componentItem : componentItems) {
             LinkableItem categoryItem = componentItem.getCategoryItem();
-            Optional<LinkableItem> optionalGroupingAttribute = componentItem.getSeverity();
+            Optional<LinkableItem> optionalSeverity = componentItem.getSeverity();
             String categoryString;
-            if (optionalGroupingAttribute.isPresent()) {
-                LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
+            if (optionalSeverity.isPresent()) {
+                LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalSeverity.get());
                 categoryString = createLinkableItemString(groupedCategoryItem);
             } else {
                 categoryString = createLinkableItemString(categoryItem);
@@ -285,10 +285,10 @@ public abstract class ChannelMessageParser {
     private SetMap<String, ComponentItem> groupAndPrioritizeCollapsibleItems(Collection<ComponentItem> componentItems) {
         SetMap<String, ComponentItem> groupedAndPrioritizedItems = SetMap.createLinked();
         for (ComponentItem componentItem : componentItems) {
-            String groupingString = componentItem.getSeverity()
-                                        .map(item -> item.getLabel() + item.getValue())
-                                        .orElse("DEFAULT_GROUPING_STRING");
-            String priorityAndGroupingKey = componentItem.getPriority().name() + groupingString;
+            String severityItemString = componentItem.getSeverity()
+                                            .map(item -> item.getLabel() + item.getValue())
+                                            .orElse("DEFAULT_GROUPING_STRING");
+            String priorityAndGroupingKey = componentItem.getPriority().name() + severityItemString;
             Set<ComponentItem> updatedSet = groupedAndPrioritizedItems.add(priorityAndGroupingKey, componentItem);
             groupedAndPrioritizedItems.put(priorityAndGroupingKey, updatedSet);
         }
