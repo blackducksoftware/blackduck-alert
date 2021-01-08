@@ -221,7 +221,7 @@ public abstract class ChannelMessageParser {
                                                      .append(createLinkableItemValueString(arbitraryItem.getComponent()))
                                                      .append(' ');
             arbitraryItem
-                .getSubComponent()
+                .getComponentVersion()
                 .map(this::createLinkableItemValueString)
                 .map(str -> String.format("[%s]", str))
                 .ifPresent(componentItemBuilder::append);
@@ -243,7 +243,7 @@ public abstract class ChannelMessageParser {
             if (optionalGroupedItem.isPresent()) {
                 ComponentItem groupedItem = optionalGroupedItem.get();
                 LinkableItem categoryItem = groupedItem.getCategoryItem();
-                Optional<LinkableItem> optionalGroupingAttribute = groupedItem.getCategoryGroupingAttribute();
+                Optional<LinkableItem> optionalGroupingAttribute = groupedItem.getSeverity();
 
                 String categoryItemNameString;
                 if (optionalGroupingAttribute.isPresent()) {
@@ -269,7 +269,7 @@ public abstract class ChannelMessageParser {
         List<String> componentItemPieces = new LinkedList<>();
         for (ComponentItem componentItem : componentItems) {
             LinkableItem categoryItem = componentItem.getCategoryItem();
-            Optional<LinkableItem> optionalGroupingAttribute = componentItem.getCategoryGroupingAttribute();
+            Optional<LinkableItem> optionalGroupingAttribute = componentItem.getSeverity();
             String categoryString;
             if (optionalGroupingAttribute.isPresent()) {
                 LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
@@ -285,7 +285,7 @@ public abstract class ChannelMessageParser {
     private SetMap<String, ComponentItem> groupAndPrioritizeCollapsibleItems(Collection<ComponentItem> componentItems) {
         SetMap<String, ComponentItem> groupedAndPrioritizedItems = SetMap.createLinked();
         for (ComponentItem componentItem : componentItems) {
-            String groupingString = componentItem.getCategoryGroupingAttribute()
+            String groupingString = componentItem.getSeverity()
                                         .map(item -> item.getLabel() + item.getValue())
                                         .orElse("DEFAULT_GROUPING_STRING");
             String priorityAndGroupingKey = componentItem.getPriority().name() + groupingString;

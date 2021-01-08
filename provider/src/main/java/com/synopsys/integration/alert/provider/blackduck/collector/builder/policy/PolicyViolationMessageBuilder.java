@@ -185,7 +185,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
                                                                  .applyOperation(ItemOperation.INFO)
                                                                  .applyPriority(ComponentItemPriority.NONE)
                                                                  .applyCategoryItem(categoryItem)
-                                                                 .applyCategoryGroupingAttribute(categoryGrouping)
+                                                                 .applySeverity(categoryGrouping)
                                                                  .applyCollapseOnCategory(collapseOnCategory)
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);
