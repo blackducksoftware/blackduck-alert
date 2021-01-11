@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
-public abstract class JobDetailsProcessor {
+public abstract class JobDetailsExtractor {
 
     public DistributionJobModel convertToJobModel(
         UUID jobId,

@@ -32,12 +32,12 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 public class AzureBoardsConfigurationAction extends ConfigurationAction {
     @Autowired
     protected AzureBoardsConfigurationAction(AzureBoardsDistributionTestAction azureBoardsDistributionTestAction, AzureBoardsGlobalTestAction azureBoardsGlobalTestAction,
-        AzureBoardsGlobalApiAction azureBoardsGlobalApiAction, AzureBoardsJobDetailsProcessor azureBoardsJobDetailsProcessor) {
+        AzureBoardsGlobalApiAction azureBoardsGlobalApiAction, AzureBoardsJobDetailsExtractor azureBoardsJobDetailsExtractor) {
         super(ChannelKeys.AZURE_BOARDS);
         addGlobalTestAction(azureBoardsGlobalTestAction);
         addGlobalApiAction(azureBoardsGlobalApiAction);
         addDistributionTestAction(azureBoardsDistributionTestAction);
-        addJobDetailsProcessor(azureBoardsJobDetailsProcessor);
+        addJobDetailsExtractor(azureBoardsJobDetailsExtractor);
     }
 
 }

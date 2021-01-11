@@ -31,11 +31,11 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class JiraCloudConfigurationAction extends ConfigurationAction {
     @Autowired
-    public JiraCloudConfigurationAction(JiraCloudGlobalTestAction globalTestAction, JiraCloudDistributionTestAction jiraDistributionTestAction, JiraCloudJobDetailsProcessor jiraCloudJobDetailsProcessor) {
+    public JiraCloudConfigurationAction(JiraCloudGlobalTestAction globalTestAction, JiraCloudDistributionTestAction jiraDistributionTestAction, JiraCloudJobDetailsExtractor jiraCloudJobDetailsExtractor) {
         super(ChannelKeys.JIRA_CLOUD);
         addGlobalTestAction(globalTestAction);
         addDistributionTestAction(jiraDistributionTestAction);
-        addJobDetailsProcessor(jiraCloudJobDetailsProcessor);
+        addJobDetailsExtractor(jiraCloudJobDetailsExtractor);
     }
 
 }

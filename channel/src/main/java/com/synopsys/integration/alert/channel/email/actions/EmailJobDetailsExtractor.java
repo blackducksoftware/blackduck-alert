@@ -30,10 +30,10 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 
 @Component
-public class EmailJobDetailsProcessor extends JobDetailsProcessor {
+public class EmailJobDetailsExtractor extends JobDetailsExtractor {
 
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {

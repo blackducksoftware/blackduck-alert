@@ -29,16 +29,16 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.synopsys.integration.alert.channel.jira.common.actions.JiraJobDetailsProcessor;
+import com.synopsys.integration.alert.channel.jira.common.actions.JiraJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
-public class JiraCloudJobDetailsProcessor extends JiraJobDetailsProcessor {
+public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {
 
     @Autowired
-    public JiraCloudJobDetailsProcessor(Gson gson) {
+    public JiraCloudJobDetailsExtractor(Gson gson) {
         super(gson);
     }
 

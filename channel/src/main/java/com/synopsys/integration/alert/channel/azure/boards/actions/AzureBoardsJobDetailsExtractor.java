@@ -20,27 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.actions;
+package com.synopsys.integration.alert.channel.azure.boards.actions;
 
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 
 @Component
-public class SlackJobDetailsProcessor extends JobDetailsProcessor {
+public class AzureBoardsJobDetailsExtractor extends JobDetailsExtractor {
 
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-        return new SlackJobDetailsModel(
-            extractFieldValueOrEmptyString(SlackDescriptor.KEY_WEBHOOK, configuredFieldsMap),
-            extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_NAME, configuredFieldsMap),
-            extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_USERNAME, configuredFieldsMap)
+        return new AzureBoardsJobDetailsModel(
+            extractFieldValue(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_AZURE_PROJECT, configuredFieldsMap),
+            extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE, configuredFieldsMap),
+            extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_WORK_ITEM_COMPLETED_STATE, configuredFieldsMap),
+            extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE, configuredFieldsMap)
         );
     }
 }

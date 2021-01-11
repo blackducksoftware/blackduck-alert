@@ -30,10 +30,10 @@ import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescript
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 
 @Component
-public class MsTeamsJobDetailsProcessor extends JobDetailsProcessor {
+public class MsTeamsJobDetailsExtractor extends JobDetailsExtractor {
 
     @Override
     protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {

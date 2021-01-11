@@ -379,8 +379,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                                   .stream()
                                                                                   .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                                   .collect(Collectors.toList());
-                    DistributionJobModel testJobModel = descriptorProcessor.retrieveJobDetailsProcessor(descriptorName)
-                                                            .map(jobDetailsProcessor -> jobDetailsProcessor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
+                    DistributionJobModel testJobModel = descriptorProcessor.retrieveJobDetailsExtractor(descriptorName)
+                                                            .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
                                                             .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
@@ -435,8 +435,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                       .collect(Collectors.toList());
         Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
         String descriptorName = Optional.ofNullable(configuredFieldsMap.get(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
-        DistributionJobModel fromResource = descriptorProcessor.retrieveJobDetailsProcessor(descriptorName)
-                                                .map(jobDetailsProcessor -> jobDetailsProcessor.convertToJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails))
+        DistributionJobModel fromResource = descriptorProcessor.retrieveJobDetailsExtractor(descriptorName)
+                                                .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails))
                                                 .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
         return new DistributionJobRequestModel(

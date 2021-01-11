@@ -29,12 +29,12 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsProcessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 
-public abstract class JiraJobDetailsProcessor extends JobDetailsProcessor {
+public abstract class JiraJobDetailsExtractor extends JobDetailsExtractor {
     private Gson gson;
 
-    public JiraJobDetailsProcessor(Gson gson) {
+    public JiraJobDetailsExtractor(Gson gson) {
         this.gson = gson;
     }
 

@@ -32,8 +32,8 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 public class SlackConfigurationAction extends ConfigurationAction {
 
     @Autowired
-    protected SlackConfigurationAction(SlackJobDetailsProcessor slackJobDetailsProcessor) {
+    protected SlackConfigurationAction(SlackJobDetailsExtractor slackJobDetailsExtractor) {
         super(ChannelKeys.SLACK);
-        addJobDetailsProcessor(slackJobDetailsProcessor);
+        addJobDetailsExtractor(slackJobDetailsExtractor);
     }
 }
