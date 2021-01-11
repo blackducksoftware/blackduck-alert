@@ -422,6 +422,11 @@ postgresPrepare600Upgrade() {
     fi
 }
 
+createPostgresExtensions() {
+  echo "Creating required postgres extensions."
+  psql "${alertDatabaseConfig}" -f ${upgradeResourcesDir}/create_extension.sql
+}
+
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
@@ -448,6 +453,7 @@ else
   createPostgresDatabase
   validatePostgresDatabase
   postgresPrepare600Upgrade
+  createPostgresExtensions
   liquibaseChangelockReset
 
   if [ -f "$truststoreFile" ];
