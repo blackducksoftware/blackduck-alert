@@ -52,6 +52,8 @@ postgres:
   userUserName: sa
   userPassword: blackduck
   databaseName: alertdb
+  adminUserName: postgres
+  adminPassword: ""
   # pvc related parameters for postgres container
   persistentVolumeClaimName: "" # set if you want to create your own PVC (used for migration)
   claimSize: "5Gi" # PVC claim size

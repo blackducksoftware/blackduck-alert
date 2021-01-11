@@ -108,6 +108,11 @@ spec:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
+        - name: POSTGRESQL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: ALERT_POSTGRES_ADMIN_PASSWORD_FILE
+              name: {{ .Release.Name }}-db-creds
         {{- if .Values.postgres.registry }}
         image: {{ .Values.postgres.registry }}/postgresql-12-centos7:1
         {{- else }}
