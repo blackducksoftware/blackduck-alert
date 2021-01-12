@@ -119,7 +119,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                                            .append(componentItem.getPriority().name());
 
             String groupString = componentItem
-                                     .getCategoryGroupingAttribute()
+                                     .getSeverity()
                                      .map(item -> item.getLabel() + item.getValue())
                                      .orElse("DEFAULT_GROUPING_STRING");
             keyBuilder.append(groupString);
@@ -155,7 +155,7 @@ public class SummaryMessageContentProcessor extends MessageContentProcessor {
                                                 .applyComponentData(COMPONENT_ITEM_NAME_SUMMARY_LABEL, COMPONENT_ITEM_NAME_SUMMARY_VALUE)
                                                 .applyCategoryItem(countItem)
                                                 .applyCollapseOnCategory(false)
-                                                .applyCategoryGroupingAttribute(arbitraryComponent.getCategoryGroupingAttribute().orElse(null))
+                                                .applySeverity(arbitraryComponent.getSeverity().orElse(null))
                                                 .applyNotificationIds(notificationIds);
             try {
                 ComponentItem summarizedItem = builder.build();

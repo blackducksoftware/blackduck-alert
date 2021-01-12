@@ -24,8 +24,7 @@ package com.synopsys.integration.alert.common.provider.state;
 
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections4.MapUtils;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -54,8 +53,13 @@ public class StatefulProvider {
         ProviderMessageContentCollector messageContentCollector
     ) {
         Map<String, ConfigurationFieldModel> keyToFieldMap = configurationModel.getCopyOfKeyToFieldMap();
-        Boolean configEnabled = MapUtils.getBoolean(keyToFieldMap, ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED, false);
-        String configName = MapUtils.getString(keyToFieldMap, ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, ProviderProperties.UNKNOWN_CONFIG_NAME);
+        Boolean configEnabled = Optional.ofNullable(keyToFieldMap.get(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED))
+                                    .flatMap(ConfigurationFieldModel::getFieldValue)
+                                    .map(Boolean::valueOf)
+                                    .orElse(false);
+        String configName = Optional.ofNullable(keyToFieldMap.get(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
+                                .flatMap(ConfigurationFieldModel::getFieldValue)
+                                .orElse(ProviderProperties.UNKNOWN_CONFIG_NAME);
         return new StatefulProvider(providerKey, configurationModel.getConfigurationId(), configName, configEnabled, tasks, properties, distributionFilter, messageContentCollector);
     }
 

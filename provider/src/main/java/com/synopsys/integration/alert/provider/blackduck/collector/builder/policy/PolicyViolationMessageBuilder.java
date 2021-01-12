@@ -176,7 +176,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
     }
 
     protected Optional<ComponentItem> createRemediationComponentItem(AlertBlackDuckService alertBlackDuckService, String categoryType, ComponentService componentService, ComponentVersionView componentVersionView,
-        ComponentData componentData, LinkableItem categoryItem, LinkableItem categoryGrouping, boolean collapseOnCategory, Long notificationId) {
+        ComponentData componentData, LinkableItem categoryItem, LinkableItem severityItem, boolean collapseOnCategory, Long notificationId) {
         try {
             List<LinkableItem> remediationItems = VulnerabilityUtil.getRemediationItems(componentService, componentVersionView);
             if (!remediationItems.isEmpty()) {
@@ -185,7 +185,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
                                                                  .applyOperation(ItemOperation.INFO)
                                                                  .applyPriority(ComponentItemPriority.NONE)
                                                                  .applyCategoryItem(categoryItem)
-                                                                 .applyCategoryGroupingAttribute(categoryGrouping)
+                                                                 .applySeverity(severityItem)
                                                                  .applyCollapseOnCategory(collapseOnCategory)
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);
