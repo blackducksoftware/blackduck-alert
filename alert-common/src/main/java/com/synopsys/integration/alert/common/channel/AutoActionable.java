@@ -31,5 +31,4 @@ public interface AutoActionable {
     ChannelKey getChannelKey();
 
     DistributionChannel getChannel();
-
 }

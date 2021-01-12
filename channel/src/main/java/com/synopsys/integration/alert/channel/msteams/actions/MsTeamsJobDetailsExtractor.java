@@ -20,22 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.actions;
+package com.synopsys.integration.alert.channel.msteams.actions;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ConfigurationAction;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 
 @Component
-public class JiraCloudConfigurationAction extends ConfigurationAction {
-    @Autowired
-    public JiraCloudConfigurationAction(JiraCloudGlobalTestAction globalTestAction, JiraCloudDistributionTestAction jiraDistributionTestAction, JiraCloudJobDetailsExtractor jiraCloudJobDetailsExtractor) {
-        super(ChannelKeys.JIRA_CLOUD);
-        addGlobalTestAction(globalTestAction);
-        addDistributionTestAction(jiraDistributionTestAction);
-        addJobDetailsExtractor(jiraCloudJobDetailsExtractor);
-    }
+public class MsTeamsJobDetailsExtractor extends JobDetailsExtractor {
 
+    @Override
+    protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+        return new MSTeamsJobDetailsModel(extractFieldValueOrEmptyString(MsTeamsDescriptor.KEY_WEBHOOK, configuredFieldsMap));
+    }
 }

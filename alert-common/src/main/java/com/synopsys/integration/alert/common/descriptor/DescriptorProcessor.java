@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
@@ -60,14 +61,18 @@ public class DescriptorProcessor {
         for (AutoActionable autoActionable : autoActionables) {
             DistributionChannel channel = autoActionable.getChannel();
             ChannelKey channelKey = autoActionable.getChannelKey();
+            ConfigurationAction configurationAction = allConfigurationActions.get(channelKey.getUniversalKey());
 
             ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {
             };
-            ConfigurationAction configurationAction = new ConfigurationAction(channelKey) {
-            };
+
             configurationAction.addDistributionTestAction(channelDistributionTestAction);
             allConfigurationActions.put(configurationAction.getDescriptorKey().getUniversalKey(), configurationAction);
         }
+    }
+
+    public Optional<JobDetailsExtractor> retrieveJobDetailsExtractor(String descriptorName) {
+        return retrieveConfigurationAction(descriptorName).flatMap(ConfigurationAction::getJobDetailsExtractor);
     }
 
     public Optional<TestAction> retrieveTestAction(FieldModel fieldModel) {
