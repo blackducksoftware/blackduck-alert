@@ -59,10 +59,10 @@ public abstract class JobDetailsExtractor {
                                                   .createdAt(createdAt)
                                                   .lastUpdated(lastUpdated)
 
-                                                  .blackDuckGlobalConfigId(extractFieldValue("provider.common.config.id", configuredFieldsMap).map(Long::valueOf).orElse(-1L))
-                                                  .filterByProject(extractFieldValue("channel.common.filter.by.project", configuredFieldsMap).map(Boolean::valueOf).orElse(false))
-                                                  .projectNamePattern(extractFieldValue("channel.common.project.name.pattern", configuredFieldsMap).orElse(null))
-                                                  .notificationTypes(extractFieldValues("provider.distribution.notification.types", configuredFieldsMap))
+                                                  .blackDuckGlobalConfigId(extractFieldValue(ProviderDistributionUIConfig.KEY_COMMON_CONFIG_ID, configuredFieldsMap).map(Long::valueOf).orElse(-1L))
+                                                  .filterByProject(extractFieldValue(ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, configuredFieldsMap).map(Boolean::valueOf).orElse(false))
+                                                  .projectNamePattern(extractFieldValue(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, configuredFieldsMap).orElse(null))
+                                                  .notificationTypes(extractFieldValues(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, configuredFieldsMap))
                                                   .policyFilterPolicyNames(extractFieldValues("blackduck.policy.notification.filter", configuredFieldsMap))
                                                   .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap))
                                                   .projectFilterDetails(projectFilterDetails);

@@ -52,6 +52,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public abstract class ProviderDistributionUIConfig extends UIConfig {
+    public static final String KEY_COMMON_CONFIG_ID = "provider.common.config.id";
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
     public static final String KEY_PROCESSING_TYPE = "provider.distribution.processing.type";
     public static final String KEY_FILTER_BY_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "filter.by.project";
