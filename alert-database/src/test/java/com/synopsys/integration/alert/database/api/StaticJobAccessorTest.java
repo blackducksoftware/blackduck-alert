@@ -20,13 +20,29 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
+import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -38,6 +54,11 @@ class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private SlackJobDetailsAccessor slackJobDetailsAccessor;
+    private AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
+    private EmailJobDetailsAccessor emailJobDetailsAccessor;
+    private JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
+    private JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
+    private MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private JobAccessor jobAccessor;
 
     private final String jobName = "jobName";
@@ -47,12 +68,25 @@ class StaticJobAccessorTest {
         distributionJobRepository = Mockito.mock(DistributionJobRepository.class);
         blackDuckJobDetailsAccessor = Mockito.mock(BlackDuckJobDetailsAccessor.class);
         slackJobDetailsAccessor = Mockito.mock(SlackJobDetailsAccessor.class);
+        azureBoardsJobDetailsAccessor = Mockito.mock(AzureBoardsJobDetailsAccessor.class);
+        emailJobDetailsAccessor = Mockito.mock(EmailJobDetailsAccessor.class);
+        jiraCloudJobDetailsAccessor = Mockito.mock(JiraCloudJobDetailsAccessor.class);
+        jiraServerJobDetailsAccessor = Mockito.mock(JiraServerJobDetailsAccessor.class);
+        msTeamsJobDetailsAccessor = Mockito.mock(MSTeamsJobDetailsAccessor.class);
 
         Mockito.when(blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
-        jobAccessor = new StaticJobAccessor(distributionJobRepository, blackDuckJobDetailsAccessor, null, null, null, null, null, slackJobDetailsAccessor, new BlackDuckProviderKey());
+        jobAccessor = new StaticJobAccessor(distributionJobRepository,
+            blackDuckJobDetailsAccessor,
+            azureBoardsJobDetailsAccessor,
+            emailJobDetailsAccessor,
+            jiraCloudJobDetailsAccessor,
+            jiraServerJobDetailsAccessor,
+            msTeamsJobDetailsAccessor,
+            slackJobDetailsAccessor,
+            new BlackDuckProviderKey());
     }
 
     @Test
@@ -90,40 +124,12 @@ class StaticJobAccessorTest {
     void createJobTest() {
         UUID jobId = UUID.randomUUID();
         SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(null, null, null);
-        DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
-            true,
-            jobName,
-            FrequencyType.DAILY,
-            ProcessingType.DEFAULT,
-            ChannelKey.SLACK.getUniversalKey(),
-            3L,
-            true,
-            "*",
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            slackJobDetailsModel
-        );
+        DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKey.SLACK.getUniversalKey(), slackJobDetailsModel);
 
         SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(
-            jobId,
-            distributionJobRequestModel.getName(),
-            distributionJobRequestModel.isEnabled(),
-            distributionJobRequestModel.getDistributionFrequency().name(),
-            distributionJobRequestModel.getProcessingType().name(),
-            distributionJobRequestModel.getChannelDescriptorName(),
-            DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp()
-        );
+        DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
         distributionJobEntity.setSlackJobDetails(slackJobDetailsEntity);
-        BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = new BlackDuckJobDetailsEntity(
-            jobId,
-            distributionJobRequestModel.getBlackDuckGlobalConfigId(),
-            distributionJobRequestModel.isFilterByProject(),
-            distributionJobRequestModel.getProjectNamePattern().orElse(null)
-        );
+        BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
 
         Mockito.when(slackJobDetailsAccessor.saveSlackJobDetails(Mockito.any(), Mockito.any())).thenReturn(slackJobDetailsEntity);
         Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
@@ -313,6 +319,154 @@ class StaticJobAccessorTest {
         DistributionJobModel distributionJobModel = matchingEnabledJobs.get(0);
         assertEquals(jobId, distributionJobModel.getJobId());
         assertEquals(jobName, distributionJobModel.getName());
+    }
+
+    @Test
+    public void createAzureBoardsJobTest() {
+        UUID jobId = UUID.randomUUID();
+        AzureBoardsJobDetailsModel azureBoardsJobDetailsModel = new AzureBoardsJobDetailsModel(false, null, null, null, null);
+        DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKey.AZURE_BOARDS.getUniversalKey(), azureBoardsJobDetailsModel);
+
+        AzureBoardsJobDetailsEntity azureBoardsJobDetailsEntity = new AzureBoardsJobDetailsEntity(null, false, null, null, null, null);
+        DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
+        distributionJobEntity.setAzureBoardsJobDetails(azureBoardsJobDetailsEntity);
+        BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
+
+        Mockito.when(azureBoardsJobDetailsAccessor.saveAzureBoardsJobDetails(Mockito.any(), Mockito.any())).thenReturn(azureBoardsJobDetailsEntity);
+        Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
+        Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
+
+        DistributionJobModel createdJob = jobAccessor.createJob(distributionJobRequestModel);
+
+        assertEquals(jobId, createdJob.getJobId());
+        assertEquals(jobName, createdJob.getName());
+    }
+
+    @Test
+    public void createEmailJobTest() {
+        UUID jobId = UUID.randomUUID();
+        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, false, false, null, List.of());
+        DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKey.EMAIL.getUniversalKey(), emailJobDetailsModel);
+
+        EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(null, null, false, false, null);
+        emailJobDetailsEntity.setEmailJobAdditionalEmailAddresses(List.of());
+        DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
+        distributionJobEntity.setEmailJobDetails(emailJobDetailsEntity);
+        BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
+
+        Mockito.when(emailJobDetailsAccessor.saveEmailJobDetails(Mockito.any(), Mockito.any())).thenReturn(emailJobDetailsEntity);
+        Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
+        Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
+
+        DistributionJobModel createdJob = jobAccessor.createJob(distributionJobRequestModel);
+
+        assertEquals(jobId, createdJob.getJobId());
+        assertEquals(jobName, createdJob.getName());
+    }
+
+    @Test
+    public void createJiraCloudJobTest() {
+        UUID jobId = UUID.randomUUID();
+        JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(false, null, null, null, null, null, List.of());
+        DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKey.JIRA_CLOUD.getUniversalKey(), jiraCloudJobDetailsModel);
+
+        JiraCloudJobDetailsEntity jiraCloudJobDetailsEntity = new JiraCloudJobDetailsEntity(null, false, null, null, null, null, null);
+        jiraCloudJobDetailsEntity.setJobCustomFields(List.of());
+        DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
+        distributionJobEntity.setJiraCloudJobDetails(jiraCloudJobDetailsEntity);
+        BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
+
+        Mockito.when(jiraCloudJobDetailsAccessor.saveJiraCloudJobDetails(Mockito.any(), Mockito.any())).thenReturn(jiraCloudJobDetailsEntity);
+        Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
+        Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
+
+        DistributionJobModel createdJob = jobAccessor.createJob(distributionJobRequestModel);
+
+        assertEquals(jobId, createdJob.getJobId());
+        assertEquals(jobName, createdJob.getName());
+    }
+
+    @Test
+    public void createJiraServerJobTest() {
+        UUID jobId = UUID.randomUUID();
+        JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(false, null, null, null, null, null, List.of());
+        DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKey.JIRA_SERVER.getUniversalKey(), jiraServerJobDetailsModel);
+
+        JiraServerJobDetailsEntity jiraServerJobDetailsEntity = new JiraServerJobDetailsEntity(null, false, null, null, null, null, null);
+        jiraServerJobDetailsEntity.setJobCustomFields(List.of());
+        DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
+        distributionJobEntity.setJiraServerJobDetails(jiraServerJobDetailsEntity);
+        BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
+
+        Mockito.when(jiraServerJobDetailsAccessor.saveJiraServerJobDetails(Mockito.any(), Mockito.any())).thenReturn(jiraServerJobDetailsEntity);
+        Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
+        Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
+
+        DistributionJobModel createdJob = jobAccessor.createJob(distributionJobRequestModel);
+
+        assertEquals(jobId, createdJob.getJobId());
+        assertEquals(jobName, createdJob.getName());
+    }
+
+    @Test
+    public void createMSTeamsJobTest() {
+        UUID jobId = UUID.randomUUID();
+        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(null);
+        DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKey.MS_TEAMS.getUniversalKey(), msTeamsJobDetailsModel);
+
+        MSTeamsJobDetailsEntity msTeamsJobDetailsEntity = new MSTeamsJobDetailsEntity();
+        DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
+        distributionJobEntity.setMsTeamsJobDetails(msTeamsJobDetailsEntity);
+        BlackDuckJobDetailsEntity blackDuckJobDetailsEntity = createBlackDuckJobDetailsEntity(jobId, distributionJobRequestModel);
+
+        Mockito.when(msTeamsJobDetailsAccessor.saveMSTeamsJobDetails(Mockito.any(), Mockito.any())).thenReturn(msTeamsJobDetailsEntity);
+        Mockito.when(blackDuckJobDetailsAccessor.saveBlackDuckJobDetails(Mockito.any(), Mockito.any())).thenReturn(blackDuckJobDetailsEntity);
+        Mockito.when(distributionJobRepository.save(Mockito.any())).thenReturn(distributionJobEntity);
+
+        DistributionJobModel createdJob = jobAccessor.createJob(distributionJobRequestModel);
+
+        assertEquals(jobId, createdJob.getJobId());
+        assertEquals(jobName, createdJob.getName());
+    }
+
+    private DistributionJobRequestModel createDistributionJobEntity(String channelDescriptorName, DistributionJobDetailsModel distributionJobDetails) {
+        return new DistributionJobRequestModel(
+            true,
+            jobName,
+            FrequencyType.DAILY,
+            ProcessingType.DEFAULT,
+            channelDescriptorName,
+            3L,
+            true,
+            "*",
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            distributionJobDetails
+        );
+    }
+
+    private DistributionJobEntity createDistributionJobEntity(UUID jobId, DistributionJobRequestModel distributionJobRequestModel) {
+        return new DistributionJobEntity(
+            jobId,
+            distributionJobRequestModel.getName(),
+            distributionJobRequestModel.isEnabled(),
+            distributionJobRequestModel.getDistributionFrequency().name(),
+            distributionJobRequestModel.getProcessingType().name(),
+            distributionJobRequestModel.getChannelDescriptorName(),
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
+    }
+
+    private BlackDuckJobDetailsEntity createBlackDuckJobDetailsEntity(UUID jobId, DistributionJobRequestModel distributionJobRequestModel) {
+        return new BlackDuckJobDetailsEntity(
+            jobId,
+            distributionJobRequestModel.getBlackDuckGlobalConfigId(),
+            distributionJobRequestModel.isFilterByProject(),
+            distributionJobRequestModel.getProjectNamePattern().orElse(null)
+        );
     }
 
     private DistributionJobEntity createSlackDistributionJobEntity(UUID jobId) {
