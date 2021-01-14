@@ -310,6 +310,7 @@ For the on-premise database deployment a second Persistent Volume Claim must be 
       persistentVolumeClaimName: "postgres-pvc"
       storageClassName: "myStorageClass"
     ```
+- Configure Postgres admin username and password following the instructions outlined here: [Using On-Premise Database Configuration](#using-on-premise-database-configuration)
 
 #### Without Storage Claims
 This section defines configuration using Persistent Volume.  Claims will automatically be created and bound to the volumes defined.
@@ -391,7 +392,8 @@ For the on-premise database deployment a second Persistent Volume must be create
     ```bash
     $ kubectl -n <ALERT_NAMESPACE> get pvc
     ```
-    
+- Configure Postgres admin username and password following the instructions outlined here: [Using On-Premise Database Configuration](#using-on-premise-database-configuration)
+
 ### External Postgres Database
 - On the external database create a user to own the Alert database
 
@@ -456,12 +458,12 @@ For the on-premise database deployment a second Persistent Volume must be create
   ```
   - Replace <DATABASE_NAME> with the name of the database created in previous steps
 
-- Configure Postgres admin username and password following the instructions outlined here: [Using External Database](#using-external-database)
+- Configure Postgres admin username and password following the instructions outlined here: [Using External Database Configuration](#using-external-database-configuration)
 
 ### Database Admin User Password
-We now require administrator access to configure the database correctly. The following section describes how to configure the administrator credentials for both internal and external database configurations.
+We now require administrator access to configure the database correctly. The following section describes how to configure the administrator credentials for both on-premise and external database configurations.
 
-#### Using Internal Database
+#### Using On-Premise Database Configuration
   - While editing the alert values.yaml, in the postgres section edit the following configurations to set the admin user password of the postgres database.
   
     ```yaml
@@ -470,7 +472,7 @@ We now require administrator access to configure the database correctly. The fol
       adminPassword: "<ADMIN_PASSWORD>"
     ```
     - Replace <ADMIN_PASSWORD> with the name of the postgres administrator password
-        - Note: The adminUserName: value must remain "postgres" when using the internal postgres database.
+        - Note: The adminUserName: value must remain "postgres" when using the on-premise postgres database.
     - Example:
     ```yaml
     postgres:
@@ -478,7 +480,7 @@ We now require administrator access to configure the database correctly. The fol
       adminPassword: my_admin_password
     ```
     
-#### Using External Database
+#### Using External Database Configuration
   - Please configure your external database settings as described [External Postgres Database](#external-postgres-database)
   - While editing the alert values.yaml, in the postgres section edit the following configurations to set the admin user password of the postgres database.
   
