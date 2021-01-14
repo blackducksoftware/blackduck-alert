@@ -14,6 +14,7 @@ Helm Charts for Synopsys Alert
   - [Custom Certificates](#custom-certificates)
   - [Persistent Storage](#persistent-storage)
   - [External Postgres Database](#external-postgres-database)
+  - [Database Admin User Password](#database-admin-user-password)
   - [Installing with Black Duck](#installing-with-black-duck)
 
 ## Prerequisites
@@ -156,6 +157,8 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `postgres.userUserName` | Postgres database user owning the database Alert uses | `sa` |
 | `postgres.userPassword` | Postgres database password for the user | `blackduck` |
 | `postgres.databaseName` | Postgres database name where Alert data will be stored | `alertdb` |
+| `postgres.adminUserName` | Postgres database admin user | `postgres` |
+| `postgres.adminPassword` | Postgres database password for the admin user | `""` |
 | `postgres.persistentVolumeClaimName` | Postgres node volume claim name | `""` | 
 | `postgres.claimSize` | Postgres node volume claim size | `"5Gi"` |
 | `postgres.storageClass` | Postgres node storage class for volume claim | `""` |
@@ -452,6 +455,46 @@ For the on-premise database deployment a second Persistent Volume must be create
     databaseName: <DATABASE_NAME>
   ```
   - Replace <DATABASE_NAME> with the name of the database created in previous steps
+
+- Configure Postgres admin username and password following the instructions outlined here: [Using External Database](#using-external-database)
+
+### Database Admin User Password
+We now require administrator access to configure the database correctly. The following section describes how to configure the administrator credentials for both internal and external database configurations.
+
+#### Using Internal Database
+  - While editing the alert values.yaml, in the postgres section edit the following configurations to set the admin user password of the postgres database.
+  
+    ```yaml
+    postgres:
+      adminUserName: postgres
+      adminPassword: "<ADMIN_PASSWORD>"
+    ```
+    - Replace <ADMIN_PASSWORD> with the name of the postgres administrator password
+        - Note: The adminUserName: value must remain "postgres" when using the internal postgres database.
+    - Example:
+    ```yaml
+    postgres:
+      adminUserName: postgres
+      adminPassword: my_admin_password
+    ```
+    
+#### Using External Database
+  - Please configure your external database settings as described [External Postgres Database](#external-postgres-database)
+  - While editing the alert values.yaml, in the postgres section edit the following configurations to set the admin user password of the postgres database.
+  
+    ```yaml
+    postgres:
+      adminUserName: "<ADMIN_USERNAME>"
+      adminPassword: "<ADMIN_PASSWORD>"
+    ```
+      - Replace <ADMIN_USERNAME> with the name of the postgres administrator username
+      - Replace <ADMIN_PASSWORD> with the name of the postgres administrator password
+    - Example:
+    ```yaml
+    postgres:
+      adminUserName: my_admin_username
+      adminPassword: my_admin_password
+    ```
   
 ### Installing with Black Duck
 - Enable deployment with Black Duck by setting 'deployAlertWithBlackDuck'
