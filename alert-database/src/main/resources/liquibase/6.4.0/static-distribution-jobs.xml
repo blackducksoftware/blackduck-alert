@@ -2,12 +2,6 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
-    <changeSet author="gavink" id="create-uuid-ossp-extension">
-        <sql stripComments="true">
-            CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-        </sql>
-    </changeSet>
-
     <!-- Base Job Table -->
 
     <changeSet author="gavink" id="create-distribution-jobs-table">

@@ -41,6 +41,11 @@ spec:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
+        - name: ALERT_DB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: ALERT_POSTGRES_ADMIN_PASSWORD_FILE
+              name: {{ .Release.Name }}-db-creds
         envFrom:
         - configMapRef:
             name: {{ .Release.Name}}-db-config

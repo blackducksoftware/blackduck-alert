@@ -11,6 +11,8 @@ alertDatabasePort="${ALERT_DB_PORT:-5432}"
 alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
 alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
+alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:$alertDatabaseUser}"
+alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:$alertDatabasePassword}"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
@@ -58,6 +60,23 @@ then
   echo "Alert Database password variable set to secret value."
 fi
 
+if [ -e $dockerSecretDir/ALERT_DB_ADMIN_USERNAME ];
+then
+  echo "Alert Database admin user secret set; using value from secret."
+  alertDatabaseAdminUser=$(cat $dockerSecretDir/ALERT_DB_ADMIN_USERNAME)
+  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser;
+  echo "Alert Database admin user variable set to secret value."
+fi
+
+if [ -e $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD ];
+then
+  echo "Alert Database admin password secret set; using value from secret."
+  alertDatabaseAdminPassword=$(cat $dockerSecretDir/ALERT_DB_ADMIN_PASSWORD)
+  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword;
+  echo "Alert Database admin password variable set to secret value."
+fi
+
+alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword"
 alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
@@ -422,6 +441,11 @@ postgresPrepare600Upgrade() {
     fi
 }
 
+createPostgresExtensions() {
+  echo "Creating required postgres extensions."
+  psql "${alertDatabaseAdminConfig}" -f ${upgradeResourcesDir}/create_extension.sql
+}
+
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
@@ -448,6 +472,7 @@ else
   createPostgresDatabase
   validatePostgresDatabase
   postgresPrepare600Upgrade
+  createPostgresExtensions
   liquibaseChangelockReset
 
   if [ -f "$truststoreFile" ];

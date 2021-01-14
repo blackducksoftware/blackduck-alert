@@ -52,6 +52,8 @@ postgres:
   userUserName: sa
   userPassword: blackduck
   databaseName: alertdb
+  adminUserName: postgres
+  adminPassword: ""
   # pvc related parameters for postgres container
   persistentVolumeClaimName: "" # set if you want to create your own PVC (used for migration)
   claimSize: "5Gi" # PVC claim size
@@ -77,7 +79,7 @@ exposedServiceType: NodePort # NodePort | LoadBalancer | OpenShift
 exposedNodePort: ""
 
 # environs is a map of *additional* environs to add to the Alert's ConfigMap
-# The follwing environs are already set in the ConfigMap
+# The following environs are already set in the ConfigMap
 # at /templates/alert-environ-configmap.yaml (go there to set them):
 #   HUB_WEBAPP_HOST
 #   HUB_CFSSL_HOST
