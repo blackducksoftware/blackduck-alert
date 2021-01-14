@@ -9,6 +9,7 @@ data:
   ALERT_DB_PORT: {{ .Values.postgres.port | quote }}
   ALERT_DB_USERNAME: {{ .Values.postgres.userUserName }}
   ALERT_DB_NAME: {{ .Values.postgres.databaseName }}
+  ALERT_DB_ADMIN_USERNAME: {{ .Values.postgres.adminUserName }}
 kind: ConfigMap
 metadata:
   labels:
@@ -21,6 +22,11 @@ metadata:
 apiVersion: v1
 data:
   ALERT_POSTGRES_USER_PASSWORD_FILE: {{ .Values.postgres.userPassword | b64enc }}
+  {{- if .Values.postgres.adminPassword }}
+  ALERT_POSTGRES_ADMIN_PASSWORD_FILE: {{ .Values.postgres.adminPassword | b64enc }}
+  {{- else }}
+  ALERT_POSTGRES_ADMIN_PASSWORD_FILE: {{ .Values.postgres.userPassword | b64enc }}
+  {{- end }}
 kind: Secret
 metadata:
   labels:
