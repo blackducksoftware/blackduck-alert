@@ -20,12 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.extract;
+package com.synopsys.integration.alert.processor.api;
 
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationWrapper;
 
-public interface NotificationExtractor {
-    <T extends ProviderMessage<T>> ProviderMessage<T> extract(FilterableNotificationWrapper<?> filteredNotification);
+public interface FilterableNotificationExtractor {
+    FilterableNotificationWrapper<?> wrapNotification(AlertNotificationModel notification);
 
 }

@@ -20,13 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.detail;
-
-import java.util.List;
+package com.synopsys.integration.alert.processor.api.summarize;
 
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
-public interface NotificationDetailer {
-    NotificationDetails detail(List<ProviderMessage<?>> providerMessage);
+public interface MessageSummarizer {
+    SimpleMessage summarize(ProviderMessage<?> digestedNotification);
 
 }

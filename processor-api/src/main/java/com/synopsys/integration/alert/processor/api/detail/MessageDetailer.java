@@ -20,12 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api;
+package com.synopsys.integration.alert.processor.api.detail;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationWrapper;
+import java.util.List;
 
-public interface NotificationPreProcessor {
-    FilterableNotificationWrapper<?> wrapNotification(AlertNotificationModel notification);
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+
+public interface MessageDetailer {
+    NotificationDetails detail(List<ProviderMessage<?>> providerMessage);
 
 }

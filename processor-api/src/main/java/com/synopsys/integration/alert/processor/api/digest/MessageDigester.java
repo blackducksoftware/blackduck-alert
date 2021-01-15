@@ -20,11 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.distribute;
+package com.synopsys.integration.alert.processor.api.digest;
 
-import com.synopsys.integration.alert.processor.api.detail.NotificationDetails;
+import java.util.List;
 
-public interface NotificationDistributor {
-    void distribute(Object job, NotificationDetails notificationDetails);
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+
+public interface MessageDigester {
+    List<ProviderMessage<?>> digest(List<ProviderMessage<?>> notifications);
 
 }
