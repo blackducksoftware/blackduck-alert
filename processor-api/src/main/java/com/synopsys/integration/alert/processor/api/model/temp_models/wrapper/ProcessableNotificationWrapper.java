@@ -20,32 +20,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.temp_models.wrapper;
+package com.synopsys.integration.alert.processor.api.model.temp_models.wrapper;
 
-import java.time.OffsetDateTime;
-
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
-public class CombinableNotificationWrapper<T extends NotificationContentComponent> extends ProcessableNotificationWrapper<T> {
-    private final ItemOperation operation;
+public class ProcessableNotificationWrapper<T extends NotificationContentComponent> extends AlertSerializableModel {
+    private final AlertNotificationModel alertNotificationModel;
+    private final T notificationContent;
 
-    public CombinableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent, ItemOperation operation) {
-        super(alertNotificationModel, notificationContent);
-        this.operation = operation;
+    public ProcessableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent) {
+        this.alertNotificationModel = alertNotificationModel;
+        this.notificationContent = notificationContent;
     }
 
-    public ItemOperation getOperation() {
-        return operation;
+    public AlertNotificationModel getAlertNotificationModel() {
+        return alertNotificationModel;
     }
 
-    public OffsetDateTime extractNotificationTime() {
-        return getAlertNotificationModel().getProviderCreationTime();
+    public T getNotificationContent() {
+        return notificationContent;
     }
 
-    public Long extractBlackDuckGlobalConfigId() {
-        return getAlertNotificationModel().getProviderConfigId();
+    public String extractNotificationType() {
+        return getAlertNotificationModel().getNotificationType();
     }
 
 }

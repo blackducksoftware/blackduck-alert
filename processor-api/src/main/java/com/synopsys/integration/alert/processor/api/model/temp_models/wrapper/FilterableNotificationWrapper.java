@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.temp_models.wrapper;
+package com.synopsys.integration.alert.processor.api.model.temp_models.wrapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +32,10 @@ import com.synopsys.integration.blackduck.api.manual.component.NotificationConte
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 
 public class FilterableNotificationWrapper<T extends NotificationContentComponent> extends ProcessableNotificationWrapper<T> {
-    private @Nullable String projectName = null;
-    private @Nullable String policyName = null;
+    private @Nullable
+    String projectName = null;
+    private @Nullable
+    String policyName = null;
     private List<String> vulnerabilitySeverities = List.of();
 
     public static FilterableNotificationWrapper<VulnerabilityNotificationContent> vulnerability(

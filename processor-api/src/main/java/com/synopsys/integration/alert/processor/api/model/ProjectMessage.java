@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.temp_models.message;
+package com.synopsys.integration.alert.processor.api.model;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,10 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.provider.blackduck.temp_models.CombinableModel;
+import com.synopsys.integration.alert.processor.api.model.temp_models.CombinableModel;
+import com.synopsys.integration.alert.processor.api.model.temp_models.message.BomComponentDetails;
+import com.synopsys.integration.alert.processor.api.model.temp_models.message.MessageReason;
+import com.synopsys.integration.alert.processor.api.model.temp_models.message.ProjectOperation;
 
 public class ProjectMessage extends ProviderMessage<ProjectMessage> {
     private final MessageReason messageReason;

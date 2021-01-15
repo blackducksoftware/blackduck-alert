@@ -11,4 +11,5 @@ include 'web'
 include 'workflow'
 include 'descriptor-api'
 include 'test-common'
+include 'processor-api'
 

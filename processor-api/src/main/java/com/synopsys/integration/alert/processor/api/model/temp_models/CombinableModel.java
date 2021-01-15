@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.temp_models;
+package com.synopsys.integration.alert.processor.api.model.temp_models;
 
 import java.util.LinkedList;
 import java.util.List;

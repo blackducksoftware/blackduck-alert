@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.temp_models.message;
+package com.synopsys.integration.alert.processor.api.model.temp_models.message;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.alert.provider.blackduck.temp_models.CombinableModel;
+import com.synopsys.integration.alert.processor.api.model.temp_models.CombinableModel;
 
 public class ComponentConcern extends AlertSerializableModel implements CombinableModel<ComponentConcern> {
     private final ComponentConcernType type;
