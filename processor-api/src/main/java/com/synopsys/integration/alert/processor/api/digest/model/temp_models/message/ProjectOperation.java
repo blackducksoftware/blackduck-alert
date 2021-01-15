@@ -20,10 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.model.temp_models.message;
+package com.synopsys.integration.alert.processor.api.digest.model.temp_models.message;
 
-public enum ComponentConcernType {
-    POLICY,
-    VULNERABILITY
+public enum ProjectOperation {
+    ADD,
+    DELETE
 
 }

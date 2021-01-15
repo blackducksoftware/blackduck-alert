@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.model.temp_models.wrapper;
+package com.synopsys.integration.alert.processor.api.digest.model.temp_models.wrapper;
 
 import java.time.OffsetDateTime;
 
