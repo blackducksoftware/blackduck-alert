@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.provider.blackduck.action.task;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,19 +62,11 @@ public class AddUserToProjectsRunnable implements Runnable {
             ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
 
             UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
-            List<ProjectView> projectViews = requestAllProjectsByName(projectService, blackDuckProjectNames);
+            List<ProjectView> projectViews = projectService.getAllProjects((projectView -> blackDuckProjectNames.contains(projectView.getName())));
             updateBlackDuckProjectPermissions(projectUsersService, currentUser, projectViews);
         } catch (Exception e) {
             logger.warn("{} failed: {}", getClass().getSimpleName(), e.getMessage());
         }
-    }
-
-    // FIXME improve performance of this call
-    private List<ProjectView> requestAllProjectsByName(ProjectService projectService, Collection<String> projectNames) throws IntegrationException {
-        return projectService.getAllProjects()
-                   .stream()
-                   .filter(projectView -> projectNames.contains(projectView.getName()))
-                   .collect(Collectors.toList());
     }
 
     private void updateBlackDuckProjectPermissions(ProjectUsersService projectUsersService, UserView userToAdd, List<ProjectView> projectViews) throws IntegrationException {
