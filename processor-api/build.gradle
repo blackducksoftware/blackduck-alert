@@ -4,7 +4,7 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
 
-    implementation 'com.synopsys.integration:integration-common'
+    implementation 'com.synopsys.integration:blackduck-common'
 
     testImplementation 'org.mockito:mockito-core'
 }

@@ -20,39 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.digest.model;
-
-import java.util.List;
+package com.synopsys.integration.alert.processor.api.extract.model;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class SimpleMessage extends ProviderMessage<SimpleMessage> {
-    private final String subject;
-    private final String description;
-    private final List<LinkableItem> details;
+public abstract class ProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<T> {
+    private final LinkableItem provider;
 
-    public SimpleMessage(LinkableItem provider, String subject, String description, List<LinkableItem> details) {
-        super(provider);
-        this.subject = subject;
-        this.description = description;
-        this.details = details;
+    public ProviderMessage(LinkableItem provider) {
+        this.provider = provider;
     }
 
-    public String getSubject() {
-        return subject;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<LinkableItem> getDetails() {
-        return details;
-    }
-
-    @Override
-    public List<SimpleMessage> combine(SimpleMessage otherMessage) {
-        return List.of(this, otherMessage);
+    public LinkableItem getProvider() {
+        return provider;
     }
 
 }

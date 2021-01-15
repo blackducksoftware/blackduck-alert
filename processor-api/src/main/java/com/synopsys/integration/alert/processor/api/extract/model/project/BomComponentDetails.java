@@ -20,13 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.digest.model.temp_models.message;
+package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import java.util.List;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.alert.processor.api.digest.model.temp_models.CombinableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
 
 public class BomComponentDetails extends AlertSerializableModel implements CombinableModel<BomComponentDetails> {
     private final LinkableItem component;

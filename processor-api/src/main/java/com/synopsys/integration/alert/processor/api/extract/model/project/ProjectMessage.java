@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.digest.model;
+package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +28,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.digest.model.temp_models.CombinableModel;
-import com.synopsys.integration.alert.processor.api.digest.model.temp_models.message.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.digest.model.temp_models.message.MessageReason;
-import com.synopsys.integration.alert.processor.api.digest.model.temp_models.message.ProjectOperation;
+import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
 
 public class ProjectMessage extends ProviderMessage<ProjectMessage> {
     private final MessageReason messageReason;

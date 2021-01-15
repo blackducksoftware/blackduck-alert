@@ -2,8 +2,9 @@ package com.synopsys.integration.alert.processor.api.filter;
 
 import java.util.List;
 
-// TODO update this when we have completed models
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+
 public interface NotificationFilter {
-    <T> List<T> filter(List<Object> notifications);
+    List<FilterableNotificationWrapper<?>> filter(DistributionJobModel job, List<FilterableNotificationWrapper<?>> notifications);
 
 }

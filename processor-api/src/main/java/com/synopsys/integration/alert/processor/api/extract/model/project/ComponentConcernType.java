@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.digest.model.temp_models.message;
+package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 public enum ComponentConcernType {
     POLICY,
