@@ -1,5 +1,5 @@
 /**
- * provider
+ * processor-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
