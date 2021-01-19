@@ -37,31 +37,32 @@ public interface CombinableModel<T> {
 
     static <T extends CombinableModel<T>> List<T> combine(List<T> models) {
         LinkedList<T> copyOfModels = new LinkedList<>(models);
-        int i = 0;
-        int j;
-        while (i < copyOfModels.size()) {
-            T e1 = copyOfModels.get(i);
-            j = i + 1;
-            while (j < copyOfModels.size()) {
-                T e2 = copyOfModels.get(j);
-                List<T> combinedElements = e1.combine(e2);
+        int curIndex = 0;
+        int combineWithIndex;
+        while (curIndex < copyOfModels.size()) {
+            T curElement = copyOfModels.get(curIndex);
+            combineWithIndex = curIndex + 1;
+            while (combineWithIndex < copyOfModels.size()) {
+                T combineWithElement = copyOfModels.get(combineWithIndex);
+                List<T> combinedElements = curElement.combine(combineWithElement);
+
                 int combinedSize = combinedElements.size();
                 if (combinedSize == 0) {
-                    copyOfModels.remove(e1);
-                    copyOfModels.remove(e2);
+                    copyOfModels.remove(curElement);
+                    copyOfModels.remove(combineWithElement);
                     break;
                 } else if (combinedSize == 1) {
-                    copyOfModels.remove(e1);
-                    copyOfModels.remove(e2);
-                    copyOfModels.add(i, combinedElements.get(0));
+                    copyOfModels.remove(curElement);
+                    copyOfModels.remove(combineWithElement);
+                    copyOfModels.add(curIndex, combinedElements.get(0));
                     break;
                 } else {
-                    j++;
+                    combineWithIndex++;
                 }
             }
 
-            if (j >= copyOfModels.size()) {
-                i++;
+            if (combineWithIndex >= copyOfModels.size()) {
+                curIndex++;
             }
         }
         return copyOfModels;
