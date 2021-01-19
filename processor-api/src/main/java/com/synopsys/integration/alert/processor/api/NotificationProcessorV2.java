@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -48,7 +46,8 @@ import com.synopsys.integration.alert.processor.api.filter.JobNotificationFilter
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
-@Component
+// TODO enable this as a component when these interfaces are implemented
+// @Component
 public final class NotificationProcessorV2 {
     private final FilterableNotificationExtractor filterableNotificationExtractor;
     private final JobNotificationFilter jobNotificationFilter;
@@ -59,7 +58,8 @@ public final class NotificationProcessorV2 {
     private final ProjectMessageSummarizer projectMessageSummarizer;
     private final ProviderMessageDistributor providerMessageDistributor;
 
-    @Autowired
+    // TODO enable autowiring when the interfaces are implemented
+    // @Autowired
     protected NotificationProcessorV2(
         FilterableNotificationExtractor filterableNotificationExtractor,
         JobNotificationFilter jobNotificationFilter,
