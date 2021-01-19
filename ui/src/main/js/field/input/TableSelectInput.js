@@ -234,10 +234,7 @@ class TableSelectInput extends Component {
                     this.setState({
                         data: options,
                         success: true,
-                        totalPageCount: totalPages,
-                        currentPage: uiPageNumber,
-                        currentPageSize: pageSize,
-                        currentSearchTerm: searchTerm
+                        totalPageCount: totalPages
                     });
                     return data;
                 });
@@ -268,17 +265,28 @@ class TableSelectInput extends Component {
 
         const onPageChange = (page, sizePerPage) => {
             const { currentSearchTerm } = this.state;
+            this.setState({
+                currentPage: page,
+                currentPageSize: sizePerPage
+            });
             this.retrieveTableData(page, sizePerPage, currentSearchTerm);
         };
 
         const onSizePerPageListChange = (sizePerPage) => {
             const { currentPage, currentSearchTerm } = this.state;
+            this.setState({
+                currentPageSize: sizePerPage
+            });
             this.retrieveTableData(currentPage, sizePerPage, currentSearchTerm);
         };
 
         const onSearchChange = (searchTerm, colInfos, multiColumnSearch) => {
-            const { currentPage, currentPageSize } = this.state;
-            this.retrieveTableData(currentPage, currentPageSize, searchTerm);
+            const { currentPageSize } = this.state;
+            this.setState({
+                currentSearchTerm: searchTerm,
+                currentPage: 1
+            });
+            this.retrieveTableData(1, currentPageSize, searchTerm);
         };
 
         const {
@@ -356,7 +364,10 @@ class TableSelectInput extends Component {
             });
             this.setState({
                 showTable: false,
-                displayedData: convertedValues
+                displayedData: convertedValues,
+                currentPage: 1,
+                currentPageSize: 10,
+                currentSearchTerm: ''
             });
 
             this.props.onChange({
