@@ -24,14 +24,27 @@ package com.synopsys.integration.alert.processor.api.detail;
 
 import java.util.List;
 
+import org.apache.commons.collections4.ListUtils;
+
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public class NotificationDetails {
+public class ProviderMessageHolder extends AlertSerializableModel {
     private final List<ProjectMessage> projectMessages;
     private final List<SimpleMessage> simpleMessages;
 
-    public NotificationDetails(List<ProjectMessage> projectMessages, List<SimpleMessage> simpleMessages) {
+    public static ProviderMessageHolder empty() {
+        return new ProviderMessageHolder(List.of(), List.of());
+    }
+
+    public static ProviderMessageHolder reduce(ProviderMessageHolder lhs, ProviderMessageHolder rhs) {
+        List<ProjectMessage> unifiedProjectMessages = ListUtils.union(lhs.getProjectMessages(), rhs.getProjectMessages());
+        List<SimpleMessage> unifiedSimpleMessages = ListUtils.union(lhs.getSimpleMessages(), rhs.getSimpleMessages());
+        return new ProviderMessageHolder(unifiedProjectMessages, unifiedSimpleMessages);
+    }
+
+    public ProviderMessageHolder(List<ProjectMessage> projectMessages, List<SimpleMessage> simpleMessages) {
         this.projectMessages = projectMessages;
         this.simpleMessages = simpleMessages;
     }

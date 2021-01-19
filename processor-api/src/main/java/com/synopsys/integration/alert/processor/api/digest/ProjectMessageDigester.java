@@ -24,9 +24,9 @@ package com.synopsys.integration.alert.processor.api.digest;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public interface MessageDigester {
-    List<ProviderMessage<?>> digest(List<ProviderMessage<?>> notifications);
+public interface ProjectMessageDigester {
+    List<ProjectMessage> digest(List<ProjectMessage> notifications);
 
 }

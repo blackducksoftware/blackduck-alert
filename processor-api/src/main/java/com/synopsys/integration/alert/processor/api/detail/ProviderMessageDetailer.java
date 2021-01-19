@@ -20,12 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.summarize;
+package com.synopsys.integration.alert.processor.api.detail;
 
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-
-public interface MessageSummarizer {
-    SimpleMessage summarize(ProviderMessage<?> digestedNotification);
+public interface ProviderMessageDetailer {
+    ProviderMessageHolder detail(ProviderMessageHolder providerMessages);
 
 }

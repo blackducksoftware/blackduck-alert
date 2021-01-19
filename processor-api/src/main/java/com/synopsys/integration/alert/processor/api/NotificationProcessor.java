@@ -26,48 +26,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.detail.MessageDetailer;
-import com.synopsys.integration.alert.processor.api.detail.NotificationDetails;
-import com.synopsys.integration.alert.processor.api.digest.MessageDigester;
-import com.synopsys.integration.alert.processor.api.distribute.MessageDistributor;
-import com.synopsys.integration.alert.processor.api.extract.MessageExtractor;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.processor.api.detail.ProviderMessageDetailer;
+import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
+import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
+import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationExtractor;
 import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.NotificationFilter;
-import com.synopsys.integration.alert.processor.api.summarize.MessageSummarizer;
+import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
 public abstract class NotificationProcessor {
     private final FilterableNotificationExtractor filterableNotificationExtractor;
     private final NotificationFilter filter;
-    private final MessageExtractor messageExtractor;
-    private final MessageDigester messageDigester;
-    private final MessageDetailer messageDetailer;
-    private final MessageSummarizer messageSummarizer;
-    private final MessageDistributor messageDistributor;
+    private final ProviderMessageExtractor providerMessageExtractor;
+    private final ProjectMessageDigester projectMessageDigester;
+    private final ProviderMessageDetailer providerMessageDetailer;
+    private final ProjectMessageSummarizer projectMessageSummarizer;
+    private final ProviderMessageDistributor providerMessageDistributor;
 
     protected NotificationProcessor(
         FilterableNotificationExtractor filterableNotificationExtractor,
         NotificationFilter filter,
-        MessageExtractor messageExtractor,
-        MessageDigester messageDigester,
-        MessageDetailer messageDetailer,
-        MessageSummarizer messageSummarizer,
-        MessageDistributor messageDistributor
+        ProviderMessageExtractor providerMessageExtractor,
+        ProjectMessageDigester projectMessageDigester,
+        ProviderMessageDetailer providerMessageDetailer,
+        ProjectMessageSummarizer projectMessageSummarizer,
+        ProviderMessageDistributor providerMessageDistributor
     ) {
         this.filterableNotificationExtractor = filterableNotificationExtractor;
         this.filter = filter;
-        this.messageExtractor = messageExtractor;
-        this.messageDigester = messageDigester;
-        this.messageDetailer = messageDetailer;
-        this.messageSummarizer = messageSummarizer;
-        this.messageDistributor = messageDistributor;
+        this.providerMessageExtractor = providerMessageExtractor;
+        this.projectMessageDigester = projectMessageDigester;
+        this.providerMessageDetailer = providerMessageDetailer;
+        this.projectMessageSummarizer = projectMessageSummarizer;
+        this.providerMessageDistributor = providerMessageDistributor;
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications) {
@@ -81,34 +83,39 @@ public abstract class NotificationProcessor {
                                                                                        .collect(Collectors.toList());
         Map<DistributionJobModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = mapJobsToNotifications(filterableNotifications, frequency);
         for (Map.Entry<DistributionJobModel, List<FilterableNotificationWrapper<?>>> jobToNotifications : jobsToNotifications.entrySet()) {
-            DistributionJobModel job = jobToNotifications.getKey();
-            List<ProviderMessage<?>> extractedNotifications = filter.filter(job, jobToNotifications.getValue())
-                                                                  .stream()
-                                                                  .map(messageExtractor::extract)
-                                                                  .collect(Collectors.toList());
-
-            NotificationDetails notificationDetails = processExtractedNotifications(job, extractedNotifications);
-            messageDistributor.distribute(job, notificationDetails);
+            processJobNotifications(jobToNotifications.getKey(), jobToNotifications.getValue());
         }
+    }
+
+    private void processJobNotifications(DistributionJobModel job, List<FilterableNotificationWrapper<?>> jobNotifications) {
+        ProviderMessageHolder extractedProviderMessages = filter.filter(job, jobNotifications)
+                                                              .stream()
+                                                              .map(providerMessageExtractor::extract)
+                                                              .reduce(ProviderMessageHolder::reduce)
+                                                              .orElse(ProviderMessageHolder.empty());
+
+        ProviderMessageHolder processedProviderMessages = processExtractedNotifications(job, extractedProviderMessages);
+        providerMessageDistributor.distribute(job, processedProviderMessages);
     }
 
     protected abstract Map<DistributionJobModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, @Nullable FrequencyType frequency);
 
-    private NotificationDetails processExtractedNotifications(DistributionJobModel job, List<ProviderMessage<?>> extractedNotifications) {
+    private ProviderMessageHolder processExtractedNotifications(DistributionJobModel job, ProviderMessageHolder providerMessages) {
         ProcessingType processingType = job.getProcessingType();
         if (ProcessingType.DEFAULT.equals(processingType)) {
-            return messageDetailer.detail(extractedNotifications);
+            return providerMessageDetailer.detail(providerMessages);
         }
 
-        List<ProviderMessage<?>> digestedNotifications = messageDigester.digest(extractedNotifications);
+        List<ProjectMessage> digestedMessages = projectMessageDigester.digest(providerMessages.getProjectMessages());
         if (ProcessingType.SUMMARY.equals(processingType)) {
-            List<SimpleMessage> summarizedNotifications = digestedNotifications
-                                                              .stream()
-                                                              .map(messageSummarizer::summarize)
-                                                              .collect(Collectors.toList());
-            return new NotificationDetails(List.of(), summarizedNotifications);
+            List<SimpleMessage> summarizedMessages = digestedMessages
+                                                         .stream()
+                                                         .map(projectMessageSummarizer::summarize)
+                                                         .collect(Collectors.toList());
+            List<SimpleMessage> allSimpleMessages = ListUtils.union(providerMessages.getSimpleMessages(), summarizedMessages);
+            return new ProviderMessageHolder(List.of(), allSimpleMessages);
         }
-        return messageDetailer.detail(digestedNotifications);
+        return providerMessageDetailer.detail(providerMessages);
     }
 
 }

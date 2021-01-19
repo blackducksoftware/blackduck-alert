@@ -20,13 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.detail;
+package com.synopsys.integration.alert.processor.api.extract;
 
-import java.util.List;
+import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationWrapper;
 
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
-
-public interface MessageDetailer {
-    NotificationDetails detail(List<ProviderMessage<?>> providerMessage);
+public interface ProviderMessageExtractor {
+    ProviderMessageHolder extract(FilterableNotificationWrapper<?> filteredNotification);
 
 }
