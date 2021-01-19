@@ -25,8 +25,9 @@ package com.synopsys.integration.alert.processor.api.filter;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 
-public interface NotificationFilter {
+public interface JobNotificationFilter {
     List<FilterableNotificationWrapper<?>> filter(DistributionJobModel job, List<FilterableNotificationWrapper<?>> notifications);
 
 }

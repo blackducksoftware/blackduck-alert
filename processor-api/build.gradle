@@ -5,6 +5,7 @@ dependencies {
     implementation project(':alert-common')
 
     implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'org.springframework:spring-context'
 
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.junit.jupiter:junit-jupiter-params'

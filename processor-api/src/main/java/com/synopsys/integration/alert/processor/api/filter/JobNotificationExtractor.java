@@ -20,12 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.extract;
+package com.synopsys.integration.alert.processor.api.filter;
 
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 
-public interface ProviderMessageExtractor {
-    ProviderMessageHolder extract(FilterableNotificationWrapper<?> filteredNotification);
+public interface JobNotificationExtractor {
+    Map<DistributionJobModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, @Nullable FrequencyType frequency);
 
 }

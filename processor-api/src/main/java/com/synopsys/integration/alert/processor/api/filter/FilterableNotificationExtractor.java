@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.processor.api.filter;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 
 public interface FilterableNotificationExtractor {
     FilterableNotificationWrapper<?> wrapNotification(AlertNotificationModel notification);

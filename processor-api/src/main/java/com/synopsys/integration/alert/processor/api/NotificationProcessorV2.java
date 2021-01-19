@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -41,22 +43,27 @@ import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtra
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationExtractor;
-import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationWrapper;
-import com.synopsys.integration.alert.processor.api.filter.NotificationFilter;
+import com.synopsys.integration.alert.processor.api.filter.JobNotificationExtractor;
+import com.synopsys.integration.alert.processor.api.filter.JobNotificationFilter;
+import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
-public abstract class NotificationProcessor {
+@Component
+public final class NotificationProcessorV2 {
     private final FilterableNotificationExtractor filterableNotificationExtractor;
-    private final NotificationFilter filter;
+    private final JobNotificationFilter jobNotificationFilter;
+    private final JobNotificationExtractor jobNotificationExtractor;
     private final ProviderMessageExtractor providerMessageExtractor;
     private final ProjectMessageDigester projectMessageDigester;
     private final ProviderMessageDetailer providerMessageDetailer;
     private final ProjectMessageSummarizer projectMessageSummarizer;
     private final ProviderMessageDistributor providerMessageDistributor;
 
-    protected NotificationProcessor(
+    @Autowired
+    protected NotificationProcessorV2(
         FilterableNotificationExtractor filterableNotificationExtractor,
-        NotificationFilter filter,
+        JobNotificationFilter jobNotificationFilter,
+        JobNotificationExtractor jobNotificationExtractor,
         ProviderMessageExtractor providerMessageExtractor,
         ProjectMessageDigester projectMessageDigester,
         ProviderMessageDetailer providerMessageDetailer,
@@ -64,7 +71,8 @@ public abstract class NotificationProcessor {
         ProviderMessageDistributor providerMessageDistributor
     ) {
         this.filterableNotificationExtractor = filterableNotificationExtractor;
-        this.filter = filter;
+        this.jobNotificationFilter = jobNotificationFilter;
+        this.jobNotificationExtractor = jobNotificationExtractor;
         this.providerMessageExtractor = providerMessageExtractor;
         this.projectMessageDigester = projectMessageDigester;
         this.providerMessageDetailer = providerMessageDetailer;
@@ -81,14 +89,14 @@ public abstract class NotificationProcessor {
                                                                                        .stream()
                                                                                        .map(filterableNotificationExtractor::wrapNotification)
                                                                                        .collect(Collectors.toList());
-        Map<DistributionJobModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = mapJobsToNotifications(filterableNotifications, frequency);
+        Map<DistributionJobModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequency);
         for (Map.Entry<DistributionJobModel, List<FilterableNotificationWrapper<?>>> jobToNotifications : jobsToNotifications.entrySet()) {
             processJobNotifications(jobToNotifications.getKey(), jobToNotifications.getValue());
         }
     }
 
     private void processJobNotifications(DistributionJobModel job, List<FilterableNotificationWrapper<?>> jobNotifications) {
-        ProviderMessageHolder extractedProviderMessages = filter.filter(job, jobNotifications)
+        ProviderMessageHolder extractedProviderMessages = jobNotificationFilter.filter(job, jobNotifications)
                                                               .stream()
                                                               .map(providerMessageExtractor::extract)
                                                               .reduce(ProviderMessageHolder::reduce)
@@ -97,8 +105,6 @@ public abstract class NotificationProcessor {
         ProviderMessageHolder processedProviderMessages = processExtractedNotifications(job, extractedProviderMessages);
         providerMessageDistributor.distribute(job, processedProviderMessages);
     }
-
-    protected abstract Map<DistributionJobModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, @Nullable FrequencyType frequency);
 
     private ProviderMessageHolder processExtractedNotifications(DistributionJobModel job, ProviderMessageHolder providerMessages) {
         ProcessingType processingType = job.getProcessingType();
