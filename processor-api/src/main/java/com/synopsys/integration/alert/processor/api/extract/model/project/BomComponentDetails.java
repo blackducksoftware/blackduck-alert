@@ -36,14 +36,17 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
     private final LinkableItem license;
     private final String usage;
 
-    // TODO add callback url
+    private final List<LinkableItem> additionalAttributes;
+    private final String blackDuckIssuesUrl;
 
-    public BomComponentDetails(LinkableItem component, LinkableItem componentVersion, List<ComponentConcern> componentConcerns, LinkableItem license, String usage) {
+    public BomComponentDetails(LinkableItem component, LinkableItem componentVersion, List<ComponentConcern> componentConcerns, LinkableItem license, String usage, List<LinkableItem> additionalAttributes, String blackDuckIssuesUrl) {
         this.component = component;
         this.componentVersion = componentVersion;
         this.componentConcerns = componentConcerns;
         this.license = license;
         this.usage = usage;
+        this.additionalAttributes = additionalAttributes;
+        this.blackDuckIssuesUrl = blackDuckIssuesUrl;
     }
 
     public LinkableItem getComponent() {
@@ -64,6 +67,14 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
 
     public String getUsage() {
         return usage;
+    }
+
+    public List<LinkableItem> getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public String getBlackDuckIssuesUrl() {
+        return blackDuckIssuesUrl;
     }
 
     public boolean hasComponentConcerns() {
@@ -94,7 +105,7 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
 
     private List<BomComponentDetails> combineComponentConcerns(List<ComponentConcern> otherDetailsComponentConcerns) {
         List<ComponentConcern> combinedComponentConcerns = CombinableModel.combine(componentConcerns, otherDetailsComponentConcerns);
-        BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(component, componentVersion, combinedComponentConcerns, license, usage);
+        BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(component, componentVersion, combinedComponentConcerns, license, usage, additionalAttributes, blackDuckIssuesUrl);
         return List.of(combinedBomComponentDetails);
     }
 
