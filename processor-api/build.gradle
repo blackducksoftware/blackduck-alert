@@ -7,4 +7,5 @@ dependencies {
     implementation 'com.synopsys.integration:blackduck-common'
 
     testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
 }
