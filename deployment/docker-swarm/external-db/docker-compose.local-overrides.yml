@@ -6,6 +6,7 @@ services:
 #      - ALERT_HOSTNAME=localhost
 #      - ALERT_SERVER_PORT=8443
 #      - ALERT_LOGGING_LEVEL=INFO
+#      - ALERT_LOG_FILE_PATH=/opt/blackduck/alert/alert-config/log
 #
 #     # -- Database Settings
 #      - ALERT_DB_HOST=alertdb

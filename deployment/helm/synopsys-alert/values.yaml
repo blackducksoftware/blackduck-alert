@@ -16,6 +16,7 @@ alert:
   registry: "" # override the docker registry at container level
   hostname: localhost
   port: 8443
+  logFilePath: /opt/blackduck/alert/alert-config/log
   resources:
     limits:
       memory: "2560Mi"
