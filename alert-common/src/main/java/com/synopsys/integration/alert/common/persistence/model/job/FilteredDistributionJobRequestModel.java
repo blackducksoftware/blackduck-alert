@@ -30,16 +30,6 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-/*
- * Filter Items:
- * Frequency (Passed into processor)
- * Notification Type (From notification)
- * Filter By Project (Projects from notification if applicable)
- *   Project Name
- *   Project Name Pattern
- * Filter by Vulnerability severity (From notification if applicable)
- * Filter by Policy name (From notification if applicable)
- */
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
     private FrequencyType frequencyType;
     private NotificationType notificationType;

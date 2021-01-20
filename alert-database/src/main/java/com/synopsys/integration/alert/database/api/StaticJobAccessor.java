@@ -202,17 +202,16 @@ public class StaticJobAccessor implements JobAccessor {
             distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyType.name(), notificationType.name(), projectName);
         }
 
-        // TODO running project name pattern checks in java code, try to do this instead in SQL
-        distributionJobEntities.stream()
-            .filter(distributionJobEntity -> Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) ||
-                                                 distributionJobEntity.getBlackDuckJobDetails()
-                                                     .getBlackDuckJobProjects()
-                                                     .stream()
-                                                     .map(BlackDuckJobProjectEntity::getProjectName)
-                                                     .anyMatch(foundProjectName -> projectName == projectName))
-            .map(this::convertToFilteredDistributionJobModel)
-            .collect(Collectors.toList());
-        return null;
+        // TODO running project name pattern checks in java code, try to do this in SQL instead
+        return distributionJobEntities.stream()
+                   .filter(distributionJobEntity -> Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) ||
+                                                        distributionJobEntity.getBlackDuckJobDetails()
+                                                            .getBlackDuckJobProjects()
+                                                            .stream()
+                                                            .map(BlackDuckJobProjectEntity::getProjectName)
+                                                            .anyMatch(foundProjectName -> projectName == projectName))
+                   .map(this::convertToFilteredDistributionJobModel)
+                   .collect(Collectors.toList());
     }
 
     private FilteredDistributionJobModel convertToFilteredDistributionJobModel(DistributionJobEntity distributionJobEntity) {
