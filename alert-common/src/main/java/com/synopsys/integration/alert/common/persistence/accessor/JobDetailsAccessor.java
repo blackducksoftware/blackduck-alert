@@ -1,5 +1,5 @@
 /**
- * channel-api
+ * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,16 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopsys.integration.alert.common.persistence.accessor;
+
+import java.util.UUID;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
-public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T, U> extends DistributionChannelV2<D, T, U> {
-    protected final IssueTrackerMessageResolver issueTrackerMessageResolver;
-
-    public IssueTrackerChannel(ChannelMessageFormatter<T> channelMessageFormatter, ChannelMessageSender<T, U> channelMessageSender, IssueTrackerMessageResolver issueTrackerMessageResolver) {
-        super(channelMessageFormatter, channelMessageSender);
-        this.issueTrackerMessageResolver = issueTrackerMessageResolver;
-    }
+public interface JobDetailsAccessor<D extends DistributionJobDetailsModel> {
+    D retrieveDetails(UUID jobId);
 
 }

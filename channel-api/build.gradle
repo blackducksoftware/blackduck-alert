@@ -7,6 +7,9 @@ dependencies {
 
     implementation 'com.synopsys.integration:blackduck-common'
 
+    implementation 'jakarta.jms:jakarta.jms-api'
+    implementation 'org.springframework:spring-jms'
+
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.junit.jupiter:junit-jupiter-params'
 }

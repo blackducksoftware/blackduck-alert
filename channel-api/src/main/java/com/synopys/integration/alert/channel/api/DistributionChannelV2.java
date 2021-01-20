@@ -22,14 +22,19 @@
  */
 package com.synopys.integration.alert.channel.api;
 
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 
-public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T, U> extends DistributionChannelV2<D, T, U> {
-    protected final IssueTrackerMessageResolver issueTrackerMessageResolver;
+public abstract class DistributionChannelV2<D extends DistributionJobDetailsModel, T, U> {
+    protected final ChannelMessageFormatter<T> channelMessageFormatter;
+    protected final ChannelMessageSender<T, U> channelMessageSender;
 
-    public IssueTrackerChannel(ChannelMessageFormatter<T> channelMessageFormatter, ChannelMessageSender<T, U> channelMessageSender, IssueTrackerMessageResolver issueTrackerMessageResolver) {
-        super(channelMessageFormatter, channelMessageSender);
-        this.issueTrackerMessageResolver = issueTrackerMessageResolver;
+    public DistributionChannelV2(ChannelMessageFormatter<T> channelMessageFormatter, ChannelMessageSender<T, U> channelMessageSender) {
+        this.channelMessageFormatter = channelMessageFormatter;
+        this.channelMessageSender = channelMessageSender;
     }
+
+    public abstract MessageResult sendMessage(D distributionDetails, ProviderMessageHolder messages);
 
 }
