@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
 
-public abstract class ChannelReceiver<D extends DistributionJobDetailsModel, T, U> extends MessageReceiver<DistributionEventV2> {
+public abstract class ChannelReceiver<D extends DistributionJobDetailsModel, T> extends MessageReceiver<DistributionEventV2> {
     private final DistributionChannelV2<D, T> channel;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
 
