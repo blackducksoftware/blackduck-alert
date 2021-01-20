@@ -1,5 +1,5 @@
 /**
- * processor-api
+ * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,32 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter.model;
+package com.synopsys.integration.alert.common.persistence.model.job;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class NotificationFilterMapModel extends AlertSerializableModel {
-    private final Map<ProcessingType, List<NotificationFilterJobModel>> jobFilterMapping;
+public class FilteredDistributionJobModel extends AlertSerializableModel {
+    private ProcessingType processingType;
+    private UUID jobId;
+    private String channelName;
 
-    public NotificationFilterMapModel(Map<ProcessingType, List<NotificationFilterJobModel>> jobFilterMapping) {
-        this.jobFilterMapping = jobFilterMapping;
+    public FilteredDistributionJobModel(ProcessingType processingType, UUID jobId, String channelName) {
+        this.processingType = processingType;
+        this.jobId = jobId;
+        this.channelName = channelName;
     }
 
-    public List<NotificationFilterJobModel> getJobModels(ProcessingType processingType) {
-        return jobFilterMapping.get(processingType);
+    public ProcessingType getProcessingType() {
+        return processingType;
     }
 
-    public Map<ProcessingType, List<NotificationFilterJobModel>> getJobFilterMapping() {
-        return jobFilterMapping;
+    public UUID getJobId() {
+        return jobId;
     }
 
-    public Set<ProcessingType> getProcessingTypes() {
-        return jobFilterMapping.keySet();
+    public String getChannelName() {
+        return channelName;
     }
-
 }

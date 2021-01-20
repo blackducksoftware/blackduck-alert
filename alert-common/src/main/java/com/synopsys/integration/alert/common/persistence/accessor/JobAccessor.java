@@ -31,6 +31,8 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -38,6 +40,8 @@ public interface JobAccessor {
     List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
 
     List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);
+
+    List<FilteredDistributionJobModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel);
     
     List<DistributionJobModel> getJobsById(Collection<UUID> jobIds);
 

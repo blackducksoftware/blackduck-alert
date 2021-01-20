@@ -1,19 +1,42 @@
+/**
+ * processor-api
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.processor.api.filter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterMapModel;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 
 @Component
@@ -38,56 +61,27 @@ public class DefaultJobNotificationExtractor implements JobNotificationExtractor
 
     @Override
     public Map<NotificationFilterMapModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, @Nullable FrequencyType frequency) {
-        SetMap<CollapsibleNotificationFilter, FilterableNotificationWrapper<?>> groupedFilterableNotifications = SetMap.createDefault();
+        SetMap<NotificationFilterMapModel, FilterableNotificationWrapper<?>> groupedFilterableNotifications = SetMap.createDefault();
+
         for (FilterableNotificationWrapper filterableNotificationWrapper : filterableNotifications) {
-            CollapsibleNotificationFilter collapsibleNotificationFilter = CollapsibleNotificationFilter.from(filterableNotificationWrapper);
-            groupedFilterableNotifications.add(collapsibleNotificationFilter, filterableNotificationWrapper);
+            List<FilteredDistributionJobModel> filteredDistributionJobModels = retrieveMatchingJobs(filterableNotificationWrapper, frequency);
         }
-        for (Map.Entry<CollapsibleNotificationFilter, Set<FilterableNotificationWrapper<?>>> groupedNotifications : groupedFilterableNotifications.entrySet()) {
-            new FilteredDistributionJobRequestModel(
-                frequency,
-                
-                );
-            jobAccessor.getMatchingEnabledJobs();
-        }
+        return null;
     }
 
-    private static class CollapsibleNotificationFilter extends AlertSerializableModel {
-        private String notificationType;
-        private List<String> projectNames;
-        private List<String> vulnerabilitySeverities;
-        private List<String> policyNames;
-
-        public static CollapsibleNotificationFilter from(FilterableNotificationWrapper filterableNotificationWrapper) {
-            return new CollapsibleNotificationFilter(
-                filterableNotificationWrapper.extractNotificationType(),
-                filterableNotificationWrapper.getProjectNames(),
-                filterableNotificationWrapper.getVulnerabilitySeverities(),
-                filterableNotificationWrapper.getPolicyNames()
-            );
-        }
-
-        public CollapsibleNotificationFilter(String notificationType, List<String> projectNames, List<String> vulnerabilitySeverities, List<String> policyNames) {
-            this.notificationType = notificationType;
-            this.projectNames = projectNames;
-            this.vulnerabilitySeverities = vulnerabilitySeverities;
-            this.policyNames = policyNames;
-        }
-
-        public String getNotificationType() {
-            return notificationType;
-        }
-
-        public List<String> getProjectNames() {
-            return projectNames;
-        }
-
-        public List<String> getVulnerabilitySeverities() {
-            return vulnerabilitySeverities;
-        }
-
-        public List<String> getPolicyNames() {
-            return policyNames;
-        }
+    private List<FilteredDistributionJobModel> retrieveMatchingJobs(FilterableNotificationWrapper filterableNotificationWrapper, FrequencyType frequencyType) {
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
+            frequencyType,
+            EnumUtils.getEnum(NotificationType.class, filterableNotificationWrapper.extractNotificationType()),
+            filterableNotificationWrapper.getProjectName(),
+            filterableNotificationWrapper.getVulnerabilitySeverities(),
+            filterableNotificationWrapper.getPolicyNames()
+        );
+        return jobAccessor.getMatchingEnabledJobs(filteredDistributionJobRequestModel);
     }
+
+    private NotificationFilterMapModel createFilterMapModel() {
+        return null;
+    }
+
 }
