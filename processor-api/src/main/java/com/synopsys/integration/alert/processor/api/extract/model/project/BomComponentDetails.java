@@ -23,6 +23,9 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -39,7 +42,14 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
     private final List<LinkableItem> additionalAttributes;
     private final String blackDuckIssuesUrl;
 
-    public BomComponentDetails(LinkableItem component, LinkableItem componentVersion, List<ComponentConcern> componentConcerns, LinkableItem license, String usage, List<LinkableItem> additionalAttributes, String blackDuckIssuesUrl) {
+    public BomComponentDetails(
+        LinkableItem component,
+        @Nullable LinkableItem componentVersion,
+        List<ComponentConcern> componentConcerns,
+        LinkableItem license, String usage,
+        List<LinkableItem> additionalAttributes,
+        String blackDuckIssuesUrl
+    ) {
         this.component = component;
         this.componentVersion = componentVersion;
         this.componentConcerns = componentConcerns;
@@ -53,8 +63,8 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
         return component;
     }
 
-    public LinkableItem getComponentVersion() {
-        return componentVersion;
+    public Optional<LinkableItem> getComponentVersion() {
+        return Optional.ofNullable(componentVersion);
     }
 
     public List<ComponentConcern> getComponentConcerns() {

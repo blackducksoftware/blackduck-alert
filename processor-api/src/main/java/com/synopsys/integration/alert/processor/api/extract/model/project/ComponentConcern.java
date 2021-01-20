@@ -31,26 +31,26 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
 
-public class ComponentConcern extends AlertSerializableModel implements CombinableModel<ComponentConcern> {
+public class ComponentConcern extends AlertSerializableModel implements CombinableModel<ComponentConcern>, Comparable<ComponentConcern> {
     private final ComponentConcernType type;
     private final ItemOperation operation;
     private final String name;
-    private final String severity;
+    private final ComponentConcernSeverity severity;
     private final String url;
 
     public static ComponentConcern policy(ItemOperation operation, String policyName) {
-        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, null, null);
+        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, ComponentConcernSeverity.UNSPECIFIED, null);
     }
 
-    public static ComponentConcern severePolicy(ItemOperation operation, String policyName, String severity) {
+    public static ComponentConcern severePolicy(ItemOperation operation, String policyName, ComponentConcernSeverity severity) {
         return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, severity, null);
     }
 
-    public static ComponentConcern vulnerability(ItemOperation operation, String vulnerabilityId, String severity, String vulnerabilityUrl) {
+    public static ComponentConcern vulnerability(ItemOperation operation, String vulnerabilityId, ComponentConcernSeverity severity, String vulnerabilityUrl) {
         return new ComponentConcern(ComponentConcernType.VULNERABILITY, operation, vulnerabilityId, severity, vulnerabilityUrl);
     }
 
-    private ComponentConcern(ComponentConcernType type, ItemOperation operation, String name, @Nullable String severity, @Nullable String url) {
+    private ComponentConcern(ComponentConcernType type, ItemOperation operation, String name, ComponentConcernSeverity severity, @Nullable String url) {
         this.operation = operation;
         this.type = type;
         this.name = name;
@@ -70,8 +70,8 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
         return name;
     }
 
-    public Optional<String> getSeverity() {
-        return Optional.ofNullable(severity);
+    public ComponentConcernSeverity getSeverity() {
+        return severity;
     }
 
     public Optional<String> getUrl() {
@@ -95,6 +95,27 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
         } else {
             return uncombinedModels;
         }
+    }
+
+    @Override
+    public int compareTo(ComponentConcern otherModel) {
+        if (!type.equals(otherModel.type)) {
+            return type.compareTo(otherModel.type);
+        }
+
+        if (!operation.equals(otherModel.operation)) {
+            return operation.compareTo(otherModel.operation);
+        }
+
+        if (!severity.equals(otherModel.severity)) {
+            return severity.compareTo(otherModel.severity);
+        }
+
+        if (!name.equals(otherModel.name)) {
+            return name.compareTo(otherModel.name);
+        }
+
+        return 0;
     }
 
 }
