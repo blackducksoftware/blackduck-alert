@@ -60,7 +60,7 @@ class TableSelectInput extends Component {
     constructor(props) {
         super(props);
 
-        this.updateSelectedValues = this.updateSelectedValues.bind(this);
+        this.loadSelectedValues = this.loadSelectedValues.bind(this);
         this.retrieveTableData = this.retrieveTableData.bind(this);
         this.createTable = this.createTable.bind(this);
         this.createSelect = this.createSelect.bind(this);
@@ -88,10 +88,10 @@ class TableSelectInput extends Component {
     }
 
     componentDidMount() {
-        this.updateSelectedValues();
+        this.loadSelectedValues();
     }
 
-    updateSelectedValues() {
+    loadSelectedValues() {
         const { value, columns, useRowAsValue } = this.props;
         const { selectedData } = this.state;
 
@@ -250,7 +250,7 @@ class TableSelectInput extends Component {
     createDataList() {
         const { data, selectedData } = this.state;
         const dataList = data.map((itemData) => Object.assign(itemData, { missing: false }));
-        selectedData.forEach(selected => {
+        selectedData.forEach((selected) => {
             const missingAttribute = selected.missing;
             if (missingAttribute !== undefined && missingAttribute) {
                 dataList.unshift(Object.assign(selected, { missing: true }));
@@ -351,9 +351,10 @@ class TableSelectInput extends Component {
             );
         };
 
+        const { selectedData } = this.state;
         const keyColumnHeader = columns.find((column) => column.isKey).header;
         const okClicked = () => {
-            const convertedValues = this.state.selectedData.map((selected) => {
+            const convertedValues = selectedData.map((selected) => {
                 const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
                 const isMissing = selected.missing !== undefined ? selected.missing : false;
                 return {
@@ -370,7 +371,8 @@ class TableSelectInput extends Component {
                 currentSearchTerm: ''
             });
 
-            this.props.onChange({
+            const { onChange } = this.props;
+            onChange({
                 target: {
                     name: this.props.fieldKey,
                     value: this.state.selectedData
@@ -514,9 +516,15 @@ class TableSelectInput extends Component {
     }
 
     onHideTableSelectModal() {
+        const { displayedData } = this.state;
+        const previousSelectedData = displayedData.map((currentValue) => {
+            return {
+                ...currentValue.value
+            };
+        });
         this.setState({
             showTable: false,
-            selectedData: this.state.displayedData
+            selectedData: previousSelectedData
         });
     }
 
