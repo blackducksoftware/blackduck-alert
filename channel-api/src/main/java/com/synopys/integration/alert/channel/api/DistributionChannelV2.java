@@ -26,15 +26,15 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 
-public abstract class DistributionChannelV2<D extends DistributionJobDetailsModel, T, U> {
-    protected final ChannelMessageFormatter<T> channelMessageFormatter;
-    protected final ChannelMessageSender<T, U> channelMessageSender;
+public abstract class DistributionChannelV2<D extends DistributionJobDetailsModel, T> {
+    protected final ChannelMessageConverter<T> channelMessageConverter;
+    protected final ChannelMessageSender<T> channelMessageSender;
 
-    public DistributionChannelV2(ChannelMessageFormatter<T> channelMessageFormatter, ChannelMessageSender<T, U> channelMessageSender) {
-        this.channelMessageFormatter = channelMessageFormatter;
+    public DistributionChannelV2(ChannelMessageConverter<T> channelMessageConverter, ChannelMessageSender<T> channelMessageSender) {
+        this.channelMessageConverter = channelMessageConverter;
         this.channelMessageSender = channelMessageSender;
     }
 
-    public abstract MessageResult sendMessage(D distributionDetails, ProviderMessageHolder messages);
+    public abstract MessageResult processAndSend(D distributionDetails, ProviderMessageHolder messages);
 
 }

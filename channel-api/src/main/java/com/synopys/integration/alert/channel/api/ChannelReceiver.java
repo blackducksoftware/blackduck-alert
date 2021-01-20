@@ -26,22 +26,22 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
+import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
 
-public abstract class ChannelReceiver<D extends DistributionJobDetailsModel, T, U> extends MessageReceiver<Object> {
-    private final DistributionChannelV2<D, T, U> channel;
+public abstract class ChannelReceiver<D extends DistributionJobDetailsModel, T, U> extends MessageReceiver<DistributionEventV2> {
+    private final DistributionChannelV2<D, T> channel;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
 
-    public ChannelReceiver(Gson gson, DistributionChannelV2<D, T, U> channel, JobDetailsAccessor<D> jobDetailsAccessor) {
-        super(gson, Object.class);
+    public ChannelReceiver(Gson gson, DistributionChannelV2<D, T> channel, JobDetailsAccessor<D> jobDetailsAccessor) {
+        super(gson, DistributionEventV2.class);
         this.channel = channel;
         this.jobDetailsAccessor = jobDetailsAccessor;
     }
 
     @Override
-    public final void handleEvent(Object event) {
-        // FIXME populate fields when event is available
-        D details = jobDetailsAccessor.retrieveDetails(null);
-        channel.sendMessage(details, null);
+    public final void handleEvent(DistributionEventV2 event) {
+        D details = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        channel.processAndSend(details, event.getProviderMessages());
     }
 
 }

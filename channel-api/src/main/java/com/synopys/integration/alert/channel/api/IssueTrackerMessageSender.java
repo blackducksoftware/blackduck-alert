@@ -24,9 +24,11 @@ package com.synopys.integration.alert.channel.api;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 
-public interface ChannelMessageFormatter<T> {
-    List<T> formatMessages(ProviderMessageHolder messages);
+public interface IssueTrackerMessageSender<T> extends ChannelMessageSender<T> {
+    @Override
+        // TODO update the result object for issue-trackers
+    MessageResult sendMessage(List<T> channelMessages);
 
 }

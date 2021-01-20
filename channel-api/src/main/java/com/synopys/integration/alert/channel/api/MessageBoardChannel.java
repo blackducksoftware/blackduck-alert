@@ -22,11 +22,21 @@
  */
 package com.synopys.integration.alert.channel.api;
 
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import java.util.List;
 
-public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> extends DistributionChannelV2<D, T, Void> {
-    public MessageBoardChannel(ChannelMessageFormatter<T> channelMessageFormatter, ChannelMessageSender<T, Void> channelMessageSender) {
-        super(channelMessageFormatter, channelMessageSender);
+import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+
+public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> extends DistributionChannelV2<D, T> {
+    public MessageBoardChannel(ChannelMessageConverter<T> channelMessageConverter, ChannelMessageSender<T> channelMessageSender) {
+        super(channelMessageConverter, channelMessageSender);
+    }
+
+    @Override
+    public MessageResult processAndSend(D distributionDetails, ProviderMessageHolder messages) {
+        List<T> channelMessages = channelMessageConverter.convertToChannelMessages(messages);
+        return channelMessageSender.sendMessage(channelMessages);
     }
 
 }

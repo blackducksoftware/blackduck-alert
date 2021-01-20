@@ -24,7 +24,9 @@ package com.synopys.integration.alert.channel.api;
 
 import java.util.List;
 
-public interface ChannelMessageSender<T, U> {
-    U sendMessage(List<T> channelMessages);
+import com.synopsys.integration.alert.common.message.model.MessageResult;
+
+public interface ChannelMessageSender<T> {
+    MessageResult sendMessage(List<T> channelMessages);
 
 }

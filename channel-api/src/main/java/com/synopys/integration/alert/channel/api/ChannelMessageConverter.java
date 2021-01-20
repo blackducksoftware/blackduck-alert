@@ -24,20 +24,9 @@ package com.synopys.integration.alert.channel.api;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 
-public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T> extends DistributionChannelV2<D, T> {
-    public IssueTrackerChannel(IssueTrackerMessageConverter<T> channelMessageConverter, ChannelMessageSender<T> channelMessageSender) {
-        super(channelMessageConverter, channelMessageSender);
-    }
-
-    @Override
-    public MessageResult processAndSend(D distributionDetails, ProviderMessageHolder messages) {
-        List<T> issueTrackerMessages = channelMessageConverter.convertToChannelMessages(messages);
-        // TODO post-process issue tracker messages
-        return channelMessageSender.sendMessage(issueTrackerMessages);
-    }
+public interface ChannelMessageConverter<T> {
+    List<T> convertToChannelMessages(ProviderMessageHolder messages);
 
 }

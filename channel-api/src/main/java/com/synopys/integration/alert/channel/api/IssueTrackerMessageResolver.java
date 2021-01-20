@@ -22,7 +22,12 @@
  */
 package com.synopys.integration.alert.channel.api;
 
-public interface IssueTrackerMessageResolver {
-    Object resolve(Object event);
+import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+
+public interface IssueTrackerMessageResolver<T> {
+    T resolve(SimpleMessage simpleMessage);
+
+    T resolve(ProjectMessage projectMessage);
 
 }
