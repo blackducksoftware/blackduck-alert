@@ -38,7 +38,7 @@ public interface JobAccessor {
     List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
 
     List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);
-
+    
     List<DistributionJobModel> getJobsById(Collection<UUID> jobIds);
 
     AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit);

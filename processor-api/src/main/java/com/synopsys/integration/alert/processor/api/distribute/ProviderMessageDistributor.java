@@ -22,10 +22,11 @@
  */
 package com.synopsys.integration.alert.processor.api.distribute;
 
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
+import java.util.List;
+
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
 
 public interface ProviderMessageDistributor {
-    void distribute(DistributionJobModel job, ProviderMessageHolder providerMessageHolder);
-
+    void distribute(List<NotificationFilterJobModel> notificationFilterJobModel, ProviderMessageHolder providerMessageHolder);
 }
