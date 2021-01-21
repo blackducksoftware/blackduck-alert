@@ -24,18 +24,40 @@ package com.synopys.integration.alert.channel.api.convert;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
-public class SimpleMessageConverter {
+public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessage> {
     private final ChannelMessageFormatter messageFormatter;
 
     public SimpleMessageConverter(ChannelMessageFormatter messageFormatter) {
+        super(messageFormatter);
         this.messageFormatter = messageFormatter;
     }
 
+    @Override
     public List<String> convertToFormattedMessageChunks(SimpleMessage simpleMessage) {
-        // TODO implement
-        return null;
+        ChunkedStringBuilder chunkedStringBuilder = new ChunkedStringBuilder(messageFormatter.getMaxMessageLength());
+
+        appendSection(chunkedStringBuilder, simpleMessage.getSubject());
+        appendSection(chunkedStringBuilder, simpleMessage.getDescription());
+
+        for (LinkableItem detail : simpleMessage.getDetails()) {
+            String detailString = createLinkableItemString(detail, false);
+            chunkedStringBuilder.append(detailString);
+            chunkedStringBuilder.append(messageFormatter.getLineSeparator());
+        }
+
+        return chunkedStringBuilder.collectCurrentChunks();
+    }
+
+    private void appendSection(ChunkedStringBuilder chunkedStringBuilder, String txt) {
+        String encodedTxt = messageFormatter.encode(txt);
+        chunkedStringBuilder.append(encodedTxt);
+        chunkedStringBuilder.append(messageFormatter.getLineSeparator());
+        chunkedStringBuilder.append(messageFormatter.getSectionSeparator());
+        chunkedStringBuilder.append(messageFormatter.getLineSeparator());
     }
 
 }

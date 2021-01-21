@@ -39,13 +39,15 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public class ProjectMessageConverter {
+public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMessage> {
     private final ChannelMessageFormatter messageFormatter;
 
     public ProjectMessageConverter(ChannelMessageFormatter messageFormatter) {
+        super(messageFormatter);
         this.messageFormatter = messageFormatter;
     }
 
+    @Override
     public List<String> convertToFormattedMessageChunks(ProjectMessage projectMessage) {
         ChunkedStringBuilder chunkedStringBuilder = new ChunkedStringBuilder(messageFormatter.getMaxMessageLength());
 
@@ -170,36 +172,6 @@ public class ProjectMessageConverter {
             .map(attr -> createLinkableItemString(attr, false))
             .forEach(componentAttributeStrings::add);
         return componentAttributeStrings;
-    }
-
-    private String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
-        String name = messageFormatter.encode(linkableItem.getLabel());
-        String value = messageFormatter.encode(linkableItem.getValue());
-        Optional<String> optionalUrl = linkableItem.getUrl();
-
-        if (bold) {
-            name = messageFormatter.emphasize(name);
-            value = messageFormatter.emphasize(value);
-        }
-
-        if (optionalUrl.isPresent()) {
-            // The nuance around stylizing links adds too much complexity for too little value to worry about emphasizing them.
-            value = createLinkableItemValueString(linkableItem);
-        }
-
-        return String.format("%s:%s%s", name, messageFormatter.getNonBreakingSpace(), value);
-    }
-
-    private String createLinkableItemValueString(LinkableItem linkableItem) {
-        String value = messageFormatter.encode(linkableItem.getValue());
-        Optional<String> optionalUrl = linkableItem.getUrl();
-
-        String formattedString = value;
-        if (optionalUrl.isPresent()) {
-            String urlString = messageFormatter.encode(optionalUrl.get());
-            formattedString = messageFormatter.createLink(value, urlString);
-        }
-        return formattedString;
     }
 
 }
