@@ -49,7 +49,9 @@ then
   echo "Alert Database user secret set; using value from secret."
   alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME)
   export ALERT_DB_USERNAME=$alertDatabaseUser;
-  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseUser
+
+  alertDatabaseAdminUser=$alertDatabaseUser;
+  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser;
   echo $ALERT_DB_ADMIN_USERNAME
   echo "Alert Database user variable set to secret value."
 fi
@@ -59,7 +61,9 @@ then
   echo "Alert Database password secret set; using value from secret."
   alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD)
   export ALERT_DB_PASSWORD=$alertDatabasePassword;
-  export ALERT_DB_ADMIN_PASSWORD=$alertDatabasePassword;
+
+  alertDatabaseAdminPassword=$alertDatabasePassword;
+  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword;
   echo $ALERT_DB_ADMIN_PASSWORD
   echo "Alert Database password variable set to secret value."
 fi
@@ -80,6 +84,9 @@ then
   echo "Alert Database admin password variable set to secret value."
 fi
 
+echo "TEST: local admin username and password test"
+echo $alertDatabaseAdminUser
+echo $alertDatabaseAdminPassword
 alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword"
 alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
 
