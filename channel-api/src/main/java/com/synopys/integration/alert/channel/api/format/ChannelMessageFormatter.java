@@ -23,16 +23,26 @@
 package com.synopys.integration.alert.channel.api.format;
 
 public abstract class ChannelMessageFormatter {
-    public static final String DEFAULT_SECTION_SEPARATOR = "- - - - - - - - - - - - - - - - - - - -";
+    public static final String DEFAULT_SECTION_SEPARATOR = "---------------------------------------";
+    public static final String DEFAULT_NON_BREAKING_SPACE = " ";
 
     private final int maxMessageLength;
     private final String lineSeparator;
     private final String sectionSeparator;
+    private final String nonBreakingSpace;
 
-    public ChannelMessageFormatter(int maxMessageLength, String lineSeparator, String sectionSeparator) {
+    public ChannelMessageFormatter(int maxMessageLength, String lineSeparator) {
+        this.maxMessageLength = maxMessageLength;
+        this.lineSeparator = lineSeparator;
+        this.sectionSeparator = DEFAULT_SECTION_SEPARATOR;
+        this.nonBreakingSpace = DEFAULT_NON_BREAKING_SPACE;
+    }
+
+    public ChannelMessageFormatter(int maxMessageLength, String lineSeparator, String sectionSeparator, String nonBreakingSpace) {
         this.maxMessageLength = maxMessageLength;
         this.lineSeparator = lineSeparator;
         this.sectionSeparator = sectionSeparator;
+        this.nonBreakingSpace = nonBreakingSpace;
     }
 
     public int getMaxMessageLength() {
@@ -45,6 +55,10 @@ public abstract class ChannelMessageFormatter {
 
     public String getSectionSeparator() {
         return sectionSeparator;
+    }
+
+    public String getNonBreakingSpace() {
+        return nonBreakingSpace;
     }
 
     public abstract String encode(String txt);

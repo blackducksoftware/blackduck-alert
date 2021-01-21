@@ -61,10 +61,12 @@ public class ProjectMessageConverter {
                 chunkedStringBuilder.append(messageFormatter.getLineSeparator());
             });
 
+        String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
+
         MessageReason messageReason = projectMessage.getMessageReason();
         if (MessageReason.PROJECT_STATUS.equals(messageReason) || MessageReason.PROJECT_VERSION_STATUS.equals(messageReason)) {
             projectMessage.getOperation()
-                .map(operation -> String.format("Project Action: %s", operation.name()))
+                .map(operation -> String.format("Project%sAction:%s%s", nonBreakingSpace, nonBreakingSpace, operation.name()))
                 .map(messageFormatter::encode)
                 .ifPresent(chunkedStringBuilder::append);
             return chunkedStringBuilder.collectCurrentChunks();
@@ -100,9 +102,11 @@ public class ProjectMessageConverter {
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
             });
 
+        String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
+
         List<String> componentAttributeStrings = gatherAttributeStrings(bomComponent);
         for (String attributeString : componentAttributeStrings) {
-            bomComponentSectionPieces.add(String.format(" - %s", attributeString));
+            bomComponentSectionPieces.add(String.format("%s-%s%s", nonBreakingSpace, nonBreakingSpace, attributeString));
             bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
         }
 
@@ -124,8 +128,7 @@ public class ProjectMessageConverter {
                 currentSeverity = null;
 
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-                // TODO get a tab character from the ChannelMessageFormatter
-                bomComponentSectionPieces.add("  ");
+                bomComponentSectionPieces.add(nonBreakingSpace + nonBreakingSpace);
                 bomComponentSectionPieces.add(messageFormatter.encode(currentOperation.name()));
             }
 
@@ -133,8 +136,7 @@ public class ProjectMessageConverter {
                 currentSeverity = componentConcern.getSeverity();
 
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-                // TODO get a tab character from the ChannelMessageFormatter
-                bomComponentSectionPieces.add("    ");
+                bomComponentSectionPieces.add(nonBreakingSpace + nonBreakingSpace + nonBreakingSpace + nonBreakingSpace);
                 bomComponentSectionPieces.add(messageFormatter.encode(currentSeverity.name()));
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
             }
@@ -146,7 +148,7 @@ public class ProjectMessageConverter {
                 String encodedUrl = messageFormatter.encode(concernUrl.get());
                 concernString = String.format("[%s]", messageFormatter.createLink(encodedName, encodedUrl));
             } else {
-                concernString = String.format(" - %s%s", encodedName, messageFormatter.getLineSeparator());
+                concernString = String.format("%s-%s%s%s", nonBreakingSpace, nonBreakingSpace, encodedName, messageFormatter.getLineSeparator());
             }
             bomComponentSectionPieces.add(concernString);
         }
@@ -186,7 +188,7 @@ public class ProjectMessageConverter {
             value = createLinkableItemValueString(linkableItem);
         }
 
-        return String.format("%s: %s", name, value);
+        return String.format("%s:%s%s", name, messageFormatter.getNonBreakingSpace(), value);
     }
 
     private String createLinkableItemValueString(LinkableItem linkableItem) {
