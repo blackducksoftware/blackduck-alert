@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
@@ -46,18 +47,18 @@ public class ProjectMessageConverter {
         this.messageFormatter = messageFormatter;
     }
 
-    public List<String> convertToMessagePieces(ProjectMessage projectMessage) {
-        List<String> messagePieces = new LinkedList<>();
+    public List<String> convertToFormattedMessageChunks(ProjectMessage projectMessage) {
+        ChunkedStringBuilder chunkedStringBuilder = new ChunkedStringBuilder(messageFormatter.getMaxMessageLength());
 
         String projectString = createLinkableItemString(projectMessage.getProject(), true);
-        messagePieces.add(projectString);
-        messagePieces.add(messageFormatter.getLineSeparator());
+        chunkedStringBuilder.append(projectString);
+        chunkedStringBuilder.append(messageFormatter.getLineSeparator());
 
         projectMessage.getProjectVersion()
             .map(projectVersion -> createLinkableItemString(projectVersion, true))
             .ifPresent(projectVersionString -> {
-                messagePieces.add(projectVersionString);
-                messagePieces.add(messageFormatter.getLineSeparator());
+                chunkedStringBuilder.append(projectVersionString);
+                chunkedStringBuilder.append(messageFormatter.getLineSeparator());
             });
 
         MessageReason messageReason = projectMessage.getMessageReason();
@@ -65,24 +66,24 @@ public class ProjectMessageConverter {
             projectMessage.getOperation()
                 .map(operation -> String.format("Project Action: %s", operation.name()))
                 .map(messageFormatter::encode)
-                .ifPresent(messagePieces::add);
-            return messagePieces;
+                .ifPresent(chunkedStringBuilder::append);
+            return chunkedStringBuilder.collectCurrentChunks();
         }
 
         List<BomComponentDetails> bomComponents = projectMessage.getBomComponents();
         if (!bomComponents.isEmpty()) {
-            messagePieces.add(messageFormatter.getSectionSeparator());
-            messagePieces.add(messageFormatter.getLineSeparator());
+            chunkedStringBuilder.append(messageFormatter.getSectionSeparator());
+            chunkedStringBuilder.append(messageFormatter.getLineSeparator());
         }
 
         for (BomComponentDetails bomComponentDetails : bomComponents) {
             List<String> bomComponentMessagePieces = gatherBomComponentPieces(bomComponentDetails);
-            messagePieces.addAll(bomComponentMessagePieces);
-            messagePieces.add(messageFormatter.getSectionSeparator());
-            messagePieces.add(messageFormatter.getLineSeparator());
+            bomComponentMessagePieces.forEach(chunkedStringBuilder::append);
+            chunkedStringBuilder.append(messageFormatter.getSectionSeparator());
+            chunkedStringBuilder.append(messageFormatter.getLineSeparator());
         }
 
-        return messagePieces;
+        return chunkedStringBuilder.collectCurrentChunks();
     }
 
     private List<String> gatherBomComponentPieces(BomComponentDetails bomComponent) {
