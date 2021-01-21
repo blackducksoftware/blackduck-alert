@@ -50,6 +50,7 @@ then
   alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME)
   export ALERT_DB_USERNAME=$alertDatabaseUser;
   export ALERT_DB_ADMIN_USERNAME=$alertDatabaseUser
+  echo $ALERT_DB_ADMIN_USERNAME
   echo "Alert Database user variable set to secret value."
 fi
 
@@ -59,6 +60,7 @@ then
   alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD)
   export ALERT_DB_PASSWORD=$alertDatabasePassword;
   export ALERT_DB_ADMIN_PASSWORD=$alertDatabasePassword;
+  echo $ALERT_DB_ADMIN_PASSWORD
   echo "Alert Database password variable set to secret value."
 fi
 
