@@ -32,8 +32,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterMapModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -64,12 +64,12 @@ public class DefaultJobNotificationExtractor implements JobNotificationExtractor
         SetMap<NotificationFilterMapModel, FilterableNotificationWrapper<?>> groupedFilterableNotifications = SetMap.createDefault();
 
         for (FilterableNotificationWrapper filterableNotificationWrapper : filterableNotifications) {
-            List<FilteredDistributionJobModel> filteredDistributionJobModels = retrieveMatchingJobs(filterableNotificationWrapper, frequency);
+            List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(filterableNotificationWrapper, frequency);
         }
         return null;
     }
 
-    private List<FilteredDistributionJobModel> retrieveMatchingJobs(FilterableNotificationWrapper filterableNotificationWrapper, FrequencyType frequencyType) {
+    private List<FilteredDistributionJobResponseModel> retrieveMatchingJobs(FilterableNotificationWrapper filterableNotificationWrapper, FrequencyType frequencyType) {
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             frequencyType,
             EnumUtils.getEnum(NotificationType.class, filterableNotificationWrapper.extractNotificationType()),

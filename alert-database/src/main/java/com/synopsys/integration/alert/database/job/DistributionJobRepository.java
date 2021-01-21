@@ -107,6 +107,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
         @Param("policyNames") Collection<String> policyNames
     );
 
+    // FIXME these queries can be improved by using pattern searching in the query and returning a FilteredDistributionJobResponseModel
     @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
                        + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
