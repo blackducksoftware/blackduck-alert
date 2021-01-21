@@ -47,8 +47,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProj
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -183,9 +183,10 @@ public class StaticJobAccessor implements JobAccessor {
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
     }
 
+    // TODO this should be paged
     @Override
-    public List<FilteredDistributionJobModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
-        FrequencyType frequencyType = filteredDistributionJobRequestModel.getFrequencyType();
+    public List<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
+        List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes().stream().map(Enum::name).collect(Collectors.toList());
         NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
 
         String projectName = filteredDistributionJobRequestModel.getProjectName();
@@ -195,11 +196,11 @@ public class StaticJobAccessor implements JobAccessor {
 
         List<DistributionJobEntity> distributionJobEntities;
         if (!policyNames.isEmpty()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyType.name(), notificationType.name(), projectName, policyNames);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectName, policyNames);
         } else if (!vulnerabilitySeverities.isEmpty()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyType.name(), notificationType.name(), projectName, vulnerabilitySeverities);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectName, vulnerabilitySeverities);
         } else {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyType.name(), notificationType.name(), projectName);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName);
         }
 
         // TODO running project name pattern checks in java code, try to do this in SQL instead
@@ -210,13 +211,13 @@ public class StaticJobAccessor implements JobAccessor {
                                                             .stream()
                                                             .map(BlackDuckJobProjectEntity::getProjectName)
                                                             .anyMatch(foundProjectName -> projectName == projectName))
-                   .map(this::convertToFilteredDistributionJobModel)
+                   .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
     }
 
-    private FilteredDistributionJobModel convertToFilteredDistributionJobModel(DistributionJobEntity distributionJobEntity) {
+    private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {
         ProcessingType processingType = Enum.valueOf(ProcessingType.class, distributionJobEntity.getProcessingType());
-        return new FilteredDistributionJobModel(processingType, distributionJobEntity.getJobId(), distributionJobEntity.getChannelDescriptorName());
+        return new FilteredDistributionJobResponseModel(distributionJobEntity.getJobId(), processingType, distributionJobEntity.getChannelDescriptorName());
     }
 
     private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {

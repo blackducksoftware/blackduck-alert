@@ -24,35 +24,33 @@ package com.synopsys.integration.alert.common.persistence.model.job;
 
 import java.util.List;
 
-import org.springframework.lang.Nullable;
-
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
-    private FrequencyType frequencyType;
+    private List<FrequencyType> frequencyTypes;
     private NotificationType notificationType;
     private String projectName;
     private List<String> vulnerabilitySeverities;
     private List<String> policyNames;
 
     public FilteredDistributionJobRequestModel(
-        @Nullable FrequencyType frequencyType,
+        List<FrequencyType> frequencyTypes,
         NotificationType notificationType,
         String projectName,
         List<String> vulnerabilitySeverities,
         List<String> policyNames
     ) {
-        this.frequencyType = frequencyType;
+        this.frequencyTypes = frequencyTypes;
         this.notificationType = notificationType;
         this.projectName = projectName;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.policyNames = policyNames;
     }
 
-    public FrequencyType getFrequencyType() {
-        return frequencyType;
+    public List<FrequencyType> getFrequencyTypes() {
+        return frequencyTypes;
     }
 
     public NotificationType getNotificationType() {

@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageDetailer;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
@@ -42,7 +43,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationExtractor;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationExtractor;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterMapModel;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
 // TODO enable this as a component when these interfaces are implemented
@@ -85,13 +86,13 @@ public final class NotificationProcessorV2 {
                                                                                        .stream()
                                                                                        .map(filterableNotificationExtractor::wrapNotification)
                                                                                        .collect(Collectors.toList());
-        Map<NotificationFilterMapModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequency);
-        for (Map.Entry<NotificationFilterMapModel, List<FilterableNotificationWrapper<?>>> jobToNotifications : jobsToNotifications.entrySet()) {
-            NotificationFilterMapModel notificationFilterMapModel = jobToNotifications.getKey();
-            for (ProcessingType processingType : notificationFilterMapModel.getProcessingTypes()) {
-                ProviderMessageHolder providerMessageHolder = processJobNotifications(processingType, jobToNotifications.getValue());
-                providerMessageDistributor.distribute(notificationFilterMapModel.getJobModels(processingType), providerMessageHolder);
-            }
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequency);
+        for (Map.Entry<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobToNotifications : jobsToNotifications.entrySet()) {
+            FilteredDistributionJobResponseModel filteredDistributionJobResponseModel = jobToNotifications.getKey();
+            ProviderMessageHolder providerMessageHolder = processJobNotifications(filteredDistributionJobResponseModel.getProcessingType(), jobToNotifications.getValue());
+            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(filteredDistributionJobResponseModel.getJobId(), filteredDistributionJobResponseModel.getChannelName());
+
+            providerMessageDistributor.distribute(notificationFilterJobModel, providerMessageHolder);
         }
     }
 

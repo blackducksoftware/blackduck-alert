@@ -79,11 +79,11 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
                        + "    WHERE jobEntity.enabled = true"
                        + "    AND notificationTypes.notificationType = :notificationType"
-                       + "    AND jobEntity.distributionFrequency = :frequency"
+                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
     )
     List<DistributionJobEntity> findMatchingEnabledJobs(
-        @Param("frequency") String frequency,
+        @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
         @Param("projectName") String projectName
     );
@@ -96,12 +96,12 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
                        + "    WHERE jobEntity.enabled = true"
                        + "    AND notificationTypes.notificationType = :notificationType"
-                       + "    AND jobEntity.distributionFrequency = :frequency"
+                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
                        + "    AND (policyFilters.policyName IS NULL OR policyFilters.policyName IN (:policyNames))"
     )
     List<DistributionJobEntity> findMatchingEnabledJobsWithPolicyNames(
-        @Param("frequency") String frequency,
+        @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
         @Param("projectName") String projectName,
         @Param("policyNames") Collection<String> policyNames
@@ -116,12 +116,12 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
                        + "    WHERE jobEntity.enabled = true"
                        + "    AND notificationTypes.notificationType = :notificationType"
-                       + "    AND jobEntity.distributionFrequency = :frequency"
+                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
                        + "    AND (vulnerabilitySeverityFilters.severityName IS NULL OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities))"
     )
     List<DistributionJobEntity> findMatchingEnabledJobsWithVulnerabilitySeverities(
-        @Param("frequency") String frequency,
+        @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
         @Param("projectName") String projectName,
         @Param("vulnerabilitySeverities") Collection<String> vulnerabilitySeverities
