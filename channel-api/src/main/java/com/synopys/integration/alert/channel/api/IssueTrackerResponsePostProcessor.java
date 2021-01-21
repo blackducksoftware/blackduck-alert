@@ -22,11 +22,9 @@
  */
 package com.synopys.integration.alert.channel.api;
 
-import java.util.List;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
-
-public interface ChannelMessageConverter<T> {
-    List<T> convertToChannelMessages(ProviderMessageHolder messages);
+public interface IssueTrackerResponsePostProcessor {
+    void postProcess(IssueTrackerResponse response);
 
 }

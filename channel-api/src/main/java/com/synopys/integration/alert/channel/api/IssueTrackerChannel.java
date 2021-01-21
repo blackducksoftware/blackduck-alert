@@ -24,20 +24,29 @@ package com.synopys.integration.alert.channel.api;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopys.integration.alert.channel.api.convert.ChannelMessageConverter;
 
-public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T> extends DistributionChannelV2<D, T> {
-    public IssueTrackerChannel(IssueTrackerMessageConverter<T> channelMessageConverter, ChannelMessageSender<T> channelMessageSender) {
-        super(channelMessageConverter, channelMessageSender);
+public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannelV2<D> {
+    private final ChannelMessageConverter<D, T> channelMessageConverter;
+    private final ChannelMessageSender<T, IssueTrackerResponse> channelMessageSender;
+    private final IssueTrackerResponsePostProcessor responsePostProcessor;
+
+    protected IssueTrackerChannel(ChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<T, IssueTrackerResponse> channelMessageSender, IssueTrackerResponsePostProcessor responsePostProcessor) {
+        this.channelMessageConverter = channelMessageConverter;
+        this.channelMessageSender = channelMessageSender;
+        this.responsePostProcessor = responsePostProcessor;
     }
 
     @Override
-    public MessageResult processAndSend(D distributionDetails, ProviderMessageHolder messages) {
-        List<T> issueTrackerMessages = channelMessageConverter.convertToChannelMessages(messages);
-        // TODO post-process issue tracker messages
-        return channelMessageSender.sendMessage(issueTrackerMessages);
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) {
+        List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages);
+        IssueTrackerResponse issueTrackerResponse = channelMessageSender.sendMessage(channelMessages);
+        responsePostProcessor.postProcess(issueTrackerResponse);
+        return new MessageResult(issueTrackerResponse.getStatusMessage());
     }
 
 }

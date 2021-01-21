@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api.format;
+package com.synopys.integration.alert.channel.api.convert;
 
 public abstract class ChannelMessageFormatter {
     public static final String DEFAULT_SECTION_SEPARATOR = "---------------------------------------";

@@ -20,15 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopys.integration.alert.channel.api.convert;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
-public interface IssueTrackerMessageSender<T> extends ChannelMessageSender<T> {
-    @Override
-        // TODO update the result object for issue-trackers
-    MessageResult sendMessage(List<T> channelMessages);
+public class SimpleMessageConverter {
+    private final ChannelMessageFormatter messageFormatter;
+
+    public SimpleMessageConverter(ChannelMessageFormatter messageFormatter) {
+        this.messageFormatter = messageFormatter;
+    }
+
+    public List<String> convertToFormattedMessageChunks(SimpleMessage simpleMessage) {
+        // TODO implement
+        return null;
+    }
 
 }

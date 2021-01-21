@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api.format;
+package com.synopys.integration.alert.channel.api.convert;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-// TODO determine a better name for this
 public class ProjectMessageConverter {
     private final ChannelMessageFormatter messageFormatter;
 

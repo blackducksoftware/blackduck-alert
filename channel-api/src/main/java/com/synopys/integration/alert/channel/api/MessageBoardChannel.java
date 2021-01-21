@@ -27,15 +27,20 @@ import java.util.List;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopys.integration.alert.channel.api.convert.AbstractChannelMessageConverter;
 
-public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> extends DistributionChannelV2<D, T> {
-    public MessageBoardChannel(ChannelMessageConverter<T> channelMessageConverter, ChannelMessageSender<T> channelMessageSender) {
-        super(channelMessageConverter, channelMessageSender);
+public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannelV2<D> {
+    private final AbstractChannelMessageConverter<D, T> channelMessageConverter;
+    private final ChannelMessageSender<T, MessageResult> channelMessageSender;
+
+    protected MessageBoardChannel(AbstractChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<T, MessageResult> channelMessageSender) {
+        this.channelMessageConverter = channelMessageConverter;
+        this.channelMessageSender = channelMessageSender;
     }
 
     @Override
-    public MessageResult processAndSend(D distributionDetails, ProviderMessageHolder messages) {
-        List<T> channelMessages = channelMessageConverter.convertToChannelMessages(messages);
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) {
+        List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages);
         return channelMessageSender.sendMessage(channelMessages);
     }
 
