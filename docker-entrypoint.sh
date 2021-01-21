@@ -11,8 +11,8 @@ alertDatabasePort="${ALERT_DB_PORT:-5432}"
 alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
 alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
-alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:$alertDatabaseUser}"
-alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:$alertDatabasePassword}"
+alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
+alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
