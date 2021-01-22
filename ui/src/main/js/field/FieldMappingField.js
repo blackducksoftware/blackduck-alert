@@ -36,7 +36,8 @@ class FieldMappingField extends Component {
             },
             tableData: fieldMappings,
             id: currentId,
-            modalError: null
+            modalError: null,
+            modalTitle: props.newMappingTitle
         });
     }
 
@@ -99,13 +100,15 @@ class FieldMappingField extends Component {
     }
 
     onEdit(selectedRow, callback) {
+        const { editMappingTitle } = this.props;
         const entireRow = this.state.tableData.filter((row) => row.id === selectedRow.id)[0];
         this.setState({
             fieldMappingRow: {
                 rowId: entireRow.id,
                 fieldName: entireRow.fieldName,
                 fieldValue: entireRow.fieldValue
-            }
+            },
+            modalTitle: editMappingTitle
         }, callback);
     }
 
@@ -140,6 +143,7 @@ class FieldMappingField extends Component {
 
     saveModalData(callback) {
         const { tableData, fieldMappingRow, id } = this.state;
+        const { newMappingTitle } = this.props;
         const { rowId, fieldName, fieldValue } = fieldMappingRow;
         let currentId = id;
         const mappingIndex = tableData.findIndex((mapping) => mapping.id === rowId);
@@ -158,7 +162,8 @@ class FieldMappingField extends Component {
         this.setState({
             tableData,
             id: currentId,
-            modalError: null
+            modalError: null,
+            modalTitle: newMappingTitle
         });
 
         const { onChange, fieldMappingKey } = this.props;
@@ -175,11 +180,10 @@ class FieldMappingField extends Component {
     }
 
     render() {
-        const { newMappingTitle } = this.props;
-        const { tableData, modalError } = this.state;
+        const { tableData, modalError, modalTitle } = this.state;
         const table = (
             <TableDisplay
-                modalTitle={newMappingTitle}
+                modalTitle={modalTitle}
                 columns={this.createColumns()}
                 newConfigFields={this.createNewRow}
                 refreshData={() => tableData}
@@ -208,13 +212,15 @@ FieldMappingField.propTypes = {
     fieldMappingKey: PropTypes.string.isRequired,
     leftSideMapping: PropTypes.string.isRequired,
     rightSideMapping: PropTypes.string.isRequired,
-    newMappingTitle: PropTypes.string
+    newMappingTitle: PropTypes.string,
+    editMappingTitle: PropTypes.string
 };
 
 FieldMappingField.defaultProps = {
     id: 'fieldMappingFieldId',
     storedMappings: [],
-    newMappingTitle: 'Create new mapping'
+    newMappingTitle: 'Create new mapping',
+    editMappingTitle: 'Edit mapping'
 };
 
 const mapStateToProps = (state) => ({

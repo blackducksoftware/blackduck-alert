@@ -218,13 +218,14 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
         BlackDuckPageResponse<UserView> pageOfUsers = retrieveBlackDuckPageResponse(blackDuckServicesFactory, ApiDiscovery.USERS_LINK_RESPONSE, pageNumber, pageSize, searchFilter);
 
-        List<ProviderUserModel> foundProjects = pageOfUsers.getItems()
-                                                    .stream()
-                                                    .map(UserView::getEmail)
-                                                    .map(email -> new ProviderUserModel(email, false))
-                                                    .collect(Collectors.toList());
+        List<ProviderUserModel> foundUsers = pageOfUsers.getItems()
+                                                 .stream()
+                                                 .map(UserView::getEmail)
+                                                 .map(email -> new ProviderUserModel(email, false))
+                                                 .collect(Collectors.toList());
+        // Due to a limitation in the blackduck-common library, the totalCount in the BlackDuckPageResponse does not represent the count the matches the searchFilter. It is the totalCount from Black Duck
         int totalPageCount = computeTotalCount(pageOfUsers, pageSize);
-        return new AlertPagedModel<>(totalPageCount, pageNumber, pageSize, foundProjects);
+        return new AlertPagedModel<>(totalPageCount, pageNumber, pageSize, foundUsers);
     }
 
     private List<ProviderUserModel> getEmailAddressesByProvider(ConfigurationModel blackDuckConfiguration) throws IntegrationException {
