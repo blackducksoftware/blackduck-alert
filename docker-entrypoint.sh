@@ -52,7 +52,6 @@ then
 
   alertDatabaseAdminUser=$alertDatabaseUser;
   export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser;
-  echo $ALERT_DB_ADMIN_USERNAME
   echo "Alert Database user variable set to secret value."
 fi
 
@@ -64,7 +63,6 @@ then
 
   alertDatabaseAdminPassword=$alertDatabasePassword;
   export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword;
-  echo $ALERT_DB_ADMIN_PASSWORD
   echo "Alert Database password variable set to secret value."
 fi
 
@@ -84,9 +82,6 @@ then
   echo "Alert Database admin password variable set to secret value."
 fi
 
-echo "TEST: local admin username and password test"
-echo $alertDatabaseAdminUser
-echo $alertDatabaseAdminPassword
 alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword"
 alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
 
