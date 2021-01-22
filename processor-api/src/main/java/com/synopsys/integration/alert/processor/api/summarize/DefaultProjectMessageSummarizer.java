@@ -120,9 +120,11 @@ public class DefaultProjectMessageSummarizer implements ProjectMessageSummarizer
 
         for (Map.Entry<Triple<ComponentConcernType, ItemOperation, ComponentConcernSeverity>, Integer> concernCountEntry : concernCounts.entrySet()) {
             Triple<ComponentConcernType, ItemOperation, ComponentConcernSeverity> concernState = concernCountEntry.getKey();
+
+            String stateTypeString = convertToUppercasePlural(concernState.getLeft());
             String stateAdjective = convertToAdjective(concernState.getLeft(), concernState.getMiddle());
 
-            String label = String.format("(%s) %s %s:", concernState.getRight(), concernState.getLeft(), stateAdjective);
+            String label = String.format("(%s) %s %s count:", concernState.getRight(), stateTypeString, stateAdjective);
             LinkableItem concernDetail = new LinkableItem(label, concernCountEntry.getValue().toString());
             concernDetail.setNumericValueFlag(true);
             details.add(concernDetail);
@@ -140,6 +142,18 @@ public class DefaultProjectMessageSummarizer implements ProjectMessageSummarizer
                 return "deleted";
             default:
                 return "updated";
+        }
+    }
+
+    // TODO consider tightly coupling this to the enum
+    private String convertToUppercasePlural(ComponentConcernType type) {
+        switch (type) {
+            case POLICY:
+                return "Policies";
+            case VULNERABILITY:
+                return "Vulnerabilities";
+            default:
+                return "Concerns";
         }
     }
 
