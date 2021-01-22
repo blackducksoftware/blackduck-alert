@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 public class ProviderMessageHolderTest {
     private static final LinkableItem PROVIDER = new LinkableItem("BlackDuck", "test-server01");
     private static final SimpleMessage SIMPLE_MESSAGE = new SimpleMessage(PROVIDER, "Subject", "Description", List.of());
-    private static final ProjectMessage PROJECT_MESSAGE = ProjectMessage.projectStatusInfo(PROVIDER, new LinkableItem("Project", "My Project"), ProjectOperation.ADD);
+    private static final ProjectMessage PROJECT_MESSAGE = ProjectMessage.projectStatusInfo(PROVIDER, new LinkableItem("Project", "My Project"), ProjectOperation.CREATE);
 
     @Test
     public void reducePopulatedTest() {

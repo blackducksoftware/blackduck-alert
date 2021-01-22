@@ -27,19 +27,19 @@ import java.util.List;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public class SimpleMessage extends ProviderMessage<SimpleMessage> {
-    private final String subject;
+    private final String summary;
     private final String description;
     private final List<LinkableItem> details;
 
-    public SimpleMessage(LinkableItem provider, String subject, String description, List<LinkableItem> details) {
+    public SimpleMessage(LinkableItem provider, String summary, String description, List<LinkableItem> details) {
         super(provider);
-        this.subject = subject;
+        this.summary = summary;
         this.description = description;
         this.details = details;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getSummary() {
+        return summary;
     }
 
     public String getDescription() {
