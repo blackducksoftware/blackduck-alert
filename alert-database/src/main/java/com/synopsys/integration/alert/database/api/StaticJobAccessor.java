@@ -65,7 +65,6 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
@@ -186,9 +185,12 @@ public class StaticJobAccessor implements JobAccessor {
     // TODO this should be paged
     @Override
     public List<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
-        List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes().stream().map(Enum::name).collect(Collectors.toList());
-        NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
+        List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
+                                          .stream()
+                                          .map(Enum::name)
+                                          .collect(Collectors.toList());
 
+        NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
         String projectName = filteredDistributionJobRequestModel.getProjectName();
 
         List<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames();
@@ -203,14 +205,10 @@ public class StaticJobAccessor implements JobAccessor {
             distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName);
         }
 
-        // TODO running project name pattern checks in java code, try to do this in SQL instead
+        // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
         return distributionJobEntities.stream()
-                   .filter(distributionJobEntity -> Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) ||
-                                                        distributionJobEntity.getBlackDuckJobDetails()
-                                                            .getBlackDuckJobProjects()
-                                                            .stream()
-                                                            .map(BlackDuckJobProjectEntity::getProjectName)
-                                                            .anyMatch(foundProjectName -> projectName == projectName))
+                   .filter(distributionJobEntity -> !distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() ||
+                                                        Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName))
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
     }

@@ -28,20 +28,20 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class FilteredDistributionJobResponseModel extends AlertSerializableModel {
-    private UUID jobId;
+    private UUID id;
     private ProcessingType processingType;
     private String channelName;
 
-    public FilteredDistributionJobResponseModel(UUID jobId, ProcessingType processingType, String channelName) {
+    public FilteredDistributionJobResponseModel(UUID id, ProcessingType processingType, String channelName) {
         this.processingType = processingType;
-        this.jobId = jobId;
+        this.id = id;
         this.channelName = channelName;
     }
 
-    public UUID getJobId() {
-        return jobId;
+    public UUID getId() {
+        return id;
     }
-    
+
     public ProcessingType getProcessingType() {
         return processingType;
     }

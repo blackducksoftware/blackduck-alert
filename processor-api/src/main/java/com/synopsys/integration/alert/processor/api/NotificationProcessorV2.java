@@ -87,10 +87,9 @@ public final class NotificationProcessorV2 {
                                                                                        .map(filterableNotificationExtractor::wrapNotification)
                                                                                        .collect(Collectors.toList());
         Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequency);
-        for (Map.Entry<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobToNotifications : jobsToNotifications.entrySet()) {
-            FilteredDistributionJobResponseModel filteredDistributionJobResponseModel = jobToNotifications.getKey();
-            ProviderMessageHolder providerMessageHolder = processJobNotifications(filteredDistributionJobResponseModel.getProcessingType(), jobToNotifications.getValue());
-            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(filteredDistributionJobResponseModel.getJobId(), filteredDistributionJobResponseModel.getChannelName());
+        for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : jobsToNotifications.keySet()) {
+            ProviderMessageHolder providerMessageHolder = processJobNotifications(filteredDistributionJobResponseModel.getProcessingType(), jobsToNotifications.get(filteredDistributionJobResponseModel));
+            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(filteredDistributionJobResponseModel.getId(), filteredDistributionJobResponseModel.getChannelName());
 
             providerMessageDistributor.distribute(notificationFilterJobModel, providerMessageHolder);
         }
