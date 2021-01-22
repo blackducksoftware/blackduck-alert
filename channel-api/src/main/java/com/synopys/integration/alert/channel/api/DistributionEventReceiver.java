@@ -28,20 +28,20 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
 
-public abstract class ChannelReceiver<D extends DistributionJobDetailsModel, T> extends MessageReceiver<DistributionEventV2> {
-    private final DistributionChannelV2<D, T> channel;
+public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEventV2> {
     private final JobDetailsAccessor<D> jobDetailsAccessor;
+    private final DistributionChannelV2<D> channel;
 
-    public ChannelReceiver(Gson gson, DistributionChannelV2<D, T> channel, JobDetailsAccessor<D> jobDetailsAccessor) {
+    public DistributionEventReceiver(Gson gson, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannelV2<D> channel) {
         super(gson, DistributionEventV2.class);
-        this.channel = channel;
         this.jobDetailsAccessor = jobDetailsAccessor;
+        this.channel = channel;
     }
 
     @Override
     public final void handleEvent(DistributionEventV2 event) {
         D details = jobDetailsAccessor.retrieveDetails(event.getJobId());
-        channel.processAndSend(details, event.getProviderMessages());
+        channel.distributeMessages(details, event.getProviderMessages());
     }
 
 }
