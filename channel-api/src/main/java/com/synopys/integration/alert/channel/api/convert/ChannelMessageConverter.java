@@ -20,14 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopys.integration.alert.channel.api.convert;
 
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import java.util.List;
 
-public interface IssueTrackerMessageResolver<T> {
-    T resolve(SimpleMessage simpleMessage);
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 
-    T resolve(ProjectMessage projectMessage);
+public interface ChannelMessageConverter<D extends DistributionJobDetailsModel, T> {
+    List<T> convertToChannelMessages(D distributionDetails, ProviderMessageHolder messages);
 
 }

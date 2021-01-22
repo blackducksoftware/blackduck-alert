@@ -1,5 +1,5 @@
 /**
- * channel-api
+ * processor-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,15 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopsys.integration.alert.processor.api.extract.model.project;
 
-import java.util.List;
-
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-
-public interface IssueTrackerMessageSender<T> extends ChannelMessageSender<T> {
-    @Override
-        // TODO update the result object for issue-trackers
-    MessageResult sendMessage(List<T> channelMessages);
+public enum ComponentConcernSeverity {
+    BLOCKER,
+    CRITICAL,
+    MAJOR,
+    MINOR,
+    TRIVIAL,
+    UNSPECIFIED
 
 }
