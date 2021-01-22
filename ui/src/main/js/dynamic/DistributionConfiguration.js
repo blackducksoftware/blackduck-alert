@@ -174,7 +174,7 @@ class DistributionConfiguration extends Component {
         let configuredProviderProjects = [];
 
         const fieldConfiguredProjects = providerConfig.keyToValues[KEY_PROVIDER_CONFIGURED_PROJECT];
-        if (fieldConfiguredProjects) {
+        if (fieldConfiguredProjects && fieldConfiguredProjects.values && fieldConfiguredProjects.values.length > 0) {
 
             configuredProviderProjects = fieldConfiguredProjects.values.map(selectedValue => {
                 let valueObject = selectedValue;
