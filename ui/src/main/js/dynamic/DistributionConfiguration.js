@@ -65,7 +65,7 @@ class DistributionConfiguration extends Component {
         if (jobId) {
             this.setState({
                 loading: true
-            })
+            });
         }
     }
 
@@ -101,7 +101,7 @@ class DistributionConfiguration extends Component {
                 } else {
                     this.setState({
                         loading: false
-                    })
+                    });
                 }
             }
         }
@@ -175,10 +175,9 @@ class DistributionConfiguration extends Component {
 
         const fieldConfiguredProjects = providerConfig.keyToValues[KEY_PROVIDER_CONFIGURED_PROJECT];
         if (fieldConfiguredProjects && fieldConfiguredProjects.values && fieldConfiguredProjects.values.length > 0) {
-
-            configuredProviderProjects = fieldConfiguredProjects.values.map(selectedValue => {
+            configuredProviderProjects = fieldConfiguredProjects.values.map((selectedValue) => {
                 let valueObject = selectedValue;
-                if (typeof selectedValue === "string") {
+                if (typeof selectedValue === 'string') {
                     valueObject = JSON.parse(selectedValue);
                 }
 
