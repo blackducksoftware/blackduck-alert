@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +40,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -61,6 +65,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
@@ -176,6 +181,42 @@ public class StaticJobAccessor implements JobAccessor {
     public List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
         // TODO change this to return a page of jobs
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
+    }
+
+    @Override
+    public List<FilteredDistributionJobModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
+        FrequencyType frequencyType = filteredDistributionJobRequestModel.getFrequencyType();
+        NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
+
+        String projectName = filteredDistributionJobRequestModel.getProjectName();
+
+        List<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames();
+        List<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
+
+        List<DistributionJobEntity> distributionJobEntities;
+        if (!policyNames.isEmpty()) {
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyType.name(), notificationType.name(), projectName, policyNames);
+        } else if (!vulnerabilitySeverities.isEmpty()) {
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyType.name(), notificationType.name(), projectName, vulnerabilitySeverities);
+        } else {
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyType.name(), notificationType.name(), projectName);
+        }
+
+        // TODO running project name pattern checks in java code, try to do this in SQL instead
+        return distributionJobEntities.stream()
+                   .filter(distributionJobEntity -> Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) ||
+                                                        distributionJobEntity.getBlackDuckJobDetails()
+                                                            .getBlackDuckJobProjects()
+                                                            .stream()
+                                                            .map(BlackDuckJobProjectEntity::getProjectName)
+                                                            .anyMatch(foundProjectName -> projectName == projectName))
+                   .map(this::convertToFilteredDistributionJobModel)
+                   .collect(Collectors.toList());
+    }
+
+    private FilteredDistributionJobModel convertToFilteredDistributionJobModel(DistributionJobEntity distributionJobEntity) {
+        ProcessingType processingType = Enum.valueOf(ProcessingType.class, distributionJobEntity.getProcessingType());
+        return new FilteredDistributionJobModel(processingType, distributionJobEntity.getJobId(), distributionJobEntity.getChannelDescriptorName());
     }
 
     private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
