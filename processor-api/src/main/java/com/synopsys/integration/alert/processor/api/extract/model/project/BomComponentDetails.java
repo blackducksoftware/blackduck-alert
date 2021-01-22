@@ -46,7 +46,8 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
         LinkableItem component,
         @Nullable LinkableItem componentVersion,
         List<ComponentConcern> componentConcerns,
-        LinkableItem license, String usage,
+        LinkableItem license,
+        String usage,
         List<LinkableItem> additionalAttributes,
         String blackDuckIssuesUrl
     ) {

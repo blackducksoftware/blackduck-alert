@@ -104,6 +104,8 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
             });
 
         String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
+        String indent = nonBreakingSpace + nonBreakingSpace;
+        String doubleIndent = indent + indent;
 
         List<String> componentAttributeStrings = gatherAttributeStrings(bomComponent);
         for (String attributeString : componentAttributeStrings) {
@@ -129,7 +131,7 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
                 currentSeverity = null;
 
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-                bomComponentSectionPieces.add(nonBreakingSpace + nonBreakingSpace);
+                bomComponentSectionPieces.add(indent);
                 bomComponentSectionPieces.add(messageFormatter.encode(currentOperation.name()));
             }
 
@@ -137,7 +139,7 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
                 currentSeverity = componentConcern.getSeverity();
 
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-                bomComponentSectionPieces.add(nonBreakingSpace + nonBreakingSpace + nonBreakingSpace + nonBreakingSpace);
+                bomComponentSectionPieces.add(doubleIndent);
                 bomComponentSectionPieces.add(messageFormatter.encode(currentSeverity.name()));
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
             }

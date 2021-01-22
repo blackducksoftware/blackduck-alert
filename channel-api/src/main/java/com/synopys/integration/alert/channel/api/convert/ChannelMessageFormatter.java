@@ -32,10 +32,7 @@ public abstract class ChannelMessageFormatter {
     private final String nonBreakingSpace;
 
     public ChannelMessageFormatter(int maxMessageLength, String lineSeparator) {
-        this.maxMessageLength = maxMessageLength;
-        this.lineSeparator = lineSeparator;
-        this.sectionSeparator = DEFAULT_SECTION_SEPARATOR;
-        this.nonBreakingSpace = DEFAULT_NON_BREAKING_SPACE;
+        this(maxMessageLength, lineSeparator, DEFAULT_SECTION_SEPARATOR, DEFAULT_NON_BREAKING_SPACE);
     }
 
     public ChannelMessageFormatter(int maxMessageLength, String lineSeparator, String sectionSeparator, String nonBreakingSpace) {
