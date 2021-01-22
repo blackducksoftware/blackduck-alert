@@ -1,19 +1,24 @@
 package com.synopsys.integration.alert.processor.api.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
@@ -26,15 +31,21 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 
 @AlertIntegrationTest
 public class DefaultJobNotificationExtractorTestIT {
+    private static final List<UUID> createdJobs = new LinkedList<>();
+    private static final String POLICY_FILTER_NAME = "policyName";
 
     @Autowired
     public JobAccessor jobAccessor;
 
+    @AfterEach
+    public void removeCreatedJobsIfExist() {
+        createdJobs.stream().forEach(jobAccessor::deleteJob);
+        createdJobs.clear();
+    }
+
     @Test
     public void extractJobTest() {
-        createDistributionJobModels()
-            .stream()
-            .forEach(jobAccessor::createJob);
+        createJobs(createDistributionJobModels());
 
         DefaultJobNotificationExtractor defaultJobNotificationExtractor = new DefaultJobNotificationExtractor(jobAccessor);
         Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), null);
@@ -42,9 +53,76 @@ public class DefaultJobNotificationExtractorTestIT {
         assertNotNull(jobResponseModelListMap);
         assertEquals(3, jobResponseModelListMap.size());
         for (List<FilterableNotificationWrapper<?>> jobNotificationList : jobResponseModelListMap.values()) {
-            assertTrue(!jobNotificationList.isEmpty());
+            assertFalse(jobNotificationList.isEmpty());
             assertTrue(jobNotificationList.size() < 4);
         }
+    }
+
+    @Test
+    public void extractNoJobsTest() {
+        DefaultJobNotificationExtractor defaultJobNotificationExtractor = new DefaultJobNotificationExtractor(jobAccessor);
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), null);
+
+        assertTrue(jobResponseModelListMap.isEmpty());
+    }
+
+    @Test
+    public void extractSingleJob() {
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(
+            FrequencyType.REAL_TIME,
+            ProcessingType.DIGEST,
+            List.of(NotificationType.VULNERABILITY.name(), NotificationType.POLICY_OVERRIDE.name()),
+            List.of(),
+            List.of()
+        );
+        testSingleJob(jobRequestModel, 4);
+    }
+
+    @Test
+    public void extractSingleJobWithMatchingFilter() {
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(
+            FrequencyType.REAL_TIME,
+            ProcessingType.DIGEST,
+            List.of(NotificationType.VULNERABILITY.name(), NotificationType.POLICY_OVERRIDE.name()),
+            List.of(),
+            List.of(POLICY_FILTER_NAME)
+        );
+        testSingleJob(jobRequestModel, 4);
+    }
+
+    @Test
+    public void extractSingleJobWithoutMatchingFilter() {
+        DistributionJobRequestModel jobRequestModel = createJobRequestModel(
+            FrequencyType.REAL_TIME,
+            ProcessingType.DIGEST,
+            List.of(NotificationType.VULNERABILITY.name(), NotificationType.POLICY_OVERRIDE.name()),
+            List.of(VulnerabilitySeverityType.HIGH.name()),
+            List.of("RANDOM")
+        );
+        testSingleJob(jobRequestModel, 2);
+    }
+
+    // TODO add tests to verify project filtering works
+
+    private void testSingleJob(DistributionJobRequestModel jobRequestModel, int expectedMappedNotifications) {
+        createJobs(List.of(jobRequestModel));
+
+        DefaultJobNotificationExtractor defaultJobNotificationExtractor = new DefaultJobNotificationExtractor(jobAccessor);
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), null);
+
+        assertEquals(1, jobResponseModelListMap.size());
+
+        List<FilterableNotificationWrapper<?>> filterableNotificationWrappers = jobResponseModelListMap.values().stream().findFirst().orElse(List.of());
+
+        assertEquals(expectedMappedNotifications, filterableNotificationWrappers.size());
+    }
+
+    private void createJobs(List<DistributionJobRequestModel> jobs) {
+        jobs
+            .stream()
+            .map(jobAccessor::createJob)
+            .map(DistributionJobModel::getJobId)
+            .forEach(createdJobs::add);
     }
 
     private List<DistributionJobRequestModel> createDistributionJobModels() {
@@ -129,7 +207,7 @@ public class DefaultJobNotificationExtractorTestIT {
             alertPolicyNotificationModel,
             null,
             "test_project2",
-            List.of("policyName")
+            List.of(POLICY_FILTER_NAME)
         );
 
         return List.of(test_project, test_project2, test_project3, test_project4);
