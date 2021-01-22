@@ -29,11 +29,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
@@ -109,23 +109,23 @@ public class DefaultProjectMessageSummarizer implements ProjectMessageSummarizer
         details.add(projectMessage.getProject());
         projectMessage.getProjectVersion().ifPresent(details::add);
 
-        Map<Triple<ComponentConcernType, ItemOperation, ComponentConcernSeverity>, Integer> concernCounts = new LinkedHashMap<>();
+        Map<ComponentConcernSummaryGrouping, Integer> groupedConcernCounts = new LinkedHashMap<>();
         for (BomComponentDetails bomComponent : projectMessage.getBomComponents()) {
             for (ComponentConcern concern : bomComponent.getComponentConcerns()) {
-                Triple<ComponentConcernType, ItemOperation, ComponentConcernSeverity> concernKey = Triple.of(concern.getType(), concern.getOperation(), concern.getSeverity());
-                int currentCount = concernCounts.getOrDefault(concernKey, 0);
-                concernCounts.put(concernKey, currentCount + 1);
+                ComponentConcernSummaryGrouping concernKey = new ComponentConcernSummaryGrouping(concern.getType(), concern.getOperation(), concern.getSeverity());
+                int currentCount = groupedConcernCounts.getOrDefault(concernKey, 0);
+                groupedConcernCounts.put(concernKey, currentCount + 1);
             }
         }
 
-        for (Map.Entry<Triple<ComponentConcernType, ItemOperation, ComponentConcernSeverity>, Integer> concernCountEntry : concernCounts.entrySet()) {
-            Triple<ComponentConcernType, ItemOperation, ComponentConcernSeverity> concernState = concernCountEntry.getKey();
+        for (Map.Entry<ComponentConcernSummaryGrouping, Integer> groupedConcernCount : groupedConcernCounts.entrySet()) {
+            ComponentConcernSummaryGrouping concernGrouping = groupedConcernCount.getKey();
 
-            String stateTypeString = convertToUppercasePlural(concernState.getLeft());
-            String stateAdjective = convertToAdjective(concernState.getLeft(), concernState.getMiddle());
+            String stateTypeString = convertToUppercasePlural(concernGrouping.type);
+            String stateAdjective = convertToAdjective(concernGrouping.type, concernGrouping.operation);
 
-            String label = String.format("(%s) %s %s count:", concernState.getRight(), stateTypeString, stateAdjective);
-            LinkableItem concernDetail = new LinkableItem(label, concernCountEntry.getValue().toString());
+            String label = String.format("(%s) %s %s count:", concernGrouping.severity, stateTypeString, stateAdjective);
+            LinkableItem concernDetail = new LinkableItem(label, groupedConcernCount.getValue().toString());
             concernDetail.setNumericValueFlag(true);
             details.add(concernDetail);
         }
@@ -169,6 +169,19 @@ public class DefaultProjectMessageSummarizer implements ProjectMessageSummarizer
             default:
                 return "with other component updates";
         }
+    }
+
+    private static class ComponentConcernSummaryGrouping extends AlertSerializableModel {
+        private final ComponentConcernType type;
+        private final ItemOperation operation;
+        private final ComponentConcernSeverity severity;
+
+        public ComponentConcernSummaryGrouping(ComponentConcernType type, ItemOperation operation, ComponentConcernSeverity severity) {
+            this.type = type;
+            this.operation = operation;
+            this.severity = severity;
+        }
+
     }
 
 }
