@@ -40,10 +40,12 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 @Component
 public class EmailAttachmentFileCreator {
     private final Logger logger = LoggerFactory.getLogger(EmailAttachmentFileCreator.class);
+
     private final AlertProperties alertProperties;
     private final MessageContentGroupCsvCreator messageContentGroupCsvCreator;
     private final Gson gson;
@@ -53,6 +55,11 @@ public class EmailAttachmentFileCreator {
         this.alertProperties = alertProperties;
         this.messageContentGroupCsvCreator = messageContentGroupCsvCreator;
         this.gson = gson;
+    }
+
+    public Optional<File> createAttachmentFile(EmailAttachmentFormat attachmentFormat, ProjectMessage message) {
+        // FIXME convert ProjectMessage to MessageContentGroup for feature parity
+        return createAttachmentFile(attachmentFormat, new MessageContentGroup());
     }
 
     public Optional<File> createAttachmentFile(EmailAttachmentFormat attachmentFormat, MessageContentGroup message) {

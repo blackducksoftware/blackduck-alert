@@ -22,17 +22,20 @@
  */
 package com.synopsys.integration.alert.channel.email2;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopys.integration.alert.channel.api.DistributionEventReceiver;
 
 @Component
 public class EmailDistributionEventReceiver extends DistributionEventReceiver<EmailJobDetailsModel> {
-    public EmailDistributionEventReceiver(Gson gson, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannel channel) {
-        super(gson, emailJobDetailsAccessor, channel);
+    @Autowired
+    public EmailDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannel channel) {
+        super(gson, auditAccessor, emailJobDetailsAccessor, channel);
     }
 
 }

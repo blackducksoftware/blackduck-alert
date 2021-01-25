@@ -27,12 +27,12 @@ import org.springframework.stereotype.Component;
 import com.synopys.integration.alert.channel.api.convert.ChannelMessageFormatter;
 
 @Component
-public class EmailMessageFormatter extends ChannelMessageFormatter {
-    private static final int MAX_EMAIL_BODY_LENGTH = 100000;
+public class EmailChannelMessageFormatter extends ChannelMessageFormatter {
+    private static final int MAX_EMAIL_BODY_LENGTH = Integer.MAX_VALUE;
     private static final String EMAIL_LINE_SEPARATOR = "<br/>";
     private static final String EMAIL_NON_BREAKING_SPACE = "&nbsp;";
 
-    public EmailMessageFormatter() {
+    public EmailChannelMessageFormatter() {
         super(MAX_EMAIL_BODY_LENGTH, EMAIL_LINE_SEPARATOR, ChannelMessageFormatter.DEFAULT_SECTION_SEPARATOR, EMAIL_NON_BREAKING_SPACE);
     }
 

@@ -25,17 +25,21 @@ package com.synopys.integration.alert.channel.api;
 import java.util.Optional;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
 
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEventV2> {
+    private final AuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final DistributionChannelV2<D> channel;
 
-    public DistributionEventReceiver(Gson gson, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannelV2<D> channel) {
+    protected DistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannelV2<D> channel) {
         super(gson, DistributionEventV2.class);
+        this.auditAccessor = auditAccessor;
         this.jobDetailsAccessor = jobDetailsAccessor;
         this.channel = channel;
     }
@@ -44,16 +48,27 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
     public final void handleEvent(DistributionEventV2 event) {
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
-            channel.distributeMessages(details.get(), event.getProviderMessages());
+            try {
+                channel.distributeMessages(details.get(), event.getProviderMessages());
+                // FIXME set audit success
+            } catch (AlertException e) {
+                handleException(e, event);
+            }
         } else {
             handleJobDetailsMissing(event);
         }
     }
 
+    protected void handleException(AlertException e, DistributionEventV2 event) {
+        // FIXME implement
+        //  log
+        //  set audit failure
+    }
+
     protected void handleJobDetailsMissing(DistributionEventV2 event) {
         // FIXME implement
         //  log
-        //  update audit status
+        //  set audit failure
     }
 
 }

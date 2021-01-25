@@ -24,6 +24,7 @@ package com.synopys.integration.alert.channel.api;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
@@ -31,17 +32,17 @@ import com.synopys.integration.alert.channel.api.convert.AbstractChannelMessageC
 
 public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannelV2<D> {
     private final AbstractChannelMessageConverter<D, T> channelMessageConverter;
-    private final ChannelMessageSender<T, MessageResult> channelMessageSender;
+    private final ChannelMessageSender<D, T, MessageResult> channelMessageSender;
 
-    protected MessageBoardChannel(AbstractChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<T, MessageResult> channelMessageSender) {
+    protected MessageBoardChannel(AbstractChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<D, T, MessageResult> channelMessageSender) {
         this.channelMessageConverter = channelMessageConverter;
         this.channelMessageSender = channelMessageSender;
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) {
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
         List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages);
-        return channelMessageSender.sendMessage(channelMessages);
+        return channelMessageSender.sendMessages(distributionDetails, channelMessages);
     }
 
 }

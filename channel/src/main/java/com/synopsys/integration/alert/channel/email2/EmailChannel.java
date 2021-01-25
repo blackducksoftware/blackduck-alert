@@ -22,14 +22,16 @@
  */
 package com.synopsys.integration.alert.channel.email2;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
 @Component
-public class EmailChannel extends MessageBoardChannel<EmailJobDetailsModel, Object> {
-    protected EmailChannel(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
+public class EmailChannel extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
+    @Autowired
+    public EmailChannel(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
         super(emailChannelMessageConverter, emailChannelMessageSender);
     }
 

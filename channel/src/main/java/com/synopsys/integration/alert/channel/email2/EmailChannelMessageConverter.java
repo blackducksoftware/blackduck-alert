@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.email2;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -32,19 +33,20 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 import com.synopys.integration.alert.channel.api.convert.AbstractChannelMessageConverter;
 
 @Component
-public class EmailChannelMessageConverter extends AbstractChannelMessageConverter<EmailJobDetailsModel, Object> {
-    public EmailChannelMessageConverter(EmailMessageFormatter emailMessageFormatter) {
-        super(emailMessageFormatter);
+public class EmailChannelMessageConverter extends AbstractChannelMessageConverter<EmailJobDetailsModel, EmailChannelMessageModel> {
+    @Autowired
+    public EmailChannelMessageConverter(EmailChannelMessageFormatter emailChannelMessageFormatter) {
+        super(emailChannelMessageFormatter);
     }
 
     @Override
-    protected List<Object> convertSimpleMessageToChannelMessages(EmailJobDetailsModel distributionDetails, SimpleMessage simpleMessage, List<String> messageChunks) {
+    protected List<EmailChannelMessageModel> convertSimpleMessageToChannelMessages(EmailJobDetailsModel distributionDetails, SimpleMessage simpleMessage, List<String> messageChunks) {
         // FIXME implement
         return null;
     }
 
     @Override
-    protected List<Object> convertProjectMessageToChannelMessages(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage, List<String> messageChunks) {
+    protected List<EmailChannelMessageModel> convertProjectMessageToChannelMessages(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage, List<String> messageChunks) {
         // FIXME implement
         return null;
     }
