@@ -27,23 +27,23 @@ import java.util.UUID;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class FilteredDistributionJobModel extends AlertSerializableModel {
+public class FilteredDistributionJobResponseModel extends AlertSerializableModel {
+    private UUID id;
     private ProcessingType processingType;
-    private UUID jobId;
     private String channelName;
 
-    public FilteredDistributionJobModel(ProcessingType processingType, UUID jobId, String channelName) {
+    public FilteredDistributionJobResponseModel(UUID id, ProcessingType processingType, String channelName) {
         this.processingType = processingType;
-        this.jobId = jobId;
+        this.id = id;
         this.channelName = channelName;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public ProcessingType getProcessingType() {
         return processingType;
-    }
-
-    public UUID getJobId() {
-        return jobId;
     }
 
     public String getChannelName() {
