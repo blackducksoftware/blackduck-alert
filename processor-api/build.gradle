@@ -1,0 +1,13 @@
+ext.moduleName = 'com.synopsys.integration.alert.processor-api'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+    implementation project(':alert-common')
+    implementation project(':descriptor-api')
+
+    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'org.springframework:spring-context'
+
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+}

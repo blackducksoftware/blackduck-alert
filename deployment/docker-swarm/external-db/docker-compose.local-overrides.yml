@@ -125,6 +125,8 @@ services:
 #      - WEBSERVER_CUSTOM_KEY_FILE
 #      - ALERT_DB_USERNAME
 #      - ALERT_DB_PASSWORD
+#      - ALERT_DB_ADMIN_USERNAME
+#      - ALERT_DB_ADMIN_PASSWORD
 #      # -- Custom Certificate Usage
 #      - source: jssecacerts
 #        target: jssecacerts
@@ -163,3 +165,9 @@ services:
 #  ALERT_DB_PASSWORD:
 #    external: true
 #    name: "<STACK_NAME>_ALERT_DB_PASSWORD"
+#  ALERT_DB_ADMIN_USERNAME:
+#    external: true
+#    name: "<STACK_NAME>_ALERT_DB_ADMIN_USERNAME"
+#  ALERT_DB_ADMIN_PASSWORD:
+#    external: true
+#    name: "<STACK_NAME>_ALERT_DB_ADMIN_PASSWORD"

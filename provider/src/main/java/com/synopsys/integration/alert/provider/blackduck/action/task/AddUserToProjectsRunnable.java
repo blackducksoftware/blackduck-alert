@@ -23,8 +23,8 @@
 package com.synopsys.integration.alert.provider.blackduck.action.task;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,12 +70,14 @@ public class AddUserToProjectsRunnable implements Runnable {
         }
     }
 
-    // FIXME improve performance of this call
     private List<ProjectView> requestAllProjectsByName(ProjectService projectService, Collection<String> projectNames) throws IntegrationException {
-        return projectService.getAllProjects()
-                   .stream()
-                   .filter(projectView -> projectNames.contains(projectView.getName()))
-                   .collect(Collectors.toList());
+        List<ProjectView> projectViews = new LinkedList<>();
+        for (String projectName : projectNames) {
+            List<ProjectView> allProjectMatches = projectService.getAllProjectMatches(projectName);
+            projectViews.addAll(allProjectMatches);
+        }
+
+        return projectViews;
     }
 
     private void updateBlackDuckProjectPermissions(ProjectUsersService projectUsersService, UserView userToAdd, List<ProjectView> projectViews) throws IntegrationException {
