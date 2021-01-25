@@ -69,4 +69,12 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
     public List<String> getPolicyNames() {
         return policyNames;
     }
+
+    public boolean isVulnerabilityNotification() {
+        return !getVulnerabilitySeverities().isEmpty();
+    }
+
+    public boolean isPolicyNotification() {
+        return !getPolicyNames().isEmpty();
+    }
 }

@@ -197,9 +197,9 @@ public class StaticJobAccessor implements JobAccessor {
         List<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         List<DistributionJobEntity> distributionJobEntities;
-        if (!policyNames.isEmpty()) {
+        if (filteredDistributionJobRequestModel.isPolicyNotification()) {
             distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectName, policyNames);
-        } else if (!vulnerabilitySeverities.isEmpty()) {
+        } else if (filteredDistributionJobRequestModel.isVulnerabilityNotification()) {
             distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectName, vulnerabilitySeverities);
         } else {
             distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName);
