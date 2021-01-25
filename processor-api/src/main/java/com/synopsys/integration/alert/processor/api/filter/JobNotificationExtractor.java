@@ -22,16 +22,15 @@
  */
 package com.synopsys.integration.alert.processor.api.filter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 
 public interface JobNotificationExtractor {
-    Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, @Nullable FrequencyType frequency);
+    Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, Collection<FrequencyType> frequencies);
 
 }

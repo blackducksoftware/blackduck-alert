@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -29,14 +30,14 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
-    private List<FrequencyType> frequencyTypes;
+    private Collection<FrequencyType> frequencyTypes;
     private NotificationType notificationType;
     private String projectName;
     private List<String> vulnerabilitySeverities;
     private List<String> policyNames;
 
     public FilteredDistributionJobRequestModel(
-        List<FrequencyType> frequencyTypes,
+        Collection<FrequencyType> frequencyTypes,
         NotificationType notificationType,
         String projectName,
         List<String> vulnerabilitySeverities,
@@ -49,7 +50,7 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
         this.policyNames = policyNames;
     }
 
-    public List<FrequencyType> getFrequencyTypes() {
+    public Collection<FrequencyType> getFrequencyTypes() {
         return frequencyTypes;
     }
 

@@ -22,15 +22,13 @@
  */
 package com.synopsys.integration.alert.processor.api.filter;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,23 +48,26 @@ public class DefaultJobNotificationExtractor implements JobNotificationExtractor
         this.jobAccessor = jobAccessor;
     }
 
-    /*
-     * Filter Items:
+    /**
+     * Jobs are retrieved from the DB depending on the following fields that are passed to this method:
+     *
      * Frequency (Passed into processor)
      * Notification Type (From notification)
      * Filter By Project (Projects from notification if applicable)
-     *   Project Name
-     *   Project Name Pattern
+     * Project Name (Found in Job and based on project)
+     * Project Name Pattern (Found in Job and based on Project)
      * Filter by Vulnerability severity (From notification if applicable)
      * Filter by Policy name (From notification if applicable)
+     * @param filterableNotifications List of notifications that will be iterated over and applied to jobs that are found
+     * @param frequencies             an Additional filter to specify when querying data from the DB
+     * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
      */
-
     @Override
-    public Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, @Nullable FrequencyType frequency) {
+    public Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, Collection<FrequencyType> frequencies) {
         Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> groupedFilterableNotifications = new HashMap<>();
 
         for (FilterableNotificationWrapper filterableNotificationWrapper : filterableNotifications) {
-            List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(filterableNotificationWrapper, frequency);
+            List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(filterableNotificationWrapper, frequencies);
             for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : filteredDistributionJobResponseModels) {
                 List<FilterableNotificationWrapper<?>> set = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
                 set.add(filterableNotificationWrapper);
@@ -75,10 +76,7 @@ public class DefaultJobNotificationExtractor implements JobNotificationExtractor
         return groupedFilterableNotifications;
     }
 
-    private List<FilteredDistributionJobResponseModel> retrieveMatchingJobs(FilterableNotificationWrapper filterableNotificationWrapper, @Nullable FrequencyType frequencyType) {
-        // If a frequency is null, we assume they want all frequency types as a frequency is required.
-        List<FrequencyType> frequencyTypes = (frequencyType == null) ? Arrays.stream(FrequencyType.values()).collect(Collectors.toList()) : List.of(frequencyType);
-
+    private List<FilteredDistributionJobResponseModel> retrieveMatchingJobs(FilterableNotificationWrapper filterableNotificationWrapper, Collection<FrequencyType> frequencyTypes) {
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             frequencyTypes,
             EnumUtils.getEnum(NotificationType.class, filterableNotificationWrapper.extractNotificationType()),
