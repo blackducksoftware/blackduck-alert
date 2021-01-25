@@ -26,6 +26,8 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
@@ -40,7 +42,16 @@ public class EmailChannelMessageModel extends AlertSerializableModel {
     private final String projectName;
     private final ProjectMessage source;
 
-    public EmailChannelMessageModel(
+    public static EmailChannelMessageModel simple(String subjectLine, String content, String providerName, String providerUrl) {
+        return new EmailChannelMessageModel(subjectLine, content, ProcessingType.SUMMARY.name(), providerName, providerUrl, null, null);
+    }
+
+    public static EmailChannelMessageModel project(String subjectLine, String content, String messageFormat, String providerName, String providerUrl, ProjectMessage projectMessage) {
+        LinkableItem project = projectMessage.getProject();
+        return new EmailChannelMessageModel(subjectLine, content, messageFormat, providerName, providerUrl, project.getValue(), projectMessage);
+    }
+
+    private EmailChannelMessageModel(
         String subjectLine,
         String content,
         String messageFormat,

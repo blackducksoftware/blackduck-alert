@@ -23,10 +23,13 @@
 package com.synopsys.integration.alert.channel.email2;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -34,6 +37,9 @@ import com.synopys.integration.alert.channel.api.convert.AbstractChannelMessageC
 
 @Component
 public class EmailChannelMessageConverter extends AbstractChannelMessageConverter<EmailJobDetailsModel, EmailChannelMessageModel> {
+    // RFC2822 suggests a max of 78 characters in an email subject line: https://tools.ietf.org/html/rfc2822#section-2.1.1
+    public static final int SUBJECT_LINE_MAX_LENGTH = 78;
+
     @Autowired
     public EmailChannelMessageConverter(EmailChannelMessageFormatter emailChannelMessageFormatter) {
         super(emailChannelMessageFormatter);
@@ -41,14 +47,37 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
 
     @Override
     protected List<EmailChannelMessageModel> convertSimpleMessageToChannelMessages(EmailJobDetailsModel distributionDetails, SimpleMessage simpleMessage, List<String> messageChunks) {
-        // FIXME implement
-        return null;
+        String subjectLine = String.format("%s | %s", distributionDetails.getSubjectLine(), simpleMessage.getSummary());
+        subjectLine = StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
+
+        LinkableItem provider = simpleMessage.getProvider();
+        String messageContent = StringUtils.join(messageChunks);
+
+        EmailChannelMessageModel model = EmailChannelMessageModel.simple(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"));
+        return List.of(model);
     }
 
     @Override
     protected List<EmailChannelMessageModel> convertProjectMessageToChannelMessages(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage, List<String> messageChunks) {
-        // FIXME implement
-        return null;
+        String subjectLine = createSubjectLine(distributionDetails, projectMessage);
+        String messageContent = StringUtils.join(messageChunks);
+        LinkableItem provider = projectMessage.getProvider();
+
+        EmailChannelMessageModel.project(subjectLine, messageContent, null, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
+        return List.of();
+    }
+
+    private String createSubjectLine(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage) {
+        LinkableItem project = projectMessage.getProject();
+        String subjectLine = String.format("%s | %s | %s", distributionDetails.getSubjectLine(), projectMessage.getMessageReason().name(), project.getValue());
+
+        Optional<String> projectVersionName = projectMessage.getProjectVersion()
+                                                  .map(LinkableItem::getValue);
+        if (projectVersionName.isPresent()) {
+            subjectLine += String.format(" %s", projectVersionName.get());
+        }
+
+        return StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
     }
 
 }
