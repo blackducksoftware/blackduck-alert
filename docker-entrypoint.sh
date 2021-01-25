@@ -11,8 +11,8 @@ alertDatabasePort="${ALERT_DB_PORT:-5432}"
 alertDatabaseName="${ALERT_DB_NAME:-alertdb}"
 alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
-alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:$alertDatabaseUser}"
-alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:$alertDatabasePassword}"
+alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
+alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
@@ -49,6 +49,9 @@ then
   echo "Alert Database user secret set; using value from secret."
   alertDatabaseUser=$(cat $dockerSecretDir/ALERT_DB_USERNAME)
   export ALERT_DB_USERNAME=$alertDatabaseUser;
+
+  alertDatabaseAdminUser=$alertDatabaseUser;
+  export ALERT_DB_ADMIN_USERNAME=$alertDatabaseAdminUser;
   echo "Alert Database user variable set to secret value."
 fi
 
@@ -57,6 +60,9 @@ then
   echo "Alert Database password secret set; using value from secret."
   alertDatabasePassword=$(cat $dockerSecretDir/ALERT_DB_PASSWORD)
   export ALERT_DB_PASSWORD=$alertDatabasePassword;
+
+  alertDatabaseAdminPassword=$alertDatabasePassword;
+  export ALERT_DB_ADMIN_PASSWORD=$alertDatabaseAdminPassword;
   echo "Alert Database password variable set to secret value."
 fi
 
