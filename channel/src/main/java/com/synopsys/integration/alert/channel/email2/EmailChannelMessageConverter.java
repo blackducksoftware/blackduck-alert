@@ -63,7 +63,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
         String messageContent = StringUtils.join(messageChunks);
         LinkableItem provider = projectMessage.getProvider();
 
-        EmailChannelMessageModel.project(subjectLine, messageContent, null, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
+        EmailChannelMessageModel.project(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
         return List.of();
     }
 
