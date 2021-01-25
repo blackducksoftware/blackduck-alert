@@ -40,7 +40,7 @@ public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessa
     public List<String> convertToFormattedMessageChunks(SimpleMessage simpleMessage) {
         ChunkedStringBuilder chunkedStringBuilder = new ChunkedStringBuilder(messageFormatter.getMaxMessageLength());
 
-        appendSection(chunkedStringBuilder, simpleMessage.getSubject());
+        appendSection(chunkedStringBuilder, simpleMessage.getSummary());
         appendSection(chunkedStringBuilder, simpleMessage.getDescription());
 
         for (LinkableItem detail : simpleMessage.getDetails()) {

@@ -30,7 +30,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.CombinableMode
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 @Component
-public class DefaultProjectMessageDigester implements ProjectMessageDigester {
+public class DefaultProjectMessageDigester extends ProjectMessageDigester {
     @Override
     public List<ProjectMessage> digest(List<ProjectMessage> notifications) {
         return CombinableModel.combine(notifications);

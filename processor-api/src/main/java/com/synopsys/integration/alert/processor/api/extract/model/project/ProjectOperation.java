@@ -23,7 +23,7 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 public enum ProjectOperation {
-    ADD,
+    CREATE,
     DELETE
 
 }
