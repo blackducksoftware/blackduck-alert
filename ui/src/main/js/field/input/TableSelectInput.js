@@ -60,7 +60,7 @@ class TableSelectInput extends Component {
     constructor(props) {
         super(props);
 
-        this.updateSelectedValues = this.updateSelectedValues.bind(this);
+        this.loadSelectedValues = this.loadSelectedValues.bind(this);
         this.retrieveTableData = this.retrieveTableData.bind(this);
         this.createTable = this.createTable.bind(this);
         this.createSelect = this.createSelect.bind(this);
@@ -88,10 +88,10 @@ class TableSelectInput extends Component {
     }
 
     componentDidMount() {
-        this.updateSelectedValues();
+        this.loadSelectedValues();
     }
 
-    updateSelectedValues() {
+    loadSelectedValues() {
         const { value, columns, useRowAsValue } = this.props;
         const { selectedData } = this.state;
 
@@ -234,10 +234,7 @@ class TableSelectInput extends Component {
                     this.setState({
                         data: options,
                         success: true,
-                        totalPageCount: totalPages,
-                        currentPage: uiPageNumber,
-                        currentPageSize: pageSize,
-                        currentSearchTerm: searchTerm
+                        totalPageCount: totalPages
                     });
                     return data;
                 });
@@ -253,7 +250,7 @@ class TableSelectInput extends Component {
     createDataList() {
         const { data, selectedData } = this.state;
         const dataList = data.map((itemData) => Object.assign(itemData, { missing: false }));
-        selectedData.forEach(selected => {
+        selectedData.forEach((selected) => {
             const missingAttribute = selected.missing;
             if (missingAttribute !== undefined && missingAttribute) {
                 dataList.unshift(Object.assign(selected, { missing: true }));
@@ -268,17 +265,28 @@ class TableSelectInput extends Component {
 
         const onPageChange = (page, sizePerPage) => {
             const { currentSearchTerm } = this.state;
+            this.setState({
+                currentPage: page,
+                currentPageSize: sizePerPage
+            });
             this.retrieveTableData(page, sizePerPage, currentSearchTerm);
         };
 
         const onSizePerPageListChange = (sizePerPage) => {
             const { currentPage, currentSearchTerm } = this.state;
+            this.setState({
+                currentPageSize: sizePerPage
+            });
             this.retrieveTableData(currentPage, sizePerPage, currentSearchTerm);
         };
 
         const onSearchChange = (searchTerm, colInfos, multiColumnSearch) => {
-            const { currentPage, currentPageSize } = this.state;
-            this.retrieveTableData(currentPage, currentPageSize, searchTerm);
+            const { currentPageSize } = this.state;
+            this.setState({
+                currentSearchTerm: searchTerm,
+                currentPage: 1
+            });
+            this.retrieveTableData(1, currentPageSize, searchTerm);
         };
 
         const {
@@ -343,9 +351,10 @@ class TableSelectInput extends Component {
             );
         };
 
+        const { selectedData } = this.state;
         const keyColumnHeader = columns.find((column) => column.isKey).header;
         const okClicked = () => {
-            const convertedValues = this.state.selectedData.map((selected) => {
+            const convertedValues = selectedData.map((selected) => {
                 const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
                 const isMissing = selected.missing !== undefined ? selected.missing : false;
                 return {
@@ -356,10 +365,14 @@ class TableSelectInput extends Component {
             });
             this.setState({
                 showTable: false,
-                displayedData: convertedValues
+                displayedData: convertedValues,
+                currentPage: 1,
+                currentPageSize: 10,
+                currentSearchTerm: ''
             });
 
-            this.props.onChange({
+            const { onChange } = this.props;
+            onChange({
                 target: {
                     name: this.props.fieldKey,
                     value: this.state.selectedData
@@ -503,9 +516,15 @@ class TableSelectInput extends Component {
     }
 
     onHideTableSelectModal() {
+        const { displayedData } = this.state;
+        const previousSelectedData = displayedData.map((currentValue) => {
+            return {
+                ...currentValue.value
+            };
+        });
         this.setState({
             showTable: false,
-            selectedData: this.state.displayedData
+            selectedData: previousSelectedData
         });
     }
 
