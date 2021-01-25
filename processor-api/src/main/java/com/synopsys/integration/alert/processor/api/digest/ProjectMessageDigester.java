@@ -24,9 +24,15 @@ package com.synopsys.integration.alert.processor.api.digest;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public interface ProjectMessageDigester {
-    List<ProjectMessage> digest(List<ProjectMessage> notifications);
+@Component
+public class ProjectMessageDigester {
+    public List<ProjectMessage> digest(List<ProjectMessage> notifications) {
+        return CombinableModel.combine(notifications);
+    }
 
 }

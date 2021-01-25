@@ -87,6 +87,7 @@ public class ProjectMessage extends ProviderMessage<ProjectMessage> {
         return Optional.ofNullable(projectVersion);
     }
 
+    // TODO consider making this a sorted set
     public List<BomComponentDetails> getBomComponents() {
         return bomComponents;
     }
