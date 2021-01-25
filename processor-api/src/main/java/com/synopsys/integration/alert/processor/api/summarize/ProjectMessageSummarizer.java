@@ -132,7 +132,6 @@ public class ProjectMessageSummarizer {
         return details;
     }
 
-    // TODO consider tightly coupling this to the enum
     private String convertToParticiple(ProjectOperation projectOperation) {
         switch (projectOperation) {
             case CREATE:
@@ -144,7 +143,6 @@ public class ProjectMessageSummarizer {
         }
     }
 
-    // TODO consider tightly coupling this to the enum
     private String convertToUppercasePlural(ComponentConcernType type) {
         switch (type) {
             case POLICY:
@@ -156,7 +154,6 @@ public class ProjectMessageSummarizer {
         }
     }
 
-    // TODO consider tightly coupling this to the enum
     private String convertToAdjective(ComponentConcernType type, ItemOperation operation) {
         switch (operation) {
             case ADD:
