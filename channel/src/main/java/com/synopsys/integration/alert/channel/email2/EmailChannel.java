@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,14 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.channel.email2;
 
-import java.util.Optional;
-import java.util.UUID;
+import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
-public interface JobDetailsAccessor<D extends DistributionJobDetailsModel> {
-    Optional<D> retrieveDetails(UUID jobId);
+@Component
+public class EmailChannel extends MessageBoardChannel<EmailJobDetailsModel, Object> {
+    protected EmailChannel(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
+        super(emailChannelMessageConverter, emailChannelMessageSender);
+    }
 
 }

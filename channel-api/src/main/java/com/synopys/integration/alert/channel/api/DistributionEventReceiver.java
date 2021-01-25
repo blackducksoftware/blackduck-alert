@@ -22,6 +22,8 @@
  */
 package com.synopys.integration.alert.channel.api;
 
+import java.util.Optional;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -40,8 +42,18 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
 
     @Override
     public final void handleEvent(DistributionEventV2 event) {
-        D details = jobDetailsAccessor.retrieveDetails(event.getJobId());
-        channel.distributeMessages(details, event.getProviderMessages());
+        Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        if (details.isPresent()) {
+            channel.distributeMessages(details.get(), event.getProviderMessages());
+        } else {
+            handleJobDetailsMissing(event);
+        }
+    }
+
+    protected void handleJobDetailsMissing(DistributionEventV2 event) {
+        // FIXME implement
+        //  log
+        //  update audit status
     }
 
 }

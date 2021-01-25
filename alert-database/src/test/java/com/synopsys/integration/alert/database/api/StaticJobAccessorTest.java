@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
@@ -55,7 +55,7 @@ class StaticJobAccessorTest {
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private SlackJobDetailsAccessor slackJobDetailsAccessor;
     private AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
-    private EmailJobDetailsAccessor emailJobDetailsAccessor;
+    private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
@@ -69,7 +69,7 @@ class StaticJobAccessorTest {
         blackDuckJobDetailsAccessor = Mockito.mock(BlackDuckJobDetailsAccessor.class);
         slackJobDetailsAccessor = Mockito.mock(SlackJobDetailsAccessor.class);
         azureBoardsJobDetailsAccessor = Mockito.mock(AzureBoardsJobDetailsAccessor.class);
-        emailJobDetailsAccessor = Mockito.mock(EmailJobDetailsAccessor.class);
+        emailJobDetailsAccessor = Mockito.mock(DefaultEmailJobDetailsAccessor.class);
         jiraCloudJobDetailsAccessor = Mockito.mock(JiraCloudJobDetailsAccessor.class);
         jiraServerJobDetailsAccessor = Mockito.mock(JiraServerJobDetailsAccessor.class);
         msTeamsJobDetailsAccessor = Mockito.mock(MSTeamsJobDetailsAccessor.class);

@@ -1,5 +1,5 @@
 /**
- * alert-common
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,14 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.persistence.accessor;
+package com.synopsys.integration.alert.channel.email2;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.List;
 
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import org.springframework.stereotype.Component;
 
-public interface JobDetailsAccessor<D extends DistributionJobDetailsModel> {
-    Optional<D> retrieveDetails(UUID jobId);
+import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopys.integration.alert.channel.api.ChannelMessageSender;
+
+@Component
+public class EmailChannelMessageSender implements ChannelMessageSender<Object, MessageResult> {
+    @Override
+    public MessageResult sendMessage(List<Object> channelMessages) {
+        // FIXME implement
+        return null;
+    }
 
 }
