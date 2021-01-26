@@ -65,6 +65,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Override
     public DistributionJobDetailsModel createDistributionJobDetails() {
         return new SlackJobDetailsModel(
+            null,
             testProperties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
             testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             getClass().getSimpleName()

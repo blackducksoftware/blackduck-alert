@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.cloud.actions;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,15 +37,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraC
 
 @Component
 public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {
-
     @Autowired
     public JiraCloudJobDetailsExtractor(Gson gson) {
         super(gson);
     }
 
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new JiraCloudJobDetailsModel(
+            jobId,
             extractFieldValue(JiraCloudDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
             extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
@@ -54,4 +55,5 @@ public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {
             extractJiraFieldMappings(JiraCloudDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap)
         );
     }
+
 }

@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.email.actions;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -34,10 +35,10 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.proce
 
 @Component
 public class EmailJobDetailsExtractor extends JobDetailsExtractor {
-
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new EmailJobDetailsModel(
+            jobId,
             extractFieldValueOrEmptyString(EmailDescriptor.KEY_SUBJECT_LINE, configuredFieldsMap),
             extractFieldValue(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             extractFieldValue(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
@@ -45,4 +46,5 @@ public class EmailJobDetailsExtractor extends JobDetailsExtractor {
             extractFieldValues(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, configuredFieldsMap)
         );
     }
+
 }

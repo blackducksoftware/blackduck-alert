@@ -412,7 +412,7 @@ public class SlackChannelTest extends AbstractChannelTest {
     }
 
     private DistributionJobModel createTestJobModel(String webhook, String channelName, String channelUsername) {
-        SlackJobDetailsModel jobDetailsModel = new SlackJobDetailsModel(webhook, channelName, channelUsername);
+        SlackJobDetailsModel jobDetailsModel = new SlackJobDetailsModel(null, webhook, channelName, channelUsername);
         return DistributionJobModel.builder()
                    .distributionJobDetails(jobDetailsModel)
                    .build();

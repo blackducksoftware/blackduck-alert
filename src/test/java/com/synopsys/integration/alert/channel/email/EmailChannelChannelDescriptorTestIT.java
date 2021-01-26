@@ -99,6 +99,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Override
     public DistributionJobDetailsModel createDistributionJobDetails() {
         return new EmailJobDetailsModel(
+            null,
             "Alert unit test subject line",
             false,
             true,
@@ -208,6 +209,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         BlackDuckProjectDetailsModel projectFilter = new BlackDuckProjectDetailsModel(blackDuckProjectName, blackDuckProjectHref);
 
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(
+            null,
             "Alert unit test subject line",
             true,
             false,

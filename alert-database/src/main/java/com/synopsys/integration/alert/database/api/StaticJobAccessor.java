@@ -299,6 +299,7 @@ public class StaticJobAccessor implements JobAccessor {
         if (ChannelKeys.AZURE_BOARDS.equals(channelKey)) {
             AzureBoardsJobDetailsEntity jobDetails = jobEntity.getAzureBoardsJobDetails();
             distributionJobDetailsModel = new AzureBoardsJobDetailsModel(
+                jobId,
                 jobDetails.getAddComments(),
                 jobDetails.getProjectNameOrId(),
                 jobDetails.getWorkItemType(),
@@ -312,6 +313,7 @@ public class StaticJobAccessor implements JobAccessor {
                                                         .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
                                                         .collect(Collectors.toList());
             distributionJobDetailsModel = new EmailJobDetailsModel(
+                jobId,
                 jobDetails.getSubjectLine(),
                 jobDetails.getProjectOwnerOnly(),
                 jobDetails.getAdditionalEmailAddressesOnly(),
@@ -325,6 +327,7 @@ public class StaticJobAccessor implements JobAccessor {
                                                              .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
                                                              .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraCloudJobDetailsModel(
+                jobId,
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorEmail(),
                 jobDetails.getProjectNameOrKey(),
@@ -340,6 +343,7 @@ public class StaticJobAccessor implements JobAccessor {
                                                              .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
                                                              .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraServerJobDetailsModel(
+                jobId,
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorUsername(),
                 jobDetails.getProjectNameOrKey(),
@@ -350,10 +354,11 @@ public class StaticJobAccessor implements JobAccessor {
             );
         } else if (ChannelKeys.MS_TEAMS.equals(channelKey)) {
             MSTeamsJobDetailsEntity jobDetails = jobEntity.getMsTeamsJobDetails();
-            distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobDetails.getWebhook());
+            distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobId, jobDetails.getWebhook());
         } else if (ChannelKeys.SLACK.equals(channelKey)) {
             SlackJobDetailsEntity slackJobDetails = jobEntity.getSlackJobDetails();
             distributionJobDetailsModel = new SlackJobDetailsModel(
+                jobId,
                 slackJobDetails.getWebhook(),
                 slackJobDetails.getChannelName(),
                 slackJobDetails.getChannelUsername()

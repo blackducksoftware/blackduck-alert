@@ -203,7 +203,7 @@ public class AuditEntryControllerTestIT {
     }
 
     private DistributionJobRequestModel createJobRequestModel() {
-        SlackJobDetailsModel details = new SlackJobDetailsModel("test_webhook", "#test-channel", null);
+        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "test_webhook", "#test-channel", null);
         return new DistributionJobRequestModel(
             true,
             "Test Slack Job",
