@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -81,6 +82,23 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     public BlackDuckProviderDataAccessor(ConfigurationAccessor configurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
         this.configurationAccessor = configurationAccessor;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
+    }
+
+    @Override
+    public Optional<ProviderProject> getProjectByHref(Long providerConfigId, String projectHref) {
+        try {
+            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            if (providerConfigOptional.isPresent()) {
+                BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
+                BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+
+                ProjectView foundProject = blackDuckApiClient.getResponse(new HttpUrl(projectHref), ProjectView.class);
+                convertBlackDuckProjects(List.of(foundProject), blackDuckApiClient);
+            }
+        } catch (IntegrationException e) {
+            logger.errorAndDebug(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()), e);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -129,6 +147,23 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             }
         }
         return Set.of();
+    }
+
+    @Override
+    public ProviderUserModel getProviderConfigUserById(Long providerConfigId) throws AlertConfigurationException {
+        try {
+            Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+            if (providerConfigOptional.isPresent()) {
+                BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
+                BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+
+                UserView providerConfigUser = blackDuckApiClient.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
+                return new ProviderUserModel(providerConfigUser.getEmail(), false);
+            }
+        } catch (IntegrationException e) {
+            throw new AlertConfigurationException(String.format("Could not get user for the provider config with id '%s'. %s", providerConfigId, e.getMessage()), e);
+        }
+        throw new AlertConfigurationException(String.format("The provider config with id '%s' is invalid", providerConfigId));
     }
 
     @Override
