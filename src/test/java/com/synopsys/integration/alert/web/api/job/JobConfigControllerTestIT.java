@@ -202,7 +202,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(Long blackDuckGlobalConfigId) {
-        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel("http://slack_webhook_url", "channelName", null);
+        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel(null, "http://slack_webhook_url", "channelName", null);
         return new DistributionJobRequestModel(
             true,
             "name",

@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.common.persistence.model.job.details;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -55,9 +56,11 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
     }
 
     private final ChannelKey channelKey;
+    private final UUID jobId;
 
-    public DistributionJobDetailsModel(ChannelKey channelKey) {
+    public DistributionJobDetailsModel(ChannelKey channelKey, UUID jobId) {
         this.channelKey = channelKey;
+        this.jobId = jobId;
     }
 
     public boolean isA(ChannelKey channelKey) {
@@ -66,6 +69,10 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
 
     public <T extends DistributionJobDetailsModel> T getAs(Class<T> clazz) {
         return clazz.cast(this);
+    }
+
+    public UUID getJobId() {
+        return jobId;
     }
 
 }

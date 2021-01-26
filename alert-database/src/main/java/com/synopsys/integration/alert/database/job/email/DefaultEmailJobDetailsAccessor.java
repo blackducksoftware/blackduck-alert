@@ -88,6 +88,7 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
                                                     .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
                                                     .collect(Collectors.toList());
         return new EmailJobDetailsModel(
+            details.getJobId(),
             details.getSubjectLine(),
             details.getProjectOwnerOnly(),
             details.getAdditionalEmailAddressesOnly(),

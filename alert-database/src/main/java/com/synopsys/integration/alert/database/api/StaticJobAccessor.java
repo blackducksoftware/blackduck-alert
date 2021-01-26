@@ -47,8 +47,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProj
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -65,7 +65,6 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
@@ -183,40 +182,40 @@ public class StaticJobAccessor implements JobAccessor {
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
     }
 
+    // TODO this should be paged
     @Override
-    public List<FilteredDistributionJobModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
-        FrequencyType frequencyType = filteredDistributionJobRequestModel.getFrequencyType();
-        NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
+    public List<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
+        List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
+                                          .stream()
+                                          .map(Enum::name)
+                                          .collect(Collectors.toList());
 
+        NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
         String projectName = filteredDistributionJobRequestModel.getProjectName();
 
         List<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames();
         List<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         List<DistributionJobEntity> distributionJobEntities;
-        if (!policyNames.isEmpty()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyType.name(), notificationType.name(), projectName, policyNames);
-        } else if (!vulnerabilitySeverities.isEmpty()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyType.name(), notificationType.name(), projectName, vulnerabilitySeverities);
+        if (filteredDistributionJobRequestModel.isPolicyNotification()) {
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectName, policyNames);
+        } else if (filteredDistributionJobRequestModel.isVulnerabilityNotification()) {
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectName, vulnerabilitySeverities);
         } else {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyType.name(), notificationType.name(), projectName);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName);
         }
 
-        // TODO running project name pattern checks in java code, try to do this in SQL instead
+        // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
         return distributionJobEntities.stream()
-                   .filter(distributionJobEntity -> Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) ||
-                                                        distributionJobEntity.getBlackDuckJobDetails()
-                                                            .getBlackDuckJobProjects()
-                                                            .stream()
-                                                            .map(BlackDuckJobProjectEntity::getProjectName)
-                                                            .anyMatch(foundProjectName -> projectName == projectName))
-                   .map(this::convertToFilteredDistributionJobModel)
+                   .filter(distributionJobEntity -> !distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() ||
+                                                        Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName))
+                   .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
     }
 
-    private FilteredDistributionJobModel convertToFilteredDistributionJobModel(DistributionJobEntity distributionJobEntity) {
+    private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {
         ProcessingType processingType = Enum.valueOf(ProcessingType.class, distributionJobEntity.getProcessingType());
-        return new FilteredDistributionJobModel(processingType, distributionJobEntity.getJobId(), distributionJobEntity.getChannelDescriptorName());
+        return new FilteredDistributionJobResponseModel(distributionJobEntity.getJobId(), processingType, distributionJobEntity.getChannelDescriptorName());
     }
 
     private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
@@ -300,6 +299,7 @@ public class StaticJobAccessor implements JobAccessor {
         if (ChannelKeys.AZURE_BOARDS.equals(channelKey)) {
             AzureBoardsJobDetailsEntity jobDetails = jobEntity.getAzureBoardsJobDetails();
             distributionJobDetailsModel = new AzureBoardsJobDetailsModel(
+                jobId,
                 jobDetails.getAddComments(),
                 jobDetails.getProjectNameOrId(),
                 jobDetails.getWorkItemType(),
@@ -313,6 +313,7 @@ public class StaticJobAccessor implements JobAccessor {
                                                         .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
                                                         .collect(Collectors.toList());
             distributionJobDetailsModel = new EmailJobDetailsModel(
+                jobId,
                 jobDetails.getSubjectLine(),
                 jobDetails.getProjectOwnerOnly(),
                 jobDetails.getAdditionalEmailAddressesOnly(),
@@ -326,6 +327,7 @@ public class StaticJobAccessor implements JobAccessor {
                                                              .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
                                                              .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraCloudJobDetailsModel(
+                jobId,
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorEmail(),
                 jobDetails.getProjectNameOrKey(),
@@ -341,6 +343,7 @@ public class StaticJobAccessor implements JobAccessor {
                                                              .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
                                                              .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraServerJobDetailsModel(
+                jobId,
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorUsername(),
                 jobDetails.getProjectNameOrKey(),
@@ -351,10 +354,11 @@ public class StaticJobAccessor implements JobAccessor {
             );
         } else if (ChannelKeys.MS_TEAMS.equals(channelKey)) {
             MSTeamsJobDetailsEntity jobDetails = jobEntity.getMsTeamsJobDetails();
-            distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobDetails.getWebhook());
+            distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobId, jobDetails.getWebhook());
         } else if (ChannelKeys.SLACK.equals(channelKey)) {
             SlackJobDetailsEntity slackJobDetails = jobEntity.getSlackJobDetails();
             distributionJobDetailsModel = new SlackJobDetailsModel(
+                jobId,
                 slackJobDetails.getWebhook(),
                 slackJobDetails.getChannelName(),
                 slackJobDetails.getChannelUsername()

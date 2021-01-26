@@ -39,6 +39,18 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
+    public Optional<ProviderProject> getProjectByHref(Long providerConfigId, String href) {
+        Set<ProviderProject> providerProjects = this.providerProjects.get(providerConfigId);
+        if (null != providerProjects) {
+            return providerProjects
+                       .stream()
+                       .filter(providerProject -> href.equals(providerProject.getHref()))
+                       .findFirst();
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public List<ProviderProject> getProjectsByProviderConfigName(String providerConfigName) {
         return getProviderConfigId(providerConfigName)
                    .map(this::getProjectsByProviderConfigId)
@@ -59,6 +71,17 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
         Set<ProviderProject> providerProjectSet = this.providerProjects.get(providerConfigId);
         Predicate<ProviderProject> searchFilter = providerProject -> providerProject.getName().toLowerCase().contains(searchTerm.toLowerCase());
         return retrievePageOfProviderData(providerProjectSet, pageNumber, pageSize, searchFilter);
+    }
+
+    @Override
+    public ProviderUserModel getProviderConfigUserById(Long providerConfigId) throws AlertConfigurationException {
+        Set<ProviderUserModel> providerUserModels = providerUsers.get(providerConfigId);
+        // This is supposed to be the user whose API Token is used for the provider config
+        // Modify if necessary
+        return providerUserModels
+                   .stream()
+                   .findAny()
+                   .orElseThrow(() -> new AlertConfigurationException("Missing provider config user"));
     }
 
     @Override

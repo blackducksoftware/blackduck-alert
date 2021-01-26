@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -36,6 +37,7 @@ public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
     private final List<JiraJobCustomFieldModel> customFields;
 
     public JiraCloudJobDetailsModel(
+        UUID jobId,
         boolean addComments,
         String issueCreatorEmail,
         String projectNameOrKey,
@@ -44,7 +46,7 @@ public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
         String reopenTransition,
         List<JiraJobCustomFieldModel> customFields
     ) {
-        super(ChannelKeys.JIRA_CLOUD);
+        super(ChannelKeys.JIRA_CLOUD, jobId);
         this.addComments = addComments;
         this.issueCreatorEmail = issueCreatorEmail;
         this.projectNameOrKey = projectNameOrKey;

@@ -32,7 +32,7 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
         MsTeamsChannel msTeamsChannel = new MsTeamsChannel(gson, auditAccessor, createRestChannelUtility(), msTeamsEventParser, msTeamsMessageParser);
         ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
-        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
+        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(null, properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
         DistributionJobModel testJobModel = DistributionJobModel.builder()
                                                 .distributionJobDetails(msTeamsJobDetailsModel)
                                                 .build();

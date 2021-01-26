@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.azure.boards.actions;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -34,10 +35,10 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.proce
 
 @Component
 public class AzureBoardsJobDetailsExtractor extends JobDetailsExtractor {
-
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new AzureBoardsJobDetailsModel(
+            jobId,
             extractFieldValue(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_AZURE_PROJECT, configuredFieldsMap),
             extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE, configuredFieldsMap),
@@ -45,4 +46,5 @@ public class AzureBoardsJobDetailsExtractor extends JobDetailsExtractor {
             extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_WORK_ITEM_REOPEN_STATE, configuredFieldsMap)
         );
     }
+
 }

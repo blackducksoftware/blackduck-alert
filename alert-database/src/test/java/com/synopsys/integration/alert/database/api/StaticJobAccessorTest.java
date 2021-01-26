@@ -123,7 +123,7 @@ class StaticJobAccessorTest {
     @Test
     void createJobTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(null, null, null);
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null, null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.SLACK.getUniversalKey(), slackJobDetailsModel);
 
         SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
@@ -151,7 +151,7 @@ class StaticJobAccessorTest {
     @Test
     void updateJobTest() throws Exception {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(null, null, null);
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(jobId, null, null, null);
         DistributionJobRequestModel distributionJobRequestModel = new DistributionJobRequestModel(
             true,
             jobName,
@@ -324,7 +324,7 @@ class StaticJobAccessorTest {
     @Test
     public void createAzureBoardsJobTest() {
         UUID jobId = UUID.randomUUID();
-        AzureBoardsJobDetailsModel azureBoardsJobDetailsModel = new AzureBoardsJobDetailsModel(false, null, null, null, null);
+        AzureBoardsJobDetailsModel azureBoardsJobDetailsModel = new AzureBoardsJobDetailsModel(jobId, false, null, null, null, null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.AZURE_BOARDS.getUniversalKey(), azureBoardsJobDetailsModel);
 
         AzureBoardsJobDetailsEntity azureBoardsJobDetailsEntity = new AzureBoardsJobDetailsEntity(null, false, null, null, null, null);
@@ -345,7 +345,7 @@ class StaticJobAccessorTest {
     @Test
     public void createEmailJobTest() {
         UUID jobId = UUID.randomUUID();
-        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, false, false, null, List.of());
+        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(jobId, null, false, false, null, List.of());
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.EMAIL.getUniversalKey(), emailJobDetailsModel);
 
         EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(null, null, false, false, null);
@@ -367,7 +367,7 @@ class StaticJobAccessorTest {
     @Test
     public void createJiraCloudJobTest() {
         UUID jobId = UUID.randomUUID();
-        JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(false, null, null, null, null, null, List.of());
+        JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(jobId, false, null, null, null, null, null, List.of());
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.JIRA_CLOUD.getUniversalKey(), jiraCloudJobDetailsModel);
 
         JiraCloudJobDetailsEntity jiraCloudJobDetailsEntity = new JiraCloudJobDetailsEntity(null, false, null, null, null, null, null);
@@ -389,7 +389,7 @@ class StaticJobAccessorTest {
     @Test
     public void createJiraServerJobTest() {
         UUID jobId = UUID.randomUUID();
-        JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(false, null, null, null, null, null, List.of());
+        JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(jobId, false, null, null, null, null, null, List.of());
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.JIRA_SERVER.getUniversalKey(), jiraServerJobDetailsModel);
 
         JiraServerJobDetailsEntity jiraServerJobDetailsEntity = new JiraServerJobDetailsEntity(null, false, null, null, null, null, null);
@@ -411,7 +411,7 @@ class StaticJobAccessorTest {
     @Test
     public void createMSTeamsJobTest() {
         UUID jobId = UUID.randomUUID();
-        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(null);
+        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(jobId, null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.MS_TEAMS.getUniversalKey(), msTeamsJobDetailsModel);
 
         MSTeamsJobDetailsEntity msTeamsJobDetailsEntity = new MSTeamsJobDetailsEntity();

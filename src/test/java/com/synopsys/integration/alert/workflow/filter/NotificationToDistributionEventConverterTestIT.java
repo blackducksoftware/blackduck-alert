@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,15 +42,17 @@ public class NotificationToDistributionEventConverterTestIT {
         messageContentGroups.add(contentGroup1);
         messageContentGroups.add(contentGroup2);
 
-        List<DistributionEvent> emailEvents = converter.convertToEvents(createEmailConfig(), messageContentGroups);
-        List<DistributionEvent> slackEvents = converter.convertToEvents(createSlackConfig(), messageContentGroups);
+        UUID jobId = UUID.randomUUID();
+        List<DistributionEvent> emailEvents = converter.convertToEvents(createEmailConfig(jobId), messageContentGroups);
+        List<DistributionEvent> slackEvents = converter.convertToEvents(createSlackConfig(jobId), messageContentGroups);
         assertEquals(4, emailEvents.size() + slackEvents.size());
     }
 
-    private DistributionJobModel createEmailConfig() {
+    private DistributionJobModel createEmailConfig(UUID jobId) {
         DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
         jobBuilder.channelDescriptorName(ChannelKeys.EMAIL.getUniversalKey());
         EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(
+            jobId,
             "Alert unit test subject line",
             false,
             true,
@@ -60,10 +63,10 @@ public class NotificationToDistributionEventConverterTestIT {
         return jobBuilder.build();
     }
 
-    private DistributionJobModel createSlackConfig() {
+    private DistributionJobModel createSlackConfig(UUID jobId) {
         DistributionJobModelBuilder jobBuilder = createJobBuilderWithDefaultBlackDuckFields();
         jobBuilder.channelDescriptorName(ChannelKeys.SLACK.getUniversalKey());
-        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel("IT Test Slack Webhook", "IT Test Slack Channel Name", "IT Test Slack Channel Username");
+        SlackJobDetailsModel slackJobDetails = new SlackJobDetailsModel(jobId, "IT Test Slack Webhook", "IT Test Slack Channel Name", "IT Test Slack Channel Username");
         jobBuilder.distributionJobDetails(slackJobDetails);
         return jobBuilder.build();
     }
