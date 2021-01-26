@@ -20,14 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter;
+package com.synopsys.integration.alert.processor.api.filter.extractor;
 
-import java.util.Optional;
-
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public interface FilterableNotificationExtractor {
-    Optional<FilterableNotificationWrapper<?>> wrapNotification(AlertNotificationModel notification);
+public abstract class NotificationExtractor {
+    private NotificationType notificationType;
+
+    public NotificationExtractor(NotificationType notificationType) {
+        this.notificationType = notificationType;
+    }
+
+    public NotificationType getNotificationType() {
+        return notificationType;
+    }
+
+    public abstract FilterableNotificationWrapper convertToFilterableNotificationWrapper(String notificationView);
 
 }
