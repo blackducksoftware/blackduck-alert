@@ -98,6 +98,10 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                                            .orElse(Set.of());
 
             Set<String> emailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
+            if (emailAddresses.isEmpty()) {
+                throw new AlertException(String.format("Could not determine what email addresses to send this content to. Job ID: %s", emailJobDetails.getJobId()));
+            }
+
             sendMessage(emailMessagingService, attachmentFormat, message, emailAddresses);
         }
         return new MessageResult(String.format("Successfully sent %d email(s)", emailMessages.size()));
@@ -109,11 +113,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     }
 
     private void sendMessage(EmailMessagingService emailService, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {
-        String alertServerUrl = alertProperties.getServerUrl().orElse("#");
-
         HashMap<String, Object> model = new HashMap<>();
-        Map<String, String> contentIdsToFilePaths = new HashMap<>();
-
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), message.getContent());
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), message.getMessageFormat());
         model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), message.getSubjectLine());
@@ -122,16 +122,16 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), message.getProjectName().orElse("Global"));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
-        model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
+        model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertProperties.getServerUrl().orElse("#"));
 
+        Map<String, String> contentIdsToFilePaths = new HashMap<>();
         emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
-        if (!model.isEmpty()) {
-            EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
-            Optional<File> optionalAttachment = message.getSource()
-                                                    .flatMap(projectMessage -> addAttachment(emailTarget, attachmentFormat, projectMessage));
-            emailService.sendEmailMessage(emailTarget);
-            optionalAttachment.ifPresent(emailAttachmentFileCreator::cleanUpAttachmentFile);
-        }
+
+        EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
+        Optional<File> optionalAttachment = message.getSource().flatMap(projectMessage -> addAttachment(emailTarget, attachmentFormat, projectMessage));
+
+        emailService.sendEmailMessage(emailTarget);
+        optionalAttachment.ifPresent(emailAttachmentFileCreator::cleanUpAttachmentFile);
     }
 
     private Optional<File> addAttachment(EmailTarget emailTarget, EmailAttachmentFormat attachmentFormat, ProjectMessage projectMessage) {

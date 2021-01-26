@@ -26,15 +26,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
@@ -59,8 +61,7 @@ public class EmailAddressGatherer {
             return emailAddresses;
         }
 
-        UUID jobId = null; // FIXME get this
-        Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(jobId)
+        Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(emailJobDetails.getJobId())
                                                              .map(DistributionJobModel::getBlackDuckGlobalConfigId);
         if (optionalBlackDuckGlobalConfigId.isPresent()) {
             Set<String> providerEmailAddresses = gatherProviderEmailAddresses(emailJobDetails.isProjectOwnerOnly(), projectHrefs, optionalBlackDuckGlobalConfigId.get());
@@ -76,7 +77,8 @@ public class EmailAddressGatherer {
         providerEmailAddresses.addAll(projectEmailAddresses);
 
         if (providerEmailAddresses.isEmpty()) {
-            providerEmailAddresses.add(retrieveProviderConfigEmailAddress(blackDuckGlobalConfigId));
+            retrieveProviderConfigEmailAddress(blackDuckGlobalConfigId)
+                .ifPresent(projectEmailAddresses::add);
         }
         return providerEmailAddresses;
     }
@@ -90,8 +92,13 @@ public class EmailAddressGatherer {
     }
 
     private Set<String> retrieveProjectOwnerEmailAddresses(Long providerConfigId, Collection<String> projectHrefs) {
-        // FIXME implement
-        return Set.of();
+        Set<String> projectOwnerEmailAddresses = new HashSet<>();
+        for (String href : projectHrefs) {
+            providerDataAccessor.getProjectByHref(providerConfigId, href)
+                .map(ProviderProject::getProjectOwnerEmail)
+                .ifPresent(projectOwnerEmailAddresses::add);
+        }
+        return projectOwnerEmailAddresses;
     }
 
     private Set<String> retrieveProjectUserEmailAddresses(Long providerConfigId, Collection<String> projectHrefs) {
@@ -104,9 +111,14 @@ public class EmailAddressGatherer {
         return projectUserEmailAddresses;
     }
 
-    private String retrieveProviderConfigEmailAddress(Long blackDuckGlobalConfigId) {
-        // FIXME implement
-        return "";
+    private Optional<String> retrieveProviderConfigEmailAddress(Long providerConfigId) {
+        try {
+            ProviderUserModel providerConfigUser = providerDataAccessor.getProviderConfigUserById(providerConfigId);
+            return Optional.of(providerConfigUser.getEmailAddress());
+        } catch (AlertConfigurationException e) {
+            logger.warn("Failed to retrieve provider config user", e);
+            return Optional.empty();
+        }
     }
 
 }
