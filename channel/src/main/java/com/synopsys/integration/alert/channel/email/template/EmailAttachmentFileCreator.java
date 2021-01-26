@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.email2.util.ProjectMessageToMessageContentGroupConversionUtils;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
@@ -57,24 +58,32 @@ public class EmailAttachmentFileCreator {
         this.gson = gson;
     }
 
+    // TODO update in 7.0.0
     public Optional<File> createAttachmentFile(EmailAttachmentFormat attachmentFormat, ProjectMessage message) {
-        // FIXME convert ProjectMessage to MessageContentGroup for feature parity
-        return createAttachmentFile(attachmentFormat, new MessageContentGroup());
+        if (EmailAttachmentFormat.NONE.equals(attachmentFormat)) {
+            return Optional.empty();
+        }
+
+        MessageContentGroup messageContentGroup = ProjectMessageToMessageContentGroupConversionUtils.toMessageContentGroup(message);
+        return createAttachmentFile(attachmentFormat, messageContentGroup);
     }
 
+    // TODO remove in 7.0.0
     public Optional<File> createAttachmentFile(EmailAttachmentFormat attachmentFormat, MessageContentGroup message) {
-        if (!EmailAttachmentFormat.NONE.equals(attachmentFormat)) {
-            String alertEmailAttachmentsDirName = alertProperties.getAlertEmailAttachmentsDir();
-            try {
-                File emailAttachmentsDir = new File(alertEmailAttachmentsDirName);
-                File formattedFile = createFormattedFile(attachmentFormat, message, emailAttachmentsDir);
-                return Optional.ofNullable(formattedFile);
-            } catch (SecurityException | IOException e) {
-                logger.warn("Unable to create {} email attachment file", attachmentFormat.name());
-                logger.debug("Attachment failure", e);
-            }
+        if (EmailAttachmentFormat.NONE.equals(attachmentFormat)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        String alertEmailAttachmentsDirName = alertProperties.getAlertEmailAttachmentsDir();
+        try {
+            File emailAttachmentsDir = new File(alertEmailAttachmentsDirName);
+            File formattedFile = createFormattedFile(attachmentFormat, message, emailAttachmentsDir);
+            return Optional.ofNullable(formattedFile);
+        } catch (SecurityException | IOException e) {
+            logger.warn("Unable to create {} email attachment file", attachmentFormat.name());
+            logger.debug("Attachment failure", e);
+            return Optional.empty();
+        }
     }
 
     public void cleanUpAttachmentFile(File attachmentFile) {
