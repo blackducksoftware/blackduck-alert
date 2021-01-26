@@ -22,37 +22,36 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job;
 
+import java.util.Collection;
 import java.util.List;
-
-import org.springframework.lang.Nullable;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
-    private FrequencyType frequencyType;
+    private Collection<FrequencyType> frequencyTypes;
     private NotificationType notificationType;
     private String projectName;
     private List<String> vulnerabilitySeverities;
     private List<String> policyNames;
 
     public FilteredDistributionJobRequestModel(
-        @Nullable FrequencyType frequencyType,
+        Collection<FrequencyType> frequencyTypes,
         NotificationType notificationType,
         String projectName,
         List<String> vulnerabilitySeverities,
         List<String> policyNames
     ) {
-        this.frequencyType = frequencyType;
+        this.frequencyTypes = frequencyTypes;
         this.notificationType = notificationType;
         this.projectName = projectName;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.policyNames = policyNames;
     }
 
-    public FrequencyType getFrequencyType() {
-        return frequencyType;
+    public Collection<FrequencyType> getFrequencyTypes() {
+        return frequencyTypes;
     }
 
     public NotificationType getNotificationType() {
@@ -69,5 +68,13 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
 
     public List<String> getPolicyNames() {
         return policyNames;
+    }
+
+    public boolean isVulnerabilityNotification() {
+        return !getVulnerabilitySeverities().isEmpty();
+    }
+
+    public boolean isPolicyNotification() {
+        return !getPolicyNames().isEmpty();
     }
 }

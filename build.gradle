@@ -78,6 +78,7 @@ repositories {
 dependencies {
     implementation platform(project(':alert-platform'))
 
+    implementation project(':processor-api')
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':channel')
@@ -87,6 +88,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':workflow')
     implementation project(':web')
+
     testImplementation project(':test-common')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes

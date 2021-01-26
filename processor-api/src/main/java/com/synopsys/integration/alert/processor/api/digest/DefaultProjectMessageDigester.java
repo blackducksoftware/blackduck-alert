@@ -20,17 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter;
+package com.synopsys.integration.alert.processor.api.digest;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import org.springframework.stereotype.Component;
 
-public interface JobNotificationExtractor {
-    Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, Collection<FrequencyType> frequencies);
+import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+
+@Component
+public class DefaultProjectMessageDigester extends ProjectMessageDigester {
+    @Override
+    public List<ProjectMessage> digest(List<ProjectMessage> notifications) {
+        return CombinableModel.combine(notifications);
+    }
 
 }
