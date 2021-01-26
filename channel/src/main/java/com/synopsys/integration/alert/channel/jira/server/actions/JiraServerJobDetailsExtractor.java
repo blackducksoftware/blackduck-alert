@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.jira.server.actions;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,15 +37,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraS
 
 @Component
 public class JiraServerJobDetailsExtractor extends JiraJobDetailsExtractor {
-
     @Autowired
     public JiraServerJobDetailsExtractor(Gson gson) {
         super(gson);
     }
 
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new JiraServerJobDetailsModel(
+            jobId,
             extractFieldValue(JiraServerDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
             extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
@@ -54,4 +55,5 @@ public class JiraServerJobDetailsExtractor extends JiraJobDetailsExtractor {
             extractJiraFieldMappings(JiraServerDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap)
         );
     }
+
 }

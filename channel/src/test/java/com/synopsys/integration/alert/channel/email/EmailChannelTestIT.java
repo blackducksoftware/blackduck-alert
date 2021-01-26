@@ -95,6 +95,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
 
     private DistributionJobModel createTestJobModel(String subjectLine, Collection<String> emailAddresses) {
         EmailJobDetailsModel jobDetailsModel = new EmailJobDetailsModel(
+            null,
             subjectLine,
             false,
             true,

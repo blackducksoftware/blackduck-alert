@@ -565,8 +565,9 @@ public class JobConfigActionsTest {
     }
 
     private DistributionJobModel createMockDistributionJobModel() {
+        UUID jobId = UUID.randomUUID();
         return DistributionJobModel.builder()
-                   .jobId(UUID.randomUUID())
+                   .jobId(jobId)
                    .enabled(true)
                    .name("A Job")
                    .blackDuckGlobalConfigId(-1L)
@@ -576,7 +577,7 @@ public class JobConfigActionsTest {
                    .createdAt(OffsetDateTime.now())
                    .filterByProject(false)
                    .notificationTypes(List.of("notification_type"))
-                   .distributionJobDetails(new MSTeamsJobDetailsModel("webhook"))
+                   .distributionJobDetails(new MSTeamsJobDetailsModel(jobId, "webhook"))
                    .build();
     }
 
@@ -613,8 +614,8 @@ public class JobConfigActionsTest {
     private JobDetailsExtractor createJobDetailsExtractor() {
         return new JobDetailsExtractor() {
             @Override
-            protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-                return new DistributionJobDetailsModel(createChannelKey()) {};
+            protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+                return new DistributionJobDetailsModel(createChannelKey(), jobId) {};
             }
         };
     }

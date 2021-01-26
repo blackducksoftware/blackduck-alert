@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public abstract class JobDetailsExtractor {
-
     public DistributionJobModel convertToJobModel(
         UUID jobId,
         Map<String, ConfigurationFieldModel> configuredFieldsMap,
@@ -67,13 +66,13 @@ public abstract class JobDetailsExtractor {
                                                   .vulnerabilityFilterSeverityNames(extractFieldValues("blackduck.vulnerability.notification.filter", configuredFieldsMap))
                                                   .projectFilterDetails(projectFilterDetails);
 
-        DistributionJobDetailsModel distributionJobDetailsModel = convertToChannelJobDetails(configuredFieldsMap);
+        DistributionJobDetailsModel distributionJobDetailsModel = convertToChannelJobDetails(jobId, configuredFieldsMap);
         builder.distributionJobDetails(distributionJobDetailsModel);
 
         return builder.build();
     }
 
-    protected abstract DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap);
+    protected abstract DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap);
 
     protected String extractFieldValueOrEmptyString(String fieldKey, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return extractFieldValue(fieldKey, configuredFieldsMap).orElse("");

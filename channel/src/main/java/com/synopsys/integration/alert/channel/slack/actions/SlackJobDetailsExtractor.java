@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.slack.actions;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -36,11 +37,13 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.proce
 public class SlackJobDetailsExtractor extends JobDetailsExtractor {
 
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new SlackJobDetailsModel(
+            jobId,
             extractFieldValueOrEmptyString(SlackDescriptor.KEY_WEBHOOK, configuredFieldsMap),
             extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_NAME, configuredFieldsMap),
             extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_USERNAME, configuredFieldsMap)
         );
     }
+
 }

@@ -178,7 +178,7 @@ public class DefaultJobNotificationExtractorTestIT {
             List.of(),
             policies,
             vulns,
-            new SlackJobDetailsModel("webhook", "channelName", "username")
+            new SlackJobDetailsModel(null, "webhook", "channelName", "username")
         );
     }
 
@@ -226,4 +226,5 @@ public class DefaultJobNotificationExtractorTestIT {
             false
         );
     }
+
 }

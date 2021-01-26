@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
+import java.util.UUID;
+
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 public class AzureBoardsJobDetailsModel extends DistributionJobDetailsModel {
@@ -31,8 +33,8 @@ public class AzureBoardsJobDetailsModel extends DistributionJobDetailsModel {
     private final String workItemCompletedState;
     private final String workItemReopenState;
 
-    public AzureBoardsJobDetailsModel(boolean addComments, String projectNameOrId, String workItemType, String workItemCompletedState, String workItemReopenState) {
-        super(ChannelKeys.AZURE_BOARDS);
+    public AzureBoardsJobDetailsModel(UUID jobId, boolean addComments, String projectNameOrId, String workItemType, String workItemCompletedState, String workItemReopenState) {
+        super(ChannelKeys.AZURE_BOARDS, jobId);
         this.addComments = addComments;
         this.projectNameOrId = projectNameOrId;
         this.workItemType = workItemType;
