@@ -33,9 +33,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email2.util.EmailAddressGatherer;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.email.EmailTarget;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -59,7 +60,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
     private final EmailChannelKey emailChannelKey;
     private final AlertProperties alertProperties;
-    private final EmailAddressHandler emailAddressHandler;
+    private final EmailAddressGatherer emailAddressGatherer;
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
     private final ConfigurationAccessor configurationAccessor;
@@ -68,14 +69,14 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     public EmailChannelMessageSender(
         EmailChannelKey emailChannelKey,
         AlertProperties alertProperties,
-        EmailAddressHandler emailAddressHandler,
+        EmailAddressGatherer emailAddressGatherer,
         EmailAttachmentFileCreator emailAttachmentFileCreator,
         FreemarkerTemplatingService freemarkerTemplatingService,
         ConfigurationAccessor configurationAccessor
     ) {
         this.emailChannelKey = emailChannelKey;
         this.alertProperties = alertProperties;
-        this.emailAddressHandler = emailAddressHandler;
+        this.emailAddressGatherer = emailAddressGatherer;
         this.emailAttachmentFileCreator = emailAttachmentFileCreator;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.configurationAccessor = configurationAccessor;
@@ -87,9 +88,16 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         EmailMessagingService emailMessagingService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
 
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
-        Set<String> emailAddresses = Set.of(); // FIXME emailAddressHandler.getUpdatedEmailAddresses(event.getProviderConfigId(), event.getContent(), distributionJobModel, emailJobDetails);
 
         for (EmailChannelMessageModel message : emailMessages) {
+            // FIXME this does not currently account for project-summary messages which do not include a source
+            Set<String> projectHrefs = message.getSource()
+                                           .map(ProjectMessage::getProject)
+                                           .flatMap(LinkableItem::getUrl)
+                                           .map(Set::of)
+                                           .orElse(Set.of());
+
+            Set<String> emailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
             sendMessage(emailMessagingService, attachmentFormat, message, emailAddresses);
         }
         return new MessageResult(String.format("Successfully sent %d email(s)", emailMessages.size()));
@@ -134,18 +142,6 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
             emailTarget.setAttachmentFilePath(attachmentFile.getPath());
         }
         return optionalAttachmentFile;
-    }
-
-    private String createEnhancedSubjectLine(String originalSubjectLine, String providerProjectName, String providerProjectVersionName) {
-        if (StringUtils.isNotBlank(providerProjectName)) {
-            String subjectLine = String.format("%s | For: %s", originalSubjectLine, providerProjectName);
-            if (StringUtils.isNotBlank(providerProjectVersionName)) {
-                subjectLine += String.format(" %s", providerProjectVersionName);
-            }
-            //78 characters is the suggested length for the message: https://tools.ietf.org/html/rfc2822#section-2.1.1
-            return StringUtils.abbreviate(subjectLine, 78);
-        }
-        return originalSubjectLine;
     }
 
     private String getImagePath(String imageFileName) throws AlertException {
