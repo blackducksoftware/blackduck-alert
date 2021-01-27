@@ -34,7 +34,7 @@ import com.synopys.integration.alert.channel.api.DistributionEventReceiver;
 @Component
 public class EmailDistributionEventReceiver extends DistributionEventReceiver<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannel channel) {
+    public EmailDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannelV2 channel) {
         super(gson, auditAccessor, emailJobDetailsAccessor, channel);
     }
 

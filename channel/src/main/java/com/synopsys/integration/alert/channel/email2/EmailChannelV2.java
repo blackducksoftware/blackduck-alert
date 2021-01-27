@@ -29,9 +29,9 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
 @Component
-public class EmailChannel extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
+public class EmailChannelV2 extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
     @Autowired
-    public EmailChannel(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
+    public EmailChannelV2(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
         super(emailChannelMessageConverter, emailChannelMessageSender);
     }
 
