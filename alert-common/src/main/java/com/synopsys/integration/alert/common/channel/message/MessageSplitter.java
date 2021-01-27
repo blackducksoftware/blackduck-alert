@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 public final class MessageSplitter {
     public static final String DEFAULT_LINE_SEPARATOR = "\n";
     public static final char BRACKET_CHARACTER = '[';
@@ -85,7 +87,10 @@ public final class MessageSplitter {
     }
 
     private StringBuilder flushChunks(List<String> messageChunks, StringBuilder chunkBuilder) {
-        messageChunks.add(chunkBuilder.toString());
+        String chunk = chunkBuilder.toString();
+        if (StringUtils.isNotEmpty(chunk)) {
+            messageChunks.add(chunk);
+        }
         return new StringBuilder();
     }
 
