@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job.details;
 
+import java.util.UUID;
+
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 public class SlackJobDetailsModel extends DistributionJobDetailsModel {
@@ -29,8 +31,8 @@ public class SlackJobDetailsModel extends DistributionJobDetailsModel {
     private final String channelName;
     private final String channelUsername;
 
-    public SlackJobDetailsModel(String webhook, String channelName, String channelUsername) {
-        super(ChannelKeys.SLACK);
+    public SlackJobDetailsModel(UUID jobId, String webhook, String channelName, String channelUsername) {
+        super(ChannelKeys.SLACK, jobId);
         this.webhook = webhook;
         this.channelName = channelName;
         this.channelUsername = channelUsername;

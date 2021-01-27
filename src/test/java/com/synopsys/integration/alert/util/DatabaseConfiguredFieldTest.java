@@ -77,7 +77,7 @@ public abstract class DatabaseConfiguredFieldTest {
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(Long blackDuckGlobalConfigId) {
-        SlackJobDetailsModel details = new SlackJobDetailsModel("channel_webhook", "#channel-name", getClass().getSimpleName());
+        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "channel_webhook", "#channel-name", getClass().getSimpleName());
         return new DistributionJobRequestModel(
             true,
             getClass().getSimpleName() + " Test Job",

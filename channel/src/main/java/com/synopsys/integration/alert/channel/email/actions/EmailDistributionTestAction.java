@@ -72,6 +72,7 @@ public class EmailDistributionTestAction extends ChannelDistributionTestAction {
         additionalEmailAddressesToUse.addAll(updateEmailAddresses);
 
         EmailJobDetailsModel updatedEmailJobDetails = new EmailJobDetailsModel(
+            originalJobModel.getJobId(),
             originalEmailJobDetails.getSubjectLine(),
             false,
             true,

@@ -32,7 +32,7 @@ public class EmailJobDetailsAccessorTest {
         UUID jobId = UUID.randomUUID();
         String additionalEmailAddress = "fake@synopsys.com";
 
-        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, false, false, null, List.of(additionalEmailAddress));
+        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, null, false, false, null, List.of(additionalEmailAddress));
         EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(jobId, null, false, false, null);
         EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
 
@@ -62,4 +62,5 @@ public class EmailJobDetailsAccessorTest {
         String newEmailAddress = newEmailAddresses.get(0);
         assertEquals(additionalEmailAddress, newEmailAddress);
     }
+
 }
