@@ -52,7 +52,7 @@ public class DefaultFilterableNotificationExtractor implements FilterableNotific
         try {
             notificationType = Enum.valueOf(NotificationType.class, notificationTypeString);
         } catch (IllegalArgumentException e) {
-            logger.warn("Notification did not match any supported notification type: {}", notificationTypeString);
+            logger.warn("Notification did not match any existing notification type: {}", notificationTypeString);
             return Optional.empty();
         }
 
