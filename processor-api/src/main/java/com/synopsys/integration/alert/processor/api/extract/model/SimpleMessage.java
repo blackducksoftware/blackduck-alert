@@ -23,19 +23,34 @@
 package com.synopsys.integration.alert.processor.api.extract.model;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class SimpleMessage extends ProviderMessage<SimpleMessage> {
     private final String summary;
     private final String description;
     private final List<LinkableItem> details;
 
-    public SimpleMessage(LinkableItem provider, String summary, String description, List<LinkableItem> details) {
+    private final ProjectMessage source;
+
+    public static SimpleMessage original(LinkableItem provider, String summary, String description, List<LinkableItem> details) {
+        return new SimpleMessage(provider, summary, description, details, null);
+    }
+
+    public static SimpleMessage derived(String summary, String description, List<LinkableItem> details, ProjectMessage source) {
+        return new SimpleMessage(source.getProvider(), summary, description, details, source);
+    }
+
+    private SimpleMessage(LinkableItem provider, String summary, String description, List<LinkableItem> details, @Nullable ProjectMessage source) {
         super(provider);
         this.summary = summary;
         this.description = description;
         this.details = details;
+        this.source = source;
     }
 
     public String getSummary() {
@@ -48,6 +63,10 @@ public class SimpleMessage extends ProviderMessage<SimpleMessage> {
 
     public List<LinkableItem> getDetails() {
         return details;
+    }
+
+    public Optional<ProjectMessage> getSource() {
+        return Optional.ofNullable(source);
     }
 
     @Override

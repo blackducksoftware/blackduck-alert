@@ -48,7 +48,7 @@ public class ProjectMessageSummarizer {
     public SimpleMessage summarize(ProjectMessage digestedProjectMessage) {
         Pair<String, String> summaryAndDescription = constructSummaryAndDescription(digestedProjectMessage);
         List<LinkableItem> details = constructMessageDetails(digestedProjectMessage);
-        return new SimpleMessage(digestedProjectMessage.getProvider(), summaryAndDescription.getLeft(), summaryAndDescription.getRight(), details);
+        return SimpleMessage.derived(summaryAndDescription.getLeft(), summaryAndDescription.getRight(), details, digestedProjectMessage);
     }
 
     private Pair<String, String> constructSummaryAndDescription(ProjectMessage projectMessage) {
