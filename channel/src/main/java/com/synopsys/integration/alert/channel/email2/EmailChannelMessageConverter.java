@@ -49,11 +49,20 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
     protected List<EmailChannelMessageModel> convertSimpleMessageToChannelMessages(EmailJobDetailsModel distributionDetails, SimpleMessage simpleMessage, List<String> messageChunks) {
         String subjectLine = String.format("%s | %s", distributionDetails.getSubjectLine(), simpleMessage.getSummary());
         subjectLine = StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
-
-        LinkableItem provider = simpleMessage.getProvider();
         String messageContent = StringUtils.join(messageChunks);
 
-        EmailChannelMessageModel model = EmailChannelMessageModel.simple(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"));
+        LinkableItem provider = simpleMessage.getProvider();
+        String providerName = provider.getValue();
+        String providerUrl = provider.getUrl().orElse("#");
+
+        Optional<ProjectMessage> optionalSource = simpleMessage.getSource();
+
+        EmailChannelMessageModel model;
+        if (optionalSource.isPresent()) {
+            model = EmailChannelMessageModel.project(subjectLine, messageContent, providerName, providerUrl, optionalSource.get());
+        } else {
+            model = EmailChannelMessageModel.simple(subjectLine, messageContent, providerName, providerUrl);
+        }
         return List.of(model);
     }
 

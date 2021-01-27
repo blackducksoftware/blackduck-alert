@@ -90,7 +90,6 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
 
         for (EmailChannelMessageModel message : emailMessages) {
-            // FIXME this does not currently account for project-summary messages which do not include a source
             Set<String> projectHrefs = message.getSource()
                                            .map(ProjectMessage::getProject)
                                            .flatMap(LinkableItem::getUrl)
