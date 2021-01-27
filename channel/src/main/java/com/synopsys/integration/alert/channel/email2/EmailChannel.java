@@ -1,5 +1,5 @@
 /**
- * channel-api
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,14 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopsys.integration.alert.channel.email2;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public interface DistributionChannelV2<D extends DistributionJobDetailsModel> {
-    MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopys.integration.alert.channel.api.MessageBoardChannel;
+
+@Component
+public class EmailChannel extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
+    @Autowired
+    public EmailChannel(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
+        super(emailChannelMessageConverter, emailChannelMessageSender);
+    }
 
 }

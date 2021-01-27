@@ -39,7 +39,11 @@ public abstract class AbstractChannelMessageConverter<D extends DistributionJobD
     private final SimpleMessageConverter simpleMessageConverter;
     private final ProjectMessageConverter projectMessageConverter;
 
-    public AbstractChannelMessageConverter(SimpleMessageConverter simpleMessageConverter, ProjectMessageConverter projectMessageConverter) {
+    protected AbstractChannelMessageConverter(ChannelMessageFormatter channelMessageFormatter) {
+        this(new SimpleMessageConverter(channelMessageFormatter), new ProjectMessageConverter(channelMessageFormatter));
+    }
+
+    protected AbstractChannelMessageConverter(SimpleMessageConverter simpleMessageConverter, ProjectMessageConverter projectMessageConverter) {
         this.simpleMessageConverter = simpleMessageConverter;
         this.projectMessageConverter = projectMessageConverter;
     }

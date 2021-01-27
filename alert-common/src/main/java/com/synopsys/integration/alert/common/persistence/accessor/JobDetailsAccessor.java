@@ -22,11 +22,12 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public interface JobDetailsAccessor<D extends DistributionJobDetailsModel> {
-    D retrieveDetails(UUID jobId);
+    Optional<D> retrieveDetails(UUID jobId);
 
 }

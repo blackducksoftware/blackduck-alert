@@ -24,7 +24,10 @@ package com.synopys.integration.alert.channel.api;
 
 import java.util.List;
 
-public interface ChannelMessageSender<M, R> {
-    R sendMessage(List<M> channelMessages);
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+
+public interface ChannelMessageSender<D extends DistributionJobDetailsModel, M, R> {
+    R sendMessages(D details, List<M> channelMessages) throws AlertException;
 
 }
