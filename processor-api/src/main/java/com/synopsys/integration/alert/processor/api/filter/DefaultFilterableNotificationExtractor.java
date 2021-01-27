@@ -60,8 +60,7 @@ public class DefaultFilterableNotificationExtractor implements FilterableNotific
         if (notificationExtractorOptional.isPresent()) {
             NotificationExtractor notificationExtractor = notificationExtractorOptional.get();
 
-            String content = notification.getContent();
-            FilterableNotificationWrapper filterableNotificationWrapper = notificationExtractor.convertToFilterableNotificationWrapper(content);
+            FilterableNotificationWrapper filterableNotificationWrapper = notificationExtractor.convertToFilterableNotificationWrapper(notification);
             return Optional.of(filterableNotificationWrapper);
         }
 

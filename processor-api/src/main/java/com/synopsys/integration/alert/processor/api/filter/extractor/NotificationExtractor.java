@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.processor.api.filter.extractor;
 
+import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -36,6 +37,6 @@ public abstract class NotificationExtractor {
         return notificationType;
     }
 
-    public abstract FilterableNotificationWrapper convertToFilterableNotificationWrapper(String notificationView);
+    public abstract FilterableNotificationWrapper convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel);
 
 }
