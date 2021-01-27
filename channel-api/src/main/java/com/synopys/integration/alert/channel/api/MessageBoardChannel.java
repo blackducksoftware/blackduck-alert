@@ -30,6 +30,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopys.integration.alert.channel.api.convert.AbstractChannelMessageConverter;
 
+/**
+ * @param <D> The type of job details relevant to this channel.
+ * @param <T> The model containing all the message-fields this channel's implementation of {@link ChannelMessageSender} requires.
+ *            This is meant to tightly couple the output of {@link AbstractChannelMessageConverter} to the input of {@link ChannelMessageSender}.
+ */
 public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannelV2<D> {
     private final AbstractChannelMessageConverter<D, T> channelMessageConverter;
     private final ChannelMessageSender<D, T, MessageResult> channelMessageSender;
