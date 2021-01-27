@@ -46,7 +46,13 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
     }
 
     public final IssueContentModel createIssueContentModel(
-        String providerName, IssueOperation issueOperation, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {
+        String providerName,
+        IssueOperation issueOperation,
+        LinkableItem topic,
+        @Nullable LinkableItem subTopic,
+        Set<ComponentItem> componentItems,
+        ComponentItem arbitraryItem
+    ) {
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
@@ -88,7 +94,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         return splitter.splitMessages(text, true);
     }
 
-    private String createTitle(String provider, LinkableItem topic, LinkableItem subTopic, ComponentItem arbitraryItem) {
+    private String createTitle(String provider, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem arbitraryItem) {
         StringBuilder title = new StringBuilder();
         title.append("Alert - Provider: ");
         title.append(provider);
