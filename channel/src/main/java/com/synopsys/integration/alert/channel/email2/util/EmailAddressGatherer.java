@@ -56,15 +56,20 @@ public class EmailAddressGatherer {
     public Set<String> gatherEmailAddresses(EmailJobDetailsModel emailJobDetails, Collection<String> projectHrefs) {
         Set<String> emailAddresses = new HashSet<>();
 
-        emailAddresses.addAll(emailJobDetails.getAdditionalEmailAddresses());
-        if (emailJobDetails.isAdditionalEmailAddressesOnly()) {
+        boolean projectOwnerOnly = emailJobDetails.isProjectOwnerOnly();
+        if (!projectOwnerOnly) {
+            emailAddresses.addAll(emailJobDetails.getAdditionalEmailAddresses());
+        }
+
+        boolean additionalEmailAddressesOnly = emailJobDetails.isAdditionalEmailAddressesOnly();
+        if (additionalEmailAddressesOnly) {
             return emailAddresses;
         }
 
         Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(emailJobDetails.getJobId())
                                                              .map(DistributionJobModel::getBlackDuckGlobalConfigId);
         if (optionalBlackDuckGlobalConfigId.isPresent()) {
-            Set<String> providerEmailAddresses = gatherProviderEmailAddresses(emailJobDetails.isProjectOwnerOnly(), projectHrefs, optionalBlackDuckGlobalConfigId.get());
+            Set<String> providerEmailAddresses = gatherProviderEmailAddresses(projectOwnerOnly, projectHrefs, optionalBlackDuckGlobalConfigId.get());
             emailAddresses.addAll(providerEmailAddresses);
         }
         return emailAddresses;
