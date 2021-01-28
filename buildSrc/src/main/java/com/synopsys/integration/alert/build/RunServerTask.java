@@ -39,6 +39,7 @@ public class RunServerTask extends Exec {
         envVars.put("ALERT_ENCRYPTION_PASSWORD", "changeme");
         envVars.put("ALERT_ENCRYPTION_GLOBAL_SALT", "changeme");
         envVars.put("ALERT_TRUST_CERT", "true");
+        envVars.put("ALERT_LOG_FILE_PATH", "log");
         getEnvironment().putAll(envVars);
 
         Project project = getProject();

@@ -24,24 +24,30 @@ package com.synopys.integration.alert.channel.api;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopys.integration.alert.channel.api.convert.AbstractChannelMessageConverter;
 
+/**
+ * @param <D> The type of job details relevant to this channel.
+ * @param <T> The model containing all the message-fields this channel's implementation of {@link ChannelMessageSender} requires.
+ *            This is meant to tightly couple the output of {@link AbstractChannelMessageConverter} to the input of {@link ChannelMessageSender}.
+ */
 public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannelV2<D> {
     private final AbstractChannelMessageConverter<D, T> channelMessageConverter;
-    private final ChannelMessageSender<T, MessageResult> channelMessageSender;
+    private final ChannelMessageSender<D, T, MessageResult> channelMessageSender;
 
-    protected MessageBoardChannel(AbstractChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<T, MessageResult> channelMessageSender) {
+    protected MessageBoardChannel(AbstractChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<D, T, MessageResult> channelMessageSender) {
         this.channelMessageConverter = channelMessageConverter;
         this.channelMessageSender = channelMessageSender;
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) {
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
         List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages);
-        return channelMessageSender.sendMessage(channelMessages);
+        return channelMessageSender.sendMessages(distributionDetails, channelMessages);
     }
 
 }

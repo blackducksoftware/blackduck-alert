@@ -65,7 +65,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
@@ -86,7 +86,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final DistributionJobRepository distributionJobRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
-    private final EmailJobDetailsAccessor emailJobDetailsAccessor;
+    private final DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
@@ -101,7 +101,7 @@ public class StaticJobAccessor implements JobAccessor {
         DistributionJobRepository distributionJobRepository,
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
         AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
-        EmailJobDetailsAccessor emailJobDetailsAccessor,
+        DefaultEmailJobDetailsAccessor emailJobDetailsAccessor,
         JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
