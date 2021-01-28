@@ -29,11 +29,14 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class LinkableItem extends AlertSerializableModel implements Comparable<LinkableItem> {
     private static final String[] EXCLUDED_FIELDS = { "collapsible", "isNumericValue" };
 
+    // TODO remove this annotation in 7.0.0
+    @SerializedName("name")
     private final String label;
     private final String value;
     private final String url;

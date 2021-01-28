@@ -81,7 +81,7 @@ public abstract class ChannelMessageParser {
     }
 
     public String getCommonTopic(MessageContentGroup messageContent, @Nullable ItemOperation nullableTopLevelAction) {
-        LinkableItem commonProject = messageContent.getCommonProject();
+        LinkableItem commonProject = messageContent.getCommonTopic();
         if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
             commonProject = new LinkableItem(commonProject.getLabel(), commonProject.getValue());
         }

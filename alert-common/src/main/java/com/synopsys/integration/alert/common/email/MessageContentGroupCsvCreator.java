@@ -46,7 +46,7 @@ public class MessageContentGroupCsvCreator {
 
     public String createCsvString(MessageContentGroup messageContentGroup) {
         LinkableItem commonProvider = messageContentGroup.getCommonProvider();
-        LinkableItem commonProject = messageContentGroup.getCommonProject();
+        LinkableItem commonProject = messageContentGroup.getCommonTopic();
         List<ProviderMessageContent> contents = messageContentGroup.getSubContent();
 
         StringBuilder csvBuilder = new StringBuilder();

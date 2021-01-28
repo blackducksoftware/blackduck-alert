@@ -34,7 +34,7 @@ public class MessageContentGroup extends AlertSerializableModel {
     private final List<ProviderMessageContent> subContent;
 
     private LinkableItem comonProvider;
-    private LinkableItem commonProject;
+    private LinkableItem commonTopic;
 
     public static MessageContentGroup singleton(ProviderMessageContent message) {
         MessageContentGroup group = new MessageContentGroup();
@@ -44,23 +44,23 @@ public class MessageContentGroup extends AlertSerializableModel {
 
     public MessageContentGroup() {
         this.subContent = new LinkedList<>();
-        this.commonProject = null;
+        this.commonTopic = null;
     }
 
     public boolean applies(ProviderMessageContent message) {
-        return null == commonProject || commonProject.getValue().equals(message.getProject().getValue());
+        return null == commonTopic || commonTopic.getValue().equals(message.getProject().getValue());
     }
 
     public void add(ProviderMessageContent message) {
-        if (null == commonProject) {
+        if (null == commonTopic) {
             comonProvider = message.getProvider();
-            commonProject = message.getProject();
-        } else if (!commonProject.getValue().equals(message.getProject().getValue())) {
-            throw new IllegalArgumentException(String.format("The project of this message content did not match the group project. Expected: %s. Actual: %s.", commonProject.getValue(), message.getProject().getValue()));
+            commonTopic = message.getProject();
+        } else if (!commonTopic.getValue().equals(message.getProject().getValue())) {
+            throw new IllegalArgumentException(String.format("The topic of this message did not match the group topic. Expected: %s. Actual: %s.", commonTopic.getValue(), message.getProject().getValue()));
         }
 
-        if (commonProject.getUrl().isEmpty() && message.getProject().getUrl().isPresent()) {
-            commonProject = message.getProject();
+        if (commonTopic.getUrl().isEmpty() && message.getProject().getUrl().isPresent()) {
+            commonTopic = message.getProject();
         }
 
         subContent.add(message);
@@ -78,12 +78,12 @@ public class MessageContentGroup extends AlertSerializableModel {
         return comonProvider;
     }
 
-    public LinkableItem getCommonProject() {
-        return commonProject;
+    public LinkableItem getCommonTopic() {
+        return commonTopic;
     }
 
     public boolean isEmpty() {
-        return subContent.isEmpty() || StringUtils.isBlank(commonProject.getLabel()) || StringUtils.isBlank(commonProject.getValue());
+        return subContent.isEmpty() || StringUtils.isBlank(commonTopic.getLabel()) || StringUtils.isBlank(commonTopic.getValue());
     }
 
 }

@@ -110,7 +110,7 @@ public class EmailChannel extends NamedDistributionChannel {
         String projectName = null;
         String projectVersionName = null;
         if (!messageContent.isEmpty()) {
-            projectName = messageContent.getCommonProject().getValue();
+            projectName = messageContent.getCommonTopic().getValue();
             projectVersionName = messageContent.getSubContent()
                                      .stream()
                                      .map(ProviderMessageContent::getProjectVersion)
