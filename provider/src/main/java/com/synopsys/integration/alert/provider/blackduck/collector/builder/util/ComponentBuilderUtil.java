@@ -76,7 +76,7 @@ public final class ComponentBuilderUtil {
             .filter(StringUtils::isNotBlank)
             .ifPresentOrElse(componentVersion -> {
                     componentBuilder.applyComponentData(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName()));
-                    componentBuilder.applyComponentVersion(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersion, projectQueryLink));
+                    componentBuilder.applySubComponent(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_VERSION_NAME, componentVersion, projectQueryLink));
                 },
                 () -> componentBuilder.applyComponentData(new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_NAME, componentData.getComponentName(), projectQueryLink)));
     }

@@ -26,8 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,8 +129,8 @@ public abstract class IssueTrackerRequestCreator {
     }
 
     private List<IssueTrackerRequest> createRequestsPerComponent(IssueConfig issueConfig, ProviderMessageContent messageContent) throws IntegrationException {
-        LinkableItem topic = messageContent.getProject();
-        LinkableItem nullableSubTopic = messageContent.getProjectVersion().orElse(null);
+        LinkableItem topic = messageContent.getTopic();
+        LinkableItem nullableSubTopic = messageContent.getSubTopic().orElse(null);
 
         ContentKey providerContentKey = messageContent.getContentKey();
         String providerUrl = messageContent.getProvider().getUrl()

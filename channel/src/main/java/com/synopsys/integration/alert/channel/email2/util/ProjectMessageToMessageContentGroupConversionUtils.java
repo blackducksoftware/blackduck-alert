@@ -49,12 +49,12 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
         providerMessageContentBuilder.applyProvider(provider.getLabel(), -1L, provider.getValue(), provider.getUrl().orElse(null));
 
         LinkableItem project = projectMessage.getProject();
-        providerMessageContentBuilder.applyProject(project.getLabel(), project.getValue(), project.getUrl().orElse(null));
+        providerMessageContentBuilder.applyTopic(project.getLabel(), project.getValue(), project.getUrl().orElse(null));
 
         Optional<LinkableItem> optionalProjectVersion = projectMessage.getProjectVersion();
         if (optionalProjectVersion.isPresent()) {
             LinkableItem projectVersion = optionalProjectVersion.get();
-            providerMessageContentBuilder.applyProjectVersion(projectVersion.getLabel(), projectVersion.getValue(), projectVersion.getUrl().orElse(null));
+            providerMessageContentBuilder.applySubTopic(projectVersion.getLabel(), projectVersion.getValue(), projectVersion.getUrl().orElse(null));
         }
 
         projectMessage.getOperation()
@@ -90,14 +90,14 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
             componentItemBuilder.applyCategory(category);
 
             componentItemBuilder.applyComponentData(bomComponent.getComponent());
-            bomComponent.getComponentVersion().ifPresent(componentItemBuilder::applyComponentVersion);
+            bomComponent.getComponentVersion().ifPresent(componentItemBuilder::applySubComponent);
 
             String categoryItemLabel = convertToCategoryLabel(type);
             LinkableItem categoryItem = new LinkableItem(categoryItemLabel, componentConcern.getName(), componentConcern.getUrl().orElse(null));
             componentItemBuilder.applyCategoryItem(categoryItem);
 
             String severity = componentConcern.getSeverity().name();
-            componentItemBuilder.applySeverity("Severity", severity);
+            componentItemBuilder.applyCategoryGroupingAttribute("Severity", severity);
 
             boolean collapseOnCategory = ComponentConcernType.VULNERABILITY.equals(type);
             componentItemBuilder.applyCollapseOnCategory(collapseOnCategory);

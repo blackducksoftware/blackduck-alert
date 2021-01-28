@@ -129,7 +129,7 @@ public class EmailAddressHandler {
     private Set<String> systemWideNotificationCheck(Collection<ProviderMessageContent> messages, DistributionJobModel distributionJobModel, Long providerConfigId, boolean projectOwnerOnly) {
         boolean hasSubTopic = messages
                                   .stream()
-                                  .map(ProviderMessageContent::getProjectVersion)
+                                  .map(ProviderMessageContent::getSubTopic)
                                   .anyMatch(Optional::isPresent);
         if (!hasSubTopic) {
             boolean filterByProject = distributionJobModel.isFilterByProject();

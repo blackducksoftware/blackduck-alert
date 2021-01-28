@@ -29,7 +29,7 @@ public abstract class ProcessorTest {
     public ProviderMessageContent createProviderMessageContent(String name, String value, ComponentItem... componentItems) throws AlertException {
         ProviderMessageContent.Builder builder = new ProviderMessageContent.Builder()
                                                      .applyProvider("Black Duck", 1L, "providerConfig")
-                                                     .applyProject(name, value);
+                                                     .applyTopic(name, value);
         for (ComponentItem componentItem : componentItems) {
             builder.applyComponentItem(componentItem);
         }

@@ -74,7 +74,7 @@ public class NotificationToDistributionEventConverterTestIT {
     private ProviderMessageContent createMessageContent(String value) throws AlertException {
         return new ProviderMessageContent.Builder()
                    .applyProvider("testProvider", 1L, "testProviderConfig")
-                   .applyProject("Name", value).build();
+                   .applyTopic("Name", value).build();
     }
 
     private DistributionJobModelBuilder createJobBuilderWithDefaultBlackDuckFields() {

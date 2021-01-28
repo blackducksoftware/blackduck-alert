@@ -101,7 +101,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         if (null != arbitraryItem) {
             title.append(createTitlePartStringPrefixedWithComma(arbitraryItem.getComponent()));
             arbitraryItem
-                .getComponentVersion()
+                .getSubComponent()
                 .ifPresent(linkableItem -> title.append(createTitlePartStringPrefixedWithComma(linkableItem)));
 
             if (arbitraryItem.collapseOnCategory()) {
