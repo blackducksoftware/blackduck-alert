@@ -223,7 +223,9 @@ class TableSelectInput extends Component {
 
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const pageNumber = uiPageNumber ? uiPageNumber - 1 : 0;
-        const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${searchTerm}`, csrfToken, newFieldModel);
+        const encodedSearchTerm = encodeURIComponent(searchTerm);
+        const apiUrl = `/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}`;
+        const request = createNewConfigurationRequest(apiUrl, csrfToken, newFieldModel);
         return request.then((response) => {
             this.setState({
                 progress: false
