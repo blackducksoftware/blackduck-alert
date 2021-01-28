@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -132,6 +133,23 @@ public class DefaultAuditAccessor implements AuditAccessor {
         Page<AlertNotificationModel> auditPage = getPageOfNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
         List<AuditEntryModel> auditEntries = convertToAuditEntryModelFromNotificationsSorted(auditPage.getContent(), notificationToAuditEntryConverter, sortField, sortOrder);
         return new AuditEntryPageModel(auditPage.getTotalPages(), auditPage.getNumber(), auditEntries.size(), auditEntries);
+    }
+
+    @Override
+    @Transactional
+    public Long createAuditEntryForJob(UUID jobId, Collection<Long> notificationIds) {
+        AuditEntryEntity auditEntryToSave = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, AuditEntryStatus.PENDING.name(), null, null);
+        AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
+        Long auditEntryId = savedAuditEntry.getId();
+
+        List<AuditNotificationRelation> auditNotificationRelationsToSave = new LinkedList<>();
+        for (Long notificationId : notificationIds) {
+            AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, notificationId);
+            auditNotificationRelationsToSave.add(auditNotificationRelation);
+        }
+
+        auditNotificationRepository.saveAll(auditNotificationRelationsToSave);
+        return auditEntryId;
     }
 
     @Override
