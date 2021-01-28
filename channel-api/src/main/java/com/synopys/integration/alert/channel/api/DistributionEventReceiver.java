@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
 
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEventV2> {
@@ -73,8 +72,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
 
     protected void handleJobDetailsMissing(DistributionEventV2 event) {
         String failureMessage = "Received a distribution event for a Job that no longer exists";
-        ChannelKey destination = event.getDestination();
-        logger.warn("{}. Destination: {}", failureMessage, destination.getDisplayName());
+        logger.warn("{}. Destination: {}", failureMessage, event.getDestination());
         auditAccessor.setAuditEntryFailure(Set.of(event.getAuditId()), failureMessage, null);
     }
 

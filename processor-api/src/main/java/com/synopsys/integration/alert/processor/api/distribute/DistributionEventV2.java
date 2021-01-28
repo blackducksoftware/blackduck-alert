@@ -24,34 +24,21 @@ package com.synopsys.integration.alert.processor.api.distribute;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 
-public class DistributionEventV2 extends AlertSerializableModel {
-    private final UUID eventId;
-
-    private final ChannelKey destination;
-
+public class DistributionEventV2 extends AlertEvent {
     private final UUID jobId;
     private final Long auditId;
 
     private final ProviderMessageHolder providerMessages;
 
     public DistributionEventV2(ChannelKey destination, UUID jobId, Long auditId, ProviderMessageHolder providerMessages) {
-        this.eventId = UUID.randomUUID();
-        this.destination = destination;
+        super(destination.getUniversalKey());
         this.jobId = jobId;
         this.auditId = auditId;
         this.providerMessages = providerMessages;
-    }
-
-    public UUID getEventId() {
-        return eventId;
-    }
-
-    public ChannelKey getDestination() {
-        return destination;
     }
 
     public UUID getJobId() {
