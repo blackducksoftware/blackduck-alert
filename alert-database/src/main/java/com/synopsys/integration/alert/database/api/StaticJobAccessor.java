@@ -191,26 +191,31 @@ public class StaticJobAccessor implements JobAccessor {
                                           .collect(Collectors.toList());
 
         NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
-        String projectName = filteredDistributionJobRequestModel.getProjectName();
+        List<String> projectNames = filteredDistributionJobRequestModel.getProjectNames();
 
         List<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames();
         List<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         List<DistributionJobEntity> distributionJobEntities;
         if (filteredDistributionJobRequestModel.isPolicyNotification()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectName, policyNames);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectNames, policyNames);
         } else if (filteredDistributionJobRequestModel.isVulnerabilityNotification()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectName, vulnerabilitySeverities);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectNames, vulnerabilitySeverities);
         } else {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectNames);
         }
 
         // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
         return distributionJobEntities.stream()
                    .filter(distributionJobEntity -> !distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() ||
-                                                        Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName))
+                                                        verifyPatternMatchesProject(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectNames)
+                   )
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
+    }
+
+    private boolean verifyPatternMatchesProject(String projectNamePattern, List<String> projectNames) {
+        return projectNamePattern == null || projectNames.stream().anyMatch(projectName -> Pattern.matches(projectNamePattern, projectName));
     }
 
     private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {

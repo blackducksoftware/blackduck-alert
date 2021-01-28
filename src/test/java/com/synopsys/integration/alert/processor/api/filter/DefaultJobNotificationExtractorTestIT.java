@@ -187,26 +187,26 @@ public class DefaultJobNotificationExtractorTestIT {
         FilterableNotificationWrapper<?> test_project = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
             null,
-            "test_project",
+            List.of("test_project"),
             List.of(VulnerabilitySeverityType.LOW.name())
         );
         FilterableNotificationWrapper<?> test_project2 = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
             null,
-            "test_project1",
+            List.of("test_project1"),
             List.of(VulnerabilitySeverityType.HIGH.name())
         );
         FilterableNotificationWrapper<?> test_project3 = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
             null,
-            "test_project2",
+            List.of("test_project2"),
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
         AlertNotificationModel alertPolicyNotificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
         FilterableNotificationWrapper<?> test_project4 = FilterableNotificationWrapper.policy(
             alertPolicyNotificationModel,
             null,
-            "test_project2",
+            List.of("test_project2"),
             List.of(POLICY_FILTER_NAME)
         );
 
