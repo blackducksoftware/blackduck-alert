@@ -45,6 +45,8 @@ public interface AuditAccessor {
     AuditEntryPageModel getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
 
+    Long createAuditEntryForJob(UUID jobId, Collection<Long> notificationIds);
+
     Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup content);
 
     void setAuditEntrySuccess(Collection<Long> auditEntryIds);

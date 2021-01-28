@@ -5,6 +5,8 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':azure-boards-common')
+    implementation project(':channel-api')
+    implementation project(':processor-api')
     implementation project(':descriptor-api')
 
     implementation 'org.springframework:spring-context'

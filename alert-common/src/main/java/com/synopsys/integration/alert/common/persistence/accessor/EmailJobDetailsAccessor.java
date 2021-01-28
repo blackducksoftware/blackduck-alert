@@ -1,5 +1,5 @@
 /**
- * channel-api
+ * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,14 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 
-public interface DistributionChannelV2<D extends DistributionJobDetailsModel> {
-    MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException;
-
+public interface EmailJobDetailsAccessor extends JobDetailsAccessor<EmailJobDetailsModel> {
 }

@@ -65,7 +65,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.email.EmailJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
@@ -86,7 +86,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final DistributionJobRepository distributionJobRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
-    private final EmailJobDetailsAccessor emailJobDetailsAccessor;
+    private final DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
@@ -101,7 +101,7 @@ public class StaticJobAccessor implements JobAccessor {
         DistributionJobRepository distributionJobRepository,
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
         AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
-        EmailJobDetailsAccessor emailJobDetailsAccessor,
+        DefaultEmailJobDetailsAccessor emailJobDetailsAccessor,
         JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
@@ -191,26 +191,31 @@ public class StaticJobAccessor implements JobAccessor {
                                           .collect(Collectors.toList());
 
         NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
-        String projectName = filteredDistributionJobRequestModel.getProjectName();
+        List<String> projectNames = filteredDistributionJobRequestModel.getProjectNames();
 
         List<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames();
         List<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         List<DistributionJobEntity> distributionJobEntities;
         if (filteredDistributionJobRequestModel.isPolicyNotification()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectName, policyNames);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectNames, policyNames);
         } else if (filteredDistributionJobRequestModel.isVulnerabilityNotification()) {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectName, vulnerabilitySeverities);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectNames, vulnerabilitySeverities);
         } else {
-            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName);
+            distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectNames);
         }
 
         // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
         return distributionJobEntities.stream()
                    .filter(distributionJobEntity -> !distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() ||
-                                                        Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName))
+                                                        verifyPatternMatchesProject(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectNames)
+                   )
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
+    }
+
+    private boolean verifyPatternMatchesProject(String projectNamePattern, List<String> projectNames) {
+        return projectNamePattern == null || projectNames.stream().anyMatch(projectName -> Pattern.matches(projectNamePattern, projectName));
     }
 
     private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {

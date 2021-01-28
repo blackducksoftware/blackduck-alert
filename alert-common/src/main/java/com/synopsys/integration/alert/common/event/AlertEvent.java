@@ -30,7 +30,7 @@ public class AlertEvent extends AlertSerializableModel {
     private final String eventId;
     private final String destination;
 
-    public AlertEvent(final String destination) {
+    public AlertEvent(String destination) {
         this.eventId = UUID.randomUUID().toString();
         this.destination = destination;
     }
@@ -42,4 +42,5 @@ public class AlertEvent extends AlertSerializableModel {
     public String getDestination() {
         return destination;
     }
+
 }
