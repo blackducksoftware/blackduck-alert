@@ -136,6 +136,23 @@ public class DefaultAuditAccessor implements AuditAccessor {
 
     @Override
     @Transactional
+    public Long createAuditEntryForJob(UUID jobId, Collection<Long> notificationIds) {
+        AuditEntryEntity auditEntryToSave = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, AuditEntryStatus.PENDING.name(), null, null);
+        AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
+        Long auditEntryId = savedAuditEntry.getId();
+
+        List<AuditNotificationRelation> auditNotificationRelationsToSave = new ArrayList<>(notificationIds.size());
+        for (Long notificationId : notificationIds) {
+            AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, notificationId);
+            auditNotificationRelationsToSave.add(auditNotificationRelation);
+        }
+
+        auditNotificationRepository.saveAll(auditNotificationRelationsToSave);
+        return auditEntryId;
+    }
+
+    @Override
+    @Transactional
     public Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup contentGroup) {
         Map<Long, Long> notificationIdToAuditId = new HashMap<>();
         List<ProviderMessageContent> subContent = contentGroup.getSubContent();
