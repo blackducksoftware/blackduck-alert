@@ -73,7 +73,8 @@ function auditResendError(message) {
 function createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
     // server side is 0 based but UI paging component starts with 1
     const pageNumberParameter = pageNumber - 1;
-    return `${FETCH_URL}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}&searchTerm=${searchTerm}&sortField=${sortField}&sortOrder=${sortOrder}&onlyShowSentNotifications=${onlyShowSentNotifications}`;
+    const encodedSearchTerm = encodeURIComponent(searchTerm);
+    return `${FETCH_URL}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}&sortField=${sortField}&sortOrder=${sortOrder}&onlyShowSentNotifications=${onlyShowSentNotifications}`;
 }
 
 /**

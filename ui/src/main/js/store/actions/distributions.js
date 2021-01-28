@@ -197,7 +197,8 @@ export function fetchDistributionJobs(pageNumber, pageLimit, searchTerm) {
 
         pageNumber = pageNumber ? pageNumber - 1 : 0;
         pageLimit = pageLimit ? pageLimit : 10;
-        const requestUrl = `${ConfigRequestBuilder.JOB_API_URL}?pageNumber=${pageNumber}&pageSize=${pageLimit}&searchTerm=${searchTerm}`;
+        const encodedSearchTerm = encodeURIComponent(searchTerm);
+        const requestUrl = `${ConfigRequestBuilder.JOB_API_URL}?pageNumber=${pageNumber}&pageSize=${pageLimit}&searchTerm=${encodedSearchTerm}`;
         fetch(requestUrl, {
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()
