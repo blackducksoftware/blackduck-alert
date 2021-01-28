@@ -1,8 +1,9 @@
 package com.synopsys.integration.alert.common.channel.message;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class MessageSplitterTest {
@@ -23,7 +24,7 @@ class MessageSplitterTest {
 
         for (String splitMessage : splitMessages) {
             System.out.println("'" + splitMessage + "'");
-            Assertions.assertTrue(splitMessage.length() <= limit,
+            assertTrue(splitMessage.length() <= limit,
                 String.format("Failed to split message by the limit (%d): '%s'", limit, splitMessage)
             );
         }
