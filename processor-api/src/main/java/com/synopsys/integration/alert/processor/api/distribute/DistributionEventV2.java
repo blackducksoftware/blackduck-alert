@@ -29,14 +29,25 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 
 public class DistributionEventV2 extends AlertSerializableModel {
+    private final UUID eventId;
+
     private final ChannelKey destination;
+
     private final UUID jobId;
+    private final Long auditId;
+
     private final ProviderMessageHolder providerMessages;
 
-    public DistributionEventV2(ChannelKey destination, UUID jobId, ProviderMessageHolder providerMessages) {
+    public DistributionEventV2(ChannelKey destination, UUID jobId, Long auditId, ProviderMessageHolder providerMessages) {
+        this.eventId = UUID.randomUUID();
         this.destination = destination;
         this.jobId = jobId;
+        this.auditId = auditId;
         this.providerMessages = providerMessages;
+    }
+
+    public UUID getEventId() {
+        return eventId;
     }
 
     public ChannelKey getDestination() {
@@ -45,6 +56,10 @@ public class DistributionEventV2 extends AlertSerializableModel {
 
     public UUID getJobId() {
         return jobId;
+    }
+
+    public Long getAuditId() {
+        return auditId;
     }
 
     public ProviderMessageHolder getProviderMessages() {

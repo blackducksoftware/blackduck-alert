@@ -3,6 +3,7 @@ ext.moduleName = 'com.synopsys.integration.alert.channel-api'
 dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
+    implementation project(':descriptor-api')
     implementation project(':processor-api')
 
     implementation 'com.synopsys.integration:blackduck-common'
