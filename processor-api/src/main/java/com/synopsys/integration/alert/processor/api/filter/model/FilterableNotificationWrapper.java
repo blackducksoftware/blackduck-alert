@@ -59,7 +59,7 @@ public class FilterableNotificationWrapper<T extends NotificationContentComponen
         return new FilterableNotificationWrapper<>(notificationModel, notificationContent, null, List.of(), List.of());
     }
 
-    public FilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent, List<String> projectNames, List<String> policyNames, List<String> vulnerabilitySeverities) {
+    private FilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent, List<String> projectNames, List<String> policyNames, List<String> vulnerabilitySeverities) {
         super(alertNotificationModel, notificationContent);
         this.projectNames = projectNames;
         this.policyNames = policyNames;
