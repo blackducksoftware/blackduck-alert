@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -142,7 +141,7 @@ public class DefaultAuditAccessor implements AuditAccessor {
         AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
         Long auditEntryId = savedAuditEntry.getId();
 
-        List<AuditNotificationRelation> auditNotificationRelationsToSave = new LinkedList<>();
+        List<AuditNotificationRelation> auditNotificationRelationsToSave = new ArrayList<>(notificationIds.size());
         for (Long notificationId : notificationIds) {
             AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, notificationId);
             auditNotificationRelationsToSave.add(auditNotificationRelation);
