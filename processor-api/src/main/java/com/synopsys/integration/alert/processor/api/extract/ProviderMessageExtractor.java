@@ -22,10 +22,51 @@
  */
 package com.synopsys.integration.alert.processor.api.extract;
 
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public interface ProviderMessageExtractor {
-    ProviderMessageHolder extract(FilterableNotificationWrapper filteredNotification);
+public abstract class ProviderMessageExtractor<T extends NotificationContentComponent> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final NotificationType notificationType;
+    private final Class<T> notificationContentClass;
+
+    protected ProviderMessageExtractor(NotificationType notificationType, Class<T> notificationContentClass) {
+        this.notificationType = notificationType;
+        this.notificationContentClass = notificationContentClass;
+    }
+
+    public NotificationType getNotificationType() {
+        return notificationType;
+    }
+
+    public final Optional<ProviderMessageHolder> extract(FilterableNotificationWrapper filteredNotification) {
+        if (!notificationContentClass.isAssignableFrom(filteredNotification.getNotificationContentClass())) {
+            logger.error("The notification type provided is incompatible with this extractor: {}", filteredNotification.extractNotificationType());
+            return Optional.empty();
+        }
+
+        return castToStrongType(filteredNotification.getNotificationContent())
+                   .flatMap(content -> extract(filteredNotification, content));
+    }
+
+    protected abstract Optional<ProviderMessageHolder> extract(FilterableNotificationWrapper filteredNotification, T notificationContent);
+
+    private Optional<T> castToStrongType(NotificationContentComponent notificationContent) {
+        try {
+            T stronglyTypedContent = notificationContentClass.cast(notificationContent);
+            return Optional.of(stronglyTypedContent);
+        } catch (ClassCastException e) {
+            logger.error("Failed to cast the notification content class from {} to {}", notificationContent.getClass().getSimpleName(), notificationContentClass.getSimpleName(), e);
+            return Optional.empty();
+        }
+    }
 
 }

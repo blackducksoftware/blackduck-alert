@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.processor.api.detail.ProviderMessageDetail
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
+import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationExtractor;
@@ -54,7 +54,7 @@ import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSumm
 public final class NotificationProcessorV2 {
     private final FilterableNotificationExtractor filterableNotificationExtractor;
     private final JobNotificationExtractor jobNotificationExtractor;
-    private final ProviderMessageExtractor providerMessageExtractor;
+    private final ProviderMessageExtractionDelegator providerMessageExtractionDelegator;
     private final ProjectMessageDigester projectMessageDigester;
     private final ProviderMessageDetailer providerMessageDetailer;
     private final ProjectMessageSummarizer projectMessageSummarizer;
@@ -65,7 +65,7 @@ public final class NotificationProcessorV2 {
     protected NotificationProcessorV2(
         FilterableNotificationExtractor filterableNotificationExtractor,
         JobNotificationExtractor jobNotificationExtractor,
-        ProviderMessageExtractor providerMessageExtractor,
+        ProviderMessageExtractionDelegator providerMessageExtractionDelegator,
         ProjectMessageDigester projectMessageDigester,
         ProviderMessageDetailer providerMessageDetailer,
         ProjectMessageSummarizer projectMessageSummarizer,
@@ -73,7 +73,7 @@ public final class NotificationProcessorV2 {
     ) {
         this.filterableNotificationExtractor = filterableNotificationExtractor;
         this.jobNotificationExtractor = jobNotificationExtractor;
-        this.providerMessageExtractor = providerMessageExtractor;
+        this.providerMessageExtractionDelegator = providerMessageExtractionDelegator;
         this.projectMessageDigester = projectMessageDigester;
         this.providerMessageDetailer = providerMessageDetailer;
         this.projectMessageSummarizer = projectMessageSummarizer;
@@ -109,7 +109,8 @@ public final class NotificationProcessorV2 {
     private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<FilterableNotificationWrapper> jobNotifications) {
         ProviderMessageHolder extractedProviderMessages = jobNotifications
                                                               .stream()
-                                                              .map(providerMessageExtractor::extract)
+                                                              .map(providerMessageExtractionDelegator::extract)
+                                                              .flatMap(Optional::stream)
                                                               .reduce(ProviderMessageHolder::reduce)
                                                               .orElse(ProviderMessageHolder.empty());
 
