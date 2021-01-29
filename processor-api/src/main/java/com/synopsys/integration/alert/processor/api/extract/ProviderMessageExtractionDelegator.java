@@ -24,7 +24,6 @@ package com.synopsys.integration.alert.processor.api.extract;
 
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,18 +48,18 @@ public final class ProviderMessageExtractionDelegator {
         this.notificationTypeToExtractor = initializeExtractorMap(providerMessageExtractors);
     }
 
-    public Optional<ProviderMessageHolder> extract(FilterableNotificationWrapper filteredNotification) {
+    public ProviderMessageHolder extract(FilterableNotificationWrapper filteredNotification) {
         String notificationTypeString = filteredNotification.extractNotificationType();
         NotificationType filteredNotificationType = EnumUtils.getEnum(NotificationType.class, notificationTypeString);
         if (null == filteredNotificationType) {
             logger.warn("Notification did not match any existing notification type: {}", notificationTypeString);
-            return Optional.empty();
+            return ProviderMessageHolder.empty();
         }
 
         ProviderMessageExtractor providerMessageExtractor = notificationTypeToExtractor.get(filteredNotificationType);
         if (null == providerMessageExtractor) {
             logger.warn("No matching extractor for notification type: {}", notificationTypeString);
-            return Optional.empty();
+            return ProviderMessageHolder.empty();
         }
 
         return providerMessageExtractor.extract(filteredNotification);

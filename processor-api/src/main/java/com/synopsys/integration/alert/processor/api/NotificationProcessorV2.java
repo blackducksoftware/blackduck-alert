@@ -110,7 +110,6 @@ public final class NotificationProcessorV2 {
         ProviderMessageHolder extractedProviderMessages = jobNotifications
                                                               .stream()
                                                               .map(providerMessageExtractionDelegator::extract)
-                                                              .flatMap(Optional::stream)
                                                               .reduce(ProviderMessageHolder::reduce)
                                                               .orElse(ProviderMessageHolder.empty());
 

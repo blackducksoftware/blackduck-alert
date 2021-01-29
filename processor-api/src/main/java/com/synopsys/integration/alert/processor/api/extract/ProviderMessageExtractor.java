@@ -47,17 +47,18 @@ public abstract class ProviderMessageExtractor<T extends NotificationContentComp
         return notificationType;
     }
 
-    public final Optional<ProviderMessageHolder> extract(FilterableNotificationWrapper filteredNotification) {
+    public final ProviderMessageHolder extract(FilterableNotificationWrapper filteredNotification) {
         if (!notificationContentClass.isAssignableFrom(filteredNotification.getNotificationContentClass())) {
             logger.error("The notification type provided is incompatible with this extractor: {}", filteredNotification.extractNotificationType());
-            return Optional.empty();
+            return ProviderMessageHolder.empty();
         }
 
         return castToStrongType(filteredNotification.getNotificationContent())
-                   .flatMap(content -> extract(filteredNotification, content));
+                   .map(content -> extract(filteredNotification, content))
+                   .orElse(ProviderMessageHolder.empty());
     }
 
-    protected abstract Optional<ProviderMessageHolder> extract(FilterableNotificationWrapper filteredNotification, T notificationContent);
+    protected abstract ProviderMessageHolder extract(FilterableNotificationWrapper filteredNotification, T notificationContent);
 
     private Optional<T> castToStrongType(NotificationContentComponent notificationContent) {
         try {
