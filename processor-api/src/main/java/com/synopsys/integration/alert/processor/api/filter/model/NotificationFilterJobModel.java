@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.processor.api.filter.model;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -29,10 +30,12 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public final class NotificationFilterJobModel extends AlertSerializableModel {
     private final UUID jobId;
     private final String channelName;
+    private final Collection<Long> notificationIds;
 
-    public NotificationFilterJobModel(UUID jobId, String channelName) {
+    public NotificationFilterJobModel(UUID jobId, String channelName, Collection<Long> notificationIds) {
         this.jobId = jobId;
         this.channelName = channelName;
+        this.notificationIds = notificationIds;
     }
 
     public UUID getJobId() {
@@ -42,4 +45,9 @@ public final class NotificationFilterJobModel extends AlertSerializableModel {
     public String getChannelName() {
         return channelName;
     }
+
+    public Collection<Long> getNotificationIds() {
+        return notificationIds;
+    }
+
 }
