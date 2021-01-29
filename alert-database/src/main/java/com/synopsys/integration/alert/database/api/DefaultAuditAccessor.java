@@ -1,4 +1,4 @@
-/**
+/*
  * alert-database
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -132,6 +132,23 @@ public class DefaultAuditAccessor implements AuditAccessor {
         Page<AlertNotificationModel> auditPage = getPageOfNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
         List<AuditEntryModel> auditEntries = convertToAuditEntryModelFromNotificationsSorted(auditPage.getContent(), notificationToAuditEntryConverter, sortField, sortOrder);
         return new AuditEntryPageModel(auditPage.getTotalPages(), auditPage.getNumber(), auditEntries.size(), auditEntries);
+    }
+
+    @Override
+    @Transactional
+    public Long createAuditEntryForJob(UUID jobId, Collection<Long> notificationIds) {
+        AuditEntryEntity auditEntryToSave = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, AuditEntryStatus.PENDING.name(), null, null);
+        AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
+        Long auditEntryId = savedAuditEntry.getId();
+
+        List<AuditNotificationRelation> auditNotificationRelationsToSave = new ArrayList<>(notificationIds.size());
+        for (Long notificationId : notificationIds) {
+            AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, notificationId);
+            auditNotificationRelationsToSave.add(auditNotificationRelation);
+        }
+
+        auditNotificationRepository.saveAll(auditNotificationRelationsToSave);
+        return auditEntryId;
     }
 
     @Override

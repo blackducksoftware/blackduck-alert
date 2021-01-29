@@ -1,4 +1,4 @@
-/**
+/*
  * test-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
