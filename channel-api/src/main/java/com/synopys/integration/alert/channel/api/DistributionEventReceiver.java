@@ -1,4 +1,4 @@
-/**
+/*
  * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -23,6 +23,10 @@
 package com.synopys.integration.alert.channel.api;
 
 import java.util.Optional;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
@@ -33,6 +37,8 @@ import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
 
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEventV2> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final AuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final DistributionChannelV2<D> channel;
@@ -50,7 +56,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         if (details.isPresent()) {
             try {
                 channel.distributeMessages(details.get(), event.getProviderMessages());
-                // FIXME set audit success
+                auditAccessor.setAuditEntrySuccess(Set.of(event.getAuditId()));
             } catch (AlertException e) {
                 handleException(e, event);
             }
@@ -60,15 +66,14 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
     }
 
     protected void handleException(AlertException e, DistributionEventV2 event) {
-        // FIXME implement
-        //  log
-        //  set audit failure
+        logger.error("An exception occurred while handling the following event: {}", event, e);
+        auditAccessor.setAuditEntryFailure(Set.of(event.getAuditId()), "An exception occurred during message distribution", e);
     }
 
     protected void handleJobDetailsMissing(DistributionEventV2 event) {
-        // FIXME implement
-        //  log
-        //  set audit failure
+        String failureMessage = "Received a distribution event for a Job that no longer exists";
+        logger.warn("{}. Destination: {}", failureMessage, event.getDestination());
+        auditAccessor.setAuditEntryFailure(Set.of(event.getAuditId()), failureMessage, null);
     }
 
 }

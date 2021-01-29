@@ -1,4 +1,4 @@
-/**
+/*
  * processor-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
@@ -45,6 +46,7 @@ import com.synopsys.integration.alert.processor.api.filter.FilterableNotificatio
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationExtractor;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
+import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
 // TODO enable this as a component when these interfaces are implemented
@@ -91,8 +93,14 @@ public final class NotificationProcessorV2 {
         Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequencies);
         for (Map.Entry<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobToNotificationPair : jobsToNotifications.entrySet()) {
             FilteredDistributionJobResponseModel filteredDistributionJobResponseModel = jobToNotificationPair.getKey();
-            ProviderMessageHolder providerMessageHolder = processJobNotifications(filteredDistributionJobResponseModel.getProcessingType(), jobToNotificationPair.getValue());
-            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(filteredDistributionJobResponseModel.getId(), filteredDistributionJobResponseModel.getChannelName());
+            List<FilterableNotificationWrapper<?>> filteredNotifications = jobToNotificationPair.getValue();
+            Set<Long> notificationIds = filteredNotifications
+                                            .stream()
+                                            .map(ProcessableNotificationWrapper::getNotificationId)
+                                            .collect(Collectors.toSet());
+
+            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(filteredDistributionJobResponseModel.getId(), filteredDistributionJobResponseModel.getChannelName(), notificationIds);
+            ProviderMessageHolder providerMessageHolder = processJobNotifications(filteredDistributionJobResponseModel.getProcessingType(), filteredNotifications);
 
             providerMessageDistributor.distribute(notificationFilterJobModel, providerMessageHolder);
         }

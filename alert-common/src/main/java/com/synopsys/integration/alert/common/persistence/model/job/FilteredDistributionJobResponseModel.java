@@ -1,4 +1,4 @@
-/**
+/*
  * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -28,9 +28,9 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class FilteredDistributionJobResponseModel extends AlertSerializableModel {
-    private UUID id;
-    private ProcessingType processingType;
-    private String channelName;
+    private final UUID id;
+    private final ProcessingType processingType;
+    private final String channelName;
 
     public FilteredDistributionJobResponseModel(UUID id, ProcessingType processingType, String channelName) {
         this.processingType = processingType;
@@ -49,4 +49,5 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
     public String getChannelName() {
         return channelName;
     }
+
 }

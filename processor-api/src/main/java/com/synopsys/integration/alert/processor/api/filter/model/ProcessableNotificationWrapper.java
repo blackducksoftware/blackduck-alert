@@ -1,4 +1,4 @@
-/**
+/*
  * processor-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -45,6 +45,10 @@ public class ProcessableNotificationWrapper<T extends NotificationContentCompone
 
     public String extractNotificationType() {
         return getAlertNotificationModel().getNotificationType();
+    }
+
+    public Long getNotificationId() {
+        return getAlertNotificationModel().getId();
     }
 
 }
