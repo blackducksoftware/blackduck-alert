@@ -26,48 +26,47 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 
 public class FilterableNotificationWrapper extends ProcessableNotificationWrapper {
-    private final List<String> projectNames;
+    private final String projectName;
     private final List<String> policyNames;
     private final List<String> vulnerabilitySeverities;
 
     public static FilterableNotificationWrapper vulnerability(
         AlertNotificationModel notificationModel,
-        VulnerabilityNotificationContent notificationContent,
-        List<String> projectNames,
+        NotificationContentComponent notificationContent,
+        String projectName,
         List<String> vulnerabilitySeverities
     ) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectNames, List.of(), vulnerabilitySeverities);
+        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectName, List.of(), vulnerabilitySeverities);
     }
 
     public static FilterableNotificationWrapper policy(
         AlertNotificationModel notificationModel,
         NotificationContentComponent notificationContent,
-        List<String> projectNames,
+        String projectName,
         List<String> policyNames
     ) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectNames, policyNames, List.of());
+        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectName, policyNames, List.of());
     }
 
     public static FilterableNotificationWrapper project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, List.of(projectName), List.of(), List.of());
+        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectName, List.of(), List.of());
     }
 
     public static FilterableNotificationWrapper projectless(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent) {
         return new FilterableNotificationWrapper(notificationModel, notificationContent, null, List.of(), List.of());
     }
 
-    private FilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, List<String> projectNames, List<String> policyNames, List<String> vulnerabilitySeverities) {
+    private FilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, String projectName, List<String> policyNames, List<String> vulnerabilitySeverities) {
         super(alertNotificationModel, notificationContent, notificationContent.getClass());
-        this.projectNames = projectNames;
+        this.projectName = projectName;
         this.policyNames = policyNames;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
     }
 
-    public List<String> getProjectNames() {
-        return projectNames;
+    public String getProjectName() {
+        return projectName;
     }
 
     public List<String> getPolicyNames() {

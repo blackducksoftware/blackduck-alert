@@ -80,7 +80,7 @@ public class DefaultJobNotificationExtractor implements JobNotificationExtractor
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             frequencyTypes,
             EnumUtils.getEnum(NotificationType.class, filterableNotificationWrapper.extractNotificationType()),
-            filterableNotificationWrapper.getProjectNames(),
+            filterableNotificationWrapper.getProjectName(),
             filterableNotificationWrapper.getVulnerabilitySeverities(),
             filterableNotificationWrapper.getPolicyNames()
         );
