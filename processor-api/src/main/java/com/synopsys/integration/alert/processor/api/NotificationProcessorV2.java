@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.processor.api;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -88,7 +87,7 @@ public final class NotificationProcessorV2 {
         List<FilterableNotificationWrapper> filterableNotifications = notifications
                                                                           .stream()
                                                                           .map(filterableNotificationExtractor::wrapNotification)
-                                                                          .flatMap(Optional::stream)
+                                                                          .flatMap(List::stream)
                                                                           .collect(Collectors.toList());
         Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequencies);
         for (Map.Entry<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> jobToNotificationPair : jobsToNotifications.entrySet()) {

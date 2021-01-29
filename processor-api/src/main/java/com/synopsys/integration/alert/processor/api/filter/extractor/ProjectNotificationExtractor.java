@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.processor.api.filter.extractor;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,8 +41,8 @@ public class ProjectNotificationExtractor extends NotificationExtractor<ProjectN
     }
 
     @Override
-    protected FilterableNotificationWrapper convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
-        return FilterableNotificationWrapper.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName());
+    protected List<FilterableNotificationWrapper> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
+        return List.of(FilterableNotificationWrapper.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName()));
     }
 
 }
