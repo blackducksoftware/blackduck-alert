@@ -85,15 +85,15 @@ public final class NotificationProcessorV2 {
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
-        List<? extends FilterableNotificationWrapper<?>> filterableNotifications = notifications
-                                                                                       .stream()
-                                                                                       .map(filterableNotificationExtractor::wrapNotification)
-                                                                                       .flatMap(Optional::stream)
-                                                                                       .collect(Collectors.toList());
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequencies);
-        for (Map.Entry<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobToNotificationPair : jobsToNotifications.entrySet()) {
+        List<FilterableNotificationWrapper> filterableNotifications = notifications
+                                                                          .stream()
+                                                                          .map(filterableNotificationExtractor::wrapNotification)
+                                                                          .flatMap(Optional::stream)
+                                                                          .collect(Collectors.toList());
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> jobsToNotifications = jobNotificationExtractor.mapJobsToNotifications(filterableNotifications, frequencies);
+        for (Map.Entry<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> jobToNotificationPair : jobsToNotifications.entrySet()) {
             FilteredDistributionJobResponseModel filteredDistributionJobResponseModel = jobToNotificationPair.getKey();
-            List<FilterableNotificationWrapper<?>> filteredNotifications = jobToNotificationPair.getValue();
+            List<FilterableNotificationWrapper> filteredNotifications = jobToNotificationPair.getValue();
             Set<Long> notificationIds = filteredNotifications
                                             .stream()
                                             .map(ProcessableNotificationWrapper::getNotificationId)
@@ -106,7 +106,7 @@ public final class NotificationProcessorV2 {
         }
     }
 
-    private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<FilterableNotificationWrapper<?>> jobNotifications) {
+    private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<FilterableNotificationWrapper> jobNotifications) {
         ProviderMessageHolder extractedProviderMessages = jobNotifications
                                                               .stream()
                                                               .map(providerMessageExtractor::extract)

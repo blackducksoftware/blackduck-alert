@@ -31,6 +31,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistr
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 
 public interface JobNotificationExtractor {
-    Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, Collection<FrequencyType> frequencies);
+    Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> mapJobsToNotifications(List<FilterableNotificationWrapper> filterableNotifications, Collection<FrequencyType> frequencies);
 
 }

@@ -48,11 +48,11 @@ public class DefaultJobNotificationExtractorTestIT {
         createJobs(createDistributionJobModels());
 
         DefaultJobNotificationExtractor defaultJobNotificationExtractor = new DefaultJobNotificationExtractor(jobAccessor);
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
 
         assertNotNull(jobResponseModelListMap);
         assertEquals(3, jobResponseModelListMap.size());
-        for (List<FilterableNotificationWrapper<?>> jobNotificationList : jobResponseModelListMap.values()) {
+        for (List<FilterableNotificationWrapper> jobNotificationList : jobResponseModelListMap.values()) {
             assertFalse(jobNotificationList.isEmpty());
             assertTrue(jobNotificationList.size() < 4);
         }
@@ -61,7 +61,7 @@ public class DefaultJobNotificationExtractorTestIT {
     @Test
     public void extractNoJobsTest() {
         DefaultJobNotificationExtractor defaultJobNotificationExtractor = new DefaultJobNotificationExtractor(jobAccessor);
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
 
         assertTrue(jobResponseModelListMap.isEmpty());
     }
@@ -108,11 +108,11 @@ public class DefaultJobNotificationExtractorTestIT {
         createJobs(List.of(jobRequestModel));
 
         DefaultJobNotificationExtractor defaultJobNotificationExtractor = new DefaultJobNotificationExtractor(jobAccessor);
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> jobResponseModelListMap = defaultJobNotificationExtractor.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
 
         assertEquals(1, jobResponseModelListMap.size());
 
-        List<FilterableNotificationWrapper<?>> filterableNotificationWrappers = jobResponseModelListMap.values().stream().findFirst().orElse(List.of());
+        List<FilterableNotificationWrapper> filterableNotificationWrappers = jobResponseModelListMap.values().stream().findFirst().orElse(List.of());
 
         assertEquals(expectedMappedNotifications, filterableNotificationWrappers.size());
     }
@@ -182,28 +182,28 @@ public class DefaultJobNotificationExtractorTestIT {
         );
     }
 
-    private List<FilterableNotificationWrapper<?>> createNotificationWrappers() {
+    private List<FilterableNotificationWrapper> createNotificationWrappers() {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
-        FilterableNotificationWrapper<?> test_project = FilterableNotificationWrapper.vulnerability(
+        FilterableNotificationWrapper test_project = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
             null,
             List.of("test_project"),
             List.of(VulnerabilitySeverityType.LOW.name())
         );
-        FilterableNotificationWrapper<?> test_project2 = FilterableNotificationWrapper.vulnerability(
+        FilterableNotificationWrapper test_project2 = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
             null,
             List.of("test_project1"),
             List.of(VulnerabilitySeverityType.HIGH.name())
         );
-        FilterableNotificationWrapper<?> test_project3 = FilterableNotificationWrapper.vulnerability(
+        FilterableNotificationWrapper test_project3 = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
             null,
             List.of("test_project2"),
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
         AlertNotificationModel alertPolicyNotificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
-        FilterableNotificationWrapper<?> test_project4 = FilterableNotificationWrapper.policy(
+        FilterableNotificationWrapper test_project4 = FilterableNotificationWrapper.policy(
             alertPolicyNotificationModel,
             null,
             List.of("test_project2"),

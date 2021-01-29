@@ -41,14 +41,14 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class FilterableNotificationExtractor {
     private final Logger logger = LoggerFactory.getLogger(FilterableNotificationExtractor.class);
 
-    private Map<NotificationType, NotificationExtractor> notificationExtractors;
+    private final Map<NotificationType, NotificationExtractor> notificationExtractors;
 
     @Autowired
     public FilterableNotificationExtractor(List<NotificationExtractor> notificationExtractors) {
         this.notificationExtractors = DataStructureUtils.mapToValues(notificationExtractors, NotificationExtractor::getNotificationType);
     }
 
-    public final Optional<FilterableNotificationWrapper<?>> wrapNotification(AlertNotificationModel notification) {
+    public final Optional<FilterableNotificationWrapper> wrapNotification(AlertNotificationModel notification) {
         String notificationTypeString = notification.getNotificationType();
         NotificationType notificationType;
         try {
@@ -73,4 +73,5 @@ public class FilterableNotificationExtractor {
         NotificationExtractor notificationExtractor = notificationExtractors.get(notificationType);
         return Optional.ofNullable(notificationExtractor);
     }
+
 }
