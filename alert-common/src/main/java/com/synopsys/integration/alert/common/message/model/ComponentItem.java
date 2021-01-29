@@ -47,11 +47,11 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
     private final ComponentItemPriority priority;
 
     private final LinkableItem component;
-    private final LinkableItem componentVersion;
+    private final LinkableItem subComponent;
     private final ComponentItemCallbackInfo callbackInfo;
 
     private final LinkableItem categoryItem;
-    private final LinkableItem severity;
+    private final LinkableItem categoryGroupingAttribute;
     private final boolean collapseOnCategory;
 
     private final LinkedHashSet<LinkableItem> componentAttributes;
@@ -62,10 +62,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         ItemOperation operation,
         ComponentItemPriority priority,
         LinkableItem component,
-        LinkableItem componentVersion,
+        LinkableItem subComponent,
         ComponentItemCallbackInfo callbackInfo,
         LinkableItem categoryItem,
-        LinkableItem severity,
+        LinkableItem categoryGroupingAttribute,
         boolean collapseOnCategory,
         LinkedHashSet<LinkableItem> componentAttributes,
         Set<Long> notificationIds
@@ -74,10 +74,10 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         this.operation = operation;
         this.priority = priority;
         this.component = component;
-        this.componentVersion = componentVersion;
+        this.subComponent = subComponent;
         this.callbackInfo = callbackInfo;
         this.categoryItem = categoryItem;
-        this.severity = severity;
+        this.categoryGroupingAttribute = categoryGroupingAttribute;
         this.collapseOnCategory = collapseOnCategory;
         this.componentAttributes = componentAttributes;
         this.notificationIds = notificationIds;
@@ -89,7 +89,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
                    .thenComparing(ComponentItem::getOperation)
                    .thenComparing(ComponentItem::getPriority)
                    .thenComparing(ComponentItem::getComponent)
-                   .thenComparing(ComponentItem::getComponentVersion, ComponentItem::compareOptionalItems)
+                   .thenComparing(ComponentItem::getSubComponent, ComponentItem::compareOptionalItems)
                    .thenComparing(ComponentItem::getCategoryItem);
     }
 
@@ -121,8 +121,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return component;
     }
 
-    public Optional<LinkableItem> getComponentVersion() {
-        return Optional.ofNullable(componentVersion);
+    public Optional<LinkableItem> getSubComponent() {
+        return Optional.ofNullable(subComponent);
     }
 
     public Optional<ComponentItemCallbackInfo> getCallbackInfo() {
@@ -133,8 +133,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         return categoryItem;
     }
 
-    public Optional<LinkableItem> getSeverity() {
-        return Optional.ofNullable(severity);
+    public Optional<LinkableItem> getCategoryGroupingAttribute() {
+        return Optional.ofNullable(categoryGroupingAttribute);
     }
 
     public boolean getCollapseOnCategory() {
@@ -178,7 +178,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         }
 
         appendLinkableItem(keyBuilder, getComponent());
-        getComponentVersion().ifPresent(currentSubComponent -> appendLinkableItem(keyBuilder, currentSubComponent));
+        getSubComponent().ifPresent(currentSubComponent -> appendLinkableItem(keyBuilder, currentSubComponent));
 
         if (!collapseOnCategory() || forceIncludeCategoryItem) {
             appendLinkableItem(keyBuilder, getCategoryItem());
@@ -212,9 +212,9 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private String componentLabel;
         private String componentValue;
         private String componentUrl;
-        private String componentVersionLabel;
-        private String componentVersionValue;
-        private String componentVersionUrl;
+        private String subComponentLabel;
+        private String subComponentValue;
+        private String subComponentUrl;
 
         private String componentCallbackUrl;
         private ProviderKey componentCallbackProviderKey;
@@ -225,8 +225,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private String categoryItemLabel;
         private String categoryItemValue;
         private String categoryItemUrl;
-        private String severityLabel;
-        private String severityValue;
+        private String categoryGroupingAttributeLabel;
+        private String categoryGroupingAttributeValue;
 
         private final Set<Long> notificationIds = new LinkedHashSet<>();
 
@@ -237,8 +237,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
             LinkableItem component = new LinkableItem(componentLabel, componentValue, componentUrl);
             LinkableItem subComponent = null;
-            if (StringUtils.isNotBlank(componentVersionLabel) && StringUtils.isNotBlank(componentVersionValue)) {
-                subComponent = new LinkableItem(componentVersionLabel, componentVersionValue, componentVersionUrl);
+            if (StringUtils.isNotBlank(subComponentLabel) && StringUtils.isNotBlank(subComponentValue)) {
+                subComponent = new LinkableItem(subComponentLabel, subComponentValue, subComponentUrl);
             }
 
             ComponentItemCallbackInfo callbackInfo = null;
@@ -248,8 +248,8 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
 
             LinkableItem categoryItem = new LinkableItem(categoryItemLabel, categoryItemValue, categoryItemUrl);
             LinkableItem subCategoryItem = null;
-            if (StringUtils.isNotBlank(severityLabel) && StringUtils.isNotBlank(severityValue)) {
-                subCategoryItem = new LinkableItem(severityLabel, severityValue);
+            if (StringUtils.isNotBlank(categoryGroupingAttributeLabel) && StringUtils.isNotBlank(categoryGroupingAttributeValue)) {
+                subCategoryItem = new LinkableItem(categoryGroupingAttributeLabel, categoryGroupingAttributeValue);
             }
 
             ComponentItemPriority componentPriority = ComponentItemPriority.NONE;
@@ -302,30 +302,30 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             return this;
         }
 
-        public Builder applyComponentVersion(LinkableItem componentVersion) {
-            if (null != componentVersion) {
-                this.componentVersionLabel = componentVersion.getLabel();
-                this.componentVersionValue = componentVersion.getValue();
-                this.componentVersionUrl = componentVersion.getUrl().orElse(null);
+        public Builder applySubComponent(LinkableItem subComponent) {
+            if (null != subComponent) {
+                this.subComponentLabel = subComponent.getLabel();
+                this.subComponentValue = subComponent.getValue();
+                this.subComponentUrl = subComponent.getUrl().orElse(null);
             }
             return this;
         }
 
-        public Builder applyComponentVersion(String componentVersionLabel, String componentVersionValue) {
-            this.componentVersionLabel = componentVersionLabel;
-            this.componentVersionValue = componentVersionValue;
+        public Builder applySubComponent(String subComponentLabel, String subComponentValue) {
+            this.subComponentLabel = subComponentLabel;
+            this.subComponentValue = subComponentValue;
             return this;
         }
 
-        public Builder applyComponentVersion(String componentVersionLabel, String componentVersionValue, String componentVersionUrl) {
-            this.componentVersionLabel = componentVersionLabel;
-            this.componentVersionValue = componentVersionValue;
-            applyComponentVersionUrl(componentVersionUrl);
+        public Builder applySubComponent(String subComponentLabel, String subComponentValue, String subComponentUrl) {
+            this.subComponentLabel = subComponentLabel;
+            this.subComponentValue = subComponentValue;
+            applySubComponentUrl(subComponentUrl);
             return this;
         }
 
-        public Builder applyComponentVersionUrl(String componentVersionUrl) {
-            this.componentVersionUrl = componentVersionUrl;
+        public Builder applySubComponentUrl(String subComponentUrl) {
+            this.subComponentUrl = subComponentUrl;
             return this;
         }
 
@@ -358,17 +358,17 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
             return this;
         }
 
-        public Builder applySeverity(LinkableItem severity) {
-            if (null != severity) {
-                this.severityLabel = severity.getLabel();
-                this.severityValue = severity.getValue();
+        public Builder applyCategoryGroupingAttribute(LinkableItem categoryGroupingAttribute) {
+            if (null != categoryGroupingAttribute) {
+                this.categoryGroupingAttributeLabel = categoryGroupingAttribute.getLabel();
+                this.categoryGroupingAttributeValue = categoryGroupingAttribute.getValue();
             }
             return this;
         }
 
-        public Builder applySeverity(String label, String value) {
-            this.severityLabel = label;
-            this.severityValue = value;
+        public Builder applyCategoryGroupingAttribute(String label, String value) {
+            this.categoryGroupingAttributeLabel = label;
+            this.categoryGroupingAttributeValue = value;
             return this;
         }
 

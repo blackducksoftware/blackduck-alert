@@ -25,11 +25,11 @@ public class DefaultMessageContentProcessorTest extends ProcessorTest {
         messageGroups.forEach(group -> assertEquals(1, group.getSubContent().size()));
 
         MessageContentGroup firstGroup = messageGroups.get(0);
-        assertEquals("Topic One", firstGroup.getCommonProject().getLabel());
+        assertEquals("Topic One", firstGroup.getCommonTopic().getLabel());
         assertEquals(4, firstGroup.getSubContent().get(0).getComponentItems().size());
 
         MessageContentGroup secondGroup = messageGroups.get(1);
-        assertEquals("Topic Two", secondGroup.getCommonProject().getLabel());
+        assertEquals("Topic Two", secondGroup.getCommonTopic().getLabel());
         assertEquals(1, secondGroup.getSubContent().get(0).getComponentItems().size());
     }
 

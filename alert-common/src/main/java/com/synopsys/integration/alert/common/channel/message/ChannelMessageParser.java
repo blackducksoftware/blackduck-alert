@@ -81,15 +81,15 @@ public abstract class ChannelMessageParser {
     }
 
     public String getCommonTopic(MessageContentGroup messageContent, @Nullable ItemOperation nullableTopLevelAction) {
-        LinkableItem commonProject = messageContent.getCommonProject();
+        LinkableItem commonTopic = messageContent.getCommonTopic();
         if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
-            commonProject = new LinkableItem(commonProject.getLabel(), commonProject.getValue());
+            commonTopic = new LinkableItem(commonTopic.getLabel(), commonTopic.getValue());
         }
-        return createLinkableItemString(commonProject, true) + getLineSeparator();
+        return createLinkableItemString(commonTopic, true) + getLineSeparator();
     }
 
     public String getComponentSubTopic(ProviderMessageContent messageContent, @Nullable ItemOperation nullableTopLevelAction) {
-        Optional<LinkableItem> optionalSubTopic = messageContent.getProjectVersion();
+        Optional<LinkableItem> optionalSubTopic = messageContent.getSubTopic();
         if (optionalSubTopic.isPresent()) {
             LinkableItem subTopic = optionalSubTopic.get();
             if (ItemOperation.DELETE.equals(nullableTopLevelAction)) {
@@ -106,7 +106,7 @@ public abstract class ChannelMessageParser {
             messageContent
                 .getAction()
                 .map(ItemOperation::name)
-                .map(action -> String.format("%s Action: %s%s", messageContent.getProject().getLabel(), action, getLineSeparator()))
+                .map(action -> String.format("%s Action: %s%s", messageContent.getTopic().getLabel(), action, getLineSeparator()))
                 .ifPresent(messagePieces::add);
         } else {
             SetMap<String, ComponentItem> componentItemSetMap = messageContent.groupRelatedComponentItems();
@@ -221,7 +221,7 @@ public abstract class ChannelMessageParser {
                                                      .append(createLinkableItemValueString(arbitraryItem.getComponent()))
                                                      .append(' ');
             arbitraryItem
-                .getComponentVersion()
+                .getSubComponent()
                 .map(this::createLinkableItemValueString)
                 .map(str -> String.format("[%s]", str))
                 .ifPresent(componentItemBuilder::append);
@@ -243,11 +243,11 @@ public abstract class ChannelMessageParser {
             if (optionalGroupedItem.isPresent()) {
                 ComponentItem groupedItem = optionalGroupedItem.get();
                 LinkableItem categoryItem = groupedItem.getCategoryItem();
-                Optional<LinkableItem> optionalSeverity = groupedItem.getSeverity();
+                Optional<LinkableItem> optionalGroupingAttribute = groupedItem.getCategoryGroupingAttribute();
 
                 String categoryItemNameString;
-                if (optionalSeverity.isPresent()) {
-                    LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalSeverity.get());
+                if (optionalGroupingAttribute.isPresent()) {
+                    LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
                     categoryItemNameString = groupedCategoryItem.getLabel();
                 } else {
                     categoryItemNameString = categoryItem.getLabel();
@@ -269,10 +269,10 @@ public abstract class ChannelMessageParser {
         List<String> componentItemPieces = new LinkedList<>();
         for (ComponentItem componentItem : componentItems) {
             LinkableItem categoryItem = componentItem.getCategoryItem();
-            Optional<LinkableItem> optionalSeverity = componentItem.getSeverity();
+            Optional<LinkableItem> optionalGroupingAttribute = componentItem.getCategoryGroupingAttribute();
             String categoryString;
-            if (optionalSeverity.isPresent()) {
-                LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalSeverity.get());
+            if (optionalGroupingAttribute.isPresent()) {
+                LinkableItem groupedCategoryItem = createGroupedCategoryItem(categoryItem, optionalGroupingAttribute.get());
                 categoryString = createLinkableItemString(groupedCategoryItem);
             } else {
                 categoryString = createLinkableItemString(categoryItem);
@@ -285,10 +285,10 @@ public abstract class ChannelMessageParser {
     private SetMap<String, ComponentItem> groupAndPrioritizeCollapsibleItems(Collection<ComponentItem> componentItems) {
         SetMap<String, ComponentItem> groupedAndPrioritizedItems = SetMap.createLinked();
         for (ComponentItem componentItem : componentItems) {
-            String severityItemString = componentItem.getSeverity()
-                                            .map(item -> item.getLabel() + item.getValue())
-                                            .orElse("DEFAULT_GROUPING_STRING");
-            String priorityAndGroupingKey = componentItem.getPriority().name() + severityItemString;
+            String groupingString = componentItem.getCategoryGroupingAttribute()
+                                        .map(item -> item.getLabel() + item.getValue())
+                                        .orElse("DEFAULT_GROUPING_STRING");
+            String priorityAndGroupingKey = componentItem.getPriority().name() + groupingString;
             Set<ComponentItem> updatedSet = groupedAndPrioritizedItems.add(priorityAndGroupingKey, componentItem);
             groupedAndPrioritizedItems.put(priorityAndGroupingKey, updatedSet);
         }

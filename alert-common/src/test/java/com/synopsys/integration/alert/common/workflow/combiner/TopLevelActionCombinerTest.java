@@ -27,40 +27,40 @@ public class TopLevelActionCombinerTest {
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                               .applyProject(commonTopicName, commonTopicValue)
-                                               .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                               .applyTopic(commonTopicName, commonTopicValue)
+                                               .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
                                                .build();
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
-                                                  .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
+                                                  .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.UPDATE)
                                                   .build();
 
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
                                                 .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                .applyProject(commonTopicName, commonTopicValue)
-                                                .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                .applyTopic(commonTopicName, commonTopicValue)
+                                                .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                 .applyAction(ItemOperation.INFO)
                                                 .build();
 
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
                                                        .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                       .applyProject("uncommon topic name 123", "random value")
-                                                       .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                       .applyTopic("uncommon topic name 123", "random value")
+                                                       .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
                                                        .build();
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
-                                                  .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
+                                                  .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
                                                   .build();
 
@@ -84,39 +84,39 @@ public class TopLevelActionCombinerTest {
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                               .applyProject(commonTopicName, commonTopicValue)
-                                               .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                               .applyTopic(commonTopicName, commonTopicValue)
+                                               .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
                                                .build();
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
-                                                  .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
+                                                  .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.UPDATE)
                                                   .build();
 
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
                                                 .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                .applyProject(commonTopicName, commonTopicValue)
-                                                .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                .applyTopic(commonTopicName, commonTopicValue)
+                                                .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                 .applyAction(ItemOperation.INFO)
                                                 .build();
 
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
                                                        .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                       .applyProject("uncommon topic name 123", "random value")
-                                                       .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                       .applyTopic("uncommon topic name 123", "random value")
+                                                       .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
                                                        .build();
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
                                                   .build();
 
@@ -140,38 +140,38 @@ public class TopLevelActionCombinerTest {
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                               .applyProject(commonTopicName, commonTopicValue)
-                                               .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                               .applyTopic(commonTopicName, commonTopicValue)
+                                               .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
                                                .build();
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
                                                   .applyAction(ItemOperation.UPDATE)
                                                   .build();
 
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
                                                 .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                .applyProject(commonTopicName, commonTopicValue)
+                                                .applyTopic(commonTopicName, commonTopicValue)
                                                 .applyAction(ItemOperation.INFO)
                                                 .build();
 
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
                                                        .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                       .applyProject("uncommon topic name 123", "random value")
-                                                       .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                       .applyTopic("uncommon topic name 123", "random value")
+                                                       .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
                                                        .build();
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
-                                                  .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
+                                                  .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
                                                   .build();
 
@@ -203,16 +203,16 @@ public class TopLevelActionCombinerTest {
         ProviderMessageContent addAction = new ProviderMessageContent.Builder()
                                                .applyNotificationId(1L)
                                                .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                               .applyProject(commonTopicName, commonTopicValue)
-                                               .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                               .applyTopic(commonTopicName, commonTopicValue)
+                                               .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                .applyAction(ItemOperation.ADD)
                                                .build();
 
         ProviderMessageContent updateAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
-                                                  .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
+                                                  .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyComponentItem(componentItem)
                                                   .applyAction(ItemOperation.UPDATE)
                                                   .build();
@@ -220,8 +220,8 @@ public class TopLevelActionCombinerTest {
         ProviderMessageContent infoAction = new ProviderMessageContent.Builder()
                                                 .applyNotificationId(1L)
                                                 .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                .applyProject(commonTopicName, commonTopicValue)
-                                                .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                .applyTopic(commonTopicName, commonTopicValue)
+                                                .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                 .applyComponentItem(componentItem)
                                                 .applyAction(ItemOperation.INFO)
                                                 .build();
@@ -229,16 +229,16 @@ public class TopLevelActionCombinerTest {
         ProviderMessageContent unrelatedTopicAdd = new ProviderMessageContent.Builder()
                                                        .applyNotificationId(1L)
                                                        .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                       .applyProject("uncommon topic name 123", "random value")
-                                                       .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                       .applyTopic("uncommon topic name 123", "random value")
+                                                       .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                        .applyAction(ItemOperation.ADD)
                                                        .build();
 
         ProviderMessageContent deleteAction = new ProviderMessageContent.Builder()
                                                   .applyNotificationId(1L)
                                                   .applyProvider(commonProviderValue, commonProviderId, commonProviderConfig)
-                                                  .applyProject(commonTopicName, commonTopicValue)
-                                                  .applyProjectVersion(commonSubTopicName, commonSubTopicValue)
+                                                  .applyTopic(commonTopicName, commonTopicValue)
+                                                  .applySubTopic(commonSubTopicName, commonSubTopicValue)
                                                   .applyAction(ItemOperation.DELETE)
                                                   .build();
 

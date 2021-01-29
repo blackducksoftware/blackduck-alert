@@ -102,7 +102,7 @@ public class PolicyCommonBuilder {
                                                         .applyPriority(priority)
                                                         .applyCategoryItem(policyNameItem)
                                                         .applyComponentItemCallbackInfo(nullableCallbackInfo)
-                                                        .applySeverity(nullablePolicySeverityItem)
+                                                        .applyCategoryGroupingAttribute(nullablePolicySeverityItem)
                                                         .applyAllComponentAttributes(policyAttributes)
                                                         .applyNotificationId(notificationId);
                     ComponentBuilderUtil.applyComponentInformation(builder, alertBlackDuckService, componentData);
@@ -183,7 +183,7 @@ public class PolicyCommonBuilder {
                                                 .applyOperation(ItemOperation.INFO)
                                                 .applyPriority(priority)
                                                 .applyCategoryItem(policyNameItem)
-                                                .applySeverity(policySeverity)
+                                                .applyCategoryGroupingAttribute(policySeverity)
                                                 .applyCollapseOnCategory(false)
                                                 .applyAllComponentAttributes(vulnAttributes)
                                                 .applyNotificationId(notificationId)
