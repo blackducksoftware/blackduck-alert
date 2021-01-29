@@ -47,4 +47,8 @@ public class ProcessableNotificationWrapper<T extends NotificationContentCompone
         return getAlertNotificationModel().getNotificationType();
     }
 
+    public Long getNotificationId() {
+        return getAlertNotificationModel().getId();
+    }
+
 }
