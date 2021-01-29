@@ -69,7 +69,7 @@ public class TopLevelActionCombiner implements MessageCombiner {
     }
 
     private String flattenProviderAndTopic(ProviderMessageContent message) {
-        LinkableItem topic = message.getProject();
+        LinkableItem topic = message.getTopic();
         return message.getProvider().getValue() + topic.getLabel() + topic.getValue();
     }
 
@@ -78,11 +78,11 @@ public class TopLevelActionCombiner implements MessageCombiner {
     }
 
     private boolean updateCache(ProviderMessageContent currentMessage, List<ProviderMessageContent> cachedMessages) {
-        String subTopicString = currentMessage.getProjectVersion().map(this::flattenSubTopic).orElse(null);
+        String subTopicString = currentMessage.getSubTopic().map(this::flattenSubTopic).orElse(null);
         Set<ProviderMessageContent> removalCandidates = new HashSet<>();
         for (ProviderMessageContent cachedMessage : cachedMessages) {
             if (cachedMessage.isTopLevelActionOnly() && !isTopLevelDelete(cachedMessage)) {
-                String cachedSubTopic = cachedMessage.getProjectVersion().map(this::flattenSubTopic).orElse(null);
+                String cachedSubTopic = cachedMessage.getSubTopic().map(this::flattenSubTopic).orElse(null);
                 if (null == subTopicString || subTopicString.equals(cachedSubTopic)) {
                     removalCandidates.add(cachedMessage);
                 }
