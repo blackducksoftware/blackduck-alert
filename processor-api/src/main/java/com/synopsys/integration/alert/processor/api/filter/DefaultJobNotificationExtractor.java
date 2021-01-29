@@ -41,7 +41,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 
 @Component
 public class DefaultJobNotificationExtractor implements JobNotificationExtractor {
-    private JobAccessor jobAccessor;
+    private final JobAccessor jobAccessor;
 
     @Autowired
     public DefaultJobNotificationExtractor(JobAccessor jobAccessor) {
@@ -63,13 +63,13 @@ public class DefaultJobNotificationExtractor implements JobNotificationExtractor
      * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
      */
     @Override
-    public Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, Collection<FrequencyType> frequencies) {
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> groupedFilterableNotifications = new HashMap<>();
+    public Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> mapJobsToNotifications(List<FilterableNotificationWrapper> filterableNotifications, Collection<FrequencyType> frequencies) {
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> groupedFilterableNotifications = new HashMap<>();
 
         for (FilterableNotificationWrapper filterableNotificationWrapper : filterableNotifications) {
             List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(filterableNotificationWrapper, frequencies);
             for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : filteredDistributionJobResponseModels) {
-                List<FilterableNotificationWrapper<?>> set = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
+                List<FilterableNotificationWrapper> set = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
                 set.add(filterableNotificationWrapper);
             }
         }

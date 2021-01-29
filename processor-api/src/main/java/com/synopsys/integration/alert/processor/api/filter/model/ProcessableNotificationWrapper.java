@@ -26,20 +26,27 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
-public class ProcessableNotificationWrapper<T extends NotificationContentComponent> extends AlertSerializableModel {
+public class ProcessableNotificationWrapper extends AlertSerializableModel {
     private final AlertNotificationModel alertNotificationModel;
-    private final T notificationContent;
+    private final NotificationContentComponent notificationContent;
 
-    public ProcessableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent) {
+    private final Class<? extends NotificationContentComponent> notificationContentClass;
+
+    public ProcessableNotificationWrapper(
+        AlertNotificationModel alertNotificationModel,
+        NotificationContentComponent notificationContent,
+        Class<? extends NotificationContentComponent> notificationContentClass
+    ) {
         this.alertNotificationModel = alertNotificationModel;
         this.notificationContent = notificationContent;
+        this.notificationContentClass = notificationContentClass;
     }
 
     public AlertNotificationModel getAlertNotificationModel() {
         return alertNotificationModel;
     }
 
-    public T getNotificationContent() {
+    public NotificationContentComponent getNotificationContent() {
         return notificationContent;
     }
 
@@ -49,6 +56,10 @@ public class ProcessableNotificationWrapper<T extends NotificationContentCompone
 
     public Long getNotificationId() {
         return getAlertNotificationModel().getId();
+    }
+
+    public Class<? extends NotificationContentComponent> getNotificationContentClass() {
+        return notificationContentClass;
     }
 
 }

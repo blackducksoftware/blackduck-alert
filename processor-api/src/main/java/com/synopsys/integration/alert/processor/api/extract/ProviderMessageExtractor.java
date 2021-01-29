@@ -26,6 +26,6 @@ import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 
 public interface ProviderMessageExtractor {
-    ProviderMessageHolder extract(FilterableNotificationWrapper<?> filteredNotification);
+    ProviderMessageHolder extract(FilterableNotificationWrapper filteredNotification);
 
 }
