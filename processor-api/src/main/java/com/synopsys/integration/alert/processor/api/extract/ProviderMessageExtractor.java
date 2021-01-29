@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.processor.api.extract;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,21 +51,10 @@ public abstract class ProviderMessageExtractor<T extends NotificationContentComp
             return ProviderMessageHolder.empty();
         }
 
-        return castToStrongType(filteredNotification.getNotificationContent())
-                   .map(content -> extract(filteredNotification, content))
-                   .orElse(ProviderMessageHolder.empty());
+        T stronglyTypedContent = notificationContentClass.cast(filteredNotification.getNotificationContent());
+        return extract(filteredNotification, stronglyTypedContent);
     }
 
     protected abstract ProviderMessageHolder extract(FilterableNotificationWrapper filteredNotification, T notificationContent);
-
-    private Optional<T> castToStrongType(NotificationContentComponent notificationContent) {
-        try {
-            T stronglyTypedContent = notificationContentClass.cast(notificationContent);
-            return Optional.of(stronglyTypedContent);
-        } catch (ClassCastException e) {
-            logger.error("Failed to cast the notification content class from {} to {}", notificationContent.getClass().getSimpleName(), notificationContentClass.getSimpleName(), e);
-            return Optional.empty();
-        }
-    }
 
 }
