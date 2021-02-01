@@ -24,32 +24,25 @@ package com.synopsys.integration.alert.processor.api.filter.extractor;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public abstract class NotificationExtractor<T extends NotificationContentComponent> {
-    private final NotificationType notificationType;
-    private final Class<T> notificationClass;
-    private final Gson gson;
-
-    public NotificationExtractor(NotificationType notificationType, Class<T> notificationClass, Gson gson) {
-        this.notificationType = notificationType;
-        this.notificationClass = notificationClass;
-        this.gson = gson;
+@Component
+public class ProjectNotificationDetailExtractor extends NotificationDetailExtractor<ProjectNotificationContent> {
+    @Autowired
+    public ProjectNotificationDetailExtractor(Gson gson) {
+        super(NotificationType.PROJECT, ProjectNotificationContent.class, gson);
     }
 
-    public NotificationType getNotificationType() {
-        return notificationType;
+    @Override
+    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
+        return List.of(DetailedNotificationContent.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName()));
     }
-
-    public final List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel) {
-        T vulnerabilityNotificationContent = gson.fromJson(alertNotificationModel.getContent(), notificationClass);
-        return convertToFilterableNotificationWrapper(alertNotificationModel, vulnerabilityNotificationContent);
-    }
-
-    protected abstract List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent);
 
 }

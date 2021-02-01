@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.processor.api.filter.extractor;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,15 +34,15 @@ import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotif
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class LicenseLimitExtractor extends NotificationExtractor<LicenseLimitNotificationContent> {
+public class LicenseLimitDetailExtractor extends NotificationDetailExtractor<LicenseLimitNotificationContent> {
     @Autowired
-    public LicenseLimitExtractor(Gson gson) {
+    public LicenseLimitDetailExtractor(Gson gson) {
         super(NotificationType.LICENSE_LIMIT, LicenseLimitNotificationContent.class, gson);
     }
 
     @Override
-    protected DetailedNotificationContent convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, LicenseLimitNotificationContent notificationContent) {
-        return DetailedNotificationContent.projectless(alertNotificationModel, notificationContent);
+    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, LicenseLimitNotificationContent notificationContent) {
+        return List.of(DetailedNotificationContent.projectless(alertNotificationModel, notificationContent));
     }
 
 }
