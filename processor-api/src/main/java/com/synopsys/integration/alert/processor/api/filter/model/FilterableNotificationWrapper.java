@@ -27,6 +27,7 @@ import java.util.List;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
+// TODO DetailedNotificationContent is a possible better name with subclasses
 public class FilterableNotificationWrapper extends ProcessableNotificationWrapper {
     private final String projectName;
     private final List<String> policyNames;

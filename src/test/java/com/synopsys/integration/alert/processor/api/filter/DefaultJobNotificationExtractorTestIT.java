@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistr
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.processor.api.filter.extractor.VulnerabilitySingleProjectNotificationContent;
+import com.synopsys.integration.alert.processor.api.filter.extractor.VulnerabilityUniqueProjectNotificationContent;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
@@ -257,23 +257,23 @@ public class DefaultJobNotificationExtractorTestIT {
     }
 
     private List<FilterableNotificationWrapper> createNotificationWrappers() {
-        VulnerabilitySingleProjectNotificationContent vulnerabilitySingleProjectNotificationContent = Mockito.mock(VulnerabilitySingleProjectNotificationContent.class);
+        VulnerabilityUniqueProjectNotificationContent vulnerabilityUniqueProjectNotificationContent = Mockito.mock(VulnerabilityUniqueProjectNotificationContent.class);
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         FilterableNotificationWrapper test_project = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
-            vulnerabilitySingleProjectNotificationContent,
+            vulnerabilityUniqueProjectNotificationContent,
             PROJECT_NAME_1,
             List.of(VulnerabilitySeverityType.LOW.name())
         );
         FilterableNotificationWrapper test_project2 = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
-            vulnerabilitySingleProjectNotificationContent,
+            vulnerabilityUniqueProjectNotificationContent,
             "test_project1",
             List.of(VulnerabilitySeverityType.HIGH.name())
         );
         FilterableNotificationWrapper test_project3 = FilterableNotificationWrapper.vulnerability(
             alertNotificationModel,
-            vulnerabilitySingleProjectNotificationContent,
+            vulnerabilityUniqueProjectNotificationContent,
             "test_project2",
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
