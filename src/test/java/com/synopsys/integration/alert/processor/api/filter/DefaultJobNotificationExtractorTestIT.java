@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
@@ -57,7 +58,7 @@ public class DefaultJobNotificationExtractorTestIT {
         assertNotNull(mappedNotifications);
         assertEquals(3, mappedNotifications.size());
         for (FilteredJobNotificationWrapper mappedJobNotifications : mappedNotifications) {
-            List<FilterableNotificationWrapper> jobNotifications = mappedJobNotifications.getJobNotifications();
+            List<ProcessableNotificationWrapper> jobNotifications = mappedJobNotifications.getJobNotifications();
             assertFalse(jobNotifications.isEmpty(), "Expected the list not to be empty");
             assertTrue(jobNotifications.size() < 4, "Expected the list to contain fewer elements");
         }
@@ -157,12 +158,11 @@ public class DefaultJobNotificationExtractorTestIT {
         assertEquals(1, mappedNotifications.size());
         FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
 
-        List<FilterableNotificationWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
+        List<ProcessableNotificationWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
         assertEquals(1, filterableNotificationWrappers.size());
 
-        FilterableNotificationWrapper filterableNotificationWrapper = filterableNotificationWrappers.get(0);
-        assertTrue(filterableNotificationWrapper.getProjectNames().contains(PROJECT_NAME_1), String.format("Expected projectNames to contain '%s'", PROJECT_NAME_1));
-        assertEquals(NotificationType.VULNERABILITY.name(), filterableNotificationWrapper.extractNotificationType());
+        ProcessableNotificationWrapper processableNotificationWrapper = filterableNotificationWrappers.get(0);
+        assertEquals(NotificationType.VULNERABILITY.name(), processableNotificationWrapper.extractNotificationType());
     }
 
     private void testSingleJob(DistributionJobRequestModel jobRequestModel, int expectedMappedNotifications) {
@@ -174,7 +174,7 @@ public class DefaultJobNotificationExtractorTestIT {
         assertEquals(1, mappedNotifications.size());
         FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
 
-        List<FilterableNotificationWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
+        List<ProcessableNotificationWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
         assertEquals(expectedMappedNotifications, filterableNotificationWrappers.size());
     }
 

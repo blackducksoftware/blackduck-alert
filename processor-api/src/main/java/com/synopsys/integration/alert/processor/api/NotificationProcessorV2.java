@@ -93,7 +93,7 @@ public final class NotificationProcessorV2 {
         List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
         for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications) {
             UUID jobId = jobNotificationWrapper.getJobId();
-            List<FilterableNotificationWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
+            List<ProcessableNotificationWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
             Set<Long> notificationIds = filteredNotifications
                                             .stream()
                                             .map(ProcessableNotificationWrapper::getNotificationId)
@@ -106,7 +106,7 @@ public final class NotificationProcessorV2 {
         }
     }
 
-    private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<FilterableNotificationWrapper> jobNotifications) {
+    private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<ProcessableNotificationWrapper> jobNotifications) {
         ProviderMessageHolder extractedProviderMessages = jobNotifications
                                                               .stream()
                                                               .map(providerMessageExtractionDelegator::extract)

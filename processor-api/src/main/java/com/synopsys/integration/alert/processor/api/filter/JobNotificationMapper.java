@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistr
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
@@ -64,18 +65,18 @@ public class JobNotificationMapper {
      * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
      */
     public List<FilteredJobNotificationWrapper> mapJobsToNotifications(List<FilterableNotificationWrapper> filterableNotifications, Collection<FrequencyType> frequencies) {
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> groupedFilterableNotifications = new HashMap<>();
+        Map<FilteredDistributionJobResponseModel, List<ProcessableNotificationWrapper>> groupedFilterableNotifications = new HashMap<>();
 
         for (FilterableNotificationWrapper filterableNotificationWrapper : filterableNotifications) {
             List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(filterableNotificationWrapper, frequencies);
             for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : filteredDistributionJobResponseModels) {
-                List<FilterableNotificationWrapper> set = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
-                set.add(filterableNotificationWrapper);
+                List<ProcessableNotificationWrapper> applicableNotifications = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
+                applicableNotifications.add(filterableNotificationWrapper);
             }
         }
 
         List<FilteredJobNotificationWrapper> filterableJobNotifications = new LinkedList<>();
-        for (Map.Entry<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
+        for (Map.Entry<FilteredDistributionJobResponseModel, List<ProcessableNotificationWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
             FilteredDistributionJobResponseModel filteredJob = groupedEntry.getKey();
             FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), groupedEntry.getValue());
             filterableJobNotifications.add(wrappedJobNotifications);
