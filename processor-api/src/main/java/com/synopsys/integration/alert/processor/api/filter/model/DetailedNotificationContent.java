@@ -27,49 +27,48 @@ import java.util.List;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 
 public class DetailedNotificationContent extends AlertSerializableModel {
-    private final List<String> projectNames;
+    private final String projectName;
     private final List<String> policyNames;
     private final List<String> vulnerabilitySeverities;
     private final NotificationContentWrapper notificationContentWrapper;
 
     public static DetailedNotificationContent vulnerability(
         AlertNotificationModel notificationModel,
-        VulnerabilityNotificationContent notificationContent,
-        List<String> projectNames,
+        NotificationContentComponent notificationContent,
+        String projectName,
         List<String> vulnerabilitySeverities
     ) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectNames, List.of(), vulnerabilitySeverities);
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(), vulnerabilitySeverities);
     }
 
     public static DetailedNotificationContent policy(
         AlertNotificationModel notificationModel,
         NotificationContentComponent notificationContent,
-        List<String> projectNames,
+        String projectName,
         List<String> policyNames
     ) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectNames, policyNames, List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, policyNames, List.of());
     }
 
     public static DetailedNotificationContent project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, List.of(projectName), List.of(), List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(), List.of());
     }
 
     public static DetailedNotificationContent projectless(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, List.of(), List.of(), List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, null, List.of(), List.of());
     }
 
-    private DetailedNotificationContent(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, List<String> projectNames, List<String> policyNames, List<String> vulnerabilitySeverities) {
-        this.projectNames = projectNames;
+    private DetailedNotificationContent(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, String projectName, List<String> policyNames, List<String> vulnerabilitySeverities) {
+        this.projectName = projectName;
         this.policyNames = policyNames;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.notificationContentWrapper = new NotificationContentWrapper(alertNotificationModel, notificationContent, notificationContent.getClass());
     }
 
-    public List<String> getProjectNames() {
-        return projectNames;
+    public String getProjectName() {
+        return projectName;
     }
 
     public List<String> getPolicyNames() {

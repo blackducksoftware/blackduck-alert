@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.alert.processor.api.filter.extractor;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,8 +41,8 @@ public class LicenseLimitDetailExtractor extends NotificationDetailExtractor<Lic
     }
 
     @Override
-    protected DetailedNotificationContent convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, LicenseLimitNotificationContent notificationContent) {
-        return DetailedNotificationContent.projectless(alertNotificationModel, notificationContent);
+    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, LicenseLimitNotificationContent notificationContent) {
+        return List.of(DetailedNotificationContent.projectless(alertNotificationModel, notificationContent));
     }
 
 }
