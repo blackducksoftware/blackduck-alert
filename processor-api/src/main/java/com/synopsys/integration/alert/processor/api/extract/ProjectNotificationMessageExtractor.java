@@ -51,8 +51,8 @@ public class ProjectNotificationMessageExtractor extends ProviderMessageExtracto
     }
 
     @Override
-    protected ProviderMessageHolder extract(NotificationContentWrapper filteredNotification, ProjectNotificationContent notificationContent) {
-        AlertNotificationModel alertNotificationModel = filteredNotification.getAlertNotificationModel();
+    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectNotificationContent notificationContent) {
+        AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
         LinkableItem project = new LinkableItem(LABEL_PROJECT, notificationContent.getProjectName(), notificationContent.getProject());
