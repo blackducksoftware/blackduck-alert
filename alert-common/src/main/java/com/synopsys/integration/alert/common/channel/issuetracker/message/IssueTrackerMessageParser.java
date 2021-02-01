@@ -24,9 +24,11 @@ package com.synopsys.integration.alert.common.channel.issuetracker.message;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,14 +41,20 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
     private final int titleSizeLimit;
     private final int messageSizeLimit;
-
+    
     protected IssueTrackerMessageParser(int titleSizeLimit, int messageSizeLimit) {
         this.titleSizeLimit = titleSizeLimit;
         this.messageSizeLimit = messageSizeLimit;
     }
 
     public final IssueContentModel createIssueContentModel(
-        String providerName, IssueOperation issueOperation, LinkableItem topic, @Nullable LinkableItem subTopic, Set<ComponentItem> componentItems, ComponentItem arbitraryItem) {
+        String providerName,
+        IssueOperation issueOperation,
+        LinkableItem topic,
+        @Nullable LinkableItem subTopic,
+        Set<ComponentItem> componentItems,
+        ComponentItem arbitraryItem
+    ) {
         String title = createTitle(providerName, topic, subTopic, arbitraryItem);
 
         StringBuilder description = new StringBuilder();
@@ -59,11 +67,10 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
             description.append(getLineSeparator());
         }
 
-        List<String> descriptionComments = new ArrayList<>();
-        String additionalDescriptionInfo = createAdditionalDescriptionInfoOrAddToAdditionalComments(description.length(), componentItems, descriptionComments);
-        description.append(additionalDescriptionInfo);
+        LinkedList<String> descriptionComments = new LinkedList<>();
+        String finalDescription = createDescriptionOrAddToAdditionalComments(description.toString(), componentItems, descriptionComments);
         List<String> operationComments = createOperationComment(providerName, topic.getLabel(), issueOperation, componentItems);
-        return IssueContentModel.of(title, description.toString(), descriptionComments, operationComments);
+        return IssueContentModel.of(title, finalDescription, descriptionComments, operationComments);
     }
 
     private List<String> createOperationComment(String provider, String category, IssueOperation operation, Set<ComponentItem> componentItems) {
@@ -88,7 +95,7 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         return splitter.splitMessages(text, true);
     }
 
-    private String createTitle(String provider, LinkableItem topic, LinkableItem subTopic, ComponentItem arbitraryItem) {
+    private String createTitle(String provider, LinkableItem topic, @Nullable LinkableItem subTopic, @Nullable ComponentItem arbitraryItem) {
         StringBuilder title = new StringBuilder();
         title.append("Alert - Provider: ");
         title.append(provider);
@@ -115,29 +122,36 @@ public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
         return StringUtils.abbreviate(title.toString(), titleSizeLimit);
     }
 
-    private String createAdditionalDescriptionInfoOrAddToAdditionalComments(int initialDescriptionLength, Set<ComponentItem> componentItems, Collection<String> additionalComments) {
-        StringBuilder additionalDescriptionInfo = new StringBuilder();
-        List<String> tempAdditionalComments = new ArrayList<>();
+    private String createDescriptionOrAddToAdditionalComments(String initialDescription, Set<ComponentItem> componentItems, Collection<String> additionalComments) {
+        StringBuilder description = new StringBuilder();
 
-        int currentLength = initialDescriptionLength;
+        List<String> tempAdditionalComments = new LinkedList<>();
+        splitAndAppendMessages(initialDescription, tempAdditionalComments);
+        description.append(tempAdditionalComments.remove(0));
+        boolean descriptionFull = CollectionUtils.isNotEmpty(tempAdditionalComments);
+        int currentLength = description.length();
+
         List<String> componentItemMessagePieces = createComponentAndCategoryMessagePieces(componentItems);
         for (String descriptionItem : componentItemMessagePieces) {
             int itemLength = descriptionItem.length();
-            if (currentLength >= messageSizeLimit) {
-                tempAdditionalComments.add(descriptionItem);
-            } else if (itemLength + currentLength >= messageSizeLimit) {
-                tempAdditionalComments.add(descriptionItem);
-                currentLength = currentLength + descriptionItem.length();
+            if (descriptionFull || itemLength + currentLength >= messageSizeLimit) {
+                descriptionFull = true;
+                splitAndAppendMessages(descriptionItem, tempAdditionalComments);
             } else {
-                additionalDescriptionInfo.append(descriptionItem);
-                currentLength = initialDescriptionLength + additionalDescriptionInfo.length();
+                description.append(descriptionItem);
+                currentLength = description.length();
             }
         }
 
-        MessageSplitter splitter = new MessageSplitter(messageSizeLimit, getLineSeparator());
-        additionalComments.addAll(splitter.splitMessages(tempAdditionalComments, false));
+        additionalComments.addAll(tempAdditionalComments);
 
-        return additionalDescriptionInfo.toString();
+        return description.toString();
+    }
+
+    private void splitAndAppendMessages(String message, List<String> messages) {
+        MessageSplitter splitter = new MessageSplitter(messageSizeLimit, getLineSeparator());
+        List<String> splitMessages = splitter.splitMessages(List.of(message), true);
+        messages.addAll(splitMessages);
     }
 
     private String createTitlePartStringPrefixedWithComma(LinkableItem linkableItem) {

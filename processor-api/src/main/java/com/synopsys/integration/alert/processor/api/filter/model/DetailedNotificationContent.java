@@ -25,45 +25,46 @@ package com.synopsys.integration.alert.processor.api.filter.model;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
-// TODO DetailedNotificationContent is a possible better name with subclasses
-public class FilterableNotificationWrapper extends ProcessableNotificationWrapper {
+public class DetailedNotificationContent extends AlertSerializableModel {
     private final String projectName;
     private final List<String> policyNames;
     private final List<String> vulnerabilitySeverities;
+    private final NotificationContentWrapper notificationContentWrapper;
 
-    public static FilterableNotificationWrapper vulnerability(
+    public static DetailedNotificationContent vulnerability(
         AlertNotificationModel notificationModel,
         NotificationContentComponent notificationContent,
         String projectName,
         List<String> vulnerabilitySeverities
     ) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectName, List.of(), vulnerabilitySeverities);
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(), vulnerabilitySeverities);
     }
 
-    public static FilterableNotificationWrapper policy(
+    public static DetailedNotificationContent policy(
         AlertNotificationModel notificationModel,
         NotificationContentComponent notificationContent,
         String projectName,
         List<String> policyNames
     ) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectName, policyNames, List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, policyNames, List.of());
     }
 
-    public static FilterableNotificationWrapper project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, projectName, List.of(), List.of());
+    public static DetailedNotificationContent project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(), List.of());
     }
 
-    public static FilterableNotificationWrapper projectless(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, null, List.of(), List.of());
+    public static DetailedNotificationContent projectless(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent) {
+        return new DetailedNotificationContent(notificationModel, notificationContent, null, List.of(), List.of());
     }
 
-    private FilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, String projectName, List<String> policyNames, List<String> vulnerabilitySeverities) {
-        super(alertNotificationModel, notificationContent, notificationContent.getClass());
+    private DetailedNotificationContent(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, String projectName, List<String> policyNames, List<String> vulnerabilitySeverities) {
         this.projectName = projectName;
         this.policyNames = policyNames;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
+        this.notificationContentWrapper = new NotificationContentWrapper(alertNotificationModel, notificationContent, notificationContent.getClass());
     }
 
     public String getProjectName() {
@@ -76,6 +77,10 @@ public class FilterableNotificationWrapper extends ProcessableNotificationWrappe
 
     public List<String> getVulnerabilitySeverities() {
         return vulnerabilitySeverities;
+    }
+
+    public NotificationContentWrapper getNotificationContentWrapper() {
+        return notificationContentWrapper;
     }
 
 }

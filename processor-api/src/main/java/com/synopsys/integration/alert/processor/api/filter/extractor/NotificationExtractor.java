@@ -26,7 +26,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -45,11 +45,11 @@ public abstract class NotificationExtractor<T extends NotificationContentCompone
         return notificationType;
     }
 
-    public final List<FilterableNotificationWrapper> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel) {
+    public final List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel) {
         T vulnerabilityNotificationContent = gson.fromJson(alertNotificationModel.getContent(), notificationClass);
         return convertToFilterableNotificationWrapper(alertNotificationModel, vulnerabilityNotificationContent);
     }
 
-    protected abstract List<FilterableNotificationWrapper> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent);
+    protected abstract List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent);
 
 }

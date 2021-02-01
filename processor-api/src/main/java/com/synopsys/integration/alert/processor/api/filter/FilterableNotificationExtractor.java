@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.processor.api.filter.extractor.NotificationExtractor;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
@@ -48,7 +48,7 @@ public class FilterableNotificationExtractor {
         this.notificationExtractors = DataStructureUtils.mapToValues(notificationExtractors, NotificationExtractor::getNotificationType);
     }
 
-    public final List<FilterableNotificationWrapper> wrapNotification(AlertNotificationModel notification) {
+    public final List<DetailedNotificationContent> wrapNotification(AlertNotificationModel notification) {
         String notificationTypeString = notification.getNotificationType();
         NotificationType notificationType;
         try {
