@@ -36,15 +36,17 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
+import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class DefaultJobNotificationExtractor implements JobNotificationExtractor {
-    private JobAccessor jobAccessor;
+public class JobNotificationMapper {
+    private final JobAccessor jobAccessor;
 
     @Autowired
-    public DefaultJobNotificationExtractor(JobAccessor jobAccessor) {
+    public JobNotificationMapper(JobAccessor jobAccessor) {
         this.jobAccessor = jobAccessor;
     }
 
@@ -62,27 +64,35 @@ public class DefaultJobNotificationExtractor implements JobNotificationExtractor
      * @param frequencies             an Additional filter to specify when querying data from the DB
      * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
      */
-    @Override
-    public Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> mapJobsToNotifications(List<? extends FilterableNotificationWrapper<?>> filterableNotifications, Collection<FrequencyType> frequencies) {
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> groupedFilterableNotifications = new HashMap<>();
+    public List<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> filterableNotifications, Collection<FrequencyType> frequencies) {
+        Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
 
-        for (FilterableNotificationWrapper filterableNotificationWrapper : filterableNotifications) {
-            List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(filterableNotificationWrapper, frequencies);
+        for (DetailedNotificationContent detailedNotificationContent : filterableNotifications) {
+            List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(detailedNotificationContent, frequencies);
             for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : filteredDistributionJobResponseModels) {
-                List<FilterableNotificationWrapper<?>> set = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
-                set.add(filterableNotificationWrapper);
+                List<NotificationContentWrapper> applicableNotifications = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
+                applicableNotifications.add(detailedNotificationContent.getNotificationContentWrapper());
             }
         }
-        return groupedFilterableNotifications;
+
+        List<FilteredJobNotificationWrapper> filterableJobNotifications = new LinkedList<>();
+        for (Map.Entry<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
+            FilteredDistributionJobResponseModel filteredJob = groupedEntry.getKey();
+            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), groupedEntry.getValue());
+            filterableJobNotifications.add(wrappedJobNotifications);
+        }
+
+        return filterableJobNotifications;
     }
 
-    private List<FilteredDistributionJobResponseModel> retrieveMatchingJobs(FilterableNotificationWrapper filterableNotificationWrapper, Collection<FrequencyType> frequencyTypes) {
+    private List<FilteredDistributionJobResponseModel> retrieveMatchingJobs(DetailedNotificationContent detailedNotificationContent, Collection<FrequencyType> frequencyTypes) {
+        NotificationContentWrapper contentWrapper = detailedNotificationContent.getNotificationContentWrapper();
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             frequencyTypes,
-            EnumUtils.getEnum(NotificationType.class, filterableNotificationWrapper.extractNotificationType()),
-            filterableNotificationWrapper.getProjectNames(),
-            filterableNotificationWrapper.getVulnerabilitySeverities(),
-            filterableNotificationWrapper.getPolicyNames()
+            EnumUtils.getEnum(NotificationType.class, contentWrapper.extractNotificationType()),
+            detailedNotificationContent.getProjectName(),
+            detailedNotificationContent.getVulnerabilitySeverities(),
+            detailedNotificationContent.getPolicyNames()
         );
         return jobAccessor.getMatchingEnabledJobs(filteredDistributionJobRequestModel);
     }

@@ -22,22 +22,27 @@
  */
 package com.synopsys.integration.alert.processor.api.filter.extractor;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public abstract class NotificationExtractor<T extends NotificationContentComponent> {
-    private NotificationType notificationType;
-
-    public NotificationExtractor(NotificationType notificationType) {
-        this.notificationType = notificationType;
+@Component
+public class ProjectNotificationDetailExtractor extends NotificationDetailExtractor<ProjectNotificationContent> {
+    @Autowired
+    public ProjectNotificationDetailExtractor(Gson gson) {
+        super(NotificationType.PROJECT, ProjectNotificationContent.class, gson);
     }
 
-    public NotificationType getNotificationType() {
-        return notificationType;
+    @Override
+    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
+        return List.of(DetailedNotificationContent.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName()));
     }
-
-    public abstract FilterableNotificationWrapper<T> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel);
 
 }

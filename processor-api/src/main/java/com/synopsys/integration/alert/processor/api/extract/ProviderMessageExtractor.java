@@ -22,10 +22,39 @@
  */
 package com.synopsys.integration.alert.processor.api.extract;
 
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface ProviderMessageExtractor {
-    ProviderMessageHolder extract(FilterableNotificationWrapper<?> filteredNotification);
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
+import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+
+public abstract class ProviderMessageExtractor<T extends NotificationContentComponent> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final NotificationType notificationType;
+    private final Class<T> notificationContentClass;
+
+    protected ProviderMessageExtractor(NotificationType notificationType, Class<T> notificationContentClass) {
+        this.notificationType = notificationType;
+        this.notificationContentClass = notificationContentClass;
+    }
+
+    public NotificationType getNotificationType() {
+        return notificationType;
+    }
+
+    public final ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper) {
+        if (!notificationContentClass.isAssignableFrom(notificationContentWrapper.getNotificationContentClass())) {
+            logger.error("The notification type provided is incompatible with this extractor: {}", notificationContentWrapper.extractNotificationType());
+            return ProviderMessageHolder.empty();
+        }
+
+        T stronglyTypedContent = notificationContentClass.cast(notificationContentWrapper.getNotificationContent());
+        return extract(notificationContentWrapper, stronglyTypedContent);
+    }
+
+    protected abstract ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, T notificationContent);
 
 }

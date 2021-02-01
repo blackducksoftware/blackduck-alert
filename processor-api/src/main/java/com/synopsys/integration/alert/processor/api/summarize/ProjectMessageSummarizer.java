@@ -104,7 +104,6 @@ public class ProjectMessageSummarizer {
 
     private List<LinkableItem> constructMessageDetails(ProjectMessage projectMessage) {
         List<LinkableItem> details = new LinkedList<>();
-        details.add(projectMessage.getProvider());
         details.add(projectMessage.getProject());
         projectMessage.getProjectVersion().ifPresent(details::add);
 

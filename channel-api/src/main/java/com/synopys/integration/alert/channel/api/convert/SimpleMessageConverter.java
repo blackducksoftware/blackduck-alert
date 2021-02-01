@@ -43,10 +43,10 @@ public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessa
         appendSection(chunkedStringBuilder, simpleMessage.getSummary());
         appendSection(chunkedStringBuilder, simpleMessage.getDescription());
 
+        appendLinkableItem(chunkedStringBuilder, simpleMessage.getProvider(), true);
+
         for (LinkableItem detail : simpleMessage.getDetails()) {
-            String detailString = createLinkableItemString(detail, false);
-            chunkedStringBuilder.append(detailString);
-            chunkedStringBuilder.append(messageFormatter.getLineSeparator());
+            appendLinkableItem(chunkedStringBuilder, detail, false);
         }
 
         return chunkedStringBuilder.collectCurrentChunks();
@@ -57,6 +57,12 @@ public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessa
         chunkedStringBuilder.append(encodedTxt);
         chunkedStringBuilder.append(messageFormatter.getLineSeparator());
         chunkedStringBuilder.append(messageFormatter.getSectionSeparator());
+        chunkedStringBuilder.append(messageFormatter.getLineSeparator());
+    }
+
+    private void appendLinkableItem(ChunkedStringBuilder chunkedStringBuilder, LinkableItem linkableItem, boolean bold) {
+        String detailString = createLinkableItemString(linkableItem, bold);
+        chunkedStringBuilder.append(detailString);
         chunkedStringBuilder.append(messageFormatter.getLineSeparator());
     }
 

@@ -57,8 +57,8 @@ public abstract class AbstractMessageCombiner implements MessageCombiner {
 
     public ProviderMessageContent createNewMessage(ProviderMessageContent oldMessage, Collection<ComponentItem> componentItems) throws AlertException {
         LinkableItem provider = oldMessage.getProvider();
-        LinkableItem topic = oldMessage.getProject();
-        Optional<LinkableItem> optionalSubTopic = oldMessage.getProjectVersion();
+        LinkableItem topic = oldMessage.getTopic();
+        Optional<LinkableItem> optionalSubTopic = oldMessage.getSubTopic();
         String subTopicName = optionalSubTopic.map(LinkableItem::getLabel).orElse(null);
         String subTopicValue = optionalSubTopic.map(LinkableItem::getValue).orElse(null);
         String subTopicUrl = optionalSubTopic.flatMap(LinkableItem::getUrl).orElse(null);
@@ -67,8 +67,8 @@ public abstract class AbstractMessageCombiner implements MessageCombiner {
 
         return new ProviderMessageContent.Builder()
                    .applyProvider(provider.getLabel(), oldMessage.getProviderConfigId(), provider.getValue(), provider.getUrl().orElse(null))
-                   .applyProject(topic.getLabel(), topic.getValue(), topic.getUrl().orElse(null))
-                   .applyProjectVersion(subTopicName, subTopicValue, subTopicUrl)
+                   .applyTopic(topic.getLabel(), topic.getValue(), topic.getUrl().orElse(null))
+                   .applySubTopic(subTopicName, subTopicValue, subTopicUrl)
                    .applyAction(action)
                    .applyNotificationId(notificationId)
                    .applyAllComponentItems(componentItems)
@@ -126,10 +126,10 @@ public abstract class AbstractMessageCombiner implements MessageCombiner {
                    .applyOperation(oldItem.getOperation())
                    .applyPriority(oldItem.getPriority())
                    .applyComponentData(oldItem.getComponent())
-                   .applyComponentVersion(oldItem.getComponentVersion().orElse(null))
+                   .applySubComponent(oldItem.getSubComponent().orElse(null))
                    .applyComponentItemCallbackInfo(oldItem.getCallbackInfo().orElse(null))
                    .applyCategoryItem(oldItem.getCategoryItem())
-                   .applySeverity(oldItem.getSeverity().orElse(null))
+                   .applyCategoryGroupingAttribute(oldItem.getCategoryGroupingAttribute().orElse(null))
                    .applyCollapseOnCategory(oldItem.collapseOnCategory())
                    .applyAllComponentAttributes(componentAttributes)
                    .applyNotificationIds(oldItem.getNotificationIds())

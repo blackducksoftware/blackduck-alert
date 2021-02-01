@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.processor.api.filter;
 
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -33,44 +33,50 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.processor.api.filter.extractor.NotificationExtractor;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.extractor.NotificationDetailExtractor;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class FilterableNotificationExtractor {
-    private final Logger logger = LoggerFactory.getLogger(FilterableNotificationExtractor.class);
+public class NotificationDetailExtractionDelegator {
+    private final Logger logger = LoggerFactory.getLogger(NotificationDetailExtractionDelegator.class);
 
-    private Map<NotificationType, NotificationExtractor> notificationExtractors;
+    private final EnumMap<NotificationType, NotificationDetailExtractor> notificationExtractors;
 
     @Autowired
-    public FilterableNotificationExtractor(List<NotificationExtractor> notificationExtractors) {
-        this.notificationExtractors = DataStructureUtils.mapToValues(notificationExtractors, NotificationExtractor::getNotificationType);
+    public NotificationDetailExtractionDelegator(List<NotificationDetailExtractor> notificationDetailExtractors) {
+        this.notificationExtractors = initializeExtractorMap(notificationDetailExtractors);
     }
 
-    public final Optional<FilterableNotificationWrapper<?>> wrapNotification(AlertNotificationModel notification) {
+    public final List<DetailedNotificationContent> wrapNotification(AlertNotificationModel notification) {
         String notificationTypeString = notification.getNotificationType();
         NotificationType notificationType;
         try {
             notificationType = Enum.valueOf(NotificationType.class, notificationTypeString);
         } catch (IllegalArgumentException e) {
             logger.warn("Notification did not match any existing notification type: {}", notificationTypeString);
-            return Optional.empty();
+            return List.of();
         }
 
-        Optional<NotificationExtractor> notificationExtractorOptional = getNotificationExtractor(notificationType);
+        Optional<NotificationDetailExtractor> notificationExtractorOptional = getNotificationExtractor(notificationType);
         if (notificationExtractorOptional.isPresent()) {
-            NotificationExtractor notificationExtractor = notificationExtractorOptional.get();
-
-            return Optional.of(notificationExtractor.convertToFilterableNotificationWrapper(notification));
+            NotificationDetailExtractor notificationDetailExtractor = notificationExtractorOptional.get();
+            return notificationDetailExtractor.convertToFilterableNotificationWrapper(notification);
         }
 
         logger.warn("Did not find extractor for notification type: {}", notificationTypeString);
-        return Optional.empty();
+        return List.of();
     }
 
-    private Optional<NotificationExtractor> getNotificationExtractor(NotificationType notificationType) {
-        NotificationExtractor notificationExtractor = notificationExtractors.get(notificationType);
-        return Optional.ofNullable(notificationExtractor);
+    private Optional<NotificationDetailExtractor> getNotificationExtractor(NotificationType notificationType) {
+        NotificationDetailExtractor notificationDetailExtractor = notificationExtractors.get(notificationType);
+        return Optional.ofNullable(notificationDetailExtractor);
     }
+
+    private EnumMap<NotificationType, NotificationDetailExtractor> initializeExtractorMap(List<NotificationDetailExtractor> notificationDetailExtractors) {
+        return notificationDetailExtractors
+                   .stream()
+                   .collect(DataStructureUtils.toEnumMap(NotificationDetailExtractor::getNotificationType, NotificationType.class));
+    }
+
 }

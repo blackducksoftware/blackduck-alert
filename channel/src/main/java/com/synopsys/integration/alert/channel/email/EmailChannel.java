@@ -107,25 +107,26 @@ public class EmailChannel extends NamedDistributionChannel {
     }
 
     public void sendMessage(EmailProperties emailProperties, Set<String> emailAddresses, String subjectLine, String formatType, EmailAttachmentFormat attachmentFormat, MessageContentGroup messageContent) throws IntegrationException {
-        String projectName = null;
-        String projectVersionName = null;
+        String topicValue = null;
+        String subTopicValue = null;
         if (!messageContent.isEmpty()) {
-            projectName = messageContent.getCommonProject().getValue();
-            projectVersionName = messageContent.getSubContent()
-                                     .stream()
-                                     .map(ProviderMessageContent::getProjectVersion)
-                                     .flatMap(Optional::stream)
-                                     .map(LinkableItem::getValue)
-                                     .collect(Collectors.joining(", "));
+            topicValue = messageContent.getCommonTopic().getValue();
+            //subTopic is assumed to be a BlackDuck project version
+            subTopicValue = messageContent.getSubContent()
+                                .stream()
+                                .map(ProviderMessageContent::getSubTopic)
+                                .flatMap(Optional::stream)
+                                .map(LinkableItem::getValue)
+                                .collect(Collectors.joining(", "));
         }
 
         String alertServerUrl = alertProperties.getServerUrl().orElse(null);
-        LinkableItem commonProvider = messageContent.getCommonProvider();
-        String providerName = commonProvider.getValue();
-        String providerUrl = commonProvider.getUrl().orElse("#");
+        LinkableItem comonProvider = messageContent.getCommonProvider();
+        String providerName = comonProvider.getValue();
+        String providerUrl = comonProvider.getUrl().orElse("#");
 
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Project: %s", providerName, projectName);
+            String errorMessage = String.format("ERROR: Could not determine what email addresses to send this content to. Provider: %s. Topic: %s", providerName, topicValue);
             throw new AlertException(errorMessage);
         }
         HashMap<String, Object> model = new HashMap<>();
@@ -135,10 +136,10 @@ public class EmailChannel extends NamedDistributionChannel {
 
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), formattedContent);
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
-        model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, projectName, projectVersionName));
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), createEnhancedSubjectLine(subjectLine, topicValue, subTopicValue));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_URL.getPropertyKey(), providerUrl);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_NAME.getPropertyKey(), providerName);
-        model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), projectName);
+        model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), topicValue);
         model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
         model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);

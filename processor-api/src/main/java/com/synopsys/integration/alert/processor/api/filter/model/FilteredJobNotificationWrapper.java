@@ -22,33 +22,39 @@
  */
 package com.synopsys.integration.alert.processor.api.filter.model;
 
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import java.util.List;
+import java.util.UUID;
+
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
-public class ProcessableNotificationWrapper<T extends NotificationContentComponent> extends AlertSerializableModel {
-    private final AlertNotificationModel alertNotificationModel;
-    private final T notificationContent;
+public class FilteredJobNotificationWrapper extends AlertSerializableModel {
+    private final UUID jobId;
+    private final ProcessingType processingType;
+    private final String channelName;
+    private final List<NotificationContentWrapper> jobNotifications;
 
-    public ProcessableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent) {
-        this.alertNotificationModel = alertNotificationModel;
-        this.notificationContent = notificationContent;
+    public FilteredJobNotificationWrapper(UUID jobId, ProcessingType processingType, String channelName, List<NotificationContentWrapper> jobNotifications) {
+        this.jobId = jobId;
+        this.processingType = processingType;
+        this.channelName = channelName;
+        this.jobNotifications = jobNotifications;
     }
 
-    public AlertNotificationModel getAlertNotificationModel() {
-        return alertNotificationModel;
+    public UUID getJobId() {
+        return jobId;
     }
 
-    public T getNotificationContent() {
-        return notificationContent;
+    public ProcessingType getProcessingType() {
+        return processingType;
     }
 
-    public String extractNotificationType() {
-        return getAlertNotificationModel().getNotificationType();
+    public String getChannelName() {
+        return channelName;
     }
 
-    public Long getNotificationId() {
-        return getAlertNotificationModel().getId();
+    public List<NotificationContentWrapper> getJobNotifications() {
+        return jobNotifications;
     }
 
 }

@@ -59,8 +59,8 @@ public class ProjectVersionMessageBuilder extends BlackDuckMessageBuilder<Projec
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyProject(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
-                .applyProjectVersion(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion())
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion())
                 .applyAction(projectLevelAction);
             return List.of(messageContentBuilder.build());
         } catch (AlertException e) {
