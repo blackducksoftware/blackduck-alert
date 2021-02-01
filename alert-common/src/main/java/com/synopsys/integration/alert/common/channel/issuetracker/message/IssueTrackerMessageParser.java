@@ -41,8 +41,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 public abstract class IssueTrackerMessageParser extends ChannelMessageParser {
     private final int titleSizeLimit;
     private final int messageSizeLimit;
-
-    // TODO: What if description length differs from comment length? Should description length be accepted here?
+    
     protected IssueTrackerMessageParser(int titleSizeLimit, int messageSizeLimit) {
         this.titleSizeLimit = titleSizeLimit;
         this.messageSizeLimit = messageSizeLimit;
