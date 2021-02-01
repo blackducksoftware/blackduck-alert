@@ -30,8 +30,8 @@ import java.util.function.Function;
 import org.apache.commons.collections4.ListUtils;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
