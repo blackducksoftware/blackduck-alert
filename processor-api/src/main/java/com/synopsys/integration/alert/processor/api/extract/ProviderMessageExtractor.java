@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.processor.api.extract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -45,16 +45,16 @@ public abstract class ProviderMessageExtractor<T extends NotificationContentComp
         return notificationType;
     }
 
-    public final ProviderMessageHolder extract(NotificationContentWrapper filteredNotification) {
-        if (!notificationContentClass.isAssignableFrom(filteredNotification.getNotificationContentClass())) {
-            logger.error("The notification type provided is incompatible with this extractor: {}", filteredNotification.extractNotificationType());
+    public final ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper) {
+        if (!notificationContentClass.isAssignableFrom(notificationContentWrapper.getNotificationContentClass())) {
+            logger.error("The notification type provided is incompatible with this extractor: {}", notificationContentWrapper.extractNotificationType());
             return ProviderMessageHolder.empty();
         }
 
-        T stronglyTypedContent = notificationContentClass.cast(filteredNotification.getNotificationContent());
-        return extract(filteredNotification, stronglyTypedContent);
+        T stronglyTypedContent = notificationContentClass.cast(notificationContentWrapper.getNotificationContent());
+        return extract(notificationContentWrapper, stronglyTypedContent);
     }
 
-    protected abstract ProviderMessageHolder extract(NotificationContentWrapper filteredNotification, T notificationContent);
+    protected abstract ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, T notificationContent);
 
 }

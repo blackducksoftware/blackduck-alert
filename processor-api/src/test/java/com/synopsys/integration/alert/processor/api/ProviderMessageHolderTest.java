@@ -8,8 +8,8 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;

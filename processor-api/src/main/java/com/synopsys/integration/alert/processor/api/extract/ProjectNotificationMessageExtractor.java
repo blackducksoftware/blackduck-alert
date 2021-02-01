@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
@@ -51,8 +51,8 @@ public class ProjectNotificationMessageExtractor extends ProviderMessageExtracto
     }
 
     @Override
-    protected ProviderMessageHolder extract(NotificationContentWrapper filteredNotification, ProjectNotificationContent notificationContent) {
-        AlertNotificationModel alertNotificationModel = filteredNotification.getAlertNotificationModel();
+    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectNotificationContent notificationContent) {
+        AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
         LinkableItem project = new LinkableItem(LABEL_PROJECT, notificationContent.getProjectName(), notificationContent.getProject());
