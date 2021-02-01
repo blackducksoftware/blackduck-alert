@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.processor.api.filter;
 
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -41,11 +41,11 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class NotificationDetailExtractionDelegator {
     private final Logger logger = LoggerFactory.getLogger(NotificationDetailExtractionDelegator.class);
 
-    private final Map<NotificationType, NotificationDetailExtractor> notificationExtractors;
+    private final EnumMap<NotificationType, NotificationDetailExtractor> notificationExtractors;
 
     @Autowired
     public NotificationDetailExtractionDelegator(List<NotificationDetailExtractor> notificationDetailExtractors) {
-        this.notificationExtractors = DataStructureUtils.mapToValues(notificationDetailExtractors, NotificationDetailExtractor::getNotificationType);
+        this.notificationExtractors = initializeExtractorMap(notificationDetailExtractors);
     }
 
     public final List<DetailedNotificationContent> wrapNotification(AlertNotificationModel notification) {
@@ -71,6 +71,12 @@ public class NotificationDetailExtractionDelegator {
     private Optional<NotificationDetailExtractor> getNotificationExtractor(NotificationType notificationType) {
         NotificationDetailExtractor notificationDetailExtractor = notificationExtractors.get(notificationType);
         return Optional.ofNullable(notificationDetailExtractor);
+    }
+
+    private EnumMap<NotificationType, NotificationDetailExtractor> initializeExtractorMap(List<NotificationDetailExtractor> notificationDetailExtractors) {
+        return notificationDetailExtractors
+                   .stream()
+                   .collect(DataStructureUtils.toEnumMap(NotificationDetailExtractor::getNotificationType, NotificationType.class));
     }
 
 }
