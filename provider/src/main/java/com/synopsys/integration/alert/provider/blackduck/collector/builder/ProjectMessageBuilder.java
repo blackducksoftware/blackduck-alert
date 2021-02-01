@@ -1,4 +1,4 @@
-/**
+/*
  * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -59,7 +59,7 @@ public class ProjectMessageBuilder extends BlackDuckMessageBuilder<ProjectNotifi
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyProject(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, notificationContent.getProjectName(), notificationContent.getProject())
                 .applyAction(projectLevelAction);
 
             return List.of(messageContentBuilder.build());

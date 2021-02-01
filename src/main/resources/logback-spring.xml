@@ -7,10 +7,10 @@
         <encoder>
 			<pattern>${FILE_LOG_PATTERN}</pattern>
 		</encoder>
-		<file>log/alert_audit.log</file>
+		<file>${LOG_PATH:-log}/alert_audit.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<cleanHistoryOnStart>${LOG_FILE_CLEAN_HISTORY_ON_START:-false}</cleanHistoryOnStart>
-			<fileNamePattern>${ROLLING_FILE_NAME_PATTERN:-log/alert_audit.log.%d{yyyy-MM-dd}.%i.gz}</fileNamePattern>
+			<fileNamePattern>${ROLLING_FILE_NAME_PATTERN:-${LOG_PATH:-log}/alert_audit.log.%d{yyyy-MM-dd}.%i.gz}</fileNamePattern>
 			<maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
 			<maxHistory>${LOG_FILE_MAX_HISTORY:-7}</maxHistory>
 			<totalSizeCap>1GB</totalSizeCap>

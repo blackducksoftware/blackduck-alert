@@ -1,4 +1,4 @@
-/**
+/*
  * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -35,7 +35,7 @@ public class JiraIssuePropertiesUtil {
     }
 
     public static IssueSearchProperties create(String providerName, String providerUrl, LinkableItem topic, LinkableItem nullableSubTopic, ComponentItem componentItem, String trackingKey) {
-        Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getComponentVersion() : Optional.empty();
+        Optional<LinkableItem> subComponent = componentItem != null ? componentItem.getSubComponent() : Optional.empty();
         String category = componentItem != null ? componentItem.getCategory() : null;
         String subTopicName = nullableSubTopic != null ? nullableSubTopic.getLabel() : null;
         String subTopicValue = nullableSubTopic != null ? nullableSubTopic.getValue() : null;

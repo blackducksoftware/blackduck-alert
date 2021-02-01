@@ -1,4 +1,4 @@
-/**
+/*
  * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -98,8 +98,8 @@ public class BomEditMessageBuilder extends BlackDuckMessageBuilder<BomEditNotifi
                 ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
                 messageContentBuilder
                     .applyCommonData(commonMessageData)
-                    .applyProject(MessageBuilderConstants.LABEL_PROJECT_NAME, projectView.getName(), projectView.getHref().toString())
-                    .applyProjectVersion(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionWrapper.getProjectVersionView().getVersionName(),
+                    .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, projectView.getName(), projectView.getHref().toString())
+                    .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, projectVersionWrapper.getProjectVersionView().getVersionName(),
                         projectVersionWrapper.getProjectVersionView().getHref().toString());
 
                 List<LinkableItem> commonAttributes = Stream.concat(ComponentBuilderUtil.getLicenseLinkableItems(bomComponent).stream(), ComponentBuilderUtil.getUsageLinkableItems(bomComponent).stream())

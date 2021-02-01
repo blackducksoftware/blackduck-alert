@@ -17,16 +17,16 @@ public class MessageContentGroupCsvCreatorTest {
 
         ProviderMessageContent.Builder providerMessageBuilder = new ProviderMessageContent.Builder();
         providerMessageBuilder.applyProvider("Example Provider", 1L, "Example Config");
-        providerMessageBuilder.applyProject("Example Topic Name", "Example Topic Value");
+        providerMessageBuilder.applyTopic("Example Topic Name", "Example Topic Value");
 
         ComponentItem.Builder componentItemBuilder = new ComponentItem.Builder();
         componentItemBuilder.applyNotificationId(1L);
         componentItemBuilder.applyOperation(ItemOperation.INFO);
         componentItemBuilder.applyCategory("Example Category");
         componentItemBuilder.applyComponentData("Example Component Name", "Example Component Value", "https://google.com");
-        componentItemBuilder.applyComponentVersion("Example SubComponent Name", "Example SubComponent Value", "https://google.com");
+        componentItemBuilder.applySubComponent("Example SubComponent Name", "Example SubComponent Value", "https://google.com");
         componentItemBuilder.applyCategoryItem("Example Category Item Name", "Example Category Item Value");
-        componentItemBuilder.applySeverity("Example Category Grouping Attribute Name", "Example Category Grouping Attribute Value");
+        componentItemBuilder.applyCategoryGroupingAttribute("Example Category Grouping Attribute Name", "Example Category Grouping Attribute Value");
 
         providerMessageBuilder.applyComponentItem(componentItemBuilder.build());
         messageContentGroup.add(providerMessageBuilder.build());

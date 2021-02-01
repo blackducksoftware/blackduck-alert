@@ -1,4 +1,4 @@
-/**
+/*
  * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -46,7 +46,7 @@ public class MessageContentGroupCsvCreator {
 
     public String createCsvString(MessageContentGroup messageContentGroup) {
         LinkableItem commonProvider = messageContentGroup.getCommonProvider();
-        LinkableItem commonProject = messageContentGroup.getCommonProject();
+        LinkableItem commonProject = messageContentGroup.getCommonTopic();
         List<ProviderMessageContent> contents = messageContentGroup.getSubContent();
 
         StringBuilder csvBuilder = new StringBuilder();
@@ -69,7 +69,7 @@ public class MessageContentGroupCsvCreator {
         columnNames.add("Provider Config");
         columnNames.add(commonProject.getLabel());
 
-        String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getProjectVersion);
+        String subTopicNamesCombined = createOptionalColumnNameString(contents, ProviderMessageContent::getSubTopic);
         columnNames.add(subTopicNamesCombined);
 
         List<ComponentItem> allComponentItems = contents
@@ -81,7 +81,7 @@ public class MessageContentGroupCsvCreator {
         String componentNamesCombined = createColumnNameString(allComponentItems, ComponentItem::getComponent);
         columnNames.add(componentNamesCombined);
 
-        String subComponentNamesCombined = createOptionalColumnNameString(allComponentItems, ComponentItem::getComponentVersion);
+        String subComponentNamesCombined = createOptionalColumnNameString(allComponentItems, ComponentItem::getSubComponent);
         columnNames.add(subComponentNamesCombined);
 
         columnNames.add("Component URL");
@@ -95,7 +95,7 @@ public class MessageContentGroupCsvCreator {
         String categoryNamesCombined = createColumnNameString(categoryNames);
         columnNames.add(categoryNamesCombined);
 
-        String categoryGroupingAttributeNamesCombined = createOptionalColumnNameString(allComponentItems, ComponentItem::getSeverity);
+        String categoryGroupingAttributeNamesCombined = createOptionalColumnNameString(allComponentItems, ComponentItem::getCategoryGroupingAttribute);
         columnNames.add(categoryGroupingAttributeNamesCombined);
 
         columnNames.add("Additional Attributes");
@@ -107,7 +107,7 @@ public class MessageContentGroupCsvCreator {
     private List<List<String>> createRowValues(LinkableItem commonProvider, LinkableItem commonTopic, List<ProviderMessageContent> contents) {
         List<List<String>> rows = new ArrayList<>();
         for (ProviderMessageContent message : contents) {
-            String subTopicValue = createOptionalValueString(message.getProjectVersion(), LinkableItem::getValue);
+            String subTopicValue = createOptionalValueString(message.getSubTopic(), LinkableItem::getValue);
             for (ComponentItem componentItem : message.getComponentItems()) {
                 List<String> columnValues = createColumnValues(commonProvider.getLabel(), commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
                 rows.add(columnValues);
@@ -124,20 +124,20 @@ public class MessageContentGroupCsvCreator {
         columnValues.add(subTopicValue);
 
         columnValues.add(componentItem.getComponent().getValue());
-        String subComponentString = createOptionalValueString(componentItem.getComponentVersion(), LinkableItem::getValue);
+        String subComponentString = createOptionalValueString(componentItem.getSubComponent(), LinkableItem::getValue);
         columnValues.add(subComponentString);
         String componentUrl;
         if (UNDEFINED_VALUE.equals(subComponentString)) {
             componentUrl = componentItem.getComponent().getUrl().orElse(null);
         } else {
-            componentUrl = createOptionalValueString(componentItem.getComponentVersion(), item -> item.getUrl().orElse(null));
+            componentUrl = createOptionalValueString(componentItem.getSubComponent(), item -> item.getUrl().orElse(null));
         }
         columnValues.add(componentUrl);
         columnValues.add(componentItem.getOperation().name());
         columnValues.add(componentItem.getCategory());
 
         columnValues.add(componentItem.getCategoryItem().getValue());
-        String categoryGroupingAttribute = createOptionalValueString(componentItem.getSeverity(), LinkableItem::getValue);
+        String categoryGroupingAttribute = createOptionalValueString(componentItem.getCategoryGroupingAttribute(), LinkableItem::getValue);
         columnValues.add(categoryGroupingAttribute);
 
         String additionalAttributes = createFlattenedItemsString(componentItem.getComponentAttributes());

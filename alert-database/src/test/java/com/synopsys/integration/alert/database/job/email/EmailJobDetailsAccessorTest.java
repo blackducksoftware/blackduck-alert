@@ -17,14 +17,14 @@ public class EmailJobDetailsAccessorTest {
     private EmailJobDetailsRepository emailJobDetailsRepository;
     private EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository;
 
-    private EmailJobDetailsAccessor emailJobDetailsAccessor;
+    private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
 
     @BeforeEach
     public void init() {
         emailJobDetailsRepository = Mockito.mock(EmailJobDetailsRepository.class);
         additionalEmailAddressRepository = Mockito.mock(EmailJobAdditionalEmailAddressRepository.class);
 
-        emailJobDetailsAccessor = new EmailJobDetailsAccessor(emailJobDetailsRepository, additionalEmailAddressRepository);
+        emailJobDetailsAccessor = new DefaultEmailJobDetailsAccessor(emailJobDetailsRepository, additionalEmailAddressRepository);
     }
 
     @Test

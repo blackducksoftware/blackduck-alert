@@ -1,4 +1,4 @@
-/**
+/*
  * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -97,8 +97,8 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
             ProviderMessageContent.Builder messageContentBuilder = new ProviderMessageContent.Builder();
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyProject(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName(), projectUrl)
-                .applyProjectVersion(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), projectVersionUrl);
+                .applyTopic(MessageBuilderConstants.LABEL_PROJECT_NAME, violationContent.getProjectName(), projectUrl)
+                .applySubTopic(MessageBuilderConstants.LABEL_PROJECT_VERSION_NAME, violationContent.getProjectVersionName(), projectVersionUrl);
             Map<String, PolicyInfo> policyUrlToInfoMap = DataStructureUtils.mapToValues(violationContent.getPolicyInfos(), PolicyInfo::getPolicy);
             SetMap<ComponentVersionStatus, PolicyInfo> componentPolicies = policyCommonBuilder.createComponentToPolicyMapping(violationContent.getComponentVersionStatuses(), policyUrlToInfoMap);
             DistributionJobModel job = commonMessageData.getJob();
@@ -185,7 +185,7 @@ public class PolicyViolationMessageBuilder extends BlackDuckMessageBuilder<RuleV
                                                                  .applyOperation(ItemOperation.INFO)
                                                                  .applyPriority(ComponentItemPriority.NONE)
                                                                  .applyCategoryItem(categoryItem)
-                                                                 .applySeverity(severityItem)
+                                                                 .applyCategoryGroupingAttribute(severityItem)
                                                                  .applyCollapseOnCategory(collapseOnCategory)
                                                                  .applyAllComponentAttributes(remediationItems)
                                                                  .applyNotificationId(notificationId);

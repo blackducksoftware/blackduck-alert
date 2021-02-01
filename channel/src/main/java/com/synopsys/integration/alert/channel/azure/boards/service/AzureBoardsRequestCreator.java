@@ -1,4 +1,4 @@
-/**
+/*
  * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -49,7 +49,7 @@ public class AzureBoardsRequestCreator extends IssueTrackerRequestCreator {
         if (null != componentItem) {
             categoryKey = componentItem.getCategory();
             componentKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(componentItem.getComponent());
-            subComponentKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(componentItem.getComponentVersion().orElse(null));
+            subComponentKey = AzureBoardsSearchPropertiesUtils.createNullableLinkableItemKey(componentItem.getSubComponent().orElse(null));
         }
         return new AzureBoardsSearchProperties(providerKey, topicKey, subTopicKey, categoryKey, componentKey, subComponentKey, additionalInfo);
     }

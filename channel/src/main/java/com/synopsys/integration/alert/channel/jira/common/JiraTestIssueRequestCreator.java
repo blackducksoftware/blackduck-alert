@@ -1,4 +1,4 @@
-/**
+/*
  * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -85,8 +85,8 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
                                      .map(UrlUtils::appendTrailingSlashIfNoneExists)
                                      .orElse("");
 
-            LinkableItem topicItem = providerMessageContent.getProject();
-            LinkableItem subTopicItem = providerMessageContent.getProjectVersion().orElse(null);
+            LinkableItem topicItem = providerMessageContent.getTopic();
+            LinkableItem subTopicItem = providerMessageContent.getSubTopic().orElse(null);
             Set<ComponentItem> componentItems = providerMessageContent.getComponentItems();
 
             IssueSearchProperties issueSearchProperties = JiraIssuePropertiesUtil.create(providerName, providerUrl, topicItem, subTopicItem, arbitraryItem, StringUtils.EMPTY);
@@ -125,8 +125,8 @@ public class JiraTestIssueRequestCreator implements TestIssueRequestCreator {
     private ProviderMessageContent createTestNotificationContent(ItemOperation operation, String messageId, String customTopic, String customMessage) throws AlertException {
         return new ProviderMessageContent.Builder()
                    .applyProvider("Alert", ProviderProperties.UNKNOWN_CONFIG_ID, "Test")
-                   .applyProject("Test Topic", customTopic)
-                   .applyProjectVersion("Test SubTopic", "Test message sent by Alert")
+                   .applyTopic("Test Topic", customTopic)
+                   .applySubTopic("Test SubTopic", "Test message sent by Alert")
                    .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))
                    .build();
     }

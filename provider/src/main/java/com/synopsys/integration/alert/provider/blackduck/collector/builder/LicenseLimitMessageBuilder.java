@@ -1,4 +1,4 @@
-/**
+/*
  * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -56,8 +56,8 @@ public class LicenseLimitMessageBuilder extends BlackDuckMessageBuilder<LicenseL
 
             messageContentBuilder
                 .applyCommonData(commonMessageData)
-                .applyProject(MessageBuilderConstants.LABEL_LICENSE_LIMIT_MESSAGE, notificationContent.getMessage())
-                .applyProjectVersion(MessageBuilderConstants.LABEL_USAGE_INFO, usageMessage)
+                .applyTopic(MessageBuilderConstants.LABEL_LICENSE_LIMIT_MESSAGE, notificationContent.getMessage())
+                .applySubTopic(MessageBuilderConstants.LABEL_USAGE_INFO, usageMessage)
                 .applyAction(ItemOperation.INFO);
             return List.of(messageContentBuilder.build());
         } catch (AlertException e) {

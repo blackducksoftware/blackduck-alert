@@ -1,4 +1,4 @@
-/**
+/*
  * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -50,8 +50,8 @@ public final class ChannelDistributionTestEventCreationUtils {
     public static ProviderMessageContent createTestNotificationContent(String customTopic, String customMessage, ItemOperation operation, String messageId) throws AlertException {
         return new ProviderMessageContent.Builder()
                    .applyProvider("Alert", ProviderProperties.UNKNOWN_CONFIG_ID, "Test")
-                   .applyProject("Test Topic", customTopic)
-                   .applyProjectVersion("Test SubTopic", "Test message sent by Alert")
+                   .applyTopic("Test Topic", customTopic)
+                   .applySubTopic("Test SubTopic", "Test message sent by Alert")
                    .applyComponentItem(createTestComponentItem(operation, messageId, customMessage))
                    .build();
     }

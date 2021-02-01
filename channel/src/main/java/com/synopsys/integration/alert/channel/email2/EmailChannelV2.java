@@ -1,5 +1,5 @@
-/**
- * processor-api
+/*
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,20 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.digest;
+package com.synopsys.integration.alert.channel.email2;
 
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
 @Component
-public class DefaultProjectMessageDigester extends ProjectMessageDigester {
-    @Override
-    public List<ProjectMessage> digest(List<ProjectMessage> notifications) {
-        return CombinableModel.combine(notifications);
+public class EmailChannelV2 extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
+    @Autowired
+    public EmailChannelV2(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
+        super(emailChannelMessageConverter, emailChannelMessageSender);
     }
 
 }

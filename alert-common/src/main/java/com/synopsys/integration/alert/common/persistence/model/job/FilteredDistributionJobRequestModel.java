@@ -1,4 +1,4 @@
-/**
+/*
  * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -32,20 +32,20 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
     private Collection<FrequencyType> frequencyTypes;
     private NotificationType notificationType;
-    private String projectName;
+    private List<String> projectNames;
     private List<String> vulnerabilitySeverities;
     private List<String> policyNames;
 
     public FilteredDistributionJobRequestModel(
         Collection<FrequencyType> frequencyTypes,
         NotificationType notificationType,
-        String projectName,
+        List<String> projectNames,
         List<String> vulnerabilitySeverities,
         List<String> policyNames
     ) {
         this.frequencyTypes = frequencyTypes;
         this.notificationType = notificationType;
-        this.projectName = projectName;
+        this.projectNames = projectNames;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.policyNames = policyNames;
     }
@@ -58,8 +58,8 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
         return notificationType;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public List<String> getProjectNames() {
+        return projectNames;
     }
 
     public List<String> getVulnerabilitySeverities() {

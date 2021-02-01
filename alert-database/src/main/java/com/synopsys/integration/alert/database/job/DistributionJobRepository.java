@@ -1,4 +1,4 @@
-/**
+/*
  * alert-database
  *
  * Copyright (c) 2021 Synopsys, Inc.
@@ -80,12 +80,12 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    WHERE jobEntity.enabled = true"
                        + "    AND notificationTypes.notificationType = :notificationType"
                        + "    AND jobEntity.distributionFrequency IN (:frequencies)"
-                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
     )
     List<DistributionJobEntity> findMatchingEnabledJobs(
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
-        @Param("projectName") String projectName
+        @Param("projectNames") Collection<String> projectNames
     );
 
     @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
@@ -96,13 +96,13 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    WHERE jobEntity.enabled = true"
                        + "    AND notificationTypes.notificationType = :notificationType"
                        + "    AND jobEntity.distributionFrequency IN (:frequencies)"
-                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
                        + "    AND (policyFilters.policyName IS NULL OR policyFilters.policyName IN (:policyNames))"
     )
     List<DistributionJobEntity> findMatchingEnabledJobsWithPolicyNames(
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
-        @Param("projectName") String projectName,
+        @Param("projectNames") Collection<String> projectNames,
         @Param("policyNames") Collection<String> policyNames
     );
 
@@ -115,13 +115,13 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    WHERE jobEntity.enabled = true"
                        + "    AND notificationTypes.notificationType = :notificationType"
                        + "    AND jobEntity.distributionFrequency IN (:frequencies)"
-                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
                        + "    AND (vulnerabilitySeverityFilters.severityName IS NULL OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities))"
     )
     List<DistributionJobEntity> findMatchingEnabledJobsWithVulnerabilitySeverities(
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
-        @Param("projectName") String projectName,
+        @Param("projectNames") Collection<String> projectNames,
         @Param("vulnerabilitySeverities") Collection<String> vulnerabilitySeverities
     );
 }
