@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -38,35 +40,33 @@ import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtra
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationExtractor;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
+import com.synopsys.integration.alert.processor.api.filter.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
-// TODO enable this as a component when these interfaces are implemented
-// @Component
+@Component
 public final class NotificationProcessorV2 {
-    private final FilterableNotificationExtractor filterableNotificationExtractor;
+    private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
     private final ProviderMessageExtractionDelegator providerMessageExtractionDelegator;
     private final ProjectMessageDigester projectMessageDigester;
     private final ProjectMessageSummarizer projectMessageSummarizer;
     private final ProviderMessageDistributor providerMessageDistributor;
 
-    // TODO enable autowiring when the interfaces are implemented
-    // @Autowired
+    @Autowired
     protected NotificationProcessorV2(
-        FilterableNotificationExtractor filterableNotificationExtractor,
+        NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
         JobNotificationMapper jobNotificationMapper,
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator,
         ProjectMessageDigester projectMessageDigester,
         ProjectMessageSummarizer projectMessageSummarizer,
         ProviderMessageDistributor providerMessageDistributor
     ) {
-        this.filterableNotificationExtractor = filterableNotificationExtractor;
+        this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.jobNotificationMapper = jobNotificationMapper;
         this.providerMessageExtractionDelegator = providerMessageExtractionDelegator;
         this.projectMessageDigester = projectMessageDigester;
@@ -81,7 +81,7 @@ public final class NotificationProcessorV2 {
     public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
                                                                         .stream()
-                                                                        .map(filterableNotificationExtractor::wrapNotification)
+                                                                        .map(notificationDetailExtractionDelegator::wrapNotification)
                                                                         .flatMap(List::stream)
                                                                         .collect(Collectors.toList());
         List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);

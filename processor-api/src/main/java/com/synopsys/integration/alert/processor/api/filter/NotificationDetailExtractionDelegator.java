@@ -38,13 +38,13 @@ import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotific
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class FilterableNotificationExtractor {
-    private final Logger logger = LoggerFactory.getLogger(FilterableNotificationExtractor.class);
+public class NotificationDetailExtractionDelegator {
+    private final Logger logger = LoggerFactory.getLogger(NotificationDetailExtractionDelegator.class);
 
     private final Map<NotificationType, NotificationDetailExtractor> notificationExtractors;
 
     @Autowired
-    public FilterableNotificationExtractor(List<NotificationDetailExtractor> notificationDetailExtractors) {
+    public NotificationDetailExtractionDelegator(List<NotificationDetailExtractor> notificationDetailExtractors) {
         this.notificationExtractors = DataStructureUtils.mapToValues(notificationDetailExtractors, NotificationDetailExtractor::getNotificationType);
     }
 
