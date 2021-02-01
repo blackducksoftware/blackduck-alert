@@ -32,20 +32,20 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
     private Collection<FrequencyType> frequencyTypes;
     private NotificationType notificationType;
-    private List<String> projectNames;
+    private String projectName;
     private List<String> vulnerabilitySeverities;
     private List<String> policyNames;
 
     public FilteredDistributionJobRequestModel(
         Collection<FrequencyType> frequencyTypes,
         NotificationType notificationType,
-        List<String> projectNames,
+        String projectName,
         List<String> vulnerabilitySeverities,
         List<String> policyNames
     ) {
         this.frequencyTypes = frequencyTypes;
         this.notificationType = notificationType;
-        this.projectNames = projectNames;
+        this.projectName = projectName;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.policyNames = policyNames;
     }
@@ -58,8 +58,8 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
         return notificationType;
     }
 
-    public List<String> getProjectNames() {
-        return projectNames;
+    public String getProjectName() {
+        return projectName;
     }
 
     public List<String> getVulnerabilitySeverities() {

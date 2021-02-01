@@ -48,25 +48,25 @@ public class FilterableNotificationExtractor {
         this.notificationExtractors = DataStructureUtils.mapToValues(notificationExtractors, NotificationExtractor::getNotificationType);
     }
 
-    public final Optional<DetailedNotificationContent> wrapNotification(AlertNotificationModel notification) {
+    public final List<DetailedNotificationContent> wrapNotification(AlertNotificationModel notification) {
         String notificationTypeString = notification.getNotificationType();
         NotificationType notificationType;
         try {
             notificationType = Enum.valueOf(NotificationType.class, notificationTypeString);
         } catch (IllegalArgumentException e) {
             logger.warn("Notification did not match any existing notification type: {}", notificationTypeString);
-            return Optional.empty();
+            return List.of();
         }
 
         Optional<NotificationExtractor> notificationExtractorOptional = getNotificationExtractor(notificationType);
         if (notificationExtractorOptional.isPresent()) {
             NotificationExtractor notificationExtractor = notificationExtractorOptional.get();
 
-            return Optional.of(notificationExtractor.convertToFilterableNotificationWrapper(notification));
+            return notificationExtractor.convertToFilterableNotificationWrapper(notification);
         }
 
         logger.warn("Did not find extractor for notification type: {}", notificationTypeString);
-        return Optional.empty();
+        return List.of();
     }
 
     private Optional<NotificationExtractor> getNotificationExtractor(NotificationType notificationType) {

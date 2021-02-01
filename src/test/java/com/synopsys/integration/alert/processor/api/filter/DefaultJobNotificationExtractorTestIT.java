@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -24,13 +25,14 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.processor.api.filter.extractor.VulnerabilityUniqueProjectNotificationContent;
 import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
-import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
+import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
@@ -151,18 +153,22 @@ public class DefaultJobNotificationExtractorTestIT {
     }
 
     private void testProjectJob() {
-        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(jobAccessor);
+        JobNotificationMapper defaultJobNotificationExtractor = new JobNotificationMapper(jobAccessor);
         List<DetailedNotificationContent> notificationWrappers = createNotificationWrappers();
-        List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
+        List<FilteredJobNotificationWrapper> filteredJobNotificationWrappers = defaultJobNotificationExtractor.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
 
-        assertEquals(1, mappedNotifications.size());
-        FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
+        assertEquals(1, filteredJobNotificationWrappers.size());
 
-        List<NotificationContentWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
+        List<NotificationContentWrapper> filterableNotificationWrappers = filteredJobNotificationWrappers.get(0).getJobNotifications();
         assertEquals(1, filterableNotificationWrappers.size());
 
-        NotificationContentWrapper notificationContentWrapper = filterableNotificationWrappers.get(0);
-        assertEquals(NotificationType.VULNERABILITY.name(), notificationContentWrapper.extractNotificationType());
+        NotificationContentWrapper filterableNotificationWrapper = filterableNotificationWrappers.get(0);
+
+        assertEquals(NotificationType.VULNERABILITY.name(), filterableNotificationWrapper.extractNotificationType());
+        VulnerabilityUniqueProjectNotificationContent vulnerabilityUniqueProjectNotificationContent = (VulnerabilityUniqueProjectNotificationContent) filterableNotificationWrapper.getNotificationContent();
+
+        assertEquals(PROJECT_NAME_1, vulnerabilityUniqueProjectNotificationContent.getAffectedProjectVersion().getProjectName());
+
     }
 
     private void testSingleJob(DistributionJobRequestModel jobRequestModel, int expectedMappedNotifications) {
@@ -251,31 +257,42 @@ public class DefaultJobNotificationExtractorTestIT {
         );
     }
 
+    private VulnerabilityUniqueProjectNotificationContent createVulnerabilityUniqueProjectNotificationContent(String projectName) {
+        VulnerabilityUniqueProjectNotificationContent vulnerabilityUniqueProjectNotificationContent = Mockito.mock(VulnerabilityUniqueProjectNotificationContent.class);
+        AffectedProjectVersion affectedProjectVersion = new AffectedProjectVersion();
+        affectedProjectVersion.setProjectName(projectName);
+        Mockito.when(vulnerabilityUniqueProjectNotificationContent.getAffectedProjectVersion()).thenReturn(affectedProjectVersion);
+        return vulnerabilityUniqueProjectNotificationContent;
+    }
+
     private List<DetailedNotificationContent> createNotificationWrappers() {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         DetailedNotificationContent test_project = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
-            new VulnerabilityNotificationContent(),
-            List.of(PROJECT_NAME_1),
+            createVulnerabilityUniqueProjectNotificationContent(PROJECT_NAME_1),
+            PROJECT_NAME_1,
             List.of(VulnerabilitySeverityType.LOW.name())
         );
+        String projectName1 = "test_project1";
         DetailedNotificationContent test_project2 = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
-            new VulnerabilityNotificationContent(),
-            List.of("test_project1"),
+            createVulnerabilityUniqueProjectNotificationContent(projectName1),
+            projectName1,
             List.of(VulnerabilitySeverityType.HIGH.name())
         );
+        String projectName2 = "test_project2";
         DetailedNotificationContent test_project3 = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
-            new VulnerabilityNotificationContent(),
-            List.of("test_project2"),
+            createVulnerabilityUniqueProjectNotificationContent(projectName2),
+            projectName2,
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
+        PolicyOverrideNotificationContent policyOverrideNotificationContent = Mockito.mock(PolicyOverrideNotificationContent.class);
         AlertNotificationModel alertPolicyNotificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
         DetailedNotificationContent test_project4 = DetailedNotificationContent.policy(
             alertPolicyNotificationModel,
-            new RuleViolationNotificationContent(),
-            List.of("test_project2"),
+            createVulnerabilityUniqueProjectNotificationContent(projectName2),
+            projectName2,
             List.of(POLICY_FILTER_NAME)
         );
 

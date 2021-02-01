@@ -90,7 +90,7 @@ public class JobNotificationMapper {
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             frequencyTypes,
             EnumUtils.getEnum(NotificationType.class, contentWrapper.extractNotificationType()),
-            detailedNotificationContent.getProjectNames(),
+            detailedNotificationContent.getProjectName(),
             detailedNotificationContent.getVulnerabilitySeverities(),
             detailedNotificationContent.getPolicyNames()
         );
