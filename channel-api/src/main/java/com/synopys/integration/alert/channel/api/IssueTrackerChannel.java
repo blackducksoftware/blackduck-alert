@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopys.integration.alert.channel.api.convert.ChannelMessageConverter;
 
 /**

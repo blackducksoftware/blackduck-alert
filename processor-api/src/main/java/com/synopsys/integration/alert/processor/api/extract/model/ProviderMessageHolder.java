@@ -20,14 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.detail;
+package com.synopsys.integration.alert.processor.api.extract.model;
 
 import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class ProviderMessageHolder extends AlertSerializableModel {

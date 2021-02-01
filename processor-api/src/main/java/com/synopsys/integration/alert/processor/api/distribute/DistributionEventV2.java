@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
 public class DistributionEventV2 extends AlertEvent {
     private final UUID jobId;
