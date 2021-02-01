@@ -33,7 +33,6 @@ import org.apache.commons.collections4.ListUtils;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.detail.ProviderMessageDetailer;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
@@ -55,7 +54,6 @@ public final class NotificationProcessorV2 {
     private final JobNotificationMapper jobNotificationMapper;
     private final ProviderMessageExtractionDelegator providerMessageExtractionDelegator;
     private final ProjectMessageDigester projectMessageDigester;
-    private final ProviderMessageDetailer providerMessageDetailer;
     private final ProjectMessageSummarizer projectMessageSummarizer;
     private final ProviderMessageDistributor providerMessageDistributor;
 
@@ -66,7 +64,6 @@ public final class NotificationProcessorV2 {
         JobNotificationMapper jobNotificationMapper,
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator,
         ProjectMessageDigester projectMessageDigester,
-        ProviderMessageDetailer providerMessageDetailer,
         ProjectMessageSummarizer projectMessageSummarizer,
         ProviderMessageDistributor providerMessageDistributor
     ) {
@@ -74,7 +71,6 @@ public final class NotificationProcessorV2 {
         this.jobNotificationMapper = jobNotificationMapper;
         this.providerMessageExtractionDelegator = providerMessageExtractionDelegator;
         this.projectMessageDigester = projectMessageDigester;
-        this.providerMessageDetailer = providerMessageDetailer;
         this.projectMessageSummarizer = projectMessageSummarizer;
         this.providerMessageDistributor = providerMessageDistributor;
     }
@@ -116,7 +112,7 @@ public final class NotificationProcessorV2 {
 
     private ProviderMessageHolder processExtractedNotifications(ProcessingType processingType, ProviderMessageHolder providerMessages) {
         if (ProcessingType.DEFAULT.equals(processingType)) {
-            return providerMessageDetailer.detail(providerMessages);
+            return providerMessages;
         }
 
         List<ProjectMessage> digestedMessages = projectMessageDigester.digest(providerMessages.getProjectMessages());
@@ -128,7 +124,7 @@ public final class NotificationProcessorV2 {
             List<SimpleMessage> allSimpleMessages = ListUtils.union(providerMessages.getSimpleMessages(), summarizedMessages);
             return new ProviderMessageHolder(List.of(), allSimpleMessages);
         }
-        return providerMessageDetailer.detail(providerMessages);
+        return new ProviderMessageHolder(digestedMessages, providerMessages.getSimpleMessages());
     }
 
 }
