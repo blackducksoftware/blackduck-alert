@@ -47,8 +47,8 @@ public final class ProviderMessageExtractionDelegator {
         this.notificationTypeToExtractor = initializeExtractorMap(providerMessageExtractors);
     }
 
-    public ProviderMessageHolder extract(NotificationContentWrapper filteredNotification) {
-        String notificationTypeString = filteredNotification.extractNotificationType();
+    public ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper) {
+        String notificationTypeString = notificationContentWrapper.extractNotificationType();
         NotificationType filteredNotificationType = EnumUtils.getEnum(NotificationType.class, notificationTypeString);
         if (null == filteredNotificationType) {
             logger.warn("Notification did not match any existing notification type: {}", notificationTypeString);
@@ -61,7 +61,7 @@ public final class ProviderMessageExtractionDelegator {
             return ProviderMessageHolder.empty();
         }
 
-        return providerMessageExtractor.extract(filteredNotification);
+        return providerMessageExtractor.extract(notificationContentWrapper);
     }
 
     private EnumMap<NotificationType, ProviderMessageExtractor> initializeExtractorMap(List<ProviderMessageExtractor> providerMessageExtractors) {

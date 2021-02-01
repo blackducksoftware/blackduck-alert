@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -49,8 +49,8 @@ public class LicenseLimitNotificationMessageExtractor extends ProviderMessageExt
     }
 
     @Override
-    protected ProviderMessageHolder extract(FilterableNotificationWrapper filteredNotification, LicenseLimitNotificationContent notificationContent) {
-        AlertNotificationModel alertNotificationModel = filteredNotification.getAlertNotificationModel();
+    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, LicenseLimitNotificationContent notificationContent) {
+        AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
         String summary = "License Limit Event";
