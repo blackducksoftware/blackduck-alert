@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -39,8 +39,8 @@ public class ProjectNotificationExtractor extends NotificationExtractor<ProjectN
     }
 
     @Override
-    protected FilterableNotificationWrapper convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
-        return FilterableNotificationWrapper.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName());
+    protected DetailedNotificationContent convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
+        return DetailedNotificationContent.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName());
     }
 
 }
