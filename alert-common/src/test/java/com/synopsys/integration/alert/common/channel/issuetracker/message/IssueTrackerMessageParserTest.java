@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerContentLengthException;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
@@ -15,12 +16,12 @@ class IssueTrackerMessageParserTest {
 
     @Test
     void createIssueContentModelTest() throws AlertException {
-        int titleSizeLimit = 10;
+        // Testing with strict limit was breaking the IssueContentModel generation.
+        int titleSizeLimit = 5;
         int messageSizeLimit = 10;
 
         IssueContentModel issueContentModel = createIssueContentModel(titleSizeLimit, messageSizeLimit);
-        IssueContentLengthValidator issueContentLengthValidator = new IssueContentLengthValidator(titleSizeLimit, messageSizeLimit, messageSizeLimit);
-        issueContentLengthValidator.validateContentLength(issueContentModel);
+        validateModel(issueContentModel, titleSizeLimit, messageSizeLimit);
     }
 
     @Test
@@ -29,11 +30,14 @@ class IssueTrackerMessageParserTest {
         int messageSizeLimit = 100;
 
         IssueContentModel issueContentModel = createIssueContentModel(titleSizeLimit, messageSizeLimit);
+        Assertions.assertTrue(issueContentModel.getDescription().length() <= messageSizeLimit, "The initial description should be longer than the limit, thus the issue description should be truncated to a length <= the limit.");
+        Assertions.assertEquals(3, issueContentModel.getDescriptionComments().size(), "The number of the description components should be 3. First being the truncated description, the rest being additional description items.");
+        validateModel(issueContentModel, titleSizeLimit, messageSizeLimit);
+    }
+
+    private void validateModel(IssueContentModel issueContentModel, int titleSizeLimit, int messageSizeLimit) throws IssueTrackerContentLengthException {
         IssueContentLengthValidator issueContentLengthValidator = new IssueContentLengthValidator(titleSizeLimit, messageSizeLimit, messageSizeLimit);
         issueContentLengthValidator.validateContentLength(issueContentModel);
-
-        Assertions.assertTrue(issueContentModel.getDescription().length() < messageSizeLimit, "The description should be longer than the limit, thus resulting in it getting truncated to the under or at limit.");
-        Assertions.assertEquals(3, issueContentModel.getDescriptionComments().size(), "The number of the description components should be 3. First being the truncated description, the rest being additional description items.");
     }
 
     private IssueContentModel createIssueContentModel(int titleSizeLimit, int messageSizeLimit) throws AlertException {
