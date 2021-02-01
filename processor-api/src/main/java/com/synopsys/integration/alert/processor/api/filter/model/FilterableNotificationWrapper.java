@@ -56,7 +56,7 @@ public class FilterableNotificationWrapper extends ProcessableNotificationWrappe
     }
 
     public static FilterableNotificationWrapper projectless(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent) {
-        return new FilterableNotificationWrapper(notificationModel, notificationContent, null, List.of(), List.of());
+        return new FilterableNotificationWrapper(notificationModel, notificationContent, List.of(), List.of(), List.of());
     }
 
     private FilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, List<String> projectNames, List<String> policyNames, List<String> vulnerabilitySeverities) {
