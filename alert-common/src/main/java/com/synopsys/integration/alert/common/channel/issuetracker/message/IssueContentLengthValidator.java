@@ -49,7 +49,7 @@ public class IssueContentLengthValidator {
         }
 
         if (issueContentDescriptionLength > getDescriptionLengthLimit()) {
-            errors.append(String.format("Description longer than the limit of %d characters. ", getTitleLengthLimit()));
+            errors.append(String.format("Description longer than the limit of %d characters. ", getDescriptionLengthLimit()));
         }
 
         Predicate<String> commentLengthTest = comment -> StringUtils.length(comment) > getCommentLengthLimit();
