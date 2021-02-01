@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
-import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
@@ -51,7 +51,7 @@ public class ProjectNotificationMessageExtractor extends ProviderMessageExtracto
     }
 
     @Override
-    protected ProviderMessageHolder extract(ProcessableNotificationWrapper filteredNotification, ProjectNotificationContent notificationContent) {
+    protected ProviderMessageHolder extract(NotificationContentWrapper filteredNotification, ProjectNotificationContent notificationContent) {
         AlertNotificationModel alertNotificationModel = filteredNotification.getAlertNotificationModel();
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());

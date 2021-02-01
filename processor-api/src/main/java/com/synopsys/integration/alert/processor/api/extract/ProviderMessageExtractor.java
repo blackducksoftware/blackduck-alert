@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -45,7 +45,7 @@ public abstract class ProviderMessageExtractor<T extends NotificationContentComp
         return notificationType;
     }
 
-    public final ProviderMessageHolder extract(ProcessableNotificationWrapper filteredNotification) {
+    public final ProviderMessageHolder extract(NotificationContentWrapper filteredNotification) {
         if (!notificationContentClass.isAssignableFrom(filteredNotification.getNotificationContentClass())) {
             logger.error("The notification type provided is incompatible with this extractor: {}", filteredNotification.extractNotificationType());
             return ProviderMessageHolder.empty();
@@ -55,6 +55,6 @@ public abstract class ProviderMessageExtractor<T extends NotificationContentComp
         return extract(filteredNotification, stronglyTypedContent);
     }
 
-    protected abstract ProviderMessageHolder extract(ProcessableNotificationWrapper filteredNotification, T notificationContent);
+    protected abstract ProviderMessageHolder extract(NotificationContentWrapper filteredNotification, T notificationContent);
 
 }

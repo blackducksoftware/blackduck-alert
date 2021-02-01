@@ -26,13 +26,13 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
-public class ProcessableNotificationWrapper extends AlertSerializableModel {
+public class NotificationContentWrapper extends AlertSerializableModel {
     private final AlertNotificationModel alertNotificationModel;
     private final NotificationContentComponent notificationContent;
 
     private final Class<? extends NotificationContentComponent> notificationContentClass;
 
-    public ProcessableNotificationWrapper(
+    public NotificationContentWrapper(
         AlertNotificationModel alertNotificationModel,
         NotificationContentComponent notificationContent,
         Class<? extends NotificationContentComponent> notificationContentClass

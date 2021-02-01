@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
@@ -47,7 +47,7 @@ public final class ProviderMessageExtractionDelegator {
         this.notificationTypeToExtractor = initializeExtractorMap(providerMessageExtractors);
     }
 
-    public ProviderMessageHolder extract(ProcessableNotificationWrapper filteredNotification) {
+    public ProviderMessageHolder extract(NotificationContentWrapper filteredNotification) {
         String notificationTypeString = filteredNotification.extractNotificationType();
         NotificationType filteredNotificationType = EnumUtils.getEnum(NotificationType.class, notificationTypeString);
         if (null == filteredNotificationType) {

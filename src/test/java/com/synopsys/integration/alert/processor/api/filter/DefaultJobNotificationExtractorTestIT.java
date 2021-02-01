@@ -24,9 +24,9 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
-import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
@@ -58,7 +58,7 @@ public class DefaultJobNotificationExtractorTestIT {
         assertNotNull(mappedNotifications);
         assertEquals(3, mappedNotifications.size());
         for (FilteredJobNotificationWrapper mappedJobNotifications : mappedNotifications) {
-            List<ProcessableNotificationWrapper> jobNotifications = mappedJobNotifications.getJobNotifications();
+            List<NotificationContentWrapper> jobNotifications = mappedJobNotifications.getJobNotifications();
             assertFalse(jobNotifications.isEmpty(), "Expected the list not to be empty");
             assertTrue(jobNotifications.size() < 4, "Expected the list to contain fewer elements");
         }
@@ -152,17 +152,17 @@ public class DefaultJobNotificationExtractorTestIT {
 
     private void testProjectJob() {
         JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(jobAccessor);
-        List<FilterableNotificationWrapper> notificationWrappers = createNotificationWrappers();
+        List<DetailedNotificationContent> notificationWrappers = createNotificationWrappers();
         List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
 
         assertEquals(1, mappedNotifications.size());
         FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
 
-        List<ProcessableNotificationWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
+        List<NotificationContentWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
         assertEquals(1, filterableNotificationWrappers.size());
 
-        ProcessableNotificationWrapper processableNotificationWrapper = filterableNotificationWrappers.get(0);
-        assertEquals(NotificationType.VULNERABILITY.name(), processableNotificationWrapper.extractNotificationType());
+        NotificationContentWrapper notificationContentWrapper = filterableNotificationWrappers.get(0);
+        assertEquals(NotificationType.VULNERABILITY.name(), notificationContentWrapper.extractNotificationType());
     }
 
     private void testSingleJob(DistributionJobRequestModel jobRequestModel, int expectedMappedNotifications) {
@@ -174,7 +174,7 @@ public class DefaultJobNotificationExtractorTestIT {
         assertEquals(1, mappedNotifications.size());
         FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
 
-        List<ProcessableNotificationWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
+        List<NotificationContentWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
         assertEquals(expectedMappedNotifications, filterableNotificationWrappers.size());
     }
 
@@ -251,28 +251,28 @@ public class DefaultJobNotificationExtractorTestIT {
         );
     }
 
-    private List<FilterableNotificationWrapper> createNotificationWrappers() {
+    private List<DetailedNotificationContent> createNotificationWrappers() {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
-        FilterableNotificationWrapper test_project = FilterableNotificationWrapper.vulnerability(
+        DetailedNotificationContent test_project = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
             new VulnerabilityNotificationContent(),
             List.of(PROJECT_NAME_1),
             List.of(VulnerabilitySeverityType.LOW.name())
         );
-        FilterableNotificationWrapper test_project2 = FilterableNotificationWrapper.vulnerability(
+        DetailedNotificationContent test_project2 = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
             new VulnerabilityNotificationContent(),
             List.of("test_project1"),
             List.of(VulnerabilitySeverityType.HIGH.name())
         );
-        FilterableNotificationWrapper test_project3 = FilterableNotificationWrapper.vulnerability(
+        DetailedNotificationContent test_project3 = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
             new VulnerabilityNotificationContent(),
             List.of("test_project2"),
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
         AlertNotificationModel alertPolicyNotificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
-        FilterableNotificationWrapper test_project4 = FilterableNotificationWrapper.policy(
+        DetailedNotificationContent test_project4 = DetailedNotificationContent.policy(
             alertPolicyNotificationModel,
             new RuleViolationNotificationContent(),
             List.of("test_project2"),

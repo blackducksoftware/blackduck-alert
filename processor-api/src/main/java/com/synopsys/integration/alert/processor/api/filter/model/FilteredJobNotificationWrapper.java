@@ -32,9 +32,9 @@ public class FilteredJobNotificationWrapper extends AlertSerializableModel {
     private final UUID jobId;
     private final ProcessingType processingType;
     private final String channelName;
-    private final List<ProcessableNotificationWrapper> jobNotifications;
+    private final List<NotificationContentWrapper> jobNotifications;
 
-    public FilteredJobNotificationWrapper(UUID jobId, ProcessingType processingType, String channelName, List<ProcessableNotificationWrapper> jobNotifications) {
+    public FilteredJobNotificationWrapper(UUID jobId, ProcessingType processingType, String channelName, List<NotificationContentWrapper> jobNotifications) {
         this.jobId = jobId;
         this.processingType = processingType;
         this.channelName = channelName;
@@ -53,7 +53,7 @@ public class FilteredJobNotificationWrapper extends AlertSerializableModel {
         return channelName;
     }
 
-    public List<ProcessableNotificationWrapper> getJobNotifications() {
+    public List<NotificationContentWrapper> getJobNotifications() {
         return jobNotifications;
     }
 

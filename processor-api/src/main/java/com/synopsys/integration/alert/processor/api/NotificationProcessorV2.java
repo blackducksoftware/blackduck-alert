@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
@@ -43,10 +42,10 @@ import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.FilterableNotificationExtractor;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
-import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
+import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
 import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
-import com.synopsys.integration.alert.processor.api.filter.model.ProcessableNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
 // TODO enable this as a component when these interfaces are implemented
@@ -85,28 +84,27 @@ public final class NotificationProcessorV2 {
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
-        List<FilterableNotificationWrapper> filterableNotifications = notifications
-                                                                          .stream()
-                                                                          .map(filterableNotificationExtractor::wrapNotification)
-                                                                          .flatMap(Optional::stream)
-                                                                          .collect(Collectors.toList());
+        List<DetailedNotificationContent> filterableNotifications = notifications
+                                                                        .stream()
+                                                                        .map(filterableNotificationExtractor::wrapNotification)
+                                                                        .flatMap(Optional::stream)
+                                                                        .collect(Collectors.toList());
         List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
         for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications) {
-            UUID jobId = jobNotificationWrapper.getJobId();
-            List<ProcessableNotificationWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
+            List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
             Set<Long> notificationIds = filteredNotifications
                                             .stream()
-                                            .map(ProcessableNotificationWrapper::getNotificationId)
+                                            .map(NotificationContentWrapper::getNotificationId)
                                             .collect(Collectors.toSet());
 
-            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(jobId, jobNotificationWrapper.getChannelName(), notificationIds);
+            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
             ProviderMessageHolder providerMessageHolder = processJobNotifications(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
             providerMessageDistributor.distribute(notificationFilterJobModel, providerMessageHolder);
         }
     }
 
-    private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<ProcessableNotificationWrapper> jobNotifications) {
+    private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<NotificationContentWrapper> jobNotifications) {
         ProviderMessageHolder extractedProviderMessages = jobNotifications
                                                               .stream()
                                                               .map(providerMessageExtractionDelegator::extract)
