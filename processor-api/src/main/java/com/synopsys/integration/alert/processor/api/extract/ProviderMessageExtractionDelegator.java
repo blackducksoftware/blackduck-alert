@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.processor.api.extract;
 
 import java.util.EnumMap;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
@@ -33,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.processor.api.detail.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.model.FilterableNotificationWrapper;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
@@ -68,7 +67,7 @@ public final class ProviderMessageExtractionDelegator {
     private EnumMap<NotificationType, ProviderMessageExtractor> initializeExtractorMap(List<ProviderMessageExtractor> providerMessageExtractors) {
         return providerMessageExtractors
                    .stream()
-                   .collect(Collectors.toMap(ProviderMessageExtractor::getNotificationType, Function.identity(), (e1, e2) -> e2, () -> new EnumMap<>(NotificationType.class)));
+                   .collect(DataStructureUtils.toEnumMap(ProviderMessageExtractor::getNotificationType, NotificationType.class));
     }
 
 }
