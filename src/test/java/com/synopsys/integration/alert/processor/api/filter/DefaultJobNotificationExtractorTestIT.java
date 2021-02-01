@@ -152,16 +152,16 @@ public class DefaultJobNotificationExtractorTestIT {
 
     private void testProjectJob() {
         DefaultJobNotificationExtractor defaultJobNotificationExtractor = new DefaultJobNotificationExtractor(jobAccessor);
-        List<FilterableNotificationWrapper<?>> notificationWrappers = createNotificationWrappers();
-        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper<?>>> filteredNotifications = defaultJobNotificationExtractor.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
+        List<FilterableNotificationWrapper> notificationWrappers = createNotificationWrappers();
+        Map<FilteredDistributionJobResponseModel, List<FilterableNotificationWrapper>> filteredNotifications = defaultJobNotificationExtractor.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
 
         assertEquals(1, filteredNotifications.size());
 
-        List<FilterableNotificationWrapper<?>> filterableNotificationWrappers = filteredNotifications.values().stream().findFirst().orElse(List.of());
+        List<FilterableNotificationWrapper> filterableNotificationWrappers = filteredNotifications.values().stream().findFirst().orElse(List.of());
 
         assertEquals(1, filterableNotificationWrappers.size());
 
-        FilterableNotificationWrapper<?> filterableNotificationWrapper = filterableNotificationWrappers.get(0);
+        FilterableNotificationWrapper filterableNotificationWrapper = filterableNotificationWrappers.get(0);
 
         assertTrue(filterableNotificationWrapper.getProjectNames().contains("test_project"));
         assertEquals(NotificationType.VULNERABILITY.name(), filterableNotificationWrapper.extractNotificationType());
