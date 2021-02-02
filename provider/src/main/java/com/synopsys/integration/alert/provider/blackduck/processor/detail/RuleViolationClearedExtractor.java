@@ -1,5 +1,5 @@
 /*
- * processor-api
+ * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter.extractor;
+package com.synopsys.integration.alert.provider.blackduck.processor.detail;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +30,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.processor.api.filter.NotificationDetailExtractor;
 import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;

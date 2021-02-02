@@ -33,7 +33,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.processor.api.filter.extractor.NotificationDetailExtractor;
 import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
