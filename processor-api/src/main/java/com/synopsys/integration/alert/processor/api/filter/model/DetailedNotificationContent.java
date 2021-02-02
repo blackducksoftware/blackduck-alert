@@ -30,6 +30,7 @@ import com.synopsys.integration.blackduck.api.manual.component.NotificationConte
 
 public class DetailedNotificationContent extends AlertSerializableModel {
     private final String projectName;
+    // TODO this should not be a list
     private final List<String> policyNames;
     private final List<String> vulnerabilitySeverities;
     private final NotificationContentWrapper notificationContentWrapper;
@@ -47,9 +48,9 @@ public class DetailedNotificationContent extends AlertSerializableModel {
         AlertNotificationModel notificationModel,
         NotificationContentComponent notificationContent,
         String projectName,
-        List<String> policyNames
+        String policyName
     ) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, policyNames, List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(policyName), List.of());
     }
 
     public static DetailedNotificationContent project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {

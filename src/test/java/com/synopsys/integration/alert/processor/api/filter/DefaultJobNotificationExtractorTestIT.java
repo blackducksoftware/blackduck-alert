@@ -293,7 +293,7 @@ public class DefaultJobNotificationExtractorTestIT {
             alertPolicyNotificationModel,
             createVulnerabilityUniqueProjectNotificationContent(projectName2),
             projectName2,
-            List.of(POLICY_FILTER_NAME)
+            POLICY_FILTER_NAME
         );
 
         return List.of(test_project, test_project2, test_project3, test_project4);
