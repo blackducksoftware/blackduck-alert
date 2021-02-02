@@ -20,13 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter;
+package com.synopsys.integration.alert.processor.api.detail;
 
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 

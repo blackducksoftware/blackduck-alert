@@ -20,12 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter.model;
+package com.synopsys.integration.alert.processor.api.detail;
 
 import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 
 public class DetailedNotificationContent extends AlertSerializableModel {

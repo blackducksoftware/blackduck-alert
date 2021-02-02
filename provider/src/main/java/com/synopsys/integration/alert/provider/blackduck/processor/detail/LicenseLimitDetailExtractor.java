@@ -29,8 +29,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.filter.NotificationDetailExtractor;
-import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
+import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 

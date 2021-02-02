@@ -34,18 +34,18 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
+import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
-import com.synopsys.integration.alert.processor.api.filter.NotificationDetailExtractionDelegator;
-import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
-import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
+import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
 @Component
@@ -92,10 +92,10 @@ public final class NotificationProcessorV2 {
                                             .map(NotificationContentWrapper::getNotificationId)
                                             .collect(Collectors.toSet());
 
-            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
+            ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
             ProviderMessageHolder providerMessageHolder = processJobNotifications(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
-            providerMessageDistributor.distribute(notificationFilterJobModel, providerMessageHolder);
+            providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
         }
     }
 
