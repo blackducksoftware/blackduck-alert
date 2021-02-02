@@ -31,8 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.filter.extractor.NotificationDetailExtractor;
 import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
@@ -53,13 +52,11 @@ import com.synopsys.integration.rest.HttpUrl;
 public class BomEditNotificationDetailExtractor extends NotificationDetailExtractor<BomEditNotificationContent> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
 
     @Autowired
-    public BomEditNotificationDetailExtractor(Gson gson, ConfigurationAccessor configurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
+    public BomEditNotificationDetailExtractor(Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
         super(NotificationType.BOM_EDIT, BomEditNotificationContent.class, gson);
-        this.configurationAccessor = configurationAccessor;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
     }
 
@@ -72,19 +69,12 @@ public class BomEditNotificationDetailExtractor extends NotificationDetailExtrac
     }
 
     private Optional<String> retrieveProjectName(Long blackDuckConfigId, String projectVersionUrl) {
-        Optional<ConfigurationModel> optionalBlackDuckConfig = configurationAccessor.getConfigurationById(blackDuckConfigId);
-        if (optionalBlackDuckConfig.isPresent()) {
-            BlackDuckProperties properties = blackDuckPropertiesFactory.createProperties(optionalBlackDuckConfig.get());
-
-            Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+        Optional<BlackDuckProperties> optionalProperties = blackDuckPropertiesFactory.createPropertiesIfConfigExists(blackDuckConfigId);
+        if (optionalProperties.isPresent()) {
             try {
-                BlackDuckHttpClient blackDuckHttpClient = properties.createBlackDuckHttpClient(intLogger);
-                BlackDuckServicesFactory blackDuckServicesFactory = properties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
-                BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-
+                BlackDuckApiClient blackDuckApiClient = createBlackDuckApiClient(optionalProperties.get());
                 ProjectVersionView projectVersion = blackDuckApiClient.getResponse(new HttpUrl(projectVersionUrl), ProjectVersionView.class);
-                Optional<ProjectView> project = blackDuckApiClient.getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE);
-                return project.map(ProjectView::getName);
+                return blackDuckApiClient.getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE).map(ProjectView::getName);
             } catch (IntegrationException e) {
                 logger.error("Failed to connect to BlackDuck. Config ID: {}", blackDuckConfigId, e);
             }
@@ -92,6 +82,13 @@ public class BomEditNotificationDetailExtractor extends NotificationDetailExtrac
             logger.warn("No BlackDuck config with ID {} existed", blackDuckConfigId);
         }
         return Optional.empty();
+    }
+
+    private BlackDuckApiClient createBlackDuckApiClient(BlackDuckProperties blackDuckProperties) throws AlertException {
+        Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+        BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
+        BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
+        return blackDuckServicesFactory.getBlackDuckApiClient();
     }
 
 }
