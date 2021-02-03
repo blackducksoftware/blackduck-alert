@@ -45,8 +45,8 @@ public abstract class NotificationDetailExtractor<T extends NotificationContentC
     }
 
     public final List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel) {
-        T vulnerabilityNotificationContent = gson.fromJson(alertNotificationModel.getContent(), notificationClass);
-        return extractDetailedContent(alertNotificationModel, vulnerabilityNotificationContent);
+        T notificationContent = gson.fromJson(alertNotificationModel.getContent(), notificationClass);
+        return extractDetailedContent(alertNotificationModel, notificationContent);
     }
 
     protected abstract List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, T notificationContent);
