@@ -35,29 +35,30 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class ProjectNotificationMessageExtractor extends ProviderMessageExtractor<ProjectNotificationContent> {
+public class ProjectVersionNotificationMessageExtractor extends ProviderMessageExtractor<ProjectVersionNotificationContent> {
     private final BlackDuckProviderKey blackDuckProviderKey;
 
     @Autowired
-    public ProjectNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey) {
-        super(NotificationType.PROJECT, ProjectNotificationContent.class);
+    public ProjectVersionNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey) {
+        super(NotificationType.PROJECT_VERSION, ProjectVersionNotificationContent.class);
         this.blackDuckProviderKey = blackDuckProviderKey;
     }
 
     @Override
-    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectNotificationContent notificationContent) {
+    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectVersionNotificationContent notificationContent) {
         AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
         LinkableItem project = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT, notificationContent.getProjectName(), notificationContent.getProject());
+        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
         ProjectOperation operation = ProjectOperation.fromOperationType(notificationContent.getOperationType());
 
-        ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(provider, project, operation);
-        return new ProviderMessageHolder(List.of(projectMessage), List.of());
+        ProjectMessage projectVersionMessage = ProjectMessage.projectVersionStatusInfo(provider, project, projectVersion, operation);
+        return new ProviderMessageHolder(List.of(projectVersionMessage), List.of());
     }
 
 }
