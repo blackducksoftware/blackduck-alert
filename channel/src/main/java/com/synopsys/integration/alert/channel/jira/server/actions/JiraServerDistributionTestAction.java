@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerContextBuilder;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -61,6 +62,9 @@ public class JiraServerDistributionTestAction extends ChannelDistributionTestAct
         @Nullable String customMessage,
         @Nullable String destination
     ) throws IntegrationException {
+        if (null == channelGlobalConfig || channelGlobalConfig.isConfiguredFieldsEmpty()) {
+            throw new AlertConfigurationException("Missing Jira Server global configuration");
+        }
         IssueTrackerContext context = jiraServerContextBuilder.build(channelGlobalConfig, testJobModel);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(jiraMessageParser, customTopic, customMessage);
         JiraServerCreateIssueTestAction testAction = new JiraServerCreateIssueTestAction((JiraServerChannel) getDistributionChannel(), gson, issueCreator);
