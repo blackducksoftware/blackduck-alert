@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.AlertConstants;
 import com.synopsys.integration.alert.common.email.MimeMultipartBuilder;
-import com.synopsys.integration.alert.test.common.ResourceLoader;
+import com.synopsys.integration.alert.test.common.TestResourceUtils;
 
 public class MimeMultipartBuilderTest {
     @Test
@@ -30,7 +30,7 @@ public class MimeMultipartBuilderTest {
         final String html = "<html></html>";
         final String text = "content";
         List<String> attachmentFilePaths = new ArrayList<>();
-        attachmentFilePaths.add(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
+        attachmentFilePaths.add(TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION);
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
         contentIdsToFilePaths.put("entry", "synopsys.png");
 

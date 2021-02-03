@@ -14,5 +14,7 @@ dependencies {
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
+
+    testImplementation project(':test-common')
     testImplementation 'org.mockito:mockito-core'
 }
