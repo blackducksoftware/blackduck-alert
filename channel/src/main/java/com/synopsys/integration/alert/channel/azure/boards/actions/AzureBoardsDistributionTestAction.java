@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsTestIssueR
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -68,6 +69,9 @@ public class AzureBoardsDistributionTestAction extends ChannelDistributionTestAc
         @Nullable String customMessage,
         @Nullable String destination
     ) throws IntegrationException {
+        if (null == channelGlobalConfig || channelGlobalConfig.isConfiguredFieldsEmpty()) {
+            throw new AlertConfigurationException("Missing Azure Boards global configuration");
+        }
         DistributionJobDetailsModel distributionJobDetails = testJobModel.getDistributionJobDetails();
         AzureBoardsContext azureBoardsContext = azureBoardsContextFactory.fromConfig(channelGlobalConfig, distributionJobDetails.getAs(DistributionJobDetailsModel.AZURE));
         AzureBoardsTestIssueRequestCreator issueCreator = new AzureBoardsTestIssueRequestCreator(azureBoardsRequestCreator, azureBoardsMessageParser, customTopic, customMessage);

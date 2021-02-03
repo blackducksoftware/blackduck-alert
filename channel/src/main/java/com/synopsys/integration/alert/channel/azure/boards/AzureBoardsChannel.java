@@ -74,6 +74,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     @Override
     protected AzureBoardsContext getIssueTrackerContext(DistributionEvent event) {
         ConfigurationModel globalConfig = event.getChannelGlobalConfig()
+                                              .filter(ConfigurationModel::isConfiguredFieldsNotEmpty)
                                               .orElseThrow(() -> new AlertRuntimeException(new AlertConfigurationException("Missing Azure Boards global configuration")));
         AzureBoardsProperties serviceConfig = AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), globalConfig);
 
