@@ -32,33 +32,39 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class ProjectVersionNotificationMessageExtractor extends ProviderMessageExtractor<ProjectVersionNotificationContent> {
+public class RuleViolationNotificationMessageExtractor extends ProviderMessageExtractor<RuleViolationUniquePolicyNotificationContent> {
     private final BlackDuckProviderKey blackDuckProviderKey;
 
     @Autowired
-    public ProjectVersionNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey) {
-        super(NotificationType.PROJECT_VERSION, ProjectVersionNotificationContent.class);
+    public RuleViolationNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey) {
+        super(NotificationType.RULE_VIOLATION, RuleViolationUniquePolicyNotificationContent.class);
         this.blackDuckProviderKey = blackDuckProviderKey;
     }
 
     @Override
-    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectVersionNotificationContent notificationContent) {
+    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, RuleViolationUniquePolicyNotificationContent notificationContent) {
         AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
         LinkableItem project = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT, notificationContent.getProjectName());
         LinkableItem projectVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
-        ProjectOperation operation = ProjectOperation.fromOperationType(notificationContent.getOperationType());
 
-        ProjectMessage projectVersionMessage = ProjectMessage.projectVersionStatusInfo(provider, project, projectVersion, operation);
-        return new ProviderMessageHolder(List.of(projectVersionMessage), List.of());
+        List<BomComponentDetails> bomComponentDetails = createBomComponentDetails(notificationContent);
+        ProjectMessage ruleViolationMessage = ProjectMessage.componentConcern(provider, project, projectVersion, bomComponentDetails);
+
+        return new ProviderMessageHolder(List.of(ruleViolationMessage), List.of());
+    }
+
+    private List<BomComponentDetails> createBomComponentDetails(RuleViolationUniquePolicyNotificationContent notificationContent) {
+        // FIXME implement
+        return List.of();
     }
 
 }
