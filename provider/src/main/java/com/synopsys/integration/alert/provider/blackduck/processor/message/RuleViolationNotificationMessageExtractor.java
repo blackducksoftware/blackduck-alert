@@ -22,8 +22,10 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,9 +35,14 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageComponentConcernUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
@@ -63,8 +70,36 @@ public class RuleViolationNotificationMessageExtractor extends ProviderMessageEx
     }
 
     private List<BomComponentDetails> createBomComponentDetails(RuleViolationUniquePolicyNotificationContent notificationContent) {
-        // FIXME implement
-        return List.of();
+        List<BomComponentDetails> bomComponentDetails = new LinkedList<>();
+        for (ComponentVersionStatus componentVersionStatus : notificationContent.getComponentVersionStatuses()) {
+            ComponentConcern policyConcern = BlackDuckMessageComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo());
+            BomComponentDetails componentVersionDetails = createBomComponentDetails(notificationContent, componentVersionStatus, policyConcern);
+            bomComponentDetails.add(componentVersionDetails);
+        }
+        return bomComponentDetails;
+    }
+
+    private BomComponentDetails createBomComponentDetails(RuleViolationUniquePolicyNotificationContent notificationContent, ComponentVersionStatus componentVersionStatus, ComponentConcern componentConcern) {
+        // FIXME use "query links"
+        LinkableItem component = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT, componentVersionStatus.getComponentName(), componentVersionStatus.getComponent());
+        LinkableItem componentVersion = null;
+        String componentVersionUrl = componentVersionStatus.getComponentVersion();
+        if (StringUtils.isNotBlank(componentVersionUrl)) {
+            componentVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT_VERSION, componentVersionStatus.getComponentVersionName(), componentVersionUrl);
+        }
+
+        ProjectVersionComponentView bomComponent = retrieveBomComponent(componentVersionStatus.getBomComponent());
+
+        LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
+        String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
+        String issuesUrl = BlackDuckMessageAttributesUtils.extractIssuesUrl(bomComponent).orElse(null);
+
+        return new BomComponentDetails(component, componentVersion, List.of(componentConcern), licenseInfo, usageInfo, List.of(), issuesUrl);
+    }
+
+    private ProjectVersionComponentView retrieveBomComponent(String bomComponentUrl) {
+        // FIXME retrieve
+        return null;
     }
 
 }

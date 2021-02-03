@@ -25,6 +25,12 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 public final class BlackDuckMessageConstants {
     public static final String LABEL_PROJECT = "Project";
     public static final String LABEL_PROJECT_VERSION = "Project Version";
+    public static final String LABEL_COMPONENT = "Component";
+    public static final String LABEL_COMPONENT_VERSION = "Component Version";
+    public static final String LABEL_LICENSE = "License";
+
+    public static final String VALUE_UNKNOWN_LICENSE = "Unknown License";
+    public static final String VALUE_UNKNOWN_USAGE = "Unknown Usage";
 
     private BlackDuckMessageConstants() {
     }
