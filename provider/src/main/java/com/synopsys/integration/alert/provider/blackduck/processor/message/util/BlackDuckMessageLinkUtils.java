@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 
 public final class BlackDuckMessageLinkUtils {
+    public static final String QUERY_PARAM_COMPONENT_NAME = "componentOrVersionName";
     public static final String URI_PIECE_COMPONENTS = "/components";
     public static final int URI_PIECE_COMPONENTS_LENGTH = URI_PIECE_COMPONENTS.length();
 
@@ -41,7 +42,7 @@ public final class BlackDuckMessageLinkUtils {
 
     public static String createComponentQueryLink(ProjectVersionComponentView bomComponent) {
         String projectVersionComponentsLink = createProjectVersionComponentsLink(bomComponent);
-        return String.format("%s?q=componentOrVersionName:%s", projectVersionComponentsLink, bomComponent.getComponentName());
+        return String.format("%s?q=%s:%s", projectVersionComponentsLink, QUERY_PARAM_COMPONENT_NAME, bomComponent.getComponentName());
     }
 
     private BlackDuckMessageLinkUtils() {
