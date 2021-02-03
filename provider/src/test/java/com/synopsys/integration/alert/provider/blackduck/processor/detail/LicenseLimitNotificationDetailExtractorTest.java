@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.processor;
+package com.synopsys.integration.alert.provider.blackduck.processor.detail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
-import com.synopsys.integration.alert.provider.blackduck.processor.detail.LicenseLimitNotificationDetailExtractor;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class LicenseLimitNotificationDetailExtractorTest {
