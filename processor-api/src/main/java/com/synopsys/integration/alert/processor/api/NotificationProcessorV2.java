@@ -56,6 +56,7 @@ public final class NotificationProcessorV2 {
     private final ProjectMessageDigester projectMessageDigester;
     private final ProjectMessageSummarizer projectMessageSummarizer;
     private final ProviderMessageDistributor providerMessageDistributor;
+    private final List<NotificationProcessingLifecycleCache> lifecycleCaches;
 
     @Autowired
     protected NotificationProcessorV2(
@@ -64,7 +65,8 @@ public final class NotificationProcessorV2 {
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator,
         ProjectMessageDigester projectMessageDigester,
         ProjectMessageSummarizer projectMessageSummarizer,
-        ProviderMessageDistributor providerMessageDistributor
+        ProviderMessageDistributor providerMessageDistributor,
+        List<NotificationProcessingLifecycleCache> lifecycleCaches
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.jobNotificationMapper = jobNotificationMapper;
@@ -72,6 +74,7 @@ public final class NotificationProcessorV2 {
         this.projectMessageDigester = projectMessageDigester;
         this.projectMessageSummarizer = projectMessageSummarizer;
         this.providerMessageDistributor = providerMessageDistributor;
+        this.lifecycleCaches = lifecycleCaches;
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications) {
@@ -97,6 +100,7 @@ public final class NotificationProcessorV2 {
 
             providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
         }
+        clearCaches();
     }
 
     private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<NotificationContentWrapper> jobNotifications) {
@@ -124,6 +128,12 @@ public final class NotificationProcessorV2 {
             return new ProviderMessageHolder(List.of(), allSimpleMessages);
         }
         return new ProviderMessageHolder(digestedMessages, providerMessages.getSimpleMessages());
+    }
+
+    private void clearCaches() {
+        for (NotificationProcessingLifecycleCache lifecycleCache : lifecycleCaches) {
+            lifecycleCache.clear();
+        }
     }
 
 }

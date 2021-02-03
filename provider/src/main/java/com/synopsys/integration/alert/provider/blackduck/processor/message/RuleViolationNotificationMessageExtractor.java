@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.BomCom
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.provider.blackduck.processor.ProcessorBlackDuckServicesFactoryCache;
+import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageComponentConcernUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
@@ -59,10 +59,10 @@ public class RuleViolationNotificationMessageExtractor extends ProviderMessageEx
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final BlackDuckProviderKey blackDuckProviderKey;
-    private final ProcessorBlackDuckServicesFactoryCache servicesFactoryCache;
+    private final NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache;
 
     @Autowired
-    public RuleViolationNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey, ProcessorBlackDuckServicesFactoryCache servicesFactoryCache) {
+    public RuleViolationNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey, NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache) {
         super(NotificationType.RULE_VIOLATION, RuleViolationUniquePolicyNotificationContent.class);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.servicesFactoryCache = servicesFactoryCache;

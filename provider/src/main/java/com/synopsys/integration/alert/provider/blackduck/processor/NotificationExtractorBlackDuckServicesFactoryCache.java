@@ -22,10 +22,9 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.slf4j.Logger;
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.processor.api.NotificationProcessingLifecycleCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
@@ -46,17 +46,15 @@ import com.synopsys.integration.log.Slf4jIntLogger;
  * can be found <a href="https://commons.apache.org/proper/commons-collections/apidocs/org/apache/commons/collections4/map/PassiveExpiringMap.html">here</a>.
  */
 @Component
-public class ProcessorBlackDuckServicesFactoryCache {
-    public static final long MAX_TIME_TO_LIVE_MINUTES = 2;
-
+public class NotificationExtractorBlackDuckServicesFactoryCache implements NotificationProcessingLifecycleCache {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final Map<Long, BlackDuckServicesFactory> servicesFactoryCache;
 
-    public ProcessorBlackDuckServicesFactoryCache(BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
+    public NotificationExtractorBlackDuckServicesFactoryCache(BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
-        this.servicesFactoryCache = Collections.synchronizedMap(new PassiveExpiringMap<>(MAX_TIME_TO_LIVE_MINUTES, TimeUnit.MINUTES));
+        this.servicesFactoryCache = new ConcurrentHashMap<>();
     }
 
     public BlackDuckServicesFactory retrieveBlackDuckServicesFactory(Long blackDuckConfigId) throws AlertConfigurationException {
@@ -82,6 +80,11 @@ public class ProcessorBlackDuckServicesFactoryCache {
             }
         }
         throw new AlertConfigurationException(String.format("No BlackDuck configuration with id '%s' existed", blackDuckConfigId));
+    }
+
+    @Override
+    public void clear() {
+        servicesFactoryCache.clear();
     }
 
 }
