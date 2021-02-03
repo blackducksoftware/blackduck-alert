@@ -15,14 +15,6 @@ task runServer(type: com.synopsys.integration.alert.build.RunServerTask, depends
     postgresVersion = project.ext.postgresContainerVersion
 }
 
-// disable the test task when running the alert server to speed up startup time.
-gradle.taskGraph.whenReady { graph ->
-    if (graph.hasTask(runServer)) {
-        compileTestJava.enabled = false
-        test.enabled = false
-    }
-}
-
 tasks.createKeystore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.keystore").exists() }
 tasks.createTruststore.onlyIf { !file("${project.buildDir}/certs/blackduck-alert.truststore").exists() }
 tasks.runServer.mustRunAfter(createKeystore)

@@ -45,6 +45,16 @@ apply from: 'buildSrc/runTasks.gradle'
 apply from: 'buildSrc/deploymentTasks.gradle'
 apply from: 'buildSrc/docker.gradle'
 
+allprojects {
+    // disable the test task when running the alert server to speed up startup time.
+    gradle.taskGraph.whenReady { graph ->
+        if (graph.hasTask(runServer)) {
+            compileTestJava.enabled = false
+            test.enabled = false
+        }
+    }
+}
+
 subprojects {
     apply plugin: 'io.spring.dependency-management'
     if (project.name != 'alert-platform') {
