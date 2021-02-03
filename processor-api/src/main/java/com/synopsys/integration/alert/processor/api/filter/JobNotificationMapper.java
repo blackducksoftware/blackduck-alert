@@ -36,9 +36,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
-import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
-import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
+import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
@@ -60,14 +58,14 @@ public class JobNotificationMapper {
      * Project Name Pattern (Found in Job and based on Project)
      * Filter by Vulnerability severity (From notification if applicable)
      * Filter by Policy name (From notification if applicable)
-     * @param filterableNotifications List of notifications that will be iterated over and applied to jobs that are found
-     * @param frequencies             an Additional filter to specify when querying data from the DB
+     * @param detailedContents List of notifications that will be iterated over and applied to jobs that are found
+     * @param frequencies      an Additional filter to specify when querying data from the DB
      * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
      */
-    public List<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> filterableNotifications, Collection<FrequencyType> frequencies) {
+    public List<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies) {
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
 
-        for (DetailedNotificationContent detailedNotificationContent : filterableNotifications) {
+        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
             List<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(detailedNotificationContent, frequencies);
             for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : filteredDistributionJobResponseModels) {
                 List<NotificationContentWrapper> applicableNotifications = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());

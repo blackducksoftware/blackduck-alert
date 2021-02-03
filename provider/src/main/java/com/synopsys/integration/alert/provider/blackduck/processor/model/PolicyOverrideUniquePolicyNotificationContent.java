@@ -1,5 +1,5 @@
 /*
- * processor-api
+ * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter.extractor;
+package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;

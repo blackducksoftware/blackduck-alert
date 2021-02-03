@@ -1,5 +1,5 @@
 /*
- * processor-api
+ * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter.extractor;
+package com.synopsys.integration.alert.provider.blackduck.processor.detail;
 
 import java.util.List;
 
@@ -29,20 +29,21 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
+import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
+import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class ProjectNotificationDetailExtractor extends NotificationDetailExtractor<ProjectNotificationContent> {
+public class LicenseLimitDetailExtractor extends NotificationDetailExtractor<LicenseLimitNotificationContent> {
     @Autowired
-    public ProjectNotificationDetailExtractor(Gson gson) {
-        super(NotificationType.PROJECT, ProjectNotificationContent.class, gson);
+    public LicenseLimitDetailExtractor(Gson gson) {
+        super(NotificationType.LICENSE_LIMIT, LicenseLimitNotificationContent.class, gson);
     }
 
     @Override
-    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
-        return List.of(DetailedNotificationContent.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName()));
+    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, LicenseLimitNotificationContent notificationContent) {
+        return List.of(DetailedNotificationContent.projectless(alertNotificationModel, notificationContent));
     }
 
 }

@@ -20,34 +20,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.filter.model;
+package com.synopsys.integration.alert.processor.api.filter;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
+import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public final class NotificationFilterJobModel extends AlertSerializableModel {
+public class FilteredJobNotificationWrapper extends AlertSerializableModel {
     private final UUID jobId;
+    private final ProcessingType processingType;
     private final String channelName;
-    private final Collection<Long> notificationIds;
+    private final List<NotificationContentWrapper> jobNotifications;
 
-    public NotificationFilterJobModel(UUID jobId, String channelName, Collection<Long> notificationIds) {
+    public FilteredJobNotificationWrapper(UUID jobId, ProcessingType processingType, String channelName, List<NotificationContentWrapper> jobNotifications) {
         this.jobId = jobId;
+        this.processingType = processingType;
         this.channelName = channelName;
-        this.notificationIds = notificationIds;
+        this.jobNotifications = jobNotifications;
     }
 
     public UUID getJobId() {
         return jobId;
     }
 
+    public ProcessingType getProcessingType() {
+        return processingType;
+    }
+
     public String getChannelName() {
         return channelName;
     }
 
-    public Collection<Long> getNotificationIds() {
-        return notificationIds;
+    public List<NotificationContentWrapper> getJobNotifications() {
+        return jobNotifications;
     }
 
 }

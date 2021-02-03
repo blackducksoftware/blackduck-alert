@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
 
 @Component
 public class ProviderMessageDistributor {
@@ -52,11 +51,11 @@ public class ProviderMessageDistributor {
         this.eventManager = eventManager;
     }
 
-    public void distribute(NotificationFilterJobModel notificationFilterJobModel, ProviderMessageHolder providerMessageHolder) {
-        UUID jobId = notificationFilterJobModel.getJobId();
-        Long auditId = auditAccessor.createAuditEntryForJob(jobId, notificationFilterJobModel.getNotificationIds());
+    public void distribute(ProcessedNotificationDetails processedNotificationDetails, ProviderMessageHolder providerMessageHolder) {
+        UUID jobId = processedNotificationDetails.getJobId();
+        Long auditId = auditAccessor.createAuditEntryForJob(jobId, processedNotificationDetails.getNotificationIds());
 
-        String channelName = notificationFilterJobModel.getChannelName();
+        String channelName = processedNotificationDetails.getChannelName();
         ChannelKey destinationKey = ChannelKeys.getChannelKey(channelName);
         if (null != destinationKey) {
             DistributionEventV2 event = new DistributionEventV2(destinationKey, jobId, auditId, providerMessageHolder);
