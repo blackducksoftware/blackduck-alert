@@ -84,7 +84,8 @@ public class EmailChannel extends NamedDistributionChannel {
     @Override
     public void distributeMessage(DistributionEvent event) throws IntegrationException {
         ConfigurationModel globalConfig = event.getChannelGlobalConfig()
-                                              .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing global config."));
+                                              .filter(ConfigurationModel::isConfiguredFieldsNotEmpty)
+                                              .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
         DistributionJobModel distributionJobModel = event.getDistributionJobModel();
         EmailJobDetailsModel emailJobDetails = distributionJobModel.getDistributionJobDetails().getAs(DistributionJobDetailsModel.EMAIL);
 
@@ -93,8 +94,10 @@ public class EmailChannel extends NamedDistributionChannel {
         Optional<String> from = globalConfig.getField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())
                                     .flatMap(ConfigurationFieldModel::getFieldValue);
 
-        if (host.isEmpty() || from.isEmpty()) {
-            throw new AlertException("ERROR: Missing global config.");
+        if (host.isEmpty()) {
+            throw new AlertException("ERROR: Missing email host.");
+        } else if (from.isEmpty()) {
+            throw new AlertException("ERROR: Missing the from email address.");
         }
 
         Set<String> emailAddresses = emailAddressHandler.getUpdatedEmailAddresses(event.getProviderConfigId(), event.getContent(), distributionJobModel, emailJobDetails);

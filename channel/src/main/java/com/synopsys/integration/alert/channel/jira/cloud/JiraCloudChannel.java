@@ -57,6 +57,7 @@ public class JiraCloudChannel extends IssueTrackerChannel {
     @Override
     protected IssueTrackerContext getIssueTrackerContext(DistributionEvent event) throws AlertConfigurationException {
         ConfigurationModel globalConfig = event.getChannelGlobalConfig()
+                                              .filter(ConfigurationModel::isConfiguredFieldsNotEmpty)
                                               .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
         return jiraCloudContextBuilder.build(globalConfig, event.getDistributionJobModel());
     }

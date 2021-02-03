@@ -89,7 +89,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
             emailChannel.sendMessage(event);
             fail("Expected exception to be thrown for null global config");
         } catch (IntegrationException e) {
-            assertEquals("ERROR: Missing global config.", e.getMessage());
+            assertEquals("ERROR: Missing Email global config.", e.getMessage());
         }
     }
 

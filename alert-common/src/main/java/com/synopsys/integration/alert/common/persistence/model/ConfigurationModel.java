@@ -100,4 +100,12 @@ public class ConfigurationModel extends AlertSerializableModel {
         mutableCopy.getConfiguredFields().putAll(configuredFields);
         return mutableCopy;
     }
+
+    public boolean isConfiguredFieldsEmpty() {
+        return configuredFields == null || configuredFields.isEmpty();
+    }
+
+    public boolean isConfiguredFieldsNotEmpty() {
+        return configuredFields != null && !configuredFields.isEmpty();
+    }
 }
