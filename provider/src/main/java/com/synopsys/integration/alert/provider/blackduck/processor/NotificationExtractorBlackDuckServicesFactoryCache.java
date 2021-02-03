@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -42,8 +41,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 
 /**
  * Caches {@link BlackDuckServicesFactory} by BlackDuck configuration ID.
- * Synchronized and backed by a {@link PassiveExpiringMap} the documentation for which
- * can be found <a href="https://commons.apache.org/proper/commons-collections/apidocs/org/apache/commons/collections4/map/PassiveExpiringMap.html">here</a>.
+ * Synchronized and backed by a {@link ConcurrentHashMap}.
  */
 @Component
 public class NotificationExtractorBlackDuckServicesFactoryCache implements NotificationProcessingLifecycleCache {
