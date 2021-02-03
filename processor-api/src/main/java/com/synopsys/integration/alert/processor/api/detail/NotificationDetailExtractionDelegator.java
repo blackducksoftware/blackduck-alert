@@ -59,7 +59,7 @@ public class NotificationDetailExtractionDelegator {
         Optional<NotificationDetailExtractor> notificationExtractorOptional = getNotificationExtractor(notificationType);
         if (notificationExtractorOptional.isPresent()) {
             NotificationDetailExtractor notificationDetailExtractor = notificationExtractorOptional.get();
-            return notificationDetailExtractor.convertToFilterableNotificationWrapper(notification);
+            return notificationDetailExtractor.extractDetailedContent(notification);
         }
 
         logger.warn("Did not find extractor for notification type: {}", notificationTypeString);

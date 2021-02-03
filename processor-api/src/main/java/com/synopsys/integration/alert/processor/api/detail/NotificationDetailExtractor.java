@@ -44,11 +44,11 @@ public abstract class NotificationDetailExtractor<T extends NotificationContentC
         return notificationType;
     }
 
-    public final List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel) {
-        T vulnerabilityNotificationContent = gson.fromJson(alertNotificationModel.getContent(), notificationClass);
-        return convertToFilterableNotificationWrapper(alertNotificationModel, vulnerabilityNotificationContent);
+    public final List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel) {
+        T notificationContent = gson.fromJson(alertNotificationModel.getContent(), notificationClass);
+        return extractDetailedContent(alertNotificationModel, notificationContent);
     }
 
-    protected abstract List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, T notificationContent);
+    protected abstract List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, T notificationContent);
 
 }

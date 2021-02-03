@@ -42,7 +42,7 @@ public class ProjectNotificationDetailExtractor extends NotificationDetailExtrac
     }
 
     @Override
-    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
+    protected List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, ProjectNotificationContent projectNotificationContent) {
         return List.of(DetailedNotificationContent.project(alertNotificationModel, projectNotificationContent, projectNotificationContent.getProjectName()));
     }
 

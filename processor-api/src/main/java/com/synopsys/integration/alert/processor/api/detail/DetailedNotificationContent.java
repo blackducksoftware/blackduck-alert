@@ -23,6 +23,10 @@
 package com.synopsys.integration.alert.processor.api.detail;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -31,8 +35,7 @@ import com.synopsys.integration.blackduck.api.manual.component.NotificationConte
 
 public class DetailedNotificationContent extends AlertSerializableModel {
     private final String projectName;
-    // TODO this should not be a list
-    private final List<String> policyNames;
+    private final String policyName;
     private final List<String> vulnerabilitySeverities;
     private final NotificationContentWrapper notificationContentWrapper;
 
@@ -42,7 +45,7 @@ public class DetailedNotificationContent extends AlertSerializableModel {
         String projectName,
         List<String> vulnerabilitySeverities
     ) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(), vulnerabilitySeverities);
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, null, vulnerabilitySeverities);
     }
 
     public static DetailedNotificationContent policy(
@@ -51,30 +54,36 @@ public class DetailedNotificationContent extends AlertSerializableModel {
         String projectName,
         String policyName
     ) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(policyName), List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, policyName, List.of());
     }
 
     public static DetailedNotificationContent project(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent, String projectName) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, List.of(), List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, projectName, null, List.of());
     }
 
     public static DetailedNotificationContent projectless(AlertNotificationModel notificationModel, NotificationContentComponent notificationContent) {
-        return new DetailedNotificationContent(notificationModel, notificationContent, null, List.of(), List.of());
+        return new DetailedNotificationContent(notificationModel, notificationContent, null, null, List.of());
     }
 
-    private DetailedNotificationContent(AlertNotificationModel alertNotificationModel, NotificationContentComponent notificationContent, String projectName, List<String> policyNames, List<String> vulnerabilitySeverities) {
-        this.projectName = projectName;
-        this.policyNames = policyNames;
+    private DetailedNotificationContent(
+        AlertNotificationModel alertNotificationModel,
+        NotificationContentComponent notificationContent,
+        @Nullable String projectName,
+        @Nullable String policyName,
+        List<String> vulnerabilitySeverities
+    ) {
+        this.projectName = StringUtils.trimToNull(projectName);
+        this.policyName = StringUtils.trimToNull(policyName);
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.notificationContentWrapper = new NotificationContentWrapper(alertNotificationModel, notificationContent, notificationContent.getClass());
     }
 
-    public String getProjectName() {
-        return projectName;
+    public Optional<String> getProjectName() {
+        return Optional.ofNullable(projectName);
     }
 
-    public List<String> getPolicyNames() {
-        return policyNames;
+    public Optional<String> getPolicyName() {
+        return Optional.ofNullable(policyName);
     }
 
     public List<String> getVulnerabilitySeverities() {

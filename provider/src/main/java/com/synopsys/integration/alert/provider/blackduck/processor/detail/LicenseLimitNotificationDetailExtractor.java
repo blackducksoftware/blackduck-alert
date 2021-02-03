@@ -35,14 +35,14 @@ import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotif
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class LicenseLimitDetailExtractor extends NotificationDetailExtractor<LicenseLimitNotificationContent> {
+public class LicenseLimitNotificationDetailExtractor extends NotificationDetailExtractor<LicenseLimitNotificationContent> {
     @Autowired
-    public LicenseLimitDetailExtractor(Gson gson) {
+    public LicenseLimitNotificationDetailExtractor(Gson gson) {
         super(NotificationType.LICENSE_LIMIT, LicenseLimitNotificationContent.class, gson);
     }
 
     @Override
-    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, LicenseLimitNotificationContent notificationContent) {
+    protected List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, LicenseLimitNotificationContent notificationContent) {
         return List.of(DetailedNotificationContent.projectless(alertNotificationModel, notificationContent));
     }
 
