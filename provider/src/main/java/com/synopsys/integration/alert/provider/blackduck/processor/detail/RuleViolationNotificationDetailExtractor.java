@@ -45,7 +45,7 @@ public class RuleViolationNotificationDetailExtractor extends NotificationDetail
     }
 
     @Override
-    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, RuleViolationNotificationContent notificationContent) {
+    protected List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, RuleViolationNotificationContent notificationContent) {
         return notificationContent.getPolicyInfos()
                    .stream()
                    .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))

@@ -61,7 +61,7 @@ public class BomEditNotificationDetailExtractor extends NotificationDetailExtrac
     }
 
     @Override
-    protected List<DetailedNotificationContent> convertToFilterableNotificationWrapper(AlertNotificationModel alertNotificationModel, BomEditNotificationContent notificationContent) {
+    protected List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, BomEditNotificationContent notificationContent) {
         return retrieveProjectName(alertNotificationModel.getProviderConfigId(), notificationContent.getProjectVersion())
                    .map(projectName -> DetailedNotificationContent.project(alertNotificationModel, notificationContent, projectName))
                    .map(List::of)
