@@ -1,5 +1,5 @@
 /*
- * processor-api
+ * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,16 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.extract.model.project;
+package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
-import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
+public final class BlackDuckMessageConstants {
+    public static final String LABEL_PROJECT = "Project";
+    public static final String LABEL_PROJECT_VERSION = "Project Version";
 
-public enum ProjectOperation {
-    CREATE,
-    DELETE;
-
-    public static ProjectOperation fromOperationType(OperationType operationType) {
-        return OperationType.DELETE.equals(operationType) ? ProjectOperation.DELETE : ProjectOperation.CREATE;
+    private BlackDuckMessageConstants() {
     }
 
 }
