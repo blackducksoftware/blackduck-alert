@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageComponentConcernUtils;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
@@ -80,15 +81,20 @@ public class RuleViolationNotificationMessageExtractor extends ProviderMessageEx
     }
 
     private BomComponentDetails createBomComponentDetails(RuleViolationUniquePolicyNotificationContent notificationContent, ComponentVersionStatus componentVersionStatus, ComponentConcern componentConcern) {
-        // FIXME use "query links"
-        LinkableItem component = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT, componentVersionStatus.getComponentName(), componentVersionStatus.getComponent());
+        ProjectVersionComponentView bomComponent = retrieveBomComponent(componentVersionStatus.getBomComponent());
+
+        LinkableItem component;
         LinkableItem componentVersion = null;
+
+        String componentQueryLink = BlackDuckMessageLinkUtils.createComponentQueryLink(bomComponent);
+
         String componentVersionUrl = componentVersionStatus.getComponentVersion();
         if (StringUtils.isNotBlank(componentVersionUrl)) {
-            componentVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT_VERSION, componentVersionStatus.getComponentVersionName(), componentVersionUrl);
+            component = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT, componentVersionStatus.getComponentName());
+            componentVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT_VERSION, componentVersionStatus.getComponentVersionName(), componentQueryLink);
+        } else {
+            component = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT, componentVersionStatus.getComponentName(), componentQueryLink);
         }
-
-        ProjectVersionComponentView bomComponent = retrieveBomComponent(componentVersionStatus.getBomComponent());
 
         LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
         String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
