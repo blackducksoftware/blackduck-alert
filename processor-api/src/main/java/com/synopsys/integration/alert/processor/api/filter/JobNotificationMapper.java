@@ -88,9 +88,9 @@ public class JobNotificationMapper {
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             frequencyTypes,
             EnumUtils.getEnum(NotificationType.class, contentWrapper.extractNotificationType()),
-            detailedNotificationContent.getProjectName(),
+            detailedNotificationContent.getProjectName().orElse(null),
             detailedNotificationContent.getVulnerabilitySeverities(),
-            detailedNotificationContent.getPolicyNames()
+            detailedNotificationContent.getPolicyName().map(List::of).orElse(List.of())
         );
         return jobAccessor.getMatchingEnabledJobs(filteredDistributionJobRequestModel);
     }
