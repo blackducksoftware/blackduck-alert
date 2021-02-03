@@ -73,7 +73,7 @@ public class NotificationExtractorBlackDuckServicesFactoryCache implements Notif
             BlackDuckProperties blackDuckProperties = optionalProperties.get();
             Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
             try {
-                BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
+                BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckCacheClient(intLogger);
                 return blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
             } catch (AlertException e) {
                 throw new AlertConfigurationException("The BlackDuck configuration is invalid", e);
