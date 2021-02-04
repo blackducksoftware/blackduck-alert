@@ -1,7 +1,5 @@
 package com.synopsys.integration.alert.workflow.message;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,26 +25,35 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.ApplicationConfiguration;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.api.StaticJobAccessor;
-import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 import com.synopsys.integration.alert.util.DescriptorMocker;
+import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
+import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
 
 //TODO: Need to remove transactional from the AlertIntegrationTest annotation. Once IALERT-2228 is resolved we should make this an @AlertIntegrationTest again
 @Tag(TestTags.DEFAULT_INTEGRATION)
@@ -60,74 +67,70 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class JmsNotificationReceiverTestIT {
     protected TestProperties properties;
+    private List<AlertNotificationModel> savedModels;
+    private DistributionJobModel distributionJobModel;
+    private Long blackDuckGlobalConfigId;
 
-    @Autowired
-    private NotificationContentRepository notificationContentRepository;
     @Autowired
     private DefaultNotificationAccessor defaultNotificationAccessor;
     @Autowired
-    private NotificationReceiver notificationReceiver;
-    @Autowired
     private EventManager eventManager;
-    @Autowired
-    private AuditAccessor auditAccessor;
     @Autowired
     private Gson gson;
     @Autowired
     private StaticJobAccessor staticJobAccessor;
+    @Autowired
+    private DefaultConfigurationAccessor defaultConfigurationAccessor;
+    @Autowired
+    private BlackDuckProviderKey blackDuckProviderKey;
 
-    private List<AlertNotificationModel> savedModels;
-    private DistributionJobModel distributionJobModel;
-    private DistributionJobModel distributionJobModel2;
-
-    //@BeforeEach
-    // Insert into the database a notification //Look at NotificationReceiverTestIt
-    // Create 2 Real-time slack jobs <-- look at SlackChannelTest
     @BeforeEach
-    public void init() throws Exception {
-        //Create a notification and add it into the notificationContentRepository database
+    public void init() {
+        properties = new TestProperties();
+
+        ConfigurationFieldModel providerConfigEnabled = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED);
+        providerConfigEnabled.setFieldValue("TRUE");
+        ConfigurationFieldModel providerConfigName = ConfigurationFieldModel.create(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME);
+        providerConfigName.setFieldValue("blackduck-config");
+        ConfigurationFieldModel blackduckUrl = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
+        blackduckUrl.setFieldValue("https://www.synopsys.com");
+        ConfigurationFieldModel blackduckApiKey = ConfigurationFieldModel.createSensitive(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
+        blackduckApiKey.setFieldValue("someApiKey");
+        ConfigurationFieldModel blackduckTimeout = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT);
+        blackduckTimeout.setFieldValue(String.valueOf(BlackDuckProperties.DEFAULT_TIMEOUT));
+
+        ConfigurationModel blackduckConfigurationModel = defaultConfigurationAccessor.createConfiguration(blackDuckProviderKey,
+            ConfigContextEnum.GLOBAL,
+            List.of(providerConfigEnabled,
+                providerConfigName,
+                blackduckUrl,
+                blackduckApiKey,
+                blackduckTimeout));
+        blackDuckGlobalConfigId = blackduckConfigurationModel.getConfigurationId();
+
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
-        notificationContent.add(createAlertNotificationModel(1L, false));
-
+        for (Long i = 1L; i <= 200; i++) {
+            notificationContent.add(createAlertNotificationModel(i, false));
+        }
         savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
-        assertNotNull(savedModels);
-
-        //Create Slack Jobs
-        properties = new TestProperties(); //TODO may not need this
 
         SlackJobDetailsModel slackJobDetailsModel = createSlackJobDetailsModel();
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobRequestModel("jobName1", slackJobDetailsModel);
-        DistributionJobRequestModel distributionJobRequestModel2 = createDistributionJobRequestModel("jobName2", slackJobDetailsModel);
-
         distributionJobModel = staticJobAccessor.createJob(distributionJobRequestModel);
-        distributionJobModel2 = staticJobAccessor.createJob(distributionJobRequestModel2);
     }
 
-    //@AfterEach
-    // Cleanup what we did in the BeforeEach
-    // Delete the jobs
-    // Clear out the database notifications
     @AfterEach
     public void cleanup() {
         defaultNotificationAccessor.deleteNotificationList(savedModels);
-        //notificationContentRepository.flush();
-        //notificationContentRepository.deleteAllInBatch();
-
         staticJobAccessor.deleteJob(distributionJobModel.getJobId());
-        staticJobAccessor.deleteJob(distributionJobModel2.getJobId());
     }
 
-    // Autowire EventManager
-    // Create a NotificationReceivedEvent (like in the Accumulator) and send through the eventManager.sendEvent
-
     @Test
-    public void testJms() {
+    public void testJms() throws InterruptedException {
         //Set breakpoints throughout this test, there is nothing to assert against here
-
-        //TODO: For debugging, delete later
-        List<AlertNotificationModel> alertPagedModel = defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(10).getModels();
-
-        eventManager.sendEvent(new NotificationReceivedEvent());
+        NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent();
+        eventManager.sendEvent(notificationReceivedEvent);
+        Thread.sleep(120000);
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(String uniqueJobName, SlackJobDetailsModel slackJobDetailsModel) {
@@ -137,10 +140,10 @@ public class JmsNotificationReceiverTestIT {
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
             ChannelKeys.SLACK.getUniversalKey(),
-            1L,
+            blackDuckGlobalConfigId,
             false,
-            "*",
-            List.of(NotificationType.VULNERABILITY.name()), //TODO policy or w/e we decide to choose should be the notification type. This is set in the createAlertNotificationModel
+            ".*",
+            List.of(NotificationType.PROJECT.name()), //TODO policy or w/e we decide to choose should be the notification type. This is set in the createAlertNotificationModel
             List.of(),
             List.of(),
             List.of(),
@@ -157,7 +160,15 @@ public class JmsNotificationReceiverTestIT {
     }
 
     private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) {
-        return new AlertNotificationModel(id, 1L, "provider_blackduck", "DELETED CONFIGURATION", NotificationType.VULNERABILITY.name(), "{content: \"content is here...\"}", DateUtils.createCurrentDateTimestamp(),
+        ProjectNotificationContent projectNotificationContent = new ProjectNotificationContent();
+        projectNotificationContent.setProject("project");
+        projectNotificationContent.setProjectName(String.format("projectName-%s", id));
+        projectNotificationContent.setOperationType(OperationType.CREATE);
+        ProjectNotificationView projectNotificationView = new ProjectNotificationView();
+        projectNotificationView.setContent(projectNotificationContent);
+        String content = gson.toJson(projectNotificationView);
+
+        return new AlertNotificationModel(id, blackDuckGlobalConfigId, "provider_blackduck", "DELETED CONFIGURATION", NotificationType.PROJECT.name(), content, DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(), processed);
     }
 }
