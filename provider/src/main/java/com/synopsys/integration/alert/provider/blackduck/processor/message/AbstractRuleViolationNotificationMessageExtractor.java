@@ -74,7 +74,7 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
     }
 
     @Override
-    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, AbstractRuleViolationNotificationContent notificationContent) {
+    protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, T notificationContent) {
         AlertNotificationModel notificationModel = notificationContentWrapper.getAlertNotificationModel();
 
         List<BomComponentDetails> bomComponentDetails;
@@ -99,7 +99,7 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
         return new ProviderMessageHolder(List.of(ruleViolationMessage), List.of());
     }
 
-    private List<BomComponentDetails> createBomComponentDetails(AbstractRuleViolationNotificationContent notificationContent, BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
+    private List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
         List<BomComponentDetails> bomComponentDetails = new LinkedList<>();
         for (ComponentVersionStatus componentVersionStatus : notificationContent.getComponentVersionStatuses()) {
             ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentView.class);
