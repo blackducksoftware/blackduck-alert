@@ -24,7 +24,7 @@ public class ProjectVersionNotificationDetailExtractorTest {
     @Test
     public void extractDetailedContentTest() throws IOException {
         String jsonContent = TestResourceUtils.readFileToString(NOTIFICATION_JSON_PATH);
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", NotificationType.PROJECT.name(), jsonContent, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", NotificationType.PROJECT_VERSION.name(), jsonContent, null, null, false);
 
         ProjectVersionNotificationDetailExtractor extractor = new ProjectVersionNotificationDetailExtractor(gson);
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification);
