@@ -31,15 +31,15 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
 public final class BlackDuckMessageComponentConcernUtils {
-    public static ComponentConcern fromPolicyInfo(PolicyInfo policyInfo) {
+    public static ComponentConcern fromPolicyInfo(PolicyInfo policyInfo, ItemOperation itemOperation) {
         String policyName = policyInfo.getPolicyName();
 
         String policySeverity = policyInfo.getSeverity();
         if (StringUtils.isNotBlank(policySeverity)) {
             ComponentConcernSeverity severity = EnumUtils.getEnum(ComponentConcernSeverity.class, policySeverity);
-            return ComponentConcern.severePolicy(ItemOperation.ADD, policyName, severity);
+            return ComponentConcern.severePolicy(itemOperation, policyName, severity);
         }
-        return ComponentConcern.policy(ItemOperation.ADD, policyName);
+        return ComponentConcern.policy(itemOperation, policyName);
     }
 
     private BlackDuckMessageComponentConcernUtils() {
