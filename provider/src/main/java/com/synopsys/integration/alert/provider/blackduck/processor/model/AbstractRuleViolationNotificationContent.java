@@ -25,25 +25,48 @@ package com.synopsys.integration.alert.provider.blackduck.processor.model;
 import java.util.List;
 
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
+import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
-public class RuleViolationUniquePolicyNotificationContent extends AbstractRuleViolationNotificationContent {
-    private final int componentVersionsInViolation;
+public abstract class AbstractRuleViolationNotificationContent extends NotificationContentComponent {
+    private final String projectName;
+    private final String projectVersionName;
+    private final String projectVersion;
+    private final List<ComponentVersionStatus> componentVersionStatuses;
+    private final PolicyInfo policyInfo;
 
-    public RuleViolationUniquePolicyNotificationContent(
+    public AbstractRuleViolationNotificationContent(
         String projectName,
         String projectVersionName,
         String projectVersion,
-        int componentVersionsInViolation,
         List<ComponentVersionStatus> componentVersionStatuses,
         PolicyInfo policyInfo
     ) {
-        super(projectName, projectVersionName, projectVersion, componentVersionStatuses, policyInfo);
-        this.componentVersionsInViolation = componentVersionsInViolation;
+        this.projectName = projectName;
+        this.projectVersionName = projectVersionName;
+        this.projectVersion = projectVersion;
+        this.componentVersionStatuses = componentVersionStatuses;
+        this.policyInfo = policyInfo;
     }
 
-    public int getComponentVersionsInViolation() {
-        return componentVersionsInViolation;
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public String getProjectVersionName() {
+        return projectVersionName;
+    }
+
+    public String getProjectVersion() {
+        return projectVersion;
+    }
+
+    public List<ComponentVersionStatus> getComponentVersionStatuses() {
+        return componentVersionStatuses;
+    }
+
+    public PolicyInfo getPolicyInfo() {
+        return policyInfo;
     }
 
 }
