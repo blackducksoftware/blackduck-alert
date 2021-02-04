@@ -82,6 +82,14 @@ public final class NotificationProcessorV2 {
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
+        try {
+            processAndDistribute(notifications, frequencies);
+        } finally {
+            clearCaches();
+        }
+    }
+
+    private void processAndDistribute(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
                                                                         .stream()
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)
@@ -100,7 +108,6 @@ public final class NotificationProcessorV2 {
 
             providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
         }
-        clearCaches();
     }
 
     private ProviderMessageHolder processJobNotifications(ProcessingType processingType, List<NotificationContentWrapper> jobNotifications) {
