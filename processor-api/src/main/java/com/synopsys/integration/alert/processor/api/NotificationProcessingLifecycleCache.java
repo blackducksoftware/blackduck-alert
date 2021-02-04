@@ -1,5 +1,5 @@
 /*
- * provider
+ * processor-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,19 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.processor.message;
+package com.synopsys.integration.alert.processor.api;
 
-public final class BlackDuckMessageConstants {
-    public static final String LABEL_PROJECT = "Project";
-    public static final String LABEL_PROJECT_VERSION = "Project Version";
-    public static final String LABEL_COMPONENT = "Component";
-    public static final String LABEL_COMPONENT_VERSION = "Component Version";
-    public static final String LABEL_LICENSE = "License";
-
-    public static final String VALUE_UNKNOWN_LICENSE = "Unknown License";
-    public static final String VALUE_UNKNOWN_USAGE = "Unknown Usage";
-
-    private BlackDuckMessageConstants() {
-    }
+/**
+ * Marks a class as a cache that should be cleared at the end of the notification processing lifecycle.
+ */
+public interface NotificationProcessingLifecycleCache {
+    void clear();
 
 }
