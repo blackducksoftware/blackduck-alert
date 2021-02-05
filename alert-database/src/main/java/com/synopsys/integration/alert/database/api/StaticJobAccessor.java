@@ -211,10 +211,10 @@ public class StaticJobAccessor implements JobAccessor {
                    .filter(distributionJobEntity -> !(distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() &&
                                                           distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern() != null &&
                                                           !Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) &&
-                                                          !distributionJobEntity.getBlackDuckJobDetails().getBlackDuckJobProjects()
-                                                               .stream()
-                                                               .map(BlackDuckJobProjectEntity::getProjectName)
-                                                               .anyMatch(projectName::equals))
+                                                          distributionJobEntity.getBlackDuckJobDetails().getBlackDuckJobProjects()
+                                                              .stream()
+                                                              .map(BlackDuckJobProjectEntity::getProjectName)
+                                                              .noneMatch(projectName::equals))
                    )
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
