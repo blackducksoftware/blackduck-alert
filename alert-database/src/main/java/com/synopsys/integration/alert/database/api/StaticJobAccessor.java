@@ -65,6 +65,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
@@ -210,7 +211,10 @@ public class StaticJobAccessor implements JobAccessor {
                    .filter(distributionJobEntity -> !(distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() &&
                                                           distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern() != null &&
                                                           !Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) &&
-                                                          !distributionJobEntity.getBlackDuckJobDetails().getBlackDuckJobProjects().contains(projectName))
+                                                          !distributionJobEntity.getBlackDuckJobDetails().getBlackDuckJobProjects()
+                                                               .stream()
+                                                               .map(BlackDuckJobProjectEntity::getProjectName)
+                                                               .anyMatch(projectName::equals))
                    )
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
