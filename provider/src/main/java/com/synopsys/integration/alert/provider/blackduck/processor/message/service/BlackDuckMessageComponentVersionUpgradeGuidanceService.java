@@ -74,16 +74,19 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
         if (optionalUpgradeGuidance.isPresent()) {
             ComponentVersionUpgradeGuidanceView upgradeGuidanceView = optionalUpgradeGuidance.get();
 
-            CommonUpgradeGuidanceModel shortTermGuidance = CommonUpgradeGuidanceModel.fromShortTermGuidance(upgradeGuidanceView.getShortTerm());
-            String shortTermGuidanceText = createUpgradeGuidanceText(shortTermGuidance);
+            List<LinkableItem> guidanceItems = new ArrayList<>(2);
 
-            CommonUpgradeGuidanceModel longTermGuidance = CommonUpgradeGuidanceModel.fromLongTermGuidance(upgradeGuidanceView.getLongTerm());
-            String longTermGuidanceText = createUpgradeGuidanceText(longTermGuidance);
+            Optional.ofNullable(upgradeGuidanceView.getShortTerm())
+                .map(CommonUpgradeGuidanceModel::fromShortTermGuidance)
+                .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_SHORT_TERM, guidanceModel))
+                .ifPresent(guidanceItems::add);
 
-            return List.of(
-                new LinkableItem(BlackDuckMessageLabels.LABEL_GUIDANCE_SHORT_TERM, shortTermGuidanceText, shortTermGuidance.getVersion()),
-                new LinkableItem(BlackDuckMessageLabels.LABEL_GUIDANCE_LONG_TERM, longTermGuidanceText, longTermGuidance.getVersion())
-            );
+            Optional.ofNullable(upgradeGuidanceView.getLongTerm())
+                .map(CommonUpgradeGuidanceModel::fromLongTermGuidance)
+                .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_LONG_TERM, guidanceModel))
+                .ifPresent(guidanceItems::add);
+
+            return guidanceItems;
         }
         return List.of();
     }
@@ -102,6 +105,11 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
             vulnerabilityCountString = "None";
         }
         return String.format("%s Vulnerability Count: %s", remediatingVersionView.getName(), vulnerabilityCountString);
+    }
+
+    private LinkableItem createUpgradeGuidanceItem(String label, CommonUpgradeGuidanceModel upgradeGuidanceModel) {
+        String upgradeGuidanceText = createUpgradeGuidanceText(upgradeGuidanceModel);
+        return new LinkableItem(label, upgradeGuidanceText, upgradeGuidanceModel.getVersion());
     }
 
     private String createUpgradeGuidanceText(CommonUpgradeGuidanceModel upgradeGuidanceModel) {

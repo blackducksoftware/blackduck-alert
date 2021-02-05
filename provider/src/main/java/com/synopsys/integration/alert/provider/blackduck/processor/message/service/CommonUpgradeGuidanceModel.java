@@ -36,10 +36,6 @@ public class CommonUpgradeGuidanceModel extends AlertSerializableModel {
     private final UpgradeGuidanceRiskModel vulnerabilityRisk;
 
     public static CommonUpgradeGuidanceModel fromShortTermGuidance(ComponentVersionUpgradeGuidanceShortTermView upgradeGuidanceShortTermView) {
-        if (null == upgradeGuidanceShortTermView) {
-            return null;
-        }
-
         return new CommonUpgradeGuidanceModel(
             upgradeGuidanceShortTermView.getOrigin(),
             upgradeGuidanceShortTermView.getOriginExternalId(),
@@ -52,10 +48,6 @@ public class CommonUpgradeGuidanceModel extends AlertSerializableModel {
     }
 
     public static CommonUpgradeGuidanceModel fromLongTermGuidance(ComponentVersionUpgradeGuidanceLongTermView upgradeGuidanceLongTermView) {
-        if (null == upgradeGuidanceLongTermView) {
-            return null;
-        }
-
         return new CommonUpgradeGuidanceModel(
             upgradeGuidanceLongTermView.getOrigin(),
             upgradeGuidanceLongTermView.getOriginExternalId(),

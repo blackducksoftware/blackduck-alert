@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView;
 import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
@@ -35,7 +37,7 @@ public class UpgradeGuidanceRiskModel extends AlertSerializableModel {
     private final Integer medium;
     private final Integer low;
 
-    public static UpgradeGuidanceRiskModel fromShortTermVulnerabilityRiskView(ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermVulnerabilityRiskView) {
+    public static UpgradeGuidanceRiskModel fromShortTermVulnerabilityRiskView(@Nullable ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView shortTermVulnerabilityRiskView) {
         if (null == shortTermVulnerabilityRiskView) {
             return new UpgradeGuidanceRiskModel();
         }
@@ -43,7 +45,7 @@ public class UpgradeGuidanceRiskModel extends AlertSerializableModel {
             getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getMedium()), getIntegerFromBigDecimal(shortTermVulnerabilityRiskView.getLow()));
     }
 
-    public static UpgradeGuidanceRiskModel fromLongTermVulnerabilityRiskView(ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView longTermVulnerabilityRiskView) {
+    public static UpgradeGuidanceRiskModel fromLongTermVulnerabilityRiskView(@Nullable ComponentVersionUpgradeGuidanceLongTermVulnerabilityRiskView longTermVulnerabilityRiskView) {
         if (null == longTermVulnerabilityRiskView) {
             return new UpgradeGuidanceRiskModel();
         }
@@ -51,7 +53,7 @@ public class UpgradeGuidanceRiskModel extends AlertSerializableModel {
             getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getMedium()), getIntegerFromBigDecimal(longTermVulnerabilityRiskView.getLow()));
     }
 
-    private static Integer getIntegerFromBigDecimal(BigDecimal bigDecimal) {
+    private static Integer getIntegerFromBigDecimal(@Nullable BigDecimal bigDecimal) {
         return null == bigDecimal ? null : bigDecimal.intValue();
     }
 
@@ -62,7 +64,7 @@ public class UpgradeGuidanceRiskModel extends AlertSerializableModel {
         this.low = null;
     }
 
-    public UpgradeGuidanceRiskModel(Integer critical, Integer high, Integer medium, Integer low) {
+    public UpgradeGuidanceRiskModel(@Nullable Integer critical, @Nullable Integer high, @Nullable Integer medium, @Nullable Integer low) {
         this.critical = critical;
         this.high = high;
         this.medium = medium;
