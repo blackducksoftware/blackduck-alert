@@ -208,16 +208,21 @@ public class StaticJobAccessor implements JobAccessor {
 
         // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
         return distributionJobEntities.stream()
-                   .filter(distributionJobEntity -> !(distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() &&
-                                                          distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern() != null &&
-                                                          !Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) &&
-                                                          distributionJobEntity.getBlackDuckJobDetails().getBlackDuckJobProjects()
-                                                              .stream()
-                                                              .map(BlackDuckJobProjectEntity::getProjectName)
-                                                              .noneMatch(projectName::equals))
-                   )
+                   .filter(distributionJobEntity -> filterByProjects(distributionJobEntity, projectName))
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
+    }
+
+    private boolean filterByProjects(DistributionJobEntity distributionJobEntity, String projectName) {
+        BlackDuckJobDetailsEntity blackDuckJobDetails = distributionJobEntity.getBlackDuckJobDetails();
+        String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
+        return !(blackDuckJobDetails.getFilterByProject() &&
+                     projectNamePattern != null &&
+                     !Pattern.matches(projectNamePattern, projectName) &&
+                     blackDuckJobDetails.getBlackDuckJobProjects()
+                         .stream()
+                         .map(BlackDuckJobProjectEntity::getProjectName)
+                         .noneMatch(projectName::equals));
     }
 
     private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {
