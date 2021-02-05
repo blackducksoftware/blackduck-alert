@@ -1,0 +1,31 @@
+{
+  "projectVersion": "https://a-hub-server.blackduck.com/api/projects/150c482b-86b1-4b05-b454-5b15adbb8fc0/versions/bba63072-2cb3-4af4-b067-8a609197d06c",
+  "projectName": "test-project",
+  "projectVersionName": "1.0.0",
+  "componentVersionStatuses": [
+    {
+      "componentVersion": "https://a-hub-server.blackduck.com/api/components/4d89434f-218a-4205-9287-53cd7cbfdcee/versions/78406eac-a897-42f4-a11c-0fd4cd19734d",
+      "componentName": "test-component",
+      "componentVersionName": "0.9",
+      "bomComponentVersionPolicyStatus": "https://a-hub-server.blackduck.com/api/projects/150c482b-86b1-4b05-b454-5b15adbb8fc0/versions/bba63072-2cb3-4af4-b067-8a609197d06c/components/4d89434f-218a-4205-9287-53cd7cbfdcee/versions/78406eac-a897-42f4-a11c-0fd4cd19734d/policy-status",
+      "componentIssueLink": "https://a-hub-server.blackduck.com/api/projects/150c482b-86b1-4b05-b454-5b15adbb8fc0/versions/bba63072-2cb3-4af4-b067-8a609197d06c/components/4d89434f-218a-4205-9287-53cd7cbfdcee/component-versions/78406eac-a897-42f4-a11c-0fd4cd19734d/issues",
+      "policies": [
+        "https://a-hub-server.blackduck.com/api/policy-rules/33034553-c47f-466e-93ca-f30342bae255"
+      ],
+      "bomComponent": "https://a-hub-server.blackduck.com/api/projects/150c482b-86b1-4b05-b454-5b15adbb8fc0/versions/bba63072-2cb3-4af4-b067-8a609197d06c/components/4d89434f-218a-4205-9287-53cd7cbfdcee/versions/78406eac-a897-42f4-a11c-0fd4cd19734d"
+    }
+  ],
+  "policyInfos": [
+    {
+      "policy": "https://a-hub-server.blackduck.com/api/policy-rules/33034553-c47f-466e-93ca-f30342bae255",
+      "policyName": "test-policy",
+      "severity": "CRITICAL"
+    },
+    {
+      "policy": "https://a-hub-server.blackduck.com/api/policy-rules/33034553-c47f-466e-93ca-f30342bae256",
+      "policyName": "test-policy",
+      "severity": "MINOR"
+    }
+  ],
+  "componentVersionsCleared": 1
+}

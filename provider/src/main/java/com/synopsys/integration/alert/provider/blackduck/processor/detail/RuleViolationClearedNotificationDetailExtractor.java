@@ -38,9 +38,9 @@ import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClea
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component
-public class RuleViolationClearedExtractor extends NotificationDetailExtractor<RuleViolationClearedNotificationContent> {
+public class RuleViolationClearedNotificationDetailExtractor extends NotificationDetailExtractor<RuleViolationClearedNotificationContent> {
     @Autowired
-    public RuleViolationClearedExtractor(Gson gson) {
+    public RuleViolationClearedNotificationDetailExtractor(Gson gson) {
         super(NotificationType.RULE_VIOLATION_CLEARED, RuleViolationClearedNotificationContent.class, gson);
     }
 
