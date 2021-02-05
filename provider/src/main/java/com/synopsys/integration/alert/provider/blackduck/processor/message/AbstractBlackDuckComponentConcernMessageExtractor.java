@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.processor.api.filter.NotificationContentWr
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractProjectVersionNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -68,8 +67,7 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
         Long providerConfigId = notificationModel.getProviderConfigId();
         try {
             BlackDuckServicesFactory blackDuckServicesFactory = servicesFactoryCache.retrieveBlackDuckServicesFactory(providerConfigId);
-            BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-            bomComponentDetails = createBomComponentDetails(notificationContent, blackDuckApiClient);
+            bomComponentDetails = createBomComponentDetails(notificationContent, blackDuckServicesFactory);
         } catch (AlertConfigurationException e) {
             logger.warn("Invalid BlackDuck configuration for notification. ID: {}. Name: {}", providerConfigId, notificationModel.getProviderConfigName(), e);
             return ProviderMessageHolder.empty();
@@ -79,13 +77,13 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
         }
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), notificationModel.getProviderConfigName());
-        LinkableItem project = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT, notificationContent.getProjectName());
-        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
+        LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName());
+        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
 
         ProjectMessage projectMessage = ProjectMessage.componentConcern(provider, project, projectVersion, bomComponentDetails);
         return new ProviderMessageHolder(List.of(projectMessage), List.of());
     }
 
-    protected abstract List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckApiClient blackDuckApiClient) throws IntegrationException;
+    protected abstract List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException;
 
 }

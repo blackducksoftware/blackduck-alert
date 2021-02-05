@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageConstants;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 
 public final class BlackDuckMessageBomComponentDetailsUtils {
@@ -45,10 +45,10 @@ public final class BlackDuckMessageBomComponentDetailsUtils {
 
         String componentVersionUrl = bomComponent.getComponentVersion();
         if (StringUtils.isNotBlank(componentVersionUrl)) {
-            component = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT, bomComponent.getComponentName());
-            componentVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT_VERSION, bomComponent.getComponentVersionName(), componentQueryLink);
+            component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName());
+            componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, bomComponent.getComponentVersionName(), componentQueryLink);
         } else {
-            component = new LinkableItem(BlackDuckMessageConstants.LABEL_COMPONENT, bomComponent.getComponentName(), componentQueryLink);
+            component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName(), componentQueryLink);
         }
 
         LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);

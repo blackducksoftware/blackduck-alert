@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.util
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageConstants;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.rest.HttpUrl;
@@ -35,8 +35,8 @@ public final class BlackDuckMessageAttributesUtils {
         return bomComponent.getLicenses()
                    .stream()
                    .findFirst()
-                   .map(license -> new LinkableItem(BlackDuckMessageConstants.LABEL_LICENSE, license.getLicenseDisplay(), license.getLicense()))
-                   .orElse(new LinkableItem(BlackDuckMessageConstants.LABEL_LICENSE, BlackDuckMessageConstants.VALUE_UNKNOWN_LICENSE));
+                   .map(license -> new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, license.getLicenseDisplay(), license.getLicense()))
+                   .orElse(new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, BlackDuckMessageLabels.VALUE_UNKNOWN_LICENSE));
     }
 
     public static String extractUsage(ProjectVersionComponentView bomComponent) {
@@ -44,7 +44,7 @@ public final class BlackDuckMessageAttributesUtils {
                    .stream()
                    .findFirst()
                    .map(UsageType::prettyPrint)
-                   .orElse(BlackDuckMessageConstants.VALUE_UNKNOWN_USAGE);
+                   .orElse(BlackDuckMessageLabels.VALUE_UNKNOWN_USAGE);
     }
 
     public static Optional<String> extractIssuesUrl(ProjectVersionComponentView bomComponent) {
