@@ -34,6 +34,10 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionCompo
 
 public final class BlackDuckMessageBomComponentDetailsUtils {
     public static BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) {
+        return createBomComponentDetails(bomComponent, List.of(componentConcern), additionalAttributes);
+    }
+
+    public static BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) {
         LinkableItem component;
         LinkableItem componentVersion = null;
 
@@ -51,7 +55,7 @@ public final class BlackDuckMessageBomComponentDetailsUtils {
         String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
         String issuesUrl = BlackDuckMessageAttributesUtils.extractIssuesUrl(bomComponent).orElse(null);
 
-        return new BomComponentDetails(component, componentVersion, List.of(componentConcern), licenseInfo, usageInfo, additionalAttributes, issuesUrl);
+        return new BomComponentDetails(component, componentVersion, componentConcerns, licenseInfo, usageInfo, additionalAttributes, issuesUrl);
     }
 
     private BlackDuckMessageBomComponentDetailsUtils() {
