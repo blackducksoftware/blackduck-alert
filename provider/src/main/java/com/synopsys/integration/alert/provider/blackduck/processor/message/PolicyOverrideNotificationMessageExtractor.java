@@ -22,49 +22,43 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
-import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageBomComponentDetailsUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageComponentConcernUtils;
-import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractRuleViolationNotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.processor.model.PolicyOverrideUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
-import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
-public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent> extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
-    private final ItemOperation itemOperation;
-
-    public AbstractRuleViolationNotificationMessageExtractor(
-        NotificationType notificationType,
-        Class<T> notificationContentClass,
-        ItemOperation itemOperation,
-        BlackDuckProviderKey blackDuckProviderKey,
-        NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache
-    ) {
-        super(notificationType, notificationContentClass, blackDuckProviderKey, servicesFactoryCache);
-        this.itemOperation = itemOperation;
+@Component
+public class PolicyOverrideNotificationMessageExtractor extends AbstractBlackDuckComponentConcernMessageExtractor<PolicyOverrideUniquePolicyNotificationContent> {
+    @Autowired
+    public PolicyOverrideNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey, NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache) {
+        super(NotificationType.POLICY_OVERRIDE, PolicyOverrideUniquePolicyNotificationContent.class, blackDuckProviderKey, servicesFactoryCache);
     }
 
     @Override
-    protected List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
-        List<BomComponentDetails> bomComponentDetails = new LinkedList<>();
-        for (ComponentVersionStatus componentVersionStatus : notificationContent.getComponentVersionStatuses()) {
-            ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentView.class);
-            ComponentConcern policyConcern = BlackDuckMessageComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
+    protected List<BomComponentDetails> createBomComponentDetails(PolicyOverrideUniquePolicyNotificationContent notificationContent, BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
+        ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(notificationContent.getBomComponent()), ProjectVersionComponentView.class);
+        ComponentConcern policyConcern = BlackDuckMessageComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo(), ItemOperation.DELETE);
 
-            BomComponentDetails componentVersionDetails = BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(bomComponent, policyConcern, List.of());
-            bomComponentDetails.add(componentVersionDetails);
-        }
-        return bomComponentDetails;
+        String overriderName = String.format("%s %s", notificationContent.getFirstName(), notificationContent.getLastName());
+        LinkableItem overrider = new LinkableItem(BlackDuckMessageConstants.LABEL_OVERRIDER, overriderName);
+
+        BomComponentDetails bomComponentDetails = BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(bomComponent, policyConcern, List.of(overrider));
+        return List.of(bomComponentDetails);
     }
 
 }

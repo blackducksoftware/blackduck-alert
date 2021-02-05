@@ -28,6 +28,7 @@ public final class BlackDuckMessageConstants {
     public static final String LABEL_COMPONENT = "Component";
     public static final String LABEL_COMPONENT_VERSION = "Component Version";
     public static final String LABEL_LICENSE = "License";
+    public static final String LABEL_OVERRIDER = "Policy overridden by";
 
     public static final String VALUE_UNKNOWN_LICENSE = "Unknown License";
     public static final String VALUE_UNKNOWN_USAGE = "Unknown Usage";

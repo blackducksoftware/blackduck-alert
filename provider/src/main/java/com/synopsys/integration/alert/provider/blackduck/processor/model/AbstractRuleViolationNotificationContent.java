@@ -25,13 +25,9 @@ package com.synopsys.integration.alert.provider.blackduck.processor.model;
 import java.util.List;
 
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
-public abstract class AbstractRuleViolationNotificationContent extends NotificationContentComponent {
-    private final String projectName;
-    private final String projectVersionName;
-    private final String projectVersion;
+public abstract class AbstractRuleViolationNotificationContent extends AbstractProjectVersionNotificationContent {
     private final List<ComponentVersionStatus> componentVersionStatuses;
     private final PolicyInfo policyInfo;
 
@@ -42,23 +38,9 @@ public abstract class AbstractRuleViolationNotificationContent extends Notificat
         List<ComponentVersionStatus> componentVersionStatuses,
         PolicyInfo policyInfo
     ) {
-        this.projectName = projectName;
-        this.projectVersionName = projectVersionName;
-        this.projectVersion = projectVersion;
+        super(projectName, projectVersionName, projectVersion);
         this.componentVersionStatuses = componentVersionStatuses;
         this.policyInfo = policyInfo;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public String getProjectVersionName() {
-        return projectVersionName;
-    }
-
-    public String getProjectVersion() {
-        return projectVersion;
     }
 
     public List<ComponentVersionStatus> getComponentVersionStatuses() {

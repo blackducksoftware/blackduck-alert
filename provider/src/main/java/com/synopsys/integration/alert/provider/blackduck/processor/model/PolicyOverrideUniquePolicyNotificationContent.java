@@ -22,13 +22,9 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.model;
 
-import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 
-public class PolicyOverrideUniquePolicyNotificationContent extends NotificationContentComponent {
-    private final String projectName;
-    private final String projectVersionName;
-    private final String projectVersion;
+public class PolicyOverrideUniquePolicyNotificationContent extends AbstractProjectVersionNotificationContent {
     private final String componentName;
     private final String componentVersionName;
     private final String firstName;
@@ -51,9 +47,7 @@ public class PolicyOverrideUniquePolicyNotificationContent extends NotificationC
         String bomComponentVersionPolicyStatus,
         String bomComponent
     ) {
-        this.projectName = projectName;
-        this.projectVersionName = projectVersionName;
-        this.projectVersion = projectVersion;
+        super(projectName, projectVersionName, projectVersion);
         this.componentName = componentName;
         this.componentVersionName = componentVersionName;
         this.firstName = firstName;
@@ -62,18 +56,6 @@ public class PolicyOverrideUniquePolicyNotificationContent extends NotificationC
         this.policy = policy;
         this.bomComponentVersionPolicyStatus = bomComponentVersionPolicyStatus;
         this.bomComponent = bomComponent;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public String getProjectVersionName() {
-        return projectVersionName;
-    }
-
-    public String getProjectVersion() {
-        return projectVersion;
     }
 
     public String getComponentName() {
