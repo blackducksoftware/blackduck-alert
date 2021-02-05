@@ -80,8 +80,12 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName());
         LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
 
-        ProjectMessage projectMessage = ProjectMessage.componentConcern(provider, project, projectVersion, bomComponentDetails);
+        ProjectMessage projectMessage = createProjectMessage(provider, project, projectVersion, bomComponentDetails);
         return new ProviderMessageHolder(List.of(projectMessage), List.of());
+    }
+
+    protected ProjectMessage createProjectMessage(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponentDetails) {
+        return ProjectMessage.componentConcern(provider, project, projectVersion, bomComponentDetails);
     }
 
     protected abstract List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException;
