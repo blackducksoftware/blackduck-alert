@@ -215,13 +215,19 @@ public class StaticJobAccessor implements JobAccessor {
 
     private boolean filterByProjects(DistributionJobEntity distributionJobEntity, String projectName) {
         BlackDuckJobDetailsEntity blackDuckJobDetails = distributionJobEntity.getBlackDuckJobDetails();
+        if (!blackDuckJobDetails.getFilterByProject()) {
+            return true;
+        }
+
         String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
-        return !blackDuckJobDetails.getFilterByProject() ||
-                   (projectNamePattern != null && Pattern.matches(projectNamePattern, projectName)) ||
-                   blackDuckJobDetails.getBlackDuckJobProjects()
-                       .stream()
-                       .map(BlackDuckJobProjectEntity::getProjectName)
-                       .anyMatch(projectName::equals);
+        if (projectNamePattern != null && Pattern.matches(projectNamePattern, projectName)) {
+            return true;
+        }
+
+        return blackDuckJobDetails.getBlackDuckJobProjects()
+                   .stream()
+                   .map(BlackDuckJobProjectEntity::getProjectName)
+                   .anyMatch(projectName::equals);
     }
 
     private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {
