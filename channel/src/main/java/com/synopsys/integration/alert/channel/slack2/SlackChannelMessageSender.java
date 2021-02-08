@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +36,6 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         String webhook = slackJobDetails.getWebhook();
         String channelName = slackJobDetails.getChannelName();
         String channelUsername = Optional.ofNullable(slackJobDetails.getChannelUsername())
-                                     .filter(StringUtils::isNotBlank)
                                      .orElse(SLACK_DEFAULT_USERNAME);
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
