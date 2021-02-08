@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,23 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopys.integration.alert.channel.api.issue.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopys.integration.alert.channel.api.convert.ChannelMessageConverter;
-import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerMessageHolder;
+public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
+    private final T issueId;
+    private final List<String> comments;
 
-@Component
-public class JiraCloudMessageConverter implements ChannelMessageConverter<JiraCloudJobDetailsModel, IssueTrackerMessageHolder<String>> {
-    @Override
-    public List<IssueTrackerMessageHolder<String>> convertToChannelMessages(JiraCloudJobDetailsModel distributionDetails, ProviderMessageHolder messages) {
-        // FIXME implement
-        return List.of();
+    public IssueCommentModel(T issueId, List<String> comments) {
+        this.issueId = issueId;
+        this.comments = comments;
+    }
+
+    public T getIssueId() {
+        return issueId;
+    }
+
+    public List<String> getComments() {
+        return comments;
     }
 
 }

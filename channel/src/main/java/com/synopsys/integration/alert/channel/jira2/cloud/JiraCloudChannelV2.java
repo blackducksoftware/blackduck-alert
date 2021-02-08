@@ -26,10 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopys.integration.alert.channel.api.IssueTrackerChannel;
+import com.synopys.integration.alert.channel.api.issue.IssueTrackerChannel;
 
 @Component
-public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsModel, Object> {
+public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsModel, String> {
     @Autowired
     public JiraCloudChannelV2(JiraCloudMessageConverter channelMessageConverter, JiraCloudMessageSender channelMessageSender, JiraCloudResponsePostProcessor responsePostProcessor) {
         super(channelMessageConverter, channelMessageSender, responsePostProcessor);

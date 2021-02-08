@@ -26,17 +26,32 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopys.integration.alert.channel.api.ChannelMessageSender;
+import com.synopys.integration.alert.channel.api.issue.IssueTrackerMessageSender;
+import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
+import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 
 @Component
-public class JiraCloudMessageSender implements ChannelMessageSender<JiraCloudJobDetailsModel, Object, IssueTrackerResponse> {
+public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJobDetailsModel, String> {
     @Override
-    public IssueTrackerResponse sendMessages(JiraCloudJobDetailsModel details, List<Object> channelMessages) throws AlertException {
+    protected List<IssueTrackerIssueResponseModel> createIssues(JiraCloudJobDetailsModel details, List<IssueCreationModel> issueCreationModels) throws AlertException {
         // FIXME implement
-        return new IssueTrackerResponse("Not implemented", List.of());
+        return List.of();
+    }
+
+    @Override
+    protected List<IssueTrackerIssueResponseModel> transitionIssues(JiraCloudJobDetailsModel details, List<IssueTransitionModel<String>> issueTransitionModels) throws AlertException {
+        // FIXME implement
+        return List.of();
+    }
+
+    @Override
+    protected List<IssueTrackerIssueResponseModel> commentOnIssues(JiraCloudJobDetailsModel details, List<IssueCommentModel<String>> issueCommentModels) throws AlertException {
+        // FIXME implement
+        return List.of();
     }
 
 }

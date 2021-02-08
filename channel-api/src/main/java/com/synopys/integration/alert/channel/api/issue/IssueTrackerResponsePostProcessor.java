@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopys.integration.alert.channel.api.issue;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 

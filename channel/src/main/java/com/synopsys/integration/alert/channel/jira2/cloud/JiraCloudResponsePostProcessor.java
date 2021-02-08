@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.channel.jira2.cloud;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopys.integration.alert.channel.api.IssueTrackerResponsePostProcessor;
+import com.synopys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
 
 @Component
 public class JiraCloudResponsePostProcessor implements IssueTrackerResponsePostProcessor {
