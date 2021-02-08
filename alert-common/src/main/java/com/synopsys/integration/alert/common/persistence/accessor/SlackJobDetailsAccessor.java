@@ -1,5 +1,5 @@
 /*
- * channel
+ * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,22 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack2;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopys.integration.alert.channel.api.DistributionEventReceiver;
 
-@Component
-public class SlackDistributionEventReceiver extends DistributionEventReceiver<SlackJobDetailsModel> {
-    @Autowired
-    public SlackDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, SlackJobDetailsAccessor slackJobDetailsAccessor, SlackChannelV2 channel) {
-        super(gson, auditAccessor, slackJobDetailsAccessor, channel);
-    }
-
+public interface SlackJobDetailsAccessor extends JobDetailsAccessor<SlackJobDetailsModel> {
 }

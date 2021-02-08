@@ -22,19 +22,21 @@
  */
 package com.synopsys.integration.alert.database.job.slack;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component
-public class SlackJobDetailsAccessor {
+public class DefaultSlackJobDetailsAccessor implements SlackJobDetailsAccessor {
     private final SlackJobDetailsRepository slackJobDetailsRepository;
 
     @Autowired
-    public SlackJobDetailsAccessor(SlackJobDetailsRepository slackJobDetailsRepository) {
+    public DefaultSlackJobDetailsAccessor(SlackJobDetailsRepository slackJobDetailsRepository) {
         this.slackJobDetailsRepository = slackJobDetailsRepository;
     }
 
@@ -43,4 +45,14 @@ public class SlackJobDetailsAccessor {
         return slackJobDetailsRepository.save(jobDetailsToSave);
     }
 
+    @Override
+    public Optional<SlackJobDetailsModel> retrieveDetails(UUID jobId) {
+        return slackJobDetailsRepository.findById(jobId)
+                   .map(slackEntity -> new SlackJobDetailsModel(
+                       slackEntity.getJobId(),
+                       slackEntity.getWebhook(),
+                       slackEntity.getChannelName(),
+                       slackEntity.getChannelUsername()
+                   ));
+    }
 }

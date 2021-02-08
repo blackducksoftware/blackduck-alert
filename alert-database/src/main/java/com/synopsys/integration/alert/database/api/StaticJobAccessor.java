@@ -75,7 +75,7 @@ import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDeta
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -91,7 +91,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
-    private final SlackJobDetailsAccessor slackJobDetailsAccessor;
+    private final DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
     // BlackDuck is currently the only provider, so this is safe in the short-term while we transition to new models
@@ -106,7 +106,7 @@ public class StaticJobAccessor implements JobAccessor {
         JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
-        SlackJobDetailsAccessor slackJobDetailsAccessor,
+        DefaultSlackJobDetailsAccessor slackJobDetailsAccessor,
         ProviderKey blackDuckProviderKey
     ) {
         this.distributionJobRepository = distributionJobRepository;

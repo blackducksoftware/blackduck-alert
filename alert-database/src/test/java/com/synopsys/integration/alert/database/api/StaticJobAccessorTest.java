@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDeta
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -53,7 +53,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
-    private SlackJobDetailsAccessor slackJobDetailsAccessor;
+    private DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
     private AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
@@ -67,7 +67,7 @@ class StaticJobAccessorTest {
     public void init() {
         distributionJobRepository = Mockito.mock(DistributionJobRepository.class);
         blackDuckJobDetailsAccessor = Mockito.mock(BlackDuckJobDetailsAccessor.class);
-        slackJobDetailsAccessor = Mockito.mock(SlackJobDetailsAccessor.class);
+        slackJobDetailsAccessor = Mockito.mock(DefaultSlackJobDetailsAccessor.class);
         azureBoardsJobDetailsAccessor = Mockito.mock(AzureBoardsJobDetailsAccessor.class);
         emailJobDetailsAccessor = Mockito.mock(DefaultEmailJobDetailsAccessor.class);
         jiraCloudJobDetailsAccessor = Mockito.mock(JiraCloudJobDetailsAccessor.class);
