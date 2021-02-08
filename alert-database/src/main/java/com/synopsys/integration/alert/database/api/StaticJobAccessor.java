@@ -69,7 +69,7 @@ import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJ
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
-import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
@@ -88,7 +88,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private final DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
-    private final DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
+    private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private final SlackJobDetailsAccessor slackJobDetailsAccessor;
@@ -103,7 +103,7 @@ public class StaticJobAccessor implements JobAccessor {
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
         AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
         DefaultEmailJobDetailsAccessor emailJobDetailsAccessor,
-        DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
+        JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
         SlackJobDetailsAccessor slackJobDetailsAccessor,
