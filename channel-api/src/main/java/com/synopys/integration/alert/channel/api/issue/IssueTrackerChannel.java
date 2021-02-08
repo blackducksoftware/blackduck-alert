@@ -41,12 +41,12 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerMessage
  *            This is meant to tightly couple the output of {@link ChannelMessageConverter} to the input of {@link ChannelMessageSender}.
  */
 public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannelV2<D> {
-    private final ChannelMessageConverter<D, IssueTrackerMessageHolder<T>> channelMessageConverter;
+    private final IssueTrackerMessageConverter<D, T> channelMessageConverter;
     private final IssueTrackerMessageSender<D, T> channelMessageSender;
     private final IssueTrackerResponsePostProcessor responsePostProcessor;
 
     protected IssueTrackerChannel(
-        ChannelMessageConverter<D, IssueTrackerMessageHolder<T>> channelMessageConverter,
+        IssueTrackerMessageConverter<D, T> channelMessageConverter,
         IssueTrackerMessageSender<D, T> channelMessageSender,
         IssueTrackerResponsePostProcessor responsePostProcessor
     ) {

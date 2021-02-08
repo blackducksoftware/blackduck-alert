@@ -22,32 +22,33 @@
  */
 package com.synopys.integration.alert.channel.api.issue.model;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 
-// TODO figure out how to handle required/custom fields generically
-public class IssueCreationModel extends AlertSerializableModel {
-    private final String title;
-    private final String description;
-    private final List<String> postCreateComments;
+public class IssueSearchResult<T extends Serializable> extends AlertSerializableModel {
+    private final T issueId;
+    private final ComponentConcern componentConcern;
 
-    public IssueCreationModel(String title, String description, List<String> postCreateComments) {
-        this.title = title;
-        this.description = description;
-        this.postCreateComments = postCreateComments;
+    public IssueSearchResult(@Nullable T issueId, ComponentConcern componentConcern) {
+        this.issueId = issueId;
+        this.componentConcern = componentConcern;
     }
 
-    public String getTitle() {
-        return title;
+    public boolean exists() {
+        return null != issueId;
     }
 
-    public String getDescription() {
-        return description;
+    public Optional<T> getIssueId() {
+        return Optional.ofNullable(issueId);
     }
 
-    public List<String> getPostCreateComments() {
-        return postCreateComments;
+    public ComponentConcern getComponentConcern() {
+        return componentConcern;
     }
 
 }

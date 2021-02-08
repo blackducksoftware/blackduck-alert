@@ -20,34 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api.issue.model;
+package com.synopys.integration.alert.channel.api.issue;
 
+import java.io.Serializable;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopys.integration.alert.channel.api.issue.model.IssueSearchResult;
 
-// TODO figure out how to handle required/custom fields generically
-public class IssueCreationModel extends AlertSerializableModel {
-    private final String title;
-    private final String description;
-    private final List<String> postCreateComments;
-
-    public IssueCreationModel(String title, String description, List<String> postCreateComments) {
-        this.title = title;
-        this.description = description;
-        this.postCreateComments = postCreateComments;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<String> getPostCreateComments() {
-        return postCreateComments;
-    }
+public interface IssueTrackerSearcher<T extends Serializable> {
+    List<IssueSearchResult<T>> findIssues(ProjectMessage projectMessage);
 
 }
