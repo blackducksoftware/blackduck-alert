@@ -53,8 +53,8 @@ public class ProjectVersionNotificationMessageExtractor extends ProviderMessageE
         AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
         LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
-        LinkableItem project = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT, notificationContent.getProjectName());
-        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageConstants.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
+        LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName());
+        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
         ProjectOperation operation = ProjectOperation.fromOperationType(notificationContent.getOperationType());
 
         ProjectMessage projectVersionMessage = ProjectMessage.projectVersionStatusInfo(provider, project, projectVersion, operation);

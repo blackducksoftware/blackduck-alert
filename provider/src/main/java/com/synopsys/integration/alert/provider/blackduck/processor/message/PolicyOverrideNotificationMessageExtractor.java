@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.model.PolicyO
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
@@ -50,12 +51,13 @@ public class PolicyOverrideNotificationMessageExtractor extends AbstractBlackDuc
     }
 
     @Override
-    protected List<BomComponentDetails> createBomComponentDetails(PolicyOverrideUniquePolicyNotificationContent notificationContent, BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
+    protected List<BomComponentDetails> createBomComponentDetails(PolicyOverrideUniquePolicyNotificationContent notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
         ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(notificationContent.getBomComponent()), ProjectVersionComponentView.class);
         ComponentConcern policyConcern = BlackDuckMessageComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo(), ItemOperation.DELETE);
 
         String overriderName = String.format("%s %s", notificationContent.getFirstName(), notificationContent.getLastName());
-        LinkableItem overrider = new LinkableItem(BlackDuckMessageConstants.LABEL_OVERRIDER, overriderName);
+        LinkableItem overrider = new LinkableItem(BlackDuckMessageLabels.LABEL_OVERRIDER, overriderName);
 
         BomComponentDetails bomComponentDetails = BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(bomComponent, policyConcern, List.of(overrider));
         return List.of(bomComponentDetails);

@@ -37,6 +37,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionCompo
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
@@ -55,7 +56,9 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
     }
 
     @Override
-    protected List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckApiClient blackDuckApiClient) throws IntegrationException {
+    protected List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+
         List<BomComponentDetails> bomComponentDetails = new LinkedList<>();
         for (ComponentVersionStatus componentVersionStatus : notificationContent.getComponentVersionStatuses()) {
             ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentView.class);
