@@ -96,7 +96,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 convertBlackDuckProjects(List.of(foundProject), blackDuckApiClient);
             }
         } catch (IntegrationException e) {
-            logger.errorAndDebug(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()), e);
+            logger.errorAndDebug(PROJECT_NOT_FOUND(providerConfigId, e.getMessage()), e);
         }
         return Optional.empty();
     }
@@ -109,7 +109,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 return getProjectsForProvider(providerConfigOptional.get());
             }
         } catch (IntegrationException e) {
-            logger.errorAndDebug(String.format("Could not get the project for the provider '%s'. %s", providerConfigName, e.getMessage()), e);
+            logger.errorAndDebug(PROJECT_NOT_FOUND(providerConfigName, e.getMessage()), e);
         }
         return List.of();
     }
@@ -143,7 +143,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 ProjectView projectView = blackDuckService.getResponse(new HttpUrl(projectHref), ProjectView.class);
                 return getEmailAddressesForProject(projectView, blackDuckServicesFactory.createProjectUsersService());
             } catch (IntegrationException e) {
-                logger.errorAndDebug(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()), e);
+                logger.errorAndDebug(PROJECT_NOT_FOUND(providerConfigId, e.getMessage()), e);
             }
         }
         return Set.of();
@@ -161,7 +161,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 return new ProviderUserModel(providerConfigUser.getEmail(), false);
             }
         } catch (IntegrationException e) {
-            throw new AlertConfigurationException(String.format("Could not get user for the provider config with id '%s'. %s", providerConfigId, e.getMessage()), e);
+            throw new AlertConfigurationException(USER_NOT_FOUND(providerConfigId, e.getMessage()), e);
         }
         throw new AlertConfigurationException(String.format("The provider config with id '%s' is invalid", providerConfigId));
     }
@@ -177,7 +177,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             try {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
             } catch (IntegrationException e) {
-                logger.errorAndDebug(String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, e.getMessage()), e);
+                logger.errorAndDebug(PROJECT_NOT_FOUND(providerConfigId, e.getMessage()), e);
             }
         }
         return List.of();
@@ -201,7 +201,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 return getEmailAddressesByProvider(providerConfigOptional.get());
             }
         } catch (IntegrationException e) {
-            logger.errorAndDebug(String.format("Could not get the project for the provider '%s'. %s", providerConfigName, e.getMessage()), e);
+            logger.errorAndDebug(PROJECT_NOT_FOUND(providerConfigName, e.getMessage()), e);
         }
         return List.of();
     }
@@ -289,7 +289,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 UserView projectOwner = blackDuckService.getResponse(projectOwnerHttpUrl, UserView.class);
                 projectOwnerEmail = projectOwner.getEmail();
             } catch (IntegrationException e) {
-                logger.errorAndDebug(String.format("Could not get the project owner for Project: %s. Error: %s", projectView.getName(), e.getMessage()), e);
+                logger.errorAndDebug(PROJECT_OWNER_NOT_FOUND(projectView.getName(), e.getMessage()), e);
             }
         }
 
@@ -356,6 +356,24 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             return StringUtils.truncate(trimmedDescription, PROJECT_DESCRIPTION_MAX_CHARS) + ". . .";
         }
         return trimmedDescription;
+    }
+
+    //ejk - the way I read these messages, they could be a little more consistent - is that, along
+    // with pleasing sonar, enough of a value add to add this layer?
+    private String PROJECT_NOT_FOUND(String providerConfigName, String message) {
+        return String.format("Could not get the project for the provider '%s'. %s", providerConfigName, message);
+    }
+
+    private String PROJECT_NOT_FOUND(Long providerConfigId, String message) {
+        return String.format("Could not get the project for the provider with id '%s'. %s", providerConfigId, message);
+    }
+
+    private String PROJECT_OWNER_NOT_FOUND(String projectName, String message) {
+        return String.format("Could not get the project owner for Project: %s. Error: %s", projectName, message);
+    }
+
+    private String USER_NOT_FOUND(Long providerConfigId, String message) {
+        return String.format("Could not get user for the provider config with id '%s'. %s", providerConfigId, message);
     }
 
 }
