@@ -63,7 +63,7 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         requestHeaders.put("Content-Type", "application/json");
 
         List<Request> requests = channelMessages.stream()
-                                     .map(message -> createRequestsForMessage(channelName, channelUsername, webhook, message.getContent(), requestHeaders))
+                                     .map(message -> createRequestsForMessage(channelName, channelUsername, webhook, message.getMarkdownContent(), requestHeaders))
                                      .collect(Collectors.toList());
 
         restChannelUtility.sendMessage(requests, slackChannelKey.getUniversalKey());
@@ -76,9 +76,9 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         return restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString);
     }
 
-    private String getJsonString(String htmlMessage, String channel, String username) {
+    private String getJsonString(String markdownMessage, String channel, String username) {
         JsonObject json = new JsonObject();
-        json.addProperty("text", htmlMessage);
+        json.addProperty("text", markdownMessage);
         json.addProperty("channel", channel);
         json.addProperty("username", username);
         json.addProperty("mrkdwn", true);

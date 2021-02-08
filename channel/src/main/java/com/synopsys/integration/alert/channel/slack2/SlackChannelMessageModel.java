@@ -25,13 +25,13 @@ package com.synopsys.integration.alert.channel.slack2;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class SlackChannelMessageModel extends AlertSerializableModel {
-    private final String content;
+    private final String markdownContent;
 
-    public SlackChannelMessageModel(String content) {
-        this.content = content;
+    public SlackChannelMessageModel(String markdownContent) {
+        this.markdownContent = markdownContent;
     }
 
-    public String getContent() {
-        return content;
+    public String getMarkdownContent() {
+        return markdownContent;
     }
 }
