@@ -22,8 +22,14 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
+import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
+
 public enum ProjectOperation {
     CREATE,
-    DELETE
+    DELETE;
+
+    public static ProjectOperation fromOperationType(OperationType operationType) {
+        return OperationType.DELETE.equals(operationType) ? ProjectOperation.DELETE : ProjectOperation.CREATE;
+    }
 
 }

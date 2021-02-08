@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
+import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 

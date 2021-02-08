@@ -65,6 +65,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
@@ -207,13 +208,26 @@ public class StaticJobAccessor implements JobAccessor {
 
         // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
         return distributionJobEntities.stream()
-                   .filter(distributionJobEntity -> !(distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() &&
-                                                          distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern() != null &&
-                                                          !Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) &&
-                                                          !distributionJobEntity.getBlackDuckJobDetails().getBlackDuckJobProjects().contains(projectName))
-                   )
+                   .filter(distributionJobEntity -> filterByProjects(distributionJobEntity, projectName))
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
+    }
+
+    private boolean filterByProjects(DistributionJobEntity distributionJobEntity, String projectName) {
+        BlackDuckJobDetailsEntity blackDuckJobDetails = distributionJobEntity.getBlackDuckJobDetails();
+        if (!blackDuckJobDetails.getFilterByProject()) {
+            return true;
+        }
+
+        String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
+        if (projectNamePattern != null && Pattern.matches(projectNamePattern, projectName)) {
+            return true;
+        }
+
+        return blackDuckJobDetails.getBlackDuckJobProjects()
+                   .stream()
+                   .map(BlackDuckJobProjectEntity::getProjectName)
+                   .anyMatch(projectName::equals);
     }
 
     private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {

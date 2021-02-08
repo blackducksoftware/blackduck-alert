@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -60,6 +61,9 @@ public class JiraCloudDistributionTestAction extends ChannelDistributionTestActi
         @Nullable String customMessage,
         @Nullable String destination
     ) throws IntegrationException {
+        if (null == channelGlobalConfig || channelGlobalConfig.isConfiguredFieldsEmpty()) {
+            throw new AlertConfigurationException("Missing Jira Cloud global configuration");
+        }
         IssueTrackerContext context = jiraCloudContextBuilder.build(channelGlobalConfig, testJobModel);
         JiraTestIssueRequestCreator issueCreator = new JiraTestIssueRequestCreator(jiraMessageParser, customTopic, customMessage);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction((JiraCloudChannel) getDistributionChannel(), gson, issueCreator);

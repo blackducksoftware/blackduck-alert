@@ -6,6 +6,7 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':descriptor-api')
+    implementation project(':processor-api')
 
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-web'
@@ -13,5 +14,7 @@ dependencies {
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 
+
+    testImplementation project(':test-common')
     testImplementation 'org.mockito:mockito-core'
 }
