@@ -45,6 +45,32 @@ public class BomComponentDetailConverter {
         this.linkableItemConverter = new LinkableItemConverter(formatter);
     }
 
+    public List<String> gatherBomComponentPieces(BomComponentDetails bomComponent) {
+        List<String> bomComponentSectionPieces = new LinkedList<>();
+
+        String componentString = linkableItemConverter.convertToString(bomComponent.getComponent(), true);
+        bomComponentSectionPieces.add(componentString);
+        bomComponentSectionPieces.add(formatter.getLineSeparator());
+
+        bomComponent.getComponentVersion()
+            .map(componentVersion -> linkableItemConverter.convertToString(componentVersion, true))
+            .ifPresent(componentVersionString -> {
+                bomComponentSectionPieces.add(componentVersionString);
+                bomComponentSectionPieces.add(formatter.getLineSeparator());
+            });
+
+        List<String> componentAttributeStrings = gatherAttributeStrings(bomComponent);
+        for (String attributeString : componentAttributeStrings) {
+            bomComponentSectionPieces.add(String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), attributeString));
+            bomComponentSectionPieces.add(formatter.getLineSeparator());
+        }
+
+        List<String> componentConcernSectionPieces = createComponentConcernSectionPieces(bomComponent);
+        bomComponentSectionPieces.addAll(componentConcernSectionPieces);
+
+        return bomComponentSectionPieces;
+    }
+
     public List<String> createComponentConcernSectionPieces(BomComponentDetails bomComponent) {
         List<String> componentConcernSectionPieces = new LinkedList<>();
 

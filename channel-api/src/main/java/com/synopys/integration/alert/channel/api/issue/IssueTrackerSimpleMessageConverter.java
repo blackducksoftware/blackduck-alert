@@ -26,7 +26,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
+import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
+import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopys.integration.alert.channel.api.convert.SimpleMessageConverter;
@@ -46,23 +47,10 @@ public class IssueTrackerSimpleMessageConverter {
         String rawTitle = String.format("%s[%s] | %s", provider.getLabel(), provider.getValue(), simpleMessage.getSummary());
         String truncatedTitle = StringUtils.truncate(rawTitle, formatter.getMaxTitleLength());
 
-        String description;
         List<String> descriptionChunks = simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage);
-        if (descriptionChunks.size() > 0) {
-            description = descriptionChunks.get(0);
-        } else {
-            description = "No description";
-        }
+        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionChunks, "No description", formatter.getMaxDescriptionLength(), formatter.getMaxCommentLength());
 
-        ChunkedStringBuilder descriptionCommentsBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
-        for (int i = 1; i < descriptionChunks.size(); i++) {
-            String descriptionChunk = descriptionChunks.get(i);
-            descriptionCommentsBuilder.append(descriptionChunk);
-        }
-
-        List<String> descriptionComments = descriptionCommentsBuilder.collectCurrentChunks();
-
-        return IssueCreationModel.simple(truncatedTitle, description, descriptionComments);
+        return IssueCreationModel.simple(truncatedTitle, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks());
     }
 
 }

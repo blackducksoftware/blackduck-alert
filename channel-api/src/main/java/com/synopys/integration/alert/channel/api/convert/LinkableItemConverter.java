@@ -33,7 +33,7 @@ public class LinkableItemConverter {
         this.formatter = formatter;
     }
 
-    protected String convertToString(LinkableItem linkableItem, boolean bold) {
+    public String convertToString(LinkableItem linkableItem, boolean bold) {
         String name = formatter.encode(linkableItem.getLabel());
         String value = formatter.encode(linkableItem.getValue());
         Optional<String> optionalUrl = linkableItem.getUrl();

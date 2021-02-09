@@ -24,11 +24,18 @@ package com.synopys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
+import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
+import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopys.integration.alert.channel.api.convert.BomComponentDetailConverter;
 import com.synopys.integration.alert.channel.api.convert.LinkableItemConverter;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
@@ -38,6 +45,9 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionType
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
 public class ProjectIssueModelConverter {
+    private static final int COMPONENT_CONCERN_TITLE_SPACE = 20;
+    private static final LinkableItem MISSING_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
+
     private final IssueTrackerMessageFormatter formatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
     private final LinkableItemConverter linkableItemConverter;
@@ -49,8 +59,28 @@ public class ProjectIssueModelConverter {
     }
 
     public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel) {
-        // FIXME implement
-        return null;
+        String title = createTruncatedTitle(projectIssueModel);
+
+        ChunkedStringBuilder descriptionBuilder = new ChunkedStringBuilder(formatter.getMaxDescriptionLength());
+
+        String projectString = linkableItemConverter.convertToString(projectIssueModel.getProject(), true);
+        descriptionBuilder.append(projectString);
+        descriptionBuilder.append(formatter.getLineSeparator());
+
+        LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_VERSION_PLACEHOLDER);
+        String projectVersionString = linkableItemConverter.convertToString(projectVersion, true);
+        descriptionBuilder.append(projectVersionString);
+        descriptionBuilder.append(formatter.getLineSeparator());
+        descriptionBuilder.append(formatter.getSectionSeparator());
+        descriptionBuilder.append(formatter.getLineSeparator());
+
+        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
+        List<String> bomComponentPieces = bomComponentDetailConverter.gatherBomComponentPieces(bomComponent);
+        bomComponentPieces.forEach(descriptionBuilder::append);
+
+        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", formatter.getMaxCommentLength());
+
+        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), projectIssueModel);
     }
 
     public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
@@ -92,6 +122,53 @@ public class ProjectIssueModelConverter {
 
         List<String> chunkedComments = commentBuilder.collectCurrentChunks();
         return new IssueCommentModel<>(issueId, chunkedComments, projectIssueModel);
+    }
+
+    private String createTruncatedTitle(ProjectIssueModel projectIssueModel) {
+        LinkableItem provider = projectIssueModel.getProvider();
+        LinkableItem project = projectIssueModel.getProject();
+        LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_VERSION_PLACEHOLDER);
+
+        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
+        LinkableItem component = bomComponent.getComponent();
+        Optional<LinkableItem> optionalComponentVersion = bomComponent.getComponentVersion();
+
+        StringBuilder componentPieceBuilder = new StringBuilder();
+        componentPieceBuilder.append(component.getValue());
+
+        if (optionalComponentVersion.isPresent()) {
+            componentPieceBuilder.append('[');
+            componentPieceBuilder.append(optionalComponentVersion);
+            componentPieceBuilder.append(']');
+        }
+
+        Optional<ComponentConcern> arbitraryComponentConcern = bomComponent.getComponentConcerns()
+                                                                   .stream()
+                                                                   .findAny();
+
+        StringBuilder componentConcernPieceBuilder = new StringBuilder();
+        if (arbitraryComponentConcern.isPresent()) {
+            ComponentConcern componentConcern = arbitraryComponentConcern.get();
+            ComponentConcernType componentConcernType = componentConcern.getType();
+
+            componentConcernPieceBuilder.append(", ");
+            componentConcernPieceBuilder.append(componentConcernType.name());
+
+            if (ComponentConcernType.POLICY.equals(componentConcernType)) {
+                componentConcernPieceBuilder.append(": ");
+                componentConcernPieceBuilder.append(componentConcern.getName());
+            }
+        }
+
+        String componentConcernPiece = componentConcernPieceBuilder.toString();
+
+        String preConcernTitle = String.format("Alert - %s[%s], %s[%s], %s", provider.getLabel(), provider.getValue(), project.getValue(), projectVersion.getValue(), componentPieceBuilder.toString());
+        if (preConcernTitle.length() + componentConcernPieceBuilder.length() > formatter.getMaxTitleLength()) {
+            preConcernTitle = StringUtils.truncate(preConcernTitle, formatter.getMaxTitleLength() - COMPONENT_CONCERN_TITLE_SPACE);
+            componentConcernPiece = StringUtils.truncate(componentConcernPieceBuilder.toString(), COMPONENT_CONCERN_TITLE_SPACE);
+        }
+
+        return preConcernTitle + componentConcernPiece;
     }
 
 }

@@ -22,7 +22,6 @@
  */
 package com.synopys.integration.alert.channel.api.convert;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
@@ -73,39 +72,13 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
         }
 
         for (BomComponentDetails bomComponentDetails : bomComponents) {
-            List<String> bomComponentMessagePieces = gatherBomComponentPieces(bomComponentDetails);
+            List<String> bomComponentMessagePieces = bomComponentDetailConverter.gatherBomComponentPieces(bomComponentDetails);
             bomComponentMessagePieces.forEach(chunkedStringBuilder::append);
             chunkedStringBuilder.append(messageFormatter.getSectionSeparator());
             chunkedStringBuilder.append(messageFormatter.getLineSeparator());
         }
 
         return chunkedStringBuilder.collectCurrentChunks();
-    }
-
-    private List<String> gatherBomComponentPieces(BomComponentDetails bomComponent) {
-        List<String> bomComponentSectionPieces = new LinkedList<>();
-
-        String componentString = createLinkableItemString(bomComponent.getComponent(), true);
-        bomComponentSectionPieces.add(componentString);
-        bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-
-        bomComponent.getComponentVersion()
-            .map(componentVersion -> createLinkableItemString(componentVersion, true))
-            .ifPresent(componentVersionString -> {
-                bomComponentSectionPieces.add(componentVersionString);
-                bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-            });
-
-        List<String> componentAttributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
-        for (String attributeString : componentAttributeStrings) {
-            bomComponentSectionPieces.add(String.format("%s-%s%s", messageFormatter.getNonBreakingSpace(), messageFormatter.getNonBreakingSpace(), attributeString));
-            bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-        }
-
-        List<String> componentConcernSectionPieces = bomComponentDetailConverter.createComponentConcernSectionPieces(bomComponent);
-        bomComponentSectionPieces.addAll(componentConcernSectionPieces);
-
-        return bomComponentSectionPieces;
     }
 
 }
