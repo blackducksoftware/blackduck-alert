@@ -25,11 +25,11 @@ package com.synopsys.integration.alert.channel.msteams2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -53,33 +53,42 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
     }
 
     @Override
-    public MessageResult sendMessages(MSTeamsJobDetailsModel slackJobDetails, List<MSTeamsChannelMessageModel> channelMessages) throws AlertException {
-        String webhook = slackJobDetails.getWebhook();
-        String channelName = "TODO"; // TODO slackJobDetails.getChannelName();
-        String channelUsername = "TODO"; // TODO Optional.ofNullable(slackJobDetails.getChannelUsername()).orElse(SLACK_DEFAULT_USERNAME);
+    public MessageResult sendMessages(MSTeamsJobDetailsModel msTeamsJobDetailsModel, List<MSTeamsChannelMessageModel> channelMessages) throws AlertException {
+        String webhook = msTeamsJobDetailsModel.getWebhook();
+
+        String messageTitle = "Received a message from Black Duck";
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
-        List<Request> requests = channelMessages.stream()
-                                     .map(message -> createRequestsForMessage(channelName, channelUsername, webhook, message.getMarkdownContent(), requestHeaders))
-                                     .collect(Collectors.toList());
+        Request request = createRequestsForMessage(webhook, messageTitle, channelMessages, requestHeaders);
 
-        restChannelUtility.sendMessage(requests, slackChannelKey.getUniversalKey());
+        restChannelUtility.sendSingleMessage(request, slackChannelKey.getUniversalKey());
 
-        return new MessageResult(String.format("Successfully sent %d Slack message(s)", requests.size()));
+        return new MessageResult(String.format("Successfully sent %d MSTeams message(s)", channelMessages.size()));
     }
 
-    private Request createRequestsForMessage(String channelName, String channelUsername, String webhook, String message, Map<String, String> requestHeaders) {
-        String jsonString = getJsonString(message, channelName, channelUsername);
+    private Request createRequestsForMessage(String webhook, String messageTitle, List<MSTeamsChannelMessageModel> messages, Map<String, String> requestHeaders) {
+        String jsonString = getJsonString(messageTitle, messages);
         return restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString);
     }
 
-    private String getJsonString(String markdownMessage, String channel, String username) {
+    private String getJsonString(String title, List<MSTeamsChannelMessageModel> messageSections) {
         JsonObject json = new JsonObject();
-        json.addProperty("text", markdownMessage);
-        json.addProperty("channel", channel);
-        json.addProperty("username", username);
-        json.addProperty("mrkdwn", true);
+        json.addProperty("@type", "MessageCard");
+        json.addProperty("@context", "https://schema.org/extensions");
+        json.addProperty("summary", "New Content from Alert");
+        json.addProperty("themeColor", "5A2A82");
+        json.addProperty("title", title);
+
+        JsonArray jsonArray = new JsonArray();
+        for (MSTeamsChannelMessageModel messageSection : messageSections) {
+            JsonObject sectionJson = new JsonObject();
+            sectionJson.addProperty("startGroup", true);
+            sectionJson.addProperty("title", messageSection.getMessageTitle());
+            sectionJson.addProperty("text", messageSection.getMessageContent());
+            jsonArray.add(sectionJson);
+        }
+        json.add("sections", jsonArray);
 
         return json.toString();
     }

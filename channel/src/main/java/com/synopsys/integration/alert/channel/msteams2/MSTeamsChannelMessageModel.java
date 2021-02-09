@@ -25,13 +25,20 @@ package com.synopsys.integration.alert.channel.msteams2;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MSTeamsChannelMessageModel extends AlertSerializableModel {
-    private final String markdownContent;
+    private final String messageTitle;
+    private final String messageContent;
 
-    public MSTeamsChannelMessageModel(String markdownContent) {
-        this.markdownContent = markdownContent;
+    public MSTeamsChannelMessageModel(String messageTitle, String messageContent) {
+        this.messageTitle = messageTitle;
+        this.messageContent = messageContent;
     }
 
-    public String getMarkdownContent() {
-        return markdownContent;
+    public String getMessageTitle() {
+        return messageTitle;
     }
+
+    public String getMessageContent() {
+        return messageContent;
+    }
+
 }

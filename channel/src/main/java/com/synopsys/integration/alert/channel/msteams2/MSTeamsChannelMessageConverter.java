@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.msteams2;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,8 +53,9 @@ public class MSTeamsChannelMessageConverter extends AbstractChannelMessageConver
     }
 
     private List<MSTeamsChannelMessageModel> createMessageModel(List<String> messageChunks) {
+        // The title for each message is currently empty because the old implementation would attempt to build a title based on components, or default to an empty String.
         return messageChunks.stream()
-                   .map(MSTeamsChannelMessageModel::new)
+                   .map(messageContent -> new MSTeamsChannelMessageModel(StringUtils.EMPTY, messageContent))
                    .collect(Collectors.toList());
     }
 }
