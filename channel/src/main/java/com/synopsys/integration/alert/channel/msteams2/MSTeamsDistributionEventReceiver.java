@@ -22,16 +22,20 @@
  */
 package com.synopsys.integration.alert.channel.msteams2;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class MsTeamsChannelMessageModel extends AlertSerializableModel {
-    private final String markdownContent;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopys.integration.alert.channel.api.DistributionEventReceiver;
 
-    public MsTeamsChannelMessageModel(String markdownContent) {
-        this.markdownContent = markdownContent;
+@Component
+public class MSTeamsDistributionEventReceiver extends DistributionEventReceiver<MSTeamsJobDetailsModel> {
+    @Autowired
+    public MSTeamsDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor, MSTeamsChannelV2 channel) {
+        super(gson, auditAccessor, msTeamsJobDetailsAccessor, channel);
     }
 
-    public String getMarkdownContent() {
-        return markdownContent;
-    }
 }

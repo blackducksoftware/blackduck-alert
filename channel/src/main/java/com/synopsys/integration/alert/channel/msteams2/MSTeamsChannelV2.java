@@ -25,17 +25,14 @@ package com.synopsys.integration.alert.channel.msteams2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopys.integration.alert.channel.api.DistributionEventReceiver;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
 @Component
-public class MsTeamsDistributionEventReceiver extends DistributionEventReceiver<SlackJobDetailsModel> {
+public class MSTeamsChannelV2 extends MessageBoardChannel<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
     @Autowired
-    public MsTeamsDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, SlackJobDetailsAccessor slackJobDetailsAccessor, MsTeamsChannelV2 channel) {
-        super(gson, auditAccessor, slackJobDetailsAccessor, channel);
+    protected MSTeamsChannelV2(MSTeamsChannelMessageConverter msTeamsChannelMessageConverter, MSTeamsChannelMessageSender msTeamsChannelMessageSender) {
+        super(msTeamsChannelMessageConverter, msTeamsChannelMessageSender);
     }
 
 }

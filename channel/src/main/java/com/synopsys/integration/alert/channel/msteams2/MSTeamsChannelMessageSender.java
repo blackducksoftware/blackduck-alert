@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.msteams2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,30 +34,29 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 import com.synopsys.integration.rest.request.Request;
 import com.synopys.integration.alert.channel.api.ChannelMessageSender;
 
 @Component
-public class MsTeamsChannelMessageSender implements ChannelMessageSender<SlackJobDetailsModel, MsTeamsChannelMessageModel, MessageResult> {
+public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel, MessageResult> {
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
     private final RestChannelUtility restChannelUtility;
     private final SlackChannelKey slackChannelKey;
 
     @Autowired
-    public MsTeamsChannelMessageSender(RestChannelUtility restChannelUtility, SlackChannelKey slackChannelKey) {
+    public MSTeamsChannelMessageSender(RestChannelUtility restChannelUtility, SlackChannelKey slackChannelKey) {
         this.restChannelUtility = restChannelUtility;
         this.slackChannelKey = slackChannelKey;
     }
 
     @Override
-    public MessageResult sendMessages(SlackJobDetailsModel slackJobDetails, List<MsTeamsChannelMessageModel> channelMessages) throws AlertException {
+    public MessageResult sendMessages(MSTeamsJobDetailsModel slackJobDetails, List<MSTeamsChannelMessageModel> channelMessages) throws AlertException {
         String webhook = slackJobDetails.getWebhook();
-        String channelName = slackJobDetails.getChannelName();
-        String channelUsername = Optional.ofNullable(slackJobDetails.getChannelUsername())
-                                     .orElse(SLACK_DEFAULT_USERNAME);
+        String channelName = "TODO"; // TODO slackJobDetails.getChannelName();
+        String channelUsername = "TODO"; // TODO Optional.ofNullable(slackJobDetails.getChannelUsername()).orElse(SLACK_DEFAULT_USERNAME);
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 

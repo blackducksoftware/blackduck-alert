@@ -22,17 +22,16 @@
  */
 package com.synopsys.integration.alert.channel.msteams2;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopys.integration.alert.channel.api.MessageBoardChannel;
+public class MSTeamsChannelMessageModel extends AlertSerializableModel {
+    private final String markdownContent;
 
-@Component
-public class MsTeamsChannelV2 extends MessageBoardChannel<SlackJobDetailsModel, MsTeamsChannelMessageModel> {
-    @Autowired
-    protected MsTeamsChannelV2(MsTeamsChannelMessageConverter msTeamsChannelMessageConverter, MsTeamsChannelMessageSender msTeamsChannelMessageSender) {
-        super(msTeamsChannelMessageConverter, msTeamsChannelMessageSender);
+    public MSTeamsChannelMessageModel(String markdownContent) {
+        this.markdownContent = markdownContent;
     }
 
+    public String getMarkdownContent() {
+        return markdownContent;
+    }
 }

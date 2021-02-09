@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 import com.synopys.integration.alert.channel.api.convert.ChannelMessageFormatter;
 
 @Component
-public class MsTeamsChannelMessageFormatter extends ChannelMessageFormatter {
+public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {
     private static final int MAX_SLACK_MESSAGE_LENGTH = 3500;
     private static final String SLACK_LINE_SEPARATOR = "\n";
     private static final Map<Character, String> SLACK_CHARACTER_ENCODING_MAP = new LinkedHashMap<>();
@@ -47,7 +47,7 @@ public class MsTeamsChannelMessageFormatter extends ChannelMessageFormatter {
     }
 
     @Autowired
-    public MsTeamsChannelMessageFormatter(MarkupEncoderUtil markupEncoderUtil) {
+    public MSTeamsChannelMessageFormatter(MarkupEncoderUtil markupEncoderUtil) {
         super(MAX_SLACK_MESSAGE_LENGTH, SLACK_LINE_SEPARATOR);
         this.markupEncoderUtil = markupEncoderUtil;
     }
