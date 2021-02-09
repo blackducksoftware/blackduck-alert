@@ -31,9 +31,12 @@ public class IssueCommentModel<T extends Serializable> extends AlertSerializable
     private final T issueId;
     private final List<String> comments;
 
-    public IssueCommentModel(T issueId, List<String> comments) {
+    private final ProjectIssueModel source;
+
+    public IssueCommentModel(T issueId, List<String> comments, ProjectIssueModel source) {
         this.issueId = issueId;
         this.comments = comments;
+        this.source = source;
     }
 
     public T getIssueId() {
@@ -42,6 +45,10 @@ public class IssueCommentModel<T extends Serializable> extends AlertSerializable
 
     public List<String> getComments() {
         return comments;
+    }
+
+    public ProjectIssueModel getSource() {
+        return source;
     }
 
 }

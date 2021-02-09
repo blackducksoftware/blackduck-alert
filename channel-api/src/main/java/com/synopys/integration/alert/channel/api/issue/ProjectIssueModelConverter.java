@@ -23,20 +23,28 @@
 package com.synopys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
+import java.util.List;
 
+import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopys.integration.alert.channel.api.convert.BomComponentDetailConverter;
 import com.synopys.integration.alert.channel.api.convert.LinkableItemConverter;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
+import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionType;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
 public class ProjectIssueModelConverter {
     private final IssueTrackerMessageFormatter formatter;
+    private final BomComponentDetailConverter bomComponentDetailConverter;
     private final LinkableItemConverter linkableItemConverter;
 
     public ProjectIssueModelConverter(IssueTrackerMessageFormatter formatter) {
         this.formatter = formatter;
+        this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
         this.linkableItemConverter = new LinkableItemConverter(formatter);
     }
 
@@ -46,13 +54,44 @@ public class ProjectIssueModelConverter {
     }
 
     public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
-        // FIXME implement
-        return null;
+        IssueTransitionType transitionType;
+        if (ItemOperation.ADD.equals(requiredOperation)) {
+            transitionType = IssueTransitionType.REOPEN;
+        } else {
+            transitionType = IssueTransitionType.RESOLVE;
+        }
+
+        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
+
+        LinkableItem provider = projectIssueModel.getProvider();
+        commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
+
+        List<String> chunkedComments = commentBuilder.collectCurrentChunks();
+        return new IssueTransitionModel<>(issueId, transitionType, chunkedComments, projectIssueModel);
     }
 
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(T issueId, ProjectIssueModel projectIssueModel) {
-        // FIXME implement
-        return null;
+        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
+
+        LinkableItem provider = projectIssueModel.getProvider();
+        commentBuilder.append(String.format("The component was updated in %s:", provider.getLabel()));
+        commentBuilder.append(formatter.getLineSeparator());
+        commentBuilder.append(formatter.getSectionSeparator());
+
+        bomComponentDetailConverter.createComponentConcernSectionPieces(projectIssueModel.getBomComponent())
+            .forEach(commentBuilder::append);
+
+        commentBuilder.append(formatter.getSectionSeparator());
+        commentBuilder.append(formatter.getLineSeparator());
+        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
+        List<String> attributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
+        for (String attributeString : attributeStrings) {
+            commentBuilder.append(String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), attributeString));
+            commentBuilder.append(formatter.getLineSeparator());
+        }
+
+        List<String> chunkedComments = commentBuilder.collectCurrentChunks();
+        return new IssueCommentModel<>(issueId, chunkedComments, projectIssueModel);
     }
 
 }

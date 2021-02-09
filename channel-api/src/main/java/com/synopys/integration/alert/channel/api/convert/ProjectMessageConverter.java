@@ -22,29 +22,22 @@
  */
 package com.synopys.integration.alert.channel.api.convert;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMessage> {
     private final ChannelMessageFormatter messageFormatter;
+    private final BomComponentDetailConverter bomComponentDetailConverter;
 
-    public ProjectMessageConverter(ChannelMessageFormatter messageFormatter) {
-        super(messageFormatter);
-        this.messageFormatter = messageFormatter;
+    public ProjectMessageConverter(ChannelMessageFormatter formatter) {
+        super(formatter);
+        this.messageFormatter = formatter;
+        this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
     }
 
     @Override
@@ -103,77 +96,16 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
                 bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
             });
 
-        String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
-        String indent = nonBreakingSpace + nonBreakingSpace;
-        String doubleIndent = indent + indent;
-
-        List<String> componentAttributeStrings = gatherAttributeStrings(bomComponent);
+        List<String> componentAttributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
         for (String attributeString : componentAttributeStrings) {
-            bomComponentSectionPieces.add(String.format("%s-%s%s", nonBreakingSpace, nonBreakingSpace, attributeString));
+            bomComponentSectionPieces.add(String.format("%s-%s%s", messageFormatter.getNonBreakingSpace(), messageFormatter.getNonBreakingSpace(), attributeString));
             bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
         }
 
-        Set<ComponentConcern> sortedConcerns = new TreeSet<>(bomComponent.getComponentConcerns());
-        ComponentConcernType currentType = null;
-        ItemOperation currentOperation = null;
-        ComponentConcernSeverity currentSeverity = null;
-        for (ComponentConcern componentConcern : sortedConcerns) {
-            if (!componentConcern.getType().equals(currentType)) {
-                currentType = componentConcern.getType();
-                currentOperation = null;
-
-                bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-                bomComponentSectionPieces.add(messageFormatter.encode(currentType.name()));
-            }
-
-            if (!componentConcern.getOperation().equals(currentOperation)) {
-                currentOperation = componentConcern.getOperation();
-                currentSeverity = null;
-
-                bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-                bomComponentSectionPieces.add(indent);
-                bomComponentSectionPieces.add(messageFormatter.encode(currentOperation.name()));
-            }
-
-            if (!componentConcern.getSeverity().equals(currentSeverity)) {
-                currentSeverity = componentConcern.getSeverity();
-
-                bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-                bomComponentSectionPieces.add(doubleIndent);
-                bomComponentSectionPieces.add(messageFormatter.encode(currentSeverity.name()));
-                bomComponentSectionPieces.add(messageFormatter.getLineSeparator());
-            }
-
-            String concernString;
-            String encodedName = messageFormatter.encode(componentConcern.getName());
-            Optional<String> concernUrl = componentConcern.getUrl();
-            if (concernUrl.isPresent()) {
-                String encodedUrl = messageFormatter.encode(concernUrl.get());
-                concernString = String.format("[%s]", messageFormatter.createLink(encodedName, encodedUrl));
-            } else {
-                concernString = String.format("%s-%s%s%s", nonBreakingSpace, nonBreakingSpace, encodedName, messageFormatter.getLineSeparator());
-            }
-            bomComponentSectionPieces.add(concernString);
-        }
+        List<String> componentConcernSectionPieces = bomComponentDetailConverter.createComponentConcernSectionPieces(bomComponent);
+        bomComponentSectionPieces.addAll(componentConcernSectionPieces);
 
         return bomComponentSectionPieces;
-    }
-
-    private List<String> gatherAttributeStrings(BomComponentDetails bomComponent) {
-        List<LinkableItem> additionalAttributes = bomComponent.getAdditionalAttributes();
-        List<String> componentAttributeStrings = new ArrayList<>(additionalAttributes.size() + 2);
-
-        String licenseString = createLinkableItemString(bomComponent.getLicense(), false);
-        componentAttributeStrings.add(licenseString);
-
-        String usageString = createLinkableItemString(bomComponent.getLicense(), false);
-        componentAttributeStrings.add(usageString);
-
-        additionalAttributes
-            .stream()
-            .map(attr -> createLinkableItemString(attr, false))
-            .forEach(componentAttributeStrings::add);
-        return componentAttributeStrings;
     }
 
 }

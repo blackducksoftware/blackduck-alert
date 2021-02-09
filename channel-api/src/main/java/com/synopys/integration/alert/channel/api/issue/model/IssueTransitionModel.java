@@ -32,10 +32,13 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
     private final IssueTransitionType transitionType;
     private final List<String> postTransitionComments;
 
-    public IssueTransitionModel(T issueId, IssueTransitionType transitionType, List<String> postTransitionComments) {
+    private final ProjectIssueModel source;
+
+    public IssueTransitionModel(T issueId, IssueTransitionType transitionType, List<String> postTransitionComments, ProjectIssueModel source) {
         this.issueId = issueId;
         this.transitionType = transitionType;
         this.postTransitionComments = postTransitionComments;
+        this.source = source;
     }
 
     public T getIssueId() {
@@ -48,6 +51,10 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
 
     public List<String> getPostTransitionComments() {
         return postTransitionComments;
+    }
+
+    public ProjectIssueModel getSource() {
+        return source;
     }
 
 }

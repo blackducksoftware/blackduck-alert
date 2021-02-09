@@ -25,17 +25,16 @@ package com.synopys.integration.alert.channel.api.issue.model;
 import java.util.List;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 
 public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
     private final LinkableItem project;
     private final LinkableItem projectVersion;
-    private final BomComponentIssueModel bomComponent;
+    private final BomComponentDetails bomComponent;
 
-    public ProjectIssueModel(LinkableItem provider, LinkableItem project, @Nullable LinkableItem projectVersion, BomComponentIssueModel bomComponent) {
+    public ProjectIssueModel(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) {
         super(provider);
         this.project = project;
         this.projectVersion = projectVersion;
@@ -50,7 +49,7 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         return Optional.ofNullable(projectVersion);
     }
 
-    public BomComponentIssueModel getBomComponent() {
+    public BomComponentDetails getBomComponent() {
         return bomComponent;
     }
 
@@ -59,14 +58,6 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         List<ProjectIssueModel> uncombinedModels = List.of(this, otherModel);
 
         if (!project.equals(otherModel.project)) {
-            return uncombinedModels;
-        }
-
-        if (null == projectVersion && null != otherModel.projectVersion) {
-            return uncombinedModels;
-        }
-
-        if (null != projectVersion && null == otherModel.projectVersion) {
             return uncombinedModels;
         }
 

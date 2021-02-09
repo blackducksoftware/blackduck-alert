@@ -29,11 +29,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-// TODO figure out how to handle required/custom fields generically
 public class IssueCreationModel extends AlertSerializableModel {
     private final String title;
     private final String description;
     private final List<String> postCreateComments;
+
     private final ProjectIssueModel source;
 
     public static IssueCreationModel simple(String title, String description, List<String> postCreateComments) {
