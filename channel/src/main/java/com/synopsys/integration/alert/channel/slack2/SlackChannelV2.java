@@ -1,5 +1,5 @@
 /*
- * alert-database
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,27 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job.slack;
-
-import java.util.UUID;
+package com.synopsys.integration.alert.channel.slack2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
 @Component
-public class SlackJobDetailsAccessor {
-    private final SlackJobDetailsRepository slackJobDetailsRepository;
-
+public class SlackChannelV2 extends MessageBoardChannel<SlackJobDetailsModel, SlackChannelMessageModel> {
     @Autowired
-    public SlackJobDetailsAccessor(SlackJobDetailsRepository slackJobDetailsRepository) {
-        this.slackJobDetailsRepository = slackJobDetailsRepository;
+    protected SlackChannelV2(SlackChannelMessageConverter slackChannelMessageConverter, SlackChannelMessageSender slackChannelMessageSender) {
+        super(slackChannelMessageConverter, slackChannelMessageSender);
     }
-
-    public SlackJobDetailsEntity saveSlackJobDetails(UUID jobId, SlackJobDetailsModel slackJobDetails) {
-        SlackJobDetailsEntity jobDetailsToSave = new SlackJobDetailsEntity(jobId, slackJobDetails.getWebhook(), slackJobDetails.getChannelName(), slackJobDetails.getChannelUsername());
-        return slackJobDetailsRepository.save(jobDetailsToSave);
-    }
-
+    
 }
