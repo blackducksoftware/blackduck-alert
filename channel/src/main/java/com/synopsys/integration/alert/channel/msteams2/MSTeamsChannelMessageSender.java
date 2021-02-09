@@ -35,21 +35,19 @@ import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.rest.request.Request;
 import com.synopys.integration.alert.channel.api.ChannelMessageSender;
 
 @Component
 public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel, MessageResult> {
-    public static final String SLACK_DEFAULT_USERNAME = "Alert";
-
     private final RestChannelUtility restChannelUtility;
-    private final SlackChannelKey slackChannelKey;
+    private final MsTeamsKey msTeamsKey;
 
     @Autowired
-    public MSTeamsChannelMessageSender(RestChannelUtility restChannelUtility, SlackChannelKey slackChannelKey) {
+    public MSTeamsChannelMessageSender(RestChannelUtility restChannelUtility, MsTeamsKey msTeamsKey) {
         this.restChannelUtility = restChannelUtility;
-        this.slackChannelKey = slackChannelKey;
+        this.msTeamsKey = msTeamsKey;
     }
 
     @Override
@@ -62,7 +60,7 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
 
         Request request = createRequestsForMessage(webhook, messageTitle, channelMessages, requestHeaders);
 
-        restChannelUtility.sendSingleMessage(request, slackChannelKey.getUniversalKey());
+        restChannelUtility.sendSingleMessage(request, msTeamsKey.getUniversalKey());
 
         return new MessageResult(String.format("Successfully sent %d MSTeams message(s)", channelMessages.size()));
     }
