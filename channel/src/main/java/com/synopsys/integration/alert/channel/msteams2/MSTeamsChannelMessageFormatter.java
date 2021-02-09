@@ -32,7 +32,8 @@ import com.synopys.integration.alert.channel.api.convert.ChannelMessageFormatter
 
 @Component
 public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {
-    private static final int MAX_SLACK_MESSAGE_LENGTH = 3500;
+    // There is a size limit in the request size that is allowed (20KB). This text limit is meant to hopefully keep the message under that size limit
+    private static final int MAX_MSTEAMS_MESSAGE_LENGTH = 10000;
     private static final String MSTEAMS_LINE_SEPARATOR = "\r\n\r\n";
     private static final Map<Character, String> MSTEAMS_CHARACTER_ENCODING_MAP = Map.of(
         '*', "\\*",
@@ -46,7 +47,7 @@ public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {
 
     @Autowired
     public MSTeamsChannelMessageFormatter(MarkupEncoderUtil markupEncoderUtil) {
-        super(MAX_SLACK_MESSAGE_LENGTH, MSTEAMS_LINE_SEPARATOR);
+        super(MAX_MSTEAMS_MESSAGE_LENGTH, MSTEAMS_LINE_SEPARATOR);
         this.markupEncoderUtil = markupEncoderUtil;
     }
 
