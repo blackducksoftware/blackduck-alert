@@ -16,6 +16,7 @@ alert:
   registry: "" # override the docker registry at container level
   hostname: localhost
   port: 8443
+  forwardHeadersStrategy: "" # set to "native" if you are using a reverse proxy/load balancer
   resources:
     limits:
       memory: "2560Mi"

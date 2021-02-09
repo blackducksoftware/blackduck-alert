@@ -22,6 +22,9 @@ services:
 #      - ALERT_SERVER_PORT=8443
 #      - ALERT_LOGGING_LEVEL=INFO
 #
+#     # uncomment the following line if you are using a reverse proxy or load balancer
+#      - ALERT_FORWARD_HEADERS_STRATEGY=native
+#
 #     # -- Database Settings
 #      - ALERT_DB_HOST=alertdb
 #      - ALERT_DB_PORT=5432
