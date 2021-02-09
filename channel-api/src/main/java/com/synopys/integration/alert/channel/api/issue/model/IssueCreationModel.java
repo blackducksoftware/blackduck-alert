@@ -23,6 +23,9 @@
 package com.synopys.integration.alert.channel.api.issue.model;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
@@ -31,11 +34,21 @@ public class IssueCreationModel extends AlertSerializableModel {
     private final String title;
     private final String description;
     private final List<String> postCreateComments;
+    private final ProjectIssueModel source;
 
-    public IssueCreationModel(String title, String description, List<String> postCreateComments) {
+    public static IssueCreationModel simple(String title, String description, List<String> postCreateComments) {
+        return new IssueCreationModel(title, description, postCreateComments, null);
+    }
+
+    public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source) {
+        return new IssueCreationModel(title, description, postCreateComments, source);
+    }
+
+    private IssueCreationModel(String title, String description, List<String> postCreateComments, @Nullable ProjectIssueModel source) {
         this.title = title;
         this.description = description;
         this.postCreateComments = postCreateComments;
+        this.source = source;
     }
 
     public String getTitle() {
@@ -48,6 +61,10 @@ public class IssueCreationModel extends AlertSerializableModel {
 
     public List<String> getPostCreateComments() {
         return postCreateComments;
+    }
+
+    public Optional<ProjectIssueModel> getSource() {
+        return Optional.ofNullable(source);
     }
 
 }

@@ -22,35 +22,31 @@
  */
 package com.synopys.integration.alert.channel.api.issue.model;
 
-import java.io.Serializable;
-import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
-
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 
-public class IssueSearchResult<T extends Serializable> extends AlertSerializableModel {
-    private final T issueId;
-    private final ProjectIssueModel projectIssueModel;
-    private final ItemOperation requiredOperation;
+public class BomComponentIssueModel extends AlertSerializableModel {
+    private final LinkableItem component;
+    private final LinkableItem componentVersion;
+    private final ComponentConcern componentConcern;
 
-    public IssueSearchResult(@Nullable T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
-        this.issueId = issueId;
-        this.projectIssueModel = projectIssueModel;
-        this.requiredOperation = requiredOperation;
+    public BomComponentIssueModel(LinkableItem component, LinkableItem componentVersion, ComponentConcern componentConcern) {
+        this.component = component;
+        this.componentVersion = componentVersion;
+        this.componentConcern = componentConcern;
     }
 
-    public Optional<T> getIssueId() {
-        return Optional.ofNullable(issueId);
+    public LinkableItem getComponent() {
+        return component;
     }
 
-    public ProjectIssueModel getProjectIssueModel() {
-        return projectIssueModel;
+    public LinkableItem getComponentVersion() {
+        return componentVersion;
     }
 
-    public ItemOperation getRequiredOperation() {
-        return requiredOperation;
+    public ComponentConcern getComponentConcern() {
+        return componentConcern;
     }
 
 }

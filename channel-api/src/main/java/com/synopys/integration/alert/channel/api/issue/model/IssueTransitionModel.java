@@ -29,12 +29,12 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
     private final T issueId;
-    private final String transitionKey;
+    private final IssueTransitionType transitionType;
     private final List<String> postTransitionComments;
 
-    public IssueTransitionModel(T issueId, String transitionKey, List<String> postTransitionComments) {
+    public IssueTransitionModel(T issueId, IssueTransitionType transitionType, List<String> postTransitionComments) {
         this.issueId = issueId;
-        this.transitionKey = transitionKey;
+        this.transitionType = transitionType;
         this.postTransitionComments = postTransitionComments;
     }
 
@@ -42,8 +42,8 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
         return issueId;
     }
 
-    public String getTransitionKey() {
-        return transitionKey;
+    public IssueTransitionType getTransitionType() {
+        return transitionType;
     }
 
     public List<String> getPostTransitionComments() {

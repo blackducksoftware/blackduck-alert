@@ -27,19 +27,19 @@ import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
 
-public class IssueTrackerMessageHolder<T extends Serializable> {
+public class IssueTrackerModelHolder<T extends Serializable> {
     private final List<IssueCreationModel> issueCreationModels;
     private final List<IssueTransitionModel<T>> issueTransitionModels;
     private final List<IssueCommentModel<T>> issueCommentModels;
 
-    public static <T extends Serializable> IssueTrackerMessageHolder<T> reduce(IssueTrackerMessageHolder<T> lhs, IssueTrackerMessageHolder<T> rhs) {
+    public static <T extends Serializable> IssueTrackerModelHolder<T> reduce(IssueTrackerModelHolder<T> lhs, IssueTrackerModelHolder<T> rhs) {
         List<IssueCreationModel> unifiedIssueCreationModels = ListUtils.union(lhs.getIssueCreationModels(), rhs.getIssueCreationModels());
         List<IssueTransitionModel<T>> unifiedIssueTransitionModels = ListUtils.union(lhs.getIssueTransitionModels(), rhs.getIssueTransitionModels());
         List<IssueCommentModel<T>> unifiedIssueCommentModels = ListUtils.union(lhs.getIssueCommentModels(), rhs.getIssueCommentModels());
-        return new IssueTrackerMessageHolder<>(unifiedIssueCreationModels, unifiedIssueTransitionModels, unifiedIssueCommentModels);
+        return new IssueTrackerModelHolder<>(unifiedIssueCreationModels, unifiedIssueTransitionModels, unifiedIssueCommentModels);
     }
 
-    public IssueTrackerMessageHolder(List<IssueCreationModel> issueCreationModels, List<IssueTransitionModel<T>> issueTransitionModels,
+    public IssueTrackerModelHolder(List<IssueCreationModel> issueCreationModels, List<IssueTransitionModel<T>> issueTransitionModels,
         List<IssueCommentModel<T>> issueCommentModels) {
         this.issueCreationModels = issueCreationModels;
         this.issueTransitionModels = issueTransitionModels;

@@ -33,14 +33,14 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopys.integration.alert.channel.api.ChannelMessageSender;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
-import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerMessageHolder;
+import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 
-public abstract class IssueTrackerMessageSender<D extends DistributionJobDetailsModel, T extends Serializable> implements ChannelMessageSender<D, IssueTrackerMessageHolder<T>, IssueTrackerResponse> {
+public abstract class IssueTrackerMessageSender<D extends DistributionJobDetailsModel, T extends Serializable> implements ChannelMessageSender<D, IssueTrackerModelHolder<T>, IssueTrackerResponse> {
     @Override
-    public final IssueTrackerResponse sendMessages(D details, List<IssueTrackerMessageHolder<T>> channelMessages) throws AlertException {
+    public final IssueTrackerResponse sendMessages(D details, List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
         List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
-        for (IssueTrackerMessageHolder<T> channelMessage : channelMessages) {
+        for (IssueTrackerModelHolder<T> channelMessage : channelMessages) {
             List<IssueTrackerIssueResponseModel> creationResponses = createIssues(details, channelMessage.getIssueCreationModels());
             responses.addAll(creationResponses);
 
