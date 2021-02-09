@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
@@ -33,7 +33,7 @@ import com.synopsys.integration.log.PrintStreamIntLogger;
 public class JiraCloudIssueHandlerTest {
     private final Gson gson = new Gson();
 
-    @Ignore
+    @Disabled
     @Test
     public void testCreateIssueIT() throws Exception {
         IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.TRACE);
