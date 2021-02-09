@@ -73,7 +73,7 @@ import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetail
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
@@ -90,7 +90,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
-    private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
+    private final DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private final DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
@@ -105,7 +105,7 @@ public class StaticJobAccessor implements JobAccessor {
         DefaultEmailJobDetailsAccessor emailJobDetailsAccessor,
         JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
-        MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
+        DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
         DefaultSlackJobDetailsAccessor slackJobDetailsAccessor,
         ProviderKey blackDuckProviderKey
     ) {
