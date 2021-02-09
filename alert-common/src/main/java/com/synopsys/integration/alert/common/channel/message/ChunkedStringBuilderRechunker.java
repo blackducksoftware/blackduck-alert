@@ -56,4 +56,7 @@ public final class ChunkedStringBuilderRechunker {
         return new RechunkedModel(firstChunk, resizedRemainingChunks);
     }
 
+    private ChunkedStringBuilderRechunker() {
+    }
+
 }
