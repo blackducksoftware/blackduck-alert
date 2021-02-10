@@ -25,7 +25,6 @@ package com.synopys.integration.alert.channel.api.issue;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +62,8 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
 
         List<IssueSearchResult<T>> projectIssueSearchResults = new LinkedList<>();
         for (ProjectIssueModel projectIssueModel : projectIssueModels) {
-            findIssueByProjectIssueModel(projectIssueModel).ifPresent(projectIssueSearchResults::add);
+            IssueSearchResult<T> searchResult = findIssueByProjectIssueModel(projectIssueModel);
+            projectIssueSearchResults.add(searchResult);
         }
         return projectIssueSearchResults;
     }
@@ -74,7 +74,7 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
 
     protected abstract List<IssueSearchResult<T>> findIssuesByComponent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion) throws AlertException;
 
-    protected abstract Optional<IssueSearchResult<T>> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
+    protected abstract IssueSearchResult<T> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
 
     private List<IssueSearchResult<T>> findIssuesByAllComponents(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) throws AlertException {
         List<IssueSearchResult<T>> componentIssues = new LinkedList<>();
