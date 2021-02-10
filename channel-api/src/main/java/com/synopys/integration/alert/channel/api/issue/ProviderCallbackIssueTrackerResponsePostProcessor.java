@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 
 @Component
@@ -68,22 +67,20 @@ public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueT
         Optional<ComponentItem> optionalComponentItem = alertIssueOrigin.getComponentItem();
         if (optionalComponentItem.isPresent()) {
             ComponentItem componentItem = optionalComponentItem.get();
-            Optional<ComponentItemCallbackInfo> optionalCallbackInfo = componentItem.getCallbackInfo();
-            if (optionalCallbackInfo.isPresent()) {
-                ComponentItemCallbackInfo callbackInfo = optionalCallbackInfo.get();
-                ProviderCallbackEvent callbackEvent = new ProviderCallbackEvent(
-                    callbackInfo.getProviderKey(),
-                    callbackInfo.getCallbackUrl(),
-                    issueResponseModel.getIssueKey(),
-                    issueResponseModel.getIssueLink(),
-                    issueResponseModel.getIssueOperation(),
-                    issueResponseModel.getIssueTitle(),
-                    providerContentKey.getProviderConfigId(),
-                    providerContentKey.getTopicName(),
-                    providerContentKey.getSubTopicName()
-                );
-                return Optional.of(callbackEvent);
-            }
+            return componentItem.getCallbackInfo()
+                       .map(callbackInfo ->
+                                new ProviderCallbackEvent(
+                                    callbackInfo.getProviderKey(),
+                                    callbackInfo.getCallbackUrl(),
+                                    issueResponseModel.getIssueKey(),
+                                    issueResponseModel.getIssueLink(),
+                                    issueResponseModel.getIssueOperation(),
+                                    issueResponseModel.getIssueTitle(),
+                                    providerContentKey.getProviderConfigId(),
+                                    providerContentKey.getTopicName(),
+                                    providerContentKey.getSubTopicName()
+                                )
+                       );
         }
         return Optional.empty();
     }
