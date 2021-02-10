@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -50,7 +51,7 @@ public abstract class IssueTrackerModelExtractor<T extends Serializable> {
         this.issueTrackerSearcher = issueTrackerSearcher;
     }
 
-    public final List<IssueTrackerModelHolder<T>> extractIssueTrackerModels(ProviderMessageHolder messages) {
+    public final List<IssueTrackerModelHolder<T>> extractIssueTrackerModels(ProviderMessageHolder messages) throws AlertException {
         List<IssueTrackerModelHolder<T>> issueTrackerModels = new LinkedList<>();
 
         List<SimpleMessage> simpleMessages = messages.getSimpleMessages();
@@ -71,7 +72,7 @@ public abstract class IssueTrackerModelExtractor<T extends Serializable> {
         return issueTrackerModels;
     }
 
-    private IssueTrackerModelHolder<T> convertProjectMessage(ProjectMessage projectMessage) {
+    private IssueTrackerModelHolder<T> convertProjectMessage(ProjectMessage projectMessage) throws AlertException {
         IssueTrackerModelHolder<T> combinedResults = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
         List<IssueSearchResult<T>> searchResults = issueTrackerSearcher.findIssues(projectMessage);
         for (IssueSearchResult<T> searchResult : searchResults) {
