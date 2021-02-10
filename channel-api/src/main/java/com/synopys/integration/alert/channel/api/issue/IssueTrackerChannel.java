@@ -38,24 +38,24 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHo
  * @param <T> The {@link Serializable} type of an issue-tracker issue's ID.
  */
 public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannelV2<D> {
-    private final IssueTrackerModelExtractor<T> issueTrackerModelExtractor;
-    private final IssueTrackerMessageSender<D, T> channelMessageSender;
+    private final IssueTrackerModelExtractor<T> modelExtractor;
+    private final IssueTrackerMessageSender<D, T> messageSender;
     private final IssueTrackerResponsePostProcessor responsePostProcessor;
 
     protected IssueTrackerChannel(
-        IssueTrackerModelExtractor<T> issueTrackerModelExtractor,
-        IssueTrackerMessageSender<D, T> channelMessageSender,
+        IssueTrackerModelExtractor<T> modelExtractor,
+        IssueTrackerMessageSender<D, T> messageSender,
         IssueTrackerResponsePostProcessor responsePostProcessor
     ) {
-        this.issueTrackerModelExtractor = issueTrackerModelExtractor;
-        this.channelMessageSender = channelMessageSender;
+        this.modelExtractor = modelExtractor;
+        this.messageSender = messageSender;
         this.responsePostProcessor = responsePostProcessor;
     }
 
     @Override
     public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
-        List<IssueTrackerModelHolder<T>> channelMessages = issueTrackerModelExtractor.extractIssueTrackerModels(messages);
-        IssueTrackerResponse issueTrackerResponse = channelMessageSender.sendMessages(distributionDetails, channelMessages);
+        List<IssueTrackerModelHolder<T>> channelMessages = modelExtractor.extractIssueTrackerModels(messages);
+        IssueTrackerResponse issueTrackerResponse = messageSender.sendMessages(distributionDetails, channelMessages);
         responsePostProcessor.postProcess(issueTrackerResponse);
         return new MessageResult(issueTrackerResponse.getStatusMessage());
     }
