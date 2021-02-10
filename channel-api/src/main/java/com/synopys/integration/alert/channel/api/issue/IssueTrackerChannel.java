@@ -20,8 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api;
+package com.synopys.integration.alert.channel.api.issue;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
@@ -29,27 +30,31 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopys.integration.alert.channel.api.convert.ChannelMessageConverter;
+import com.synopys.integration.alert.channel.api.DistributionChannelV2;
+import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 
 /**
  * @param <D> The type of job details relevant to this channel.
- * @param <T> The model containing all the message-fields this channel's implementation of {@link ChannelMessageSender} requires.
- *            This is meant to tightly couple the output of {@link ChannelMessageConverter} to the input of {@link ChannelMessageSender}.
+ * @param <T> The {@link Serializable} type of an issue-tracker issue's ID.
  */
-public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannelV2<D> {
-    private final ChannelMessageConverter<D, T> channelMessageConverter;
-    private final ChannelMessageSender<D, T, IssueTrackerResponse> channelMessageSender;
+public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannelV2<D> {
+    private final IssueTrackerModelExtractor<T> issueTrackerModelExtractor;
+    private final IssueTrackerMessageSender<D, T> channelMessageSender;
     private final IssueTrackerResponsePostProcessor responsePostProcessor;
 
-    protected IssueTrackerChannel(ChannelMessageConverter<D, T> channelMessageConverter, ChannelMessageSender<D, T, IssueTrackerResponse> channelMessageSender, IssueTrackerResponsePostProcessor responsePostProcessor) {
-        this.channelMessageConverter = channelMessageConverter;
+    protected IssueTrackerChannel(
+        IssueTrackerModelExtractor<T> issueTrackerModelExtractor,
+        IssueTrackerMessageSender<D, T> channelMessageSender,
+        IssueTrackerResponsePostProcessor responsePostProcessor
+    ) {
+        this.issueTrackerModelExtractor = issueTrackerModelExtractor;
         this.channelMessageSender = channelMessageSender;
         this.responsePostProcessor = responsePostProcessor;
     }
 
     @Override
     public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
-        List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages);
+        List<IssueTrackerModelHolder<T>> channelMessages = issueTrackerModelExtractor.extractIssueTrackerModels(messages);
         IssueTrackerResponse issueTrackerResponse = channelMessageSender.sendMessages(distributionDetails, channelMessages);
         responsePostProcessor.postProcess(issueTrackerResponse);
         return new MessageResult(issueTrackerResponse.getStatusMessage());

@@ -20,24 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api.convert;
+package com.synopys.integration.alert.channel.api.issue.model;
 
-import java.util.List;
-
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
-
-public abstract class ProviderMessageConverter<T extends ProviderMessage<T>> {
-    private final LinkableItemConverter linkableItemConverter;
-
-    public ProviderMessageConverter(ChannelMessageFormatter formatter) {
-        linkableItemConverter = new LinkableItemConverter(formatter);
-    }
-
-    public abstract List<String> convertToFormattedMessageChunks(T message);
-
-    protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
-        return linkableItemConverter.convertToString(linkableItem, bold);
-    }
+public enum IssueTransitionType {
+    REOPEN,
+    RESOLVE
 
 }
