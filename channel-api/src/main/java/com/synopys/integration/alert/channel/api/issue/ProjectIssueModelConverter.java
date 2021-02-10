@@ -45,8 +45,8 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionType
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
 public class ProjectIssueModelConverter {
-    private static final int COMPONENT_CONCERN_TITLE_SPACE = 20;
-    private static final LinkableItem MISSING_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
+    public static final int COMPONENT_CONCERN_TITLE_SPACE = 20;
+    public static final LinkableItem MISSING_PROJECT_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
 
     private final IssueTrackerMessageFormatter formatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
@@ -67,7 +67,7 @@ public class ProjectIssueModelConverter {
         descriptionBuilder.append(projectString);
         descriptionBuilder.append(formatter.getLineSeparator());
 
-        LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_VERSION_PLACEHOLDER);
+        LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER);
         String projectVersionString = linkableItemConverter.convertToString(projectVersion, true);
         descriptionBuilder.append(projectVersionString);
         descriptionBuilder.append(formatter.getLineSeparator());
@@ -127,7 +127,7 @@ public class ProjectIssueModelConverter {
     private String createTruncatedTitle(ProjectIssueModel projectIssueModel) {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
-        LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_VERSION_PLACEHOLDER);
+        LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER);
 
         BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
         LinkableItem component = bomComponent.getComponent();
