@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
@@ -97,6 +98,7 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
         List<ProviderCallbackEvent> callbackEvents = new ArrayList<>();
         for (IssueTrackerIssueResponseModel issueResponseModel : issueTrackerResponse.getUpdatedIssues()) {
             AlertIssueOrigin alertIssueOrigin = issueResponseModel.getAlertIssueOrigin();
+            ContentKey providerContentKey = alertIssueOrigin.getProviderContentKey();
 
             Optional<ComponentItem> optionalComponentItem = alertIssueOrigin.getComponentItem();
             if (optionalComponentItem.isPresent()) {
@@ -107,13 +109,13 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
                     ProviderCallbackEvent issueCallback = new ProviderCallbackEvent(
                         callbackInfo.getProviderKey(),
                         callbackInfo.getCallbackUrl(),
-                        callbackInfo.getNotificationType(),
                         issueResponseModel.getIssueKey(),
                         issueResponseModel.getIssueLink(),
                         issueResponseModel.getIssueOperation(),
                         issueResponseModel.getIssueTitle(),
-                        alertIssueOrigin.getProviderContentKey(),
-                        componentItem
+                        providerContentKey.getProviderConfigId(),
+                        providerContentKey.getTopicName(),
+                        providerContentKey.getSubTopicName()
                     );
                     callbackEvents.add(issueCallback);
                 }
