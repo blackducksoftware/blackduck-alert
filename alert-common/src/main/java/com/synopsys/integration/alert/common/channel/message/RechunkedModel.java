@@ -1,5 +1,5 @@
 /*
- * channel-api
+ * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,24 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api.convert;
+package com.synopsys.integration.alert.common.channel.message;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public abstract class ProviderMessageConverter<T extends ProviderMessage<T>> {
-    private final LinkableItemConverter linkableItemConverter;
+public class RechunkedModel extends AlertSerializableModel {
+    private final String firstChunk;
+    private final List<String> remainingChunks;
 
-    public ProviderMessageConverter(ChannelMessageFormatter formatter) {
-        linkableItemConverter = new LinkableItemConverter(formatter);
+    public RechunkedModel(String firstChunk, List<String> remainingChunks) {
+        this.firstChunk = firstChunk;
+        this.remainingChunks = remainingChunks;
     }
 
-    public abstract List<String> convertToFormattedMessageChunks(T message);
+    public String getFirstChunk() {
+        return firstChunk;
+    }
 
-    protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
-        return linkableItemConverter.convertToString(linkableItem, bold);
+    public List<String> getRemainingChunks() {
+        return remainingChunks;
     }
 
 }

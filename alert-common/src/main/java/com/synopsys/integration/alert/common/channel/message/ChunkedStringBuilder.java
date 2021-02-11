@@ -56,6 +56,10 @@ public class ChunkedStringBuilder {
         this.currentChunkBuilder = new StringBuilder();
     }
 
+    public int getMaxLength() {
+        return maxLength;
+    }
+
     public List<String> collectCurrentChunks() {
         List<String> copyOfChunks = new ArrayList<>(chunks);
         if (currentChunkBuilder.length() > 0) {

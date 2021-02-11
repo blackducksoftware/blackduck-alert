@@ -20,24 +20,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopys.integration.alert.channel.api.convert;
+package com.synopys.integration.alert.channel.api.issue.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public abstract class ProviderMessageConverter<T extends ProviderMessage<T>> {
-    private final LinkableItemConverter linkableItemConverter;
+public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
+    private final T issueId;
+    private final List<String> comments;
 
-    public ProviderMessageConverter(ChannelMessageFormatter formatter) {
-        linkableItemConverter = new LinkableItemConverter(formatter);
+    private final ProjectIssueModel source;
+
+    public IssueCommentModel(T issueId, List<String> comments, ProjectIssueModel source) {
+        this.issueId = issueId;
+        this.comments = comments;
+        this.source = source;
     }
 
-    public abstract List<String> convertToFormattedMessageChunks(T message);
+    public T getIssueId() {
+        return issueId;
+    }
 
-    protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
-        return linkableItemConverter.convertToString(linkableItem, bold);
+    public List<String> getComments() {
+        return comments;
+    }
+
+    public ProjectIssueModel getSource() {
+        return source;
     }
 
 }

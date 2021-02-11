@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
@@ -53,8 +52,8 @@ public class BlackDuckProviderIssueHandler {
         this.projectService = projectService;
     }
 
-    public void createOrUpdateBlackDuckIssue(String bomComponentVersionIssuesUrl, BlackDuckProviderIssueModel issueModel, ContentKey contentKey) throws IntegrationException {
-        Optional<ProjectVersionIssuesView> optionalExistingIssue = retrieveExistingIssue(contentKey, issueModel.getKey());
+    public void createOrUpdateBlackDuckIssue(String bomComponentVersionIssuesUrl, BlackDuckProviderIssueModel issueModel, String projectName, String projectVersionName) throws IntegrationException {
+        Optional<ProjectVersionIssuesView> optionalExistingIssue = retrieveExistingIssue(projectName, projectVersionName, issueModel.getKey());
 
         Date currentDate = Date.from(Instant.now());
         HttpUrl requestUri = new HttpUrl(bomComponentVersionIssuesUrl);
@@ -77,8 +76,8 @@ public class BlackDuckProviderIssueHandler {
         performRequest(requestUri, httpMethod, issueRequestModel);
     }
 
-    private Optional<ProjectVersionIssuesView> retrieveExistingIssue(ContentKey contentKey, String issueKey) throws IntegrationException {
-        Optional<ProjectVersionWrapper> projectVersionWrapperOptional = projectService.getProjectVersion(contentKey.getTopicValue(), contentKey.getSubTopicValue());
+    private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectName, String projectVersionName, String issueKey) throws IntegrationException {
+        Optional<ProjectVersionWrapper> projectVersionWrapperOptional = projectService.getProjectVersion(projectName, projectVersionName);
         if (projectVersionWrapperOptional.isPresent()) {
             ProjectVersionWrapper projectVersionWrapper = projectVersionWrapperOptional.get();
             List<ProjectVersionIssuesView> bomComponentIssues = blackDuckApiClient.getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.ISSUES_LINK_RESPONSE);
