@@ -54,7 +54,7 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
     public MessageResult sendMessages(MSTeamsJobDetailsModel msTeamsJobDetailsModel, List<MSTeamsChannelMessageModel> channelMessages) throws AlertException {
         String webhook = msTeamsJobDetailsModel.getWebhook();
 
-        String messageTitle = "Received a message from Black Duck";
+        String messageTitle = "Received a message from Black Duck"; // TODO: How should we get the provider? Each message converted in a ChannelMessageConverter is as ProviderMessage.
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
