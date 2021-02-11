@@ -42,19 +42,19 @@ public abstract class ChannelMessageFormatter {
         this.nonBreakingSpace = nonBreakingSpace;
     }
 
-    public int getMaxMessageLength() {
+    public final int getMaxMessageLength() {
         return maxMessageLength;
     }
 
-    public String getLineSeparator() {
+    public final String getLineSeparator() {
         return lineSeparator;
     }
 
-    public String getSectionSeparator() {
+    public final String getSectionSeparator() {
         return sectionSeparator;
     }
 
-    public String getNonBreakingSpace() {
+    public final String getNonBreakingSpace() {
         return nonBreakingSpace;
     }
 

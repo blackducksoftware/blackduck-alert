@@ -65,10 +65,5 @@ public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {
     public String createLink(String txt, String url) {
         return String.format("[%s](%s)", txt, url);
     }
-
-    @Override
-    public String getLineSeparator() {
-        return MSTEAMS_LINE_SEPARATOR;
-    }
-
+    
 }
