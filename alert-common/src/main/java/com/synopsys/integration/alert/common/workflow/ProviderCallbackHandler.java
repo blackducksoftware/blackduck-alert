@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertEventListener;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
-import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.Provider;
@@ -79,17 +78,17 @@ public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCa
     protected abstract void performProviderCallback(ProviderCallbackEvent event, StatefulProvider statefulProvider) throws IntegrationException;
 
     private Optional<StatefulProvider> validateAndRetrieveStatefulProvider(ProviderCallbackEvent event) throws IntegrationException {
-        ContentKey contentKey = event.getProviderContentKey();
-        Optional<ConfigurationModel> optionalProviderConfigModel = configurationAccessor.getConfigurationById(contentKey.getProviderConfigId());
+        Long providerConfigId = event.getProviderConfigId();
+        Optional<ConfigurationModel> optionalProviderConfigModel = configurationAccessor.getConfigurationById(providerConfigId);
         if (optionalProviderConfigModel.isPresent()) {
             ConfigurationModel providerGlobalConfig = optionalProviderConfigModel.get();
             boolean isGlobalConfigValid = provider.validate(providerGlobalConfig);
             if (isGlobalConfigValid) {
                 return Optional.of(provider.createStatefulProvider(providerGlobalConfig));
             }
-            logger.warn("The provider config with id '{}' for the callback event with id '{}' is invalid.", contentKey.getProviderConfigId(), event.getEventId());
+            logger.warn("The provider config with id '{}' for the callback event with id '{}' is invalid.", providerConfigId, event.getEventId());
         } else {
-            logger.warn("The provider config with id '{}' for the callback event with id '{}' no longer exists.", contentKey.getProviderConfigId(), event.getEventId());
+            logger.warn("The provider config with id '{}' for the callback event with id '{}' no longer exists.", providerConfigId, event.getEventId());
         }
         return Optional.empty();
     }
