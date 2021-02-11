@@ -73,9 +73,7 @@ public class GlobalConfigExistsValidator {
         List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
         boolean configurationsAreEmpty = configurations
                                              .stream()
-                                             .filter(configuration -> !configuration.getCopyOfFieldList().isEmpty())
-                                             .findFirst()
-                                             .isEmpty();
+                                             .allMatch(ConfigurationModel::isConfiguredFieldsEmpty);
         if (configurationsAreEmpty) {
             return Optional.of(String.format(GLOBAL_CONFIG_MISSING, descriptorDisplayName));
         }

@@ -22,12 +22,16 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.factory;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderPropertiesFactory;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -37,17 +41,28 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
     private final Gson gson;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public BlackDuckPropertiesFactory(Gson gson, AlertProperties alertProperties, ProxyManager proxyManager) {
+    public BlackDuckPropertiesFactory(Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
-    public BlackDuckProperties createProperties(Long configId, FieldUtility fieldUtility) {
-        return new BlackDuckProperties(configId, gson, alertProperties, proxyManager, fieldUtility);
+    public BlackDuckProperties createProperties(Long blackDuckConfigId, FieldUtility fieldUtility) {
+        return new BlackDuckProperties(blackDuckConfigId, gson, alertProperties, proxyManager, fieldUtility);
+    }
+
+    public Optional<BlackDuckProperties> createPropertiesIfConfigExists(Long blackDuckConfigId) {
+        Optional<ConfigurationModel> optionalBlackDuckConfig = configurationAccessor.getConfigurationById(blackDuckConfigId);
+        if (optionalBlackDuckConfig.isPresent()) {
+            BlackDuckProperties blackDuckProperties = createProperties(optionalBlackDuckConfig.get());
+            return Optional.of(blackDuckProperties);
+        }
+        return Optional.empty();
     }
 
 }

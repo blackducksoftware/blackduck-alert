@@ -25,13 +25,10 @@ package com.synopsys.integration.alert.common.event;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public class ProviderCallbackEvent extends AlertEvent {
     private final String callbackUrl;
-    private final String notificationType;
 
     private final String issueId;
     private final String issueUrl;
@@ -39,37 +36,34 @@ public class ProviderCallbackEvent extends AlertEvent {
     private final IssueOperation operation;
     private final String issueSummary;
 
-    private final ContentKey providerContentKey;
-    private final ComponentItem componentItem;
+    private final Long providerConfigId;
+    private final String blackDuckProjectName;
+    private final String blackDuckProjectVersionName;
 
     public ProviderCallbackEvent(
         ProviderKey providerKey,
         String callbackUrl,
-        String notificationType,
         String issueId,
         String issueUrl,
         IssueOperation operation,
         String issueSummary,
-        ContentKey providerContentKey,
-        ComponentItem componentItem
+        Long providerConfigId,
+        String blackDuckProjectName,
+        String blackDuckProjectVersionName
     ) {
         super(providerKey.getUniversalKey());
         this.callbackUrl = callbackUrl;
-        this.notificationType = notificationType;
         this.issueId = issueId;
         this.issueUrl = issueUrl;
         this.operation = operation;
         this.issueSummary = issueSummary;
-        this.providerContentKey = providerContentKey;
-        this.componentItem = componentItem;
+        this.providerConfigId = providerConfigId;
+        this.blackDuckProjectName = blackDuckProjectName;
+        this.blackDuckProjectVersionName = blackDuckProjectVersionName;
     }
 
     public String getCallbackUrl() {
         return callbackUrl;
-    }
-
-    public String getNotificationType() {
-        return notificationType;
     }
 
     public String getIssueId() {
@@ -88,12 +82,16 @@ public class ProviderCallbackEvent extends AlertEvent {
         return issueSummary;
     }
 
-    public ContentKey getProviderContentKey() {
-        return providerContentKey;
+    public Long getProviderConfigId() {
+        return providerConfigId;
     }
 
-    public ComponentItem getComponentItem() {
-        return componentItem;
+    public String getBlackDuckProjectName() {
+        return blackDuckProjectName;
+    }
+
+    public String getBlackDuckProjectVersionName() {
+        return blackDuckProjectVersionName;
     }
 
 }

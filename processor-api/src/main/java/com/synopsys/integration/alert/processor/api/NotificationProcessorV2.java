@@ -34,18 +34,18 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
+import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
+import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
+import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
-import com.synopsys.integration.alert.processor.api.filter.NotificationDetailExtractionDelegator;
-import com.synopsys.integration.alert.processor.api.filter.model.DetailedNotificationContent;
-import com.synopsys.integration.alert.processor.api.filter.model.FilteredJobNotificationWrapper;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationContentWrapper;
-import com.synopsys.integration.alert.processor.api.filter.model.NotificationFilterJobModel;
+import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.processor.api.summarize.ProjectMessageSummarizer;
 
 @Component
@@ -56,6 +56,7 @@ public final class NotificationProcessorV2 {
     private final ProjectMessageDigester projectMessageDigester;
     private final ProjectMessageSummarizer projectMessageSummarizer;
     private final ProviderMessageDistributor providerMessageDistributor;
+    private final List<NotificationProcessingLifecycleCache> lifecycleCaches;
 
     @Autowired
     protected NotificationProcessorV2(
@@ -64,7 +65,8 @@ public final class NotificationProcessorV2 {
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator,
         ProjectMessageDigester projectMessageDigester,
         ProjectMessageSummarizer projectMessageSummarizer,
-        ProviderMessageDistributor providerMessageDistributor
+        ProviderMessageDistributor providerMessageDistributor,
+        List<NotificationProcessingLifecycleCache> lifecycleCaches
     ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.jobNotificationMapper = jobNotificationMapper;
@@ -72,6 +74,7 @@ public final class NotificationProcessorV2 {
         this.projectMessageDigester = projectMessageDigester;
         this.projectMessageSummarizer = projectMessageSummarizer;
         this.providerMessageDistributor = providerMessageDistributor;
+        this.lifecycleCaches = lifecycleCaches;
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications) {
@@ -79,6 +82,14 @@ public final class NotificationProcessorV2 {
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
+        try {
+            processAndDistribute(notifications, frequencies);
+        } finally {
+            clearCaches();
+        }
+    }
+
+    private void processAndDistribute(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
                                                                         .stream()
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)
@@ -92,10 +103,10 @@ public final class NotificationProcessorV2 {
                                             .map(NotificationContentWrapper::getNotificationId)
                                             .collect(Collectors.toSet());
 
-            NotificationFilterJobModel notificationFilterJobModel = new NotificationFilterJobModel(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
+            ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
             ProviderMessageHolder providerMessageHolder = processJobNotifications(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
-            providerMessageDistributor.distribute(notificationFilterJobModel, providerMessageHolder);
+            providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
         }
     }
 
@@ -124,6 +135,12 @@ public final class NotificationProcessorV2 {
             return new ProviderMessageHolder(List.of(), allSimpleMessages);
         }
         return new ProviderMessageHolder(digestedMessages, providerMessages.getSimpleMessages());
+    }
+
+    private void clearCaches() {
+        for (NotificationProcessingLifecycleCache lifecycleCache : lifecycleCaches) {
+            lifecycleCache.clear();
+        }
     }
 
 }

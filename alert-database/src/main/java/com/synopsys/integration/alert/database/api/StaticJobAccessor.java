@@ -65,6 +65,7 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
@@ -74,7 +75,7 @@ import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDeta
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -90,7 +91,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
-    private final SlackJobDetailsAccessor slackJobDetailsAccessor;
+    private final DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
     // BlackDuck is currently the only provider, so this is safe in the short-term while we transition to new models
@@ -105,7 +106,7 @@ public class StaticJobAccessor implements JobAccessor {
         JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
-        SlackJobDetailsAccessor slackJobDetailsAccessor,
+        DefaultSlackJobDetailsAccessor slackJobDetailsAccessor,
         ProviderKey blackDuckProviderKey
     ) {
         this.distributionJobRepository = distributionJobRepository;
@@ -207,13 +208,26 @@ public class StaticJobAccessor implements JobAccessor {
 
         // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
         return distributionJobEntities.stream()
-                   .filter(distributionJobEntity -> !(distributionJobEntity.getBlackDuckJobDetails().getFilterByProject() &&
-                                                          distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern() != null &&
-                                                          !Pattern.matches(distributionJobEntity.getBlackDuckJobDetails().getProjectNamePattern(), projectName) &&
-                                                          !distributionJobEntity.getBlackDuckJobDetails().getBlackDuckJobProjects().contains(projectName))
-                   )
+                   .filter(distributionJobEntity -> filterByProjects(distributionJobEntity, projectName))
                    .map(this::convertToFilteredDistributionJobResponseModel)
                    .collect(Collectors.toList());
+    }
+
+    private boolean filterByProjects(DistributionJobEntity distributionJobEntity, String projectName) {
+        BlackDuckJobDetailsEntity blackDuckJobDetails = distributionJobEntity.getBlackDuckJobDetails();
+        if (!blackDuckJobDetails.getFilterByProject()) {
+            return true;
+        }
+
+        String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
+        if (projectNamePattern != null && Pattern.matches(projectNamePattern, projectName)) {
+            return true;
+        }
+
+        return blackDuckJobDetails.getBlackDuckJobProjects()
+                   .stream()
+                   .map(BlackDuckJobProjectEntity::getProjectName)
+                   .anyMatch(projectName::equals);
     }
 
     private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {

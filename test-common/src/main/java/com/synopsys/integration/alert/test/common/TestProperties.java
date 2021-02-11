@@ -27,18 +27,15 @@ import java.util.Properties;
 import org.junit.jupiter.api.Assumptions;
 
 public class TestProperties {
-    private final ResourceLoader resourceLoader;
     private Properties properties;
     private String propertiesLocation;
 
     public TestProperties() {
-        resourceLoader = new ResourceLoader();
-        propertiesLocation = ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
+        propertiesLocation = TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION;
         loadProperties();
     }
 
     public TestProperties(String propertiesLocation) {
-        resourceLoader = new ResourceLoader();
         this.propertiesLocation = propertiesLocation;
         loadProperties();
     }
@@ -58,7 +55,7 @@ public class TestProperties {
         if (properties == null) {
             properties = new Properties();
             try {
-                properties = resourceLoader.loadProperties(propertiesLocation);
+                properties = TestResourceUtils.loadProperties(propertiesLocation);
             } catch (Exception ex) {
                 System.out.println("Couldn't load " + propertiesLocation + " file!");
                 System.out.println("Reading from the environment...");

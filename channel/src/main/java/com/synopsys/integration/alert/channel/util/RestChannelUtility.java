@@ -52,11 +52,11 @@ public class RestChannelUtility {
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
-    public void sendSingleMessage(Request request, String eventDestination) throws IntegrationException {
+    public void sendSingleMessage(Request request, String eventDestination) throws AlertException {
         sendMessage(List.of(request), eventDestination);
     }
 
-    public void sendMessage(List<Request> requests, String eventDestination) throws IntegrationException {
+    public void sendMessage(List<Request> requests, String eventDestination) throws AlertException {
         try {
             IntHttpClient intHttpClient = getIntHttpClient();
             for (Request request : requests) {
@@ -97,7 +97,7 @@ public class RestChannelUtility {
         return requestBuilder.build();
     }
 
-    public void sendMessageRequest(IntHttpClient intHttpClient, Request request, String messageType) throws IntegrationException {
+    public void sendMessageRequest(IntHttpClient intHttpClient, Request request, String messageType) throws AlertException {
         logger.info("Attempting to send a {} message...", messageType);
         try (Response response = sendGenericRequest(intHttpClient, request)) {
             if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
