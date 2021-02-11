@@ -44,6 +44,8 @@ import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldM
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.test.common.TestProperties;
+import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
@@ -60,6 +62,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Autowired
     private Gson gson;
 
+    private final TestProperties testProperties = new TestProperties();
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -116,8 +119,10 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testUpdateConfig() throws Exception {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
-            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
+            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)),
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY))
+            )
+        );
 
         JobFieldModel fieldModel = createTestJobFieldModel("1", "2", providerGlobalConfig);
         Map<String, Collection<String>> fieldValueModels = new HashMap<>();
@@ -147,8 +152,10 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testSaveConfig() throws Exception {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
-            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
+            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)),
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY))
+            )
+        );
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(REQUEST_URL)
                                                     .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTest.ROLE_ALERT_ADMIN))
                                                     .with(SecurityMockMvcRequestPostProcessors.csrf());

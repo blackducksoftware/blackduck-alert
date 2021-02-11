@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
@@ -47,13 +48,20 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     private final ProviderDataAccessor providerDataAccessor;
     private final BlackDuckProvider blackDuckProvider;
     private final ConfigurationAccessor configurationAccessor;
+    private final BlackDuckCacheHttpClientCache blackDuckCacheHttpClientCache;
 
-    public BlackDuckGlobalApiAction(BlackDuckProvider blackDuckProvider, ProviderSchedulingManager providerLifecycleManager, ProviderDataAccessor providerDataAccessor,
-        ConfigurationAccessor configurationAccessor) {
+    public BlackDuckGlobalApiAction(
+        BlackDuckProvider blackDuckProvider,
+        ProviderSchedulingManager providerLifecycleManager,
+        ProviderDataAccessor providerDataAccessor,
+        ConfigurationAccessor configurationAccessor,
+        BlackDuckCacheHttpClientCache blackDuckCacheHttpClientCache
+    ) {
         this.blackDuckProvider = blackDuckProvider;
         this.providerLifecycleManager = providerLifecycleManager;
         this.providerDataAccessor = providerDataAccessor;
         this.configurationAccessor = configurationAccessor;
+        this.blackDuckCacheHttpClientCache = blackDuckCacheHttpClientCache;
     }
 
     @Override
@@ -72,6 +80,7 @@ public class BlackDuckGlobalApiAction extends ApiAction {
     @Override
     public FieldModel afterUpdateAction(FieldModel previousFieldModel, FieldModel currentFieldModel) throws AlertException {
         handleNewOrUpdatedConfig(currentFieldModel);
+        blackDuckCacheHttpClientCache.invalidate(Long.parseLong(previousFieldModel.getId()));
         return super.afterUpdateAction(previousFieldModel, currentFieldModel);
     }
 
