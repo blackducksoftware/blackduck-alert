@@ -55,7 +55,7 @@ public class AddUserToProjectsRunnable implements Runnable {
     public void run() {
         try {
             Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-            BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
+            BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckCacheClient(intLogger);
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
 
             BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
