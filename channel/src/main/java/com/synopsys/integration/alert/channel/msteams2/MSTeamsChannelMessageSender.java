@@ -41,6 +41,9 @@ import com.synopys.integration.alert.channel.api.ChannelMessageSender;
 
 @Component
 public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel, MessageResult> {
+    private static final String MESSAGE_THEME_COLOR = "5A2A82"; // Synopsys Purple
+    private static final String MESSAGE_SUMMARY = "New Content from Alert";
+
     private final RestChannelUtility restChannelUtility;
     private final MsTeamsKey msTeamsKey;
 
@@ -74,8 +77,8 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         JsonObject json = new JsonObject();
         json.addProperty("@type", "MessageCard");
         json.addProperty("@context", "https://schema.org/extensions");
-        json.addProperty("summary", "New Content from Alert");
-        json.addProperty("themeColor", "5A2A82");
+        json.addProperty("summary", MESSAGE_SUMMARY);
+        json.addProperty("themeColor", MESSAGE_THEME_COLOR);
         json.addProperty("title", title);
 
         JsonArray jsonArray = new JsonArray();
