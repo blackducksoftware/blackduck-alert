@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.database.configuration.repository.Descript
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @AlertIntegrationTest
 public abstract class DatabaseConfiguredFieldTest {
@@ -67,7 +68,7 @@ public abstract class DatabaseConfiguredFieldTest {
     }
 
     public ConfigurationFieldModel createConfigurationFieldModel(String key, Collection<String> values) {
-        ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
+        ConfigurationFieldModel configurationFieldModel = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY.equals(key) ? ConfigurationFieldModel.createSensitive(key) : ConfigurationFieldModel.create(key);
         configurationFieldModel.setFieldValues(values);
         return configurationFieldModel;
     }
