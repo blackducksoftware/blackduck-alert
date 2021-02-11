@@ -23,9 +23,11 @@
 package com.synopsys.integration.alert.provider.blackduck.action;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.action.task.AddUserToProjectsRunnable;
@@ -46,11 +49,13 @@ import com.synopsys.integration.alert.provider.blackduck.action.task.AddUserToPr
 public class BlackDuckDistributionApiAction extends ApiAction {
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckProvider blackDuckProvider;
+    private final BlackDuckCacheHttpClientCache blackDuckHttpClientCache;
 
     @Autowired
-    public BlackDuckDistributionApiAction(ConfigurationAccessor configurationAccessor, BlackDuckProvider blackDuckProvider) {
+    public BlackDuckDistributionApiAction(ConfigurationAccessor configurationAccessor, BlackDuckProvider blackDuckProvider, BlackDuckCacheHttpClientCache blackDuckHttpClientCache) {
         this.configurationAccessor = configurationAccessor;
         this.blackDuckProvider = blackDuckProvider;
+        this.blackDuckHttpClientCache = blackDuckHttpClientCache;
     }
 
     @Override
@@ -67,13 +72,14 @@ public class BlackDuckDistributionApiAction extends ApiAction {
 
     private void afterWrite(FieldModel currentFieldModel) throws AlertException {
         Optional<Long> optionalProviderConfigId = currentFieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID).map(Long::valueOf);
-        Collection<String> configuredProjects = extractConfiguredProjects(currentFieldModel);
-        if (optionalProviderConfigId.isPresent() && !configuredProjects.isEmpty()) {
+        boolean filterByProject = extractFilterByProject(currentFieldModel);
+        Collection<String> configuredProjects = filterByProject ? extractConfiguredProjects(currentFieldModel) : List.of();
+        if (optionalProviderConfigId.isPresent()) {
             Optional<ConfigurationModel> optionalBlackDuckGlobalConfig = configurationAccessor.getConfigurationById(optionalProviderConfigId.get());
             if (optionalBlackDuckGlobalConfig.isPresent()) {
                 StatefulProvider statefulProvider = blackDuckProvider.createStatefulProvider(optionalBlackDuckGlobalConfig.get());
 
-                AddUserToProjectsRunnable addUserToProjects = new AddUserToProjectsRunnable((BlackDuckProperties) statefulProvider.getProperties(), configuredProjects);
+                AddUserToProjectsRunnable addUserToProjects = new AddUserToProjectsRunnable(blackDuckHttpClientCache, (BlackDuckProperties) statefulProvider.getProperties(), filterByProject, configuredProjects);
                 addUserToProjects.run();
             }
         }
@@ -83,6 +89,13 @@ public class BlackDuckDistributionApiAction extends ApiAction {
         return currentFieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT)
                    .map(FieldValueModel::getValues)
                    .orElse(Set.of());
+    }
+
+    private boolean extractFilterByProject(FieldModel currentFieldModel) {
+        return currentFieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT)
+                   .flatMap(FieldValueModel::getValue)
+                   .map(BooleanUtils::toBoolean)
+                   .orElse(false);
     }
 
 }

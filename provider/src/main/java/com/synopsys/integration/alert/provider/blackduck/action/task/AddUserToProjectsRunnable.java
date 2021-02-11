@@ -29,6 +29,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
@@ -43,11 +44,17 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class AddUserToProjectsRunnable implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final BlackDuckCacheHttpClientCache blackDuckHttpClientCache;
     private final BlackDuckProperties blackDuckProperties;
+    private final boolean filterByProject;
     private final Collection<String> blackDuckProjectNames;
 
-    public AddUserToProjectsRunnable(BlackDuckProperties blackDuckProperties, Collection<String> blackDuckProjectNames) {
+    public AddUserToProjectsRunnable(BlackDuckCacheHttpClientCache blackDuckHttpClientCache, BlackDuckProperties blackDuckProperties, boolean filterByProject,
+        Collection<String> blackDuckProjectNames) {
+        this.blackDuckHttpClientCache = blackDuckHttpClientCache;
         this.blackDuckProperties = blackDuckProperties;
+        this.filterByProject = filterByProject;
         this.blackDuckProjectNames = blackDuckProjectNames;
     }
 
@@ -55,7 +62,7 @@ public class AddUserToProjectsRunnable implements Runnable {
     public void run() {
         try {
             Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-            BlackDuckHttpClient blackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClient(intLogger);
+            BlackDuckHttpClient blackDuckHttpClient = blackDuckHttpClientCache.retrieveOrCreateBlackDuckCacheHttpClient(blackDuckProperties.getConfigId());
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
 
             BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
@@ -63,7 +70,7 @@ public class AddUserToProjectsRunnable implements Runnable {
             ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
 
             UserView currentUser = blackDuckService.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
-            List<ProjectView> projectViews = requestAllProjectsByName(projectService, blackDuckProjectNames);
+            List<ProjectView> projectViews = filterByProject ? requestAllProjectsByName(projectService, blackDuckProjectNames) : projectService.getAllProjects();
             updateBlackDuckProjectPermissions(projectUsersService, currentUser, projectViews);
         } catch (Exception e) {
             logger.warn("{} failed: {}", getClass().getSimpleName(), e.getMessage());
