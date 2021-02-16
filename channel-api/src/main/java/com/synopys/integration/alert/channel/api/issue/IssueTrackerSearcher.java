@@ -27,8 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
@@ -91,17 +89,14 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
 
     protected abstract List<ProjectIssueSearchResult<T>> findProjectVersionIssues(LinkableItem provider, LinkableItem project, LinkableItem projectVersion) throws AlertException;
 
-    protected abstract List<ProjectIssueSearchResult<T>> findIssuesByComponent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion)
-        throws AlertException;
+    protected abstract List<ProjectIssueSearchResult<T>> findIssuesByComponent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException;
 
     protected abstract ActionableIssueSearchResult<T> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
 
     private List<ActionableIssueSearchResult<T>> findIssuesByAllComponents(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) throws AlertException {
         List<ProjectIssueSearchResult<T>> componentIssues = new LinkedList<>();
         for (BomComponentDetails bomComponent : bomComponents) {
-            LinkableItem component = bomComponent.getComponent();
-            LinkableItem nullableComponentVersion = bomComponent.getComponentVersion().orElse(null);
-            List<ProjectIssueSearchResult<T>> issuesByComponent = findIssuesByComponent(provider, project, projectVersion, component, nullableComponentVersion);
+            List<ProjectIssueSearchResult<T>> issuesByComponent = findIssuesByComponent(provider, project, projectVersion, bomComponent);
             componentIssues.addAll(issuesByComponent);
         }
         return componentIssues
