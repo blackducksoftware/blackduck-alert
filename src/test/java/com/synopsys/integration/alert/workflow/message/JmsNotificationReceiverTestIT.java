@@ -109,7 +109,7 @@ public class JmsNotificationReceiverTestIT {
         blackDuckGlobalConfigId = blackduckConfigurationModel.getConfigurationId();
 
         List<AlertNotificationModel> notificationContent = new ArrayList<>();
-        for (Long i = 1L; i <= 200; i++) {
+        for (Long i = 1L; i <= 1000; i++) {
             notificationContent.add(createAlertNotificationModel(i, false));
         }
         savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);

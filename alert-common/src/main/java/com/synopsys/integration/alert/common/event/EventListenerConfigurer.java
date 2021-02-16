@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.JmsListenerConfigurer;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
@@ -37,30 +38,32 @@ public class EventListenerConfigurer implements JmsListenerConfigurer {
     private final Logger logger = LoggerFactory.getLogger(EventListenerConfigurer.class);
 
     private final List<AlertEventListener> alertEventListeners;
+    private final DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory;
 
     @Autowired
-    public EventListenerConfigurer(final List<AlertEventListener> alertEventListeners) {
+    public EventListenerConfigurer(List<AlertEventListener> alertEventListeners, DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory) {
         this.alertEventListeners = alertEventListeners;
+        this.defaultJmsListenerContainerFactory = defaultJmsListenerContainerFactory;
     }
 
     @Override
-    public void configureJmsListeners(final JmsListenerEndpointRegistrar registrar) {
+    public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
         logger.info("Registering JMS Listeners");
-        for (final AlertEventListener listener : alertEventListeners) {
+        for (AlertEventListener listener : alertEventListeners) {
             if (listener != null) {
-                final String destinationName = listener.getDestinationName();
-                final String listenerId = createListenerId(destinationName);
+                String destinationName = listener.getDestinationName();
+                String listenerId = createListenerId(destinationName);
                 logger.info("Registering JMS Listener: {}", listenerId);
-                final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+                SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
                 endpoint.setId(listenerId);
                 endpoint.setDestination(destinationName);
                 endpoint.setMessageListener(listener);
-                registrar.registerEndpoint(endpoint);
+                registrar.registerEndpoint(endpoint, defaultJmsListenerContainerFactory);
             }
         }
     }
 
-    private String createListenerId(final String name) {
+    private String createListenerId(String name) {
         return String.format("%sListener", name);
     }
 }
