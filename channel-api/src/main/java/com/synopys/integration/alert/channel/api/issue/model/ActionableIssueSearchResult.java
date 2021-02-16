@@ -30,12 +30,12 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueSearchResult<T extends Serializable> extends AlertSerializableModel {
+public class ActionableIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
     private final T issueId;
     private final ProjectIssueModel projectIssueModel;
     private final ItemOperation requiredOperation;
 
-    public IssueSearchResult(@Nullable T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
+    public ActionableIssueSearchResult(@Nullable T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
         this.issueId = issueId;
         this.projectIssueModel = projectIssueModel;
         this.requiredOperation = requiredOperation;

@@ -38,26 +38,26 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHo
  * @param <T> The {@link Serializable} type of an issue-tracker issue's ID.
  */
 public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannelV2<D> {
-    private final IssueTrackerModelExtractor<T> modelExtractor;
-    private final IssueTrackerMessageSender<D, T> messageSender;
     private final IssueTrackerResponsePostProcessor responsePostProcessor;
 
-    protected IssueTrackerChannel(
-        IssueTrackerModelExtractor<T> modelExtractor,
-        IssueTrackerMessageSender<D, T> messageSender,
-        IssueTrackerResponsePostProcessor responsePostProcessor
-    ) {
-        this.modelExtractor = modelExtractor;
-        this.messageSender = messageSender;
+    protected IssueTrackerChannel(IssueTrackerResponsePostProcessor responsePostProcessor) {
         this.responsePostProcessor = responsePostProcessor;
     }
 
     @Override
     public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
+        IssueTrackerModelExtractor<T> modelExtractor = createModelExtractor(distributionDetails);
         List<IssueTrackerModelHolder<T>> channelMessages = modelExtractor.extractIssueTrackerModels(messages);
+
+        IssueTrackerMessageSender<D, T> messageSender = createMessageSender(distributionDetails);
         IssueTrackerResponse issueTrackerResponse = messageSender.sendMessages(distributionDetails, channelMessages);
+
         responsePostProcessor.postProcess(issueTrackerResponse);
         return new MessageResult(issueTrackerResponse.getStatusMessage());
     }
+
+    protected abstract IssueTrackerModelExtractor<T> createModelExtractor(D distributionDetails);
+
+    protected abstract IssueTrackerMessageSender<D, T> createMessageSender(D distributionDetails);
 
 }

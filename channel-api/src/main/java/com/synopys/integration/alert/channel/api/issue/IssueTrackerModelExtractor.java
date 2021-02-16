@@ -33,9 +33,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
+import com.synopys.integration.alert.channel.api.issue.model.ActionableIssueSearchResult;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
-import com.synopys.integration.alert.channel.api.issue.model.IssueSearchResult;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
@@ -74,15 +74,15 @@ public abstract class IssueTrackerModelExtractor<T extends Serializable> {
 
     private IssueTrackerModelHolder<T> convertProjectMessage(ProjectMessage projectMessage) throws AlertException {
         IssueTrackerModelHolder<T> combinedResults = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
-        List<IssueSearchResult<T>> searchResults = issueTrackerSearcher.findIssues(projectMessage);
-        for (IssueSearchResult<T> searchResult : searchResults) {
+        List<ActionableIssueSearchResult<T>> searchResults = issueTrackerSearcher.findIssues(projectMessage);
+        for (ActionableIssueSearchResult<T> searchResult : searchResults) {
             IssueTrackerModelHolder<T> searchResultMessages = convertSearchResult(searchResult);
             combinedResults = IssueTrackerModelHolder.reduce(combinedResults, searchResultMessages);
         }
         return combinedResults;
     }
 
-    private IssueTrackerModelHolder<T> convertSearchResult(IssueSearchResult<T> searchResult) {
+    private IssueTrackerModelHolder<T> convertSearchResult(ActionableIssueSearchResult<T> searchResult) {
         Optional<T> optionalIssueId = searchResult.getIssueId();
         ProjectIssueModel projectIssueModel = searchResult.getProjectIssueModel();
         if (optionalIssueId.isPresent()) {

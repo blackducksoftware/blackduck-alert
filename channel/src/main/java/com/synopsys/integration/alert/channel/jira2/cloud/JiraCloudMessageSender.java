@@ -24,8 +24,6 @@ package com.synopsys.integration.alert.channel.jira2.cloud;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
@@ -34,7 +32,6 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 
-@Component
 public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJobDetailsModel, String> {
     @Override
     protected List<IssueTrackerIssueResponseModel> createIssues(JiraCloudJobDetailsModel details, List<IssueCreationModel> issueCreationModels) throws AlertException {

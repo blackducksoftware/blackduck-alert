@@ -25,15 +25,31 @@ package com.synopsys.integration.alert.channel.jira2.cloud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira2.common.JiraMessageFormatter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerChannel;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
 
 @Component
 public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsModel, String> {
+    private final JiraMessageFormatter jiraMessageFormatter;
+
     @Autowired
-    public JiraCloudChannelV2(JiraCloudModelExtractor modelExtractor, JiraCloudMessageSender messageSender, IssueTrackerResponsePostProcessor responsePostProcessor) {
-        super(modelExtractor, messageSender, responsePostProcessor);
+    public JiraCloudChannelV2(JiraMessageFormatter jiraMessageFormatter, IssueTrackerResponsePostProcessor responsePostProcessor) {
+        super(responsePostProcessor);
+        this.jiraMessageFormatter = jiraMessageFormatter;
+    }
+
+    @Override
+    protected JiraCloudModelExtractor createModelExtractor(JiraCloudJobDetailsModel distributionDetails) {
+        // FIXME initialize properly
+        JiraCloudSearcher jiraCloudSearcher = new JiraCloudSearcher(distributionDetails.getProjectNameOrKey(), null, null);
+        return new JiraCloudModelExtractor(jiraMessageFormatter, jiraCloudSearcher);
+    }
+
+    @Override
+    protected JiraCloudMessageSender createMessageSender(JiraCloudJobDetailsModel distributionDetails) {
+        return new JiraCloudMessageSender();
     }
 
 }

@@ -22,42 +22,144 @@
  */
 package com.synopsys.integration.alert.channel.jira2.cloud;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira2.common.JqlStringCreator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
+import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
+import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerSearcher;
-import com.synopys.integration.alert.channel.api.issue.model.IssueSearchResult;
+import com.synopys.integration.alert.channel.api.issue.model.ActionableIssueSearchResult;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueSearchResult;
 
-@Component
 public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
-    @Override
-    protected List<IssueSearchResult<String>> findIssuesByProject(LinkableItem provider, LinkableItem project) throws AlertException {
-        // FIXME implement
-        return List.of();
+    private final String jiraProjectKey;
+    private final IssueSearchService issueSearchService;
+    private final JiraIssueAlertPropertiesManager issuePropertiesManager;
+
+    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager) {
+        this.jiraProjectKey = jiraProjectKey;
+        this.issueSearchService = issueSearchService;
+        this.issuePropertiesManager = issuePropertiesManager;
     }
 
     @Override
-    protected List<IssueSearchResult<String>> findIssuesByProjectAndVersion(LinkableItem provider, LinkableItem project, LinkableItem projectVersion) throws AlertException {
-        // FIXME implement
-        return List.of();
+    protected List<ProjectIssueSearchResult<String>> findProjectIssues(LinkableItem provider, LinkableItem project) throws AlertException {
+        String jqlString = JqlStringCreator.createBlackDuckProjectIssuesSearchString(jiraProjectKey, provider, project);
+        return findIssues(jqlString, provider, project);
     }
 
     @Override
-    protected List<IssueSearchResult<String>> findIssuesByComponent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion) throws AlertException {
-        // FIXME implement
-        return List.of();
+    protected List<ProjectIssueSearchResult<String>> findProjectVersionIssues(LinkableItem provider, LinkableItem project, LinkableItem projectVersion) throws AlertException {
+        String jqlString = JqlStringCreator.createBlackDuckProjectVersionIssuesSearchString(jiraProjectKey, provider, project, projectVersion);
+        return findIssues(jqlString, provider, project);
     }
 
     @Override
-    protected IssueSearchResult<String> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
-        // FIXME implement
-        return new IssueSearchResult<>(null, projectIssueModel, ItemOperation.ADD);
+    protected List<ProjectIssueSearchResult<String>> findIssuesByComponent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, LinkableItem component, @Nullable LinkableItem componentVersion) throws AlertException {
+        String jqlString = JqlStringCreator.createBlackDuckComponentIssuesSearchString(jiraProjectKey, provider, project, projectVersion, component, componentVersion);
+        return findIssues(jqlString, provider, project);
+    }
+
+    @Override
+    protected ActionableIssueSearchResult<String> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+        LinkableItem provider = projectIssueModel.getProvider();
+        LinkableItem project = projectIssueModel.getProject();
+        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
+
+        ComponentConcern componentConcern = bomComponent.getComponentConcerns()
+                                                .stream()
+                                                .findAny()
+                                                .orElseThrow(() -> new AlertRuntimeException("Unable to search for issue. Missing required component concern"));
+
+        String jqlString = JqlStringCreator.createBlackDuckComponentConcernIssuesSearchString(
+            jiraProjectKey,
+            provider,
+            project,
+            projectIssueModel.getProjectVersion().orElse(null),
+            bomComponent.getComponent(),
+            bomComponent.getComponentVersion().orElse(null),
+            componentConcern
+        );
+
+        List<IssueResponseModel> issueResponseModels = queryForIssues(jqlString);
+        int foundIssuesCount = issueResponseModels.size();
+
+        String issueId = null;
+        if (foundIssuesCount == 1) {
+            issueId = issueResponseModels.get(0).getId();
+        } else if (foundIssuesCount > 1) {
+            throw new AlertException("Expect to find a unique issue, but more than one issue was found");
+        }
+
+        return new ActionableIssueSearchResult<>(issueId, projectIssueModel, ItemOperation.ADD);
+    }
+
+    private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, LinkableItem provider, LinkableItem project) throws AlertException {
+        List<IssueResponseModel> issueResponseModels = queryForIssues(jqlString);
+        return createResultsFromExistingIssues(provider, project, issueResponseModels);
+    }
+
+    private List<IssueResponseModel> queryForIssues(String jql) throws AlertException {
+        try {
+            IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssues(jql);
+            return issueSearchResponseModel.getIssues();
+        } catch (IntegrationException e) {
+            throw new AlertException("Failed to query for Jira issues", e);
+        }
+    }
+
+    private List<ProjectIssueSearchResult<String>> createResultsFromExistingIssues(LinkableItem provider, LinkableItem project, List<IssueResponseModel> issueResponseModels) throws AlertException {
+        List<ProjectIssueSearchResult<String>> searchResults = new ArrayList<>();
+        for (IssueResponseModel model : issueResponseModels) {
+            ProjectIssueSearchResult<String> resultFromExistingIssue = createResultFromExistingIssue(model, provider, project);
+            searchResults.add(resultFromExistingIssue);
+        }
+        return searchResults;
+    }
+
+    private ProjectIssueSearchResult<String> createResultFromExistingIssue(IssueResponseModel issue, LinkableItem provider, LinkableItem project) throws AlertException {
+        JiraIssueSearchProperties issueProperties = issuePropertiesManager.retrieveIssueProperties(issue.getKey());
+
+        String nullableSubComponentName = issueProperties.getSubComponentName();
+        String nullableSubComponentValue = issueProperties.getSubComponentValue();
+        LinkableItem componentVersion = null;
+        if (StringUtils.isNotBlank(nullableSubComponentName) && StringUtils.isNotBlank(nullableSubComponentValue)) {
+            componentVersion = new LinkableItem(nullableSubComponentName, nullableSubComponentValue);
+        }
+
+        LinkableItem projectVersion = new LinkableItem(issueProperties.getSubTopicName(), issueProperties.getSubTopicValue());
+        BomComponentDetails bomComponent = createBomComponentDetails(
+            new LinkableItem(issueProperties.getComponentName(), issueProperties.getComponentValue()),
+            componentVersion
+        );
+        ProjectIssueModel projectIssueModel = new ProjectIssueModel(provider, project, projectVersion, bomComponent);
+        return new ProjectIssueSearchResult<>(issue.getId(), projectIssueModel);
+    }
+
+    private BomComponentDetails createBomComponentDetails(LinkableItem component, @Nullable LinkableItem componentVersion) {
+        return new BomComponentDetails(
+            component,
+            componentVersion,
+            List.of(),
+            new LinkableItem("License", "Unknown License"),
+            "Unknown Usage",
+            List.of(),
+            ""
+        );
     }
 
 }
