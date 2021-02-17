@@ -198,6 +198,7 @@ public class AlertProperties {
 
     public Optional<String> getServerUrl() {
         try {
+            // TODO investigate using ServletUriComponentsBuilder.fromCurrentRequest() to replace how we construct the URL's
             String hostName = getAlertHostName().orElse("localhost");
             String port = getPublicServerPort().orElse(getServerPort().orElse(""));
             String path = getContextPath().orElse("");
@@ -211,7 +212,8 @@ public class AlertProperties {
             } else {
                 url = new URL(protocol, hostName, path);
             }
-            return Optional.of(url.toString());
+            String urlString = StringUtils.appendIfMissing(url.toString(), "/");
+            return Optional.of(urlString);
         } catch (NumberFormatException | MalformedURLException ex) {
             return Optional.empty();
         }
