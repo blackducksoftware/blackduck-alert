@@ -31,7 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -60,21 +61,31 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
-public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJobDetailsModel, String> {
+public class JiraCloudMessageSender extends IssueTrackerMessageSender<String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
+    private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
 
-    public JiraCloudMessageSender(IssueService issueService, JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator, JiraErrorMessageUtility jiraErrorMessageUtility) {
+    public JiraCloudMessageSender(
+        JiraCloudJobDetailsModel distributionDetails,
+        IssueService issueService,
+        JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
+        JiraIssueAlertPropertiesManager issuePropertiesManager,
+        JiraErrorMessageUtility jiraErrorMessageUtility
+    ) {
+        this.distributionDetails = distributionDetails;
         this.issueService = issueService;
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
+        this.issuePropertiesManager = issuePropertiesManager;
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
     }
 
     @Override
-    protected List<IssueTrackerIssueResponseModel> createIssues(JiraCloudJobDetailsModel details, List<IssueCreationModel> issueCreationModels) throws AlertException {
+    protected List<IssueTrackerIssueResponseModel> createIssues(List<IssueCreationModel> issueCreationModels) throws AlertException {
         List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
         for (IssueCreationModel alertIssueCreationModel : issueCreationModels) {
             // FIXME get all field values
@@ -82,14 +93,14 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJ
                 alertIssueCreationModel.getTitle(),
                 alertIssueCreationModel.getDescription(),
                 null,
-                details.getIssueType(),
+                distributionDetails.getIssueType(),
                 null,
-                details.getCustomFields()
+                distributionDetails.getCustomFields()
             );
             IssueCreationRequestModel creationRequestModel = new IssueCreationRequestModel(
-                details.getIssueCreatorEmail(),
-                details.getIssueType(),
-                details.getProjectNameOrKey(),
+                distributionDetails.getIssueCreatorEmail(),
+                distributionDetails.getIssueType(),
+                distributionDetails.getProjectNameOrKey(),
                 fieldsBuilder,
                 List.of()
             );
@@ -100,13 +111,13 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJ
     }
 
     @Override
-    protected List<IssueTrackerIssueResponseModel> transitionIssues(JiraCloudJobDetailsModel details, List<IssueTransitionModel<String>> issueTransitionModels) throws AlertException {
+    protected List<IssueTrackerIssueResponseModel> transitionIssues(List<IssueTransitionModel<String>> issueTransitionModels) throws AlertException {
         // FIXME implement
         return List.of();
     }
 
     @Override
-    protected List<IssueTrackerIssueResponseModel> commentOnIssues(JiraCloudJobDetailsModel details, List<IssueCommentModel<String>> issueCommentModels) throws AlertException {
+    protected List<IssueTrackerIssueResponseModel> commentOnIssues(List<IssueCommentModel<String>> issueCommentModels) throws AlertException {
         List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
         for (IssueCommentModel<String> issueCommentModel : issueCommentModels) {
             ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
@@ -127,12 +138,23 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJ
 
     private IssueTrackerIssueResponseModel createIssue(IssueCreationModel alertIssueModel, IssueCreationRequestModel creationRequest) throws AlertException {
         IssueResponseModel createdIssue;
+        AlertIssueOrigin issueOrigin = null;
         try {
             IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(creationRequest);
             createdIssue = issueService.getIssue(issueCreationResponseModel.getKey());
 
             String issueKey = createdIssue.getKey();
             logger.debug("Created new Jira Cloud issue: {}", issueKey);
+
+            Optional<ProjectIssueModel> optionalSource = alertIssueModel.getSource();
+            if (optionalSource.isPresent()) {
+                ProjectIssueModel alertIssueSource = optionalSource.get();
+                JiraIssueSearchProperties searchProperties = createSearchProperties(alertIssueSource);
+                issuePropertiesManager.assignIssueProperties(issueKey, searchProperties);
+
+                // FIXME figure out if alertIssueOrigin is required
+                issueOrigin = createIssueOrigin(alertIssueSource);
+            }
 
             addComments(issueKey, List.of("This issue was automatically created by Alert."));
             addComments(issueKey, alertIssueModel.getPostCreateComments());
@@ -143,13 +165,38 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJ
             throw new AlertException(e);
         }
 
-        // FIXME figure out if alertIssueOrigin is required
-        AlertIssueOrigin issueOrigin = null;
-        Optional<ProjectIssueModel> optionalSource = alertIssueModel.getSource();
-        if (optionalSource.isPresent()) {
-            issueOrigin = createIssueOrigin(optionalSource.get());
-        }
         return new IssueTrackerIssueResponseModel(issueOrigin, createdIssue.getKey(), createdIssue.getSelf(), null, IssueOperation.OPEN);
+    }
+
+    // TODO consider adding this at search time
+    private JiraIssueSearchProperties createSearchProperties(ProjectIssueModel alertIssueSource) {
+        LinkableItem provider = alertIssueSource.getProvider();
+        LinkableItem project = alertIssueSource.getProject();
+
+        LinkableItem projectVersion = alertIssueSource.getProjectVersion()
+                                          .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
+
+        BomComponentDetails bomComponent = alertIssueSource.getBomComponent();
+        LinkableItem component = bomComponent.getComponent();
+        String componentVersionLabel = bomComponent.getComponentVersion().map(LinkableItem::getLabel).orElse(null);
+        String componentVersionName = bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null);
+
+        return new JiraIssueSearchProperties(
+            provider.getLabel(),
+            provider.getUrl().orElse(null),
+            project.getLabel(),
+            project.getValue(),
+            projectVersion.getLabel(),
+            projectVersion.getValue(),
+            // FIXME get category
+            null,
+            component.getLabel(),
+            component.getValue(),
+            componentVersionLabel,
+            componentVersionName,
+            // FIXME get additional key
+            null
+        );
     }
 
     private void addComments(String issueKey, Collection<String> groupedComments) throws AlertException {

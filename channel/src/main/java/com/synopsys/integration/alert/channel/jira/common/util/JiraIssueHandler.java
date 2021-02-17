@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;

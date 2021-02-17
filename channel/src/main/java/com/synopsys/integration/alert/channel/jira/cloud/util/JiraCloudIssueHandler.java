@@ -30,9 +30,9 @@ import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDes
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraIssueHandler;
 import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;

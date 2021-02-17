@@ -23,7 +23,6 @@
 package com.synopys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -31,33 +30,27 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopys.integration.alert.channel.api.DistributionChannelV2;
-import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 
 /**
  * @param <D> The type of job details relevant to this channel.
  * @param <T> The {@link Serializable} type of an issue-tracker issue's ID.
  */
 public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannelV2<D> {
+    private final IssueTrackerProcessorFactory<D, T> processorFactory;
     private final IssueTrackerResponsePostProcessor responsePostProcessor;
 
-    protected IssueTrackerChannel(IssueTrackerResponsePostProcessor responsePostProcessor) {
+    protected IssueTrackerChannel(IssueTrackerProcessorFactory<D, T> processorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
+        this.processorFactory = processorFactory;
         this.responsePostProcessor = responsePostProcessor;
     }
 
     @Override
     public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
-        IssueTrackerModelExtractor<T> modelExtractor = createModelExtractor(distributionDetails);
-        List<IssueTrackerModelHolder<T>> channelMessages = modelExtractor.extractIssueTrackerModels(messages);
-
-        IssueTrackerMessageSender<D, T> messageSender = createMessageSender(distributionDetails);
-        IssueTrackerResponse issueTrackerResponse = messageSender.sendMessages(distributionDetails, channelMessages);
+        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails);
+        IssueTrackerResponse issueTrackerResponse = processor.processMessages(messages);
 
         responsePostProcessor.postProcess(issueTrackerResponse);
         return new MessageResult(issueTrackerResponse.getStatusMessage());
     }
-
-    protected abstract IssueTrackerModelExtractor<T> createModelExtractor(D distributionDetails);
-
-    protected abstract IssueTrackerMessageSender<D, T> createMessageSender(D distributionDetails);
 
 }

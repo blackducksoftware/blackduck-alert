@@ -20,13 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.util;
+package com.synopsys.integration.alert.channel.jira2.common;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -37,9 +39,11 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
+@Component
 public class JiraErrorMessageUtility {
     private final Gson gson;
 
+    @Autowired
     public JiraErrorMessageUtility(Gson gson) {
         this.gson = gson;
     }

@@ -29,34 +29,32 @@ import java.util.List;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
-import com.synopys.integration.alert.channel.api.ChannelMessageSender;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 
-public abstract class IssueTrackerMessageSender<D extends DistributionJobDetailsModel, T extends Serializable> implements ChannelMessageSender<D, IssueTrackerModelHolder<T>, IssueTrackerResponse> {
-    @Override
-    public final IssueTrackerResponse sendMessages(D details, List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
+// TODO consider renaming this
+public abstract class IssueTrackerMessageSender<T extends Serializable> {
+    public final IssueTrackerResponse sendMessages(List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
         List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
         for (IssueTrackerModelHolder<T> channelMessage : channelMessages) {
-            List<IssueTrackerIssueResponseModel> creationResponses = createIssues(details, channelMessage.getIssueCreationModels());
+            List<IssueTrackerIssueResponseModel> creationResponses = createIssues(channelMessage.getIssueCreationModels());
             responses.addAll(creationResponses);
 
-            List<IssueTrackerIssueResponseModel> transitionResponses = transitionIssues(details, channelMessage.getIssueTransitionModels());
+            List<IssueTrackerIssueResponseModel> transitionResponses = transitionIssues(channelMessage.getIssueTransitionModels());
             responses.addAll(transitionResponses);
 
-            List<IssueTrackerIssueResponseModel> commentResponses = commentOnIssues(details, channelMessage.getIssueCommentModels());
+            List<IssueTrackerIssueResponseModel> commentResponses = commentOnIssues(channelMessage.getIssueCommentModels());
             responses.addAll(commentResponses);
         }
         return new IssueTrackerResponse("Success", responses);
     }
 
-    protected abstract List<IssueTrackerIssueResponseModel> createIssues(D details, List<IssueCreationModel> issueCreationModels) throws AlertException;
+    protected abstract List<IssueTrackerIssueResponseModel> createIssues(List<IssueCreationModel> issueCreationModels) throws AlertException;
 
-    protected abstract List<IssueTrackerIssueResponseModel> transitionIssues(D details, List<IssueTransitionModel<T>> issueTransitionModels) throws AlertException;
+    protected abstract List<IssueTrackerIssueResponseModel> transitionIssues(List<IssueTransitionModel<T>> issueTransitionModels) throws AlertException;
 
-    protected abstract List<IssueTrackerIssueResponseModel> commentOnIssues(D details, List<IssueCommentModel<T>> issueCommentModels) throws AlertException;
+    protected abstract List<IssueTrackerIssueResponseModel> commentOnIssues(List<IssueCommentModel<T>> issueCommentModels) throws AlertException;
 
 }

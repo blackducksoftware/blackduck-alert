@@ -18,8 +18,8 @@ import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchPropert
 import com.synopsys.integration.alert.channel.jira.common.JiraTestConfigHelper;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;

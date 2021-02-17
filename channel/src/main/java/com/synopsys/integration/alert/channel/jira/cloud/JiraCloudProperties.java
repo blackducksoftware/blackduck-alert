@@ -25,8 +25,11 @@ package com.synopsys.integration.alert.channel.jira.cloud;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfig;
 import com.synopsys.integration.jira.common.cloud.configuration.JiraCloudRestConfigBuilder;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
@@ -40,6 +43,15 @@ public class JiraCloudProperties implements IssueTrackerServiceConfig {
     private final String username;
     private final boolean pluginCheckDisabled;
     private final ProxyInfo proxyInfo;
+
+    public static JiraCloudProperties fromConfig(ConfigurationModel configurationModel, ProxyInfo proxyInfo) {
+        FieldUtility fieldUtility = new FieldUtility(configurationModel.getCopyOfKeyToFieldMap());
+        String url = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_URL);
+        String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxyInfo);
+    }
 
     public JiraCloudProperties(String url, String accessToken, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo) {
         this.url = url;
