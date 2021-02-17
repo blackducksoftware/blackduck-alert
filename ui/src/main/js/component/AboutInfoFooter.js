@@ -51,7 +51,7 @@ class AboutInfoFooter extends React.Component {
 
     getFontAwesomeIcon() {
         const { latestMessages } = this.props;
-        if (this.hasErrorMessages(latestMessages) || this.hasWarninigMessages(latestMessages)) {
+        if (this.hasErrorMessages(latestMessages) || this.hasWarningMessages(latestMessages)) {
             return 'exclamation-triangle';
         }
         return 'check-circle';
@@ -61,7 +61,8 @@ class AboutInfoFooter extends React.Component {
         const { latestMessages } = this.props;
         if (this.hasErrorMessages(latestMessages)) {
             return 'statusPopoverError errorStatus';
-        } if (this.hasWarninigMessages(latestMessages)) {
+        }
+        if (this.hasWarningMessages(latestMessages)) {
             return 'warningStatus';
         }
         return 'validStatus';
@@ -71,7 +72,7 @@ class AboutInfoFooter extends React.Component {
         return this.containsSeverity(messages, 'ERROR');
     }
 
-    hasWarninigMessages(messages) {
+    hasWarningMessages(messages) {
         return this.containsSeverity(messages, 'WARNING');
     }
 
@@ -175,7 +176,7 @@ class AboutInfoFooter extends React.Component {
                     {version}
                 </span>
                 <span className="copyright">
-                    &nbsp;© 2020&nbsp;
+                    &nbsp;© 2021&nbsp;
                     <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
                     &nbsp;All rights reserved
                 </span>
