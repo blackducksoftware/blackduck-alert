@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.jira2.common.JiraMessageFormatter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerChannel;
+import com.synopys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
 
 @Component
@@ -41,15 +42,15 @@ public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsM
     }
 
     @Override
-    protected JiraCloudModelExtractor createModelExtractor(JiraCloudJobDetailsModel distributionDetails) {
+    protected IssueTrackerModelExtractor<String> createModelExtractor(JiraCloudJobDetailsModel distributionDetails) {
         // FIXME initialize properly
         JiraCloudSearcher jiraCloudSearcher = new JiraCloudSearcher(distributionDetails.getProjectNameOrKey(), null, null);
-        return new JiraCloudModelExtractor(jiraMessageFormatter, jiraCloudSearcher);
+        return new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraCloudSearcher);
     }
 
     @Override
     protected JiraCloudMessageSender createMessageSender(JiraCloudJobDetailsModel distributionDetails) {
-        return new JiraCloudMessageSender();
+        return new JiraCloudMessageSender(null);
     }
 
 }

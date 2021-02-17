@@ -26,27 +26,33 @@ import java.io.Serializable;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class ProjectIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
+public class ExistingIssueDetails<T extends Serializable> extends AlertSerializableModel {
     private final T issueId;
-    private final ExistingIssueDetails<T> existingIssueDetails;
-    private final ProjectIssueModel projectIssueModel;
+    private final String issueKey;
+    private final String issueSummary;
+    private final String issueLink;
 
-    public ProjectIssueSearchResult(T issueId, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
+    public ExistingIssueDetails(T issueId, String issueKey, String issueSummary, String issueLink) {
         this.issueId = issueId;
-        this.existingIssueDetails = existingIssueDetails;
-        this.projectIssueModel = projectIssueModel;
+        this.issueKey = issueKey;
+        this.issueSummary = issueSummary;
+        this.issueLink = issueLink;
     }
 
     public T getIssueId() {
         return issueId;
     }
 
-    public ExistingIssueDetails<T> getExistingIssueDetails() {
-        return existingIssueDetails;
+    public String getIssueKey() {
+        return issueKey;
     }
 
-    public ProjectIssueModel getProjectIssueModel() {
-        return projectIssueModel;
+    public String getIssueSummary() {
+        return issueSummary;
+    }
+
+    public String getIssueLink() {
+        return issueLink;
     }
 
 }

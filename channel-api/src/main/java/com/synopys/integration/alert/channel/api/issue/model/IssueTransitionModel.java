@@ -28,21 +28,26 @@ import java.util.List;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
-    private final T issueId;
+    private final ExistingIssueDetails<T> existingIssueDetails;
     private final IssueTransitionType transitionType;
     private final List<String> postTransitionComments;
 
     private final ProjectIssueModel source;
 
-    public IssueTransitionModel(T issueId, IssueTransitionType transitionType, List<String> postTransitionComments, ProjectIssueModel source) {
-        this.issueId = issueId;
+    public IssueTransitionModel(
+        ExistingIssueDetails<T> existingIssueDetails,
+        IssueTransitionType transitionType,
+        List<String> postTransitionComments,
+        ProjectIssueModel source
+    ) {
+        this.existingIssueDetails = existingIssueDetails;
         this.transitionType = transitionType;
         this.postTransitionComments = postTransitionComments;
         this.source = source;
     }
 
-    public T getIssueId() {
-        return issueId;
+    public ExistingIssueDetails<T> getExistingIssueDetails() {
+        return existingIssueDetails;
     }
 
     public IssueTransitionType getTransitionType() {

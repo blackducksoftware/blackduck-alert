@@ -28,6 +28,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira2.common.JqlStringCreator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -40,9 +42,11 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
+import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerSearcher;
 import com.synopys.integration.alert.channel.api.issue.model.ActionableIssueSearchResult;
+import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueSearchResult;
 
@@ -120,11 +124,13 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         List<IssueResponseModel> issueResponseModels = queryForIssues(jqlString);
         int foundIssuesCount = issueResponseModels.size();
 
-        String issueId = null;
+        ExistingIssueDetails<String> existingIssueDetails = null;
         ItemOperation operation;
 
         if (foundIssuesCount == 1) {
-            issueId = issueResponseModels.get(0).getId();
+            IssueResponseModel issue = issueResponseModels.get(0);
+            existingIssueDetails = new ExistingIssueDetails<>(issue.getId(), issue.getKey(), extractSummary(issue), issue.getSelf());
+
             operation = ItemOperation.UPDATE;
 
             // TODO we might need more granularity in policy / vulnerability concerns at the bom component level
@@ -142,7 +148,7 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
             operation = ItemOperation.ADD;
         }
 
-        return new ActionableIssueSearchResult<>(issueId, projectIssueModel, operation);
+        return new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, operation);
     }
 
     private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, LinkableItem provider, LinkableItem project) throws AlertException {
@@ -194,7 +200,8 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         BomComponentDetails relevantDetails
     ) {
         ProjectIssueModel projectIssueModel = new ProjectIssueModel(provider, project, projectVersion, relevantDetails);
-        return new ProjectIssueSearchResult<>(issue.getId(), projectIssueModel);
+        ExistingIssueDetails<String> issueDetails = new ExistingIssueDetails<>(issue.getId(), issue.getKey(), extractSummary(issue), issue.getSelf());
+        return new ProjectIssueSearchResult<>(issue.getId(), issueDetails, projectIssueModel);
     }
 
     private BomComponentDetails createMinimalBomComponentDetails(LinkableItem component, @Nullable LinkableItem componentVersion) {
@@ -207,6 +214,20 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
             List.of(),
             ""
         );
+    }
+
+    // FIXME update int-jira-common
+    private String extractSummary(IssueResponseModel issue) {
+        IssueFieldsComponent fields = issue.getFields();
+        JsonElement fieldsElement = fields.getJsonElement();
+        if (fieldsElement.isJsonObject()) {
+            JsonObject fieldsObject = fieldsElement.getAsJsonObject();
+            JsonElement summaryElement = fieldsObject.get("summary");
+            if (null != summaryElement && summaryElement.isJsonPrimitive()) {
+                return summaryElement.getAsJsonPrimitive().getAsString();
+            }
+        }
+        return "Unknown Summary";
     }
 
 }

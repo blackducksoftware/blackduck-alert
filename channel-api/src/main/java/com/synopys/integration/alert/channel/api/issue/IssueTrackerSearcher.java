@@ -114,7 +114,7 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
     }
 
     private ActionableIssueSearchResult<T> convertToOperationResult(ProjectIssueSearchResult<T> projectIssueSearchResult, ItemOperation operation) {
-        return new ActionableIssueSearchResult<>(projectIssueSearchResult.getIssueId(), projectIssueSearchResult.getProjectIssueModel(), operation);
+        return new ActionableIssueSearchResult<>(projectIssueSearchResult.getExistingIssueDetails(), projectIssueSearchResult.getProjectIssueModel(), operation);
     }
 
 }

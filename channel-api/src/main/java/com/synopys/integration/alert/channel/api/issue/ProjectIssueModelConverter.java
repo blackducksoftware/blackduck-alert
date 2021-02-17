@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopys.integration.alert.channel.api.convert.BomComponentDetailConverter;
 import com.synopys.integration.alert.channel.api.convert.LinkableItemConverter;
+import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
@@ -83,7 +84,7 @@ public class ProjectIssueModelConverter {
         return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), projectIssueModel);
     }
 
-    public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
+    public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
         IssueTransitionType transitionType;
         if (ItemOperation.ADD.equals(requiredOperation)) {
             transitionType = IssueTransitionType.REOPEN;
@@ -97,10 +98,10 @@ public class ProjectIssueModelConverter {
         commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
 
         List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueTransitionModel<>(issueId, transitionType, chunkedComments, projectIssueModel);
+        return new IssueTransitionModel<>(existingIssueDetails, transitionType, chunkedComments, projectIssueModel);
     }
 
-    public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(T issueId, ProjectIssueModel projectIssueModel) {
+    public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
 
         LinkableItem provider = projectIssueModel.getProvider();
@@ -121,7 +122,7 @@ public class ProjectIssueModelConverter {
         }
 
         List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueCommentModel<>(issueId, chunkedComments, projectIssueModel);
+        return new IssueCommentModel<>(existingIssueDetails, chunkedComments, projectIssueModel);
     }
 
     private String createTruncatedTitle(ProjectIssueModel projectIssueModel) {
