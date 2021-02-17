@@ -20,23 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.model;
+package com.synopsys.integration.alert.channel.jira2.common.model;
 
-public class JiraResolvedCustomField {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class CustomFieldDefinitionModel extends AlertSerializableModel {
     private final String fieldId;
-    private final Object fieldValue;
+    private final String fieldType;
 
-    public JiraResolvedCustomField(String fieldId, Object fieldValue) {
+    public CustomFieldDefinitionModel(String fieldId, String fieldType) {
         this.fieldId = fieldId;
-        this.fieldValue = fieldValue;
+        this.fieldType = fieldType;
     }
 
     public String getFieldId() {
         return fieldId;
     }
 
-    public Object getFieldValue() {
-        return fieldValue;
+    public String getFieldType() {
+        return fieldType;
     }
 
 }

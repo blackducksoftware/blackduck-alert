@@ -22,11 +22,17 @@
  */
 package com.synopsys.integration.alert.channel.jira2.cloud;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
@@ -40,8 +46,13 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraC
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
+import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
+import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerMessageSender;
 import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
@@ -50,16 +61,42 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionMode
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
 public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJobDetailsModel, String> {
-    private final IssueService issueService;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public JiraCloudMessageSender(IssueService issueService) {
+    private final IssueService issueService;
+    private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
+    private final JiraErrorMessageUtility jiraErrorMessageUtility;
+
+    public JiraCloudMessageSender(IssueService issueService, JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator, JiraErrorMessageUtility jiraErrorMessageUtility) {
         this.issueService = issueService;
+        this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
+        this.jiraErrorMessageUtility = jiraErrorMessageUtility;
     }
 
     @Override
     protected List<IssueTrackerIssueResponseModel> createIssues(JiraCloudJobDetailsModel details, List<IssueCreationModel> issueCreationModels) throws AlertException {
-        // FIXME implement
-        return List.of();
+        List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
+        for (IssueCreationModel alertIssueCreationModel : issueCreationModels) {
+            // FIXME get all field values
+            IssueRequestModelFieldsMapBuilder fieldsBuilder = jiraIssueCreationRequestCreator.createIssueRequestModel(
+                alertIssueCreationModel.getTitle(),
+                alertIssueCreationModel.getDescription(),
+                null,
+                details.getIssueType(),
+                null,
+                details.getCustomFields()
+            );
+            IssueCreationRequestModel creationRequestModel = new IssueCreationRequestModel(
+                details.getIssueCreatorEmail(),
+                details.getIssueType(),
+                details.getProjectNameOrKey(),
+                fieldsBuilder,
+                List.of()
+            );
+            IssueTrackerIssueResponseModel responseModel = createIssue(alertIssueCreationModel, creationRequestModel);
+            responses.add(responseModel);
+        }
+        return responses;
     }
 
     @Override
@@ -73,24 +110,56 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<JiraCloudJ
         List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
         for (IssueCommentModel<String> issueCommentModel : issueCommentModels) {
             ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
-            for (String comment : issueCommentModel.getComments()) {
-                addComment(existingIssueDetails.getIssueKey(), comment);
-            }
+            addComments(existingIssueDetails.getIssueKey(), issueCommentModel.getComments());
 
             AlertIssueOrigin alertIssueOrigin = createIssueOrigin(issueCommentModel.getSource());
-            IssueTrackerIssueResponseModel commentResponse = new IssueTrackerIssueResponseModel(alertIssueOrigin, existingIssueDetails.getIssueKey(), existingIssueDetails.getIssueLink(), existingIssueDetails.getIssueSummary(),
-                IssueOperation.UPDATE);
+            IssueTrackerIssueResponseModel commentResponse = new IssueTrackerIssueResponseModel(
+                alertIssueOrigin,
+                existingIssueDetails.getIssueKey(),
+                existingIssueDetails.getIssueLink(),
+                existingIssueDetails.getIssueSummary(),
+                IssueOperation.UPDATE
+            );
             responses.add(commentResponse);
         }
         return responses;
     }
 
-    private void addComment(String issueKey, String commentContent) throws AlertException {
-        IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, commentContent);
+    private IssueTrackerIssueResponseModel createIssue(IssueCreationModel alertIssueModel, IssueCreationRequestModel creationRequest) throws AlertException {
+        IssueResponseModel createdIssue;
         try {
-            issueService.addComment(issueCommentRequestModel);
+            IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(creationRequest);
+            createdIssue = issueService.getIssue(issueCreationResponseModel.getKey());
+
+            String issueKey = createdIssue.getKey();
+            logger.debug("Created new Jira Cloud issue: {}", issueKey);
+
+            addComments(issueKey, List.of("This issue was automatically created by Alert."));
+            addComments(issueKey, alertIssueModel.getPostCreateComments());
+        } catch (IntegrationRestException restException) {
+            // FIXME include issue creation field key
+            throw jiraErrorMessageUtility.improveRestException(restException, null, creationRequest.getReporterEmail());
         } catch (IntegrationException e) {
-            throw new AlertException("Failed to add a comment in Jira", e);
+            throw new AlertException(e);
+        }
+
+        // FIXME figure out if alertIssueOrigin is required
+        AlertIssueOrigin issueOrigin = null;
+        Optional<ProjectIssueModel> optionalSource = alertIssueModel.getSource();
+        if (optionalSource.isPresent()) {
+            issueOrigin = createIssueOrigin(optionalSource.get());
+        }
+        return new IssueTrackerIssueResponseModel(issueOrigin, createdIssue.getKey(), createdIssue.getSelf(), null, IssueOperation.OPEN);
+    }
+
+    private void addComments(String issueKey, Collection<String> groupedComments) throws AlertException {
+        for (String comment : groupedComments) {
+            IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
+            try {
+                issueService.addComment(issueCommentRequestModel);
+            } catch (IntegrationException e) {
+                throw new AlertException("Failed to add a comment in Jira", e);
+            }
         }
     }
 

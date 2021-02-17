@@ -24,6 +24,7 @@ package com.synopsys.integration.alert.channel.jira.common.model;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 
 public class JiraIssueConfig extends IssueConfig {

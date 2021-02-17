@@ -50,7 +50,7 @@ public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsM
 
     @Override
     protected JiraCloudMessageSender createMessageSender(JiraCloudJobDetailsModel distributionDetails) {
-        return new JiraCloudMessageSender(null);
+        return new JiraCloudMessageSender(null, null, null);
     }
 
 }

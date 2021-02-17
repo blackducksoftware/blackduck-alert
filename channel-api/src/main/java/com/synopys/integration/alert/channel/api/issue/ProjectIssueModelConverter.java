@@ -25,6 +25,7 @@ package com.synopys.integration.alert.channel.api.issue;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,6 +49,7 @@ import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 public class ProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SPACE = 20;
     public static final LinkableItem MISSING_PROJECT_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
+    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
 
     private final IssueTrackerMessageFormatter formatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
@@ -79,9 +81,15 @@ public class ProjectIssueModelConverter {
         List<String> bomComponentPieces = bomComponentDetailConverter.gatherBomComponentPieces(bomComponent);
         bomComponentPieces.forEach(descriptionBuilder::append);
 
-        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", formatter.getMaxCommentLength());
+        int newChunkSize = formatter.getMaxCommentLength() - DESCRIPTION_CONTINUED_TEXT.length() - formatter.getLineSeparator().length();
+        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", newChunkSize);
 
-        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), projectIssueModel);
+        List<String> postCreateComments = rechunkedDescription.getRemainingChunks()
+                                              .stream()
+                                              .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
+                                              .collect(Collectors.toList());
+
+        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel);
     }
 
     public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
