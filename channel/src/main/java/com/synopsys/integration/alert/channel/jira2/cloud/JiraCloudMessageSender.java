@@ -31,7 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -46,6 +48,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
@@ -159,13 +162,15 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<String> {
             addComments(issueKey, List.of("This issue was automatically created by Alert."));
             addComments(issueKey, alertIssueModel.getPostCreateComments());
         } catch (IntegrationRestException restException) {
-            // FIXME include issue creation field key
-            throw jiraErrorMessageUtility.improveRestException(restException, null, creationRequest.getReporterEmail());
+            throw jiraErrorMessageUtility.improveRestException(restException, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
         } catch (IntegrationException e) {
+            // FIXME this will always catch the previous exception
             throw new AlertException(e);
         }
 
-        return new IssueTrackerIssueResponseModel(issueOrigin, createdIssue.getKey(), createdIssue.getSelf(), null, IssueOperation.OPEN);
+        String issueCallbackLink = JiraCallbackUtils.createUILink(createdIssue);
+        // FIXME get summary
+        return new IssueTrackerIssueResponseModel(issueOrigin, createdIssue.getKey(), issueCallbackLink, null, IssueOperation.OPEN);
     }
 
     // TODO consider adding this at search time
@@ -181,6 +186,20 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<String> {
         String componentVersionLabel = bomComponent.getComponentVersion().map(LinkableItem::getLabel).orElse(null);
         String componentVersionName = bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null);
 
+        ComponentConcern arbitraryComponentConcern = bomComponent.getComponentConcerns()
+                                                         .stream()
+                                                         .findAny()
+                                                         .orElseThrow(() -> new AlertRuntimeException("Missing component-concern"));
+        ComponentConcernType concernType = arbitraryComponentConcern.getType();
+        // TODO abstract this String construction also done in JqlStringCreator
+        String category = StringUtils.capitalize(concernType.name().toLowerCase());
+
+        String additionalKey = null;
+        if (ComponentConcernType.POLICY.equals(concernType)) {
+            // TODO abstract this String construction also done in JqlStringCreator
+            additionalKey = String.format("Policy Violated%s", arbitraryComponentConcern.getName());
+        }
+
         return new JiraIssueSearchProperties(
             provider.getLabel(),
             provider.getUrl().orElse(null),
@@ -188,14 +207,12 @@ public class JiraCloudMessageSender extends IssueTrackerMessageSender<String> {
             project.getValue(),
             projectVersion.getLabel(),
             projectVersion.getValue(),
-            // FIXME get category
-            null,
+            category,
             component.getLabel(),
             component.getValue(),
             componentVersionLabel,
             componentVersionName,
-            // FIXME get additional key
-            null
+            additionalKey
         );
     }
 

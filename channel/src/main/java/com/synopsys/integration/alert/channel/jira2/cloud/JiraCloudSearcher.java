@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
+import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira2.common.JqlStringCreator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -129,7 +130,7 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
 
         if (foundIssuesCount == 1) {
             IssueResponseModel issue = issueResponseModels.get(0);
-            existingIssueDetails = new ExistingIssueDetails<>(issue.getId(), issue.getKey(), extractSummary(issue), issue.getSelf());
+            existingIssueDetails = createExistingIssueDetails(issue);
 
             operation = ItemOperation.UPDATE;
 
@@ -200,7 +201,7 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         BomComponentDetails relevantDetails
     ) {
         ProjectIssueModel projectIssueModel = new ProjectIssueModel(provider, project, projectVersion, relevantDetails);
-        ExistingIssueDetails<String> issueDetails = new ExistingIssueDetails<>(issue.getId(), issue.getKey(), extractSummary(issue), issue.getSelf());
+        ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue);
         return new ProjectIssueSearchResult<>(issue.getId(), issueDetails, projectIssueModel);
     }
 
@@ -214,6 +215,11 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
             List.of(),
             ""
         );
+    }
+
+    private ExistingIssueDetails<String> createExistingIssueDetails(IssueResponseModel issue) {
+        String issueCallbackLink = JiraCallbackUtils.createUILink(issue);
+        return new ExistingIssueDetails<>(issue.getId(), issue.getKey(), extractSummary(issue), issueCallbackLink);
     }
 
     // FIXME update int-jira-common
