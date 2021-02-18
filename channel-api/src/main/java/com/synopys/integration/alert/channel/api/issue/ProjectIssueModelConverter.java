@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
@@ -43,7 +44,6 @@ import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetail
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
-import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionType;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
 public class ProjectIssueModelConverter {
@@ -93,11 +93,11 @@ public class ProjectIssueModelConverter {
     }
 
     public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
-        IssueTransitionType transitionType;
+        IssueOperation issueOperation;
         if (ItemOperation.ADD.equals(requiredOperation)) {
-            transitionType = IssueTransitionType.REOPEN;
+            issueOperation = IssueOperation.OPEN;
         } else {
-            transitionType = IssueTransitionType.RESOLVE;
+            issueOperation = IssueOperation.RESOLVE;
         }
 
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
@@ -106,7 +106,7 @@ public class ProjectIssueModelConverter {
         commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
 
         List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueTransitionModel<>(existingIssueDetails, transitionType, chunkedComments, projectIssueModel);
+        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, chunkedComments, projectIssueModel);
     }
 
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {

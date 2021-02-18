@@ -25,12 +25,12 @@ package com.synopys.integration.alert.channel.api.issue;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.function.ThrowingFunction;
-import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 
 public class IssueTrackerMessageSender<T extends Serializable> {
@@ -50,13 +50,11 @@ public class IssueTrackerMessageSender<T extends Serializable> {
             List<IssueTrackerIssueResponseModel> creationResponses = sendMessages(channelMessage.getIssueCreationModels(), issueCreator::createIssue);
             responses.addAll(creationResponses);
 
-            List<IssueTrackerIssueResponseModel> transitionResponses = sendMessages(channelMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
+            List<IssueTrackerIssueResponseModel> transitionResponses = sendOptionalMessages(channelMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
             responses.addAll(transitionResponses);
 
-            List<IssueCommentModel<T>> issueCommentModels = channelMessage.getIssueCommentModels();
-            for (IssueCommentModel<T> issueCommentModel : issueCommentModels) {
-                issueCommentCreator.commentOnIssue(issueCommentModel).ifPresent(responses::add);
-            }
+            List<IssueTrackerIssueResponseModel> commentResponses = sendOptionalMessages(channelMessage.getIssueCommentModels(), issueCommentCreator::commentOnIssue);
+            responses.addAll(commentResponses);
         }
         return new IssueTrackerResponse("Success", responses);
     }
@@ -66,6 +64,16 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         for (U message : messages) {
             IssueTrackerIssueResponseModel response = sendMessage.apply(message);
             responses.add(response);
+        }
+        return responses;
+    }
+
+    private <U> List<IssueTrackerIssueResponseModel> sendOptionalMessages(List<U> messages, ThrowingFunction<U, Optional<IssueTrackerIssueResponseModel>, AlertException> sendMessage) throws AlertException {
+        List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
+        for (U message : messages) {
+            sendMessage
+                .apply(message)
+                .ifPresent(responses::add);
         }
         return responses;
     }

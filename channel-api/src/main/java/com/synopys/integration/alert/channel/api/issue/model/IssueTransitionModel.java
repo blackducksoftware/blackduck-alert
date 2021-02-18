@@ -25,23 +25,24 @@ package com.synopys.integration.alert.channel.api.issue.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;
-    private final IssueTransitionType transitionType;
+    private final IssueOperation issueOperation;
     private final List<String> postTransitionComments;
 
     private final ProjectIssueModel source;
 
     public IssueTransitionModel(
         ExistingIssueDetails<T> existingIssueDetails,
-        IssueTransitionType transitionType,
+        IssueOperation issueOperation,
         List<String> postTransitionComments,
         ProjectIssueModel source
     ) {
         this.existingIssueDetails = existingIssueDetails;
-        this.transitionType = transitionType;
+        this.issueOperation = issueOperation;
         this.postTransitionComments = postTransitionComments;
         this.source = source;
     }
@@ -50,8 +51,8 @@ public class IssueTransitionModel<T extends Serializable> extends AlertSerializa
         return existingIssueDetails;
     }
 
-    public IssueTransitionType getTransitionType() {
-        return transitionType;
+    public IssueOperation getIssueOperation() {
+        return issueOperation;
     }
 
     public List<String> getPostTransitionComments() {

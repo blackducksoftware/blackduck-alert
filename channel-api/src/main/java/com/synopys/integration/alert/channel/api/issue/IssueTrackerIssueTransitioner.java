@@ -23,12 +23,13 @@
 package com.synopys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 
 public interface IssueTrackerIssueTransitioner<T extends Serializable> {
-    IssueTrackerIssueResponseModel transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException;
+    Optional<IssueTrackerIssueResponseModel> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException;
 
 }

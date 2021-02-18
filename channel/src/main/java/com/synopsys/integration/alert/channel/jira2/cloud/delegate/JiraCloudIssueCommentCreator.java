@@ -32,8 +32,8 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraC
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
-import com.synopys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueCommentCreator;
+import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
 import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 
@@ -43,8 +43,8 @@ public class JiraCloudIssueCommentCreator extends IssueTrackerIssueCommentCreato
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
 
-    public JiraCloudIssueCommentCreator(JiraCloudJobDetailsModel distributionDetails, IssueService issueService, AlertIssueOriginCreator alertIssueOriginCreator) {
-        super(alertIssueOriginCreator);
+    public JiraCloudIssueCommentCreator(IssueTrackerIssueResponseCreator<String> issueResponseCreator, JiraCloudJobDetailsModel distributionDetails, IssueService issueService) {
+        super(issueResponseCreator);
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
     }
@@ -71,7 +71,7 @@ public class JiraCloudIssueCommentCreator extends IssueTrackerIssueCommentCreato
             try {
                 issueService.addComment(issueCommentRequestModel);
             } catch (IntegrationException e) {
-                throw new AlertException("Failed to add a comment in Jira", e);
+                throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", issueKey), e);
             }
         }
     }

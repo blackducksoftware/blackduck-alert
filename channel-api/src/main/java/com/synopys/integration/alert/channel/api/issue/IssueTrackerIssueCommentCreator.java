@@ -29,10 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 
 public abstract class IssueTrackerIssueCommentCreator<T extends Serializable> {
@@ -40,10 +38,10 @@ public abstract class IssueTrackerIssueCommentCreator<T extends Serializable> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final AlertIssueOriginCreator alertIssueOriginCreator;
+    private final IssueTrackerIssueResponseCreator<T> issueResponseCreator;
 
-    protected IssueTrackerIssueCommentCreator(AlertIssueOriginCreator alertIssueOriginCreator) {
-        this.alertIssueOriginCreator = alertIssueOriginCreator;
+    protected IssueTrackerIssueCommentCreator(IssueTrackerIssueResponseCreator<T> issueResponseCreator) {
+        this.issueResponseCreator = issueResponseCreator;
     }
 
     public final Optional<IssueTrackerIssueResponseModel> commentOnIssue(IssueCommentModel<T> issueCommentModel) throws AlertException {
@@ -53,17 +51,7 @@ public abstract class IssueTrackerIssueCommentCreator<T extends Serializable> {
         }
 
         addComments(issueCommentModel);
-
-        AlertIssueOrigin alertIssueOrigin = alertIssueOriginCreator.createIssueOrigin(issueCommentModel.getSource());
-        ExistingIssueDetails<T> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
-
-        IssueTrackerIssueResponseModel responseModel = new IssueTrackerIssueResponseModel(
-            alertIssueOrigin,
-            existingIssueDetails.getIssueKey(),
-            existingIssueDetails.getIssueLink(),
-            existingIssueDetails.getIssueSummary(),
-            IssueOperation.UPDATE
-        );
+        IssueTrackerIssueResponseModel responseModel = issueResponseCreator.createIssueResponse(issueCommentModel.getSource(), issueCommentModel.getExistingIssueDetails(), IssueOperation.UPDATE);
         return Optional.of(responseModel);
     }
 
