@@ -28,8 +28,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira2.common.JqlStringCreator;
@@ -219,21 +217,8 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
 
     private ExistingIssueDetails<String> createExistingIssueDetails(IssueResponseModel issue) {
         String issueCallbackLink = JiraCallbackUtils.createUILink(issue);
-        return new ExistingIssueDetails<>(issue.getId(), issue.getKey(), extractSummary(issue), issueCallbackLink);
-    }
-
-    // FIXME update int-jira-common
-    private String extractSummary(IssueResponseModel issue) {
-        IssueFieldsComponent fields = issue.getFields();
-        JsonElement fieldsElement = fields.getJsonElement();
-        if (fieldsElement.isJsonObject()) {
-            JsonObject fieldsObject = fieldsElement.getAsJsonObject();
-            JsonElement summaryElement = fieldsObject.get("summary");
-            if (null != summaryElement && summaryElement.isJsonPrimitive()) {
-                return summaryElement.getAsJsonPrimitive().getAsString();
-            }
-        }
-        return "Unknown Summary";
+        IssueFieldsComponent issueFields = issue.getFields();
+        return new ExistingIssueDetails<>(issue.getId(), issue.getKey(), issueFields.getSummary(), issueCallbackLink);
     }
 
 }
