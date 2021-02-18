@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +34,7 @@ import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils
 import com.synopsys.integration.alert.channel.jira2.cloud.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
+import com.synopsys.integration.alert.channel.jira2.common.JiraIssueSearchPropertyStringCompatibilityUtils;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
@@ -159,15 +158,9 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
                                                          .stream()
                                                          .findAny()
                                                          .orElseThrow(() -> new AlertRuntimeException("Missing component-concern"));
-        ComponentConcernType concernType = arbitraryComponentConcern.getType();
-        // TODO abstract this String construction also done in JqlStringCreator
-        String category = StringUtils.capitalize(concernType.name().toLowerCase());
 
-        String additionalKey = null;
-        if (ComponentConcernType.POLICY.equals(concernType)) {
-            // TODO abstract this String construction also done in JqlStringCreator
-            additionalKey = String.format("Policy Violated%s", arbitraryComponentConcern.getName());
-        }
+        String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(arbitraryComponentConcern.getType());
+        String additionalKey = JiraIssueSearchPropertyStringCompatibilityUtils.createAdditionalKey(arbitraryComponentConcern).orElse(null);
 
         return new JiraIssueSearchProperties(
             provider.getLabel(),

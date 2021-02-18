@@ -30,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public final class JqlStringCreator {
     private static final String SEARCH_CONJUNCTION = "AND";
@@ -84,14 +83,11 @@ public final class JqlStringCreator {
         StringBuilder jqlBuilder = new StringBuilder();
         appendBlackDuckComponentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion);
 
-        ComponentConcernType concernType = componentConcern.getType();
-        String category = StringUtils.capitalize(concernType.name().toLowerCase());
+        String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(componentConcern.getType());
         appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category);
 
-        if (ComponentConcernType.POLICY.equals(concernType)) {
-            String additionalKey = String.format("Policy Violated%s", componentConcern.getName());
-            appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey);
-        }
+        JiraIssueSearchPropertyStringCompatibilityUtils.createAdditionalKey(componentConcern)
+            .ifPresent(additionalKey -> appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey));
 
         return jqlBuilder.toString();
     }
