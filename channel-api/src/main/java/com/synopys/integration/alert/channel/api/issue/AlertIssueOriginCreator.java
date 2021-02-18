@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.common;
+package com.synopys.integration.alert.channel.api.issue;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,8 +35,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.BomCom
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
-// TODO this should be available to all issue trackers
-public class AlertJiraIssueOriginCreator {
+public class AlertIssueOriginCreator {
     // FIXME replace this concept
     public AlertIssueOrigin createIssueOrigin(ProjectIssueModel projectIssueModel) {
         LinkableItem provider = projectIssueModel.getProvider();

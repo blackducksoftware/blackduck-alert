@@ -22,76 +22,51 @@
  */
 package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.jira2.common.AlertJiraIssueOriginCreator;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.synopys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueCommentCreator;
 import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 
-public class JiraCloudIssueCommentCreator implements IssueTrackerIssueCommentCreator<String> {
-    private static final String COMMENTING_DISABLED_MESSAGE = "Commenting on issues is disabled. Skipping.";
-
+public class JiraCloudIssueCommentCreator extends IssueTrackerIssueCommentCreator<String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
-    private final AlertJiraIssueOriginCreator alertJiraIssueOriginCreator;
 
-    public JiraCloudIssueCommentCreator(JiraCloudJobDetailsModel distributionDetails, IssueService issueService, AlertJiraIssueOriginCreator alertJiraIssueOriginCreator) {
+    public JiraCloudIssueCommentCreator(JiraCloudJobDetailsModel distributionDetails, IssueService issueService, AlertIssueOriginCreator alertIssueOriginCreator) {
+        super(alertIssueOriginCreator);
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
-        this.alertJiraIssueOriginCreator = alertJiraIssueOriginCreator;
-    }
-
-    @Override
-    public List<IssueTrackerIssueResponseModel> commentOnIssues(List<IssueCommentModel<String>> issueCommentModels) throws AlertException {
-        if (!distributionDetails.isAddComments()) {
-            logger.debug(COMMENTING_DISABLED_MESSAGE);
-            return List.of();
-        }
-
-        List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
-        for (IssueCommentModel<String> issueCommentModel : issueCommentModels) {
-            ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
-            addComments(existingIssueDetails.getIssueKey(), issueCommentModel.getComments());
-
-            AlertIssueOrigin alertIssueOrigin = alertJiraIssueOriginCreator.createIssueOrigin(issueCommentModel.getSource());
-            IssueTrackerIssueResponseModel commentResponse = new IssueTrackerIssueResponseModel(
-                alertIssueOrigin,
-                existingIssueDetails.getIssueKey(),
-                existingIssueDetails.getIssueLink(),
-                existingIssueDetails.getIssueSummary(),
-                IssueOperation.UPDATE
-            );
-            responses.add(commentResponse);
-        }
-        return responses;
     }
 
     public void addComment(String issueKey, String comment) throws AlertException {
         addComments(issueKey, List.of(comment));
     }
 
-    public void addComments(String issueKey, List<String> groupedComments) throws AlertException {
-        if (!distributionDetails.isAddComments()) {
+    @Override
+    public void addComments(IssueCommentModel<String> issueCommentModel) throws AlertException {
+        ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
+        String issueKey = existingIssueDetails.getIssueKey();
+        addComments(issueKey, issueCommentModel.getComments());
+    }
+
+    public void addComments(String issueKey, List<String> comments) throws AlertException {
+        if (!isCommentingEnabled()) {
             logger.debug(COMMENTING_DISABLED_MESSAGE);
             return;
         }
 
-        for (String comment : groupedComments) {
+        for (String comment : comments) {
             IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
             try {
                 issueService.addComment(issueCommentRequestModel);
@@ -99,6 +74,11 @@ public class JiraCloudIssueCommentCreator implements IssueTrackerIssueCommentCre
                 throw new AlertException("Failed to add a comment in Jira", e);
             }
         }
+    }
+
+    @Override
+    protected boolean isCommentingEnabled() {
+        return distributionDetails.isAddComments();
     }
 
 }

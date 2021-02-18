@@ -22,13 +22,11 @@
  */
 package com.synopys.integration.alert.channel.api.issue;
 
-import java.util.List;
-
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
 
 public interface IssueTrackerIssueCreator {
-    List<IssueTrackerIssueResponseModel> createIssues(List<IssueCreationModel> issueCreationModels) throws AlertException;
+    IssueTrackerIssueResponseModel createIssue(IssueCreationModel issueCreationModel) throws AlertException;
 
 }

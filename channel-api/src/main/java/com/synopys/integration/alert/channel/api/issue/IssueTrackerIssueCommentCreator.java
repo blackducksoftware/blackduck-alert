@@ -23,13 +23,52 @@
 package com.synopys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 
-public interface IssueTrackerIssueCommentCreator<T extends Serializable> {
-    List<IssueTrackerIssueResponseModel> commentOnIssues(List<IssueCommentModel<T>> issueCommentModels) throws AlertException;
+public abstract class IssueTrackerIssueCommentCreator<T extends Serializable> {
+    public static final String COMMENTING_DISABLED_MESSAGE = "Commenting on issues is disabled. Skipping.";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final AlertIssueOriginCreator alertIssueOriginCreator;
+
+    protected IssueTrackerIssueCommentCreator(AlertIssueOriginCreator alertIssueOriginCreator) {
+        this.alertIssueOriginCreator = alertIssueOriginCreator;
+    }
+
+    public final Optional<IssueTrackerIssueResponseModel> commentOnIssue(IssueCommentModel<T> issueCommentModel) throws AlertException {
+        if (!isCommentingEnabled()) {
+            logger.debug(COMMENTING_DISABLED_MESSAGE);
+            return Optional.empty();
+        }
+
+        addComments(issueCommentModel);
+
+        AlertIssueOrigin alertIssueOrigin = alertIssueOriginCreator.createIssueOrigin(issueCommentModel.getSource());
+        ExistingIssueDetails<T> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
+
+        IssueTrackerIssueResponseModel responseModel = new IssueTrackerIssueResponseModel(
+            alertIssueOrigin,
+            existingIssueDetails.getIssueKey(),
+            existingIssueDetails.getIssueLink(),
+            existingIssueDetails.getIssueSummary(),
+            IssueOperation.UPDATE
+        );
+        return Optional.of(responseModel);
+    }
+
+    protected abstract boolean isCommentingEnabled();
+
+    protected abstract void addComments(IssueCommentModel<T> issueCommentModel) throws AlertException;
 
 }

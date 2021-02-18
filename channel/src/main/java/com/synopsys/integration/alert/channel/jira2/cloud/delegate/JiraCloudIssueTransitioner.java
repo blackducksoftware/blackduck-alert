@@ -22,8 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
 
-import java.util.List;
-
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueTransitioner;
@@ -31,9 +29,9 @@ import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionMode
 
 public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner<String> {
     @Override
-    public List<IssueTrackerIssueResponseModel> transitionIssues(List<IssueTransitionModel<String>> issueTransitionModels) throws AlertException {
+    public IssueTrackerIssueResponseModel transitionIssue(IssueTransitionModel<String> issueTransitionModel) throws AlertException {
         // FIXME implement
-        return List.of();
+        return null;
     }
 
 }
