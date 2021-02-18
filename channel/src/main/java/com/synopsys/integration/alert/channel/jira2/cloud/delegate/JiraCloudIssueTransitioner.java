@@ -20,16 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
 
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCommentCreator;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCreator;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueTransitioner;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerMessageSender;
+import java.util.List;
 
-public class JiraCloudMessageSender extends IssueTrackerMessageSender<String> {
-    public JiraCloudMessageSender(JiraCloudIssueCreator issueCreator, JiraCloudIssueTransitioner issueTransitioner, JiraCloudIssueCommentCreator issueCommentCreator) {
-        super(issueCreator, issueTransitioner, issueCommentCreator);
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueTransitioner;
+import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
+
+public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner<String> {
+    @Override
+    public List<IssueTrackerIssueResponseModel> transitionIssues(List<IssueTransitionModel<String>> issueTransitionModels) throws AlertException {
+        // FIXME implement
+        return List.of();
     }
 
 }

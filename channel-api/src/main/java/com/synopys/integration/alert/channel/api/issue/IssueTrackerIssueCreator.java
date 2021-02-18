@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,16 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopys.integration.alert.channel.api.issue;
 
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCommentCreator;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCreator;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueTransitioner;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerMessageSender;
+import java.util.List;
 
-public class JiraCloudMessageSender extends IssueTrackerMessageSender<String> {
-    public JiraCloudMessageSender(JiraCloudIssueCreator issueCreator, JiraCloudIssueTransitioner issueTransitioner, JiraCloudIssueCommentCreator issueCommentCreator) {
-        super(issueCreator, issueTransitioner, issueCommentCreator);
-    }
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
+
+public interface IssueTrackerIssueCreator {
+    List<IssueTrackerIssueResponseModel> createIssues(List<IssueCreationModel> issueCreationModels) throws AlertException;
 
 }
