@@ -59,11 +59,18 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
     private final IssueTrackerIssueResponseCreator<String> issueResponseCreator;
+    private final JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator;
 
-    public JiraCloudIssueTransitioner(JiraCloudJobDetailsModel distributionDetails, IssueService issueService, IssueTrackerIssueResponseCreator<String> issueResponseCreator) {
+    public JiraCloudIssueTransitioner(
+        JiraCloudJobDetailsModel distributionDetails,
+        IssueService issueService,
+        IssueTrackerIssueResponseCreator<String> issueResponseCreator,
+        JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator
+    ) {
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
         this.issueResponseCreator = issueResponseCreator;
+        this.jiraCloudIssueCommentCreator = jiraCloudIssueCommentCreator;
     }
 
     @Override
@@ -72,22 +79,27 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
         ExistingIssueDetails<String> existingIssueDetails = issueTransitionModel.getExistingIssueDetails();
         String issueKey = existingIssueDetails.getIssueKey();
 
+        Optional<IssueTrackerIssueResponseModel> transitionResponse = Optional.empty();
+
         Optional<String> optionalTransitionName = retrieveJobTransitionName(issueOperation);
         if (optionalTransitionName.isPresent()) {
-
             String transitionName = optionalTransitionName.get();
+
             boolean shouldAttemptTransition = isTransitionRequired(issueKey, issueOperation);
             if (shouldAttemptTransition) {
                 findAndPerformTransition(issueKey, transitionName);
+                jiraCloudIssueCommentCreator.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
                 IssueTrackerIssueResponseModel transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
-                return Optional.of(transitionResponseModel);
+                transitionResponse = Optional.of(transitionResponseModel);
             } else {
                 logger.debug("The issue {} is already in the status category that would result from this transition ({}).", issueKey, transitionName);
             }
         } else {
             logger.debug("No transition name was provided so no '{}' transition will be performed. Issue Key: {}", issueOperation.name(), issueKey);
         }
-        return Optional.empty();
+
+        jiraCloudIssueCommentCreator.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
+        return transitionResponse;
     }
 
     private Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {

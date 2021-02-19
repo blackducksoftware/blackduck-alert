@@ -108,7 +108,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         AlertIssueOriginCreator alertIssueOriginCreator = new AlertIssueOriginCreator();
         IssueTrackerIssueResponseCreator<String> issueResponseCreator = new IssueTrackerIssueResponseCreator<>(alertIssueOriginCreator);
         JiraCloudIssueCommentCreator issueCommentCreator = new JiraCloudIssueCommentCreator(issueResponseCreator, distributionDetails, issueService);
-        JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(distributionDetails, issueService, issueResponseCreator);
+        JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(distributionDetails, issueService, issueResponseCreator, issueCommentCreator);
         JiraCloudIssueCreator issueCreator = new JiraCloudIssueCreator(
             distributionDetails,
             issueService,
