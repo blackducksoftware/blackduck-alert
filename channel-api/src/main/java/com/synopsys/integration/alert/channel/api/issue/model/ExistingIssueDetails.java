@@ -23,32 +23,36 @@
 package com.synopsys.integration.alert.channel.api.issue.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
-    private final ExistingIssueDetails<T> existingIssueDetails;
-    private final List<String> comments;
+public class ExistingIssueDetails<T extends Serializable> extends AlertSerializableModel {
+    private final T issueId;
+    private final String issueKey;
+    private final String issueSummary;
+    private final String issueLink;
 
-    private final ProjectIssueModel source;
-
-    public IssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, List<String> comments, ProjectIssueModel source) {
-        this.existingIssueDetails = existingIssueDetails;
-        this.comments = comments;
-        this.source = source;
+    public ExistingIssueDetails(T issueId, String issueKey, String issueSummary, String issueLink) {
+        this.issueId = issueId;
+        this.issueKey = issueKey;
+        this.issueSummary = issueSummary;
+        this.issueLink = issueLink;
     }
 
-    public ExistingIssueDetails<T> getExistingIssueDetails() {
-        return existingIssueDetails;
+    public T getIssueId() {
+        return issueId;
     }
 
-    public List<String> getComments() {
-        return comments;
+    public String getIssueKey() {
+        return issueKey;
     }
 
-    public ProjectIssueModel getSource() {
-        return source;
+    public String getIssueSummary() {
+        return issueSummary;
+    }
+
+    public String getIssueLink() {
+        return issueLink;
     }
 
 }

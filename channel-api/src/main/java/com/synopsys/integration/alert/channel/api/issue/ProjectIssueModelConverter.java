@@ -25,16 +25,18 @@ package com.synopsys.integration.alert.channel.api.issue;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.convert.BomComponentDetailConverter;
 import com.synopsys.integration.alert.channel.api.convert.LinkableItemConverter;
+import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionType;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
@@ -47,6 +49,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 public class ProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SPACE = 20;
     public static final LinkableItem MISSING_PROJECT_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
+    public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
 
     private final IssueTrackerMessageFormatter formatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
@@ -78,17 +81,23 @@ public class ProjectIssueModelConverter {
         List<String> bomComponentPieces = bomComponentDetailConverter.gatherBomComponentPieces(bomComponent);
         bomComponentPieces.forEach(descriptionBuilder::append);
 
-        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", formatter.getMaxCommentLength());
+        int newChunkSize = formatter.getMaxCommentLength() - DESCRIPTION_CONTINUED_TEXT.length() - formatter.getLineSeparator().length();
+        RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", newChunkSize);
 
-        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), projectIssueModel);
+        List<String> postCreateComments = rechunkedDescription.getRemainingChunks()
+                                              .stream()
+                                              .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
+                                              .collect(Collectors.toList());
+
+        return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel);
     }
 
-    public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
-        IssueTransitionType transitionType;
+    public <T extends Serializable> IssueTransitionModel<T> toIssueTransitionModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
+        IssueOperation issueOperation;
         if (ItemOperation.ADD.equals(requiredOperation)) {
-            transitionType = IssueTransitionType.REOPEN;
+            issueOperation = IssueOperation.OPEN;
         } else {
-            transitionType = IssueTransitionType.RESOLVE;
+            issueOperation = IssueOperation.RESOLVE;
         }
 
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
@@ -97,10 +106,10 @@ public class ProjectIssueModelConverter {
         commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
 
         List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueTransitionModel<>(issueId, transitionType, chunkedComments, projectIssueModel);
+        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, chunkedComments, projectIssueModel);
     }
 
-    public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(T issueId, ProjectIssueModel projectIssueModel) {
+    public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
 
         LinkableItem provider = projectIssueModel.getProvider();
@@ -121,7 +130,7 @@ public class ProjectIssueModelConverter {
         }
 
         List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueCommentModel<>(issueId, chunkedComments, projectIssueModel);
+        return new IssueCommentModel<>(existingIssueDetails, chunkedComments, projectIssueModel);
     }
 
     private String createTruncatedTitle(ProjectIssueModel projectIssueModel) {

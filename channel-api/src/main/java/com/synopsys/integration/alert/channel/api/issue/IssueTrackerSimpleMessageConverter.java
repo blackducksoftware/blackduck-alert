@@ -50,7 +50,7 @@ public class IssueTrackerSimpleMessageConverter {
         List<String> descriptionChunks = simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage);
         RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionChunks, "No description", formatter.getMaxDescriptionLength(), formatter.getMaxCommentLength());
 
-        return IssueCreationModel.simple(truncatedTitle, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks());
+        return IssueCreationModel.simple(truncatedTitle, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), simpleMessage.getProvider());
     }
 
 }

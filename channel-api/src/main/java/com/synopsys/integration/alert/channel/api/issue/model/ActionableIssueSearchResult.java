@@ -23,44 +23,34 @@
 package com.synopsys.integration.alert.channel.api.issue.model;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Optional;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import org.jetbrains.annotations.Nullable;
+
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
+public class ActionableIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;
-    private final IssueOperation issueOperation;
-    private final List<String> postTransitionComments;
+    private final ProjectIssueModel projectIssueModel;
+    private final ItemOperation requiredOperation;
 
-    private final ProjectIssueModel source;
-
-    public IssueTransitionModel(
-        ExistingIssueDetails<T> existingIssueDetails,
-        IssueOperation issueOperation,
-        List<String> postTransitionComments,
-        ProjectIssueModel source
-    ) {
+    public ActionableIssueSearchResult(@Nullable ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
         this.existingIssueDetails = existingIssueDetails;
-        this.issueOperation = issueOperation;
-        this.postTransitionComments = postTransitionComments;
-        this.source = source;
+        this.projectIssueModel = projectIssueModel;
+        this.requiredOperation = requiredOperation;
     }
 
-    public ExistingIssueDetails<T> getExistingIssueDetails() {
-        return existingIssueDetails;
+    public Optional<ExistingIssueDetails<T>> getExistingIssueDetails() {
+        return Optional.ofNullable(existingIssueDetails);
     }
 
-    public IssueOperation getIssueOperation() {
-        return issueOperation;
+    public ProjectIssueModel getProjectIssueModel() {
+        return projectIssueModel;
     }
 
-    public List<String> getPostTransitionComments() {
-        return postTransitionComments;
-    }
-
-    public ProjectIssueModel getSource() {
-        return source;
+    public ItemOperation getRequiredOperation() {
+        return requiredOperation;
     }
 
 }
