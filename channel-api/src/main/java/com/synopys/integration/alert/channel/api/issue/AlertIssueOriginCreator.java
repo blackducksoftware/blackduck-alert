@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
 public class AlertIssueOriginCreator {
-    // FIXME replace this concept
     public AlertIssueOrigin createIssueOrigin(ProjectIssueModel projectIssueModel) {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
