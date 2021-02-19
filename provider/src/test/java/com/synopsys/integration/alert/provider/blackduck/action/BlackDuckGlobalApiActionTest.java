@@ -21,6 +21,7 @@ import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckCacheHttpClientCache;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
@@ -44,6 +45,7 @@ public class BlackDuckGlobalApiActionTest {
         BlackDuckProperties properties = Mockito.mock(BlackDuckProperties.class);
         Mockito.when(properties.isConfigEnabled()).thenReturn(true);
         FieldModel fieldModel = Mockito.mock(FieldModel.class);
+        Mockito.when(fieldModel.getId()).thenReturn("1");
         Mockito.when(fieldModel.getFieldValue(Mockito.eq(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED))).thenReturn(Optional.of("true"));
         String providerConfigName = "Test Provider Config";
         Mockito.when(fieldModel.getFieldValue(Mockito.eq(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))).thenReturn(Optional.of(providerConfigName));
@@ -81,14 +83,16 @@ public class BlackDuckGlobalApiActionTest {
         Mockito.when(statefulProvider.getTasks()).thenReturn(List.of(blackDuckAccumulator, blackDuckDataSyncTask));
 
         BlackDuckPropertiesFactory propertiesFactory = Mockito.mock(BlackDuckPropertiesFactory.class);
-        Mockito.when(propertiesFactory.createProperties(Mockito.any())).thenReturn(properties);
+        Mockito.when(propertiesFactory.createProperties((ConfigurationModel) Mockito.any())).thenReturn(properties);
 
         ProviderDataAccessor providerDataAccessor = Mockito.mock(ProviderDataAccessor.class);
         ConfigurationFieldModelConverter fieldModelConverter = Mockito.mock(ConfigurationFieldModelConverter.class);
         Mockito.when(fieldModelConverter.convertToConfigurationModel(Mockito.any())).thenReturn(configurationModel);
 
+        BlackDuckCacheHttpClientCache blackDuckCacheHttpClientCache = Mockito.mock(BlackDuckCacheHttpClientCache.class);
+
         ProviderSchedulingManager providerLifecycleManager = new ProviderSchedulingManager(List.of(blackDuckProvider), taskManager, null);
-        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, configurationAccessor);
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction = new BlackDuckGlobalApiAction(blackDuckProvider, providerLifecycleManager, providerDataAccessor, configurationAccessor, blackDuckCacheHttpClientCache);
 
         Optional<String> initialAccumulatorNextRunTime = taskManager.getNextRunTime(blackDuckAccumulator.getTaskName());
         Optional<String> initialSyncNextRunTime = taskManager.getNextRunTime(blackDuckDataSyncTask.getTaskName());

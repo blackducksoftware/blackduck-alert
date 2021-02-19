@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderPropertiesFactory;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -44,7 +43,8 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public BlackDuckPropertiesFactory(Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
+    public BlackDuckPropertiesFactory(ConfigurationAccessor configurationAccessor, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager) {
+        super(configurationAccessor);
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
@@ -56,13 +56,9 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
         return new BlackDuckProperties(blackDuckConfigId, gson, alertProperties, proxyManager, fieldUtility);
     }
 
+    // TODO remote duplicate method
     public Optional<BlackDuckProperties> createPropertiesIfConfigExists(Long blackDuckConfigId) {
-        Optional<ConfigurationModel> optionalBlackDuckConfig = configurationAccessor.getConfigurationById(blackDuckConfigId);
-        if (optionalBlackDuckConfig.isPresent()) {
-            BlackDuckProperties blackDuckProperties = createProperties(optionalBlackDuckConfig.get());
-            return Optional.of(blackDuckProperties);
-        }
-        return Optional.empty();
+        return createProperties(blackDuckConfigId);
     }
 
 }
