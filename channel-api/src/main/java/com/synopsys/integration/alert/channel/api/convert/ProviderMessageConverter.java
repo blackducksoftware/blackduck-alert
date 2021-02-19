@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,19 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email2;
+package com.synopsys.integration.alert.channel.api.convert;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
 
-@Component
-public class EmailChannelV2 extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
-    @Autowired
-    public EmailChannelV2(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
-        super(emailChannelMessageConverter, emailChannelMessageSender);
+public abstract class ProviderMessageConverter<T extends ProviderMessage<T>> {
+    private final LinkableItemConverter linkableItemConverter;
+
+    public ProviderMessageConverter(ChannelMessageFormatter formatter) {
+        linkableItemConverter = new LinkableItemConverter(formatter);
+    }
+
+    public abstract List<String> convertToFormattedMessageChunks(T message);
+
+    protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
+        return linkableItemConverter.convertToString(linkableItem, bold);
     }
 
 }

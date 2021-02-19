@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,19 +20,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email2;
+package com.synopsys.integration.alert.channel.api.issue.model;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.io.Serializable;
+import java.util.List;
 
-import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-@Component
-public class EmailChannelV2 extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
-    @Autowired
-    public EmailChannelV2(EmailChannelMessageConverter emailChannelMessageConverter, EmailChannelMessageSender emailChannelMessageSender) {
-        super(emailChannelMessageConverter, emailChannelMessageSender);
+public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
+    private final T issueId;
+    private final List<String> comments;
+
+    private final ProjectIssueModel source;
+
+    public IssueCommentModel(T issueId, List<String> comments, ProjectIssueModel source) {
+        this.issueId = issueId;
+        this.comments = comments;
+        this.source = source;
+    }
+
+    public T getIssueId() {
+        return issueId;
+    }
+
+    public List<String> getComments() {
+        return comments;
+    }
+
+    public ProjectIssueModel getSource() {
+        return source;
     }
 
 }
