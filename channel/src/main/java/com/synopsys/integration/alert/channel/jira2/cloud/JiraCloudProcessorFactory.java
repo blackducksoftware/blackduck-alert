@@ -50,6 +50,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 import com.synopys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
@@ -105,13 +106,17 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraCloudSearcher);
 
         IssueService issueService = jiraCloudServiceFactory.createIssueService();
+        ProjectService projectService = jiraCloudServiceFactory.createProjectService();
+
         AlertIssueOriginCreator alertIssueOriginCreator = new AlertIssueOriginCreator();
         IssueTrackerIssueResponseCreator<String> issueResponseCreator = new IssueTrackerIssueResponseCreator<>(alertIssueOriginCreator);
+
         JiraCloudIssueCommentCreator issueCommentCreator = new JiraCloudIssueCommentCreator(issueResponseCreator, distributionDetails, issueService);
         JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(distributionDetails, issueService, issueResponseCreator, issueCommentCreator);
         JiraCloudIssueCreator issueCreator = new JiraCloudIssueCreator(
             distributionDetails,
             issueService,
+            projectService,
             issueCreationRequestCreator,
             issueCommentCreator,
             issuePropertiesManager,

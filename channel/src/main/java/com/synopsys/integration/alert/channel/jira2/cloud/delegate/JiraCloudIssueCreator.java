@@ -48,10 +48,13 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
+import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
+import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
 import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 import com.synopys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
 import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueCreator;
@@ -63,6 +66,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
 
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
+    private final ProjectService projectService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
     private final JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
@@ -72,6 +76,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
     public JiraCloudIssueCreator(
         JiraCloudJobDetailsModel distributionDetails,
         IssueService issueService,
+        ProjectService projectService,
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
         JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
@@ -80,6 +85,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
     ) {
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
+        this.projectService = projectService;
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
         this.jiraCloudIssueCommentCreator = jiraCloudIssueCommentCreator;
         this.issuePropertiesManager = issuePropertiesManager;
@@ -89,15 +95,14 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
 
     @Override
     public IssueTrackerIssueResponseModel createIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
-        // FIXME get project id
-        String projectId = null;
+        ProjectComponent jiraProject = retrieveProjectComponent();
         JiraCustomFieldReplacementValues replacementValues = alertIssueCreationModel.getSource()
                                                                  .map(this::createCustomFieldReplacementValues)
                                                                  .orElse(JiraCustomFieldReplacementValues.trivial(alertIssueCreationModel.getProvider()));
         IssueRequestModelFieldsMapBuilder fieldsBuilder = jiraIssueCreationRequestCreator.createIssueRequestModel(
             alertIssueCreationModel.getTitle(),
             alertIssueCreationModel.getDescription(),
-            projectId,
+            jiraProject.getId(),
             distributionDetails.getIssueType(),
             replacementValues,
             distributionDetails.getCustomFields()
@@ -132,16 +137,34 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
 
             jiraCloudIssueCommentCreator.addComment(issueKey, "This issue was automatically created by Alert.");
             jiraCloudIssueCommentCreator.addComments(issueKey, alertIssueModel.getPostCreateComments());
-        } catch (IntegrationRestException restException) {
-            throw jiraErrorMessageUtility.improveRestException(restException, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
         } catch (IntegrationException e) {
-            // FIXME this will always catch the previous exception
-            throw new AlertException(e);
+            // TODO improve this workflow
+            if (e instanceof AlertException) {
+                throw (AlertException) e;
+            } else if (e instanceof IntegrationRestException) {
+                throw jiraErrorMessageUtility.improveRestException((IntegrationRestException) e, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
+            }
+            throw new AlertException("Failed to create an issue in Jira.", e);
         }
 
         String issueCallbackLink = JiraCallbackUtils.createUILink(createdIssue);
         IssueFieldsComponent issueFields = createdIssue.getFields();
         return new IssueTrackerIssueResponseModel(issueOrigin, createdIssue.getKey(), issueCallbackLink, issueFields.getSummary(), IssueOperation.OPEN);
+    }
+
+    private ProjectComponent retrieveProjectComponent() throws AlertException {
+        String jiraProjectName = distributionDetails.getProjectNameOrKey();
+        PageOfProjectsResponseModel projectsResponseModel;
+        try {
+            projectsResponseModel = projectService.getProjectsByName(jiraProjectName);
+        } catch (IntegrationException e) {
+            throw new AlertException("Failed to retrieve projects from Jira", e);
+        }
+        return projectsResponseModel.getProjects()
+                   .stream()
+                   .filter(project -> jiraProjectName.equals(project.getName()) || jiraProjectName.equals(project.getKey()))
+                   .findAny()
+                   .orElseThrow(() -> new AlertException(String.format("Unable to find project matching '%s'", jiraProjectName)));
     }
 
     private JiraIssueSearchProperties createSearchProperties(ProjectIssueModel alertIssueSource) {
