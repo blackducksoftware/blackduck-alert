@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.event.AlertEventListener;
+import com.synopsys.integration.alert.common.event.AlertDefaultEventListener;
 import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCallbackEvent> implements AlertEventListener {
+public abstract class ProviderCallbackHandler extends MessageReceiver<ProviderCallbackEvent> implements AlertDefaultEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Provider provider;
     private final ConfigurationAccessor configurationAccessor;

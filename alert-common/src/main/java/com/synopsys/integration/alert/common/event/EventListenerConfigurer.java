@@ -37,29 +37,39 @@ import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 public class EventListenerConfigurer implements JmsListenerConfigurer {
     private final Logger logger = LoggerFactory.getLogger(EventListenerConfigurer.class);
 
-    private final List<AlertEventListener> alertEventListeners;
+    private final List<AlertChannelEventListener> alertChannelEventListeners;
+    private final List<AlertDefaultEventListener> alertDefaultEventListeners;
     private final DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory;
+    private final DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory;
 
     @Autowired
-    public EventListenerConfigurer(List<AlertEventListener> alertEventListeners, DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory) {
-        this.alertEventListeners = alertEventListeners;
+    public EventListenerConfigurer(List<AlertChannelEventListener> alertChannelEventListeners,
+        List<AlertDefaultEventListener> alertDefaultEventListeners,
+        DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory,
+        DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory) {
+        this.alertChannelEventListeners = alertChannelEventListeners;
+        this.alertDefaultEventListeners = alertDefaultEventListeners;
         this.defaultJmsListenerContainerFactory = defaultJmsListenerContainerFactory;
+        this.distributionChannelJmsListenerContainerFactory = distributionChannelJmsListenerContainerFactory;
     }
 
     @Override
     public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
         logger.info("Registering JMS Listeners");
-        for (AlertEventListener listener : alertEventListeners) {
-            if (listener != null) {
-                String destinationName = listener.getDestinationName();
-                String listenerId = createListenerId(destinationName);
-                logger.info("Registering JMS Listener: {}", listenerId);
-                SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-                endpoint.setId(listenerId);
-                endpoint.setDestination(destinationName);
-                endpoint.setMessageListener(listener);
-                registrar.registerEndpoint(endpoint, defaultJmsListenerContainerFactory);
-            }
+        alertDefaultEventListeners.forEach(listener -> registerListenerEndpoint(registrar, listener, defaultJmsListenerContainerFactory));
+        alertChannelEventListeners.forEach(listener -> registerListenerEndpoint(registrar, listener, distributionChannelJmsListenerContainerFactory));
+    }
+
+    private void registerListenerEndpoint(JmsListenerEndpointRegistrar registrar, AlertEventListener listener, DefaultJmsListenerContainerFactory jmsListenerContainerFactory) {
+        if (listener != null) {
+            String destinationName = listener.getDestinationName();
+            String listenerId = createListenerId(destinationName);
+            logger.info("Registering JMS Listener: {}", listenerId);
+            SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+            endpoint.setId(listenerId);
+            endpoint.setDestination(destinationName);
+            endpoint.setMessageListener(listener);
+            registrar.registerEndpoint(endpoint, jmsListenerContainerFactory);
         }
     }
 

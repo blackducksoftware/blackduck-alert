@@ -142,13 +142,19 @@ public class ApplicationConfiguration {
     public DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory(CachingConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
+        return factory;
+    }
+
+    @Bean
+    public DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory(CachingConnectionFactory connectionFactory) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
         int minConcurrency = 1;
         int maxThreadCount = Runtime.getRuntime().availableProcessors();
         int maxConcurrency = maxThreadCount < 10 ? maxThreadCount : 10;
         String concurrencyRange = String.format("%s-%s", minConcurrency, maxConcurrency);
         factory.setConcurrency(concurrencyRange);
-        
+
         return factory;
     }
-
 }

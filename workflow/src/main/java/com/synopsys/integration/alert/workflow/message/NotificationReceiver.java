@@ -34,7 +34,7 @@ import org.springframework.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.event.AlertEventListener;
+import com.synopsys.integration.alert.common.event.AlertDefaultEventListener;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
-public class NotificationReceiver extends MessageReceiver<NotificationReceivedEvent> implements AlertEventListener {
+public class NotificationReceiver extends MessageReceiver<NotificationReceivedEvent> implements AlertDefaultEventListener {
     private final static int MAX_NUMBER_PAGES_PROCESSED = 100;
     public static final String COMPONENT_NAME = "notification_receiver";
 
