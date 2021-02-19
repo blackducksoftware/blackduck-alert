@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,20 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopsys.integration.alert.channel.api.convert;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerChannel;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
 
-@Component
-public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsModel, String> {
-    @Autowired
-    public JiraCloudChannelV2(JiraCloudProcessorFactory jiraCloudProcessorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
-        super(jiraCloudProcessorFactory, responsePostProcessor);
+public abstract class ProviderMessageConverter<T extends ProviderMessage<T>> {
+    private final LinkableItemConverter linkableItemConverter;
+
+    public ProviderMessageConverter(ChannelMessageFormatter formatter) {
+        linkableItemConverter = new LinkableItemConverter(formatter);
+    }
+
+    public abstract List<String> convertToFormattedMessageChunks(T message);
+
+    protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
+        return linkableItemConverter.convertToString(linkableItem, bold);
     }
 
 }

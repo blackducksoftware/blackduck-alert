@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,20 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopsys.integration.alert.channel.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerChannel;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-
-@Component
-public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsModel, String> {
-    @Autowired
-    public JiraCloudChannelV2(JiraCloudProcessorFactory jiraCloudProcessorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
-        super(jiraCloudProcessorFactory, responsePostProcessor);
-    }
+public interface DistributionChannelV2<D extends DistributionJobDetailsModel> {
+    MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException;
 
 }

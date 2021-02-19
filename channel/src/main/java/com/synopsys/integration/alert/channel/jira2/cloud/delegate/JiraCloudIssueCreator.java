@@ -28,6 +28,10 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueCreator;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
@@ -56,10 +60,6 @@ import com.synopsys.integration.jira.common.model.response.IssueCreationResponse
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
-import com.synopys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueCreator;
-import com.synopys.integration.alert.channel.api.issue.model.IssueCreationModel;
-import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 
 public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
     private final Logger logger = LoggerFactory.getLogger(getClass());

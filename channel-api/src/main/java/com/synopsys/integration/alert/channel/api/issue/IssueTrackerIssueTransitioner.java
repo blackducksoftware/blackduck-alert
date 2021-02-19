@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,20 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopsys.integration.alert.channel.api.issue;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.io.Serializable;
+import java.util.Optional;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerChannel;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.common.exception.AlertException;
 
-@Component
-public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsModel, String> {
-    @Autowired
-    public JiraCloudChannelV2(JiraCloudProcessorFactory jiraCloudProcessorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
-        super(jiraCloudProcessorFactory, responsePostProcessor);
-    }
+public interface IssueTrackerIssueTransitioner<T extends Serializable> {
+    Optional<IssueTrackerIssueResponseModel> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException;
 
 }

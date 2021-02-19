@@ -28,6 +28,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerSearcher;
+import com.synopsys.integration.alert.channel.api.issue.model.ActionableIssueSearchResult;
+import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira2.common.JqlStringCreator;
@@ -43,11 +48,6 @@ import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerSearcher;
-import com.synopys.integration.alert.channel.api.issue.model.ActionableIssueSearchResult;
-import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
-import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopys.integration.alert.channel.api.issue.model.ProjectIssueSearchResult;
 
 public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
     private final String jiraProjectKey;

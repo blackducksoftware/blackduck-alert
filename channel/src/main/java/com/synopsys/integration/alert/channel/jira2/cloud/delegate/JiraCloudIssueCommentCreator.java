@@ -27,15 +27,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueCommentCreator;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueCommentCreator;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
-import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
-import com.synopys.integration.alert.channel.api.issue.model.IssueCommentModel;
 
 public class JiraCloudIssueCommentCreator extends IssueTrackerIssueCommentCreator<String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

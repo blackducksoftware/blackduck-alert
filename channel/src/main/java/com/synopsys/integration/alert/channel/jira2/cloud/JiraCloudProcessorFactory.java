@@ -28,6 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCommentCreator;
@@ -52,12 +58,6 @@ import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.cloud.service.JiraCloudServiceFactory;
 import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
-import com.synopys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerMessageSender;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerProcessor;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
 
 @Component
 public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<JiraCloudJobDetailsModel, String> {

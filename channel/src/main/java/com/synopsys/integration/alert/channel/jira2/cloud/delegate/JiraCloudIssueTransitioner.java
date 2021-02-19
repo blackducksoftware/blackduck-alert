@@ -31,6 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueTransitioner;
+import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
@@ -45,10 +49,6 @@ import com.synopsys.integration.jira.common.model.components.StatusDetailsCompon
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
-import com.synopys.integration.alert.channel.api.issue.IssueTrackerIssueTransitioner;
-import com.synopys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
-import com.synopys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 
 public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner<String> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
