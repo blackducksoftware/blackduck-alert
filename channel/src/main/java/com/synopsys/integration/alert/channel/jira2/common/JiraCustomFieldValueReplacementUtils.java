@@ -23,8 +23,7 @@
 package com.synopsys.integration.alert.channel.jira2.common;
 
 import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.function.Supplier;
 
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldConfig;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
@@ -36,8 +35,7 @@ public final class JiraCustomFieldValueReplacementUtils {
     public static final String REPLACEMENT_COMPONENT_NAME = "{{componentName}}";
     public static final String REPLACEMENT_COMPONENT_VERSION = "{{componentVersion}}";
 
-    // "None" is a frequently used default String for many fields
-    public static final String DEFAULT_REPLACEMENT = "None";
+    private static final Supplier<Optional<String>> DEFAULT_REPLACEMENT_SUPPLIER = () -> Optional.of(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT);
 
     public static void injectReplacementFieldValue(JiraCustomFieldConfig jiraCustomField, JiraCustomFieldReplacementValues replacementValues) {
         String originalValue = jiraCustomField.getFieldOriginalValue();
@@ -52,19 +50,14 @@ public final class JiraCustomFieldValueReplacementUtils {
             case REPLACEMENT_PROJECT_NAME:
                 return Optional.of(replacementValues.getProjectName());
             case REPLACEMENT_PROJECT_VERSION:
-                return defaultIfBlank(replacementValues.getProjectVersionName());
+                return replacementValues.getProjectVersionName().or(DEFAULT_REPLACEMENT_SUPPLIER);
             case REPLACEMENT_COMPONENT_NAME:
-                return defaultIfBlank(replacementValues.getComponentName());
+                return replacementValues.getComponentName().or(DEFAULT_REPLACEMENT_SUPPLIER);
             case REPLACEMENT_COMPONENT_VERSION:
-                return defaultIfBlank(replacementValues.getComponentVersionName());
+                return replacementValues.getComponentVersionName().or(DEFAULT_REPLACEMENT_SUPPLIER);
             default:
                 return Optional.empty();
         }
-    }
-
-    private static Optional<String> defaultIfBlank(String nullableValue) {
-        return Optional.ofNullable(StringUtils.trimToNull(nullableValue))
-                   .or(() -> Optional.of(DEFAULT_REPLACEMENT));
     }
 
     private JiraCustomFieldValueReplacementUtils() {

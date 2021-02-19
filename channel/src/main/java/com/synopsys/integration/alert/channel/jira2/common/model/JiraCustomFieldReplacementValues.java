@@ -22,19 +22,39 @@
  */
 package com.synopsys.integration.alert.channel.jira2.common.model;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
+
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+
 public class JiraCustomFieldReplacementValues {
+    // "None" is a frequently used default String for many Jira custom-fields
+    public static final String DEFAULT_REPLACEMENT = "None";
+
     private final String providerName;
     private final String projectName;
     private final String projectVersionName;
     private final String componentName;
     private final String componentVersionName;
 
-    public JiraCustomFieldReplacementValues(String providerName, String projectName, String projectVersionName, String componentName, String componentVersionName) {
+    public static JiraCustomFieldReplacementValues trivial(LinkableItem provider) {
+        return new JiraCustomFieldReplacementValues(provider.getLabel(), DEFAULT_REPLACEMENT, null, null, null);
+    }
+
+    public JiraCustomFieldReplacementValues(
+        String providerName,
+        String projectName,
+        @Nullable String projectVersionName,
+        @Nullable String componentName,
+        @Nullable String componentVersionName
+    ) {
         this.providerName = providerName;
         this.projectName = projectName;
-        this.projectVersionName = projectVersionName;
-        this.componentName = componentName;
-        this.componentVersionName = componentVersionName;
+        this.projectVersionName = StringUtils.trimToNull(projectVersionName);
+        this.componentName = StringUtils.trimToNull(componentName);
+        this.componentVersionName = StringUtils.trimToNull(componentVersionName);
     }
 
     public String getProviderName() {
@@ -45,16 +65,16 @@ public class JiraCustomFieldReplacementValues {
         return projectName;
     }
 
-    public String getProjectVersionName() {
-        return projectVersionName;
+    public Optional<String> getProjectVersionName() {
+        return Optional.ofNullable(projectVersionName);
     }
 
-    public String getComponentName() {
-        return componentName;
+    public Optional<String> getComponentName() {
+        return Optional.ofNullable(componentName);
     }
 
-    public String getComponentVersionName() {
-        return componentVersionName;
+    public Optional<String> getComponentVersionName() {
+        return Optional.ofNullable(componentVersionName);
     }
 
 }

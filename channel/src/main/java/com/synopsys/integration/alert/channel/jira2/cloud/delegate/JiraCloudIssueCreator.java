@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.channel.jira2.cloud.JiraIssueAlertProperti
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueSearchPropertyStringCompatibilityUtils;
+import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
@@ -88,13 +89,17 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
 
     @Override
     public IssueTrackerIssueResponseModel createIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
-        // FIXME get all field values
+        // FIXME get project id
+        String projectId = null;
+        JiraCustomFieldReplacementValues replacementValues = alertIssueCreationModel.getSource()
+                                                                 .map(this::createCustomFieldReplacementValues)
+                                                                 .orElse(JiraCustomFieldReplacementValues.trivial(alertIssueCreationModel.getProvider()));
         IssueRequestModelFieldsMapBuilder fieldsBuilder = jiraIssueCreationRequestCreator.createIssueRequestModel(
             alertIssueCreationModel.getTitle(),
             alertIssueCreationModel.getDescription(),
-            null,
+            projectId,
             distributionDetails.getIssueType(),
-            null,
+            replacementValues,
             distributionDetails.getCustomFields()
         );
         IssueCreationRequestModel creationRequestModel = new IssueCreationRequestModel(
@@ -122,8 +127,6 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
                 ProjectIssueModel alertIssueSource = optionalSource.get();
                 JiraIssueSearchProperties searchProperties = createSearchProperties(alertIssueSource);
                 issuePropertiesManager.assignIssueProperties(issueKey, searchProperties);
-
-                // FIXME figure out if alertIssueOrigin is required
                 issueOrigin = alertIssueOriginCreator.createIssueOrigin(alertIssueSource);
             }
 
@@ -141,7 +144,6 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
         return new IssueTrackerIssueResponseModel(issueOrigin, createdIssue.getKey(), issueCallbackLink, issueFields.getSummary(), IssueOperation.OPEN);
     }
 
-    // TODO consider adding this at search time
     private JiraIssueSearchProperties createSearchProperties(ProjectIssueModel alertIssueSource) {
         LinkableItem provider = alertIssueSource.getProvider();
         LinkableItem project = alertIssueSource.getProject();
@@ -175,6 +177,17 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
             componentVersionLabel,
             componentVersionName,
             additionalKey
+        );
+    }
+
+    private JiraCustomFieldReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
+        BomComponentDetails bomComponent = alertIssueSource.getBomComponent();
+        return new JiraCustomFieldReplacementValues(
+            alertIssueSource.getProvider().getLabel(),
+            alertIssueSource.getProject().getValue(),
+            alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(null),
+            bomComponent.getComponent().getValue(),
+            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null)
         );
     }
 
