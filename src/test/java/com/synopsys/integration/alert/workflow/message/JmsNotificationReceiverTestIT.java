@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -126,10 +128,17 @@ public class JmsNotificationReceiverTestIT {
     }
 
     @Test
+    @Ignore
+    @Disabled
     public void testJms() throws InterruptedException {
-        //Set breakpoints throughout this test, there is nothing to assert against here
+        // Set breakpoints throughout this test, there is nothing to assert against here. Suggestions for breakpoints:
+        //      Registering listeners: EvenListenerConfigurer
+        //      Sending events: EventManager
+        //      Receiving events: NotificationReceiver or DistributionChannel
+        //      Processing notifications: NotificationReceiver
         NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent();
         eventManager.sendEvent(notificationReceivedEvent);
+
         Thread.sleep(120000);
     }
 
@@ -143,7 +152,7 @@ public class JmsNotificationReceiverTestIT {
             blackDuckGlobalConfigId,
             false,
             ".*",
-            List.of(NotificationType.PROJECT.name()), //TODO policy or w/e we decide to choose should be the notification type. This is set in the createAlertNotificationModel
+            List.of(NotificationType.PROJECT.name()),
             List.of(),
             List.of(),
             List.of(),
