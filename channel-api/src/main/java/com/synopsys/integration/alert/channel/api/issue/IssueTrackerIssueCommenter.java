@@ -33,14 +33,14 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
-public abstract class IssueTrackerIssueCommentCreator<T extends Serializable> {
+public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
     public static final String COMMENTING_DISABLED_MESSAGE = "Commenting on issues is disabled. Skipping.";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final IssueTrackerIssueResponseCreator<T> issueResponseCreator;
 
-    protected IssueTrackerIssueCommentCreator(IssueTrackerIssueResponseCreator<T> issueResponseCreator) {
+    protected IssueTrackerIssueCommenter(IssueTrackerIssueResponseCreator<T> issueResponseCreator) {
         this.issueResponseCreator = issueResponseCreator;
     }
 

@@ -27,7 +27,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueCommentCreator;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
@@ -37,13 +37,13 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 
-public class JiraCloudIssueCommentCreator extends IssueTrackerIssueCommentCreator<String> {
+public class JiraCloudIssueCommenter extends IssueTrackerIssueCommenter<String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
 
-    public JiraCloudIssueCommentCreator(IssueTrackerIssueResponseCreator<String> issueResponseCreator, JiraCloudJobDetailsModel distributionDetails, IssueService issueService) {
+    public JiraCloudIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, JiraCloudJobDetailsModel distributionDetails, IssueService issueService) {
         super(issueResponseCreator);
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;

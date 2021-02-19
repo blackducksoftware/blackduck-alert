@@ -68,7 +68,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
     private final IssueService issueService;
     private final ProjectService projectService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
-    private final JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator;
+    private final JiraCloudIssueCommenter jiraCloudIssueCommenter;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
     private final AlertIssueOriginCreator alertIssueOriginCreator;
@@ -78,7 +78,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
         IssueService issueService,
         ProjectService projectService,
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
-        JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator,
+        JiraCloudIssueCommenter jiraCloudIssueCommenter,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         AlertIssueOriginCreator alertIssueOriginCreator
@@ -87,7 +87,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
         this.issueService = issueService;
         this.projectService = projectService;
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
-        this.jiraCloudIssueCommentCreator = jiraCloudIssueCommentCreator;
+        this.jiraCloudIssueCommenter = jiraCloudIssueCommenter;
         this.issuePropertiesManager = issuePropertiesManager;
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
         this.alertIssueOriginCreator = alertIssueOriginCreator;
@@ -135,8 +135,8 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
                 issueOrigin = alertIssueOriginCreator.createIssueOrigin(alertIssueSource);
             }
 
-            jiraCloudIssueCommentCreator.addComment(issueKey, "This issue was automatically created by Alert.");
-            jiraCloudIssueCommentCreator.addComments(issueKey, alertIssueModel.getPostCreateComments());
+            jiraCloudIssueCommenter.addComment(issueKey, "This issue was automatically created by Alert.");
+            jiraCloudIssueCommenter.addComments(issueKey, alertIssueModel.getPostCreateComments());
         } catch (IntegrationException e) {
             // TODO improve this workflow
             if (e instanceof AlertException) {

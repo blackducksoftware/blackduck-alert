@@ -59,18 +59,18 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
     private final IssueTrackerIssueResponseCreator<String> issueResponseCreator;
-    private final JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator;
+    private final JiraCloudIssueCommenter jiraCloudIssueCommenter;
 
     public JiraCloudIssueTransitioner(
         JiraCloudJobDetailsModel distributionDetails,
         IssueService issueService,
         IssueTrackerIssueResponseCreator<String> issueResponseCreator,
-        JiraCloudIssueCommentCreator jiraCloudIssueCommentCreator
+        JiraCloudIssueCommenter jiraCloudIssueCommenter
     ) {
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
         this.issueResponseCreator = issueResponseCreator;
-        this.jiraCloudIssueCommentCreator = jiraCloudIssueCommentCreator;
+        this.jiraCloudIssueCommenter = jiraCloudIssueCommenter;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
             boolean shouldAttemptTransition = isTransitionRequired(issueKey, issueOperation);
             if (shouldAttemptTransition) {
                 findAndPerformTransition(issueKey, transitionName);
-                jiraCloudIssueCommentCreator.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
+                jiraCloudIssueCommenter.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
                 IssueTrackerIssueResponseModel transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
                 transitionResponse = Optional.of(transitionResponseModel);
             } else {
@@ -98,7 +98,7 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
             logger.debug("No transition name was provided so no '{}' transition will be performed. Issue Key: {}", issueOperation.name(), issueKey);
         }
 
-        jiraCloudIssueCommentCreator.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
+        jiraCloudIssueCommenter.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
         return transitionResponse;
     }
 

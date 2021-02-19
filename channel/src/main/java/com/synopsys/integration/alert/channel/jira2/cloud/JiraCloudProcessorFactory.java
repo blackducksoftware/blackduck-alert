@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCommentCreator;
+import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCommenter;
 import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCreator;
 import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueTransitioner;
 import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
@@ -111,7 +111,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         AlertIssueOriginCreator alertIssueOriginCreator = new AlertIssueOriginCreator();
         IssueTrackerIssueResponseCreator<String> issueResponseCreator = new IssueTrackerIssueResponseCreator<>(alertIssueOriginCreator);
 
-        JiraCloudIssueCommentCreator issueCommentCreator = new JiraCloudIssueCommentCreator(issueResponseCreator, distributionDetails, issueService);
+        JiraCloudIssueCommenter issueCommentCreator = new JiraCloudIssueCommenter(issueResponseCreator, distributionDetails, issueService);
         JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(distributionDetails, issueService, issueResponseCreator, issueCommentCreator);
         JiraCloudIssueCreator issueCreator = new JiraCloudIssueCreator(
             distributionDetails,

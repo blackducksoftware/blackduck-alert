@@ -36,9 +36,9 @@ import com.synopsys.integration.function.ThrowingFunction;
 public class IssueTrackerMessageSender<T extends Serializable> {
     private final IssueTrackerIssueCreator issueCreator;
     private final IssueTrackerIssueTransitioner<T> issueTransitioner;
-    private final IssueTrackerIssueCommentCreator<T> issueCommentCreator;
+    private final IssueTrackerIssueCommenter<T> issueCommentCreator;
 
-    public IssueTrackerMessageSender(IssueTrackerIssueCreator issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommentCreator<T> issueCommentCreator) {
+    public IssueTrackerMessageSender(IssueTrackerIssueCreator issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommenter<T> issueCommentCreator) {
         this.issueCreator = issueCreator;
         this.issueTransitioner = issueTransitioner;
         this.issueCommentCreator = issueCommentCreator;
