@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.BomCom
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
+import com.synopsys.integration.function.ThrowingSupplier;
 
 public abstract class IssueTrackerSearcher<T extends Serializable> {
     public final List<ActionableIssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
@@ -50,25 +51,13 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                                          .isPresent();
 
         if (MessageReason.PROJECT_STATUS.equals(messageReason)) {
-            if (isEntireBomDeleted) {
-                return findProjectIssues(provider, project)
-                           .stream()
-                           .map(this::convertToDeleteResult)
-                           .collect(Collectors.toList());
-            }
-            return List.of();
+            return findProjectIssues(isEntireBomDeleted, () -> findProjectIssues(provider, project));
         }
 
         LinkableItem projectVersion = projectMessage.getProjectVersion()
                                           .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
         if (MessageReason.PROJECT_VERSION_STATUS.equals(messageReason)) {
-            if (isEntireBomDeleted) {
-                return findProjectVersionIssues(provider, project, projectVersion)
-                           .stream()
-                           .map(this::convertToDeleteResult)
-                           .collect(Collectors.toList());
-            }
-            return List.of();
+            return findProjectIssues(isEntireBomDeleted, () -> findProjectVersionIssues(provider, project, projectVersion));
         }
 
         if (MessageReason.COMPONENT_UPDATE.equals(messageReason)) {
@@ -103,6 +92,16 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                    .stream()
                    .map(this::convertToUpdateResult)
                    .collect(Collectors.toList());
+    }
+
+    private List<ActionableIssueSearchResult<T>> findProjectIssues(boolean isEntireBomDeleted, ThrowingSupplier<List<ProjectIssueSearchResult<T>>, AlertException> find) throws AlertException {
+        if (isEntireBomDeleted) {
+            return find.get()
+                       .stream()
+                       .map(this::convertToDeleteResult)
+                       .collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     private ActionableIssueSearchResult<T> convertToDeleteResult(ProjectIssueSearchResult<T> projectIssueSearchResult) {

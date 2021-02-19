@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
-import com.synopsys.integration.alert.channel.jira2.cloud.JiraIssueAlertPropertiesManager;
+import com.synopsys.integration.alert.channel.jira2.cloud.JiraCloudIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueSearchPropertyStringCompatibilityUtils;
@@ -69,7 +69,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
     private final ProjectService projectService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
     private final JiraCloudIssueCommenter jiraCloudIssueCommenter;
-    private final JiraIssueAlertPropertiesManager issuePropertiesManager;
+    private final JiraCloudIssueAlertPropertiesManager issuePropertiesManager;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
     private final AlertIssueOriginCreator alertIssueOriginCreator;
 
@@ -79,7 +79,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
         ProjectService projectService,
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
         JiraCloudIssueCommenter jiraCloudIssueCommenter,
-        JiraIssueAlertPropertiesManager issuePropertiesManager,
+        JiraCloudIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         AlertIssueOriginCreator alertIssueOriginCreator
     ) {
@@ -137,14 +137,10 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
 
             jiraCloudIssueCommenter.addComment(issueKey, "This issue was automatically created by Alert.");
             jiraCloudIssueCommenter.addComments(issueKey, alertIssueModel.getPostCreateComments());
-        } catch (IntegrationException e) {
-            // TODO improve this workflow
-            if (e instanceof AlertException) {
-                throw (AlertException) e;
-            } else if (e instanceof IntegrationRestException) {
-                throw jiraErrorMessageUtility.improveRestException((IntegrationRestException) e, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
-            }
-            throw new AlertException("Failed to create an issue in Jira.", e);
+        } catch (IntegrationRestException restException) {
+            throw jiraErrorMessageUtility.improveRestException(restException, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
+        } catch (IntegrationException intException) {
+            throw new AlertException("Failed to create an issue in Jira.", intException);
         }
 
         String issueCallbackLink = JiraCallbackUtils.createUILink(createdIssue);

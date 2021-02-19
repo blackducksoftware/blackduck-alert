@@ -23,6 +23,7 @@
 package com.synopsys.integration.alert.channel.api.issue;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 
+@Component
 public class AlertIssueOriginCreator {
     public AlertIssueOrigin createIssueOrigin(ProjectIssueModel projectIssueModel) {
         LinkableItem provider = projectIssueModel.getProvider();

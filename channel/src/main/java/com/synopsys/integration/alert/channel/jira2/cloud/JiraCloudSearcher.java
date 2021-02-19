@@ -52,9 +52,9 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
     private final String jiraProjectKey;
     private final IssueSearchService issueSearchService;
-    private final JiraIssueAlertPropertiesManager issuePropertiesManager;
+    private final JiraCloudIssueAlertPropertiesManager issuePropertiesManager;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager) {
+    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraCloudIssueAlertPropertiesManager issuePropertiesManager) {
         this.jiraProjectKey = jiraProjectKey;
         this.issueSearchService = issueSearchService;
         this.issuePropertiesManager = issuePropertiesManager;
