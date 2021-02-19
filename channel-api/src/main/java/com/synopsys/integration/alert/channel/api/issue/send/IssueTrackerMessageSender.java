@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.send;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -36,12 +36,12 @@ import com.synopsys.integration.function.ThrowingFunction;
 public class IssueTrackerMessageSender<T extends Serializable> {
     private final IssueTrackerIssueCreator issueCreator;
     private final IssueTrackerIssueTransitioner<T> issueTransitioner;
-    private final IssueTrackerIssueCommenter<T> issueCommentCreator;
+    private final IssueTrackerIssueCommenter<T> issueCommenter;
 
-    public IssueTrackerMessageSender(IssueTrackerIssueCreator issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommenter<T> issueCommentCreator) {
+    public IssueTrackerMessageSender(IssueTrackerIssueCreator issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommenter<T> issueCommenter) {
         this.issueCreator = issueCreator;
         this.issueTransitioner = issueTransitioner;
-        this.issueCommentCreator = issueCommentCreator;
+        this.issueCommenter = issueCommenter;
     }
 
     public final IssueTrackerResponse sendMessages(List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
@@ -53,7 +53,7 @@ public class IssueTrackerMessageSender<T extends Serializable> {
             List<IssueTrackerIssueResponseModel> transitionResponses = sendOptionalMessages(channelMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
             responses.addAll(transitionResponses);
 
-            List<IssueTrackerIssueResponseModel> commentResponses = sendOptionalMessages(channelMessage.getIssueCommentModels(), issueCommentCreator::commentOnIssue);
+            List<IssueTrackerIssueResponseModel> commentResponses = sendOptionalMessages(channelMessage.getIssueCommentModels(), issueCommenter::commentOnIssue);
             responses.addAll(commentResponses);
         }
         return new IssueTrackerResponse("Success", responses);

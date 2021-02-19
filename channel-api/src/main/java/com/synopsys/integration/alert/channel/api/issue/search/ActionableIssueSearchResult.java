@@ -20,29 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue.model;
+package com.synopsys.integration.alert.channel.api.issue.search;
 
 import java.io.Serializable;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueSearchResult<T extends Serializable> extends AlertSerializableModel {
-    private final T issueId;
+public class ActionableIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
+    private final ExistingIssueDetails<T> existingIssueDetails;
     private final ProjectIssueModel projectIssueModel;
     private final ItemOperation requiredOperation;
 
-    public IssueSearchResult(@Nullable T issueId, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
-        this.issueId = issueId;
+    public ActionableIssueSearchResult(@Nullable ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
+        this.existingIssueDetails = existingIssueDetails;
         this.projectIssueModel = projectIssueModel;
         this.requiredOperation = requiredOperation;
     }
 
-    public Optional<T> getIssueId() {
-        return Optional.ofNullable(issueId);
+    public Optional<ExistingIssueDetails<T>> getExistingIssueDetails() {
+        return Optional.ofNullable(existingIssueDetails);
     }
 
     public ProjectIssueModel getProjectIssueModel() {

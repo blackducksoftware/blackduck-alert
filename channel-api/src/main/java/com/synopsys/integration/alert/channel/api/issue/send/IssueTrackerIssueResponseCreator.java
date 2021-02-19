@@ -20,12 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.send;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.convert;
 
 import java.util.LinkedList;
 import java.util.List;

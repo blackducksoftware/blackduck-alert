@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.send;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -45,6 +45,7 @@ public class AlertIssueOriginCreator {
                                           .orElseThrow(() -> new AlertRuntimeException("Missing BlackDuck project-version"));
         ContentKey providerContentKey = new ContentKey(
             provider.getLabel(),
+            // FIXME we need provider config id to be included from the processing level
             null,
             project.getLabel(),
             project.getValue(),

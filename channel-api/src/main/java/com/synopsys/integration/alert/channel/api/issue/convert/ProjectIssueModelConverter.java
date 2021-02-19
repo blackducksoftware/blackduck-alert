@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.convert;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,11 +31,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.convert.BomComponentDetailConverter;
 import com.synopsys.integration.alert.channel.api.convert.LinkableItemConverter;
-import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;

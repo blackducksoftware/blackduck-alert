@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.api.issue.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
