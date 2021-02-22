@@ -59,7 +59,7 @@ public class ConfigurationLogger extends StartupComponent {
 
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
-        logger.info("Alert Server URL:          {}", alertProperties.getServerUrl().orElse(""));
+        logger.info("Alert Server URL:          {}", alertProperties.getExternalServerUrl().orElse(""));
         logger.info("Logging level:             {}", alertProperties.getLoggingLevel().orElse(""));
         logger.info("Alert Proxy Host:          {}", proxyHost.orElse(""));
         logger.info("Alert Proxy Port:          {}", proxyPort.orElse(""));
