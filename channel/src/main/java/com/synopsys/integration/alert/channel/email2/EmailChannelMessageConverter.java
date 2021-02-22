@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.api.convert.AbstractChannelMessageConverter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
@@ -52,8 +51,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
         subjectLine = StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
         String messageContent = StringUtils.join(messageChunks);
 
-        ProviderDetails providerDetails = simpleMessage.getProviderDetails();
-        LinkableItem provider = providerDetails.getProvider();
+        LinkableItem provider = simpleMessage.getProvider();
         String providerName = provider.getValue();
         String providerUrl = provider.getUrl().orElse("#");
 
@@ -72,9 +70,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
     protected List<EmailChannelMessageModel> convertProjectMessageToChannelMessages(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage, List<String> messageChunks) {
         String subjectLine = createSubjectLine(distributionDetails, projectMessage);
         String messageContent = StringUtils.join(messageChunks);
-
-        ProviderDetails providerDetails = projectMessage.getProviderDetails();
-        LinkableItem provider = providerDetails.getProvider();
+        LinkableItem provider = projectMessage.getProvider();
 
         EmailChannelMessageModel.project(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
         return List.of();

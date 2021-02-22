@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilderRechunker;
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
 public class IssueTrackerSimpleMessageConverter {
@@ -44,8 +43,7 @@ public class IssueTrackerSimpleMessageConverter {
     }
 
     public IssueCreationModel convertToIssueCreationModel(SimpleMessage simpleMessage) {
-        ProviderDetails providerDetails = simpleMessage.getProviderDetails();
-        LinkableItem provider = providerDetails.getProvider();
+        LinkableItem provider = simpleMessage.getProvider();
         String rawTitle = String.format("%s[%s] | %s", provider.getLabel(), provider.getValue(), simpleMessage.getSummary());
         String truncatedTitle = StringUtils.truncate(rawTitle, formatter.getMaxTitleLength());
 

@@ -33,15 +33,13 @@ import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public abstract class IssueTrackerSearcher<T extends Serializable> {
     public final List<IssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
-        ProviderDetails providerDetails = projectMessage.getProviderDetails();
-        LinkableItem provider = providerDetails.getProvider();
+        LinkableItem provider = projectMessage.getProvider();
         LinkableItem project = projectMessage.getProject();
 
         MessageReason messageReason = projectMessage.getMessageReason();

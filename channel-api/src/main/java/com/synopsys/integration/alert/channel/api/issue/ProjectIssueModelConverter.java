@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilde
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
@@ -94,8 +93,7 @@ public class ProjectIssueModelConverter {
 
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
 
-        ProviderDetails providerDetails = projectIssueModel.getProviderDetails();
-        LinkableItem provider = providerDetails.getProvider();
+        LinkableItem provider = projectIssueModel.getProvider();
         commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
 
         List<String> chunkedComments = commentBuilder.collectCurrentChunks();
@@ -105,8 +103,7 @@ public class ProjectIssueModelConverter {
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(T issueId, ProjectIssueModel projectIssueModel) {
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
 
-        ProviderDetails providerDetails = projectIssueModel.getProviderDetails();
-        LinkableItem provider = providerDetails.getProvider();
+        LinkableItem provider = projectIssueModel.getProvider();
         commentBuilder.append(String.format("The component was updated in %s:", provider.getLabel()));
         commentBuilder.append(formatter.getLineSeparator());
         commentBuilder.append(formatter.getSectionSeparator());
@@ -128,8 +125,7 @@ public class ProjectIssueModelConverter {
     }
 
     private String createTruncatedTitle(ProjectIssueModel projectIssueModel) {
-        ProviderDetails providerDetails = projectIssueModel.getProviderDetails();
-        LinkableItem provider = providerDetails.getProvider();
+        LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
         LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER);
 

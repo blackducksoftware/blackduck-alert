@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public abstract class ProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<T> {
@@ -33,6 +34,10 @@ public abstract class ProviderMessage<T extends ProviderMessage<T>> extends Aler
 
     public ProviderDetails getProviderDetails() {
         return providerDetails;
+    }
+
+    public LinkableItem getProvider() {
+        return providerDetails.getProvider();
     }
 
 }
