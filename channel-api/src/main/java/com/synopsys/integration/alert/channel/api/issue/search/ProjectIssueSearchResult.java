@@ -28,18 +28,12 @@ import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ProjectIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
-    private final T issueId;
     private final ExistingIssueDetails<T> existingIssueDetails;
     private final ProjectIssueModel projectIssueModel;
 
-    public ProjectIssueSearchResult(T issueId, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
-        this.issueId = issueId;
+    public ProjectIssueSearchResult(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
         this.existingIssueDetails = existingIssueDetails;
         this.projectIssueModel = projectIssueModel;
-    }
-
-    public T getIssueId() {
-        return issueId;
     }
 
     public ExistingIssueDetails<T> getExistingIssueDetails() {
