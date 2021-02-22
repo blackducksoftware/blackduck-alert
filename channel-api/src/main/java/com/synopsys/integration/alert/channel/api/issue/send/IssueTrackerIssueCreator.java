@@ -20,10 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue.model;
+package com.synopsys.integration.alert.channel.api.issue.send;
 
-public enum IssueTransitionType {
-    REOPEN,
-    RESOLVE
+import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.common.exception.AlertException;
+
+public interface IssueTrackerIssueCreator {
+    IssueTrackerIssueResponseModel createIssue(IssueCreationModel issueCreationModel) throws AlertException;
 
 }

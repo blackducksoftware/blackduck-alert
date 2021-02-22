@@ -1,5 +1,5 @@
 /*
- * channel-api
+ * processor-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,36 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue.model;
+package com.synopsys.integration.alert.processor.api.extract.model;
 
-import java.io.Serializable;
-import java.util.List;
-
-import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
-    private final ExistingIssueDetails<T> existingIssueDetails;
-    private final List<String> comments;
+public class ProviderDetails extends AlertSerializableModel {
+    private final Long providerConfigId;
+    private final LinkableItem provider;
 
-    private final ProjectIssueModel source;
-
-    public IssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, List<String> comments, ProjectIssueModel source) {
-        this.existingIssueDetails = existingIssueDetails;
-        this.comments = comments;
-        this.source = source;
+    public ProviderDetails(Long providerConfigId, LinkableItem provider) {
+        this.providerConfigId = providerConfigId;
+        this.provider = provider;
     }
 
-    public ExistingIssueDetails<T> getExistingIssueDetails() {
-        return existingIssueDetails;
+    public Long getProviderConfigId() {
+        return providerConfigId;
     }
 
-    public List<String> getComments() {
-        return comments;
-    }
-
-    public ProjectIssueModel getSource() {
-        return source;
+    public LinkableItem getProvider() {
+        return provider;
     }
 
 }

@@ -20,36 +20,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue.model;
+package com.synopsys.integration.alert.channel.api.issue.search;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Optional;
 
-import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import org.jetbrains.annotations.Nullable;
+
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
+public class ActionableIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;
-    private final List<String> comments;
+    private final ProjectIssueModel projectIssueModel;
+    private final ItemOperation requiredOperation;
 
-    private final ProjectIssueModel source;
-
-    public IssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, List<String> comments, ProjectIssueModel source) {
+    public ActionableIssueSearchResult(@Nullable ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel, ItemOperation requiredOperation) {
         this.existingIssueDetails = existingIssueDetails;
-        this.comments = comments;
-        this.source = source;
+        this.projectIssueModel = projectIssueModel;
+        this.requiredOperation = requiredOperation;
     }
 
-    public ExistingIssueDetails<T> getExistingIssueDetails() {
-        return existingIssueDetails;
+    public Optional<ExistingIssueDetails<T>> getExistingIssueDetails() {
+        return Optional.ofNullable(existingIssueDetails);
     }
 
-    public List<String> getComments() {
-        return comments;
+    public ProjectIssueModel getProjectIssueModel() {
+        return projectIssueModel;
     }
 
-    public ProjectIssueModel getSource() {
-        return source;
+    public ItemOperation getRequiredOperation() {
+        return requiredOperation;
     }
 
 }

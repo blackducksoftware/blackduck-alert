@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueCreationModel extends AlertSerializableModel {
@@ -34,20 +35,22 @@ public class IssueCreationModel extends AlertSerializableModel {
     private final String description;
     private final List<String> postCreateComments;
 
+    private final LinkableItem provider;
     private final ProjectIssueModel source;
 
-    public static IssueCreationModel simple(String title, String description, List<String> postCreateComments) {
-        return new IssueCreationModel(title, description, postCreateComments, null);
+    public static IssueCreationModel simple(String title, String description, List<String> postCreateComments, LinkableItem provider) {
+        return new IssueCreationModel(title, description, postCreateComments, provider, null);
     }
 
     public static IssueCreationModel project(String title, String description, List<String> postCreateComments, ProjectIssueModel source) {
-        return new IssueCreationModel(title, description, postCreateComments, source);
+        return new IssueCreationModel(title, description, postCreateComments, source.getProvider(), source);
     }
 
-    private IssueCreationModel(String title, String description, List<String> postCreateComments, @Nullable ProjectIssueModel source) {
+    private IssueCreationModel(String title, String description, List<String> postCreateComments, LinkableItem provider, @Nullable ProjectIssueModel source) {
         this.title = title;
         this.description = description;
         this.postCreateComments = postCreateComments;
+        this.provider = provider;
         this.source = source;
     }
 
@@ -61,6 +64,10 @@ public class IssueCreationModel extends AlertSerializableModel {
 
     public List<String> getPostCreateComments() {
         return postCreateComments;
+    }
+
+    public LinkableItem getProvider() {
+        return provider;
     }
 
     public Optional<ProjectIssueModel> getSource() {

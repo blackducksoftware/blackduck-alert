@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.convert;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class IssueTrackerSimpleMessageConverter {
         List<String> descriptionChunks = simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage);
         RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionChunks, "No description", formatter.getMaxDescriptionLength(), formatter.getMaxCommentLength());
 
-        return IssueCreationModel.simple(truncatedTitle, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks());
+        return IssueCreationModel.simple(truncatedTitle, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), simpleMessage.getProvider());
     }
 
 }

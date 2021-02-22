@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.convert;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +74,7 @@ public final class ProjectMessageToIssueModelTransformer {
 
     private static ProjectIssueModel copyFromProjectMessage(ProjectMessage projectMessage, BomComponentDetails bomComponent) {
         return new ProjectIssueModel(
-            projectMessage.getProvider(),
+            projectMessage.getProviderDetails(),
             projectMessage.getProject(),
             projectMessage.getProjectVersion().orElse(ProjectIssueModelConverter.MISSING_PROJECT_VERSION_PLACEHOLDER),
             bomComponent

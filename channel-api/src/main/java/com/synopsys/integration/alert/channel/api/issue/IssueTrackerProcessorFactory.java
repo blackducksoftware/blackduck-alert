@@ -1,5 +1,5 @@
 /*
- * processor-api
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,24 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.processor.api.extract.model;
+package com.synopsys.integration.alert.channel.api.issue;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import java.io.Serializable;
 
-public abstract class ProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<T> {
-    private final ProviderDetails providerDetails;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
-    public ProviderMessage(ProviderDetails providerDetails) {
-        this.providerDetails = providerDetails;
-    }
-
-    public ProviderDetails getProviderDetails() {
-        return providerDetails;
-    }
-
-    public LinkableItem getProvider() {
-        return providerDetails.getProvider();
-    }
+public interface IssueTrackerProcessorFactory<D extends DistributionJobDetailsModel, T extends Serializable> {
+    IssueTrackerProcessor<T> createProcessor(D distributionDetails) throws AlertException;
 
 }

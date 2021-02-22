@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 
@@ -34,8 +35,8 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
     private final LinkableItem projectVersion;
     private final BomComponentDetails bomComponent;
 
-    public ProjectIssueModel(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) {
-        super(provider);
+    public ProjectIssueModel(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) {
+        super(providerDetails);
         this.project = project;
         this.projectVersion = projectVersion;
         this.bomComponent = bomComponent;

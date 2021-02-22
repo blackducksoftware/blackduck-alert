@@ -37,15 +37,15 @@ public class SimpleMessage extends ProviderMessage<SimpleMessage> {
 
     private final ProjectMessage source;
 
-    public static SimpleMessage original(LinkableItem provider, String summary, String description, List<LinkableItem> details) {
-        return new SimpleMessage(provider, summary, description, details, null);
+    public static SimpleMessage original(ProviderDetails providerDetails, String summary, String description, List<LinkableItem> details) {
+        return new SimpleMessage(providerDetails, summary, description, details, null);
     }
 
     public static SimpleMessage derived(String summary, String description, List<LinkableItem> details, ProjectMessage source) {
-        return new SimpleMessage(source.getProvider(), summary, description, details, source);
+        return new SimpleMessage(source.getProviderDetails(), summary, description, details, source);
     }
 
-    private SimpleMessage(LinkableItem provider, String summary, String description, List<LinkableItem> details, @Nullable ProjectMessage source) {
+    private SimpleMessage(ProviderDetails provider, String summary, String description, List<LinkableItem> details, @Nullable ProjectMessage source) {
         super(provider);
         this.summary = summary;
         this.description = description;

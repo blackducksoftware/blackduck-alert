@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
@@ -53,7 +54,9 @@ public class LicenseLimitNotificationMessageExtractor extends ProviderMessageExt
     protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, LicenseLimitNotificationContent notificationContent) {
         AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
-        LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
+        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
+        ProviderDetails providerDetails = new ProviderDetails(alertNotificationModel.getProviderConfigId(), providerItem);
+
         String summary = "License Limit Event";
 
         List<LinkableItem> details = new LinkedList<>();
@@ -82,7 +85,7 @@ public class LicenseLimitNotificationMessageExtractor extends ProviderMessageExt
             details.add(softLimitDetail);
         }
 
-        SimpleMessage licenseLimitMessage = SimpleMessage.original(provider, summary, notificationContent.getMessage(), details);
+        SimpleMessage licenseLimitMessage = SimpleMessage.original(providerDetails, summary, notificationContent.getMessage(), details);
         return new ProviderMessageHolder(List.of(), List.of(licenseLimitMessage));
     }
 
