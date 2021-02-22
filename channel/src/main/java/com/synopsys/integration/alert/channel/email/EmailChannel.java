@@ -123,7 +123,7 @@ public class EmailChannel extends NamedDistributionChannel {
                                 .collect(Collectors.joining(", "));
         }
 
-        String alertServerUrl = alertProperties.getServerUrl().orElse(null);
+        String alertServerUrl = alertProperties.getExternalServerUrl().orElse(null);
         LinkableItem comonProvider = messageContent.getCommonProvider();
         String providerName = comonProvider.getValue();
         String providerUrl = comonProvider.getUrl().orElse("#");
