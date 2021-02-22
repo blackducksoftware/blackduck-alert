@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -76,15 +77,17 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
             return ProviderMessageHolder.empty();
         }
 
-        LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), notificationModel.getProviderConfigName());
+        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), notificationModel.getProviderConfigName());
+        ProviderDetails providerDetails = new ProviderDetails(notificationModel.getProviderConfigId(), providerItem);
+
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName());
         LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
 
-        ProjectMessage projectMessage = createProjectMessage(provider, project, projectVersion, bomComponentDetails);
+        ProjectMessage projectMessage = createProjectMessage(providerDetails, project, projectVersion, bomComponentDetails);
         return new ProviderMessageHolder(List.of(projectMessage), List.of());
     }
 
-    protected ProjectMessage createProjectMessage(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponentDetails) {
+    protected ProjectMessage createProjectMessage(ProviderDetails provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponentDetails) {
         return ProjectMessage.componentConcern(provider, project, projectVersion, bomComponentDetails);
     }
 

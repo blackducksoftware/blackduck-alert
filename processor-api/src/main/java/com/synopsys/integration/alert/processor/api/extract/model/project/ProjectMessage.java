@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
 
 public class ProjectMessage extends ProviderMessage<ProjectMessage> {
@@ -39,31 +40,31 @@ public class ProjectMessage extends ProviderMessage<ProjectMessage> {
     private final LinkableItem projectVersion;
     private final List<BomComponentDetails> bomComponents;
 
-    public static ProjectMessage projectStatusInfo(LinkableItem provider, LinkableItem project, ProjectOperation operation) {
-        return new ProjectMessage(provider, MessageReason.PROJECT_STATUS, operation, project, null, List.of());
+    public static ProjectMessage projectStatusInfo(ProviderDetails providerDetails, LinkableItem project, ProjectOperation operation) {
+        return new ProjectMessage(providerDetails, MessageReason.PROJECT_STATUS, operation, project, null, List.of());
     }
 
-    public static ProjectMessage projectVersionStatusInfo(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, ProjectOperation operation) {
-        return new ProjectMessage(provider, MessageReason.PROJECT_VERSION_STATUS, operation, project, projectVersion, List.of());
+    public static ProjectMessage projectVersionStatusInfo(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, ProjectOperation operation) {
+        return new ProjectMessage(providerDetails, MessageReason.PROJECT_VERSION_STATUS, operation, project, projectVersion, List.of());
     }
 
-    public static ProjectMessage componentUpdate(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) {
-        return new ProjectMessage(provider, MessageReason.COMPONENT_UPDATE, null, project, projectVersion, bomComponents);
+    public static ProjectMessage componentUpdate(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) {
+        return new ProjectMessage(providerDetails, MessageReason.COMPONENT_UPDATE, null, project, projectVersion, bomComponents);
     }
 
-    public static ProjectMessage componentConcern(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) {
-        return new ProjectMessage(provider, MessageReason.COMPONENT_CONCERN, null, project, projectVersion, bomComponents);
+    public static ProjectMessage componentConcern(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) {
+        return new ProjectMessage(providerDetails, MessageReason.COMPONENT_CONCERN, null, project, projectVersion, bomComponents);
     }
 
     private ProjectMessage(
-        LinkableItem provider,
+        ProviderDetails providerDetails,
         MessageReason messageReason,
         ProjectOperation operation,
         LinkableItem project,
         @Nullable LinkableItem projectVersion,
         List<BomComponentDetails> bomComponents
     ) {
-        super(provider);
+        super(providerDetails);
         this.messageReason = messageReason;
         this.operation = operation;
         this.project = project;
@@ -100,7 +101,7 @@ public class ProjectMessage extends ProviderMessage<ProjectMessage> {
     public List<ProjectMessage> combine(ProjectMessage otherMessage) {
         List<ProjectMessage> uncombinedMessages = List.of(this, otherMessage);
 
-        if (!getProvider().equals(otherMessage.getProvider())) {
+        if (!getProviderDetails().equals(otherMessage.getProviderDetails())) {
             return uncombinedMessages;
         }
 
@@ -137,7 +138,7 @@ public class ProjectMessage extends ProviderMessage<ProjectMessage> {
 
     private List<ProjectMessage> combineBomComponents(List<BomComponentDetails> otherMessageBomComponents) {
         List<BomComponentDetails> combinedBomComponents = CombinableModel.combine(bomComponents, otherMessageBomComponents);
-        ProjectMessage projectMessageWithCombinedComponents = new ProjectMessage(getProvider(), messageReason, operation, project, projectVersion, combinedBomComponents);
+        ProjectMessage projectMessageWithCombinedComponents = new ProjectMessage(getProviderDetails(), messageReason, operation, project, projectVersion, combinedBomComponents);
         return List.of(projectMessageWithCombinedComponents);
     }
 

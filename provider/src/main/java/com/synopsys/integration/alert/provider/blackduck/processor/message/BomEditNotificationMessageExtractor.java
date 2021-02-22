@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
@@ -49,7 +50,7 @@ public class BomEditNotificationMessageExtractor extends AbstractBlackDuckCompon
     }
 
     @Override
-    protected ProjectMessage createProjectMessage(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponentDetails) {
+    protected ProjectMessage createProjectMessage(ProviderDetails provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponentDetails) {
         return ProjectMessage.componentUpdate(provider, project, projectVersion, bomComponentDetails);
     }
 
