@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
@@ -52,7 +53,8 @@ public class ProjectMessageSummarizer {
     }
 
     private Pair<String, String> constructSummaryAndDescription(ProjectMessage projectMessage) {
-        String providerName = projectMessage.getProvider().getValue();
+        ProviderDetails providerDetails = projectMessage.getProviderDetails();
+        String providerName = providerDetails.getProvider().getValue();
         String projectName = projectMessage.getProject().getValue();
 
         MessageReason messageReason = projectMessage.getMessageReason();

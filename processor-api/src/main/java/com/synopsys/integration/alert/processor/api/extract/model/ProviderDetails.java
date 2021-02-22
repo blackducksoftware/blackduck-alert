@@ -22,17 +22,24 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public abstract class ProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<T> {
-    private final ProviderDetails providerDetails;
+public class ProviderDetails extends AlertSerializableModel {
+    private final Long providerConfigId;
+    private final LinkableItem provider;
 
-    public ProviderMessage(ProviderDetails providerDetails) {
-        this.providerDetails = providerDetails;
+    public ProviderDetails(Long providerConfigId, LinkableItem provider) {
+        this.providerConfigId = providerConfigId;
+        this.provider = provider;
     }
 
-    public ProviderDetails getProviderDetails() {
-        return providerDetails;
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
+    public LinkableItem getProvider() {
+        return provider;
     }
 
 }

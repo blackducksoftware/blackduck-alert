@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
 public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessage> {
@@ -43,7 +44,8 @@ public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessa
         appendSection(chunkedStringBuilder, simpleMessage.getSummary());
         appendSection(chunkedStringBuilder, simpleMessage.getDescription());
 
-        appendLinkableItem(chunkedStringBuilder, simpleMessage.getProvider(), true);
+        ProviderDetails providerDetails = simpleMessage.getProviderDetails();
+        appendLinkableItem(chunkedStringBuilder, providerDetails.getProvider(), true);
 
         for (LinkableItem detail : simpleMessage.getDetails()) {
             appendLinkableItem(chunkedStringBuilder, detail, false);

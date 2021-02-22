@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
@@ -45,7 +46,8 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
     public static MessageContentGroup toMessageContentGroup(ProjectMessage projectMessage) {
         ProviderMessageContent.Builder providerMessageContentBuilder = new ProviderMessageContent.Builder();
 
-        LinkableItem provider = projectMessage.getProvider();
+        ProviderDetails providerDetails = projectMessage.getProviderDetails();
+        LinkableItem provider = providerDetails.getProvider();
         providerMessageContentBuilder.applyProvider(provider.getLabel(), -1L, provider.getValue(), provider.getUrl().orElse(null));
 
         LinkableItem project = projectMessage.getProject();
