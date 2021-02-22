@@ -8,6 +8,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
@@ -15,9 +16,10 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 
 public class ProviderMessageHolderTest {
-    private static final LinkableItem PROVIDER = new LinkableItem("BlackDuck", "test-server01");
-    private static final SimpleMessage SIMPLE_MESSAGE = SimpleMessage.original(PROVIDER, "Subject", "Description", List.of());
-    private static final ProjectMessage PROJECT_MESSAGE = ProjectMessage.projectStatusInfo(PROVIDER, new LinkableItem("Project", "My Project"), ProjectOperation.CREATE);
+    private static final LinkableItem PROVIDER_ITEM = new LinkableItem("BlackDuck", "test-server01");
+    private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(0L, PROVIDER_ITEM);
+    private static final SimpleMessage SIMPLE_MESSAGE = SimpleMessage.original(PROVIDER_DETAILS, "Subject", "Description", List.of());
+    private static final ProjectMessage PROJECT_MESSAGE = ProjectMessage.projectStatusInfo(PROVIDER_DETAILS, new LinkableItem("Project", "My Project"), ProjectOperation.CREATE);
 
     @Test
     public void reducePopulatedTest() {

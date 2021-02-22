@@ -37,7 +37,7 @@ public class AboutReaderTest {
     @BeforeEach
     public void initialize() {
         alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getServerUrl()).thenReturn(Optional.empty());
+        Mockito.when(alertProperties.getExternalServerUrl()).thenReturn(Optional.empty());
 
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusAccessor.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);

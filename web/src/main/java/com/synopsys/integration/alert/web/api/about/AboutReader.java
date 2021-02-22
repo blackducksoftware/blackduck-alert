@@ -95,7 +95,7 @@ public class AboutReader {
     }
 
     private String createInternalUrl(String path) {
-        String baseUrl = alertProperties.getServerUrl().orElse("https://localhost:8443/alert");
+        String baseUrl = alertProperties.getExternalServerUrl().orElse("https://localhost:8443/alert/");
         return baseUrl + path;
     }
 

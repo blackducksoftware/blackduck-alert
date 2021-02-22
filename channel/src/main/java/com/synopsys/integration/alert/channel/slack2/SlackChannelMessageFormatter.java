@@ -28,8 +28,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.api.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-import com.synopys.integration.alert.channel.api.convert.ChannelMessageFormatter;
 
 @Component
 public class SlackChannelMessageFormatter extends ChannelMessageFormatter {
@@ -66,5 +66,5 @@ public class SlackChannelMessageFormatter extends ChannelMessageFormatter {
     protected String createLink(String txt, String url) {
         return String.format("<%s|%s>", url, txt);
     }
-    
+
 }

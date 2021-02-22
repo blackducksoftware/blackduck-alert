@@ -198,6 +198,7 @@ public class AlertProperties {
 
     public Optional<String> getServerUrl() {
         try {
+            // TODO investigate using ServletUriComponentsBuilder.fromCurrentContextPath() to construct the URL
             String hostName = getAlertHostName().orElse("localhost");
             String port = getPublicServerPort().orElse(getServerPort().orElse(""));
             String path = getContextPath().orElse("");
@@ -215,5 +216,10 @@ public class AlertProperties {
         } catch (NumberFormatException | MalformedURLException ex) {
             return Optional.empty();
         }
+    }
+
+    public Optional<String> getExternalServerUrl() {
+        // Can not use this for Azure OAuth authentication
+        return getServerUrl().map(url -> StringUtils.appendIfMissing(url, "/"));
     }
 }

@@ -75,7 +75,7 @@ public class PasswordResetService {
                                              .findFirst()
                                              .orElseThrow(() -> new AlertConfigurationException("No global email configuration found"));
         EmailProperties emailProperties = new EmailProperties(emailConfig);
-        String alertServerUrl = alertProperties.getServerUrl().orElse(null);
+        String alertServerUrl = alertProperties.getExternalServerUrl().orElse(null);
         String tempPassword = RandomStringUtils.randomAlphanumeric(TEMP_PASSWORD_LENGTH);
         Map<String, Object> templateFields = new HashMap<>();
         templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);

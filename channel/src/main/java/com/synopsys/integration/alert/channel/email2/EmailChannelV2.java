@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.channel.email2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
 @Component
 public class EmailChannelV2 extends MessageBoardChannel<EmailJobDetailsModel, EmailChannelMessageModel> {
