@@ -33,20 +33,22 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 
 @Component
 public class AlertIssueOriginCreator {
     public AlertIssueOrigin createIssueOrigin(ProjectIssueModel projectIssueModel) {
-        LinkableItem provider = projectIssueModel.getProvider();
+        ProviderDetails providerDetails = projectIssueModel.getProviderDetails();
+        LinkableItem provider = providerDetails.getProvider();
+
         LinkableItem project = projectIssueModel.getProject();
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
                                           .orElseThrow(() -> new AlertRuntimeException("Missing BlackDuck project-version"));
         ContentKey providerContentKey = new ContentKey(
             provider.getLabel(),
-            // FIXME we need provider config id to be included from the processing level
-            null,
+            providerDetails.getProviderConfigId(),
             project.getLabel(),
             project.getValue(),
             projectVersion.getLabel(),
