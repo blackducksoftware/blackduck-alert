@@ -30,12 +30,13 @@ import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 
 @Component
 public class EmailDistributionEventReceiver extends DistributionEventReceiver<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannelV2 channel) {
-        super(gson, auditAccessor, emailJobDetailsAccessor, channel);
+    public EmailDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannelV2 channel, EmailChannelKey channelKey) {
+        super(gson, auditAccessor, emailJobDetailsAccessor, channel, channelKey);
     }
 
 }

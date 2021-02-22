@@ -61,16 +61,14 @@ public class EventListenerConfigurer implements JmsListenerConfigurer {
     }
 
     private void registerListenerEndpoint(JmsListenerEndpointRegistrar registrar, AlertEventListener listener, DefaultJmsListenerContainerFactory jmsListenerContainerFactory) {
-        if (listener != null) {
-            String destinationName = listener.getDestinationName();
-            String listenerId = createListenerId(destinationName);
-            logger.info("Registering JMS Listener: {}", listenerId);
-            SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-            endpoint.setId(listenerId);
-            endpoint.setDestination(destinationName);
-            endpoint.setMessageListener(listener);
-            registrar.registerEndpoint(endpoint, jmsListenerContainerFactory);
-        }
+        String destinationName = listener.getDestinationName();
+        String listenerId = createListenerId(destinationName);
+        logger.info("Registering JMS Listener: {}", listenerId);
+        SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+        endpoint.setId(listenerId);
+        endpoint.setDestination(destinationName);
+        endpoint.setMessageListener(listener);
+        registrar.registerEndpoint(endpoint, jmsListenerContainerFactory);
     }
 
     private String createListenerId(String name) {

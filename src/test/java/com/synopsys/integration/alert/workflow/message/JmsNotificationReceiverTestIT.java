@@ -132,7 +132,7 @@ public class JmsNotificationReceiverTestIT {
     @Disabled
     public void testJms() throws InterruptedException {
         // Set breakpoints throughout this test, there is nothing to assert against here. Suggestions for breakpoints:
-        //      Registering listeners: EvenListenerConfigurer
+        //      Registering listeners: EventListenerConfigurer
         //      Sending events: EventManager
         //      Receiving events: NotificationReceiver or DistributionChannel
         //      Processing notifications: NotificationReceiver

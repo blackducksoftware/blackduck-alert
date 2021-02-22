@@ -33,8 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -138,23 +136,4 @@ public class ApplicationConfiguration {
         return new AuthorizationManager(roleAccessor);
     }
 
-    @Bean
-    public DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory(CachingConnectionFactory connectionFactory) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        return factory;
-    }
-
-    @Bean
-    public DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory(CachingConnectionFactory connectionFactory) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        int minConcurrency = 1;
-        int maxThreadCount = Runtime.getRuntime().availableProcessors();
-        int maxConcurrency = maxThreadCount < 10 ? maxThreadCount : 10;
-        String concurrencyRange = String.format("%s-%s", minConcurrency, maxConcurrency);
-        factory.setConcurrency(concurrencyRange);
-
-        return factory;
-    }
 }
