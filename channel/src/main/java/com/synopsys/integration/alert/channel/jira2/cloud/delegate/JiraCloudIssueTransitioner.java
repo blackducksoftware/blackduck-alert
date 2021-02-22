@@ -31,10 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueTransitioner;
-import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;

@@ -27,10 +27,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
+import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;

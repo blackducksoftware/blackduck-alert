@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
@@ -52,11 +53,13 @@ public class ProjectNotificationMessageExtractor extends ProviderMessageExtracto
     protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectNotificationContent notificationContent) {
         AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
-        LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
+        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
+        ProviderDetails providerDetails = new ProviderDetails(alertNotificationModel.getProviderConfigId(), providerItem);
+
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName(), notificationContent.getProject());
         ProjectOperation operation = ProjectOperation.fromOperationType(notificationContent.getOperationType());
 
-        ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(provider, project, operation);
+        ProjectMessage projectMessage = ProjectMessage.projectStatusInfo(providerDetails, project, operation);
         return new ProviderMessageHolder(List.of(projectMessage), List.of());
     }
 

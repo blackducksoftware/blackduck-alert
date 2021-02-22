@@ -1,5 +1,5 @@
 /*
- * channel-api
+ * processor-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,16 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.processor.api.extract.model;
 
-import java.io.Serializable;
-import java.util.Optional;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
-import com.synopsys.integration.alert.common.exception.AlertException;
+public class ProviderDetails extends AlertSerializableModel {
+    private final Long providerConfigId;
+    private final LinkableItem provider;
 
-public interface IssueTrackerIssueTransitioner<T extends Serializable> {
-    Optional<IssueTrackerIssueResponseModel> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException;
+    public ProviderDetails(Long providerConfigId, LinkableItem provider) {
+        this.providerConfigId = providerConfigId;
+        this.provider = provider;
+    }
+
+    public Long getProviderConfigId() {
+        return providerConfigId;
+    }
+
+    public LinkableItem getProvider() {
+        return provider;
+    }
 
 }

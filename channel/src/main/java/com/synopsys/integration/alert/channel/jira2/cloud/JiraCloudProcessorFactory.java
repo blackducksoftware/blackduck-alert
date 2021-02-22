@@ -28,12 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.api.issue.AlertIssueOriginCreator;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
+import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
+import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCommenter;

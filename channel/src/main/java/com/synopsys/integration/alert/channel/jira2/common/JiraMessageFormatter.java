@@ -24,7 +24,7 @@ package com.synopsys.integration.alert.channel.jira2.common;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerMessageFormatter;
+import com.synopsys.integration.alert.channel.api.issue.convert.IssueTrackerMessageFormatter;
 
 @Component
 public class JiraMessageFormatter extends IssueTrackerMessageFormatter {

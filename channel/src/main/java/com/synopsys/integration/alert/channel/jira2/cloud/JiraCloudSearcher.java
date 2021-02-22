@@ -28,11 +28,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerSearcher;
-import com.synopsys.integration.alert.channel.api.issue.model.ActionableIssueSearchResult;
-import com.synopsys.integration.alert.channel.api.issue.model.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.channel.api.issue.search.ActionableIssueSearchResult;
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
+import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira2.common.JqlStringCreator;
@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
@@ -61,23 +62,23 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
     }
 
     @Override
-    protected List<ProjectIssueSearchResult<String>> findProjectIssues(LinkableItem provider, LinkableItem project) throws AlertException {
-        String jqlString = JqlStringCreator.createBlackDuckProjectIssuesSearchString(jiraProjectKey, provider, project);
-        return findIssues(jqlString, provider, project);
+    protected List<ProjectIssueSearchResult<String>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
+        String jqlString = JqlStringCreator.createBlackDuckProjectIssuesSearchString(jiraProjectKey, providerDetails.getProvider(), project);
+        return findIssues(jqlString, providerDetails, project);
     }
 
     @Override
-    protected List<ProjectIssueSearchResult<String>> findProjectVersionIssues(LinkableItem provider, LinkableItem project, LinkableItem projectVersion) throws AlertException {
-        String jqlString = JqlStringCreator.createBlackDuckProjectVersionIssuesSearchString(jiraProjectKey, provider, project, projectVersion);
-        return findIssues(jqlString, provider, project);
+    protected List<ProjectIssueSearchResult<String>> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException {
+        String jqlString = JqlStringCreator.createBlackDuckProjectVersionIssuesSearchString(jiraProjectKey, providerDetails.getProvider(), project, projectVersion);
+        return findIssues(jqlString, providerDetails, project);
     }
 
     @Override
-    protected List<ProjectIssueSearchResult<String>> findIssuesByComponent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, BomComponentDetails originalBomComponent) throws AlertException {
+    protected List<ProjectIssueSearchResult<String>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails originalBomComponent) throws AlertException {
         LinkableItem component = originalBomComponent.getComponent();
         LinkableItem nullableComponentVersion = originalBomComponent.getComponentVersion().orElse(null);
 
-        String jqlString = JqlStringCreator.createBlackDuckComponentIssuesSearchString(jiraProjectKey, provider, project, projectVersion, component, nullableComponentVersion);
+        String jqlString = JqlStringCreator.createBlackDuckComponentIssuesSearchString(jiraProjectKey, providerDetails.getProvider(), project, projectVersion, component, nullableComponentVersion);
         List<IssueResponseModel> issueResponseModels = queryForIssues(jqlString);
 
         BomComponentDetails relevantDetails = new BomComponentDetails(
@@ -92,7 +93,7 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
 
         List<ProjectIssueSearchResult<String>> searchResults = new ArrayList<>();
         for (IssueResponseModel model : issueResponseModels) {
-            ProjectIssueSearchResult<String> resultFromExistingIssue = createIssueResult(model, provider, project, projectVersion, relevantDetails);
+            ProjectIssueSearchResult<String> resultFromExistingIssue = createIssueResult(model, providerDetails, project, projectVersion, relevantDetails);
             searchResults.add(resultFromExistingIssue);
         }
         return searchResults;
@@ -150,9 +151,9 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         return new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, operation);
     }
 
-    private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, LinkableItem provider, LinkableItem project) throws AlertException {
+    private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
         List<IssueResponseModel> issueResponseModels = queryForIssues(jqlString);
-        return createResultsFromExistingIssues(provider, project, issueResponseModels);
+        return createResultsFromExistingIssues(providerDetails, project, issueResponseModels);
     }
 
     private List<IssueResponseModel> queryForIssues(String jql) throws AlertException {
@@ -164,16 +165,16 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         }
     }
 
-    private List<ProjectIssueSearchResult<String>> createResultsFromExistingIssues(LinkableItem provider, LinkableItem project, List<IssueResponseModel> issueResponseModels) throws AlertException {
+    private List<ProjectIssueSearchResult<String>> createResultsFromExistingIssues(ProviderDetails providerDetails, LinkableItem project, List<IssueResponseModel> issueResponseModels) throws AlertException {
         List<ProjectIssueSearchResult<String>> searchResults = new ArrayList<>();
         for (IssueResponseModel model : issueResponseModels) {
-            ProjectIssueSearchResult<String> resultFromExistingIssue = createResultFromProjectIssue(model, provider, project);
+            ProjectIssueSearchResult<String> resultFromExistingIssue = createResultFromProjectIssue(model, providerDetails, project);
             searchResults.add(resultFromExistingIssue);
         }
         return searchResults;
     }
 
-    private ProjectIssueSearchResult<String> createResultFromProjectIssue(IssueResponseModel issue, LinkableItem provider, LinkableItem project) throws AlertException {
+    private ProjectIssueSearchResult<String> createResultFromProjectIssue(IssueResponseModel issue, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
         JiraIssueSearchProperties issueProperties = issuePropertiesManager.retrieveIssueProperties(issue.getKey());
 
         String nullableSubComponentName = issueProperties.getSubComponentName();
@@ -188,19 +189,19 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
             new LinkableItem(issueProperties.getComponentName(), issueProperties.getComponentValue()),
             componentVersion
         );
-        return createIssueResult(issue, provider, project, projectVersion, bomComponent);
+        return createIssueResult(issue, providerDetails, project, projectVersion, bomComponent);
     }
 
     private ProjectIssueSearchResult<String> createIssueResult(
         IssueResponseModel issue,
-        LinkableItem provider,
+        ProviderDetails providerDetails,
         LinkableItem project,
         LinkableItem projectVersion,
         BomComponentDetails relevantDetails
     ) {
-        ProjectIssueModel projectIssueModel = new ProjectIssueModel(provider, project, projectVersion, relevantDetails);
+        ProjectIssueModel projectIssueModel = new ProjectIssueModel(providerDetails, project, projectVersion, relevantDetails);
         ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue);
-        return new ProjectIssueSearchResult<>(issue.getId(), issueDetails, projectIssueModel);
+        return new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
     }
 
     private BomComponentDetails createMinimalBomComponentDetails(LinkableItem component, @Nullable LinkableItem componentVersion) {

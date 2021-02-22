@@ -20,20 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.api.issue;
+package com.synopsys.integration.alert.channel.api.issue.search;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.channel.api.issue.model.ActionableIssueSearchResult;
+import com.synopsys.integration.alert.channel.api.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -42,7 +42,7 @@ import com.synopsys.integration.function.ThrowingSupplier;
 
 public abstract class IssueTrackerSearcher<T extends Serializable> {
     public final List<ActionableIssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
-        LinkableItem provider = projectMessage.getProvider();
+        ProviderDetails providerDetails = projectMessage.getProviderDetails();
         LinkableItem project = projectMessage.getProject();
 
         MessageReason messageReason = projectMessage.getMessageReason();
@@ -51,17 +51,17 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                                          .isPresent();
 
         if (MessageReason.PROJECT_STATUS.equals(messageReason)) {
-            return findProjectIssues(isEntireBomDeleted, () -> findProjectIssues(provider, project));
+            return findProjectIssues(isEntireBomDeleted, () -> findProjectIssues(providerDetails, project));
         }
 
         LinkableItem projectVersion = projectMessage.getProjectVersion()
                                           .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
         if (MessageReason.PROJECT_VERSION_STATUS.equals(messageReason)) {
-            return findProjectIssues(isEntireBomDeleted, () -> findProjectVersionIssues(provider, project, projectVersion));
+            return findProjectIssues(isEntireBomDeleted, () -> findProjectVersionIssues(providerDetails, project, projectVersion));
         }
 
         if (MessageReason.COMPONENT_UPDATE.equals(messageReason)) {
-            return findIssuesByAllComponents(provider, project, projectVersion, projectMessage.getBomComponents());
+            return findIssuesByAllComponents(providerDetails, project, projectVersion, projectMessage.getBomComponents());
         }
 
         List<ProjectIssueModel> projectIssueModels = ProjectMessageToIssueModelTransformer.convertToIssueModels(projectMessage);
@@ -74,18 +74,18 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
         return projectIssueSearchResults;
     }
 
-    protected abstract List<ProjectIssueSearchResult<T>> findProjectIssues(LinkableItem provider, LinkableItem project) throws AlertException;
+    protected abstract List<ProjectIssueSearchResult<T>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException;
 
-    protected abstract List<ProjectIssueSearchResult<T>> findProjectVersionIssues(LinkableItem provider, LinkableItem project, LinkableItem projectVersion) throws AlertException;
+    protected abstract List<ProjectIssueSearchResult<T>> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException;
 
-    protected abstract List<ProjectIssueSearchResult<T>> findIssuesByComponent(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException;
+    protected abstract List<ProjectIssueSearchResult<T>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException;
 
     protected abstract ActionableIssueSearchResult<T> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
 
-    private List<ActionableIssueSearchResult<T>> findIssuesByAllComponents(LinkableItem provider, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) throws AlertException {
+    private List<ActionableIssueSearchResult<T>> findIssuesByAllComponents(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) throws AlertException {
         List<ProjectIssueSearchResult<T>> componentIssues = new LinkedList<>();
         for (BomComponentDetails bomComponent : bomComponents) {
-            List<ProjectIssueSearchResult<T>> issuesByComponent = findIssuesByComponent(provider, project, projectVersion, bomComponent);
+            List<ProjectIssueSearchResult<T>> issuesByComponent = findIssuesByComponent(providerDetails, project, projectVersion, bomComponent);
             componentIssues.addAll(issuesByComponent);
         }
         return componentIssues

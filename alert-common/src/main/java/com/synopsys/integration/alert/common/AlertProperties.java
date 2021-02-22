@@ -212,10 +212,14 @@ public class AlertProperties {
             } else {
                 url = new URL(protocol, hostName, path);
             }
-            String urlString = StringUtils.appendIfMissing(url.toString(), "/");
-            return Optional.of(urlString);
+            return Optional.of(url.toString());
         } catch (NumberFormatException | MalformedURLException ex) {
             return Optional.empty();
         }
+    }
+
+    public Optional<String> getExternalServerUrl() {
+        // Can not use this for Azure OAuth authentication
+        return getServerUrl().map(url -> StringUtils.appendIfMissing(url, "/"));
     }
 }

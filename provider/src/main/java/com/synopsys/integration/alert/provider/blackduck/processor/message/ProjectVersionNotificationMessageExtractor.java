@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractor;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
@@ -52,12 +53,14 @@ public class ProjectVersionNotificationMessageExtractor extends ProviderMessageE
     protected ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, ProjectVersionNotificationContent notificationContent) {
         AlertNotificationModel alertNotificationModel = notificationContentWrapper.getAlertNotificationModel();
 
-        LinkableItem provider = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
+        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), alertNotificationModel.getProviderConfigName());
+        ProviderDetails providerDetails = new ProviderDetails(alertNotificationModel.getProviderConfigId(), providerItem);
+
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName());
         LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
         ProjectOperation operation = ProjectOperation.fromOperationType(notificationContent.getOperationType());
 
-        ProjectMessage projectVersionMessage = ProjectMessage.projectVersionStatusInfo(provider, project, projectVersion, operation);
+        ProjectMessage projectVersionMessage = ProjectMessage.projectVersionStatusInfo(providerDetails, project, projectVersion, operation);
         return new ProviderMessageHolder(List.of(projectVersionMessage), List.of());
     }
 
