@@ -121,7 +121,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         model.put(EmailPropertyKeys.TEMPLATE_KEY_PROVIDER_PROJECT_NAME.getPropertyKey(), message.getProjectName().orElse("Global"));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
         model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
-        model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertProperties.getServerUrl().orElse("#"));
+        model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertProperties.getRootURL());
 
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
         emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));

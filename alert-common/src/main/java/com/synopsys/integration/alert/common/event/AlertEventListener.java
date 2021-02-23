@@ -26,5 +26,4 @@ import javax.jms.MessageListener;
 
 public interface AlertEventListener extends MessageListener {
     String getDestinationName();
-
 }

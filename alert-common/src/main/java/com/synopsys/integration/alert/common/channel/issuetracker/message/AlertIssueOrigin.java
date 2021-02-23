@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
+// TODO replace this concept
 public class AlertIssueOrigin extends AlertSerializableModel {
     private final ContentKey providerContentKey;
     private final ComponentItem componentItem;
