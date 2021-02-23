@@ -81,11 +81,11 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
     }
 
     private Request createRequestsForMessage(String webhook, String messageTitle, List<MSTeamsChannelMessageModel> messages, Map<String, String> requestHeaders) {
-        String jsonString = getJsonString(messageTitle, messages);
+        String jsonString = createJsonString(messageTitle, messages);
         return restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString);
     }
 
-    private String getJsonString(String title, List<MSTeamsChannelMessageModel> messageSections) {
+    private String createJsonString(String title, List<MSTeamsChannelMessageModel> messageSections) {
         JsonObject json = new JsonObject();
         json.addProperty("@type", "MessageCard");
         json.addProperty("@context", "https://schema.org/extensions");
