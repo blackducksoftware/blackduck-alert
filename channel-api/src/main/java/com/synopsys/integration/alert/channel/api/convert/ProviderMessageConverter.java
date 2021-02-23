@@ -36,7 +36,7 @@ public abstract class ProviderMessageConverter<T extends ProviderMessage<T>> {
 
     public abstract List<String> convertToFormattedMessageChunks(T message);
 
-    public String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
+    protected String createLinkableItemString(LinkableItem linkableItem, boolean bold) {
         return linkableItemConverter.convertToString(linkableItem, bold);
     }
 
