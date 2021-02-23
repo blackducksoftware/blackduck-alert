@@ -93,7 +93,7 @@ public class UpdateEmailService {
                 FieldUtility fieldUtility = new FieldUtility(emailConfig.getCopyOfKeyToFieldMap());
                 EmailProperties emailProperties = new EmailProperties(fieldUtility);
 
-                String alertServerUrl = alertProperties.getExternalServerUrl().orElse(null);
+                String alertServerUrl = alertProperties.getRootURL();
                 Map<String, Object> templateFields = new HashMap<>();
                 templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
                 templateFields.put("newVersionName", updateVersion);

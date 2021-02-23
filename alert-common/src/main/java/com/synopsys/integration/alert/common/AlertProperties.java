@@ -224,14 +224,10 @@ public class AlertProperties {
         }
     }
 
-    public Optional<String> getExternalServerUrl() {
+    public String getRootURL() {
         UriComponentsBuilder uriComponentsBuilder = getServerUrlBuilder();
         uriComponentsBuilder.path("/");
-        try {
-            String serverUrl = uriComponentsBuilder.build().toUri().toURL().toString();
-            return Optional.of(serverUrl);
-        } catch (MalformedURLException e) {
-            return Optional.empty();
-        }
+        return uriComponentsBuilder.toUriString();
+
     }
 }
