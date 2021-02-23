@@ -16,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -250,6 +251,7 @@ public class UpdateCheckerTest {
         Mockito.when(descriptorMetadataActions.getDescriptorsByType(Mockito.anyString())).thenReturn(new ActionResponse<>(HttpStatus.OK, new DescriptorsResponseModel()));
 
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getServerUrlBuilder()).thenReturn(UriComponentsBuilder.newInstance());
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
 
         AboutReader reader = new AboutReader(gson, alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
