@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -94,7 +93,7 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         for (MSTeamsChannelMessageModel messageSection : messageSections) {
             JsonObject sectionJson = new JsonObject();
             sectionJson.addProperty("startGroup", true);
-            sectionJson.addProperty("title", messageSection.getMessageTitle().orElse(StringUtils.EMPTY));
+            sectionJson.addProperty("title", messageSection.getMessageTitle());
             sectionJson.addProperty("text", messageSection.getMessageContent());
             jsonArray.add(sectionJson);
         }

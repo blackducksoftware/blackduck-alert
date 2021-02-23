@@ -22,20 +22,15 @@
  */
 package com.synopsys.integration.alert.channel.msteams2;
 
-import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 
 public class MSTeamsChannelMessageModel extends AlertSerializableModel {
     private final ProviderDetails providerDetails;
-    @Nullable
     private final String messageTitle;
     private final String messageContent;
 
-    public MSTeamsChannelMessageModel(ProviderDetails providerDetails, @Nullable String messageTitle, String messageContent) {
+    public MSTeamsChannelMessageModel(ProviderDetails providerDetails, String messageTitle, String messageContent) {
         this.providerDetails = providerDetails;
         this.messageTitle = messageTitle;
         this.messageContent = messageContent;
@@ -45,8 +40,8 @@ public class MSTeamsChannelMessageModel extends AlertSerializableModel {
         return providerDetails;
     }
 
-    public Optional<String> getMessageTitle() {
-        return Optional.ofNullable(messageTitle);
+    public String getMessageTitle() {
+        return messageTitle;
     }
 
     public String getMessageContent() {
