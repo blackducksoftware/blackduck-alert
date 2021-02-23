@@ -28,7 +28,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
@@ -47,8 +49,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
@@ -170,19 +171,21 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
         LinkableItem projectVersion = alertIssueSource.getProjectVersion()
                                           .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
 
-        BomComponentDetails bomComponent = alertIssueSource.getBomComponent();
+        IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
         LinkableItem component = bomComponent.getComponent();
         String componentVersionLabel = bomComponent.getComponentVersion().map(LinkableItem::getLabel).orElse(null);
         String componentVersionName = bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null);
 
-        ComponentConcern arbitraryComponentConcern = bomComponent.getComponentConcerns()
-                                                         .stream()
-                                                         .findAny()
-                                                         .orElseThrow(() -> new AlertRuntimeException("Missing component-concern"));
+        String additionalKey = null;
+        ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
 
-        String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(arbitraryComponentConcern.getType());
-        String additionalKey = JiraIssueSearchPropertyStringCompatibilityUtils.createAdditionalKey(arbitraryComponentConcern).orElse(null);
+        Optional<String> optionalPolicyName = alertIssueSource.getPolicyDetails().map(IssuePolicyDetails::getName);
+        if (optionalPolicyName.isPresent()) {
+            concernType = ComponentConcernType.POLICY;
+            additionalKey = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(optionalPolicyName.get());
+        }
 
+        String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(concernType);
         return new JiraIssueSearchProperties(
             provider.getLabel(),
             provider.getUrl().orElse(null),
@@ -200,7 +203,7 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
     }
 
     private JiraCustomFieldReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
-        BomComponentDetails bomComponent = alertIssueSource.getBomComponent();
+        IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
         return new JiraCustomFieldReplacementValues(
             alertIssueSource.getProvider().getLabel(),
             alertIssueSource.getProject().getValue(),

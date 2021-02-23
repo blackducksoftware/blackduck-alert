@@ -22,11 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.jira2.common;
 
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public class JiraIssueSearchPropertyStringCompatibilityUtils {
@@ -34,12 +31,8 @@ public class JiraIssueSearchPropertyStringCompatibilityUtils {
         return StringUtils.capitalize(concernType.name().toLowerCase());
     }
 
-    public static Optional<String> createAdditionalKey(ComponentConcern componentConcern) {
-        if (ComponentConcernType.POLICY.equals(componentConcern.getType())) {
-            String additionalKey = String.format("Policy Violated%s", componentConcern.getName());
-            return Optional.of(additionalKey);
-        }
-        return Optional.empty();
+    public static String createPolicyAdditionalKey(String policyName) {
+        return String.format("Policy Violated%s", policyName);
     }
 
     private JiraIssueSearchPropertyStringCompatibilityUtils() {

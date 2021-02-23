@@ -63,7 +63,7 @@ public class SlackChannelMessageFormatter extends ChannelMessageFormatter {
     }
 
     @Override
-    protected String createLink(String txt, String url) {
+    public String createLink(String txt, String url) {
         return String.format("<%s|%s>", url, txt);
     }
 

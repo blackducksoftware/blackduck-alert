@@ -22,20 +22,27 @@
  */
 package com.synopsys.integration.alert.channel.api.issue.model;
 
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 
 public class IssuePolicyDetails extends AlertSerializableModel {
     private final String name;
+    private final ItemOperation operation;
     private final ComponentConcernSeverity severity;
 
-    public IssuePolicyDetails(String name, ComponentConcernSeverity severity) {
+    public IssuePolicyDetails(String name, ItemOperation operation, ComponentConcernSeverity severity) {
         this.name = name;
+        this.operation = operation;
         this.severity = severity;
     }
 
     public String getName() {
         return name;
+    }
+
+    public ItemOperation getOperation() {
+        return operation;
     }
 
     public ComponentConcernSeverity getSeverity() {

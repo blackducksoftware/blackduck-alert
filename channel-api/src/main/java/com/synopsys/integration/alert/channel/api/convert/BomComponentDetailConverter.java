@@ -31,6 +31,7 @@ import java.util.TreeSet;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
@@ -48,27 +49,35 @@ public class BomComponentDetailConverter {
     public List<String> gatherBomComponentPieces(BomComponentDetails bomComponent) {
         List<String> bomComponentSectionPieces = new LinkedList<>();
 
-        String componentString = linkableItemConverter.convertToString(bomComponent.getComponent(), true);
-        bomComponentSectionPieces.add(componentString);
-        bomComponentSectionPieces.add(formatter.getLineSeparator());
-
-        bomComponent.getComponentVersion()
-            .map(componentVersion -> linkableItemConverter.convertToString(componentVersion, true))
-            .ifPresent(componentVersionString -> {
-                bomComponentSectionPieces.add(componentVersionString);
-                bomComponentSectionPieces.add(formatter.getLineSeparator());
-            });
-
-        List<String> componentAttributeStrings = gatherAttributeStrings(bomComponent);
-        for (String attributeString : componentAttributeStrings) {
-            bomComponentSectionPieces.add(String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), attributeString));
-            bomComponentSectionPieces.add(formatter.getLineSeparator());
-        }
+        List<String> preConcernSectionPieces = gatherPreConcernSectionPieces(bomComponent);
+        bomComponentSectionPieces.addAll(preConcernSectionPieces);
 
         List<String> componentConcernSectionPieces = createComponentConcernSectionPieces(bomComponent);
         bomComponentSectionPieces.addAll(componentConcernSectionPieces);
 
         return bomComponentSectionPieces;
+    }
+
+    public List<String> gatherPreConcernSectionPieces(AbstractBomComponentDetails bomComponent) {
+        List<String> preConcernSectionPieces = new LinkedList<>();
+
+        String componentString = linkableItemConverter.convertToString(bomComponent.getComponent(), true);
+        preConcernSectionPieces.add(componentString);
+        preConcernSectionPieces.add(formatter.getLineSeparator());
+
+        bomComponent.getComponentVersion()
+            .map(componentVersion -> linkableItemConverter.convertToString(componentVersion, true))
+            .ifPresent(componentVersionString -> {
+                preConcernSectionPieces.add(componentVersionString);
+                preConcernSectionPieces.add(formatter.getLineSeparator());
+            });
+
+        List<String> componentAttributeStrings = gatherAttributeStrings(bomComponent);
+        for (String attributeString : componentAttributeStrings) {
+            preConcernSectionPieces.add(String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), attributeString));
+            preConcernSectionPieces.add(formatter.getLineSeparator());
+        }
+        return preConcernSectionPieces;
     }
 
     public List<String> createComponentConcernSectionPieces(BomComponentDetails bomComponent) {
@@ -115,7 +124,7 @@ public class BomComponentDetailConverter {
         return componentConcernSectionPieces;
     }
 
-    public List<String> gatherAttributeStrings(BomComponentDetails bomComponent) {
+    public List<String> gatherAttributeStrings(AbstractBomComponentDetails bomComponent) {
         return gatherAttributeStrings(bomComponent.getLicense(), bomComponent.getUsage(), bomComponent.getAdditionalAttributes());
     }
 

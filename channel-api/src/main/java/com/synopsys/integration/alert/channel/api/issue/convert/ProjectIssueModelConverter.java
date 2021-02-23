@@ -23,6 +23,8 @@
 package com.synopsys.integration.alert.channel.api.issue.convert;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,9 +33,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.convert.BomComponentDetailConverter;
 import com.synopsys.integration.alert.channel.api.convert.LinkableItemConverter;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -42,8 +48,7 @@ import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilde
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public class ProjectIssueModelConverter {
@@ -77,9 +82,12 @@ public class ProjectIssueModelConverter {
         descriptionBuilder.append(formatter.getSectionSeparator());
         descriptionBuilder.append(formatter.getLineSeparator());
 
-        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
-        List<String> bomComponentPieces = bomComponentDetailConverter.gatherBomComponentPieces(bomComponent);
+        IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
+        List<String> bomComponentPieces = bomComponentDetailConverter.gatherPreConcernSectionPieces(bomComponent);
         bomComponentPieces.forEach(descriptionBuilder::append);
+
+        createProjectIssueModelConcernSectionPieces(projectIssueModel)
+            .forEach(descriptionBuilder::append);
 
         int newChunkSize = formatter.getMaxCommentLength() - DESCRIPTION_CONTINUED_TEXT.length() - formatter.getLineSeparator().length();
         RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", newChunkSize);
@@ -117,12 +125,12 @@ public class ProjectIssueModelConverter {
         commentBuilder.append(formatter.getLineSeparator());
         commentBuilder.append(formatter.getSectionSeparator());
 
-        bomComponentDetailConverter.createComponentConcernSectionPieces(projectIssueModel.getBomComponent())
+        createProjectIssueModelConcernSectionPieces(projectIssueModel)
             .forEach(commentBuilder::append);
 
         commentBuilder.append(formatter.getSectionSeparator());
         commentBuilder.append(formatter.getLineSeparator());
-        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
+        IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         List<String> attributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
         for (String attributeString : attributeStrings) {
             commentBuilder.append(String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), attributeString));
@@ -138,7 +146,7 @@ public class ProjectIssueModelConverter {
         LinkableItem project = projectIssueModel.getProject();
         LinkableItem projectVersion = projectIssueModel.getProjectVersion().orElse(MISSING_PROJECT_VERSION_PLACEHOLDER);
 
-        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
+        IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         LinkableItem component = bomComponent.getComponent();
         Optional<LinkableItem> optionalComponentVersion = bomComponent.getComponentVersion();
 
@@ -151,22 +159,17 @@ public class ProjectIssueModelConverter {
             componentPieceBuilder.append(']');
         }
 
-        Optional<ComponentConcern> arbitraryComponentConcern = bomComponent.getComponentConcerns()
-                                                                   .stream()
-                                                                   .findAny();
-
         StringBuilder componentConcernPieceBuilder = new StringBuilder();
-        if (arbitraryComponentConcern.isPresent()) {
-            ComponentConcern componentConcern = arbitraryComponentConcern.get();
-            ComponentConcernType componentConcernType = componentConcern.getType();
 
+        Optional<String> optionalPolicyName = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getName);
+        if (optionalPolicyName.isPresent()) {
             componentConcernPieceBuilder.append(", ");
-            componentConcernPieceBuilder.append(componentConcernType.name());
-
-            if (ComponentConcernType.POLICY.equals(componentConcernType)) {
-                componentConcernPieceBuilder.append(": ");
-                componentConcernPieceBuilder.append(componentConcern.getName());
-            }
+            componentConcernPieceBuilder.append(ComponentConcernType.POLICY.name());
+            componentConcernPieceBuilder.append(": ");
+            componentConcernPieceBuilder.append(optionalPolicyName);
+        } else {
+            componentConcernPieceBuilder.append(", ");
+            componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.name());
         }
 
         String componentConcernPiece = componentConcernPieceBuilder.toString();
@@ -178,6 +181,87 @@ public class ProjectIssueModelConverter {
         }
 
         return preConcernTitle + componentConcernPiece;
+    }
+
+    private List<String> createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel) {
+        List<String> concernSectionPieces = new LinkedList<>();
+
+        projectIssueModel.getPolicyDetails()
+            .map(this::createPolicyDetailsSectionPieces)
+            .stream()
+            .flatMap(List::stream)
+            .forEach(concernSectionPieces::add);
+
+        projectIssueModel.getVulnerabilityDetails()
+            .map(this::createVulnerabilityDetailsSectionPieces)
+            .stream()
+            .flatMap(List::stream)
+            .forEach(concernSectionPieces::add);
+
+        return concernSectionPieces;
+    }
+
+    private List<String> createPolicyDetailsSectionPieces(IssuePolicyDetails policyDetails) {
+        List<String> policyDetailsSectionPieces = new LinkedList<>();
+
+        policyDetailsSectionPieces.add(formatter.encode("Policy: "));
+        policyDetailsSectionPieces.add(formatter.encode(policyDetails.getName()));
+        policyDetailsSectionPieces.add(formatter.getLineSeparator());
+        policyDetailsSectionPieces.add(formatter.encode("Severity: "));
+        policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().name()));
+
+        return policyDetailsSectionPieces;
+    }
+
+    private List<String> createVulnerabilityDetailsSectionPieces(IssueVulnerabilityDetails vulnerabilityDetails) {
+        List<String> vulnDetailsSectionPieces = new LinkedList<>();
+
+        vulnDetailsSectionPieces.add(formatter.encode("Vulnerabilities: "));
+
+        List<String> addedSectionPieces = createIssueVulnerabilityCollectionSectionPieces("Added", vulnerabilityDetails.getVulnerabilitiesAdded());
+        vulnDetailsSectionPieces.addAll(addedSectionPieces);
+
+        List<String> updatedSectionPieces = createIssueVulnerabilityCollectionSectionPieces("Updated", vulnerabilityDetails.getVulnerabilitiesUpdated());
+        vulnDetailsSectionPieces.addAll(updatedSectionPieces);
+
+        List<String> deletedSectionPieces = createIssueVulnerabilityCollectionSectionPieces("Deleted", vulnerabilityDetails.getVulnerabilitiesDeleted());
+        vulnDetailsSectionPieces.addAll(deletedSectionPieces);
+
+        return vulnDetailsSectionPieces;
+    }
+
+    private List<String> createIssueVulnerabilityCollectionSectionPieces(String operationParticiple, Collection<IssueVulnerabilityModel> vulnerabilities) {
+        List<String> vulnDetailsSectionPieces = new LinkedList<>();
+
+        vulnDetailsSectionPieces.add(formatter.getLineSeparator());
+        vulnDetailsSectionPieces.add(formatter.encode(operationParticiple + ": "));
+
+        String encodedSeverityPrefix = formatter.encode("Severity: ");
+        ComponentConcernSeverity currentSeverity = ComponentConcernSeverity.UNSPECIFIED;
+
+        for (IssueVulnerabilityModel vulnerability : vulnerabilities) {
+            ComponentConcernSeverity vulnerabilitySeverity = vulnerability.getSeverity();
+            if (!currentSeverity.equals(vulnerabilitySeverity)) {
+                currentSeverity = vulnerabilitySeverity;
+
+                vulnDetailsSectionPieces.add(formatter.getLineSeparator());
+                vulnDetailsSectionPieces.add(encodedSeverityPrefix);
+                vulnDetailsSectionPieces.add(formatter.encode(currentSeverity.name()));
+                vulnDetailsSectionPieces.add(formatter.getLineSeparator());
+            }
+
+            LinkableItem vulnerabilityItem = vulnerability.getVulnerability();
+            Optional<String> optionalUrl = vulnerabilityItem.getUrl().map(formatter::encode);
+            String encodedValue = formatter.encode(vulnerabilityItem.getValue());
+
+            if (optionalUrl.isPresent()) {
+                vulnDetailsSectionPieces.add(formatter.createLink(encodedValue, optionalUrl.get()));
+            } else {
+                vulnDetailsSectionPieces.add(encodedValue);
+            }
+            vulnDetailsSectionPieces.add(formatter.getNonBreakingSpace());
+        }
+        return vulnDetailsSectionPieces;
     }
 
 }

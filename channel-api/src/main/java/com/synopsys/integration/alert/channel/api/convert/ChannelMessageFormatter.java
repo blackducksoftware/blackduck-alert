@@ -62,6 +62,6 @@ public abstract class ChannelMessageFormatter {
 
     public abstract String emphasize(String txt);
 
-    protected abstract String createLink(String txt, String url);
+    public abstract String createLink(String txt, String url);
 
 }
