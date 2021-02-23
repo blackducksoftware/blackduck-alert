@@ -30,12 +30,12 @@ import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 
 @Component
 public class SlackDistributionEventReceiver extends DistributionEventReceiver<SlackJobDetailsModel> {
     @Autowired
-    public SlackDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, SlackJobDetailsAccessor slackJobDetailsAccessor, SlackChannelV2 channel) {
-        super(gson, auditAccessor, slackJobDetailsAccessor, channel);
+    public SlackDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, SlackJobDetailsAccessor slackJobDetailsAccessor, SlackChannelV2 channel, SlackChannelKey channelKey) {
+        super(gson, auditAccessor, slackJobDetailsAccessor, channel, channelKey);
     }
-
 }

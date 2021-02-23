@@ -30,24 +30,28 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
+import com.synopsys.integration.alert.common.event.AlertChannelEventListener;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
 
-public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEventV2> {
+public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEventV2> implements AlertChannelEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final DistributionChannelV2<D> channel;
+    private final ChannelKey channelKey;
 
-    protected DistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannelV2<D> channel) {
+    protected DistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannelV2<D> channel, ChannelKey channelKey) {
         super(gson, DistributionEventV2.class);
         this.auditAccessor = auditAccessor;
         this.jobDetailsAccessor = jobDetailsAccessor;
         this.channel = channel;
+        this.channelKey = channelKey;
     }
 
     @Override
@@ -63,6 +67,12 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         } else {
             handleJobDetailsMissing(event);
         }
+    }
+
+    @Override
+    public final String getDestinationName() {
+        //FIXME remove this when the old channels are deprecated
+        return channelKey.getUniversalKey() + "_v2";
     }
 
     protected void handleException(AlertException e, DistributionEventV2 event) {
