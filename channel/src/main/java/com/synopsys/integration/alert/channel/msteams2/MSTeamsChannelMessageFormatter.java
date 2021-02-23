@@ -20,9 +20,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack2;
+package com.synopsys.integration.alert.channel.msteams2;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,39 +31,39 @@ import com.synopsys.integration.alert.channel.api.convert.ChannelMessageFormatte
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 
 @Component
-public class SlackChannelMessageFormatter extends ChannelMessageFormatter {
-    private static final int MAX_SLACK_MESSAGE_LENGTH = 3500;
-    private static final String SLACK_LINE_SEPARATOR = "\n";
-    private static final Map<Character, String> SLACK_CHARACTER_ENCODING_MAP = new LinkedHashMap<>();
+public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {
+    // There is a size limit in the request size that is allowed (20KB). This text limit is meant to hopefully keep the message under that size limit
+    private static final int MAX_MSTEAMS_MESSAGE_LENGTH = 10000;
+    private static final String MSTEAMS_LINE_SEPARATOR = "\r\n\r\n";
+    private static final Map<Character, String> MSTEAMS_CHARACTER_ENCODING_MAP = Map.of(
+        '*', "\\*",
+        '~', "\\~",
+        '#', "\\#",
+        '-', "\\-",
+        '_', "\\_"
+    );
 
     private final MarkupEncoderUtil markupEncoderUtil;
 
-    static {
-        // Insertion order matters, so '&' must always be inserted first.
-        SLACK_CHARACTER_ENCODING_MAP.put('&', "&amp;");
-        SLACK_CHARACTER_ENCODING_MAP.put('<', "&lt;");
-        SLACK_CHARACTER_ENCODING_MAP.put('>', "&gt;");
-    }
-
     @Autowired
-    public SlackChannelMessageFormatter(MarkupEncoderUtil markupEncoderUtil) {
-        super(MAX_SLACK_MESSAGE_LENGTH, SLACK_LINE_SEPARATOR);
+    public MSTeamsChannelMessageFormatter(MarkupEncoderUtil markupEncoderUtil) {
+        super(MAX_MSTEAMS_MESSAGE_LENGTH, MSTEAMS_LINE_SEPARATOR);
         this.markupEncoderUtil = markupEncoderUtil;
     }
 
     @Override
     public String encode(String txt) {
-        return markupEncoderUtil.encodeMarkup(SLACK_CHARACTER_ENCODING_MAP, txt);
+        return markupEncoderUtil.encodeMarkup(MSTEAMS_CHARACTER_ENCODING_MAP, txt);
     }
 
     @Override
     public String emphasize(String txt) {
-        return String.format("*%s*", txt);
+        return String.format("**%s**", txt);
     }
 
     @Override
-    protected String createLink(String txt, String url) {
-        return String.format("<%s|%s>", url, txt);
+    public String createLink(String txt, String url) {
+        return String.format("[%s](%s)", txt, url);
     }
 
 }

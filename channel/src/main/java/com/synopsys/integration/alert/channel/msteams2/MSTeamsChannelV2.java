@@ -1,5 +1,5 @@
 /*
- * alert-database
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,27 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.job.msteams;
-
-import java.util.UUID;
+package com.synopsys.integration.alert.channel.msteams2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component
-public class MSTeamsJobDetailsAccessor {
-    private final MSTeamsJobDetailsRepository msTeamsJobDetailsRepository;
-
+public class MSTeamsChannelV2 extends MessageBoardChannel<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
     @Autowired
-    public MSTeamsJobDetailsAccessor(MSTeamsJobDetailsRepository msTeamsJobDetailsRepository) {
-        this.msTeamsJobDetailsRepository = msTeamsJobDetailsRepository;
-    }
-
-    public MSTeamsJobDetailsEntity saveMSTeamsJobDetails(UUID jobId, MSTeamsJobDetailsModel msTeamsJobDetails) {
-        MSTeamsJobDetailsEntity jobDetailsToSave = new MSTeamsJobDetailsEntity(jobId, msTeamsJobDetails.getWebhook());
-        return msTeamsJobDetailsRepository.save(jobDetailsToSave);
+    protected MSTeamsChannelV2(MSTeamsChannelMessageConverter msTeamsChannelMessageConverter, MSTeamsChannelMessageSender msTeamsChannelMessageSender) {
+        super(msTeamsChannelMessageConverter, msTeamsChannelMessageSender);
     }
 
 }
