@@ -159,7 +159,6 @@ distributions {
                 include 'liquibase-core*.jar'
                 include 'logback-*.jar'
                 include 'slf4j-api*.jar'
-                include 'snakeyaml*.jar'
                 into 'lib/liquibase'
             }
             from('src/main/resources/db/changelog-master.xml') { into 'upgradeResources' }

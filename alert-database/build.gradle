@@ -32,7 +32,9 @@ dependencies {
     implementation 'org.hibernate:hibernate-core'
 
     runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'org.liquibase:liquibase-core'
+    runtimeOnly(group: 'org.liquibase', name: 'liquibase-core') {
+        exclude group: 'org.yaml', module: 'snakeyaml'
+    }
 
     // Connection Pool
     // https://www.baeldung.com/hibernate-c3p0

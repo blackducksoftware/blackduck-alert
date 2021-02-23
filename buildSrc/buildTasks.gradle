@@ -8,7 +8,7 @@ def findJar(Object... prefixes) {
 }
 
 task copyToLib(type: Copy, dependsOn: [compileJava]) {
-    from findJar('h2', 'liquibase', 'logback-classic', 'logback-core', 'slf4j-api', 'snakeyaml')
+    from findJar('h2', 'liquibase', 'logback-classic', 'logback-core', 'slf4j-api')
     into "${project.buildDir}/libs/liquibase"
 }
 
