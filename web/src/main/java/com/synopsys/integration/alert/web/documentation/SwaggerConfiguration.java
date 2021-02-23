@@ -43,7 +43,7 @@ import springfox.documentation.swagger.web.UiConfigurationBuilder;
 @Configuration
 @EnableOpenApi
 public class SwaggerConfiguration {
-    public static final String SWAGGER_DEFAULT_PATH_SPEC = "/swagger-ui/";
+    public static final String SWAGGER_DEFAULT_PATH_SPEC = "swagger-ui";
 
     // These must be lower-case in order for Swagger to accept them
     private static final String[] SUPPORTED_SUBMIT_METHODS = new String[] {

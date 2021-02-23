@@ -28,6 +28,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.web.AzureOAuthCallbackController;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
 public class AzureRedirectUtil {
@@ -46,24 +48,20 @@ public class AzureRedirectUtil {
      * @see #createOAuthRedirectUri()
      */
     public String createUIRedirectLocation() {
-        StringBuilder locationBuilder = new StringBuilder(200);
-        alertProperties.getServerUrl()
-            .ifPresent(locationBuilder::append);
-        locationBuilder.append("/channels/");
-        locationBuilder.append(AzureBoardsDescriptor.AZURE_BOARDS_URL);
-        return locationBuilder.toString();
+        String uiRedirectURL = alertProperties.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL)
+                                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
+        return uiRedirectURL;
     }
 
     /**
-     * The OAuth  callback controller URI as a string for Azure to redirect to send the authorization code.
+     * The OAuth callback controller URI as a string for Azure to redirect to send the authorization code.
      * This URI string should match the redirect URI in the Azure registered client application.
      * @return The URI string to redirect to from azure when obtaining the authorization code
      */
     public String createOAuthRedirectUri() {
-        StringBuilder locationBuilder = new StringBuilder(200);
-        alertProperties.getServerUrl()
-            .ifPresent(locationBuilder::append);
-        locationBuilder.append(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH);
-        return locationBuilder.toString();
+        String oAuthRedirectURL = alertProperties.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS,
+            AlertRestConstants.OAUTH, AzureOAuthCallbackController.AZURE)
+                                      .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
+        return oAuthRedirectURL;
     }
 }
