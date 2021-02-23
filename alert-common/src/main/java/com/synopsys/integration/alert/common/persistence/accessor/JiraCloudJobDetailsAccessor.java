@@ -1,5 +1,5 @@
 /*
- * channel
+ * alert-common
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,24 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.util;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
-import org.apache.commons.lang3.StringUtils;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-
-public class JiraCallbackUtils {
-    private JiraCallbackUtils() {
-        throw new IllegalStateException("Utility class");
-    }
-
-    public static String createUILink(IssueResponseModel issueResponseModel) {
-        return createUILink(issueResponseModel.getSelf(), issueResponseModel.getKey());
-    }
-
-    public static String createUILink(String issueUrl, String issueKey) {
-        String userFriendlyUrl = StringUtils.substringBefore(issueUrl, "/rest/api");
-        return String.format("%s/browse/%s", userFriendlyUrl, issueKey);
-    }
-
+public interface JiraCloudJobDetailsAccessor extends JobDetailsAccessor<JiraCloudJobDetailsModel> {
 }

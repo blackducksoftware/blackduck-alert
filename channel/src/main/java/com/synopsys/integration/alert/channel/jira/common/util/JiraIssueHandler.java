@@ -28,11 +28,12 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
-import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
 import com.synopsys.integration.alert.channel.jira.common.model.JiraIssueConfig;
-import com.synopsys.integration.alert.channel.jira.common.model.JiraResolvedCustomField;
+import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
+import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
@@ -48,15 +49,20 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final JiraCustomFieldResolver jiraCustomFieldResolver;
+    private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
     private final JiraTransitionHandler jiraTransitionHelper;
     private final JiraIssuePropertyHandler jiraIssuePropertyHelper;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
 
-    public JiraIssueHandler(JiraErrorMessageUtility jiraErrorMessageUtility, JiraCustomFieldResolver jiraCustomFieldResolver, JiraTransitionHandler jiraTransitionHandler, JiraIssuePropertyHandler<?> jiraIssuePropertyHandler,
-        JiraContentValidator contentValidator) {
+    public JiraIssueHandler(
+        JiraErrorMessageUtility jiraErrorMessageUtility,
+        JiraCustomFieldResolver jiraCustomFieldResolver,
+        JiraTransitionHandler jiraTransitionHandler,
+        JiraIssuePropertyHandler<?> jiraIssuePropertyHandler,
+        JiraContentValidator contentValidator
+    ) {
         super(contentValidator);
-        this.jiraCustomFieldResolver = jiraCustomFieldResolver;
+        this.jiraIssueCreationRequestCreator = new JiraIssueCreationRequestCreator(jiraCustomFieldResolver);
         this.jiraTransitionHelper = jiraTransitionHandler;
         this.jiraIssuePropertyHelper = jiraIssuePropertyHandler;
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
@@ -78,8 +84,14 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
             issueContentModel = IssueContentModel.of(contentModel.getTitle(), description, List.of());
         }
 
-        IssueRequestModelFieldsBuilder fieldsBuilder = createFieldsBuilder(issueContentModel);
-        appendIssueConfig(fieldsBuilder, (JiraIssueConfig) issueConfig, issueSearchProperties);
+        IssueRequestModelFieldsBuilder fieldsBuilder = jiraIssueCreationRequestCreator.createIssueRequestModel(
+            contentModel.getTitle(),
+            contentModel.getDescription(),
+            issueConfig.getProjectId(),
+            issueConfig.getIssueType(),
+            ((JiraIssueConfig) issueConfig).getCustomFields(),
+            createReplacementValues(issueSearchProperties)
+        );
 
         String issueCreator = issueConfig.getIssueCreator();
         try {
@@ -122,22 +134,14 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         jiraIssuePropertyHelper.addPropertiesToIssue(issueKey, issueProperties);
     }
 
-    private IssueRequestModelFieldsBuilder createFieldsBuilder(IssueContentModel contentModel) {
-        IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder();
-        fieldsBuilder.setSummary(contentModel.getTitle());
-        fieldsBuilder.setDescription(contentModel.getDescription());
-        return fieldsBuilder;
-    }
-
-    private void appendIssueConfig(IssueRequestModelFieldsBuilder fieldsBuilder, JiraIssueConfig issueConfig, JiraIssueSearchProperties issueSearchProperties) {
-        fieldsBuilder.setProject(issueConfig.getProjectId());
-        fieldsBuilder.setIssueType(issueConfig.getIssueType());
-
-        for (JiraCustomFieldConfig customField : issueConfig.getCustomFields()) {
-            JiraCustomFieldValueReplacementUtils.injectReplacementFieldValue(customField, issueSearchProperties);
-            JiraResolvedCustomField resolvedCustomField = jiraCustomFieldResolver.resolveCustomField(customField);
-            fieldsBuilder.setValue(resolvedCustomField.getFieldId(), resolvedCustomField.getFieldValue());
-        }
+    private JiraCustomFieldReplacementValues createReplacementValues(JiraIssueSearchProperties issueSearchProperties) {
+        return new JiraCustomFieldReplacementValues(
+            issueSearchProperties.getProvider(),
+            issueSearchProperties.getTopicValue(),
+            issueSearchProperties.getSubTopicValue(),
+            issueSearchProperties.getComponentValue(),
+            issueSearchProperties.getSubComponentValue()
+        );
     }
 
 }

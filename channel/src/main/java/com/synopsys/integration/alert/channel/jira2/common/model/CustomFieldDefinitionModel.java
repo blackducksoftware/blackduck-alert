@@ -20,23 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.model;
+package com.synopsys.integration.alert.channel.jira2.common.model;
 
-import java.util.List;
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldConfig;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
+public class CustomFieldDefinitionModel extends AlertSerializableModel {
+    private final String fieldId;
+    private final String fieldType;
 
-public class JiraIssueConfig extends IssueConfig {
-    private final List<JiraCustomFieldConfig> customFields;
-
-    public JiraIssueConfig(String projectName, String projectKey, String projectId, String issueCreator, String issueType, boolean commentOnIssues, String resolveTransition, String openTransition, List<JiraCustomFieldConfig> customFields) {
-        super(projectName, projectKey, projectId, issueCreator, issueType, commentOnIssues, resolveTransition, openTransition);
-        this.customFields = customFields;
+    public CustomFieldDefinitionModel(String fieldId, String fieldType) {
+        this.fieldId = fieldId;
+        this.fieldType = fieldType;
     }
 
-    public List<JiraCustomFieldConfig> getCustomFields() {
-        return customFields;
+    public String getFieldId() {
+        return fieldId;
+    }
+
+    public String getFieldType() {
+        return fieldType;
     }
 
 }

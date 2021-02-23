@@ -20,14 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.util;
+package com.synopsys.integration.alert.channel.jira2.common;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
-import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
+import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldConfig;
+import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
 
 public final class JiraCustomFieldValueReplacementUtils {
     public static final String REPLACEMENT_PROVIDER_NAME = "{{providerName}}";
@@ -36,35 +35,29 @@ public final class JiraCustomFieldValueReplacementUtils {
     public static final String REPLACEMENT_COMPONENT_NAME = "{{componentName}}";
     public static final String REPLACEMENT_COMPONENT_VERSION = "{{componentVersion}}";
 
-    // "None" is a frequently used default String for many fields
-    public static final String DEFAULT_REPLACEMENT = "None";
+    private static final Supplier<Optional<String>> DEFAULT_REPLACEMENT_SUPPLIER = () -> Optional.of(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT);
 
-    public static void injectReplacementFieldValue(JiraCustomFieldConfig jiraCustomField, JiraIssueSearchProperties jiraIssueSearchProperties) {
+    public static void injectReplacementFieldValue(JiraCustomFieldConfig jiraCustomField, JiraCustomFieldReplacementValues replacementValues) {
         String originalValue = jiraCustomField.getFieldOriginalValue();
-        extractReplacementValue(originalValue, jiraIssueSearchProperties)
+        extractReplacementValue(originalValue, replacementValues)
             .ifPresent(jiraCustomField::setFieldReplacementValue);
     }
 
-    private static Optional<String> extractReplacementValue(String originalFieldValue, JiraIssueSearchProperties jiraIssueSearchProperties) {
+    private static Optional<String> extractReplacementValue(String originalFieldValue, JiraCustomFieldReplacementValues replacementValues) {
         switch (originalFieldValue) {
             case REPLACEMENT_PROVIDER_NAME:
-                return Optional.of(jiraIssueSearchProperties.getProvider());
+                return Optional.of(replacementValues.getProviderName());
             case REPLACEMENT_PROJECT_NAME:
-                return Optional.of(jiraIssueSearchProperties.getTopicValue());
+                return Optional.of(replacementValues.getProjectName());
             case REPLACEMENT_PROJECT_VERSION:
-                return defaultIfBlank(jiraIssueSearchProperties.getSubTopicValue());
+                return replacementValues.getProjectVersionName().or(DEFAULT_REPLACEMENT_SUPPLIER);
             case REPLACEMENT_COMPONENT_NAME:
-                return defaultIfBlank(jiraIssueSearchProperties.getComponentValue());
+                return replacementValues.getComponentName().or(DEFAULT_REPLACEMENT_SUPPLIER);
             case REPLACEMENT_COMPONENT_VERSION:
-                return defaultIfBlank(jiraIssueSearchProperties.getSubComponentValue());
+                return replacementValues.getComponentVersionName().or(DEFAULT_REPLACEMENT_SUPPLIER);
             default:
                 return Optional.empty();
         }
-    }
-
-    private static Optional<String> defaultIfBlank(String nullableValue) {
-        return Optional.ofNullable(StringUtils.trimToNull(nullableValue))
-                   .or(() -> Optional.of(DEFAULT_REPLACEMENT));
     }
 
     private JiraCustomFieldValueReplacementUtils() {

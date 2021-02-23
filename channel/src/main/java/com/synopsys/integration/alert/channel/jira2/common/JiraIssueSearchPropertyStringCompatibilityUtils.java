@@ -20,24 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.util;
+package com.synopsys.integration.alert.channel.jira2.common;
+
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
-public class JiraCallbackUtils {
-    private JiraCallbackUtils() {
-        throw new IllegalStateException("Utility class");
+public class JiraIssueSearchPropertyStringCompatibilityUtils {
+    public static String createCategory(ComponentConcernType concernType) {
+        return StringUtils.capitalize(concernType.name().toLowerCase());
     }
 
-    public static String createUILink(IssueResponseModel issueResponseModel) {
-        return createUILink(issueResponseModel.getSelf(), issueResponseModel.getKey());
+    public static Optional<String> createAdditionalKey(ComponentConcern componentConcern) {
+        if (ComponentConcernType.POLICY.equals(componentConcern.getType())) {
+            String additionalKey = String.format("Policy Violated%s", componentConcern.getName());
+            return Optional.of(additionalKey);
+        }
+        return Optional.empty();
     }
 
-    public static String createUILink(String issueUrl, String issueKey) {
-        String userFriendlyUrl = StringUtils.substringBefore(issueUrl, "/rest/api");
-        return String.format("%s/browse/%s", userFriendlyUrl, issueKey);
+    private JiraIssueSearchPropertyStringCompatibilityUtils() {
     }
 
 }

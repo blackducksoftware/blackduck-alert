@@ -20,23 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.model;
+package com.synopsys.integration.alert.channel.jira2.cloud;
 
-public class JiraResolvedCustomField {
-    private final String fieldId;
-    private final Object fieldValue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    public JiraResolvedCustomField(String fieldId, Object fieldValue) {
-        this.fieldId = fieldId;
-        this.fieldValue = fieldValue;
-    }
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerChannel;
+import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
-    public String getFieldId() {
-        return fieldId;
-    }
-
-    public Object getFieldValue() {
-        return fieldValue;
+@Component
+public class JiraCloudChannelV2 extends IssueTrackerChannel<JiraCloudJobDetailsModel, String> {
+    @Autowired
+    public JiraCloudChannelV2(JiraCloudProcessorFactory jiraCloudProcessorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
+        super(jiraCloudProcessorFactory, responsePostProcessor);
     }
 
 }
