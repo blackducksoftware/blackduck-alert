@@ -27,8 +27,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.api.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
-import com.synopys.integration.alert.channel.api.convert.ChannelMessageFormatter;
 
 @Component
 public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {
@@ -65,5 +65,5 @@ public class MSTeamsChannelMessageFormatter extends ChannelMessageFormatter {
     public String createLink(String txt, String url) {
         return String.format("[%s](%s)", txt, url);
     }
-    
+
 }

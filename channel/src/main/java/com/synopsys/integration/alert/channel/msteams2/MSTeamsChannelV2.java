@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.channel.msteams2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopys.integration.alert.channel.api.MessageBoardChannel;
 
 @Component
 public class MSTeamsChannelV2 extends MessageBoardChannel<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
