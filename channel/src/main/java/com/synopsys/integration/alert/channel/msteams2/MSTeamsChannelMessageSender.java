@@ -34,9 +34,11 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.api.ChannelMessageSender;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
@@ -57,10 +59,16 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
     public MessageResult sendMessages(MSTeamsJobDetailsModel msTeamsJobDetailsModel, List<MSTeamsChannelMessageModel> channelMessages) throws AlertException {
         String webhook = msTeamsJobDetailsModel.getWebhook();
 
-        String messageTitle = "Received a message from Black Duck"; // TODO: How should we get the provider? Each message converted in a ChannelMessageConverter is as ProviderMessage.
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
+        String provider = channelMessages.stream()
+                              .findFirst()
+                              .map(MSTeamsChannelMessageModel::getProviderDetails)
+                              .map(ProviderDetails::getProvider)
+                              .map(LinkableItem::getValue)
+                              .orElse("Black Duck"); // TODO: Should we always assume we have at least one channel message to avoid this Optional?
+        String messageTitle = String.format("Received a message from %s", provider);
         Request request = createRequestsForMessage(webhook, messageTitle, channelMessages, requestHeaders);
 
         restChannelUtility.sendSingleMessage(request, msTeamsKey.getUniversalKey());

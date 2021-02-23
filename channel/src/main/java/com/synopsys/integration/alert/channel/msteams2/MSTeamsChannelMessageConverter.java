@@ -22,8 +22,8 @@
  */
 package com.synopsys.integration.alert.channel.msteams2;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 
 @Component
 public class MSTeamsChannelMessageConverter extends AbstractChannelMessageConverter<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
-
     @Autowired
     protected MSTeamsChannelMessageConverter(MSTeamsChannelMessageFormatter channelMessageFormatter) {
         super(channelMessageFormatter);
@@ -47,18 +46,48 @@ public class MSTeamsChannelMessageConverter extends AbstractChannelMessageConver
 
     @Override
     protected List<MSTeamsChannelMessageModel> convertSimpleMessageToChannelMessages(MSTeamsJobDetailsModel msTeamsJobDetailsModel, SimpleMessage simpleMessage, List<String> messageChunks) {
-        return createMessageModel(messageChunks);
+        String sectionTitle = simpleMessage.getDescription(); // TODO: Not sure what the topic of a SimpleMessage is
+        return createMessageModel(simpleMessage.getProviderDetails(), sectionTitle, messageChunks);
     }
 
     @Override
     protected List<MSTeamsChannelMessageModel> convertProjectMessageToChannelMessages(MSTeamsJobDetailsModel msTeamsJobDetailsModel, ProjectMessage projectMessage, List<String> messageChunks) {
-        return createMessageModel(messageChunks);
+        boolean wasDeleted = projectMessage.getOperation()
+                                 .filter(ProjectOperation.DELETE::equals)
+                                 .isPresent();
+        LinkableItem project = projectMessage.getProject();
+        String projectTitle = createProjectTitle(project, wasDeleted);
+        String projectVersionTitle = projectMessage.getProjectVersion()
+                                         .map(it -> createProjectTitle(it, wasDeleted))
+                                         .orElse(StringUtils.EMPTY);
+
+        String sectionTitle = projectTitle + projectVersionTitle;
+
+        return createMessageModel(projectMessage.getProviderDetails(), sectionTitle, messageChunks);
     }
 
-    private List<MSTeamsChannelMessageModel> createMessageModel(List<String> messageChunks) {
-        // The title for each message is currently empty because the old implementation would attempt to build a title based on components, or default to an empty String.
-        return messageChunks.stream()
-                   .map(messageContent -> new MSTeamsChannelMessageModel(StringUtils.EMPTY, messageContent))
-                   .collect(Collectors.toList());
+    private String createProjectTitle(LinkableItem linkableItem, boolean wasDeleted) {
+        if (wasDeleted) {
+            linkableItem = new LinkableItem(linkableItem.getLabel(), linkableItem.getValue());
+        }
+        return projectMessageConverter.createLinkableItemString(linkableItem, true);
     }
+
+    private List<MSTeamsChannelMessageModel> createMessageModel(ProviderDetails providerDetails, String sectionTitle, List<String> messageChunks) {
+        List<MSTeamsChannelMessageModel> messageModels = new LinkedList<>();
+        int messagesSize = messageChunks.size();
+        if (messagesSize > 1) {
+            for (int i = 0; i < messagesSize; i++) {
+                String newTitle = String.format("%s (%s/%s)", sectionTitle, i + 1, messagesSize);
+                messageModels.add(new MSTeamsChannelMessageModel(providerDetails, newTitle, messageChunks.get(i)));
+            }
+        } else {
+            messageChunks.stream()
+                .map(messageContent -> new MSTeamsChannelMessageModel(providerDetails, sectionTitle, messageContent))
+                .forEach(messageModels::add);
+        }
+
+        return messageModels;
+    }
+
 }

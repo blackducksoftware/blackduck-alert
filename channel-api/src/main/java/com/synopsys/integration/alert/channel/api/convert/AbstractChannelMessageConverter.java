@@ -36,8 +36,8 @@ import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public abstract class AbstractChannelMessageConverter<D extends DistributionJobDetailsModel, T> implements ChannelMessageConverter<D, T> {
-    private final SimpleMessageConverter simpleMessageConverter;
-    private final ProjectMessageConverter projectMessageConverter;
+    protected final SimpleMessageConverter simpleMessageConverter;
+    protected final ProjectMessageConverter projectMessageConverter;
 
     protected AbstractChannelMessageConverter(ChannelMessageFormatter channelMessageFormatter) {
         this(new SimpleMessageConverter(channelMessageFormatter), new ProjectMessageConverter(channelMessageFormatter));

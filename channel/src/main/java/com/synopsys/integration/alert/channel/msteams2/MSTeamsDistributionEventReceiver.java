@@ -35,8 +35,8 @@ import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 @Component
 public class MSTeamsDistributionEventReceiver extends DistributionEventReceiver<MSTeamsJobDetailsModel> {
     @Autowired
-    public MSTeamsDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor, MSTeamsChannelV2 channel) {
-        super(gson, auditAccessor, msTeamsJobDetailsAccessor, channel);
+    public MSTeamsDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor, MSTeamsChannelV2 channel, MsTeamsKey channelKey) {
+        super(gson, auditAccessor, msTeamsJobDetailsAccessor, channel, channelKey);
     }
 
 }
