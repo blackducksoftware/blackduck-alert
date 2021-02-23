@@ -30,12 +30,13 @@ import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudDistributionEventReceiver extends DistributionEventReceiver<JiraCloudJobDetailsModel> {
     @Autowired
-    public JiraCloudDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JiraCloudJobDetailsAccessor jobDetailsAccessor, JiraCloudChannelV2 channel) {
-        super(gson, auditAccessor, jobDetailsAccessor, channel);
+    public JiraCloudDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JiraCloudJobDetailsAccessor jobDetailsAccessor, JiraCloudChannelV2 channel, JiraCloudChannelKey channelKey) {
+        super(gson, auditAccessor, jobDetailsAccessor, channel, channelKey);
     }
 
 }
