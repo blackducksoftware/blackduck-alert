@@ -225,7 +225,13 @@ public class AlertProperties {
     }
 
     public Optional<String> getExternalServerUrl() {
-        // Can not use this for Azure OAuth authentication
-        return getServerUrl().map(url -> StringUtils.appendIfMissing(url, "/"));
+        UriComponentsBuilder uriComponentsBuilder = getServerUrlBuilder();
+        uriComponentsBuilder.path("/");
+        try {
+            String serverUrl = uriComponentsBuilder.build().toUri().toURL().toString();
+            return Optional.of(serverUrl);
+        } catch (MalformedURLException e) {
+            return Optional.empty();
+        }
     }
 }
