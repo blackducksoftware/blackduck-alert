@@ -45,6 +45,12 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 
 @Component
 public class ProjectMessageSummarizer {
+    public static final String OP_PARTICIPLE_ADDED = "added";
+    public static final String OP_PARTICIPLE_CREATED = "created";
+    public static final String OP_PARTICIPLE_DELETED = "deleted";
+    public static final String OP_PARTICIPLE_UPDATED = "updated";
+    public static final String OP_PARTICIPLE_VIOLATED = "violated";
+
     public SimpleMessage summarize(ProjectMessage digestedProjectMessage) {
         Pair<String, String> summaryAndDescription = constructSummaryAndDescription(digestedProjectMessage);
         List<LinkableItem> details = constructMessageDetails(digestedProjectMessage);
@@ -74,7 +80,7 @@ public class ProjectMessageSummarizer {
     private Pair<String, String> constructProjectVersionStatusSummaryAndDescription(String providerName, String projectName, ProjectMessage projectMessage) {
         String operationString = projectMessage.getOperation()
                                      .map(this::convertToParticiple)
-                                     .orElse("updated");
+                                     .orElse(OP_PARTICIPLE_UPDATED);
 
         Optional<String> optionalProjectVersionName = projectMessage.getProjectVersion().map(LinkableItem::getValue);
         if (optionalProjectVersionName.isPresent()) {
@@ -134,11 +140,11 @@ public class ProjectMessageSummarizer {
     private String convertToParticiple(ProjectOperation projectOperation) {
         switch (projectOperation) {
             case CREATE:
-                return "created";
+                return OP_PARTICIPLE_CREATED;
             case DELETE:
-                return "deleted";
+                return OP_PARTICIPLE_DELETED;
             default:
-                return "updated";
+                return OP_PARTICIPLE_UPDATED;
         }
     }
 
@@ -156,11 +162,11 @@ public class ProjectMessageSummarizer {
     private String convertToAdjective(ComponentConcernType type, ItemOperation operation) {
         switch (operation) {
             case ADD:
-                return ComponentConcernType.POLICY.equals(type) ? "violated" : "added";
+                return ComponentConcernType.POLICY.equals(type) ? OP_PARTICIPLE_VIOLATED : OP_PARTICIPLE_ADDED;
             case DELETE:
-                return ComponentConcernType.POLICY.equals(type) ? "no longer in violation" : "deleted";
+                return ComponentConcernType.POLICY.equals(type) ? "no longer in violation" : OP_PARTICIPLE_DELETED;
             case UPDATE:
-                return "updated";
+                return OP_PARTICIPLE_UPDATED;
             default:
                 return "with other component updates";
         }
