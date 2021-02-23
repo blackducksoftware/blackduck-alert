@@ -62,18 +62,22 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
-        String provider = channelMessages.stream()
-                              .findFirst()
-                              .map(MSTeamsChannelMessageModel::getProviderDetails)
-                              .map(ProviderDetails::getProvider)
-                              .map(LinkableItem::getValue)
-                              .orElse("Black Duck"); // TODO: Should we always assume we have at least one channel message to avoid this Optional?
+        String provider = createProviderString(channelMessages);
         String messageTitle = String.format("Received a message from %s", provider);
         Request request = createRequestsForMessage(webhook, messageTitle, channelMessages, requestHeaders);
 
         restChannelUtility.sendSingleMessage(request, msTeamsKey.getUniversalKey());
 
         return new MessageResult(String.format("Successfully sent %d MSTeams message(s)", channelMessages.size()));
+    }
+
+    private String createProviderString(List<MSTeamsChannelMessageModel> channelMessages) {
+        return channelMessages.stream()
+                   .findFirst()
+                   .map(MSTeamsChannelMessageModel::getProviderDetails)
+                   .map(ProviderDetails::getProvider)
+                   .map(LinkableItem::getValue)
+                   .orElse("BlackDuck");
     }
 
     private Request createRequestsForMessage(String webhook, String messageTitle, List<MSTeamsChannelMessageModel> messages, Map<String, String> requestHeaders) {
