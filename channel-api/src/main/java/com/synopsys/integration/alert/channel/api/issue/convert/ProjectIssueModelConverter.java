@@ -49,9 +49,10 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public class ProjectIssueModelConverter {
-    public static final int COMPONENT_CONCERN_TITLE_SPACE = 20;
+    public static final int COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT = 20;
     public static final LinkableItem MISSING_PROJECT_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
+    public static final String COMMA_SPACE = ", ";
 
     private final IssueTrackerMessageFormatter formatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
@@ -123,7 +124,8 @@ public class ProjectIssueModelConverter {
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
 
         LinkableItem provider = projectIssueModel.getProvider();
-        commentBuilder.append(String.format("The component was updated in %s[%s]", provider.getLabel(), provider.getValue()));
+        String commentHeader = String.format("The component was updated in %s[%s]", provider.getLabel(), provider.getValue());
+        commentBuilder.append(formatter.encode(commentHeader));
         commentBuilder.append(formatter.getLineSeparator());
         commentBuilder.append(formatter.getSectionSeparator());
         commentBuilder.append(formatter.getLineSeparator());
@@ -136,7 +138,10 @@ public class ProjectIssueModelConverter {
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         List<String> attributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
         for (String attributeString : attributeStrings) {
-            commentBuilder.append(String.format("%s-%s%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), attributeString));
+            commentBuilder.append(formatter.getNonBreakingSpace());
+            commentBuilder.append(formatter.encode("-"));
+            commentBuilder.append(formatter.getNonBreakingSpace());
+            commentBuilder.append(attributeString);
             commentBuilder.append(formatter.getLineSeparator());
         }
 
@@ -166,12 +171,12 @@ public class ProjectIssueModelConverter {
 
         Optional<String> optionalPolicyName = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getName);
         if (optionalPolicyName.isPresent()) {
-            componentConcernPieceBuilder.append(", ");
+            componentConcernPieceBuilder.append(COMMA_SPACE);
             componentConcernPieceBuilder.append(ComponentConcernType.POLICY.name());
             componentConcernPieceBuilder.append(": ");
             componentConcernPieceBuilder.append(optionalPolicyName);
         } else {
-            componentConcernPieceBuilder.append(", ");
+            componentConcernPieceBuilder.append(COMMA_SPACE);
             componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.name());
         }
 
@@ -179,8 +184,14 @@ public class ProjectIssueModelConverter {
 
         String preConcernTitle = String.format("Alert - %s[%s], %s[%s], %s", provider.getLabel(), provider.getValue(), project.getValue(), projectVersion.getValue(), componentPieceBuilder.toString());
         if (preConcernTitle.length() + componentConcernPieceBuilder.length() > formatter.getMaxTitleLength()) {
-            preConcernTitle = StringUtils.truncate(preConcernTitle, formatter.getMaxTitleLength() - COMPONENT_CONCERN_TITLE_SPACE);
-            componentConcernPiece = StringUtils.truncate(componentConcernPieceBuilder.toString(), COMPONENT_CONCERN_TITLE_SPACE);
+            if (formatter.getMaxTitleLength() > COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT) {
+                preConcernTitle = StringUtils.truncate(preConcernTitle, formatter.getMaxTitleLength() - COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT);
+                componentConcernPiece = StringUtils.truncate(componentConcernPieceBuilder.toString(), COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT);
+            } else {
+                // If max title length is less than 3, then there are bigger concerns than an IllegalArgumentException
+                preConcernTitle = StringUtils.truncate(preConcernTitle, formatter.getMaxTitleLength() - 3);
+                componentConcernPiece = "...";
+            }
         }
 
         return preConcernTitle + componentConcernPiece;
