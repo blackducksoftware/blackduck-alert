@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 
 public class IssueBomComponentDetails extends AbstractBomComponentDetails {
     private static final String UNKNOWN_USAGE = "Unknown Usage";
@@ -45,7 +44,7 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
         );
     }
 
-    public static IssueBomComponentDetails fromBomComponentDetails(BomComponentDetails bomComponentDetails) {
+    public static IssueBomComponentDetails fromBomComponentDetails(AbstractBomComponentDetails bomComponentDetails) {
         return new IssueBomComponentDetails(
             bomComponentDetails.getComponent(),
             bomComponentDetails.getComponentVersion().orElse(null),

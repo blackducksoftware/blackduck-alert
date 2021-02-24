@@ -23,7 +23,6 @@
 package com.synopsys.integration.alert.channel.api.issue.convert;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +37,6 @@ import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -48,7 +45,6 @@ import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilde
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public class ProjectIssueModelConverter {
@@ -58,11 +54,15 @@ public class ProjectIssueModelConverter {
 
     private final IssueTrackerMessageFormatter formatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
+    private final IssuePolicyDetailsConverter issuePolicyDetailsConverter;
+    private final IssueVulnerabilityDetailsConverter issueVulnerabilityDetailsConverter;
     private final LinkableItemConverter linkableItemConverter;
 
     public ProjectIssueModelConverter(IssueTrackerMessageFormatter formatter) {
         this.formatter = formatter;
         this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
+        this.issuePolicyDetailsConverter = new IssuePolicyDetailsConverter(formatter);
+        this.issueVulnerabilityDetailsConverter = new IssueVulnerabilityDetailsConverter(formatter);
         this.linkableItemConverter = new LinkableItemConverter(formatter);
     }
 
@@ -187,81 +187,18 @@ public class ProjectIssueModelConverter {
         List<String> concernSectionPieces = new LinkedList<>();
 
         projectIssueModel.getPolicyDetails()
-            .map(this::createPolicyDetailsSectionPieces)
+            .map(issuePolicyDetailsConverter::createPolicyDetailsSectionPieces)
             .stream()
             .flatMap(List::stream)
             .forEach(concernSectionPieces::add);
 
         projectIssueModel.getVulnerabilityDetails()
-            .map(this::createVulnerabilityDetailsSectionPieces)
+            .map(issueVulnerabilityDetailsConverter::createVulnerabilityDetailsSectionPieces)
             .stream()
             .flatMap(List::stream)
             .forEach(concernSectionPieces::add);
 
         return concernSectionPieces;
-    }
-
-    private List<String> createPolicyDetailsSectionPieces(IssuePolicyDetails policyDetails) {
-        List<String> policyDetailsSectionPieces = new LinkedList<>();
-
-        policyDetailsSectionPieces.add(formatter.encode("Policy: "));
-        policyDetailsSectionPieces.add(formatter.encode(policyDetails.getName()));
-        policyDetailsSectionPieces.add(formatter.getLineSeparator());
-        policyDetailsSectionPieces.add(formatter.encode("Severity: "));
-        policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().name()));
-
-        return policyDetailsSectionPieces;
-    }
-
-    private List<String> createVulnerabilityDetailsSectionPieces(IssueVulnerabilityDetails vulnerabilityDetails) {
-        List<String> vulnDetailsSectionPieces = new LinkedList<>();
-
-        vulnDetailsSectionPieces.add(formatter.encode("Vulnerabilities: "));
-
-        List<String> addedSectionPieces = createIssueVulnerabilityCollectionSectionPieces("Added", vulnerabilityDetails.getVulnerabilitiesAdded());
-        vulnDetailsSectionPieces.addAll(addedSectionPieces);
-
-        List<String> updatedSectionPieces = createIssueVulnerabilityCollectionSectionPieces("Updated", vulnerabilityDetails.getVulnerabilitiesUpdated());
-        vulnDetailsSectionPieces.addAll(updatedSectionPieces);
-
-        List<String> deletedSectionPieces = createIssueVulnerabilityCollectionSectionPieces("Deleted", vulnerabilityDetails.getVulnerabilitiesDeleted());
-        vulnDetailsSectionPieces.addAll(deletedSectionPieces);
-
-        return vulnDetailsSectionPieces;
-    }
-
-    private List<String> createIssueVulnerabilityCollectionSectionPieces(String operationParticiple, Collection<IssueVulnerabilityModel> vulnerabilities) {
-        List<String> vulnDetailsSectionPieces = new LinkedList<>();
-
-        vulnDetailsSectionPieces.add(formatter.getLineSeparator());
-        vulnDetailsSectionPieces.add(formatter.encode(operationParticiple + ": "));
-
-        String encodedSeverityPrefix = formatter.encode("Severity: ");
-        ComponentConcernSeverity currentSeverity = ComponentConcernSeverity.UNSPECIFIED;
-
-        for (IssueVulnerabilityModel vulnerability : vulnerabilities) {
-            ComponentConcernSeverity vulnerabilitySeverity = vulnerability.getSeverity();
-            if (!currentSeverity.equals(vulnerabilitySeverity)) {
-                currentSeverity = vulnerabilitySeverity;
-
-                vulnDetailsSectionPieces.add(formatter.getLineSeparator());
-                vulnDetailsSectionPieces.add(encodedSeverityPrefix);
-                vulnDetailsSectionPieces.add(formatter.encode(currentSeverity.name()));
-                vulnDetailsSectionPieces.add(formatter.getLineSeparator());
-            }
-
-            LinkableItem vulnerabilityItem = vulnerability.getVulnerability();
-            Optional<String> optionalUrl = vulnerabilityItem.getUrl().map(formatter::encode);
-            String encodedValue = formatter.encode(vulnerabilityItem.getValue());
-
-            if (optionalUrl.isPresent()) {
-                vulnDetailsSectionPieces.add(formatter.createLink(encodedValue, optionalUrl.get()));
-            } else {
-                vulnDetailsSectionPieces.add(encodedValue);
-            }
-            vulnDetailsSectionPieces.add(formatter.getNonBreakingSpace());
-        }
-        return vulnDetailsSectionPieces;
     }
 
 }
