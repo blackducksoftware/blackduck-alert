@@ -29,6 +29,9 @@ import com.synopsys.integration.alert.channel.api.convert.ChannelMessageFormatte
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 
 public class IssuePolicyDetailsConverter {
+    private static final String LABEL_POLICY = "Policy: ";
+    private static final String LABEL_SEVERITY = "Severity: ";
+
     private final ChannelMessageFormatter formatter;
 
     public IssuePolicyDetailsConverter(ChannelMessageFormatter formatter) {
@@ -38,10 +41,10 @@ public class IssuePolicyDetailsConverter {
     public List<String> createPolicyDetailsSectionPieces(IssuePolicyDetails policyDetails) {
         List<String> policyDetailsSectionPieces = new LinkedList<>();
 
-        policyDetailsSectionPieces.add(formatter.encode("Policy: "));
+        policyDetailsSectionPieces.add(formatter.encode(LABEL_POLICY));
         policyDetailsSectionPieces.add(formatter.encode(policyDetails.getName()));
         policyDetailsSectionPieces.add(formatter.getLineSeparator());
-        policyDetailsSectionPieces.add(formatter.encode("Severity: "));
+        policyDetailsSectionPieces.add(formatter.encode(LABEL_SEVERITY));
         policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().name()));
 
         return policyDetailsSectionPieces;

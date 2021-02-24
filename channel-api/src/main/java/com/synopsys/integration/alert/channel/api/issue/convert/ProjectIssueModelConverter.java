@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -86,6 +87,7 @@ public class ProjectIssueModelConverter {
         List<String> bomComponentPieces = bomComponentDetailConverter.gatherPreConcernSectionPieces(bomComponent);
         bomComponentPieces.forEach(descriptionBuilder::append);
 
+        descriptionBuilder.append(formatter.getLineSeparator());
         createProjectIssueModelConcernSectionPieces(projectIssueModel)
             .forEach(descriptionBuilder::append);
 
@@ -121,9 +123,10 @@ public class ProjectIssueModelConverter {
         ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
 
         LinkableItem provider = projectIssueModel.getProvider();
-        commentBuilder.append(String.format("The component was updated in %s:", provider.getLabel()));
+        commentBuilder.append(String.format("The component was updated in %s[%s]", provider.getLabel(), provider.getValue()));
         commentBuilder.append(formatter.getLineSeparator());
         commentBuilder.append(formatter.getSectionSeparator());
+        commentBuilder.append(formatter.getLineSeparator());
 
         createProjectIssueModelConcernSectionPieces(projectIssueModel)
             .forEach(commentBuilder::append);
@@ -186,17 +189,19 @@ public class ProjectIssueModelConverter {
     private List<String> createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel) {
         List<String> concernSectionPieces = new LinkedList<>();
 
-        projectIssueModel.getPolicyDetails()
-            .map(issuePolicyDetailsConverter::createPolicyDetailsSectionPieces)
-            .stream()
-            .flatMap(List::stream)
-            .forEach(concernSectionPieces::add);
+        Optional<IssuePolicyDetails> optionalPolicyDetails = projectIssueModel.getPolicyDetails();
+        if (optionalPolicyDetails.isPresent()) {
+            List<String> policyDetailsSectionPieces = issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(optionalPolicyDetails.get());
+            concernSectionPieces.addAll(policyDetailsSectionPieces);
+            concernSectionPieces.add(formatter.getLineSeparator());
+        }
 
-        projectIssueModel.getVulnerabilityDetails()
-            .map(issueVulnerabilityDetailsConverter::createVulnerabilityDetailsSectionPieces)
-            .stream()
-            .flatMap(List::stream)
-            .forEach(concernSectionPieces::add);
+        Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
+        if (optionalVulnDetails.isPresent()) {
+            List<String> vulnDetailsSectionPieces = issueVulnerabilityDetailsConverter.createVulnerabilityDetailsSectionPieces(optionalVulnDetails.get());
+            concernSectionPieces.addAll(vulnDetailsSectionPieces);
+            concernSectionPieces.add(formatter.getLineSeparator());
+        }
 
         return concernSectionPieces;
     }
