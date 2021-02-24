@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKeyV2;
 
 public final class ChannelKeys {
     public static final AzureBoardsChannelKey AZURE_BOARDS = new AzureBoardsChannelKey();
@@ -39,6 +40,8 @@ public final class ChannelKeys {
     public static final JiraServerChannelKey JIRA_SERVER = new JiraServerChannelKey();
     public static final MsTeamsKey MS_TEAMS = new MsTeamsKey();
     public static final SlackChannelKey SLACK = new SlackChannelKey();
+    //TODO remove this:
+    public static final SlackChannelKeyV2 SLACK_V2 = new SlackChannelKeyV2();
 
     private static final Map<String, ChannelKey> KEYS = new HashMap<>();
 
@@ -57,6 +60,8 @@ public final class ChannelKeys {
         ChannelKeys.putKey(ChannelKeys.JIRA_SERVER);
         ChannelKeys.putKey(ChannelKeys.MS_TEAMS);
         ChannelKeys.putKey(ChannelKeys.SLACK);
+        //TODO remove this:
+        ChannelKeys.putKey(ChannelKeys.SLACK_V2);
     }
 
 }

@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +31,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
+import com.synopsys.integration.alert.common.event.NotificationReceivedEventV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -128,8 +127,8 @@ public class JmsNotificationReceiverTestIT {
     }
 
     @Test
-    @Ignore
-    @Disabled
+    //@Ignore
+    //@Disabled
     public void testJms() throws InterruptedException {
         // Set breakpoints throughout this test, there is nothing to assert against here. Suggestions for breakpoints:
         //      Registering listeners: EventListenerConfigurer
@@ -137,9 +136,12 @@ public class JmsNotificationReceiverTestIT {
         //      Receiving events: NotificationReceiver or DistributionChannel
         //      Processing notifications: NotificationReceiver
         NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent();
-        eventManager.sendEvent(notificationReceivedEvent);
+        //eventManager.sendEvent(notificationReceivedEvent);
 
-        Thread.sleep(120000);
+        NotificationReceivedEventV2 notificationReceivedEventV2 = new NotificationReceivedEventV2();
+        eventManager.sendEvent(notificationReceivedEventV2);
+
+        Thread.sleep(1200000);
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(String uniqueJobName, SlackJobDetailsModel slackJobDetailsModel) {
@@ -148,7 +150,8 @@ public class JmsNotificationReceiverTestIT {
             uniqueJobName,
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
-            ChannelKeys.SLACK.getUniversalKey(),
+            //ChannelKeys.SLACK.getUniversalKey(), //For old notificationProcessor
+            ChannelKeys.SLACK_V2.getUniversalKey(), //TODO: For a test, remove the _V2 in master
             blackDuckGlobalConfigId,
             false,
             ".*",
@@ -175,7 +178,8 @@ public class JmsNotificationReceiverTestIT {
         projectNotificationContent.setOperationType(OperationType.CREATE);
         ProjectNotificationView projectNotificationView = new ProjectNotificationView();
         projectNotificationView.setContent(projectNotificationContent);
-        String content = gson.toJson(projectNotificationView);
+        //String content = gson.toJson(projectNotificationView);
+        String content = gson.toJson(projectNotificationContent); //Required for NotificationProcessorV2
 
         return new AlertNotificationModel(id, blackDuckGlobalConfigId, "provider_blackduck", "DELETED CONFIGURATION", NotificationType.PROJECT.name(), content, DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(), processed);
