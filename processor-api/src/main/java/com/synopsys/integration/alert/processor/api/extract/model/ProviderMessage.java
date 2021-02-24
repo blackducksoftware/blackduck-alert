@@ -26,14 +26,18 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public abstract class ProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<T> {
-    private final LinkableItem provider;
+    private final ProviderDetails providerDetails;
 
-    public ProviderMessage(LinkableItem provider) {
-        this.provider = provider;
+    public ProviderMessage(ProviderDetails providerDetails) {
+        this.providerDetails = providerDetails;
+    }
+
+    public ProviderDetails getProviderDetails() {
+        return providerDetails;
     }
 
     public LinkableItem getProvider() {
-        return provider;
+        return providerDetails.getProvider();
     }
 
 }

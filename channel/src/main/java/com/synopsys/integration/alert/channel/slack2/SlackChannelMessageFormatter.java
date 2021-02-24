@@ -67,9 +67,4 @@ public class SlackChannelMessageFormatter extends ChannelMessageFormatter {
         return String.format("<%s|%s>", url, txt);
     }
 
-    @Override
-    public String getLineSeparator() {
-        return SLACK_LINE_SEPARATOR;
-    }
-
 }

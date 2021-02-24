@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common;
+package com.synopsys.integration.alert.channel.jira2.common;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.jira.common.model.CustomFieldDefinitionModel;
-import com.synopsys.integration.alert.channel.jira.common.model.JiraCustomFieldConfig;
-import com.synopsys.integration.alert.channel.jira.common.model.JiraResolvedCustomField;
+import com.synopsys.integration.alert.channel.jira2.common.model.CustomFieldDefinitionModel;
+import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldConfig;
+import com.synopsys.integration.alert.channel.jira2.common.model.JiraResolvedCustomField;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingSupplier;

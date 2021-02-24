@@ -23,12 +23,12 @@
 package com.synopsys.integration.alert.common;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
 
@@ -196,26 +196,38 @@ public class AlertProperties {
         return Optional.empty();
     }
 
-    public Optional<String> getServerUrl() {
+    public UriComponentsBuilder getServerUrlBuilder() {
+        String scheme = getSslEnabled() ? "https" : "http";
+        String hostName = getAlertHostName().orElse("localhost");
+        String port = getPublicServerPort().orElse(getServerPort().orElse("8443"));
+        String path = getContextPath().orElse("alert");
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance();
+        uriComponentsBuilder.scheme(scheme);
+        uriComponentsBuilder.host(hostName);
+        uriComponentsBuilder.port(port);
+        uriComponentsBuilder.path(path);
+        return uriComponentsBuilder;
+    }
+
+    // TODO investigate using ServletUriComponentsBuilder.fromCurrentContextPath() to construct the URL
+    //  for code paths that are triggered from a HttpServletRequest
+
+    public Optional<String> getServerUrl(String... pathSegments) {
+        UriComponentsBuilder uriComponentsBuilder = getServerUrlBuilder();
+        uriComponentsBuilder.pathSegment(pathSegments);
         try {
-            // TODO investigate using ServletUriComponentsBuilder.fromCurrentContextPath() to construct the URL
-            String hostName = getAlertHostName().orElse("localhost");
-            String port = getPublicServerPort().orElse(getServerPort().orElse(""));
-            String path = getContextPath().orElse("");
-            String protocol = "http";
-            if (getSslEnabled()) {
-                protocol = "https";
-            }
-            URL url;
-            if (StringUtils.isNotBlank(port)) {
-                url = new URL(protocol, hostName, Integer.parseInt(port), path);
-            } else {
-                url = new URL(protocol, hostName, path);
-            }
-            String urlString = StringUtils.appendIfMissing(url.toString(), "/");
-            return Optional.of(urlString);
-        } catch (NumberFormatException | MalformedURLException ex) {
+            String serverUrl = uriComponentsBuilder.build().toUri().toURL().toString();
+            return Optional.of(serverUrl);
+        } catch (MalformedURLException e) {
             return Optional.empty();
         }
+    }
+
+    public String getRootURL() {
+        UriComponentsBuilder uriComponentsBuilder = getServerUrlBuilder();
+        uriComponentsBuilder.path("/");
+        return uriComponentsBuilder.toUriString();
+
     }
 }

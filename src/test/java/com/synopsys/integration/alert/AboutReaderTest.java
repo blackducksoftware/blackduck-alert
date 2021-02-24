@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -37,7 +38,7 @@ public class AboutReaderTest {
     @BeforeEach
     public void initialize() {
         alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getServerUrl()).thenReturn(Optional.empty());
+        Mockito.when(alertProperties.getServerUrlBuilder()).thenReturn(UriComponentsBuilder.newInstance());
 
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusAccessor.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);

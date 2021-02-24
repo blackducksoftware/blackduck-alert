@@ -29,12 +29,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraContentValidator;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssueHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerIssuePropertyHandler;
 import com.synopsys.integration.alert.channel.jira.server.util.JiraServerTransitionHandler;
+import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;

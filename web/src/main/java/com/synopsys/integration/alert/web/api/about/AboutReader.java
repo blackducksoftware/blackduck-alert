@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -70,7 +71,7 @@ public class AboutReader {
             Set<DescriptorMetadata> providers = getDescriptorData(DescriptorType.PROVIDER);
             Set<DescriptorMetadata> channels = getDescriptorData(DescriptorType.CHANNEL);
             AboutModel model = new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),
-                createInternalUrl(SwaggerConfiguration.SWAGGER_DEFAULT_PATH_SPEC), systemStatusAccessor.isSystemInitialized(), startupDate, providers, channels);
+                createSwaggerUrl(SwaggerConfiguration.SWAGGER_DEFAULT_PATH_SPEC), systemStatusAccessor.isSystemInitialized(), startupDate, providers, channels);
             return Optional.of(model);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -94,9 +95,11 @@ public class AboutReader {
                    .orElse(PRODUCT_VERSION_UNKNOWN);
     }
 
-    private String createInternalUrl(String path) {
-        String baseUrl = alertProperties.getServerUrl().orElse("https://localhost:8443/alert/");
-        return baseUrl + path;
+    private String createSwaggerUrl(String swaggerPath) {
+        UriComponentsBuilder serverUrlBuilder = alertProperties.getServerUrlBuilder();
+        serverUrlBuilder.pathSegment(swaggerPath);
+        serverUrlBuilder.path("/");
+        return serverUrlBuilder.toUriString();
     }
 
 }

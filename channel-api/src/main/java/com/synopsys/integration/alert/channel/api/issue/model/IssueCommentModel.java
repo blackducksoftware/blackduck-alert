@@ -25,22 +25,23 @@ package com.synopsys.integration.alert.channel.api.issue.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueCommentModel<T extends Serializable> extends AlertSerializableModel {
-    private final T issueId;
+    private final ExistingIssueDetails<T> existingIssueDetails;
     private final List<String> comments;
 
     private final ProjectIssueModel source;
 
-    public IssueCommentModel(T issueId, List<String> comments, ProjectIssueModel source) {
-        this.issueId = issueId;
+    public IssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, List<String> comments, ProjectIssueModel source) {
+        this.existingIssueDetails = existingIssueDetails;
         this.comments = comments;
         this.source = source;
     }
 
-    public T getIssueId() {
-        return issueId;
+    public ExistingIssueDetails<T> getExistingIssueDetails() {
+        return existingIssueDetails;
     }
 
     public List<String> getComments() {

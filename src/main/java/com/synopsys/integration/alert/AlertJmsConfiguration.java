@@ -45,7 +45,7 @@ public class AlertJmsConfiguration {
         factory.setConnectionFactory(connectionFactory);
         int minConcurrency = 1;
         int maxThreadCount = Runtime.getRuntime().availableProcessors();
-        int maxConcurrency = maxThreadCount < MAX_ALLOWED_THREAD_COUNT ? maxThreadCount : MAX_ALLOWED_THREAD_COUNT;
+        int maxConcurrency = Math.min(maxThreadCount, MAX_ALLOWED_THREAD_COUNT);
         String concurrencyRange = String.format("%s-%s", minConcurrency, maxConcurrency);
         factory.setConcurrency(concurrencyRange);
 

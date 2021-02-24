@@ -20,25 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.model;
+package com.synopsys.integration.alert.channel.msteams2;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class CustomFieldDefinitionModel extends AlertSerializableModel {
-    private final String fieldId;
-    private final String fieldType;
+import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
-    public CustomFieldDefinitionModel(String fieldId, String fieldType) {
-        this.fieldId = fieldId;
-        this.fieldType = fieldType;
-    }
-
-    public String getFieldId() {
-        return fieldId;
-    }
-
-    public String getFieldType() {
-        return fieldType;
+@Component
+public class MSTeamsChannelV2 extends MessageBoardChannel<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
+    @Autowired
+    protected MSTeamsChannelV2(MSTeamsChannelMessageConverter msTeamsChannelMessageConverter, MSTeamsChannelMessageSender msTeamsChannelMessageSender) {
+        super(msTeamsChannelMessageConverter, msTeamsChannelMessageSender);
     }
 
 }

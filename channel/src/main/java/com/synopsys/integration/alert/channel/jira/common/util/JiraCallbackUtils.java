@@ -32,8 +32,12 @@ public class JiraCallbackUtils {
     }
 
     public static String createUILink(IssueResponseModel issueResponseModel) {
-        String userFriendlyUrl = StringUtils.substringBefore(issueResponseModel.getSelf(), "/rest/api");
-        return String.format("%s/browse/%s", userFriendlyUrl, issueResponseModel.getKey());
+        return createUILink(issueResponseModel.getSelf(), issueResponseModel.getKey());
+    }
+
+    public static String createUILink(String issueUrl, String issueKey) {
+        String userFriendlyUrl = StringUtils.substringBefore(issueUrl, "/rest/api");
+        return String.format("%s/browse/%s", userFriendlyUrl, issueKey);
     }
 
 }

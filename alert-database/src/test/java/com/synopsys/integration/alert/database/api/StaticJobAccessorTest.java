@@ -37,11 +37,11 @@ import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetails
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
@@ -56,9 +56,9 @@ class StaticJobAccessorTest {
     private DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
     private AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
-    private JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
+    private DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
-    private MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
+    private DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private JobAccessor jobAccessor;
 
     private final String jobName = "jobName";
@@ -70,9 +70,9 @@ class StaticJobAccessorTest {
         slackJobDetailsAccessor = Mockito.mock(DefaultSlackJobDetailsAccessor.class);
         azureBoardsJobDetailsAccessor = Mockito.mock(AzureBoardsJobDetailsAccessor.class);
         emailJobDetailsAccessor = Mockito.mock(DefaultEmailJobDetailsAccessor.class);
-        jiraCloudJobDetailsAccessor = Mockito.mock(JiraCloudJobDetailsAccessor.class);
+        jiraCloudJobDetailsAccessor = Mockito.mock(DefaultJiraCloudJobDetailsAccessor.class);
         jiraServerJobDetailsAccessor = Mockito.mock(JiraServerJobDetailsAccessor.class);
-        msTeamsJobDetailsAccessor = Mockito.mock(MSTeamsJobDetailsAccessor.class);
+        msTeamsJobDetailsAccessor = Mockito.mock(DefaultMSTeamsJobDetailsAccessor.class);
 
         Mockito.when(blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());

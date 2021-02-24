@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira.common.model;
+package com.synopsys.integration.alert.channel.jira2.common.model;
 
 public class JiraResolvedCustomField {
     private final String fieldId;

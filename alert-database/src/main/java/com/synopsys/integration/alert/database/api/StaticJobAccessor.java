@@ -69,11 +69,11 @@ import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJ
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
-import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
@@ -88,9 +88,9 @@ public class StaticJobAccessor implements JobAccessor {
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private final DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
-    private final JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
+    private final DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
-    private final MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
+    private final DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private final DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
 
     // Temporary until all three tiers of the application have been updated to new Job models
@@ -103,9 +103,9 @@ public class StaticJobAccessor implements JobAccessor {
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
         AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
         DefaultEmailJobDetailsAccessor emailJobDetailsAccessor,
-        JiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
+        DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
-        MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
+        DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
         DefaultSlackJobDetailsAccessor slackJobDetailsAccessor,
         ProviderKey blackDuckProviderKey
     ) {
