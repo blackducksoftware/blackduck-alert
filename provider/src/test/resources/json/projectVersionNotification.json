@@ -1,7 +1,9 @@
 {
-  "project": "https://a-hub-server.blackduck.com/api/projects/963947b3-311f-4aa8-81e6-bf9de13441af",
-  "projectName": "test-project",
-  "projectVersion": "https://a-hub-server.blackduck.com/api/projects/963947b3-311f-4aa8-81e6-bf9de13441af/versions/e6245cf1-16d9-4fcd-a491-501154e587ae",
-  "projectVersionName": "test-version",
-  "operationType": "CREATE"
+  "content": {
+    "project": "https://a-hub-server.blackduck.com/api/projects/963947b3-311f-4aa8-81e6-bf9de13441af",
+    "projectName": "test-project",
+    "projectVersion": "https://a-hub-server.blackduck.com/api/projects/963947b3-311f-4aa8-81e6-bf9de13441af/versions/e6245cf1-16d9-4fcd-a491-501154e587ae",
+    "projectVersionName": "test-version",
+    "operationType": "CREATE"
+  }
 }

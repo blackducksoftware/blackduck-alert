@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
 
 public class ProjectVersionNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/projectVersionNotification.json";
@@ -35,8 +36,10 @@ public class ProjectVersionNotificationDetailExtractorTest {
         Optional<String> optionalProjectName = detailedNotificationContent.getProjectName();
         assertTrue(optionalProjectName.isPresent(), "Expect project name to be present");
 
-        ProjectVersionNotificationContent projectNotificationContent = gson.fromJson(jsonContent, ProjectVersionNotificationContent.class);
-        assertEquals(projectNotificationContent.getProjectName(), optionalProjectName.get());
+        ProjectVersionNotificationView projectNotificationView = gson.fromJson(jsonContent, ProjectVersionNotificationView.class);
+        ProjectVersionNotificationContent projectVersionNotificationContent = projectNotificationView.getContent();
+
+        assertEquals(projectVersionNotificationContent.getProjectName(), optionalProjectName.get());
         assertTrue(detailedNotificationContent.getPolicyName().isEmpty(), "Expected no policy name to be present");
         assertEquals(0, detailedNotificationContent.getVulnerabilitySeverities().size());
     }

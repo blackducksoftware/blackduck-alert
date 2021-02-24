@@ -1,5 +1,7 @@
 {
-  "project": "https://a-hub-server.blackduck.com/api/projects/e63099eb-02d0-4fd5-8f4a-4cfab7d45a8b",
-  "projectName": "test-project",
-  "operationType": "DELETE"
+  "content": {
+    "project": "https://a-hub-server.blackduck.com/api/projects/e63099eb-02d0-4fd5-8f4a-4cfab7d45a8b",
+    "projectName": "test-project",
+    "operationType": "DELETE"
+  }
 }

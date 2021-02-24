@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
 
 public class RuleViolationClearedNotificationContentDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/ruleViolationClearedNotification.json";
@@ -31,7 +32,9 @@ public class RuleViolationClearedNotificationContentDetailExtractorTest {
         List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification);
         assertEquals(2, detailedNotificationContents.size());
 
-        RuleViolationClearedNotificationContent notificationContent = gson.fromJson(jsonContent, RuleViolationClearedNotificationContent.class);
+        RuleViolationClearedNotificationView notificationView = gson.fromJson(jsonContent, RuleViolationClearedNotificationView.class);
+        RuleViolationClearedNotificationContent notificationContent = notificationView.getContent();
+
         for (DetailedNotificationContent detailedContent : detailedNotificationContents) {
             Optional<String> optionalProjectName = detailedContent.getProjectName();
             assertTrue(optionalProjectName.isPresent(), "Expect project name to be present");
