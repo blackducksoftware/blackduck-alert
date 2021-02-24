@@ -49,7 +49,6 @@ public class AboutActionsTest {
         SystemStatusAccessor systemStatusAccessor = Mockito.mock(SystemStatusAccessor.class);
         DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);
 
-        Mockito.when(alertProperties.getExternalServerUrl()).thenThrow(new NullPointerException("Exception for about test"));
         AboutReader aboutReader = new AboutReader(gson, alertProperties, systemStatusAccessor, descriptorActions);
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();

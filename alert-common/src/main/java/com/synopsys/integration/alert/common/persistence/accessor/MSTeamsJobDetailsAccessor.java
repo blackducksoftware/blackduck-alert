@@ -20,19 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.rest;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
-public final class AlertRestConstants {
-    public static final String API = "api";
-    public static final String CALLBACKS = "callbacks";
-    public static final String OAUTH = "oauth";
-    public static final String BASE_PATH = "/" + API;
-    public static final String CALLBACKS_PATH = BASE_PATH + "/" + CALLBACKS;
-    public static final String OAUTH_CALLBACK_PATH = CALLBACKS_PATH + "/" + OAUTH;
-    public static final String CONFIGURATION_PATH = AlertRestConstants.BASE_PATH + "/configuration";
+import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
-    private AlertRestConstants() {
-        // This class should not be instantiated
-    }
-
+public interface MSTeamsJobDetailsAccessor extends JobDetailsAccessor<MSTeamsJobDetailsModel> {
 }

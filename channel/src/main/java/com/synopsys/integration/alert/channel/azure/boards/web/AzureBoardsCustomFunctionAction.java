@@ -116,8 +116,8 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             if (!clientId.isPresent()) {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("App ID not found."));
             }
-            Optional<String> alertServerUrl = alertProperties.getServerUrl();
 
+            Optional<String> alertServerUrl = alertProperties.getServerUrl();
             if (!alertServerUrl.isPresent()) {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("Could not determine the alert server url for the callback."));
             }

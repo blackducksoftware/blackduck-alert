@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJo
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.slack.DefaultSlackJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
@@ -58,7 +58,7 @@ class StaticJobAccessorTest {
     private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
-    private MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
+    private DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private JobAccessor jobAccessor;
 
     private final String jobName = "jobName";
@@ -72,7 +72,7 @@ class StaticJobAccessorTest {
         emailJobDetailsAccessor = Mockito.mock(DefaultEmailJobDetailsAccessor.class);
         jiraCloudJobDetailsAccessor = Mockito.mock(DefaultJiraCloudJobDetailsAccessor.class);
         jiraServerJobDetailsAccessor = Mockito.mock(JiraServerJobDetailsAccessor.class);
-        msTeamsJobDetailsAccessor = Mockito.mock(MSTeamsJobDetailsAccessor.class);
+        msTeamsJobDetailsAccessor = Mockito.mock(DefaultMSTeamsJobDetailsAccessor.class);
 
         Mockito.when(blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());

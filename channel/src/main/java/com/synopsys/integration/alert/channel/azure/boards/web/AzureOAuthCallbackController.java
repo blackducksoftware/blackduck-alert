@@ -64,7 +64,8 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @RestController
 @RequestMapping(AzureOAuthCallbackController.AZURE_OAUTH_CALLBACK_PATH)
 public class AzureOAuthCallbackController {
-    public static final String AZURE_OAUTH_CALLBACK_PATH = AlertRestConstants.OAUTH_CALLBACK_PATH + "/azure";
+    public static final String AZURE = "azure";
+    public static final String AZURE_OAUTH_CALLBACK_PATH = AlertRestConstants.OAUTH_CALLBACK_PATH + "/" + AZURE;
     private final Logger logger = LoggerFactory.getLogger(AzureOAuthCallbackController.class);
     private final ResponseFactory responseFactory;
     private final Gson gson;
