@@ -36,12 +36,13 @@ import com.synopsys.integration.alert.provider.blackduck.processor.model.PolicyO
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 
 @Component
-public class PolicyOverrideNotificationDetailExtractor extends NotificationDetailExtractor<PolicyOverrideNotificationContent> {
+public class PolicyOverrideNotificationDetailExtractor extends NotificationDetailExtractor<PolicyOverrideNotificationContent, PolicyOverrideNotificationView> {
     @Autowired
     public PolicyOverrideNotificationDetailExtractor(Gson gson) {
-        super(NotificationType.POLICY_OVERRIDE, PolicyOverrideNotificationContent.class, gson);
+        super(NotificationType.POLICY_OVERRIDE, PolicyOverrideNotificationView.class, gson);
     }
 
     @Override

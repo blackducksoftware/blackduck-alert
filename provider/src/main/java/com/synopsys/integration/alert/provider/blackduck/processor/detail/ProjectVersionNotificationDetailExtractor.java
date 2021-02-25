@@ -33,12 +33,13 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.ProjectVersionNotificationView;
 
 @Component
-public class ProjectVersionNotificationDetailExtractor extends NotificationDetailExtractor<ProjectVersionNotificationContent> {
+public class ProjectVersionNotificationDetailExtractor extends NotificationDetailExtractor<ProjectVersionNotificationContent, ProjectVersionNotificationView> {
     @Autowired
     public ProjectVersionNotificationDetailExtractor(Gson gson) {
-        super(NotificationType.PROJECT_VERSION, ProjectVersionNotificationContent.class, gson);
+        super(NotificationType.PROJECT_VERSION, ProjectVersionNotificationView.class, gson);
     }
 
     @Override

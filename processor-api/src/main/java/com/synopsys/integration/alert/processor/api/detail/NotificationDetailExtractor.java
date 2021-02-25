@@ -25,21 +25,19 @@ package com.synopsys.integration.alert.processor.api.detail;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.blackduck.api.manual.contract.NotificationContentData;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public abstract class NotificationDetailExtractor<T extends NotificationContentComponent> {
-    private final String JSON_FIELD_NOTIFICATION_CONTENT = "content";
-
+public abstract class NotificationDetailExtractor<T extends NotificationContentComponent, U extends NotificationContentData<T>> {
     private final NotificationType notificationType;
-    private final Class<T> notificationContentClass;
+    private final Class<U> notificationViewClass;
     private final Gson gson;
 
-    public NotificationDetailExtractor(NotificationType notificationType, Class<T> notificationContentClass, Gson gson) {
+    public NotificationDetailExtractor(NotificationType notificationType, Class<U> notificationViewClass, Gson gson) {
         this.notificationType = notificationType;
-        this.notificationContentClass = notificationContentClass;
+        this.notificationViewClass = notificationViewClass;
         this.gson = gson;
     }
 
@@ -48,10 +46,8 @@ public abstract class NotificationDetailExtractor<T extends NotificationContentC
     }
 
     public final List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel) {
-        // The NotificationView object (which we assume getContent() deserializes to) does not have a common "content" field explicitly defined.
-        JsonObject notificationViewJsonObject = gson.fromJson(alertNotificationModel.getContent(), JsonObject.class);
-        JsonObject notificationContentJsonObject = notificationViewJsonObject.get(JSON_FIELD_NOTIFICATION_CONTENT).getAsJsonObject();
-        T notificationContent = gson.fromJson(notificationContentJsonObject, notificationContentClass);
+        U notificationView = gson.fromJson(alertNotificationModel.getContent(), notificationViewClass);
+        T notificationContent = notificationView.getContent();
         return extractDetailedContent(alertNotificationModel, notificationContent);
     }
 
