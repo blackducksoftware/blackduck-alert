@@ -53,20 +53,29 @@ public class MSTeamsChannelMessageConverter extends AbstractChannelMessageConver
     }
 
     private List<MSTeamsChannelMessageModel> createMessageModel(ProviderDetails providerDetails, List<String> messageChunks) {
-        List<MSTeamsChannelMessageModel> messageModels = new LinkedList<>();
-        int messagesSize = messageChunks.size();
-        if (messagesSize > 1) {
-            for (int i = 0; i < messagesSize; i++) {
-                String title = String.format("(%s/%s)", i + 1, messagesSize);
-                messageModels.add(new MSTeamsChannelMessageModel(providerDetails, title, messageChunks.get(i)));
+        String provider = providerDetails.getProvider().getValue();
+        String messageTitle = String.format("Received a message from %s", provider);
+        List<MSTeamsChannelMessageSection> messageSections = createMessageSections(messageChunks);
+        MSTeamsChannelMessageModel messageModel = new MSTeamsChannelMessageModel(messageTitle, messageSections);
+        return List.of(messageModel);
+    }
+
+    private List<MSTeamsChannelMessageSection> createMessageSections(List<String> messageChunks) {
+        List<MSTeamsChannelMessageSection> messageSections = new LinkedList<>();
+        int messageChunksSize = messageChunks.size();
+
+        if (messageChunksSize > 1) {
+            for (int i = 0; i < messageChunksSize; i++) {
+                String title = String.format("(%s/%s)", i + 1, messageChunksSize);
+                messageSections.add(new MSTeamsChannelMessageSection(title, messageChunks.get(i)));
             }
         } else {
             messageChunks.stream()
-                .map(messageContent -> new MSTeamsChannelMessageModel(providerDetails, StringUtils.EMPTY, messageContent))
-                .forEach(messageModels::add);
+                .map(messageContent -> new MSTeamsChannelMessageSection(StringUtils.EMPTY, messageContent))
+                .forEach(messageSections::add);
         }
 
-        return messageModels;
+        return messageSections;
     }
 
 }
