@@ -56,14 +56,14 @@ public class MSTeamsChannelMessageConverter extends AbstractChannelMessageConver
         String provider = providerDetails.getProvider().getValue();
         String messageTitle = String.format("Received a message from %s", provider);
         List<MSTeamsChannelMessageSection> messageSections = createMessageSections(messageChunks);
-        MSTeamsChannelMessageModel messageModel = new MSTeamsChannelMessageModel(providerDetails, messageTitle, messageSections);
+        MSTeamsChannelMessageModel messageModel = new MSTeamsChannelMessageModel(messageTitle, messageSections);
         return List.of(messageModel);
     }
 
     private List<MSTeamsChannelMessageSection> createMessageSections(List<String> messageChunks) {
         List<MSTeamsChannelMessageSection> messageSections = new LinkedList<>();
         int messageChunksSize = messageChunks.size();
-        
+
         if (messageChunksSize > 1) {
             for (int i = 0; i < messageChunksSize; i++) {
                 String title = String.format("(%s/%s)", i + 1, messageChunksSize);
