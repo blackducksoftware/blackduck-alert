@@ -62,7 +62,7 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         requestHeaders.put("Content-Type", "application/json");
 
         List<Request> messageRequests = channelMessages.stream()
-                                            .map(it -> createRequestsForMessage(webhook, it, requestHeaders))
+                                            .map(it -> createRequestForMessage(webhook, it, requestHeaders))
                                             .collect(Collectors.toList());
 
         restChannelUtility.sendMessage(messageRequests, msTeamsKey.getUniversalKey());
@@ -70,7 +70,7 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         return new MessageResult(String.format("Successfully sent %d MSTeams message(s)", channelMessages.size()));
     }
 
-    private Request createRequestsForMessage(String webhook, MSTeamsChannelMessageModel messageModel, Map<String, String> requestHeaders) {
+    private Request createRequestForMessage(String webhook, MSTeamsChannelMessageModel messageModel, Map<String, String> requestHeaders) {
         String jsonString = createJsonString(messageModel);
         return restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString);
     }
