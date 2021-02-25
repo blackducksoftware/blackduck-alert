@@ -22,10 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.azureboards2.delegate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
@@ -35,8 +32,6 @@ import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
 
 public class AzureBoardsIssueCommenter extends IssueTrackerIssueCommenter<Integer> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final String organizationName;
     private final AzureBoardsJobDetailsModel distributionDetails;
     private final AzureWorkItemCommentService commentService;
@@ -58,21 +53,12 @@ public class AzureBoardsIssueCommenter extends IssueTrackerIssueCommenter<Intege
         return distributionDetails.isAddComments();
     }
 
-    // TODO abstract this method more
     @Override
-    protected void addComments(IssueCommentModel<Integer> issueCommentModel) throws AlertException {
-        if (!isCommentingEnabled()) {
-            logger.debug(COMMENTING_DISABLED_MESSAGE);
-            return;
-        }
-
-        ExistingIssueDetails<Integer> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
-        for (String comment : issueCommentModel.getComments()) {
-            try {
-                commentService.addComment(organizationName, distributionDetails.getProjectNameOrId(), existingIssueDetails.getIssueId(), comment);
-            } catch (HttpServiceException e) {
-                throw new AlertException(String.format("Failed to add Azure Boards comment. Issue Key: %s", existingIssueDetails.getIssueId()), e);
-            }
+    protected void addComment(String comment, ExistingIssueDetails<Integer> existingIssueDetails, ProjectIssueModel source) throws AlertException {
+        try {
+            commentService.addComment(organizationName, distributionDetails.getProjectNameOrId(), existingIssueDetails.getIssueId(), comment);
+        } catch (HttpServiceException e) {
+            throw new AlertException(String.format("Failed to add Azure Boards comment. Issue ID: %s", existingIssueDetails.getIssueId()), e);
         }
     }
 
