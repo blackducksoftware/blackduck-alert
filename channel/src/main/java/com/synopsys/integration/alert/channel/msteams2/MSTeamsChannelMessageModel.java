@@ -22,30 +22,32 @@
  */
 package com.synopsys.integration.alert.channel.msteams2;
 
+import java.util.List;
+
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 
 public class MSTeamsChannelMessageModel extends AlertSerializableModel {
     private final ProviderDetails providerDetails;
     private final String messageTitle;
-    private final String messageContent;
+    private final List<MSTeamsChannelMessageSection> messageSections;
 
-    public MSTeamsChannelMessageModel(ProviderDetails providerDetails, String messageTitle, String messageContent) {
+    public MSTeamsChannelMessageModel(ProviderDetails providerDetails, String messageTitle, List<MSTeamsChannelMessageSection> messageSections) {
         this.providerDetails = providerDetails;
         this.messageTitle = messageTitle;
-        this.messageContent = messageContent;
+        this.messageSections = messageSections;
     }
 
     public ProviderDetails getProviderDetails() {
         return providerDetails;
     }
 
-    public String getMessageTitle() {
+    public String getTitle() {
         return messageTitle;
     }
 
-    public String getMessageContent() {
-        return messageContent;
+    public List<MSTeamsChannelMessageSection> getSections() {
+        return messageSections;
     }
 
 }

@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.msteams2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,11 +35,9 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.api.ChannelMessageSender;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
@@ -62,43 +61,34 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
-        String provider = createProviderString(channelMessages);
-        String messageTitle = String.format("Received a message from %s", provider);
-        Request request = createRequestsForMessage(webhook, messageTitle, channelMessages, requestHeaders);
+        List<Request> messageRequests = channelMessages.stream()
+                                            .map(it -> createRequestsForMessage(webhook, it, requestHeaders))
+                                            .collect(Collectors.toList());
 
-        restChannelUtility.sendSingleMessage(request, msTeamsKey.getUniversalKey());
+        restChannelUtility.sendMessage(messageRequests, msTeamsKey.getUniversalKey());
 
         return new MessageResult(String.format("Successfully sent %d MSTeams message(s)", channelMessages.size()));
     }
 
-    private String createProviderString(List<MSTeamsChannelMessageModel> channelMessages) {
-        return channelMessages.stream()
-                   .findFirst()
-                   .map(MSTeamsChannelMessageModel::getProviderDetails)
-                   .map(ProviderDetails::getProvider)
-                   .map(LinkableItem::getValue)
-                   .orElse("BlackDuck");
-    }
-
-    private Request createRequestsForMessage(String webhook, String messageTitle, List<MSTeamsChannelMessageModel> messages, Map<String, String> requestHeaders) {
-        String jsonString = createJsonString(messageTitle, messages);
+    private Request createRequestsForMessage(String webhook, MSTeamsChannelMessageModel messageModel, Map<String, String> requestHeaders) {
+        String jsonString = createJsonString(messageModel);
         return restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString);
     }
 
-    private String createJsonString(String title, List<MSTeamsChannelMessageModel> messageSections) {
+    private String createJsonString(MSTeamsChannelMessageModel messageModel) {
         JsonObject json = new JsonObject();
         json.addProperty("@type", "MessageCard");
         json.addProperty("@context", "https://schema.org/extensions");
         json.addProperty("summary", MESSAGE_SUMMARY);
         json.addProperty("themeColor", MESSAGE_THEME_COLOR);
-        json.addProperty("title", title);
+        json.addProperty("title", messageModel.getTitle());
 
         JsonArray jsonArray = new JsonArray();
-        for (MSTeamsChannelMessageModel messageSection : messageSections) {
+        for (MSTeamsChannelMessageSection messageSection : messageModel.getSections()) {
             JsonObject sectionJson = new JsonObject();
             sectionJson.addProperty("startGroup", true);
-            sectionJson.addProperty("title", messageSection.getMessageTitle());
-            sectionJson.addProperty("text", messageSection.getMessageContent());
+            sectionJson.addProperty("title", messageSection.getTitle());
+            sectionJson.addProperty("text", messageSection.getContent());
             jsonArray.add(sectionJson);
         }
         json.add("sections", jsonArray);
