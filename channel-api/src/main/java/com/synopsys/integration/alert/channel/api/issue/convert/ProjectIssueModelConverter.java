@@ -85,7 +85,7 @@ public class ProjectIssueModelConverter {
         descriptionBuilder.append(formatter.getLineSeparator());
 
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
-        List<String> bomComponentPieces = bomComponentDetailConverter.gatherPreConcernSectionPieces(bomComponent);
+        List<String> bomComponentPieces = bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent);
         bomComponentPieces.forEach(descriptionBuilder::append);
 
         descriptionBuilder.append(formatter.getLineSeparator());

@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.alert.channel.api.convert;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
@@ -32,11 +33,13 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMessage> {
     private final ChannelMessageFormatter messageFormatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
+    private final ComponentConcernConverter componentConcernConverter;
 
     public ProjectMessageConverter(ChannelMessageFormatter formatter) {
         super(formatter);
         this.messageFormatter = formatter;
         this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
+        componentConcernConverter = new ComponentConcernConverter(formatter);
     }
 
     @Override
@@ -72,13 +75,25 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
         }
 
         for (BomComponentDetails bomComponentDetails : bomComponents) {
-            List<String> bomComponentMessagePieces = bomComponentDetailConverter.gatherBomComponentPieces(bomComponentDetails);
+            List<String> bomComponentMessagePieces = gatherBomComponentAndConcernSectionPieces(bomComponentDetails);
             bomComponentMessagePieces.forEach(chunkedStringBuilder::append);
             chunkedStringBuilder.append(messageFormatter.getSectionSeparator());
             chunkedStringBuilder.append(messageFormatter.getLineSeparator());
         }
 
         return chunkedStringBuilder.collectCurrentChunks();
+    }
+
+    private List<String> gatherBomComponentAndConcernSectionPieces(BomComponentDetails bomComponent) {
+        List<String> bomComponentSectionPieces = new LinkedList<>();
+
+        List<String> preConcernSectionPieces = bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent);
+        bomComponentSectionPieces.addAll(preConcernSectionPieces);
+
+        List<String> componentConcernSectionPieces = componentConcernConverter.gatherComponentConcernSectionPieces(bomComponent.getComponentConcerns());
+        bomComponentSectionPieces.addAll(componentConcernSectionPieces);
+
+        return bomComponentSectionPieces;
     }
 
 }
