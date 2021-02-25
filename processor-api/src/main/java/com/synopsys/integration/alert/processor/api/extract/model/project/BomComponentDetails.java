@@ -28,19 +28,10 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
 
-public class BomComponentDetails extends AlertSerializableModel implements CombinableModel<BomComponentDetails> {
-    private final LinkableItem component;
-    private final LinkableItem componentVersion;
+public class BomComponentDetails extends AbstractBomComponentDetails implements CombinableModel<BomComponentDetails> {
     private final List<ComponentConcern> componentConcerns;
-
-    private final LinkableItem license;
-    private final String usage;
-
-    private final List<LinkableItem> additionalAttributes;
-    private final String blackDuckIssuesUrl;
 
     public BomComponentDetails(
         LinkableItem component,
@@ -51,41 +42,12 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
         List<LinkableItem> additionalAttributes,
         String blackDuckIssuesUrl
     ) {
-        this.component = component;
-        this.componentVersion = componentVersion;
+        super(component, componentVersion, license, usage, additionalAttributes, blackDuckIssuesUrl);
         this.componentConcerns = componentConcerns;
-        this.license = license;
-        this.usage = usage;
-        this.additionalAttributes = additionalAttributes;
-        this.blackDuckIssuesUrl = blackDuckIssuesUrl;
-    }
-
-    public LinkableItem getComponent() {
-        return component;
-    }
-
-    public Optional<LinkableItem> getComponentVersion() {
-        return Optional.ofNullable(componentVersion);
     }
 
     public List<ComponentConcern> getComponentConcerns() {
         return componentConcerns;
-    }
-
-    public LinkableItem getLicense() {
-        return license;
-    }
-
-    public String getUsage() {
-        return usage;
-    }
-
-    public List<LinkableItem> getAdditionalAttributes() {
-        return additionalAttributes;
-    }
-
-    public String getBlackDuckIssuesUrl() {
-        return blackDuckIssuesUrl;
     }
 
     public boolean hasComponentConcerns() {
@@ -96,27 +58,35 @@ public class BomComponentDetails extends AlertSerializableModel implements Combi
     public List<BomComponentDetails> combine(BomComponentDetails otherDetails) {
         List<BomComponentDetails> uncombinedDetails = List.of(this, otherDetails);
 
-        if (!component.equals(otherDetails.component)) {
+        if (!getComponent().equals(otherDetails.getComponent())) {
             return uncombinedDetails;
         }
 
-        // If one is null and the other is not, they represent different component-versions and cannot be combined.
-        if (null == componentVersion && otherDetails.componentVersion != null) {
-            return uncombinedDetails;
-        }
-        // If one is not null and it does not equal the other, they represent different component-versions and cannot be combined.
-        else if (null != componentVersion && !componentVersion.equals(otherDetails.componentVersion)) {
+        Optional<LinkableItem> optionalComponentVersion = getComponentVersion();
+        if (optionalComponentVersion.isPresent()) {
+            LinkableItem componentVersion = optionalComponentVersion.get();
+            if (!componentVersion.equals(otherDetails.getComponentVersion().orElse(null))) {
+                return uncombinedDetails;
+            }
+        } else if (otherDetails.getComponentVersion().isPresent()) {
             return uncombinedDetails;
         }
 
-        // Either both component-versions are null, or they are equal to each other.
+        // Either both component-versions are missing, or they are equal to each other.
         // Either way, their component-concerns are candidates for combination.
         return combineComponentConcerns(otherDetails.componentConcerns);
     }
 
     private List<BomComponentDetails> combineComponentConcerns(List<ComponentConcern> otherDetailsComponentConcerns) {
         List<ComponentConcern> combinedComponentConcerns = CombinableModel.combine(componentConcerns, otherDetailsComponentConcerns);
-        BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(component, componentVersion, combinedComponentConcerns, license, usage, additionalAttributes, blackDuckIssuesUrl);
+        BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(
+            getComponent(),
+            getComponentVersion().orElse(null),
+            combinedComponentConcerns, getLicense(),
+            getUsage(),
+            getAdditionalAttributes(),
+            getBlackDuckIssuesUrl()
+        );
         return List.of(combinedBomComponentDetails);
     }
 

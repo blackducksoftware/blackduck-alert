@@ -22,9 +22,13 @@
  */
 package com.synopsys.integration.alert.channel.api.issue.send;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -34,8 +38,7 @@ import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 @Component
 public class AlertIssueOriginCreator {
@@ -56,21 +59,29 @@ public class AlertIssueOriginCreator {
             ItemOperation.UPDATE
         );
 
-        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
-        ComponentConcern arbitraryComponentConcern = bomComponent.getComponentConcerns()
-                                                         .stream()
-                                                         .findAny()
-                                                         .orElseThrow(() -> new AlertRuntimeException("Missing component-concern"));
-        String categoryString = StringUtils.capitalize(arbitraryComponentConcern.getType().name().toLowerCase());
+        IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
+        ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
+        ItemOperation operation = ItemOperation.UPDATE;
+        String categoryItemName = "Unknown";
+
+        Optional<IssuePolicyDetails> optionalPolicyDetails = projectIssueModel.getPolicyDetails();
+        if (optionalPolicyDetails.isPresent()) {
+            IssuePolicyDetails issuePolicyDetails = optionalPolicyDetails.get();
+            concernType = ComponentConcernType.POLICY;
+            operation = issuePolicyDetails.getOperation();
+            categoryItemName = issuePolicyDetails.getName();
+        }
+
+        String categoryString = StringUtils.capitalize(concernType.name().toLowerCase());
 
         ComponentItem componentItem;
         try {
             componentItem = new ComponentItem.Builder()
                                 .applyCategory(categoryString)
-                                .applyOperation(arbitraryComponentConcern.getOperation())
+                                .applyOperation(operation)
                                 .applyComponentData(bomComponent.getComponent())
                                 .applySubComponent(bomComponent.getComponentVersion().orElse(null))
-                                .applyCategoryItem(categoryString, arbitraryComponentConcern.getName())
+                                .applyCategoryItem(categoryString, categoryItemName)
                                 .applyNotificationId(0L)
                                 .build();
         } catch (AlertException e) {

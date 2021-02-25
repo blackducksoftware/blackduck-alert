@@ -24,10 +24,12 @@ package com.synopsys.integration.alert.channel.jira2.cloud;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ActionableIssueSearchResult;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
@@ -38,11 +40,9 @@ import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils
 import com.synopsys.integration.alert.channel.jira2.common.JqlStringCreator;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
@@ -81,19 +81,11 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         String jqlString = JqlStringCreator.createBlackDuckComponentIssuesSearchString(jiraProjectKey, providerDetails.getProvider(), project, projectVersion, component, nullableComponentVersion);
         List<IssueResponseModel> issueResponseModels = queryForIssues(jqlString);
 
-        BomComponentDetails relevantDetails = new BomComponentDetails(
-            originalBomComponent.getComponent(),
-            originalBomComponent.getComponentVersion().orElse(null),
-            List.of(),
-            originalBomComponent.getLicense(),
-            originalBomComponent.getUsage(),
-            originalBomComponent.getAdditionalAttributes(),
-            originalBomComponent.getBlackDuckIssuesUrl()
-        );
-
         List<ProjectIssueSearchResult<String>> searchResults = new ArrayList<>();
         for (IssueResponseModel model : issueResponseModels) {
-            ProjectIssueSearchResult<String> resultFromExistingIssue = createIssueResult(model, providerDetails, project, projectVersion, relevantDetails);
+            IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(originalBomComponent);
+            ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, issueBomComponentDetails);
+            ProjectIssueSearchResult<String> resultFromExistingIssue = createIssueResult(model, projectIssueModel);
             searchResults.add(resultFromExistingIssue);
         }
         return searchResults;
@@ -103,13 +95,19 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
     protected ActionableIssueSearchResult<String> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
-        BomComponentDetails bomComponent = projectIssueModel.getBomComponent();
+        IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
 
-        List<ComponentConcern> componentConcerns = bomComponent.getComponentConcerns();
-        ComponentConcern arbitraryComponentConcern = componentConcerns
-                                                         .stream()
-                                                         .findAny()
-                                                         .orElseThrow(() -> new AlertRuntimeException("Unable to search for issue. Missing required component concern"));
+        ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
+        ItemOperation searchResultOperation = ItemOperation.UPDATE;
+
+        String policyName = null;
+
+        Optional<IssuePolicyDetails> policyDetails = projectIssueModel.getPolicyDetails();
+        Optional<String> optionalPolicyName = policyDetails.map(IssuePolicyDetails::getName);
+        if (optionalPolicyName.isPresent()) {
+            concernType = ComponentConcernType.POLICY;
+            policyName = optionalPolicyName.get();
+        }
 
         String jqlString = JqlStringCreator.createBlackDuckComponentConcernIssuesSearchString(
             jiraProjectKey,
@@ -118,37 +116,30 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
             projectIssueModel.getProjectVersion().orElse(null),
             bomComponent.getComponent(),
             bomComponent.getComponentVersion().orElse(null),
-            arbitraryComponentConcern
+            concernType,
+            policyName
         );
 
         List<IssueResponseModel> issueResponseModels = queryForIssues(jqlString);
         int foundIssuesCount = issueResponseModels.size();
 
         ExistingIssueDetails<String> existingIssueDetails = null;
-        ItemOperation operation;
 
         if (foundIssuesCount == 1) {
             IssueResponseModel issue = issueResponseModels.get(0);
             existingIssueDetails = createExistingIssueDetails(issue);
 
-            operation = ItemOperation.UPDATE;
-
-            // TODO we might need more granularity in policy / vulnerability concerns at the bom component level
-            boolean onlyPolicyDeletes = componentConcerns
-                                            .stream()
-                                            .filter(concern -> ComponentConcernType.POLICY.equals(concern.getType()))
-                                            .map(ComponentConcern::getOperation)
-                                            .allMatch(ItemOperation.DELETE::equals);
-            if (onlyPolicyDeletes) {
-                operation = ItemOperation.DELETE;
+            Optional<ItemOperation> policyOperation = policyDetails.map(IssuePolicyDetails::getOperation);
+            if (policyOperation.isPresent()) {
+                searchResultOperation = policyOperation.get();
             }
         } else if (foundIssuesCount > 1) {
             throw new AlertException("Expect to find a unique issue, but more than one issue was found");
         } else {
-            operation = ItemOperation.ADD;
+            searchResultOperation = ItemOperation.ADD;
         }
 
-        return new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, operation);
+        return new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, searchResultOperation);
     }
 
     private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, ProviderDetails providerDetails, LinkableItem project) throws AlertException {
@@ -185,35 +176,19 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         }
 
         LinkableItem projectVersion = new LinkableItem(issueProperties.getSubTopicName(), issueProperties.getSubTopicValue());
-        BomComponentDetails bomComponent = createMinimalBomComponentDetails(
+
+        IssueBomComponentDetails bomComponentDetails = IssueBomComponentDetails.fromSearchResults(
             new LinkableItem(issueProperties.getComponentName(), issueProperties.getComponentValue()),
             componentVersion
         );
-        return createIssueResult(issue, providerDetails, project, projectVersion, bomComponent);
+
+        ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponentDetails);
+        return createIssueResult(issue, projectIssueModel);
     }
 
-    private ProjectIssueSearchResult<String> createIssueResult(
-        IssueResponseModel issue,
-        ProviderDetails providerDetails,
-        LinkableItem project,
-        LinkableItem projectVersion,
-        BomComponentDetails relevantDetails
-    ) {
-        ProjectIssueModel projectIssueModel = new ProjectIssueModel(providerDetails, project, projectVersion, relevantDetails);
+    private ProjectIssueSearchResult<String> createIssueResult(IssueResponseModel issue, ProjectIssueModel projectIssueModel) {
         ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue);
         return new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
-    }
-
-    private BomComponentDetails createMinimalBomComponentDetails(LinkableItem component, @Nullable LinkableItem componentVersion) {
-        return new BomComponentDetails(
-            component,
-            componentVersion,
-            List.of(),
-            new LinkableItem("License", "Unknown License"),
-            "Unknown Usage",
-            List.of(),
-            ""
-        );
     }
 
     private ExistingIssueDetails<String> createExistingIssueDetails(IssueResponseModel issue) {

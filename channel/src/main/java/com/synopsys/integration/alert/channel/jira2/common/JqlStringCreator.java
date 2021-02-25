@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public final class JqlStringCreator {
     private static final String SEARCH_CONJUNCTION = "AND";
@@ -78,16 +78,19 @@ public final class JqlStringCreator {
         LinkableItem projectVersion,
         LinkableItem component,
         @Nullable LinkableItem componentVersion,
-        ComponentConcern componentConcern
+        ComponentConcernType concernType,
+        @Nullable String policyName
     ) {
         StringBuilder jqlBuilder = new StringBuilder();
         appendBlackDuckComponentSearchStrings(jqlBuilder, jiraProjectKey, provider, project, projectVersion, component, componentVersion);
 
-        String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(componentConcern.getType());
+        String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(concernType);
         appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_CATEGORY, category);
 
-        JiraIssueSearchPropertyStringCompatibilityUtils.createAdditionalKey(componentConcern)
-            .ifPresent(additionalKey -> appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey));
+        if (ComponentConcernType.POLICY.equals(concernType) && null != policyName) {
+            String additionalKey = JiraIssueSearchPropertyStringCompatibilityUtils.createPolicyAdditionalKey(policyName);
+            appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_ADDITIONAL_KEY, additionalKey);
+        }
 
         return jqlBuilder.toString();
     }

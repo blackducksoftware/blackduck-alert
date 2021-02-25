@@ -25,21 +25,63 @@ package com.synopsys.integration.alert.channel.api.issue.model;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 
 public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
     private final LinkableItem project;
     private final LinkableItem projectVersion;
-    private final BomComponentDetails bomComponent;
+    private final IssueBomComponentDetails bomComponentDetails;
 
-    public ProjectIssueModel(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) {
+    private final IssuePolicyDetails policyDetails;
+    private final IssueVulnerabilityDetails vulnerabilityDetails;
+
+    public static ProjectIssueModel bom(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        IssueBomComponentDetails bomComponentDetails
+    ) {
+        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, null, null);
+    }
+
+    public static ProjectIssueModel policy(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        IssueBomComponentDetails bomComponentDetails,
+        IssuePolicyDetails policyDetails
+    ) {
+        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, policyDetails, null);
+    }
+
+    public static ProjectIssueModel vulnerability(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        IssueBomComponentDetails bomComponentDetails,
+        IssueVulnerabilityDetails vulnerabilityDetails
+    ) {
+        return new ProjectIssueModel(providerDetails, project, projectVersion, bomComponentDetails, null, vulnerabilityDetails);
+    }
+
+    private ProjectIssueModel(
+        ProviderDetails providerDetails,
+        LinkableItem project,
+        LinkableItem projectVersion,
+        IssueBomComponentDetails bomComponentDetails,
+        @Nullable IssuePolicyDetails policyDetails,
+        @Nullable IssueVulnerabilityDetails vulnerabilityDetails
+    ) {
         super(providerDetails);
         this.project = project;
         this.projectVersion = projectVersion;
-        this.bomComponent = bomComponent;
+        this.bomComponentDetails = bomComponentDetails;
+        this.policyDetails = policyDetails;
+        this.vulnerabilityDetails = vulnerabilityDetails;
     }
 
     public LinkableItem getProject() {
@@ -50,8 +92,16 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
         return Optional.ofNullable(projectVersion);
     }
 
-    public BomComponentDetails getBomComponent() {
-        return bomComponent;
+    public IssueBomComponentDetails getBomComponentDetails() {
+        return bomComponentDetails;
+    }
+
+    public Optional<IssuePolicyDetails> getPolicyDetails() {
+        return Optional.ofNullable(policyDetails);
+    }
+
+    public Optional<IssueVulnerabilityDetails> getVulnerabilityDetails() {
+        return Optional.ofNullable(vulnerabilityDetails);
     }
 
     @Override
@@ -62,11 +112,19 @@ public class ProjectIssueModel extends ProviderMessage<ProjectIssueModel> {
             return uncombinedModels;
         }
 
-        if (projectVersion != null && !projectVersion.equals(otherModel.projectVersion)) {
+        if (null != projectVersion && !projectVersion.equals(otherModel.projectVersion)) {
             return uncombinedModels;
         }
 
-        if (!bomComponent.equals(otherModel.bomComponent)) {
+        if (!bomComponentDetails.equals(otherModel.bomComponentDetails)) {
+            return uncombinedModels;
+        }
+
+        if (null != policyDetails && !policyDetails.equals(otherModel.policyDetails)) {
+            return uncombinedModels;
+        }
+
+        if (null != vulnerabilityDetails && !vulnerabilityDetails.equals(otherModel.vulnerabilityDetails)) {
             return uncombinedModels;
         }
 
