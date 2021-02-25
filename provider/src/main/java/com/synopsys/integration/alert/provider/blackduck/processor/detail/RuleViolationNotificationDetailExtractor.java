@@ -36,12 +36,13 @@ import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleVio
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.RuleViolationNotificationView;
 
 @Component
-public class RuleViolationNotificationDetailExtractor extends NotificationDetailExtractor<RuleViolationNotificationContent> {
+public class RuleViolationNotificationDetailExtractor extends NotificationDetailExtractor<RuleViolationNotificationContent, RuleViolationNotificationView> {
     @Autowired
     public RuleViolationNotificationDetailExtractor(Gson gson) {
-        super(NotificationType.RULE_VIOLATION, RuleViolationNotificationContent.class, gson);
+        super(NotificationType.RULE_VIOLATION, RuleViolationNotificationView.class, gson);
     }
 
     @Override

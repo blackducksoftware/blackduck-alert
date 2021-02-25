@@ -40,6 +40,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.manual.component.BomEditNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.BomEditNotificationView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
@@ -47,14 +48,14 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
 @Component
-public class BomEditNotificationDetailExtractor extends NotificationDetailExtractor<BomEditNotificationContent> {
+public class BomEditNotificationDetailExtractor extends NotificationDetailExtractor<BomEditNotificationContent, BomEditNotificationView> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache;
 
     @Autowired
     public BomEditNotificationDetailExtractor(Gson gson, NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache) {
-        super(NotificationType.BOM_EDIT, BomEditNotificationContent.class, gson);
+        super(NotificationType.BOM_EDIT, BomEditNotificationView.class, gson);
         this.servicesFactoryCache = servicesFactoryCache;
     }
 

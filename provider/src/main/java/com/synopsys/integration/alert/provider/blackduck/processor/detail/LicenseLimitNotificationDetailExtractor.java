@@ -33,12 +33,13 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
 import com.synopsys.integration.blackduck.api.manual.component.LicenseLimitNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
 
 @Component
-public class LicenseLimitNotificationDetailExtractor extends NotificationDetailExtractor<LicenseLimitNotificationContent> {
+public class LicenseLimitNotificationDetailExtractor extends NotificationDetailExtractor<LicenseLimitNotificationContent, LicenseLimitNotificationView> {
     @Autowired
     public LicenseLimitNotificationDetailExtractor(Gson gson) {
-        super(NotificationType.LICENSE_LIMIT, LicenseLimitNotificationContent.class, gson);
+        super(NotificationType.LICENSE_LIMIT, LicenseLimitNotificationView.class, gson);
     }
 
     @Override
