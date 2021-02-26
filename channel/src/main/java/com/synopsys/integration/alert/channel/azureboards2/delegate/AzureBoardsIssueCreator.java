@@ -68,13 +68,14 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
             WorkItemResponseModel workItem = workItemService.createWorkItem(organizationName, distributionDetails.getProjectNameOrId(), distributionDetails.getWorkItemType(), workItemCreationRequest);
             return extractIssueDetails(workItem);
         } catch (HttpServiceException e) {
-            throw new AlertException(String.format("Failed to create a work item in Azure Boards"), e);
+            throw new AlertException("Failed to create a work item in Azure Boards", e);
         }
     }
 
     @Override
     protected void assignAlertSearchProperties(ExistingIssueDetails<Integer> createdIssueDetails, ProjectIssueModel alertIssueSource) {
         // Although we can make this request here, it is more efficient to do this while creating the issue.
+        // See the note in the method that creates the WorkItemRequest for more details.
     }
 
     private WorkItemRequest createWorkItemCreationRequest(IssueCreationModel alertIssueCreationModel) {
@@ -86,6 +87,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         WorkItemElementOperationModel addDescriptionOp = createWorkItemAddOperation(WorkItemResponseFields.System_Description, alertIssueCreationModel.getDescription());
         requestElementOps.add(addDescriptionOp);
 
+        // Note: If a ProjectIssueModel is present, Alert Search Properties are assigned during issue-creation
         Optional<ProjectIssueModel> issueSource = alertIssueCreationModel.getSource();
         if (issueSource.isPresent()) {
             List<WorkItemElementOperationModel> alertSearchFieldOps = issuePropertiesManager.createWorkItemRequestCustomFieldOperations(issueSource.get());
