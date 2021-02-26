@@ -31,13 +31,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -50,7 +48,7 @@ import com.synopsys.integration.jira.common.model.components.TransitionComponent
 import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
-public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner<String> {
+public class JiraCloudIssueTransitioner extends IssueTrackerIssueTransitioner<String> {
     public static final String TODO_STATUS_CATEGORY_KEY = "new";
     public static final String DONE_STATUS_CATEGORY_KEY = "done";
 
@@ -58,51 +56,20 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
 
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
-    private final IssueTrackerIssueResponseCreator<String> issueResponseCreator;
-    private final JiraCloudIssueCommenter jiraCloudIssueCommenter;
 
     public JiraCloudIssueTransitioner(
-        JiraCloudJobDetailsModel distributionDetails,
-        IssueService issueService,
+        JiraCloudIssueCommenter jiraCloudIssueCommenter,
         IssueTrackerIssueResponseCreator<String> issueResponseCreator,
-        JiraCloudIssueCommenter jiraCloudIssueCommenter
+        JiraCloudJobDetailsModel distributionDetails,
+        IssueService issueService
     ) {
+        super(jiraCloudIssueCommenter, issueResponseCreator);
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
-        this.issueResponseCreator = issueResponseCreator;
-        this.jiraCloudIssueCommenter = jiraCloudIssueCommenter;
     }
 
     @Override
-    public Optional<IssueTrackerIssueResponseModel> transitionIssue(IssueTransitionModel<String> issueTransitionModel) throws AlertException {
-        IssueOperation issueOperation = issueTransitionModel.getIssueOperation();
-        ExistingIssueDetails<String> existingIssueDetails = issueTransitionModel.getExistingIssueDetails();
-        String issueKey = existingIssueDetails.getIssueKey();
-
-        Optional<IssueTrackerIssueResponseModel> transitionResponse = Optional.empty();
-
-        Optional<String> optionalTransitionName = retrieveJobTransitionName(issueOperation);
-        if (optionalTransitionName.isPresent()) {
-            String transitionName = optionalTransitionName.get();
-
-            boolean shouldAttemptTransition = isTransitionRequired(issueKey, issueOperation);
-            if (shouldAttemptTransition) {
-                findAndPerformTransition(issueKey, transitionName);
-                jiraCloudIssueCommenter.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
-                IssueTrackerIssueResponseModel transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
-                transitionResponse = Optional.of(transitionResponseModel);
-            } else {
-                logger.debug("The issue {} is already in the status category that would result from this transition ({}).", issueKey, transitionName);
-            }
-        } else {
-            logger.debug("No transition name was provided so no '{}' transition will be performed. Issue Key: {}", issueOperation.name(), issueKey);
-        }
-
-        jiraCloudIssueCommenter.addComments(issueKey, issueTransitionModel.getPostTransitionComments());
-        return transitionResponse;
-    }
-
-    private Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {
+    protected Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {
         String transitionName;
         if (IssueOperation.OPEN.equals(transitionType)) {
             transitionName = distributionDetails.getReopenTransition();
@@ -112,8 +79,9 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
         return Optional.ofNullable(transitionName).filter(StringUtils::isNotBlank);
     }
 
-    private boolean isTransitionRequired(String issueKey, IssueOperation issueTransitionType) throws AlertException {
-        StatusCategory issueStatusCategory = retrieveIssueStatusCategory(issueKey);
+    @Override
+    protected boolean isTransitionRequired(ExistingIssueDetails<String> existingIssueDetails, IssueOperation issueTransitionType) throws AlertException {
+        StatusCategory issueStatusCategory = retrieveIssueStatusCategory(existingIssueDetails.getIssueKey());
         String statusCategoryKey = issueStatusCategory.getKey();
         if (IssueOperation.OPEN.equals(issueTransitionType)) {
             // Should reopen?
@@ -134,7 +102,9 @@ public class JiraCloudIssueTransitioner implements IssueTrackerIssueTransitioner
         }
     }
 
-    private void findAndPerformTransition(String issueKey, String transitionName) throws AlertException {
+    @Override
+    protected void findAndPerformTransition(ExistingIssueDetails<String> existingIssueDetails, String transitionName) throws AlertException {
+        String issueKey = existingIssueDetails.getIssueKey();
         logger.debug("Attempting the transition '{}' on the issue '{}'", transitionName, issueKey);
         List<TransitionComponent> issueTransitions = retrieveTransitions(issueKey);
         Optional<IdComponent> foundTransitionId = findTransitionIdByTransitionName(issueTransitions, transitionName);

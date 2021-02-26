@@ -112,7 +112,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         // Message Sender Requirements
         JiraCloudIssueCommenter issueCommenter = new JiraCloudIssueCommenter(issueResponseCreator, distributionDetails, issueService);
-        JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(distributionDetails, issueService, issueResponseCreator, issueCommenter);
+        JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(issueCommenter, issueResponseCreator, distributionDetails, issueService);
         JiraCloudIssueCreator issueCreator = createIssueCreator(distributionDetails, jiraCloudServiceFactory, issuePropertiesManager, issueService, issueCommenter);
 
         // Extractor Requirement
