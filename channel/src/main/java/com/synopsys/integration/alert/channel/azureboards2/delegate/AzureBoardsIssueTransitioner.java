@@ -104,13 +104,18 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
         Optional<String> optionalCurrentState = fieldsWrapper.getField(WorkItemResponseFields.System_State);
         if (optionalCurrentState.isPresent()) {
             String workItemStateCategory = stateNameToCategory.get(optionalCurrentState.get());
-            if (IssueOperation.OPEN.equals(issueOperation) && WORK_ITEM_STATE_CATEGORY_PROPOSED.equals(workItemStateCategory)) {
-                return false;
-            } else if (IssueOperation.RESOLVE.equals(issueOperation) && WORK_ITEM_STATE_CATEGORY_COMPLETED.equals(workItemStateCategory)) {
-                return false;
+            boolean isOpen = WORK_ITEM_STATE_CATEGORY_PROPOSED.equals(workItemStateCategory);
+            boolean isResolved = WORK_ITEM_STATE_CATEGORY_COMPLETED.equals(workItemStateCategory);
+
+            if (IssueOperation.OPEN.equals(issueOperation)) {
+                return !isOpen;
+            } else if (IssueOperation.RESOLVE.equals(issueOperation)) {
+                return !isResolved;
             } else {
                 return true;
             }
+        } else {
+            logger.warn("Could not get the work item state. Work Item ID: {}", issueId);
         }
         return false;
     }
