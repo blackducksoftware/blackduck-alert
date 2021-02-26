@@ -45,8 +45,8 @@ public class NotificationReceiverV2 extends MessageReceiver<NotificationReceived
     public static final String COMPONENT_NAME = "notification_receiverV2";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private NotificationAccessor notificationAccessor;
-    private NotificationProcessorV2 notificationProcessor;
+    private final NotificationAccessor notificationAccessor;
+    private final NotificationProcessorV2 notificationProcessor;
 
     @Autowired
     public NotificationReceiverV2(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessorV2 notificationProcessor) {
@@ -68,13 +68,9 @@ public class NotificationReceiverV2 extends MessageReceiver<NotificationReceived
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Sending {} notifications.", notifications.size());
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-            //logger.info("Sending {} events for notifications.", distributionEvents.size());
-            //eventManager.sendEvents(distributionEvents);
-            //TODO: This may be better moved into the notificationProcessor once the notifications are sent out and processed.
-            notificationAccessor.setNotificationsProcessed(notifications);
             numPagesProcessed++;
             pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
-            logger.info("Processing Page: {}. New pages found: {}", //TODO set this back to trace level logging
+            logger.trace("Processing Page: {}. New pages found: {}",
                 numPagesProcessed,
                 pageOfAlertNotificationModels.getTotalPages());
         }

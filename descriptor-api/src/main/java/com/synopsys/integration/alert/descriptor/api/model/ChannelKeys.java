@@ -40,7 +40,7 @@ public final class ChannelKeys {
     public static final JiraServerChannelKey JIRA_SERVER = new JiraServerChannelKey();
     public static final MsTeamsKey MS_TEAMS = new MsTeamsKey();
     public static final SlackChannelKey SLACK = new SlackChannelKey();
-    //TODO remove this:
+    //FIXME: these ChannelKeys are used for testing the NotificationReceiverV2. These must be removed before releasing 6.5.0.
     public static final SlackChannelKeyV2 SLACK_V2 = new SlackChannelKeyV2();
 
     private static final Map<String, ChannelKey> KEYS = new HashMap<>();
@@ -60,7 +60,7 @@ public final class ChannelKeys {
         ChannelKeys.putKey(ChannelKeys.JIRA_SERVER);
         ChannelKeys.putKey(ChannelKeys.MS_TEAMS);
         ChannelKeys.putKey(ChannelKeys.SLACK);
-        //TODO remove this:
+        //FIXME: these ChannelKeys are used for testing the NotificationReceiverV2. These must be removed before releasing 6.5.0.
         ChannelKeys.putKey(ChannelKeys.SLACK_V2);
     }
 

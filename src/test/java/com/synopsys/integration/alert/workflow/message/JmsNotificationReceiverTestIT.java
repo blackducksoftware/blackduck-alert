@@ -30,7 +30,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEventV2;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -135,13 +134,10 @@ public class JmsNotificationReceiverTestIT {
         //      Sending events: EventManager
         //      Receiving events: NotificationReceiver or DistributionChannel
         //      Processing notifications: NotificationReceiver
-        NotificationReceivedEvent notificationReceivedEvent = new NotificationReceivedEvent();
-        //eventManager.sendEvent(notificationReceivedEvent);
-
         NotificationReceivedEventV2 notificationReceivedEventV2 = new NotificationReceivedEventV2();
         eventManager.sendEvent(notificationReceivedEventV2);
 
-        Thread.sleep(1200000);
+        Thread.sleep(120000);
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(String uniqueJobName, SlackJobDetailsModel slackJobDetailsModel) {
@@ -150,8 +146,7 @@ public class JmsNotificationReceiverTestIT {
             uniqueJobName,
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
-            //ChannelKeys.SLACK.getUniversalKey(), //For old notificationProcessor
-            ChannelKeys.SLACK_V2.getUniversalKey(), //TODO: For a test, remove the _V2 in master
+            ChannelKeys.SLACK_V2.getUniversalKey(), //FIXME: For a test, remove the _V2 in master
             blackDuckGlobalConfigId,
             false,
             ".*",
@@ -178,8 +173,7 @@ public class JmsNotificationReceiverTestIT {
         projectNotificationContent.setOperationType(OperationType.CREATE);
         ProjectNotificationView projectNotificationView = new ProjectNotificationView();
         projectNotificationView.setContent(projectNotificationContent);
-        //String content = gson.toJson(projectNotificationView);
-        String content = gson.toJson(projectNotificationContent); //Required for NotificationProcessorV2
+        String content = gson.toJson(projectNotificationView);
 
         return new AlertNotificationModel(id, blackDuckGlobalConfigId, "provider_blackduck", "DELETED CONFIGURATION", NotificationType.PROJECT.name(), content, DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(), processed);

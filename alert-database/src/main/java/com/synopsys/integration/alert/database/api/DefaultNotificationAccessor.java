@@ -23,10 +23,12 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -189,6 +191,12 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
                                                             .collect(Collectors.toList());
         notificationEntities.forEach(NotificationEntity::setProcessedToTrue);
         notificationContentRepository.saveAll(notificationEntities);
+    }
+
+    @Override
+    public void setNotificationsProcessedById(Set<Long> notificationIds) {
+        List<AlertNotificationModel> notificationModels = findByIds(new ArrayList<>(notificationIds));
+        setNotificationsProcessed(notificationModels);
     }
 
     private void deleteAuditEntries(Long notificationId) {

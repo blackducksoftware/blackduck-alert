@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
@@ -57,6 +58,7 @@ public final class NotificationProcessorV2 {
     private final ProjectMessageSummarizer projectMessageSummarizer;
     private final ProviderMessageDistributor providerMessageDistributor;
     private final List<NotificationProcessingLifecycleCache> lifecycleCaches;
+    private final NotificationAccessor notificationAccessor;
 
     @Autowired
     protected NotificationProcessorV2(
@@ -66,8 +68,8 @@ public final class NotificationProcessorV2 {
         ProjectMessageDigester projectMessageDigester,
         ProjectMessageSummarizer projectMessageSummarizer,
         ProviderMessageDistributor providerMessageDistributor,
-        List<NotificationProcessingLifecycleCache> lifecycleCaches
-    ) {
+        List<NotificationProcessingLifecycleCache> lifecycleCaches,
+        NotificationAccessor notificationAccessor) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.jobNotificationMapper = jobNotificationMapper;
         this.providerMessageExtractionDelegator = providerMessageExtractionDelegator;
@@ -75,6 +77,7 @@ public final class NotificationProcessorV2 {
         this.projectMessageSummarizer = projectMessageSummarizer;
         this.providerMessageDistributor = providerMessageDistributor;
         this.lifecycleCaches = lifecycleCaches;
+        this.notificationAccessor = notificationAccessor;
     }
 
     public final void processNotifications(List<AlertNotificationModel> notifications) {
@@ -107,6 +110,7 @@ public final class NotificationProcessorV2 {
             ProviderMessageHolder providerMessageHolder = processJobNotifications(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
             providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
+            notificationAccessor.setNotificationsProcessedById(notificationIds);
         }
     }
 
