@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -57,6 +59,17 @@ public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
 
     protected abstract boolean isCommentingEnabled();
 
-    protected abstract void addComments(IssueCommentModel<T> issueCommentModel) throws AlertException;
+    protected abstract void addComment(String comment, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel source) throws AlertException;
+
+    protected void addComments(IssueCommentModel<T> issueCommentModel) throws AlertException {
+        if (!isCommentingEnabled()) {
+            logger.debug(COMMENTING_DISABLED_MESSAGE);
+            return;
+        }
+
+        for (String comment : issueCommentModel.getComments()) {
+            addComment(comment, issueCommentModel.getExistingIssueDetails(), issueCommentModel.getSource());
+        }
+    }
 
 }

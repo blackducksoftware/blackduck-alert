@@ -27,16 +27,17 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.blackduck.api.manual.contract.NotificationContentData;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public abstract class NotificationDetailExtractor<T extends NotificationContentComponent> {
+public abstract class NotificationDetailExtractor<T extends NotificationContentComponent, U extends NotificationContentData<T>> {
     private final NotificationType notificationType;
-    private final Class<T> notificationClass;
+    private final Class<U> notificationViewClass;
     private final Gson gson;
 
-    public NotificationDetailExtractor(NotificationType notificationType, Class<T> notificationClass, Gson gson) {
+    public NotificationDetailExtractor(NotificationType notificationType, Class<U> notificationViewClass, Gson gson) {
         this.notificationType = notificationType;
-        this.notificationClass = notificationClass;
+        this.notificationViewClass = notificationViewClass;
         this.gson = gson;
     }
 
@@ -45,7 +46,8 @@ public abstract class NotificationDetailExtractor<T extends NotificationContentC
     }
 
     public final List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel) {
-        T notificationContent = gson.fromJson(alertNotificationModel.getContent(), notificationClass);
+        U notificationView = gson.fromJson(alertNotificationModel.getContent(), notificationViewClass);
+        T notificationContent = notificationView.getContent();
         return extractDetailedContent(alertNotificationModel, notificationContent);
     }
 

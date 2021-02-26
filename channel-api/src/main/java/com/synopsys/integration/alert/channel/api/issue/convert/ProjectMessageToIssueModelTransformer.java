@@ -24,9 +24,13 @@ package com.synopsys.integration.alert.channel.api.issue.convert;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
@@ -34,18 +38,16 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 
 public final class ProjectMessageToIssueModelTransformer {
     public static List<ProjectIssueModel> convertToIssueModels(ProjectMessage projectMessage) {
-        return projectMessage.getBomComponents()
-                   .stream()
-                   .map(ProjectMessageToIssueModelTransformer::flattenToSingleConcernType)
-                   .flatMap(List::stream)
-                   .map(flattenedDetails -> copyFromProjectMessage(projectMessage, flattenedDetails))
-                   .collect(Collectors.toList());
-
+        List<ProjectIssueModel> projectIssueModels = new LinkedList<>();
+        for (BomComponentDetails bomComponent : projectMessage.getBomComponents()) {
+            IssueBomComponentDetails issueBomComponent = IssueBomComponentDetails.fromBomComponentDetails(bomComponent);
+            List<ProjectIssueModel> projectIssueModelsForConcerns = convertToIssueModels(projectMessage, issueBomComponent, bomComponent.getComponentConcerns());
+            projectIssueModels.addAll(projectIssueModelsForConcerns);
+        }
+        return projectIssueModels;
     }
 
-    private static List<BomComponentDetails> flattenToSingleConcernType(BomComponentDetails bomComponentDetails) {
-        List<ComponentConcern> componentConcerns = bomComponentDetails.getComponentConcerns();
-
+    private static List<ProjectIssueModel> convertToIssueModels(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> componentConcerns) {
         List<ComponentConcern> policyConcerns = new LinkedList<>();
         List<ComponentConcern> vulnerabilityConcerns = new LinkedList<>();
 
@@ -57,39 +59,61 @@ public final class ProjectMessageToIssueModelTransformer {
             }
         }
 
-        List<BomComponentDetails> flattenedDetails = new LinkedList<>();
+        List<ProjectIssueModel> projectIssueModels = new LinkedList<>();
 
         policyConcerns
             .stream()
-            .map(concern -> copyAndReplaceConcerns(bomComponentDetails, List.of(concern)))
-            .forEach(flattenedDetails::add);
+            .map(concern -> createPolicyProjectIssueModel(projectMessage, issueBomComponent, concern))
+            .forEach(projectIssueModels::add);
 
-        if (!vulnerabilityConcerns.isEmpty()) {
-            BomComponentDetails flattenedVulnerabilityConcern = copyAndReplaceConcerns(bomComponentDetails, vulnerabilityConcerns);
-            flattenedDetails.add(flattenedVulnerabilityConcern);
-        }
+        ProjectIssueModel vulnerabilityProjectIssueModel = createVulnerabilityProjectIssueModel(projectMessage, issueBomComponent, vulnerabilityConcerns);
+        projectIssueModels.add(vulnerabilityProjectIssueModel);
 
-        return flattenedDetails;
+        return projectIssueModels;
     }
 
-    private static ProjectIssueModel copyFromProjectMessage(ProjectMessage projectMessage, BomComponentDetails bomComponent) {
-        return new ProjectIssueModel(
+    private static ProjectIssueModel createPolicyProjectIssueModel(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, ComponentConcern policyConcern) {
+        IssuePolicyDetails policyDetails = new IssuePolicyDetails(policyConcern.getName(), policyConcern.getOperation(), policyConcern.getSeverity());
+        return ProjectIssueModel.policy(
             projectMessage.getProviderDetails(),
             projectMessage.getProject(),
-            projectMessage.getProjectVersion().orElse(ProjectIssueModelConverter.MISSING_PROJECT_VERSION_PLACEHOLDER),
-            bomComponent
+            projectMessage.getProjectVersion().orElse(null),
+            issueBomComponent,
+            policyDetails
         );
     }
 
-    private static BomComponentDetails copyAndReplaceConcerns(BomComponentDetails oldComponent, List<ComponentConcern> componentConcerns) {
-        return new BomComponentDetails(
-            oldComponent.getComponent(),
-            oldComponent.getComponentVersion().orElse(null),
-            componentConcerns,
-            oldComponent.getLicense(),
-            oldComponent.getUsage(),
-            oldComponent.getAdditionalAttributes(),
-            oldComponent.getBlackDuckIssuesUrl()
+    private static ProjectIssueModel createVulnerabilityProjectIssueModel(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> vulnerabilityConcerns) {
+        List<IssueVulnerabilityModel> issueVulnerabilitiesAdded = new LinkedList<>();
+        List<IssueVulnerabilityModel> issueVulnerabilitiesUpdated = new LinkedList<>();
+        List<IssueVulnerabilityModel> issueVulnerabilitiesDeleted = new LinkedList<>();
+
+        for (ComponentConcern vulnerabilityConcern : vulnerabilityConcerns) {
+            IssueVulnerabilityModel issueVulnerabilityModel = IssueVulnerabilityModel.fromComponentConcern(vulnerabilityConcern);
+
+            ItemOperation vulnOperation = vulnerabilityConcern.getOperation();
+            if (ItemOperation.ADD.equals(vulnOperation)) {
+                issueVulnerabilitiesAdded.add(issueVulnerabilityModel);
+            } else if (ItemOperation.DELETE.equals(vulnOperation)) {
+                issueVulnerabilitiesDeleted.add(issueVulnerabilityModel);
+            } else {
+                issueVulnerabilitiesUpdated.add(issueVulnerabilityModel);
+            }
+        }
+
+        IssueVulnerabilityDetails vulnerabilityDetails = new IssueVulnerabilityDetails(
+            // TODO cary this information from the processing level
+            false,
+            issueVulnerabilitiesAdded,
+            issueVulnerabilitiesUpdated,
+            issueVulnerabilitiesDeleted
+        );
+        return ProjectIssueModel.vulnerability(
+            projectMessage.getProviderDetails(),
+            projectMessage.getProject(),
+            projectMessage.getProjectVersion().orElse(null),
+            issueBomComponent,
+            vulnerabilityDetails
         );
     }
 

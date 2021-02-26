@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -20,27 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.msteams2;
+package com.synopsys.integration.alert.channel.api.issue.model;
 
-import java.util.List;
-
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 
-public class MSTeamsChannelMessageModel extends AlertSerializableModel {
-    private final String messageTitle;
-    private final List<MSTeamsChannelMessageSection> messageSections;
+public class IssuePolicyDetails extends AlertSerializableModel {
+    private final String name;
+    private final ItemOperation operation;
+    private final ComponentConcernSeverity severity;
 
-    public MSTeamsChannelMessageModel(String messageTitle, List<MSTeamsChannelMessageSection> messageSections) {
-        this.messageTitle = messageTitle;
-        this.messageSections = messageSections;
+    public IssuePolicyDetails(String name, ItemOperation operation, ComponentConcernSeverity severity) {
+        this.name = name;
+        this.operation = operation;
+        this.severity = severity;
     }
 
-    public String getTitle() {
-        return messageTitle;
+    public String getName() {
+        return name;
     }
 
-    public List<MSTeamsChannelMessageSection> getSections() {
-        return messageSections;
+    public ItemOperation getOperation() {
+        return operation;
+    }
+
+    public ComponentConcernSeverity getSeverity() {
+        return severity;
     }
 
 }

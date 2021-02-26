@@ -20,22 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.jira2.common;
+package com.synopsys.integration.alert.channel.msteams2;
 
-import org.apache.commons.lang3.StringUtils;
+public class MSTeamsChannelMessageSection {
+    private final String sectionTitle;
+    private final String content;
 
-import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
-
-public class JiraIssueSearchPropertyStringCompatibilityUtils {
-    public static String createCategory(ComponentConcernType concernType) {
-        return StringUtils.capitalize(concernType.name().toLowerCase());
+    public MSTeamsChannelMessageSection(String sectionTitle, String content) {
+        this.sectionTitle = sectionTitle;
+        this.content = content;
     }
 
-    public static String createPolicyAdditionalKey(String policyName) {
-        return String.format("Policy Violated%s", policyName);
+    public String getTitle() {
+        return sectionTitle;
     }
 
-    private JiraIssueSearchPropertyStringCompatibilityUtils() {
+    public String getContent() {
+        return content;
     }
 
 }
