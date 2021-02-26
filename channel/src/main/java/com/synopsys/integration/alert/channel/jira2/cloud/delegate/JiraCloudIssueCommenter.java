@@ -27,7 +27,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
@@ -53,13 +53,6 @@ public class JiraCloudIssueCommenter extends IssueTrackerIssueCommenter<String> 
         addComments(issueKey, List.of(comment));
     }
 
-    @Override
-    public void addComments(IssueCommentModel<String> issueCommentModel) throws AlertException {
-        ExistingIssueDetails<String> existingIssueDetails = issueCommentModel.getExistingIssueDetails();
-        String issueKey = existingIssueDetails.getIssueKey();
-        addComments(issueKey, issueCommentModel.getComments());
-    }
-
     public void addComments(String issueKey, List<String> comments) throws AlertException {
         if (!isCommentingEnabled()) {
             logger.debug(COMMENTING_DISABLED_MESSAGE);
@@ -79,6 +72,16 @@ public class JiraCloudIssueCommenter extends IssueTrackerIssueCommenter<String> 
     @Override
     protected boolean isCommentingEnabled() {
         return distributionDetails.isAddComments();
+    }
+
+    @Override
+    protected void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, ProjectIssueModel source) throws AlertException {
+        try {
+            IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), comment);
+            issueService.addComment(issueCommentRequestModel);
+        } catch (IntegrationException e) {
+            throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", existingIssueDetails.getIssueKey()), e);
+        }
     }
 
 }
