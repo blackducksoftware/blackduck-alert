@@ -123,6 +123,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
 
         return new JiraCloudIssueCreator(
+            jiraCloudChannelKey,
             distributionDetails,
             issueService,
             projectService,

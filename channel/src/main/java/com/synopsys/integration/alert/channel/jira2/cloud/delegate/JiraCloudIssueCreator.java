@@ -10,13 +10,11 @@ package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
@@ -27,13 +25,11 @@ import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtili
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueSearchPropertyStringCompatibilityUtils;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
@@ -47,19 +43,16 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
+public class JiraCloudIssueCreator extends IssueTrackerIssueCreator<String> {
     private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
     private final ProjectService projectService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
-    private final JiraCloudIssueCommenter jiraCloudIssueCommenter;
     private final JiraCloudIssueAlertPropertiesManager issuePropertiesManager;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
-    private final AlertIssueOriginCreator alertIssueOriginCreator;
 
     public JiraCloudIssueCreator(
+        JiraCloudChannelKey jiraCloudChannelKey,
         JiraCloudJobDetailsModel distributionDetails,
         IssueService issueService,
         ProjectService projectService,
@@ -69,18 +62,43 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
         JiraErrorMessageUtility jiraErrorMessageUtility,
         AlertIssueOriginCreator alertIssueOriginCreator
     ) {
+        super(jiraCloudChannelKey, jiraCloudIssueCommenter, alertIssueOriginCreator);
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
         this.projectService = projectService;
         this.jiraIssueCreationRequestCreator = jiraIssueCreationRequestCreator;
-        this.jiraCloudIssueCommenter = jiraCloudIssueCommenter;
         this.issuePropertiesManager = issuePropertiesManager;
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
-        this.alertIssueOriginCreator = alertIssueOriginCreator;
     }
 
     @Override
-    public IssueTrackerIssueResponseModel createIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
+    protected ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
+        IssueCreationRequestModel creationRequest = createIssueCreationRequest(alertIssueCreationModel);
+        try {
+            IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(creationRequest);
+            IssueResponseModel createdIssue = issueService.getIssue(issueCreationResponseModel.getKey());
+
+            IssueFieldsComponent createdIssueFields = createdIssue.getFields();
+            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), createdIssue.getSelf());
+        } catch (IntegrationRestException restException) {
+            throw jiraErrorMessageUtility.improveRestException(restException, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
+        } catch (IntegrationException intException) {
+            throw new AlertException("Failed to create an issue in Jira.", intException);
+        }
+    }
+
+    @Override
+    protected void assignAlertSearchProperties(ExistingIssueDetails<String> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException {
+        JiraIssueSearchProperties searchProperties = createSearchProperties(alertIssueSource);
+        issuePropertiesManager.assignIssueProperties(createdIssueDetails.getIssueKey(), searchProperties);
+    }
+
+    @Override
+    protected String createUserFriendlyIssueLink(ExistingIssueDetails<String> issueDetails) {
+        return JiraCallbackUtils.createUILink(issueDetails.getIssueLink(), issueDetails.getIssueKey());
+    }
+
+    private IssueCreationRequestModel createIssueCreationRequest(IssueCreationModel alertIssueCreationModel) throws AlertException {
         ProjectComponent jiraProject = retrieveProjectComponent();
         JiraCustomFieldReplacementValues replacementValues = alertIssueCreationModel.getSource()
                                                                  .map(this::createCustomFieldReplacementValues)
@@ -93,45 +111,13 @@ public class JiraCloudIssueCreator implements IssueTrackerIssueCreator {
             replacementValues,
             distributionDetails.getCustomFields()
         );
-        IssueCreationRequestModel creationRequestModel = new IssueCreationRequestModel(
+        return new IssueCreationRequestModel(
             distributionDetails.getIssueCreatorEmail(),
             distributionDetails.getIssueType(),
             distributionDetails.getProjectNameOrKey(),
             fieldsBuilder,
             List.of()
         );
-        return createIssue(alertIssueCreationModel, creationRequestModel);
-    }
-
-    private IssueTrackerIssueResponseModel createIssue(IssueCreationModel alertIssueModel, IssueCreationRequestModel creationRequest) throws AlertException {
-        IssueResponseModel createdIssue;
-        AlertIssueOrigin issueOrigin = null;
-        try {
-            IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(creationRequest);
-            createdIssue = issueService.getIssue(issueCreationResponseModel.getKey());
-
-            String issueKey = createdIssue.getKey();
-            logger.debug("Created new Jira Cloud issue: {}", issueKey);
-
-            Optional<ProjectIssueModel> optionalSource = alertIssueModel.getSource();
-            if (optionalSource.isPresent()) {
-                ProjectIssueModel alertIssueSource = optionalSource.get();
-                JiraIssueSearchProperties searchProperties = createSearchProperties(alertIssueSource);
-                issuePropertiesManager.assignIssueProperties(issueKey, searchProperties);
-                issueOrigin = alertIssueOriginCreator.createIssueOrigin(alertIssueSource);
-            }
-
-            jiraCloudIssueCommenter.addComment(issueKey, "This issue was automatically created by Alert.");
-            jiraCloudIssueCommenter.addComments(issueKey, alertIssueModel.getPostCreateComments());
-        } catch (IntegrationRestException restException) {
-            throw jiraErrorMessageUtility.improveRestException(restException, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
-        } catch (IntegrationException intException) {
-            throw new AlertException("Failed to create an issue in Jira.", intException);
-        }
-
-        String issueCallbackLink = JiraCallbackUtils.createUILink(createdIssue);
-        IssueFieldsComponent issueFields = createdIssue.getFields();
-        return new IssueTrackerIssueResponseModel(issueOrigin, createdIssue.getKey(), issueCallbackLink, issueFields.getSummary(), IssueOperation.OPEN);
     }
 
     private ProjectComponent retrieveProjectComponent() throws AlertException {
