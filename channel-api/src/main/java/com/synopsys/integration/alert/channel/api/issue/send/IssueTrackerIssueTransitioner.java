@@ -41,7 +41,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
     private final IssueTrackerIssueCommenter<T> commenter;
     private final IssueTrackerIssueResponseCreator<T> issueResponseCreator;
 
-    public IssueTrackerIssueTransitioner(IssueTrackerIssueCommenter<T> commenter, IssueTrackerIssueResponseCreator<T> issueResponseCreator) {
+    protected IssueTrackerIssueTransitioner(IssueTrackerIssueCommenter<T> commenter, IssueTrackerIssueResponseCreator<T> issueResponseCreator) {
         this.commenter = commenter;
         this.issueResponseCreator = issueResponseCreator;
     }

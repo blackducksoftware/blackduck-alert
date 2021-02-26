@@ -70,10 +70,10 @@ public class JiraCloudIssueTransitioner extends IssueTrackerIssueTransitioner<St
 
     @Override
     protected Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {
-        String transitionName;
+        String transitionName = null;
         if (IssueOperation.OPEN.equals(transitionType)) {
             transitionName = distributionDetails.getReopenTransition();
-        } else {
+        } else if (IssueOperation.RESOLVE.equals(transitionType)) {
             transitionName = distributionDetails.getResolveTransition();
         }
         return Optional.ofNullable(transitionName).filter(StringUtils::isNotBlank);
