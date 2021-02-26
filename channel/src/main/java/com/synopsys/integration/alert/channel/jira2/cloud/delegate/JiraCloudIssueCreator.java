@@ -77,9 +77,10 @@ public class JiraCloudIssueCreator extends IssueTrackerIssueCreator<String> {
         try {
             IssueCreationResponseModel issueCreationResponseModel = issueService.createIssue(creationRequest);
             IssueResponseModel createdIssue = issueService.getIssue(issueCreationResponseModel.getKey());
-
             IssueFieldsComponent createdIssueFields = createdIssue.getFields();
-            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), createdIssue.getSelf());
+
+            String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
+            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink);
         } catch (IntegrationRestException restException) {
             throw jiraErrorMessageUtility.improveRestException(restException, JiraCloudDescriptor.KEY_ISSUE_CREATOR, creationRequest.getReporterEmail());
         } catch (IntegrationException intException) {
@@ -91,11 +92,6 @@ public class JiraCloudIssueCreator extends IssueTrackerIssueCreator<String> {
     protected void assignAlertSearchProperties(ExistingIssueDetails<String> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException {
         JiraIssueSearchProperties searchProperties = createSearchProperties(alertIssueSource);
         issuePropertiesManager.assignIssueProperties(createdIssueDetails.getIssueKey(), searchProperties);
-    }
-
-    @Override
-    protected String createUserFriendlyIssueLink(ExistingIssueDetails<String> issueDetails) {
-        return JiraCallbackUtils.createUILink(issueDetails.getIssueLink(), issueDetails.getIssueKey());
     }
 
     private IssueCreationRequestModel createIssueCreationRequest(IssueCreationModel alertIssueCreationModel) throws AlertException {

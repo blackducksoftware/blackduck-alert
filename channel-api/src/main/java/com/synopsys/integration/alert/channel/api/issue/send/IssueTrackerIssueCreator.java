@@ -63,15 +63,12 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
             issueOrigin = alertIssueOriginCreator.createIssueOrigin(alertIssueSource);
         }
 
-        String userFriendlyLink = createUserFriendlyIssueLink(createdIssueDetails);
-        return new IssueTrackerIssueResponseModel(issueOrigin, createdIssueDetails.getIssueKey(), userFriendlyLink, createdIssueDetails.getIssueSummary(), IssueOperation.OPEN);
+        return new IssueTrackerIssueResponseModel(issueOrigin, createdIssueDetails.getIssueKey(), createdIssueDetails.getIssueUILink(), createdIssueDetails.getIssueSummary(), IssueOperation.OPEN);
     }
 
     protected abstract ExistingIssueDetails<T> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException;
 
     protected abstract void assignAlertSearchProperties(ExistingIssueDetails<T> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException;
-
-    protected abstract String createUserFriendlyIssueLink(ExistingIssueDetails<T> issueDetails);
 
     private void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, ProjectIssueModel projectSource) throws AlertException {
         LinkedList<String> postCreateComments = new LinkedList<>(creationModel.getPostCreateComments());
