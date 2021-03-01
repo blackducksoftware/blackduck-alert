@@ -65,6 +65,9 @@ postgres:
   podSecurityContext: {}
   securityContext: {}
   resources: {}
+  #TODO:
+  # dbCredentialSecretName: "" #Secret that contains both the regular username & password
+  # dbAdminCredentialSecretName: "" #Secret that contains both the admin username & password
 
 # image pull secret to download images (mostly applicable for air gapped customers)
 imagePullSecrets: [] # array of strings delimited by comma

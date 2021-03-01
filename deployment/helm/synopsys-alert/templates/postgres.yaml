@@ -83,6 +83,7 @@ spec:
           value: "300"
         - name: POSTGRESQL_SHARED_BUFFERS
           value: 1024MB
+        #TODO: if the secret name is defined don't run lines below
         - name: POSTGRESQL_USER
           valueFrom:
             configMapKeyRef:
@@ -103,11 +104,13 @@ spec:
             configMapKeyRef:
               key: ALERT_DB_PORT
               name: {{ .Release.Name }}-db-config
+        #TODO: if the secret name is defined don't run lines below
         - name: POSTGRESQL_PASSWORD
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
+        #TODO: if the secret name is defined don't run lines below
         - name: POSTGRESQL_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -150,6 +153,13 @@ spec:
         volumeMounts:
           - mountPath: /var/lib/pgsql/data
             name: alert-postgres-data-volume
+          #TODO: Similar to alert.yaml, we need to set the mount paths for postgres
+          # {{- if .Values.postgres.<regular database user (un/pw)> }}
+          #- mountPath: /var/lib/pgsql/data
+          #  name: #TODO need to figure out how to map a defined secret to the volume
+          #  subPath: ALERT_DB_USERNAME
+          #- mountPath: /var/lib/pgsql/data
+          #  name: #TODO need to figure out how to map a defined secret to the volume
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.postgres.nodeSelector }}
@@ -184,3 +194,19 @@ spec:
   name: alert-postgres-data-volume
 {{- end -}}
 {{- end -}}
+
+#TODO define the secrets (copied from the other file)
+      #   We will need to research how to map these to the environment variables above
+      #TODO: We may not need to set this default mode?
+      # {{- .Values.postgres.<regular database user (un/pw)> }}
+      #- name: db_credentials
+      #  secret:
+      #    defaultMode: 292
+      #    secretName: {{ .Values.postgres.<regular database user (un/pw)> }}
+      #{{- end }}
+      # {{- .Values.postgres.<admin database user (un/pw)> }}
+      #- name: db_admin_credentials
+      #  secret:
+      #    defaultMode: 292
+      #    secretName: {{ .Values.postgres.<admin database user (un/pw)> }}
+      #{{- end }}
