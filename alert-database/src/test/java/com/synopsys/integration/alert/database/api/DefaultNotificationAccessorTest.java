@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -321,6 +322,24 @@ public class DefaultNotificationAccessorTest {
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, configurationAccessor);
         notificationManager.setNotificationsProcessed(List.of(alertNotificationModel));
+
+        Mockito.verify(notificationContentRepository).saveAll(Mockito.any());
+    }
+
+    @Test
+    public void setNotificationsProcessedByIdTest() {
+        NotificationEntity notificationEntity = new NotificationEntity(id, DateUtils.createCurrentDateTimestamp(), provider, providerConfigId, DateUtils.createCurrentDateTimestamp(), notificationType, content, false);
+        ConfigurationModel configurationModel = createConfigurationModel();
+        Set<Long> notificationIds = Set.of(1L);
+
+        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
+        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+
+        Mockito.when(notificationContentRepository.findAllById(Mockito.any())).thenReturn(List.of(notificationEntity));
+        Mockito.when(configurationAccessor.getConfigurationById(Mockito.any())).thenReturn(Optional.of(configurationModel));
+
+        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, configurationAccessor);
+        notificationManager.setNotificationsProcessedById(notificationIds);
 
         Mockito.verify(notificationContentRepository).saveAll(Mockito.any());
     }
