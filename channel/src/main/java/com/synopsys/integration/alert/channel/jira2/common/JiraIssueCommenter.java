@@ -33,17 +33,17 @@ import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCo
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
+import com.synopsys.integration.function.ThrowingConsumer;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 
 public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final IssueService issueService;
+    private final ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer;
 
-    public JiraIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, IssueService issueService) {
+    protected JiraIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer) {
         super(issueResponseCreator);
-        this.issueService = issueService;
+        this.addCommentConsumer = addCommentConsumer;
     }
 
     public final void addComment(String issueKey, String comment) throws AlertException {
@@ -59,7 +59,7 @@ public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<Stri
         for (String comment : comments) {
             IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
             try {
-                issueService.addComment(issueCommentRequestModel);
+                addCommentConsumer.accept(issueCommentRequestModel);
             } catch (IntegrationException e) {
                 throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", issueKey), e);
             }
@@ -70,7 +70,7 @@ public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<Stri
     protected final void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, ProjectIssueModel source) throws AlertException {
         try {
             IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), comment);
-            issueService.addComment(issueCommentRequestModel);
+            addCommentConsumer.accept(issueCommentRequestModel);
         } catch (IntegrationException e) {
             throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", existingIssueDetails.getIssueKey()), e);
         }

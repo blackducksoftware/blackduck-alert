@@ -16,7 +16,7 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter {
     private final JiraCloudJobDetailsModel distributionDetails;
 
     public JiraCloudIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, IssueService issueService, JiraCloudJobDetailsModel distributionDetails) {
-        super(issueResponseCreator, issueService);
+        super(issueResponseCreator, issueService::addComment);
         this.distributionDetails = distributionDetails;
     }
 

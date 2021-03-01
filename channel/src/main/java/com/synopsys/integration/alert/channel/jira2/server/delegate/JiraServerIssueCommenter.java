@@ -25,13 +25,13 @@ package com.synopsys.integration.alert.channel.jira2.server.delegate;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCommenter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
+import com.synopsys.integration.jira.common.server.service.IssueService;
 
 public class JiraServerIssueCommenter extends JiraIssueCommenter {
     private final JiraServerJobDetailsModel distributionDetails;
 
     public JiraServerIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, IssueService issueService, JiraServerJobDetailsModel distributionDetails) {
-        super(issueResponseCreator, issueService);
+        super(issueResponseCreator, issueService::addComment);
         this.distributionDetails = distributionDetails;
     }
 
