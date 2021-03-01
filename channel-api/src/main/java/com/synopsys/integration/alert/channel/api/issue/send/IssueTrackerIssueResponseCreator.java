@@ -28,7 +28,7 @@ public class IssueTrackerIssueResponseCreator<T extends Serializable> {
         return new IssueTrackerIssueResponseModel(
             alertIssueOrigin,
             existingIssueDetails.getIssueKey(),
-            existingIssueDetails.getIssueLink(),
+            existingIssueDetails.getIssueUILink(),
             existingIssueDetails.getIssueSummary(),
             issueOperation
         );

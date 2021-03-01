@@ -15,13 +15,13 @@ public class ExistingIssueDetails<T extends Serializable> extends AlertSerializa
     private final T issueId;
     private final String issueKey;
     private final String issueSummary;
-    private final String issueLink;
+    private final String issueUILink;
 
-    public ExistingIssueDetails(T issueId, String issueKey, String issueSummary, String issueLink) {
+    public ExistingIssueDetails(T issueId, String issueKey, String issueSummary, String issueUILink) {
         this.issueId = issueId;
         this.issueKey = issueKey;
         this.issueSummary = issueSummary;
-        this.issueLink = issueLink;
+        this.issueUILink = issueUILink;
     }
 
     public T getIssueId() {
@@ -36,8 +36,8 @@ public class ExistingIssueDetails<T extends Serializable> extends AlertSerializa
         return issueSummary;
     }
 
-    public String getIssueLink() {
-        return issueLink;
+    public String getIssueUILink() {
+        return issueUILink;
     }
 
 }

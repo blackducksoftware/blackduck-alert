@@ -32,7 +32,7 @@ public class IssueTrackerMessageSender<T extends Serializable> {
     public final IssueTrackerResponse sendMessages(List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
         List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
         for (IssueTrackerModelHolder<T> channelMessage : channelMessages) {
-            List<IssueTrackerIssueResponseModel> creationResponses = sendMessages(channelMessage.getIssueCreationModels(), issueCreator::createIssue);
+            List<IssueTrackerIssueResponseModel> creationResponses = sendMessages(channelMessage.getIssueCreationModels(), issueCreator::createIssueTrackerIssue);
             responses.addAll(creationResponses);
 
             List<IssueTrackerIssueResponseModel> transitionResponses = sendOptionalMessages(channelMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
