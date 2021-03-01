@@ -44,15 +44,13 @@ public class AzureBoardsAlertIssuePropertiesManager {
         addStringField(customFields, AzureCustomFieldManager.ALERT_COMPONENT_KEY_FIELD_REFERENCE_NAME, componentKey);
         addStringField(customFields, AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME, subComponentKey);
 
-        String categoryKey;
+        String categoryKey = CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL;
 
         Optional<String> optionalPolicyName = alertIssueSource.getPolicyDetails().map(IssuePolicyDetails::getName);
         if (optionalPolicyName.isPresent()) {
             String additionalInfoKey = POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
             addStringField(customFields, AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, additionalInfoKey);
             categoryKey = CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL;
-        } else {
-            categoryKey = CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL;
         }
 
         addStringField(customFields, AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, categoryKey);
