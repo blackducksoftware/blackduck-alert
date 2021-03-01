@@ -16,26 +16,28 @@ import com.synopsys.integration.azure.boards.common.service.workitem.response.Wo
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public final class AzureBoardsWorkItemExtractionUtils {
+    private static final String UNKNOWN_VALUE = "Unknown";
+
     public static LinkableItem extractLinkableItem(WorkItemFieldsWrapper workItemFields, AzureFieldDefinition<String> fieldDefinition) {
         Optional<String> optionalFieldValue = workItemFields.getField(fieldDefinition);
         return optionalFieldValue
                    .map(AzureBoardsWorkItemExtractionUtils::extractLinkableItem)
-                   .orElseGet(() -> new LinkableItem("Unknown", "Unknown"));
+                   .orElseGet(() -> new LinkableItem(UNKNOWN_VALUE, UNKNOWN_VALUE));
     }
 
     public static LinkableItem extractLinkableItem(String fieldValue) {
-        String label = "Unknown";
-        String value = "Unknown";
+        String label = UNKNOWN_VALUE;
+        String value = UNKNOWN_VALUE;
         String url = null;
 
-        if (StringUtils.contains(fieldValue, ':')) {
-            label = StringUtils.substringBefore(fieldValue, ":");
-            value = StringUtils.substringAfter(fieldValue, ":");
+        if (StringUtils.contains(fieldValue, AzureBoardsSearchPropertiesUtils.LINKABLE_ITEM_DELIMITER)) {
+            label = StringUtils.substringBefore(fieldValue, AzureBoardsSearchPropertiesUtils.LINKABLE_ITEM_DELIMITER);
+            value = StringUtils.substringAfter(fieldValue, AzureBoardsSearchPropertiesUtils.LINKABLE_ITEM_DELIMITER);
         }
 
-        if (StringUtils.contains(value, '|')) {
-            String urlCandidate = StringUtils.substringAfter(value, "|");
-            value = StringUtils.substringBefore(fieldValue, "|");
+        if (StringUtils.contains(value, AzureBoardsSearchPropertiesUtils.URL_DELIMITER)) {
+            String urlCandidate = StringUtils.substringAfter(value, AzureBoardsSearchPropertiesUtils.URL_DELIMITER);
+            value = StringUtils.substringBefore(fieldValue, AzureBoardsSearchPropertiesUtils.URL_DELIMITER);
             if (StringUtils.isNotBlank(urlCandidate)) {
                 url = urlCandidate;
             }

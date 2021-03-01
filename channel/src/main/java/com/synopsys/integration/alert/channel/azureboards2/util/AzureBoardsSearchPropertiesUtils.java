@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public final class AzureBoardsSearchPropertiesUtils {
-    private static final char URL_DELIMITER = '|';
-    private static final char LINKABLE_ITEM_DELIMITER = ':';
+    public static final String URL_DELIMITER = "|";
+    public static final String LINKABLE_ITEM_DELIMITER = ":";
 
     public static String createProviderKey(String providerName, String providerUrl) {
         StringBuilder providerKeyBuilder = new StringBuilder();
