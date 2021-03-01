@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.google.api.client.http.GenericUrl;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
@@ -21,12 +20,11 @@ import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCre
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.azureboards2.AzureBoardsAlertIssuePropertiesManager;
+import com.synopsys.integration.alert.channel.azureboards2.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
-import com.synopsys.integration.azure.boards.common.model.ReferenceLinkModel;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
@@ -105,21 +103,9 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         WorkItemFieldsWrapper workItemFields = workItem.createFieldsWrapper(gson);
         String workItemKey = Objects.toString(workItem.getId());
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
-        String workItemUILink = extractUILink(workItem);
+        String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
         return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink);
-    }
-
-    private String extractUILink(WorkItemResponseModel workItem) {
-        return Optional.ofNullable(workItem.getLinks())
-                   .flatMap(issueLinkMap -> Optional.ofNullable(issueLinkMap.get("html")))
-                   .map(ReferenceLinkModel::getHref)
-                   .orElseGet(this::createIssueTrackerUrl);
-    }
-
-    private String createIssueTrackerUrl() {
-        String url = String.format("%s/%s", AzureHttpServiceFactory.DEFAULT_BASE_URL, organizationName);
-        return new GenericUrl(url).build();
     }
 
 }

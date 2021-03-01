@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public final class AzureBoardsSearchPropertiesUtils {
     private static final char URL_DELIMITER = '|';
+    private static final char LINKABLE_ITEM_DELIMITER = ':';
 
     public static String createProviderKey(String providerName, String providerUrl) {
         StringBuilder providerKeyBuilder = new StringBuilder();
@@ -29,7 +30,7 @@ public final class AzureBoardsSearchPropertiesUtils {
 
         StringBuilder linkableItemBuilder = new StringBuilder();
         linkableItemBuilder.append(linkableItem.getLabel());
-        linkableItemBuilder.append(':');
+        linkableItemBuilder.append(LINKABLE_ITEM_DELIMITER);
         linkableItemBuilder.append(linkableItem.getValue());
         linkableItem.getUrl()
             .ifPresent(url -> {

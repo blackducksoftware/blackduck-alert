@@ -23,9 +23,9 @@ import com.synopsys.integration.azure.boards.common.service.workitem.request.Wor
 import com.synopsys.integration.azure.boards.common.util.AzureFieldDefinition;
 
 public class AzureBoardsAlertIssuePropertiesManager {
-    private static final String POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL = "Policy Violated";
-    private static final String CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL = "Policy";
-    private static final String CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL = "Vulnerability";
+    public static final String POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL = "Policy Violated";
+    public static final String CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL = "Policy";
+    public static final String CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL = "Vulnerability";
 
     public List<WorkItemElementOperationModel> createWorkItemRequestCustomFieldOperations(ProjectIssueModel alertIssueSource) {
         LinkableItem provider = alertIssueSource.getProvider();
