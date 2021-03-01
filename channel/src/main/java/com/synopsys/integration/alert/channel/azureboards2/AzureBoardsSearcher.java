@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
@@ -26,6 +25,9 @@ import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureCustomFieldManager;
+import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsSearchPropertiesUtils;
+import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsUILinkUtils;
+import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsWorkItemExtractionUtils;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
@@ -70,9 +72,11 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
 
         List<ProjectIssueSearchResult<Integer>> searchResults = new ArrayList<>(workItems.size());
         for (WorkItemResponseModel workItem : workItems) {
-            WorkItemFieldsWrapper workItemFields = workItem.createFieldsWrapper(gson);
-            ExistingIssueDetails<Integer> issueDetails = createIssueDetails(workItem, workItemFields);
-            ProjectIssueModel projectIssueModel = createProjectIssueModel(providerDetails, project, projectVersion, bomComponent);
+            ExistingIssueDetails<Integer> issueDetails = createIssueDetails(workItem, workItem.createFieldsWrapper(gson));
+
+            IssueBomComponentDetails issueBomComponent = IssueBomComponentDetails.fromBomComponentDetails(bomComponent);
+            ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, issueBomComponent);
+
             ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
             searchResults.add(searchResult);
         }
@@ -186,13 +190,13 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         AzureFieldDefinition<String> subComponentFieldDef = AzureFieldDefinition.stringField(AzureCustomFieldManager.ALERT_SUB_COMPONENT_KEY_FIELD_REFERENCE_NAME);
 
         LinkableItem projectVersion = Optional.ofNullable(nullableProjectVersion)
-                                          .orElse(extractLinkableItem(workItemFields, projectVersionFieldDef));
-        LinkableItem component = extractLinkableItem(workItemFields, componentFieldDef);
+                                          .orElse(AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, projectVersionFieldDef));
+        LinkableItem component = AzureBoardsWorkItemExtractionUtils.extractLinkableItem(workItemFields, componentFieldDef);
 
         LinkableItem componentVersion = null;
         Optional<String> componentVersionField = workItemFields.getField(subComponentFieldDef);
         if (componentVersionField.isPresent()) {
-            componentVersion = extractLinkableItem(componentVersionField.get());
+            componentVersion = AzureBoardsWorkItemExtractionUtils.extractLinkableItem(componentVersionField.get());
         }
 
         IssueBomComponentDetails bomComponent = new IssueBomComponentDetails(
@@ -204,39 +208,6 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
             ""
         );
         return ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponent);
-    }
-
-    private ProjectIssueModel createProjectIssueModel(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) {
-        IssueBomComponentDetails issueBomComponent = IssueBomComponentDetails.fromBomComponentDetails(bomComponent);
-        return ProjectIssueModel.bom(providerDetails, project, projectVersion, issueBomComponent);
-    }
-
-    // FIXME clean this up and abstract
-    private LinkableItem extractLinkableItem(WorkItemFieldsWrapper workItemFields, AzureFieldDefinition<String> fieldDefinition) {
-        Optional<String> optionalFieldValue = workItemFields.getField(fieldDefinition);
-        return optionalFieldValue
-                   .map(this::extractLinkableItem)
-                   .orElseGet(() -> new LinkableItem("Unknown", "Unknown"));
-    }
-
-    private LinkableItem extractLinkableItem(String fieldValue) {
-        String label = "Unknown";
-        String value = "Unknown";
-        String url = null;
-
-        if (StringUtils.contains(fieldValue, ':')) {
-            label = StringUtils.substringBefore(fieldValue, ":");
-            value = StringUtils.substringAfter(fieldValue, ":");
-        }
-
-        if (StringUtils.contains(value, '|')) {
-            String urlCandidate = StringUtils.substringAfter(value, "|");
-            value = StringUtils.substringBefore(fieldValue, "|");
-            if (StringUtils.isNotBlank(urlCandidate)) {
-                url = urlCandidate;
-            }
-        }
-        return new LinkableItem(label, value, url);
     }
 
 }

@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCre
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.azureboards2.AzureBoardsAlertIssuePropertiesManager;
-import com.synopsys.integration.alert.channel.azureboards2.AzureBoardsUILinkUtils;
+import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
