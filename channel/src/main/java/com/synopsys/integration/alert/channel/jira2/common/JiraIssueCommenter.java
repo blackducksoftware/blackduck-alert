@@ -22,11 +22,6 @@
  */
 package com.synopsys.integration.alert.channel.jira2.common;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
@@ -37,33 +32,11 @@ import com.synopsys.integration.function.ThrowingConsumer;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 
 public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer;
 
     protected JiraIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer) {
         super(issueResponseCreator);
         this.addCommentConsumer = addCommentConsumer;
-    }
-
-    public final void addComment(String issueKey, String comment) throws AlertException {
-        addComments(issueKey, List.of(comment));
-    }
-
-    public final void addComments(String issueKey, List<String> comments) throws AlertException {
-        if (!isCommentingEnabled()) {
-            logger.debug(COMMENTING_DISABLED_MESSAGE);
-            return;
-        }
-
-        for (String comment : comments) {
-            IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(issueKey, comment);
-            try {
-                addCommentConsumer.accept(issueCommentRequestModel);
-            } catch (IntegrationException e) {
-                throw new AlertException(String.format("Failed to add a comment in Jira. Issue Key: %s", issueKey), e);
-            }
-        }
     }
 
     @Override
