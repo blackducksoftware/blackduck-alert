@@ -35,10 +35,10 @@
 
     <!-- Remove all projects with missing hrefs as they will not be able to be properly processed -->
 
-    <changeSet author="gavink" id="delete-missing-projects">
+    <changeSet author="gavink" id="delete-missing-projects-2">
         <delete schemaName="alert" tableName="blackduck_job_projects">
             <where>
-                href = null
+                href IS NULL
             </where>
         </delete>
     </changeSet>
