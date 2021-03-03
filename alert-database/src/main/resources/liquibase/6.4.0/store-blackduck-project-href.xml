@@ -17,19 +17,19 @@
 
     <!-- Insert data into columns -->
 
-    <changeSet author="gavink" id="insert-provider-project-data">
+    <changeSet author="gavink" id="insert-provider-project-data-2">
         <sql dbms="postgresql" stripComments="true">
             UPDATE alert.blackduck_job_projects bd_job_projects
             SET href = job_project_details.href
             FROM alert.blackduck_job_details bd_job_details
             JOIN (
-                SELECT bd_project.job_id, prov_project.href
+                SELECT bd_project.job_id, prov_project.name, prov_project.href
                 FROM alert.blackduck_job_details bd_job_details
                 INNER JOIN alert.blackduck_job_projects bd_project ON bd_project.job_id = bd_job_details.job_id
                 INNER JOIN alert.provider_projects prov_project ON prov_project.name = bd_project.project_name
                 WHERE bd_job_details.global_config_id = prov_project.provider_config_id
             ) job_project_details ON job_project_details.job_id = bd_job_details.job_id
-            WHERE bd_job_projects.job_id = job_project_details.job_id;
+            WHERE bd_job_projects.job_id = job_project_details.job_id AND bd_job_projects.project_name = job_project_details.name;
         </sql>
     </changeSet>
 
