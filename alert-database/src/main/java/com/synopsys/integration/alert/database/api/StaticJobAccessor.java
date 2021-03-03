@@ -46,8 +46,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
-import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
@@ -71,7 +71,7 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 public class StaticJobAccessor implements JobAccessor {
     private final DistributionJobRepository distributionJobRepository;
     private final BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
-    private final AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
+    private final DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private final DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private final DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
@@ -86,7 +86,7 @@ public class StaticJobAccessor implements JobAccessor {
     public StaticJobAccessor(
         DistributionJobRepository distributionJobRepository,
         BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor,
-        AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
+        DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
         DefaultEmailJobDetailsAccessor emailJobDetailsAccessor,
         DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
         JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,

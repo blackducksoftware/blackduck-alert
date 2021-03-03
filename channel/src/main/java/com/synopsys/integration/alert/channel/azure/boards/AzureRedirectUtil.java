@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
+// TODO rename this class
 public class AzureRedirectUtil {
     private final AlertProperties alertProperties;
 
@@ -49,4 +50,5 @@ public class AzureRedirectUtil {
                                       .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
         return oAuthRedirectURL;
     }
+
 }
