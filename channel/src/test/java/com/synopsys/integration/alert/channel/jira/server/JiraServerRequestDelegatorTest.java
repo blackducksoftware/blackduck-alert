@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueS
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
@@ -122,7 +123,7 @@ public class JiraServerRequestDelegatorTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = createSearchProperties();
-        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        AlertIssueOrigin alertIssueOrigin = createTempIssueOrigin();
         requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
@@ -159,7 +160,7 @@ public class JiraServerRequestDelegatorTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        AlertIssueOrigin alertIssueOrigin = createTempIssueOrigin();
         requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
         IssueTrackerResponse response = service.sendRequests(requests);
         assertNotNull(response);
@@ -197,7 +198,7 @@ public class JiraServerRequestDelegatorTest {
         JiraServerRequestDelegator service = new JiraServerRequestDelegator(gson, createContext());
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
-        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        AlertIssueOrigin alertIssueOrigin = createTempIssueOrigin();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
         requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
@@ -288,6 +289,14 @@ public class JiraServerRequestDelegatorTest {
         ids.add(new IdComponent("2"));
         issueResponse.getTransitions().addAll(ids);
         return issueResponse;
+    }
+
+    private AlertIssueOrigin createTempIssueOrigin() {
+        ContentKey contentKey = new ContentKey(null, 0L, null, null, null, null, null);
+        return new AlertIssueOrigin(
+            contentKey,
+            null
+        );
     }
 
 }

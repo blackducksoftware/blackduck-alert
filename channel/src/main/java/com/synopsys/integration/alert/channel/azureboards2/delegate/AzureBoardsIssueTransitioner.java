@@ -51,7 +51,7 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
 
     public AzureBoardsIssueTransitioner(
         IssueTrackerIssueCommenter<Integer> commenter,
-        IssueTrackerIssueResponseCreator<Integer> issueResponseCreator,
+        IssueTrackerIssueResponseCreator issueResponseCreator,
         Gson gson,
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,

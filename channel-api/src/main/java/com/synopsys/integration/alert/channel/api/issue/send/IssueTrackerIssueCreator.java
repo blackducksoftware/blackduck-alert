@@ -14,12 +14,13 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
@@ -29,16 +30,15 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
 
     private final IssueTrackerChannelKey channelKey;
     private final IssueTrackerIssueCommenter<T> commenter;
-    private final AlertIssueOriginCreator alertIssueOriginCreator;
+    private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
 
     public IssueTrackerIssueCreator(
         IssueTrackerChannelKey channelKey,
         IssueTrackerIssueCommenter<T> commenter,
-        AlertIssueOriginCreator alertIssueOriginCreator
-    ) {
+        IssueTrackerCallbackInfoCreator callbackInfoCreator) {
         this.channelKey = channelKey;
         this.commenter = commenter;
-        this.alertIssueOriginCreator = alertIssueOriginCreator;
+        this.callbackInfoCreator = callbackInfoCreator;
     }
 
     /**
@@ -54,16 +54,22 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
         ExistingIssueDetails<T> createdIssueDetails = createIssueAndExtractDetails(alertIssueCreationModel);
         logger.debug("Created new {} issue: {}", channelKey.getDisplayName(), createdIssueDetails);
 
-        AlertIssueOrigin issueOrigin = null;
+        IssueTrackerCallbackInfo callbackInfo = null;
         Optional<ProjectIssueModel> optionalSource = alertIssueCreationModel.getSource();
         if (optionalSource.isPresent()) {
             ProjectIssueModel alertIssueSource = optionalSource.get();
             assignAlertSearchProperties(createdIssueDetails, alertIssueSource);
             addPostCreateComments(createdIssueDetails, alertIssueCreationModel, alertIssueSource);
-            issueOrigin = alertIssueOriginCreator.createIssueOrigin(alertIssueSource);
+            callbackInfo = callbackInfoCreator.createCallbackInfo(alertIssueSource);
         }
 
-        return new IssueTrackerIssueResponseModel(issueOrigin, createdIssueDetails.getIssueKey(), createdIssueDetails.getIssueUILink(), createdIssueDetails.getIssueSummary(), IssueOperation.OPEN);
+        return new IssueTrackerIssueResponseModel(
+            createdIssueDetails.getIssueKey(),
+            createdIssueDetails.getIssueUILink(),
+            createdIssueDetails.getIssueSummary(),
+            IssueOperation.OPEN,
+            callbackInfo
+        );
     }
 
     protected abstract ExistingIssueDetails<T> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException;
