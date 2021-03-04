@@ -124,14 +124,14 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         return new JiraCloudIssueCreator(
             jiraCloudChannelKey,
+            issueCommenter,
+            callbackInfoCreator,
             distributionDetails,
             issueService,
             projectService,
             issueCreationRequestCreator,
-            issueCommenter,
             issuePropertiesManager,
-            jiraErrorMessageUtility,
-            callbackInfoCreator
+            jiraErrorMessageUtility
         );
     }
 

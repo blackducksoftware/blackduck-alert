@@ -2,12 +2,12 @@ package com.synopsys.integration.alert.channel.jira2.common.delegate;
 
 import java.util.Optional;
 
+import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
@@ -32,14 +32,15 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final String issueCreatorDescriptorKey;
 
-    public JiraIssueCreator(
+    protected JiraIssueCreator(
         IssueTrackerChannelKey channelKey,
         IssueTrackerIssueCommenter<String> commenter,
-        AlertIssueOriginCreator alertIssueOriginCreator,
+        IssueTrackerCallbackInfoCreator callbackInfoCreator,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
-        String issueCreatorDescriptorKey) {
-        super(channelKey, commenter, alertIssueOriginCreator);
+        String issueCreatorDescriptorKey
+    ) {
+        super(channelKey, commenter, callbackInfoCreator);
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
         this.issuePropertiesManager = issuePropertiesManager;
         this.issueCreatorDescriptorKey = issueCreatorDescriptorKey;

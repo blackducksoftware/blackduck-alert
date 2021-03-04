@@ -17,7 +17,7 @@ import com.synopsys.integration.function.ThrowingConsumer;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 
 public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {
-    private final ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer;
+    private final ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer; // TODO: Just expose another abstract method instead of this
 
     protected JiraIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator, ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer) {
         super(issueResponseCreator);
