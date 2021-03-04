@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azureboards2;
+package com.synopsys.integration.alert.channel.azure.boards2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +25,9 @@ import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureCustomFieldManager;
-import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsSearchPropertiesUtils;
-import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsUILinkUtils;
-import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsWorkItemExtractionUtils;
+import com.synopsys.integration.alert.channel.azure.boards2.util.AzureBoardsSearchPropertiesUtils;
+import com.synopsys.integration.alert.channel.azure.boards2.util.AzureBoardsUILinkUtils;
+import com.synopsys.integration.alert.channel.azure.boards2.util.AzureBoardsWorkItemExtractionUtils;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;

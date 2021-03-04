@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azureboards2.delegate;
+package com.synopsys.integration.alert.channel.azure.boards2.delegate;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +19,8 @@ import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
-import com.synopsys.integration.alert.channel.azureboards2.AzureBoardsAlertIssuePropertiesManager;
-import com.synopsys.integration.alert.channel.azureboards2.util.AzureBoardsUILinkUtils;
+import com.synopsys.integration.alert.channel.azure.boards2.AzureBoardsAlertIssuePropertiesManager;
+import com.synopsys.integration.alert.channel.azure.boards2.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
