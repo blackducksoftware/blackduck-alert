@@ -44,7 +44,7 @@ public class JiraCloudIssueTransitioner extends IssueTrackerIssueTransitioner<St
 
     public JiraCloudIssueTransitioner(
         JiraCloudIssueCommenter jiraCloudIssueCommenter,
-        IssueTrackerIssueResponseCreator<String> issueResponseCreator,
+        IssueTrackerIssueResponseCreator issueResponseCreator,
         JiraCloudJobDetailsModel distributionDetails,
         IssueService issueService
     ) {

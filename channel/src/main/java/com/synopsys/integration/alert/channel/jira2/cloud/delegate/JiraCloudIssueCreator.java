@@ -10,12 +10,12 @@ package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
 import java.util.List;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
@@ -60,9 +60,9 @@ public class JiraCloudIssueCreator extends IssueTrackerIssueCreator<String> {
         JiraCloudIssueCommenter jiraCloudIssueCommenter,
         JiraCloudIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
-        AlertIssueOriginCreator alertIssueOriginCreator
+        IssueTrackerCallbackInfoCreator callbackInfoCreator
     ) {
-        super(jiraCloudChannelKey, jiraCloudIssueCommenter, alertIssueOriginCreator);
+        super(jiraCloudChannelKey, jiraCloudIssueCommenter, callbackInfoCreator);
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
         this.projectService = projectService;

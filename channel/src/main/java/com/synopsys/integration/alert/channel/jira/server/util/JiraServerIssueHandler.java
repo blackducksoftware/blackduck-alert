@@ -25,8 +25,11 @@ import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtili
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
@@ -100,7 +103,17 @@ public class JiraServerIssueHandler extends JiraIssueHandler {
     @Override
     protected IssueTrackerIssueResponseModel createResponseModel(AlertIssueOrigin alertIssueOrigin, String issueTitle, IssueOperation issueOperation, IssueResponseModel issueResponse) {
         String uiLink = JiraCallbackUtils.createUILink(issueResponse);
-        return new IssueTrackerIssueResponseModel(alertIssueOrigin, issueResponse.getKey(), uiLink, issueTitle, issueOperation);
+        return new IssueTrackerIssueResponseModel(
+            issueResponse.getKey(),
+            uiLink,
+            issueTitle,
+            issueOperation,
+            new IssueTrackerCallbackInfo(
+                alertIssueOrigin.getProviderContentKey().getProviderConfigId(),
+                alertIssueOrigin.getComponentItem().flatMap(ComponentItem::getCallbackInfo).map(ComponentItemCallbackInfo::getCallbackUrl).orElse(null),
+                alertIssueOrigin.getProviderContentKey().getSubTopicValue() // FIXME this is wrong, but this class will be deleted before 6.5.0 is released
+            )
+        );
     }
 
     @Override
