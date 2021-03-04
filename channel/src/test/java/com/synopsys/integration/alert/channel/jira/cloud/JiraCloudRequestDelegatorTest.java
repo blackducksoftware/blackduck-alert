@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueS
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
@@ -160,7 +161,7 @@ public class JiraCloudRequestDelegatorTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        AlertIssueOrigin alertIssueOrigin = createTempIssueOrigin();
         requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
         IssueTrackerResponse response = service.sendRequests(requests);
         assertNotNull(response);
@@ -201,7 +202,7 @@ public class JiraCloudRequestDelegatorTest {
         List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+        AlertIssueOrigin alertIssueOrigin = createTempIssueOrigin();
         requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
         requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
         IssueTrackerResponse response = service.sendRequests(requests);
@@ -291,6 +292,14 @@ public class JiraCloudRequestDelegatorTest {
         ids.add(new IdComponent("2"));
         issueResponse.getTransitions().addAll(ids);
         return issueResponse;
+    }
+
+    private AlertIssueOrigin createTempIssueOrigin() {
+        ContentKey contentKey = new ContentKey(null, 0L, null, null, null, null, null);
+        return new AlertIssueOrigin(
+            contentKey,
+            null
+        );
     }
 
 }

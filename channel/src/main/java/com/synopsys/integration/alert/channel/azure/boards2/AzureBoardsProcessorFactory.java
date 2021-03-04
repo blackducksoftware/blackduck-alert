@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
-import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
+import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
@@ -47,7 +47,7 @@ import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkIt
 @Component
 public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory<AzureBoardsJobDetailsModel, Integer> {
     private final Gson gson;
-    private final AlertIssueOriginCreator alertIssueOriginCreator;
+    private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final AzureBoardsChannelKey channelKey;
     private final AzureBoardsMessageFormatter formatter;
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
@@ -58,7 +58,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
     @Autowired
     public AzureBoardsProcessorFactory(
         Gson gson,
-        AlertIssueOriginCreator alertIssueOriginCreator,
+        IssueTrackerCallbackInfoCreator callbackInfoCreator,
         AzureBoardsChannelKey channelKey,
         AzureBoardsMessageFormatter formatter,
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
@@ -67,7 +67,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         ProxyManager proxyManager
     ) {
         this.gson = gson;
-        this.alertIssueOriginCreator = alertIssueOriginCreator;
+        this.callbackInfoCreator = callbackInfoCreator;
         this.channelKey = channelKey;
         this.formatter = formatter;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
@@ -95,7 +95,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
 
         // Helper Classes
-        IssueTrackerIssueResponseCreator<Integer> issueResponseCreator = new IssueTrackerIssueResponseCreator<>(alertIssueOriginCreator);
+        IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
         AzureBoardsIssueTrackerQueryManager queryManager = new AzureBoardsIssueTrackerQueryManager(organizationName, distributionDetails, workItemService, workItemQueryService);
         AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever = new AzureBoardsWorkItemTypeStateRetriever(gson, workItemService, workItemTypeStateService);
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager = new AzureBoardsAlertIssuePropertiesManager();
@@ -103,7 +103,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         // Message Sender Requirements
         AzureBoardsIssueCommenter commenter = new AzureBoardsIssueCommenter(issueResponseCreator, organizationName, distributionDetails, workItemCommentService);
         AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(commenter, issueResponseCreator, gson, organizationName, distributionDetails, workItemService, workItemTypeStateRetriever);
-        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey, commenter, alertIssueOriginCreator, gson, organizationName, distributionDetails, workItemService, issuePropertiesManager);
+        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey, commenter, callbackInfoCreator, gson, organizationName, distributionDetails, workItemService, issuePropertiesManager);
 
         // Extractor Requirement
         AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager);

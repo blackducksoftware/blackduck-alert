@@ -13,10 +13,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.azure.boards2.AzureBoardsAlertIssuePropertiesManager;
@@ -44,14 +44,14 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     public AzureBoardsIssueCreator(
         AzureBoardsChannelKey channelKey,
         IssueTrackerIssueCommenter<Integer> commenter,
-        AlertIssueOriginCreator alertIssueOriginCreator,
+        IssueTrackerCallbackInfoCreator callbackInfoCreator,
         Gson gson,
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,
         AzureWorkItemService workItemService,
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager
     ) {
-        super(channelKey, commenter, alertIssueOriginCreator);
+        super(channelKey, commenter, callbackInfoCreator);
         this.gson = gson;
         this.organizationName = organizationName;
         this.distributionDetails = distributionDetails;

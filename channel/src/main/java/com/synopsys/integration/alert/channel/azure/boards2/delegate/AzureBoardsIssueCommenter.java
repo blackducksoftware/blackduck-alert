@@ -22,7 +22,7 @@ public class AzureBoardsIssueCommenter extends IssueTrackerIssueCommenter<Intege
     private final AzureWorkItemCommentService commentService;
 
     public AzureBoardsIssueCommenter(
-        IssueTrackerIssueResponseCreator<Integer> issueResponseCreator,
+        IssueTrackerIssueResponseCreator issueResponseCreator,
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,
         AzureWorkItemCommentService commentService

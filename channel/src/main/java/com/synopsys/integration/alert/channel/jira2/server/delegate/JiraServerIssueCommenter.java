@@ -15,7 +15,7 @@ import com.synopsys.integration.jira.common.server.service.IssueService;
 public class JiraServerIssueCommenter extends JiraIssueCommenter {
     private final JiraServerJobDetailsModel distributionDetails;
 
-    public JiraServerIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, IssueService issueService, JiraServerJobDetailsModel distributionDetails) {
+    public JiraServerIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator, IssueService issueService, JiraServerJobDetailsModel distributionDetails) {
         super(issueResponseCreator, issueService::addComment);
         this.distributionDetails = distributionDetails;
     }
@@ -24,4 +24,5 @@ public class JiraServerIssueCommenter extends JiraIssueCommenter {
     protected boolean isCommentingEnabled() {
         return distributionDetails.isAddComments();
     }
+
 }

@@ -19,7 +19,7 @@ import com.synopsys.integration.jira.common.model.request.IssueCommentRequestMod
 public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {
     private final ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer;
 
-    protected JiraIssueCommenter(IssueTrackerIssueResponseCreator<String> issueResponseCreator, ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer) {
+    protected JiraIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator, ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer) {
         super(issueResponseCreator);
         this.addCommentConsumer = addCommentConsumer;
     }

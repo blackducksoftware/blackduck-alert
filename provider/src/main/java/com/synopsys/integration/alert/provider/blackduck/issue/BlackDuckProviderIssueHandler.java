@@ -18,8 +18,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
-import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
-import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.synopsys.integration.blackduck.service.dataservice.IssueService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
@@ -29,22 +28,23 @@ import com.synopsys.integration.rest.request.Request;
 public class BlackDuckProviderIssueHandler {
     private final Gson gson;
     private final BlackDuckApiClient blackDuckApiClient;
-    private final ProjectService projectService;
+    private final IssueService issueService;
 
-    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckApiClient blackDuckApiClient, ProjectService projectService) {
+    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckApiClient blackDuckApiClient, IssueService issueService) {
         this.gson = gson;
         this.blackDuckApiClient = blackDuckApiClient;
-        this.projectService = projectService;
+        this.issueService = issueService;
     }
 
-    public void createOrUpdateBlackDuckIssue(String bomComponentVersionIssuesUrl, BlackDuckProviderIssueModel issueModel, String projectName, String projectVersionName) throws IntegrationException {
-        Optional<ProjectVersionIssuesView> optionalExistingIssue = retrieveExistingIssue(projectName, projectVersionName, issueModel.getKey());
+    public void createOrUpdateBlackDuckIssue(BlackDuckProviderIssueModel issueModel, String bomComponentVersionIssuesUrl, String projectVersionUrl) throws IntegrationException {
+        Optional<ProjectVersionIssuesView> optionalExistingIssue = retrieveExistingIssue(projectVersionUrl, issueModel.getKey());
 
         Date currentDate = Date.from(Instant.now());
-        HttpUrl requestUri = new HttpUrl(bomComponentVersionIssuesUrl);
         IssueRequest issueRequestModel = createIssueRequestModel(issueModel);
 
         HttpMethod httpMethod = HttpMethod.POST;
+        HttpUrl requestUri = new HttpUrl(bomComponentVersionIssuesUrl);
+
         if (optionalExistingIssue.isPresent()) {
             ProjectVersionIssuesView existingIssue = optionalExistingIssue.get();
             issueRequestModel.setIssueDescription(existingIssue.getIssueDescription());
@@ -61,17 +61,14 @@ public class BlackDuckProviderIssueHandler {
         performRequest(requestUri, httpMethod, issueRequestModel);
     }
 
-    private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectName, String projectVersionName, String issueKey) throws IntegrationException {
-        Optional<ProjectVersionWrapper> projectVersionWrapperOptional = projectService.getProjectVersion(projectName, projectVersionName);
-        if (projectVersionWrapperOptional.isPresent()) {
-            ProjectVersionWrapper projectVersionWrapper = projectVersionWrapperOptional.get();
-            List<ProjectVersionIssuesView> bomComponentIssues = blackDuckApiClient.getAllResponses(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.ISSUES_LINK_RESPONSE);
-            return bomComponentIssues
-                       .stream()
-                       .filter(issue -> issue.getIssueId().equals(issueKey))
-                       .findAny();
-        }
-        return Optional.empty();
+    private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectVersionUrl, String blackDuckIssueId) throws IntegrationException {
+        HttpUrl projectVersionHttpUrl = new HttpUrl(projectVersionUrl);
+        ProjectVersionView projectVersion = blackDuckApiClient.getResponse(projectVersionHttpUrl, ProjectVersionView.class);
+        List<ProjectVersionIssuesView> bomComponentIssues = issueService.getIssuesForProjectVersion(projectVersion);
+        return bomComponentIssues
+                   .stream()
+                   .filter(issue -> issue.getIssueId().equals(blackDuckIssueId))
+                   .findAny();
     }
 
     private void performRequest(HttpUrl httpUrl, HttpMethod httpMethod, IssueRequest issueRequest) throws IntegrationException {

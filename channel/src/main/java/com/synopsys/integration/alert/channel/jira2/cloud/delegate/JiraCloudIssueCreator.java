@@ -44,6 +44,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
         JiraCloudIssueCommenter jiraCloudIssueCommenter,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
+        IssueTrackerCallbackInfoCreator callbackInfoCreator,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         AlertIssueOriginCreator alertIssueOriginCreator
     ) {
@@ -53,6 +54,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             alertIssueOriginCreator,
             jiraErrorMessageUtility,
             issuePropertiesManager,
+            callbackInfoCreator,
             JiraCloudDescriptor.KEY_ISSUE_CREATOR
         );
         this.distributionDetails = distributionDetails;

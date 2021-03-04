@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueR
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.TestIssueRequestCreator;
+import com.synopsys.integration.alert.common.message.model.ContentKey;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;
@@ -107,7 +108,7 @@ public class JiraCloudTestActionTest {
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraCloudChannel, gson, new TestIssueRequestCreator() {
             @Override
             public Optional<IssueTrackerRequest> createRequest(IssueOperation operation, String messageId) {
-                AlertIssueOrigin alertIssueOrigin = new AlertIssueOrigin(null, null);
+                AlertIssueOrigin alertIssueOrigin = createTempIssueOrigin();
                 if (operation == IssueOperation.RESOLVE) {
                     return Optional.of(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
                 }
@@ -197,6 +198,14 @@ public class JiraCloudTestActionTest {
         ids.add(new IdComponent("2"));
         issueResponse.getTransitions().addAll(ids);
         return issueResponse;
+    }
+
+    private AlertIssueOrigin createTempIssueOrigin() {
+        ContentKey contentKey = new ContentKey(null, 0L, null, null, null, null, null);
+        return new AlertIssueOrigin(
+            contentKey,
+            null
+        );
     }
 
 }
