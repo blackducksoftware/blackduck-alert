@@ -29,6 +29,8 @@ import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 public class NotificationReceiverV2 extends MessageReceiver<NotificationReceivedEventV2> implements AlertDefaultEventListener {
     public static final String COMPONENT_NAME = "notification_receiverV2";
 
+    private static final int PAGE_SIZE = 100;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationAccessor notificationAccessor;
     private final NotificationProcessorV2 notificationProcessor;
@@ -46,15 +48,14 @@ public class NotificationReceiverV2 extends MessageReceiver<NotificationReceived
         logger.info("Processing event for notifications.");
 
         int numPagesProcessed = 0;
-        int pageSize = 100;
 
-        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
+        AlertPagedModel<AlertNotificationModel> pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
         while (!CollectionUtils.isEmpty(pageOfAlertNotificationModels.getModels())) {
             List<AlertNotificationModel> notifications = pageOfAlertNotificationModels.getModels();
             logger.info("Sending {} notifications.", notifications.size());
             notificationProcessor.processNotifications(notifications, List.of(FrequencyType.REAL_TIME));
             numPagesProcessed++;
-            pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize);
+            pageOfAlertNotificationModels = notificationAccessor.getFirstPageOfNotificationsNotProcessed(PAGE_SIZE);
             logger.trace("Processing Page: {}. New pages found: {}",
                 numPagesProcessed,
                 pageOfAlertNotificationModels.getTotalPages());

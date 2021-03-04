@@ -33,7 +33,8 @@ public abstract class NamedDistributionChannel extends DistributionChannel {
 
     @Override
     public String getDestinationName() {
-        return channelKey.getUniversalKey();
+        // Required to avoid conflicts when registering new JMS Listeners
+        return channelKey.getUniversalKey() + "_old";
     }
 
     public ChannelKey getChannelKey() {

@@ -148,7 +148,7 @@ public class JmsNotificationReceiverTestIT {
             uniqueJobName,
             FrequencyType.REAL_TIME,
             ProcessingType.DEFAULT,
-            ChannelKeys.SLACK_V2.getUniversalKey(), //FIXME: For a test, remove the _V2 in master
+            ChannelKeys.SLACK.getUniversalKey(),
             blackDuckGlobalConfigId,
             false,
             ".*",

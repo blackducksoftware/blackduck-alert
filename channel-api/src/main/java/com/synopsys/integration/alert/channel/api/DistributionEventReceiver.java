@@ -56,8 +56,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
 
     @Override
     public final String getDestinationName() {
-        //FIXME remove the "_v2" when the new channels are implemented
-        return channelKey.getUniversalKey() + "_v2";
+        return channelKey.getUniversalKey();
     }
 
     protected void handleException(AlertException e, DistributionEventV2 event) {
