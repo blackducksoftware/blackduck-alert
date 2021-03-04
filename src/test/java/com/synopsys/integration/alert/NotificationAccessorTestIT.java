@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -364,35 +363,6 @@ public class NotificationAccessorTestIT {
         notificationManager.deleteNotification(savedModel);
 
         assertEquals(0, notificationContentRepository.count());
-    }
-
-    @Test
-    public void testSetNotificationsProcessed() {
-        AlertNotificationModel notification = createNotificationModel();
-        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notification));
-        List<Long> notificationIds = savedModels.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
-
-        notificationManager.setNotificationsProcessed(savedModels);
-
-        List<AlertNotificationModel> notificationList = notificationManager.findByIds(notificationIds);
-
-        assertEquals(1, notificationList.size());
-        assertTrue(notificationList.get(0).getProcessed());
-    }
-
-    @Test
-    public void testSetNotificationsProcessedById() {
-        AlertNotificationModel notification = createNotificationModel();
-        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notification));
-        List<Long> notificationIds = savedModels.stream().map(AlertNotificationModel::getId).collect(Collectors.toList());
-
-        assertEquals(1, notificationIds.size());
-        notificationManager.setNotificationsProcessedById(Set.of(notificationIds.get(0)));
-
-        List<AlertNotificationModel> notificationList = notificationManager.findByIds(notificationIds);
-
-        assertEquals(1, notificationList.size());
-        assertTrue(notificationList.get(0).getProcessed());
     }
 
     private AlertNotificationModel createNotificationModel(OffsetDateTime createdAt) {

@@ -323,7 +323,7 @@ public class DefaultNotificationAccessorTest {
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, configurationAccessor);
         notificationManager.setNotificationsProcessed(List.of(alertNotificationModel));
 
-        Mockito.verify(notificationContentRepository).saveAll(Mockito.any());
+        Mockito.verify(notificationContentRepository).setProcessedByIds(Mockito.any());
     }
 
     @Test
@@ -341,7 +341,7 @@ public class DefaultNotificationAccessorTest {
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, null, null, configurationAccessor);
         notificationManager.setNotificationsProcessedById(notificationIds);
 
-        Mockito.verify(notificationContentRepository).saveAll(Mockito.any());
+        Mockito.verify(notificationContentRepository).setProcessedByIds(Mockito.any());
     }
 
     private void testExpectedAlertNotificationModel(AlertNotificationModel expected, AlertNotificationModel actual) {
