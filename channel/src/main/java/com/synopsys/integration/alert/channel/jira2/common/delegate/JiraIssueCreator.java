@@ -48,7 +48,10 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     @Override
     protected final ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
-        T creationRequest = createIssueCreationRequest(alertIssueCreationModel);
+        JiraCustomFieldReplacementValues replacementValues = alertIssueCreationModel.getSource()
+                                                                 .map(this::createCustomFieldReplacementValues)
+                                                                 .orElse(JiraCustomFieldReplacementValues.trivial(alertIssueCreationModel.getProvider()));
+        T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
         try {
             IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
             IssueResponseModel createdIssue = fetchIssue(issueCreationResponseModel.getKey());
@@ -69,7 +72,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         issuePropertiesManager.assignIssueProperties(createdIssueDetails.getIssueKey(), searchProperties);
     }
 
-    protected abstract T createIssueCreationRequest(IssueCreationModel alertIssueCreationModel) throws AlertException;
+    protected abstract T createIssueCreationRequest(IssueCreationModel alertIssueCreationModel, JiraCustomFieldReplacementValues replacementValues) throws AlertException;
 
     protected abstract IssueCreationResponseModel createIssue(T alertIssueCreationModel) throws IntegrationException;
 
