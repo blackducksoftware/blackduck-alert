@@ -62,7 +62,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
     }
 
     @Override
-    public IssueCreationRequestModel createIssueCreationRequest(IssueCreationModel alertIssueCreationModel) throws AlertException {
+    protected IssueCreationRequestModel createIssueCreationRequest(IssueCreationModel alertIssueCreationModel) throws AlertException {
         ProjectComponent jiraProject = retrieveProjectComponent();
         JiraCustomFieldReplacementValues replacementValues = alertIssueCreationModel.getSource()
                                                                  .map(this::createCustomFieldReplacementValues)
