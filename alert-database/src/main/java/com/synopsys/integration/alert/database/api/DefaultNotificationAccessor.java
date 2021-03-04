@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.database.api;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -171,17 +170,17 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     @Override
     public void setNotificationsProcessed(List<AlertNotificationModel> notifications) {
-        List<NotificationEntity> notificationEntities = notifications.stream()
-                                                            .map(this::fromModel)
-                                                            .collect(Collectors.toList());
-        notificationEntities.forEach(NotificationEntity::setProcessedToTrue);
-        notificationContentRepository.saveAll(notificationEntities);
+        Set<Long> notificationIds = notifications
+                                        .stream()
+                                        .map(AlertNotificationModel::getId)
+                                        .collect(Collectors.toSet());
+        setNotificationsProcessedById(notificationIds);
     }
 
     @Override
+    @Transactional
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
-        List<AlertNotificationModel> notificationModels = findByIds(new ArrayList<>(notificationIds));
-        setNotificationsProcessed(notificationModels);
+        notificationContentRepository.setProcessedByIds(notificationIds);
     }
 
     private void deleteAuditEntries(Long notificationId) {

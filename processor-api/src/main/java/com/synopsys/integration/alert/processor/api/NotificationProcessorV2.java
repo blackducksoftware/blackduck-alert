@@ -54,7 +54,8 @@ public final class NotificationProcessorV2 {
         ProjectMessageSummarizer projectMessageSummarizer,
         ProviderMessageDistributor providerMessageDistributor,
         List<NotificationProcessingLifecycleCache> lifecycleCaches,
-        NotificationAccessor notificationAccessor) {
+        NotificationAccessor notificationAccessor
+    ) {
         this.notificationDetailExtractionDelegator = notificationDetailExtractionDelegator;
         this.jobNotificationMapper = jobNotificationMapper;
         this.providerMessageExtractionDelegator = providerMessageExtractionDelegator;
