@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azureboards2;
+package com.synopsys.integration.alert.channel.azure.boards2;
 
 import java.util.List;
 import java.util.Optional;

@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.database.job.azure.boards;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +15,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.accessor.AzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 @Component
-public class AzureBoardsJobDetailsAccessor {
+public class DefaultAzureBoardsJobDetailsAccessor implements AzureBoardsJobDetailsAccessor {
     private final AzureBoardsJobDetailsRepository azureBoardsJobDetailsRepository;
 
     @Autowired
-    public AzureBoardsJobDetailsAccessor(AzureBoardsJobDetailsRepository azureBoardsJobDetailsRepository) {
+    public DefaultAzureBoardsJobDetailsAccessor(AzureBoardsJobDetailsRepository azureBoardsJobDetailsRepository) {
         this.azureBoardsJobDetailsRepository = azureBoardsJobDetailsRepository;
+    }
+
+    @Override
+    public Optional<AzureBoardsJobDetailsModel> retrieveDetails(UUID jobId) {
+        return azureBoardsJobDetailsRepository.findById(jobId).map(this::convertToModel);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -36,6 +43,17 @@ public class AzureBoardsJobDetailsAccessor {
             azureBoardsJobDetails.getWorkItemReopenState()
         );
         return azureBoardsJobDetailsRepository.save(detailsToSave);
+    }
+
+    private AzureBoardsJobDetailsModel convertToModel(AzureBoardsJobDetailsEntity jobDetails) {
+        return new AzureBoardsJobDetailsModel(
+            jobDetails.getJobId(),
+            jobDetails.getAddComments(),
+            jobDetails.getProjectNameOrId(),
+            jobDetails.getWorkItemType(),
+            jobDetails.getWorkItemCompletedState(),
+            jobDetails.getWorkItemReopenState()
+        );
     }
 
 }
