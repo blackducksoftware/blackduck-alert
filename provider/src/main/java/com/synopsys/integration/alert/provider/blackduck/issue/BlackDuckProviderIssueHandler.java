@@ -18,6 +18,7 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRequest;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.dataservice.IssueService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
@@ -27,10 +28,12 @@ import com.synopsys.integration.rest.request.Request;
 public class BlackDuckProviderIssueHandler {
     private final Gson gson;
     private final BlackDuckApiClient blackDuckApiClient;
+    private final IssueService issueService;
 
-    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckApiClient blackDuckApiClient) {
+    public BlackDuckProviderIssueHandler(Gson gson, BlackDuckApiClient blackDuckApiClient, IssueService issueService) {
         this.gson = gson;
         this.blackDuckApiClient = blackDuckApiClient;
+        this.issueService = issueService;
     }
 
     public void createOrUpdateBlackDuckIssue(BlackDuckProviderIssueModel issueModel, String bomComponentVersionIssuesUrl, String projectVersionUrl) throws IntegrationException {
@@ -61,7 +64,7 @@ public class BlackDuckProviderIssueHandler {
     private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectVersionUrl, String blackDuckIssueId) throws IntegrationException {
         HttpUrl projectVersionHttpUrl = new HttpUrl(projectVersionUrl);
         ProjectVersionView projectVersion = blackDuckApiClient.getResponse(projectVersionHttpUrl, ProjectVersionView.class);
-        List<ProjectVersionIssuesView> bomComponentIssues = blackDuckApiClient.getAllResponses(projectVersion, ProjectVersionView.ISSUES_LINK_RESPONSE);
+        List<ProjectVersionIssuesView> bomComponentIssues = issueService.getIssuesForProjectVersion(projectVersion);
         return bomComponentIssues
                    .stream()
                    .filter(issue -> issue.getIssueId().equals(blackDuckIssueId))

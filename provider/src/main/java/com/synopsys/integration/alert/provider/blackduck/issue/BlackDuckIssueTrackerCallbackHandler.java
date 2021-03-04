@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckProper
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.dataservice.IssueService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -52,11 +53,14 @@ public class BlackDuckIssueTrackerCallbackHandler extends IssueTrackerCallbackHa
         logger.debug("Handling issue-tracker callback event with id '{}'", eventId);
 
         IssueTrackerCallbackInfo callbackInfo = event.getCallbackInfo();
-        Optional<BlackDuckApiClient> optionalBlackDuckApiClient = createBlackDuckProperties(callbackInfo.getProviderConfigId())
-                                                                      .flatMap(this::createBlackDuckServicesFactory)
-                                                                      .map(BlackDuckServicesFactory::getBlackDuckApiClient);
-        if (optionalBlackDuckApiClient.isPresent()) {
-            BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, optionalBlackDuckApiClient.get());
+        Optional<BlackDuckServicesFactory> optionalBlackDuckServicesFactory = createBlackDuckProperties(callbackInfo.getProviderConfigId())
+                                                                                  .flatMap(this::createBlackDuckServicesFactory);
+        if (optionalBlackDuckServicesFactory.isPresent()) {
+            BlackDuckServicesFactory blackDuckServicesFactory = optionalBlackDuckServicesFactory.get();
+            BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+            IssueService blackDuckIssueService = blackDuckServicesFactory.createIssueService();
+
+            BlackDuckProviderIssueHandler blackDuckProviderIssueHandler = new BlackDuckProviderIssueHandler(gson, blackDuckApiClient, blackDuckIssueService);
             BlackDuckProviderIssueModel issueModel = createBlackDuckIssueModel(event);
             createOrUpdateBlackDuckIssue(blackDuckProviderIssueHandler, issueModel, callbackInfo);
         }
