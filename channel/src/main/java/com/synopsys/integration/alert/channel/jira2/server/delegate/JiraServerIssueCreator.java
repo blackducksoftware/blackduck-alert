@@ -5,55 +5,54 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
+package com.synopsys.integration.alert.channel.jira2.server.delegate;
 
 import java.util.List;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
-import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira2.cloud.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.channel.jira2.common.delegate.JiraIssueCreator;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
-import com.synopsys.integration.jira.common.cloud.service.ProjectService;
 import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.request.builder.IssueRequestModelFieldsMapBuilder;
 import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
+import com.synopsys.integration.jira.common.server.model.IssueCreationRequestModel;
+import com.synopsys.integration.jira.common.server.service.IssueService;
+import com.synopsys.integration.jira.common.server.service.ProjectService;
 
-public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
-    private final JiraCloudJobDetailsModel distributionDetails;
+public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationRequestModel> {
+    private final JiraServerJobDetailsModel distributionDetails;
     private final IssueService issueService;
     private final ProjectService projectService;
     private final JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator;
 
-    public JiraCloudIssueCreator(
-        JiraCloudChannelKey jiraCloudChannelKey,
-        JiraCloudJobDetailsModel distributionDetails,
+    public JiraServerIssueCreator(
+        JiraServerChannelKey jiraServerChannelKey,
+        JiraServerJobDetailsModel distributionDetails,
         IssueService issueService,
         ProjectService projectService,
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
-        JiraCloudIssueCommenter jiraCloudIssueCommenter,
+        JiraServerIssueCommenter jiraServerIssueCommenter,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         AlertIssueOriginCreator alertIssueOriginCreator
     ) {
         super(
-            jiraCloudChannelKey,
-            jiraCloudIssueCommenter,
+            jiraServerChannelKey,
+            jiraServerIssueCommenter,
             alertIssueOriginCreator,
             jiraErrorMessageUtility,
             issuePropertiesManager,
-            JiraCloudDescriptor.KEY_ISSUE_CREATOR
+            JiraServerDescriptor.KEY_ISSUE_CREATOR
         );
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
@@ -76,11 +75,10 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             distributionDetails.getCustomFields()
         );
         return new IssueCreationRequestModel(
-            distributionDetails.getIssueCreatorEmail(),
+            distributionDetails.getIssueCreatorUsername(),
             distributionDetails.getIssueType(),
             distributionDetails.getProjectNameOrKey(),
-            fieldsBuilder,
-            List.of()
+            fieldsBuilder
         );
     }
 
@@ -90,26 +88,26 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
     }
 
     @Override
-    protected IssueResponseModel fetchIssue(String issueKeyOrId) throws IntegrationException {
-        return issueService.getIssue(issueKeyOrId);
+    protected IssueResponseModel fetchIssue(String issueIdOrKey) throws IntegrationException {
+        return issueService.getIssue(issueIdOrKey);
     }
 
     @Override
     protected String getReporter(IssueCreationRequestModel creationRequest) {
-        return creationRequest.getReporterEmail();
+        return creationRequest.getReporterUsername();
     }
 
     private ProjectComponent retrieveProjectComponent() throws AlertException {
         String jiraProjectName = distributionDetails.getProjectNameOrKey();
-        PageOfProjectsResponseModel projectsResponseModel;
+        List<ProjectComponent> foundProjectComponents;
         try {
-            projectsResponseModel = projectService.getProjectsByName(jiraProjectName);
+            foundProjectComponents = projectService.getProjectsByName(jiraProjectName);
         } catch (IntegrationException e) {
             throw new AlertException("Failed to retrieve projects from Jira", e);
         }
-        return projectsResponseModel.getProjects()
+
+        return foundProjectComponents
                    .stream()
-                   .filter(project -> jiraProjectName.equals(project.getName()) || jiraProjectName.equals(project.getKey()))
                    .findAny()
                    .orElseThrow(() -> new AlertException(String.format("Unable to find project matching '%s'", jiraProjectName)));
     }
