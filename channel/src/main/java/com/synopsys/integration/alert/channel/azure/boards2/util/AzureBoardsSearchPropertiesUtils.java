@@ -5,14 +5,15 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azureboards2;
+package com.synopsys.integration.alert.channel.azure.boards2.util;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 public final class AzureBoardsSearchPropertiesUtils {
-    private static final char URL_DELIMITER = '|';
+    public static final String URL_DELIMITER = "|";
+    public static final String LINKABLE_ITEM_DELIMITER = ":";
 
     public static String createProviderKey(String providerName, String providerUrl) {
         StringBuilder providerKeyBuilder = new StringBuilder();
@@ -29,7 +30,7 @@ public final class AzureBoardsSearchPropertiesUtils {
 
         StringBuilder linkableItemBuilder = new StringBuilder();
         linkableItemBuilder.append(linkableItem.getLabel());
-        linkableItemBuilder.append(':');
+        linkableItemBuilder.append(LINKABLE_ITEM_DELIMITER);
         linkableItemBuilder.append(linkableItem.getValue());
         linkableItem.getUrl()
             .ifPresent(url -> {

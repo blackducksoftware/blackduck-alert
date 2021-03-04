@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
 import com.synopsys.integration.alert.database.job.DistributionJobRepository;
-import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDetailsEntity;
+import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
@@ -54,7 +54,7 @@ class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;
     private BlackDuckJobDetailsAccessor blackDuckJobDetailsAccessor;
     private DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
-    private AzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
+    private DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
     private JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
@@ -68,7 +68,7 @@ class StaticJobAccessorTest {
         distributionJobRepository = Mockito.mock(DistributionJobRepository.class);
         blackDuckJobDetailsAccessor = Mockito.mock(BlackDuckJobDetailsAccessor.class);
         slackJobDetailsAccessor = Mockito.mock(DefaultSlackJobDetailsAccessor.class);
-        azureBoardsJobDetailsAccessor = Mockito.mock(AzureBoardsJobDetailsAccessor.class);
+        azureBoardsJobDetailsAccessor = Mockito.mock(DefaultAzureBoardsJobDetailsAccessor.class);
         emailJobDetailsAccessor = Mockito.mock(DefaultEmailJobDetailsAccessor.class);
         jiraCloudJobDetailsAccessor = Mockito.mock(DefaultJiraCloudJobDetailsAccessor.class);
         jiraServerJobDetailsAccessor = Mockito.mock(JiraServerJobDetailsAccessor.class);
