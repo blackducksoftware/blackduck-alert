@@ -65,7 +65,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     Page<NotificationEntity> findByProcessedFalse(Pageable pageable);
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "
                + "SET entity.processed = true "
                + "WHERE entity.id IN :notificationIds"
