@@ -82,6 +82,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
         if (hasTimedOut) {
             logger.warn("Receiver has timed out after 2 hours.");
         }
+        logger.info("Finished processing event for notifications.");
     }
 
     @Override
