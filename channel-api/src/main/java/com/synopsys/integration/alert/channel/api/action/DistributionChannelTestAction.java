@@ -36,24 +36,27 @@ public abstract class DistributionChannelTestAction<D extends DistributionJobDet
     @Override
     public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig, @Nullable String customTopic, @Nullable String customMessage, @Nullable String destination)
         throws IntegrationException {
-        return testConfig(testJobModel, customTopic, customMessage);
+        return testConfig(testJobModel, customTopic, customMessage, destination);
     }
 
     @Override
     public abstract DistributionChannel getDistributionChannel();
 
     public MessageResult testConfig(DistributionJobModel testJobModel) throws IntegrationException {
-        return testConfig(testJobModel, null, null);
+        return testConfig(testJobModel, null, null, null);
     }
 
-    // TODO determine if we should include destination
-    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
+    public final MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage, @Nullable String destination) throws AlertException {
         String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
         String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
 
-        D distributionJobDetails = (D) testJobModel.getDistributionJobDetails();
+        D distributionJobDetails = resolveTestDistributionDetails(testJobModel, destination);
         ProviderMessageHolder messages = createTestMessageHolder(testJobModel, topicString, messageString);
         return distributionChannel.distributeMessages(distributionJobDetails, messages);
+    }
+
+    protected D resolveTestDistributionDetails(DistributionJobModel testJobModel, @Nullable String destination) throws AlertException {
+        return (D) testJobModel.getDistributionJobDetails();
     }
 
     private ProviderMessageHolder createTestMessageHolder(DistributionJobModel testJobModel, String summary, String message) {

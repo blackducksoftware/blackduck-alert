@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.email.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email2.action.EmailDistributionTestAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
