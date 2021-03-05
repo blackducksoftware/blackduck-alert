@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
@@ -37,6 +38,7 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -197,7 +199,11 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
 
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(jobAccessor, providerDataAccessor);
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, alertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, configurationAccessor);
+
+        ConfigurationAccessor mockConfigAccessor = Mockito.mock(ConfigurationAccessor.class);
+        Mockito.when(mockConfigAccessor.getProviderConfigurationByName(Mockito.anyString())).thenReturn(optionalChannelGlobalConfig);
+
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, alertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, mockConfigAccessor);
         EmailChannelV2 emailChannel = new EmailChannelV2(emailChannelMessageConverter, emailChannelMessageSender);
 
         return new EmailDistributionTestAction(emailChannel, emailTestActionHelper);

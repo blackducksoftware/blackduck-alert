@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.channel.AbstractChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -604,12 +603,7 @@ public class JobConfigActionsTest {
     }
 
     private ChannelDistributionTestAction createChannelDistributionTestAction() {
-        return new AbstractChannelDistributionTestAction(null) {
-            @Override
-            public MessageResult testConfig(DistributionJobModel testJobModel, ConfigurationModel channelGlobalConfig, String customTopic, String customMessage, String destination) {
-                return new MessageResult("Test Status Message");
-            }
-        };
+        return (testJobModel, channelGlobalConfig, customTopic, customMessage, destination) -> new MessageResult("Test Status Message");
     }
 
     private JobDetailsExtractor createJobDetailsExtractor() {
