@@ -36,12 +36,4 @@ public abstract class NamedDistributionChannel extends DistributionChannel {
         return channelKey.getUniversalKey();
     }
 
-    public ChannelKey getChannelKey() {
-        return channelKey;
-    }
-
-    public DistributionChannel getChannel() {
-        return this;
-    }
-
 }
