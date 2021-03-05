@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraMessageParser;
 import com.synopsys.integration.alert.channel.jira.common.JiraTestIssueRequestCreator;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerChannel;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerContextBuilder;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActionImpl;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class JiraServerDistributionTestAction extends ChannelDistributionTestAction {
+public class JiraServerDistributionTestAction extends ChannelDistributionTestActionImpl {
     private final Gson gson;
     private final JiraMessageParser jiraMessageParser;
     private final JiraServerContextBuilder jiraServerContextBuilder;

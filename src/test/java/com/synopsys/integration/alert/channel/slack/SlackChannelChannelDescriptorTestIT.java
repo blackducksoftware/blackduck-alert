@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActionImpl;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -128,7 +129,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
     @Override
     public ChannelDistributionTestAction getChannelDistributionTestAction() {
-        return new ChannelDistributionTestAction(slackChannel) {};
+        return new ChannelDistributionTestActionImpl(slackChannel) {};
     }
 
     @Override

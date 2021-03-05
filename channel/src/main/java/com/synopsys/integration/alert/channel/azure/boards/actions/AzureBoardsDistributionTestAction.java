@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsContextFac
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsTestIssueRequestCreator;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsMessageParser;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsRequestCreator;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActionImpl;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class AzureBoardsDistributionTestAction extends ChannelDistributionTestAction {
+public class AzureBoardsDistributionTestAction extends ChannelDistributionTestActionImpl {
     private final Gson gson;
     private final AzureBoardsRequestCreator azureBoardsRequestCreator;
     private final AzureBoardsMessageParser azureBoardsMessageParser;

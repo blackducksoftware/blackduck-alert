@@ -21,6 +21,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActionImpl;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
@@ -603,7 +604,7 @@ public class JobConfigActionsTest {
     }
 
     private ChannelDistributionTestAction createChannelDistributionTestAction() {
-        return new ChannelDistributionTestAction(null) {
+        return new ChannelDistributionTestActionImpl(null) {
             @Override
             public MessageResult testConfig(DistributionJobModel testJobModel, ConfigurationModel channelGlobalConfig, String customTopic, String customMessage, String destination) {
                 return new MessageResult("Test Status Message");
