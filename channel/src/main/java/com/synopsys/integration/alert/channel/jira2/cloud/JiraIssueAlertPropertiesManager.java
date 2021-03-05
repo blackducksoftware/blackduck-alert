@@ -15,11 +15,11 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.response.IssuePropertyResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 
-public class JiraCloudIssueAlertPropertiesManager {
+public class JiraIssueAlertPropertiesManager {
     private final Gson gson;
     private final IssuePropertyService issuePropertyService;
 
-    public JiraCloudIssueAlertPropertiesManager(Gson gson, IssuePropertyService issuePropertyService) {
+    public JiraIssueAlertPropertiesManager(Gson gson, IssuePropertyService issuePropertyService) {
         this.gson = gson;
         this.issuePropertyService = issuePropertyService;
     }

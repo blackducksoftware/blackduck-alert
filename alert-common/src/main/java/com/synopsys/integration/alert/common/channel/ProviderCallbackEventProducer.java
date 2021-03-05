@@ -9,9 +9,9 @@ package com.synopsys.integration.alert.common.channel;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.event.ProviderCallbackEvent;
+import com.synopsys.integration.alert.common.event.IssueTrackerCallbackEvent;
 
 public interface ProviderCallbackEventProducer {
-    void sendProviderCallbackEvents(List<ProviderCallbackEvent> events);
+    void sendProviderCallbackEvents(List<IssueTrackerCallbackEvent> events);
 
 }

@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azureboards2.delegate;
+package com.synopsys.integration.alert.channel.azure.boards2.delegate;
 
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
@@ -22,7 +22,7 @@ public class AzureBoardsIssueCommenter extends IssueTrackerIssueCommenter<Intege
     private final AzureWorkItemCommentService commentService;
 
     public AzureBoardsIssueCommenter(
-        IssueTrackerIssueResponseCreator<Integer> issueResponseCreator,
+        IssueTrackerIssueResponseCreator issueResponseCreator,
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,
         AzureWorkItemCommentService commentService

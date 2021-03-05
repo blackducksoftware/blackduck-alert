@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsSearchProperties;
-import com.synopsys.integration.alert.channel.azureboards2.AzureBoardsSearchPropertiesUtils;
+import com.synopsys.integration.alert.channel.azure.boards2.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueTrackerRequestCreator;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

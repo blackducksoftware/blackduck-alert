@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -74,6 +75,11 @@ public class MockNotificationAccessor implements NotificationAccessor {
             int index = alertNotificationModels.indexOf(notification);
             alertNotificationModels.set(index, updatedNotification);
         }
+    }
+
+    @Override
+    public void setNotificationsProcessedById(Set<Long> notificationIds) {
+
     }
 
     @Override

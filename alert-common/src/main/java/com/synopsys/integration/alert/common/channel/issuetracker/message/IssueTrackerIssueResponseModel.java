@@ -7,26 +7,33 @@
  */
 package com.synopsys.integration.alert.common.channel.issuetracker.message;
 
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueTrackerIssueResponseModel extends AlertSerializableModel {
-    private final AlertIssueOrigin alertIssueOrigin;
     private final String issueKey;
     private final String issueLink;
     private final String issueTitle;
     private final IssueOperation issueOperation;
 
-    public IssueTrackerIssueResponseModel(AlertIssueOrigin alertIssueOrigin, String issueKey, String issueLink, String issueTitle, IssueOperation issueOperation) {
-        this.alertIssueOrigin = alertIssueOrigin;
+    private final IssueTrackerCallbackInfo callbackInfo;
+
+    public IssueTrackerIssueResponseModel(
+        String issueKey,
+        String issueLink,
+        String issueTitle,
+        IssueOperation issueOperation,
+        @Nullable IssueTrackerCallbackInfo callbackInfo
+    ) {
         this.issueKey = issueKey;
         this.issueLink = issueLink;
         this.issueTitle = issueTitle;
         this.issueOperation = issueOperation;
-    }
-
-    public AlertIssueOrigin getAlertIssueOrigin() {
-        return alertIssueOrigin;
+        this.callbackInfo = callbackInfo;
     }
 
     public String getIssueKey() {
@@ -43,6 +50,10 @@ public class IssueTrackerIssueResponseModel extends AlertSerializableModel {
 
     public IssueOperation getIssueOperation() {
         return issueOperation;
+    }
+
+    public Optional<IssueTrackerCallbackInfo> getCallbackInfo() {
+        return Optional.ofNullable(callbackInfo);
     }
 
 }

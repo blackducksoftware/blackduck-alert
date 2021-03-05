@@ -26,9 +26,12 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentLengthValidator;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueContentModel;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.service.IssueHandler;
+import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.common.message.model.ComponentItemCallbackInfo;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
@@ -176,7 +179,17 @@ public class AzureBoardsIssueHandler extends IssueHandler<WorkItemResponseModel>
                             .flatMap(issueLinkMap -> Optional.ofNullable(issueLinkMap.get("html")))
                             .map(ReferenceLinkModel::getHref)
                             .orElseGet(this::getIssueTrackerUrl);
-        return new IssueTrackerIssueResponseModel(alertIssueOrigin, workItemId.toString(), uiLink, issueTitle, issueOperation);
+        return new IssueTrackerIssueResponseModel(
+            workItemId.toString(),
+            uiLink,
+            issueTitle,
+            issueOperation,
+            new IssueTrackerCallbackInfo(
+                alertIssueOrigin.getProviderContentKey().getProviderConfigId(),
+                alertIssueOrigin.getComponentItem().flatMap(ComponentItem::getCallbackInfo).map(ComponentItemCallbackInfo::getCallbackUrl).orElse(null),
+                alertIssueOrigin.getProviderContentKey().getSubTopicValue() // FIXME this is wrong, but this class will be deleted before 6.5.0 is released
+            )
+        );
     }
 
     @Override

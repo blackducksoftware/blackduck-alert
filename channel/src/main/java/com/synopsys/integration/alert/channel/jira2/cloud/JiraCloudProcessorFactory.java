@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
-import com.synopsys.integration.alert.channel.api.issue.send.AlertIssueOriginCreator;
+import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
@@ -54,7 +54,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraCloudChannelKey jiraCloudChannelKey;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
-    private final AlertIssueOriginCreator alertIssueOriginCreator;
+    private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
 
@@ -64,7 +64,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         JiraMessageFormatter jiraMessageFormatter,
         JiraCloudChannelKey jiraCloudChannelKey,
         JiraErrorMessageUtility jiraErrorMessageUtility,
-        AlertIssueOriginCreator alertIssueOriginCreator,
+        IssueTrackerCallbackInfoCreator callbackInfoCreator,
         ConfigurationAccessor configurationAccessor,
         ProxyManager proxyManager
     ) {
@@ -72,7 +72,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraCloudChannelKey = jiraCloudChannelKey;
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
-        this.alertIssueOriginCreator = alertIssueOriginCreator;
+        this.callbackInfoCreator = callbackInfoCreator;
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
     }
@@ -92,11 +92,11 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
 
         // Common Helpers
-        JiraCloudIssueAlertPropertiesManager issuePropertiesManager = new JiraCloudIssueAlertPropertiesManager(gson, issuePropertyService);
-        IssueTrackerIssueResponseCreator<String> issueResponseCreator = new IssueTrackerIssueResponseCreator<>(alertIssueOriginCreator);
+        JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
+        IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
 
         // Message Sender Requirements
-        JiraCloudIssueCommenter issueCommenter = new JiraCloudIssueCommenter(issueResponseCreator, distributionDetails, issueService);
+        JiraCloudIssueCommenter issueCommenter = new JiraCloudIssueCommenter(issueResponseCreator, issueService, distributionDetails);
         JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(issueCommenter, issueResponseCreator, distributionDetails, issueService);
         JiraCloudIssueCreator issueCreator = createIssueCreator(distributionDetails, jiraCloudServiceFactory, issuePropertiesManager, issueService, issueCommenter);
 
@@ -112,7 +112,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private JiraCloudIssueCreator createIssueCreator(
         JiraCloudJobDetailsModel distributionDetails,
         JiraCloudServiceFactory jiraCloudServiceFactory,
-        JiraCloudIssueAlertPropertiesManager issuePropertiesManager,
+        JiraIssueAlertPropertiesManager issuePropertiesManager,
         IssueService issueService,
         JiraCloudIssueCommenter issueCommenter
     ) {
@@ -124,14 +124,14 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         return new JiraCloudIssueCreator(
             jiraCloudChannelKey,
+            issueCommenter,
+            callbackInfoCreator,
             distributionDetails,
             issueService,
             projectService,
             issueCreationRequestCreator,
-            issueCommenter,
             issuePropertiesManager,
-            jiraErrorMessageUtility,
-            alertIssueOriginCreator
+            jiraErrorMessageUtility
         );
     }
 

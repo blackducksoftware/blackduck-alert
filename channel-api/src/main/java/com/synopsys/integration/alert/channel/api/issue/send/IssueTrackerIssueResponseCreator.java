@@ -9,28 +9,28 @@ package com.synopsys.integration.alert.channel.api.issue.send;
 
 import java.io.Serializable;
 
+import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.AlertIssueOrigin;
+import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 
-public class IssueTrackerIssueResponseCreator<T extends Serializable> {
-    private final AlertIssueOriginCreator alertIssueOriginCreator;
+public class IssueTrackerIssueResponseCreator {
+    private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
 
-    public IssueTrackerIssueResponseCreator(AlertIssueOriginCreator alertIssueOriginCreator) {
-        this.alertIssueOriginCreator = alertIssueOriginCreator;
+    public IssueTrackerIssueResponseCreator(IssueTrackerCallbackInfoCreator callbackInfoCreator) {
+        this.callbackInfoCreator = callbackInfoCreator;
     }
 
-    public final IssueTrackerIssueResponseModel createIssueResponse(ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
-        AlertIssueOrigin alertIssueOrigin = alertIssueOriginCreator.createIssueOrigin(source);
-
+    public final <T extends Serializable> IssueTrackerIssueResponseModel createIssueResponse(ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
+        IssueTrackerCallbackInfo callbackInfo = callbackInfoCreator.createCallbackInfo(source);
         return new IssueTrackerIssueResponseModel(
-            alertIssueOrigin,
             existingIssueDetails.getIssueKey(),
             existingIssueDetails.getIssueUILink(),
             existingIssueDetails.getIssueSummary(),
-            issueOperation
+            issueOperation,
+            callbackInfo
         );
     }
 

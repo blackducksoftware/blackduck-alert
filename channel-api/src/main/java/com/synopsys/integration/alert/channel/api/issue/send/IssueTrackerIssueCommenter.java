@@ -25,9 +25,9 @@ public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final IssueTrackerIssueResponseCreator<T> issueResponseCreator;
+    private final IssueTrackerIssueResponseCreator issueResponseCreator;
 
-    protected IssueTrackerIssueCommenter(IssueTrackerIssueResponseCreator<T> issueResponseCreator) {
+    protected IssueTrackerIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator) {
         this.issueResponseCreator = issueResponseCreator;
     }
 
