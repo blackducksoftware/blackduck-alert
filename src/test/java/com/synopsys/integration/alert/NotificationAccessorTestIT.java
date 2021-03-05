@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -363,6 +365,38 @@ public class NotificationAccessorTestIT {
         notificationManager.deleteNotification(savedModel);
 
         assertEquals(0, notificationContentRepository.count());
+    }
+
+    @Test
+    public void setNotificationsProcessedTest() {
+        AlertNotificationModel notificationModel = createNotificationModel();
+
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationModel));
+
+        notificationManager.setNotificationsProcessed(savedModels);
+
+        assertEquals(1, savedModels.size());
+        Optional<AlertNotificationModel> alertNotificationModelTest = notificationManager.findById(savedModels.get(0).getId());
+        assertTrue(alertNotificationModelTest.isPresent());
+        assertTrue(alertNotificationModelTest.get().getProcessed());
+    }
+
+    @Test
+    public void setNotificationsProcessedByIdTest() {
+        AlertNotificationModel notificationModel = createNotificationModel();
+
+        List<AlertNotificationModel> savedModels = notificationManager.saveAllNotifications(List.of(notificationModel));
+        List<Long> notificationIds = savedModels
+                                         .stream()
+                                         .map(AlertNotificationModel::getId)
+                                         .collect(Collectors.toList());
+
+        notificationManager.setNotificationsProcessedById(new HashSet<>(notificationIds));
+
+        assertEquals(1, notificationIds.size());
+        Optional<AlertNotificationModel> alertNotificationModelTest = notificationManager.findById(notificationIds.get(0));
+        assertTrue(alertNotificationModelTest.isPresent());
+        assertTrue(alertNotificationModelTest.get().getProcessed());
     }
 
     private AlertNotificationModel createNotificationModel(OffsetDateTime createdAt) {

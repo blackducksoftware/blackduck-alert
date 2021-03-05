@@ -11,6 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -31,6 +32,8 @@ public interface NotificationAccessor {
     AlertPagedModel<AlertNotificationModel> getFirstPageOfNotificationsNotProcessed(int pageSize);
 
     void setNotificationsProcessed(List<AlertNotificationModel> notifications);
+
+    void setNotificationsProcessedById(Set<Long> notificationIds);
 
     void deleteNotificationList(List<AlertNotificationModel> notifications);
 

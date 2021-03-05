@@ -188,7 +188,7 @@ public class NotificationContentRepositoryIT {
 
         assertEquals(numberOfSearchTermMatches, matchingNotifications.getTotalElements());
     }
-
+    
     private Long initializeNotificationRepo(String searchTerm, int numberToCreate) throws ParseException, AlertException {
         List<NotificationEntity> notifications = new ArrayList<>(numberToCreate);
         long searchableCount = 0;

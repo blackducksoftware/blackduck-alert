@@ -55,7 +55,8 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
 
     @Override
     public final String getDestinationName() {
-        return channelKey.getUniversalKey();
+        //FIXME: Required to avoid conflicts when registering new JMS Listeners
+        return channelKey.getUniversalKey() + "_old";
     }
 
     @Override
