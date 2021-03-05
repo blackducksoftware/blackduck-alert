@@ -10,14 +10,14 @@ package com.synopsys.integration.alert.channel.jira2.cloud.action;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
 import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
+import com.synopsys.integration.alert.channel.jira2.cloud.JiraCloudChannelV2;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 
 @Component
 public class JiraCloudDistributionTestAction extends DistributionChannelTestAction<JiraCloudJobDetailsModel> {
     @Autowired
-    public JiraCloudDistributionTestAction(DistributionChannelV2<JiraCloudJobDetailsModel> distributionChannel) {
+    public JiraCloudDistributionTestAction(JiraCloudChannelV2 distributionChannel) {
         super(distributionChannel);
     }
 
