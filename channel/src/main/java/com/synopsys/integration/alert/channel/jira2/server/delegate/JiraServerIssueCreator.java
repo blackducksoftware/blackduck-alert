@@ -90,7 +90,7 @@ public class JiraServerIssueCreator extends JiraIssueCreator<IssueCreationReques
     }
 
     @Override
-    protected String getReporter(IssueCreationRequestModel creationRequest) {
+    protected String extractReporter(IssueCreationRequestModel creationRequest) {
         return creationRequest.getReporterUsername();
     }
 

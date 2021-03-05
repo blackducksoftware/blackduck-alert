@@ -60,7 +60,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
             return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink);
         } catch (IntegrationRestException restException) {
-            throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, getReporter(creationRequest));
+            throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
         } catch (IntegrationException intException) {
             throw new AlertException("Failed to create an issue in Jira.", intException);
         }
@@ -78,7 +78,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     protected abstract IssueResponseModel fetchIssue(String createdIssueKey) throws IntegrationException;
 
-    protected abstract String getReporter(T creationRequest);
+    protected abstract String extractReporter(T creationRequest);
 
     protected JiraCustomFieldReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
         IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();

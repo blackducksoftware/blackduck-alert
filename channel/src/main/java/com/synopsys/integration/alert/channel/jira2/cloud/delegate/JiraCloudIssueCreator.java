@@ -92,7 +92,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
     }
 
     @Override
-    protected String getReporter(IssueCreationRequestModel creationRequest) {
+    protected String extractReporter(IssueCreationRequestModel creationRequest) {
         return creationRequest.getReporterEmail();
     }
 
