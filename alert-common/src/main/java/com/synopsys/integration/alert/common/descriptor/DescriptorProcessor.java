@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.channel.AbstractChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActionImpl;
 import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
@@ -49,7 +49,7 @@ public class DescriptorProcessor {
             ChannelKey channelKey = autoActionable.getChannelKey();
             ConfigurationAction configurationAction = allConfigurationActions.get(channelKey.getUniversalKey());
 
-            ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestActionImpl(channel) {
+            ChannelDistributionTestAction channelDistributionTestAction = new AbstractChannelDistributionTestAction(channel) {
             };
 
             configurationAction.addDistributionTestAction(channelDistributionTestAction);

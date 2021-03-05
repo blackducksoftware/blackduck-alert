@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -38,9 +37,6 @@ public abstract class DistributionChannelTestAction<D extends DistributionJobDet
         throws IntegrationException {
         return testConfig(testJobModel, customTopic, customMessage, destination);
     }
-
-    @Override
-    public abstract DistributionChannel getDistributionChannel();
 
     public MessageResult testConfig(DistributionJobModel testJobModel) throws IntegrationException {
         return testConfig(testJobModel, null, null, null);

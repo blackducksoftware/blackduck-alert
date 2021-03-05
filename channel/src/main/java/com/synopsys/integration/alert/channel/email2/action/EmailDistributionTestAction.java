@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
 import com.synopsys.integration.alert.channel.email2.EmailChannelV2;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -31,11 +30,6 @@ public class EmailDistributionTestAction extends DistributionChannelTestAction<E
     public EmailDistributionTestAction(EmailChannelV2 distributionChannel, EmailTestActionHelper emailTestActionHelper) {
         super(distributionChannel);
         this.emailTestActionHelper = emailTestActionHelper;
-    }
-
-    @Override
-    public DistributionChannel getDistributionChannel() {
-        return null;
     }
 
     @Override

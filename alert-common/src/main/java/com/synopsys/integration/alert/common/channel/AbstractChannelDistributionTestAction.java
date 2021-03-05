@@ -17,10 +17,10 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class ChannelDistributionTestActionImpl implements ChannelDistributionTestAction {
+public abstract class AbstractChannelDistributionTestAction implements ChannelDistributionTestAction {
     private final DistributionChannel distributionChannel;
 
-    public ChannelDistributionTestActionImpl(DistributionChannel distributionChannel) {
+    public AbstractChannelDistributionTestAction(DistributionChannel distributionChannel) {
         this.distributionChannel = distributionChannel;
     }
 
@@ -38,8 +38,7 @@ public abstract class ChannelDistributionTestActionImpl implements ChannelDistri
         return distributionChannel.sendMessage(channelTestEvent);
     }
 
-    @Override
-    public DistributionChannel getDistributionChannel() {
+    protected DistributionChannel getDistributionChannel() {
         return distributionChannel;
     }
 

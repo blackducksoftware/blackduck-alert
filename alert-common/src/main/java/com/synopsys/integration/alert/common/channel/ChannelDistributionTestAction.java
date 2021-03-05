@@ -23,6 +23,4 @@ public interface ChannelDistributionTestAction {
         @Nullable String destination
     ) throws IntegrationException;
 
-    DistributionChannel getDistributionChannel();
-
 }
