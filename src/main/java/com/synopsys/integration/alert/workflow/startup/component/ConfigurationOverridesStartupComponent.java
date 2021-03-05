@@ -34,12 +34,13 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 @Component
 @Order(11)
 public class ConfigurationOverridesStartupComponent extends StartupComponent {
-    private final Logger logger = LoggerFactory.getLogger(ConfigurationOverridesStartupComponent.class);
-    private static final String ENV_VAR_LDAP_DISABLE = "ALERT_LDAP_DISABLED";
-    private static final String ENV_VAR_SAML_DISABLE = "ALERT_SAML_DISABLED";
-    private static final String ENV_VAR_ADMIN_USER_PASSWORD_RESET = "ALERT_ADMIN_USER_PASSWORD_RESET";
+    public static final String ENV_VAR_LDAP_DISABLE = "ALERT_LDAP_DISABLED";
+    public static final String ENV_VAR_SAML_DISABLE = "ALERT_SAML_DISABLED";
+    public static final String ENV_VAR_ADMIN_USER_PASSWORD_RESET = "ALERT_ADMIN_USER_PASSWORD_RESET";
     private static final String DEFAULT_ADMIN_USERNAME = "sysadmin";
     private static final String DEFAULT_ADMIN_PASSWORD = "$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy";
+
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationOverridesStartupComponent.class);
 
     private EnvironmentVariableUtility environmentVariableUtility;
     private final DefaultDescriptorGlobalConfigUtility configUtility;
