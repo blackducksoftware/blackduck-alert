@@ -10,13 +10,17 @@ package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.jira2.common.delegate.JiraIssueCommenter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
+import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 
 public class JiraCloudIssueCommenter extends JiraIssueCommenter {
+    private final IssueService issueService;
     private final JiraCloudJobDetailsModel distributionDetails;
 
     public JiraCloudIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator, IssueService issueService, JiraCloudJobDetailsModel distributionDetails) {
-        super(issueResponseCreator, issueService::addComment);
+        super(issueResponseCreator);
+        this.issueService = issueService;
         this.distributionDetails = distributionDetails;
     }
 
@@ -25,4 +29,8 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter {
         return distributionDetails.isAddComments();
     }
 
+    @Override
+    protected void addComment(IssueCommentRequestModel requestModel) throws IntegrationException {
+        issueService.addComment(requestModel);
+    }
 }
