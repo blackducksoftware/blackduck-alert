@@ -8,7 +8,7 @@
 package com.synopsys.integration.alert.channel.jira2.server.delegate;
 
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCommenter;
+import com.synopsys.integration.alert.channel.jira2.common.delegate.JiraIssueCommenter;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.jira.common.server.service.IssueService;
 

@@ -92,7 +92,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         IssuePropertyService issuePropertyService = jiraCloudServiceFactory.createIssuePropertyService();
 
         // Common Helpers
-        JiraCloudIssueAlertPropertiesManager issuePropertiesManager = new JiraCloudIssueAlertPropertiesManager(gson, issuePropertyService);
+        JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
 
         // Message Sender Requirements
@@ -112,7 +112,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private JiraCloudIssueCreator createIssueCreator(
         JiraCloudJobDetailsModel distributionDetails,
         JiraCloudServiceFactory jiraCloudServiceFactory,
-        JiraCloudIssueAlertPropertiesManager issuePropertiesManager,
+        JiraIssueAlertPropertiesManager issuePropertiesManager,
         IssueService issueService,
         JiraCloudIssueCommenter issueCommenter
     ) {
@@ -124,14 +124,14 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         return new JiraCloudIssueCreator(
             jiraCloudChannelKey,
+            issueCommenter,
+            callbackInfoCreator,
             distributionDetails,
             issueService,
             projectService,
             issueCreationRequestCreator,
-            issueCommenter,
             issuePropertiesManager,
-            jiraErrorMessageUtility,
-            callbackInfoCreator
+            jiraErrorMessageUtility
         );
     }
 

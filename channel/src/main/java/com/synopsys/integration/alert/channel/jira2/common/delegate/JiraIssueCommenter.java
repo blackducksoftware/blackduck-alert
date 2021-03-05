@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira2.common;
+package com.synopsys.integration.alert.channel.jira2.common.delegate;
 
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
@@ -17,7 +17,7 @@ import com.synopsys.integration.function.ThrowingConsumer;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
 
 public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<String> {
-    private final ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer;
+    private final ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer; // TODO: Just expose another abstract method instead of this
 
     protected JiraIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator, ThrowingConsumer<IssueCommentRequestModel, IntegrationException> addCommentConsumer) {
         super(issueResponseCreator);
