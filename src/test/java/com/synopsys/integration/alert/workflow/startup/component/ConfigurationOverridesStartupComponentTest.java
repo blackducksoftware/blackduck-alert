@@ -153,7 +153,7 @@ public class ConfigurationOverridesStartupComponentTest {
 
         String newUsername = "UpdatedAdmin";
 
-        // Update the sysadmin password
+        // Update the sysadmin username and password
         Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
