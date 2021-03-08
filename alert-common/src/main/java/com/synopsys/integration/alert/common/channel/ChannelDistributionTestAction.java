@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.exception.IntegrationException;
 
 public interface ChannelDistributionTestAction {
+    // FIXME remove ConfigurationModel parameter
     MessageResult testConfig(
         DistributionJobModel testJobModel,
         @Nullable ConfigurationModel channelGlobalConfig,

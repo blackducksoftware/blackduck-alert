@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.exception.IntegrationException;
 
+// FIXME remove this class when JiraServer v2 is implemented
 public abstract class AbstractChannelDistributionTestAction implements ChannelDistributionTestAction {
     private final DistributionChannel distributionChannel;
 

@@ -368,6 +368,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                             .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
                                                             .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
+                    // FIXME remove nullableChannelGlobalConfig parameter
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
                         testJobModel,
                         nullableChannelGlobalConfig,
