@@ -52,7 +52,7 @@ public class ConfigurationOverridesStartupComponentTest {
 
     @AfterEach
     public void cleanUp() throws AlertException {
-        Optional<UserModel> sysadminOptional = userAccessor.getUser(DEFAULT_ADMIN_USER);
+        Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
         UserModel updatedSysadmin = changeUserPassword(sysadmin, DEFAULT_PASSWORD);
@@ -68,7 +68,7 @@ public class ConfigurationOverridesStartupComponentTest {
             apiAction, configurationFieldModelConverter);
 
         // Update the sysadmin password
-        Optional<UserModel> sysadminOptional = userAccessor.getUser(DEFAULT_ADMIN_USER);
+        Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
         assertEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
@@ -79,7 +79,7 @@ public class ConfigurationOverridesStartupComponentTest {
         configurationOverridesStartupComponent.initialize();
 
         // Verify the sysadmin password is the updated password
-        sysadminOptional = userAccessor.getUser(DEFAULT_ADMIN_USER);
+        sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         sysadmin = sysadminOptional.get();
         assertNotEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
@@ -110,7 +110,7 @@ public class ConfigurationOverridesStartupComponentTest {
             apiAction, configurationFieldModelConverter);
 
         // Update the sysadmin password
-        Optional<UserModel> sysadminOptional = userAccessor.getUser(DEFAULT_ADMIN_USER);
+        Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         UserModel sysadmin = sysadminOptional.get();
         assertEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
@@ -121,7 +121,7 @@ public class ConfigurationOverridesStartupComponentTest {
         configurationOverridesStartupComponent.initialize();
 
         // Verify the sysadmin password is the default password
-        sysadminOptional = userAccessor.getUser(DEFAULT_ADMIN_USER);
+        sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
         assertTrue(sysadminOptional.isPresent());
         sysadmin = sysadminOptional.get();
         assertEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
@@ -142,8 +142,57 @@ public class ConfigurationOverridesStartupComponentTest {
         assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
     }
 
+    @Test
+    public void testInitializeResetPasswordDifferentUsername() throws AlertException {
+        Environment environment = Mockito.mock(Environment.class);
+        Mockito.when(environment.getProperty(ConfigurationOverridesStartupComponent.ENV_VAR_ADMIN_USER_PASSWORD_RESET)).thenReturn("true");
+        EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
+
+        ConfigurationOverridesStartupComponent configurationOverridesStartupComponent = new ConfigurationOverridesStartupComponent(environmentVariableUtility, userAccessor, descriptorKey, configurationAccessor,
+            apiAction, configurationFieldModelConverter);
+
+        String newUsername = "UpdatedAdmin";
+
+        // Update the sysadmin password
+        Optional<UserModel> sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
+        assertTrue(sysadminOptional.isPresent());
+        UserModel sysadmin = sysadminOptional.get();
+        assertEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
+        UserModel updatedSysadmin = changeUserNameAndPassword(sysadmin, newUsername, UPDATED_PASSWORD);
+        userAccessor.updateUser(updatedSysadmin, false);
+
+        // Run the initialize method
+        configurationOverridesStartupComponent.initialize();
+
+        // Verify the sysadmin password is the default password
+        sysadminOptional = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID);
+        assertTrue(sysadminOptional.isPresent());
+        sysadmin = sysadminOptional.get();
+        assertEquals(DEFAULT_PASSWORD_ENCODED, sysadmin.getPassword());
+
+        HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(servletRequest.getSession()).thenReturn(session);
+        HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);
+
+        // Try to login with the updated password
+        LoginConfig updatedLoginConfig = new LoginConfig(newUsername, UPDATED_PASSWORD);
+        ActionResponse<Void> actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, updatedLoginConfig);
+        assertEquals(HttpStatus.UNAUTHORIZED, actionResponse.getHttpStatus());
+
+        // Try to login with the default password
+        LoginConfig defaultLoginConfig = new LoginConfig(newUsername, DEFAULT_PASSWORD);
+        actionResponse = authenticationActions.authenticateUser(servletRequest, servletResponse, defaultLoginConfig);
+        assertEquals(HttpStatus.NO_CONTENT, actionResponse.getHttpStatus());
+    }
+
     private UserModel changeUserPassword(UserModel oldUserModel, String newPassword) {
-        return UserModel.existingUser(oldUserModel.getId(), oldUserModel.getName(),
+        return UserModel.existingUser(oldUserModel.getId(), DEFAULT_ADMIN_USER,
+            newPassword, oldUserModel.getEmailAddress(), oldUserModel.getAuthenticationType(), oldUserModel.getRoles(), oldUserModel.isEnabled());
+    }
+
+    private UserModel changeUserNameAndPassword(UserModel oldUserModel, String newUsername, String newPassword) {
+        return UserModel.existingUser(oldUserModel.getId(), newUsername,
             newPassword, oldUserModel.getEmailAddress(), oldUserModel.getAuthenticationType(), oldUserModel.getRoles(), oldUserModel.isEnabled());
     }
 }
