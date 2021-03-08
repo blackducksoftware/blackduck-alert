@@ -73,6 +73,7 @@ public final class NotificationProcessorV2 {
     public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
         try {
             processAndDistribute(notifications, frequencies);
+            notificationAccessor.setNotificationsProcessed(notifications);
         } finally {
             clearCaches();
         }
@@ -96,7 +97,6 @@ public final class NotificationProcessorV2 {
             ProviderMessageHolder providerMessageHolder = processJobNotifications(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
             providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
-            notificationAccessor.setNotificationsProcessedById(notificationIds);
         }
     }
 
