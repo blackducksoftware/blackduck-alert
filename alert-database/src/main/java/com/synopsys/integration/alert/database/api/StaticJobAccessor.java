@@ -50,7 +50,6 @@ import com.synopsys.integration.alert.database.job.azure.boards.AzureBoardsJobDe
 import com.synopsys.integration.alert.database.job.azure.boards.DefaultAzureBoardsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.blackduck.BlackDuckJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.blackduck.projects.BlackDuckJobProjectEntity;
 import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
@@ -209,9 +208,9 @@ public class StaticJobAccessor implements JobAccessor {
             return true;
         }
 
-        return blackDuckJobDetails.getBlackDuckJobProjects()
+        return blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(distributionJobEntity.getJobId())
                    .stream()
-                   .map(BlackDuckJobProjectEntity::getProjectName)
+                   .map(BlackDuckProjectDetailsModel::getName)
                    .anyMatch(projectName::equals);
     }
 
