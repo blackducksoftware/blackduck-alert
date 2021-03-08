@@ -37,7 +37,6 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     public static final String ENV_VAR_LDAP_DISABLE = "ALERT_LDAP_DISABLED";
     public static final String ENV_VAR_SAML_DISABLE = "ALERT_SAML_DISABLED";
     public static final String ENV_VAR_ADMIN_USER_PASSWORD_RESET = "ALERT_ADMIN_USER_PASSWORD_RESET";
-    private static final String DEFAULT_ADMIN_USERNAME = "sysadmin";
     private static final String DEFAULT_ADMIN_PASSWORD = "$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy";
 
     private final Logger logger = LoggerFactory.getLogger(ConfigurationOverridesStartupComponent.class);
@@ -97,9 +96,9 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
     private void checkAndResetDefaultAdminPassword() throws AlertException {
         boolean disable = isEnvironmentVariableActivated(ENV_VAR_ADMIN_USER_PASSWORD_RESET);
         if (disable) {
-            logger.info("Resetting default admin password.");
-            UserModel userModel = userAccessor.getUser(DEFAULT_ADMIN_USERNAME)
-                                      .orElseThrow(() -> new AlertException("Default Sysadmin user not found."));
+            UserModel userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER_ID)
+                                      .orElseThrow(() -> new AlertException("The default admin user was not found."));
+            logger.info("Resetting the password for the user '{}'.", userModel.getName());
             UserModel newModel = UserModel.existingUser(userModel.getId(), userModel.getName(), DEFAULT_ADMIN_PASSWORD, userModel.getEmailAddress(), userModel.getAuthenticationType(), userModel.getRoles(), userModel.isEnabled());
             userAccessor.updateUser(newModel, true);
         }
