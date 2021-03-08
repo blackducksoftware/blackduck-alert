@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
@@ -26,7 +28,7 @@ public class ComponentConcernConverter {
     }
 
     public List<String> gatherComponentConcernSectionPieces(List<ComponentConcern> componentConcerns) {
-        List<String> componentConcernSectionPieces = new LinkedList<>();
+        LinkedList<String> componentConcernSectionPieces = new LinkedList<>();
 
         String nonBreakingSpace = formatter.getNonBreakingSpace();
         String indent = nonBreakingSpace + nonBreakingSpace;
@@ -65,6 +67,10 @@ public class ComponentConcernConverter {
 
             String concernString = createComponentConcernString(componentConcern);
             componentConcernSectionPieces.add(concernString);
+        }
+
+        if (!StringUtils.endsWith(componentConcernSectionPieces.getLast(), formatter.getLineSeparator())) {
+            componentConcernSectionPieces.add(formatter.getLineSeparator());
         }
         return componentConcernSectionPieces;
     }
