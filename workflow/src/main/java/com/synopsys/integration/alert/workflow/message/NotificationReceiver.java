@@ -12,8 +12,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
@@ -29,17 +27,15 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 
-@Component(value = NotificationReceiver.COMPONENT_NAME)
 public class NotificationReceiver extends MessageReceiver<NotificationReceivedEvent> implements AlertDefaultEventListener {
     private final static int MAX_NUMBER_PAGES_PROCESSED = 100;
     public static final String COMPONENT_NAME = "notification_receiver";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private NotificationAccessor notificationAccessor;
-    private NotificationProcessor notificationProcessor;
-    private ChannelEventManager eventManager;
+    private final NotificationAccessor notificationAccessor;
+    private final NotificationProcessor notificationProcessor;
+    private final ChannelEventManager eventManager;
 
-    @Autowired
     public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, ChannelEventManager eventManager) {
         super(gson, NotificationReceivedEvent.class);
         this.notificationAccessor = notificationAccessor;
@@ -89,4 +85,5 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
     public String getDestinationName() {
         return NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE;
     }
+
 }

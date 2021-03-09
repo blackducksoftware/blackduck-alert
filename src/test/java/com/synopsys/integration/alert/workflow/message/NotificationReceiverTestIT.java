@@ -23,13 +23,12 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 //  Move this class into the workflow subproject once the dependencies are resolved
 @AlertIntegrationTest
 public class NotificationReceiverTestIT {
-
     @Autowired
     private NotificationContentRepository notificationContentRepository;
     @Autowired
     private DefaultNotificationAccessor defaultNotificationAccessor;
     @Autowired
-    private NotificationReceiver notificationReceiver;
+    private NotificationReceiverV2 notificationReceiver;
 
     int pageSize = 10;
 

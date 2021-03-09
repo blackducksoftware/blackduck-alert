@@ -18,7 +18,7 @@ import org.springframework.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertDefaultEventListener;
-import com.synopsys.integration.alert.common.event.NotificationReceivedEventV2;
+import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
@@ -26,24 +26,24 @@ import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 
 @Component(value = NotificationReceiverV2.COMPONENT_NAME)
-public class NotificationReceiverV2 extends MessageReceiver<NotificationReceivedEventV2> implements AlertDefaultEventListener {
-    public static final String COMPONENT_NAME = "notification_receiverV2";
-
+public class NotificationReceiverV2 extends MessageReceiver<NotificationReceivedEvent> implements AlertDefaultEventListener {
+    public static final String COMPONENT_NAME = "notification_receiver";
     private static final int PAGE_SIZE = 100;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final NotificationAccessor notificationAccessor;
     private final NotificationProcessorV2 notificationProcessor;
 
     @Autowired
     public NotificationReceiverV2(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessorV2 notificationProcessor) {
-        super(gson, NotificationReceivedEventV2.class);
+        super(gson, NotificationReceivedEvent.class);
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
     }
 
     @Override
-    public void handleEvent(NotificationReceivedEventV2 event) {
+    public void handleEvent(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
         logger.info("Processing event for notifications.");
 
@@ -65,6 +65,7 @@ public class NotificationReceiverV2 extends MessageReceiver<NotificationReceived
 
     @Override
     public String getDestinationName() {
-        return NotificationReceivedEventV2.NOTIFICATION_RECEIVED_EVENT_TYPE;
+        return NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE;
     }
+
 }
