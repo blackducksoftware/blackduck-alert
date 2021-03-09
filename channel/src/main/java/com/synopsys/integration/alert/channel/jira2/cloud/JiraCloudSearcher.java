@@ -181,7 +181,7 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
         IssueFieldsComponent nullableIssueFields = issue.getFields();
         String existingIssueSummary = Optional.ofNullable(nullableIssueFields)
                                           .map(IssueFieldsComponent::getSummary)
-                                          .orElse("Not included");
+                                          .orElse(issue.getKey());
         return new ExistingIssueDetails<>(issue.getId(), issue.getKey(), existingIssueSummary, issueCallbackLink);
     }
 
