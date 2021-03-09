@@ -43,17 +43,17 @@ public class JiraCloudIssueTransitioner extends JiraIssueTransitioner {
     }
 
     @Override
-    protected StatusDetailsComponent getIssueStatus(String issueKey) throws IntegrationException {
+    protected StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException {
         return issueService.getStatus(issueKey);
     }
 
     @Override
-    protected TransitionsResponseModel getIssueTransitions(String issueKey) throws IntegrationException {
+    protected TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException {
         return issueService.getTransitions(issueKey);
     }
 
     @Override
-    protected void transitionIssue(IssueRequestModel issueRequestModel) throws IntegrationException {
+    protected void executeTransitionRequest(IssueRequestModel issueRequestModel) throws IntegrationException {
         issueService.transitionIssue(issueRequestModel);
     }
 }

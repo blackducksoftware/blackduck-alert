@@ -42,11 +42,11 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
 
     protected abstract String extractResolveTransitionName();
 
-    protected abstract StatusDetailsComponent getIssueStatus(String issueKey) throws IntegrationException;
+    protected abstract StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException;
 
-    protected abstract TransitionsResponseModel getIssueTransitions(String issueKey) throws IntegrationException;
+    protected abstract TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException;
 
-    protected abstract void transitionIssue(IssueRequestModel issueRequestModel) throws IntegrationException;
+    protected abstract void executeTransitionRequest(IssueRequestModel issueRequestModel) throws IntegrationException;
 
     @Override
     protected Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {
@@ -89,7 +89,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
 
     private StatusCategory retrieveIssueStatusCategory(String issueKey) throws AlertException {
         try {
-            StatusDetailsComponent issueStatus = getIssueStatus(issueKey);
+            StatusDetailsComponent issueStatus = fetchIssueStatus(issueKey);
             return issueStatus.getStatusCategory();
         } catch (IntegrationException e) {
             throw new AlertException(String.format("Failed to retrieve issue status from Jira. Issue Key: %s", issueKey), e);
@@ -98,7 +98,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
 
     private List<TransitionComponent> retrieveTransitions(String issueKey) throws AlertException {
         try {
-            TransitionsResponseModel transitionsResponse = getIssueTransitions(issueKey);
+            TransitionsResponseModel transitionsResponse = fetchIssueTransitions(issueKey);
             return transitionsResponse.getTransitions();
         } catch (IntegrationException e) {
             throw new AlertException(String.format("Failed to retrieve transitions from Jira. Issue Key: %s", issueKey), e);
@@ -124,7 +124,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
     private void performTransition(String issueKey, IdComponent transitionId) throws AlertException {
         IssueRequestModel issueRequestModel = new IssueRequestModel(issueKey, transitionId, new IssueRequestModelFieldsBuilder(), Map.of(), List.of());
         try {
-            transitionIssue(issueRequestModel);
+            executeTransitionRequest(issueRequestModel);
         } catch (IntegrationException e) {
             throw new AlertException(String.format("Failed to transition issue in Jira. Issue Key: %s", issueKey), e);
         }
