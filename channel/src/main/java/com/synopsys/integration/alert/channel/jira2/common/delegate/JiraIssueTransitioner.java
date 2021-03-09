@@ -31,10 +31,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected JiraIssueTransitioner(
-        IssueTrackerIssueCommenter<String> commenter,
-        IssueTrackerIssueResponseCreator issueResponseCreator
-    ) {
+    protected JiraIssueTransitioner(IssueTrackerIssueCommenter<String> commenter, IssueTrackerIssueResponseCreator issueResponseCreator) {
         super(commenter, issueResponseCreator);
     }
 
@@ -49,7 +46,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
     protected abstract void executeTransitionRequest(IssueRequestModel issueRequestModel) throws IntegrationException;
 
     @Override
-    protected Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {
+    protected final Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {
         String transitionName = null;
         if (IssueOperation.OPEN.equals(transitionType)) {
             transitionName = extractReopenTransitionName();
@@ -60,7 +57,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
     }
 
     @Override
-    protected boolean isTransitionRequired(ExistingIssueDetails<String> existingIssueDetails, IssueOperation transitionType) throws AlertException {
+    protected final boolean isTransitionRequired(ExistingIssueDetails<String> existingIssueDetails, IssueOperation transitionType) throws AlertException {
         StatusCategory issueStatusCategory = retrieveIssueStatusCategory(existingIssueDetails.getIssueKey());
         String statusCategoryKey = issueStatusCategory.getKey();
         if (IssueOperation.OPEN.equals(transitionType)) {
@@ -74,7 +71,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
     }
 
     @Override
-    protected void findAndPerformTransition(ExistingIssueDetails<String> existingIssueDetails, String transitionName) throws AlertException {
+    protected final void findAndPerformTransition(ExistingIssueDetails<String> existingIssueDetails, String transitionName) throws AlertException {
         String issueKey = existingIssueDetails.getIssueKey();
         logger.debug("Attempting the transition '{}' on the issue '{}'", transitionName, issueKey);
         List<TransitionComponent> issueTransitions = retrieveTransitions(issueKey);
