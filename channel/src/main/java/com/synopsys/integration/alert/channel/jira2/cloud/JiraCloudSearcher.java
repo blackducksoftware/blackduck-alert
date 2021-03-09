@@ -178,8 +178,11 @@ public class JiraCloudSearcher extends IssueTrackerSearcher<String> {
 
     private ExistingIssueDetails<String> createExistingIssueDetails(IssueResponseModel issue) {
         String issueCallbackLink = JiraCallbackUtils.createUILink(issue);
-        IssueFieldsComponent issueFields = issue.getFields();
-        return new ExistingIssueDetails<>(issue.getId(), issue.getKey(), issueFields.getSummary(), issueCallbackLink);
+        IssueFieldsComponent nullableIssueFields = issue.getFields();
+        String existingIssueSummary = Optional.ofNullable(nullableIssueFields)
+                                          .map(IssueFieldsComponent::getSummary)
+                                          .orElse(issue.getKey());
+        return new ExistingIssueDetails<>(issue.getId(), issue.getKey(), existingIssueSummary, issueCallbackLink);
     }
 
 }

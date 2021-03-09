@@ -111,8 +111,10 @@ public final class JqlStringCreator {
 
     private static void appendBlackDuckProjectSearchStrings(StringBuilder jqlBuilder, String jiraProjectKey, LinkableItem provider, LinkableItem project) {
         appendProjectKey(jqlBuilder, jiraProjectKey);
-        appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider.getValue());
-        appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL, provider.getValue());
+        appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, provider.getLabel());
+        provider.getUrl()
+            .flatMap(JiraIssueAlertPropertiesUrlCorrector::correctUrl)
+            .ifPresent(url -> appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL, url));
         appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_LABEL, project.getLabel());
         appendPropertySearchString(jqlBuilder, JiraIssuePropertyKeys.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROJECT_NAME, project.getValue());
     }
