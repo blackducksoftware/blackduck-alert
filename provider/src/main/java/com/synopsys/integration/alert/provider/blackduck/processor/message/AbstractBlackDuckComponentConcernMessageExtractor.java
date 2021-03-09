@@ -49,10 +49,13 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
     protected final ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper, T notificationContent) {
         AlertNotificationModel notificationModel = notificationContentWrapper.getAlertNotificationModel();
 
-        List<BomComponentDetails> bomComponentDetails;
         Long providerConfigId = notificationModel.getProviderConfigId();
+        String providerUrl;
+
+        List<BomComponentDetails> bomComponentDetails;
         try {
             BlackDuckServicesFactory blackDuckServicesFactory = servicesFactoryCache.retrieveBlackDuckServicesFactory(providerConfigId);
+            providerUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl().toString();
             bomComponentDetails = createBomComponentDetails(notificationContent, blackDuckServicesFactory);
         } catch (AlertConfigurationException e) {
             logger.warn("Invalid BlackDuck configuration for notification. ID: {}. Name: {}", providerConfigId, notificationModel.getProviderConfigName(), e);
@@ -62,7 +65,7 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
             return ProviderMessageHolder.empty();
         }
 
-        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), notificationModel.getProviderConfigName());
+        LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), notificationModel.getProviderConfigName(), providerUrl);
         ProviderDetails providerDetails = new ProviderDetails(notificationModel.getProviderConfigId(), providerItem);
 
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName());

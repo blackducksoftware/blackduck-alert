@@ -1,3 +1,10 @@
+/*
+ * channel
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
 package com.synopsys.integration.alert.channel.jira2.common.delegate;
 
 import java.util.Optional;
@@ -14,6 +21,7 @@ import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchPropert
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.channel.jira2.cloud.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropertiesUrlCorrector;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueSearchPropertyStringCompatibilityUtils;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -115,7 +123,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         String category = JiraIssueSearchPropertyStringCompatibilityUtils.createCategory(concernType);
         return new JiraIssueSearchProperties(
             provider.getLabel(),
-            provider.getUrl().orElse(null),
+            provider.getUrl().flatMap(JiraIssueAlertPropertiesUrlCorrector::correctUrl).orElse(null),
             project.getLabel(),
             project.getValue(),
             projectVersion.getLabel(),
