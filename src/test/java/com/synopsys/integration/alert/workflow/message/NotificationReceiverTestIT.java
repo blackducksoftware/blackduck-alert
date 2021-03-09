@@ -28,7 +28,7 @@ public class NotificationReceiverTestIT {
     @Autowired
     private DefaultNotificationAccessor defaultNotificationAccessor;
     @Autowired
-    private NotificationReceiverV2 notificationReceiver;
+    private NotificationReceiver notificationReceiver;
 
     int pageSize = 10;
 
