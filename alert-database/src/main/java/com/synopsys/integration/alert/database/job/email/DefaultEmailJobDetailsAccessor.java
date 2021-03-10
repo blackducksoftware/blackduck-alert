@@ -34,6 +34,7 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<EmailJobDetailsModel> retrieveDetails(UUID jobId) {
         return emailJobDetailsRepository.findById(jobId).map(this::convertToModel);
     }
@@ -68,7 +69,7 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
     }
 
     private EmailJobDetailsModel convertToModel(EmailJobDetailsEntity details) {
-        List<String> additionalEmailAddresses = details.getEmailJobAdditionalEmailAddresses()
+        List<String> additionalEmailAddresses = additionalEmailAddressRepository.findByJobId(details.getJobId())
                                                     .stream()
                                                     .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
                                                     .collect(Collectors.toList());
