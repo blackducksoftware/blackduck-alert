@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
@@ -53,7 +52,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.common.rest.model.NotificationConfig;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptor;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -68,6 +66,8 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.processor.api.JobNotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.util.ResourceUtil;
@@ -97,11 +97,11 @@ public class AuditEntryHandlerTestIT {
     @Autowired
     private AuditAccessor auditAccessor;
     @Autowired
-    private NotificationProcessor notificationProcessor;
+    private NotificationProcessorV2 notificationProcessor;
+    @Autowired
+    private JobNotificationProcessor jobNotificationProcessor;
     @Autowired
     private NotificationAccessor notificationAccessor;
-    @Autowired
-    private ChannelEventManager channelEventManager;
 
     private ConfigurationModel providerConfigModel = null;
 
@@ -152,12 +152,11 @@ public class AuditEntryHandlerTestIT {
     }
 
     private AuditEntryActions createAuditActions(AuthorizationManager authorizationManager) {
-        return new AuditEntryActions(authorizationManager, auditDescriptorKey, auditAccessor, notificationAccessor,
-            jobAccessor, channelEventManager, notificationProcessor);
+        return new AuditEntryActions(authorizationManager, auditDescriptorKey, auditAccessor, notificationAccessor, jobAccessor, notificationProcessor, jobNotificationProcessor);
     }
 
     @Test
-    public void getTestIT() throws Exception {
+    public void getTestIT() {
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         notificationContentRepository

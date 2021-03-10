@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,6 @@ import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.common.workflow.cache.NotificationDeserializationCache;
 import com.synopsys.integration.alert.common.workflow.processor.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
-import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.datastructure.SetMap;
 import com.synopsys.integration.log.IntLogger;
@@ -48,16 +46,14 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 public class NotificationProcessor {
     private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
 
-    private final ProviderKey defaultProviderKey;
     private final ConfigurationAccessor configurationAccessor;
     private final JobAccessor jobAccessor;
     private final Map<String, Provider> providerKeyToProvider;
     private final NotificationToDistributionEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(ProviderKey defaultProviderKey, ConfigurationAccessor configurationAccessor, JobAccessor jobAccessor, List<Provider> providers,
+    public NotificationProcessor(ConfigurationAccessor configurationAccessor, JobAccessor jobAccessor, List<Provider> providers,
         NotificationToDistributionEventConverter notificationToEventConverter) {
-        this.defaultProviderKey = defaultProviderKey;
         this.configurationAccessor = configurationAccessor;
         this.jobAccessor = jobAccessor;
         this.providerKeyToProvider = DataStructureUtils.mapToValues(providers, provider -> provider.getKey().getUniversalKey());
@@ -67,12 +63,6 @@ public class NotificationProcessor {
     public List<DistributionEvent> processNotifications(FrequencyType frequency, List<AlertNotificationModel> notifications) {
         logger.info(String.format("Notifications to Process: %s", notifications.size()));
         return processNotifications(notifications, (id, notificationType) -> jobAccessor.getMatchingEnabledJobs(frequency, id, notificationType));
-    }
-
-    public List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications) {
-        // used in AuditEntryActions
-        // when a job is deleted use this method to send the same notification to the current set of jobs. i.e. audit
-        return processNotifications(notifications, jobAccessor::getMatchingEnabledJobs);
     }
 
     private List<DistributionEvent> processNotifications(List<AlertNotificationModel> notifications, BiFunction<Long, NotificationType, List<DistributionJobModel>> getJobs) {
@@ -93,41 +83,6 @@ public class NotificationProcessor {
             }
         }
         return events;
-    }
-
-    public List<DistributionEvent> processNotificationsForJob(DistributionJobModel job, List<AlertNotificationModel> notifications) {
-        // used in AuditEntryActions
-        if (!job.isEnabled()) {
-            logger.debug(String.format("Skipping disabled distribution job: %s", job.getName()));
-            return List.of();
-        }
-        if (notifications.isEmpty()) {
-            return List.of();
-        }
-
-        Optional<ConfigurationModel> optionalProviderConfig = configurationAccessor.getConfigurationById(job.getBlackDuckGlobalConfigId());
-        if (optionalProviderConfig.isPresent()) {
-            Provider provider = providerKeyToProvider.get(defaultProviderKey.getUniversalKey());
-            ConfigurationModel providerConfiguration = optionalProviderConfig.get();
-            StatefulProvider statefulProvider;
-            try {
-                statefulProvider = provider.createStatefulProvider(providerConfiguration);
-            } catch (AlertException e) {
-                logger.errorAndDebug("Cannot create connection to Black Duck. " + e.getMessage(), e);
-                return List.of();
-            }
-
-            ProviderDistributionFilter distributionFilter = statefulProvider.getDistributionFilter();
-            List<AlertNotificationModel> notificationsByProviderConfig = filterNotificationsByProviderConfigId(statefulProvider, notifications);
-            List<AlertNotificationModel> notificationsByType = filterNotificationsByType(job, notificationsByProviderConfig);
-            List<AlertNotificationModel> filteredNotifications = filterNotificationsByProviderFields(job, distributionFilter, notificationsByType);
-
-            if (!filteredNotifications.isEmpty()) {
-                ProviderMessageContentCollector messageContentCollector = statefulProvider.getMessageContentCollector();
-                return createDistributionEventsForNotifications(messageContentCollector, job, distributionFilter.getCache(), filteredNotifications);
-            }
-        }
-        return List.of();
     }
 
     private List<DistributionEvent> processNotificationsThatMatchFilter(NotificationFilterModel notificationFilterModel, List<DistributionJobModel> matchingJobs, List<AlertNotificationModel> notifications) {
@@ -172,20 +127,6 @@ public class NotificationProcessor {
         }
 
         return List.of();
-    }
-
-    private List<AlertNotificationModel> filterNotificationsByType(DistributionJobModel job, List<AlertNotificationModel> notifications) {
-        return notifications
-                   .stream()
-                   .filter(notification -> job.getNotificationTypes().contains(notification.getNotificationType()))
-                   .collect(Collectors.toList());
-    }
-
-    private List<AlertNotificationModel> filterNotificationsByProviderConfigId(StatefulProvider provider, List<AlertNotificationModel> notifications) {
-        return notifications
-                   .stream()
-                   .filter(notification -> notification.getProviderConfigId().equals(provider.getConfigId()))
-                   .collect(Collectors.toList());
     }
 
     private List<AlertNotificationModel> filterNotificationsByProviderFields(DistributionJobModel job, ProviderDistributionFilter distributionFilter, List<AlertNotificationModel> notifications) {
