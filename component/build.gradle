@@ -15,6 +15,7 @@ dependencies {
     implementation project(':channel')
     implementation project(':descriptor-api')
     implementation project(":workflow")
+    implementation project(":processor-api")
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'org.apache.activemq:activemq-broker'

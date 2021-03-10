@@ -46,7 +46,7 @@ public final class NotificationProcessorV2 {
     private final NotificationAccessor notificationAccessor;
 
     @Autowired
-    protected NotificationProcessorV2(
+    public NotificationProcessorV2(
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
         JobNotificationMapper jobNotificationMapper,
         ProviderMessageExtractionDelegator providerMessageExtractionDelegator,

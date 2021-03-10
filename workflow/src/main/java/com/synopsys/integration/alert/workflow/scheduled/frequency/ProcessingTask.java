@@ -14,34 +14,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
+import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private NotificationAccessor notificationAccessor;
-    private NotificationProcessor notificationProcessor;
-    private ChannelEventManager eventManager;
+
+    private final NotificationAccessor notificationAccessor;
+    private final NotificationProcessorV2 notificationProcessorV2;
+    private final FrequencyType frequencyType;
+
     private OffsetDateTime lastRunTime;
 
-    public ProcessingTask(TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, ChannelEventManager eventManager, TaskManager taskManager) {
+    public ProcessingTask(
+        TaskScheduler taskScheduler,
+        NotificationAccessor notificationAccessor,
+        TaskManager taskManager,
+        NotificationProcessorV2 notificationProcessorV2,
+        FrequencyType frequencyType
+    ) {
         super(taskScheduler, taskManager);
         this.notificationAccessor = notificationAccessor;
-        this.notificationProcessor = notificationProcessor;
-        this.eventManager = eventManager;
+        this.notificationProcessorV2 = notificationProcessorV2;
+        this.frequencyType = frequencyType;
         lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
-
-    public abstract FrequencyType getDigestType();
 
     public OffsetDateTime getLastRunTime() {
         return lastRunTime;
@@ -58,9 +62,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         DateRange dateRange = getDateRange();
         List<AlertNotificationModel> notificationList = read(dateRange);
         logger.info("Processing {} notifications.", notificationList.size());
-        List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(getDigestType(), notificationList);
-        logger.info("Sending {} events for notifications.", distributionEvents.size());
-        eventManager.sendEvents(distributionEvents);
+        notificationProcessorV2.processNotifications(notificationList, List.of(frequencyType));
         lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 
