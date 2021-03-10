@@ -36,26 +36,20 @@ spec:
       - env:
         - name: RUN_SECRETS_DIR
           value: /tmp/secrets
-          #TODO: if the secret name is defined don't run lines below from "- name: ALERT_DB_PASSWORD" (look at the if example below)
-          #{{ -if not .Values.postgres.<dbPasswordSecret-variable name> }}
-          # Run section below
-          #{{- else }}
-          # Otherwise, do nothing and use the secret name
+        {{- if not .Values.postgres.dbCredentialSecretName }}
         - name: ALERT_DB_PASSWORD 
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
-        #TODO: if the secret name is defined don't run lines below from "- name: ALERT_ADMIN_DB_ADMIN_PASSWORD" (look at the if example below)
-          #{{ -if not .Values.postgres.<dbAdminPasswordSecret-variable name> }}
-          # Run section below
-          #{{- else }}
-          # Otherwise, do nothing and use the secret name
+        {{- end }}
+        {{- if not .Values.postgres.dbAdminCredentialSecretName }}
         - name: ALERT_DB_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_ADMIN_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ .Release.Name}}-db-config
@@ -104,22 +98,22 @@ spec:
           name: java-keystore
           subPath: cacerts
         {{- end }}
-        #TODO: We want to do something similar as above in the webserverCustomCertificatesSecretName
-        # {{- if .Values.postgres.<regular database user (un/pw)> }}
-        #- mountPath: /tmp/secrets/ALERT_DB_USERNAME
-        #  name: db_credentials
-        #  subPath: ALERT_DB_USERNAME
-        #- mountPath: /tmp/secrets/ALERT_DB_PASSWORD
-        #  name: db_credentials
-        #  subPath: ALERT_DB_PASSWORD
-        #TODO: We want to do something similar as above in the webserverCustomCertificatesSecretName
-        # {{- if .Values.postgres.<admin database user (un/pw)> }}
-        #- mountPath: /tmp/secrets/ALERT_DB_ADMIN_USERNAME
-        #  name: db_admin_credentials
-        #  subPath: ALERT_DB_ADMIN_USERNAME
-        #- mountPath: /tmp/secrets/ALERT_DB_ADMIN_PASSWORD
-        #  name: db_admin_credentials
-        #  subPath: ALERT_DB_ADMIN_PASSWORD
+        {{- if .Values.postgres.dbCredentialSecretName }}
+        - mountPath: /tmp/secrets/ALERT_DB_USERNAME
+          name: db-credentials
+          subPath: ALERT_DB_USERNAME
+        - mountPath: /tmp/secrets/ALERT_DB_PASSWORD
+          name: db-credentials
+          subPath: ALERT_DB_PASSWORD
+        {{- end }}
+        {{- if .Values.postgres.dbAdminCredentialSecretName }}
+        - mountPath: /tmp/secrets/ALERT_DB_ADMIN_USERNAME
+          name: db-admin-credentials
+          subPath: ALERT_DB_ADMIN_USERNAME
+        - mountPath: /tmp/secrets/ALERT_DB_ADMIN_PASSWORD
+          name: db-admin-credentials
+          subPath: ALERT_DB_ADMIN_PASSWORD
+        {{- end }}
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.alert.nodeSelector }}
@@ -159,18 +153,18 @@ spec:
           defaultMode: 292
           secretName: {{ .Values.javaKeystoreSecretName }}
       {{- end }}
-      # {{- .Values.postgres.<regular database user (un/pw)> }}
-      #- name: db_credentials
-      #  secret:
-      #    defaultMode: 292
-      #    secretName: {{ .Values.postgres.<regular database user (un/pw)> }}
-      #{{- end }}
-      # {{- .Values.postgres.<admin database user (un/pw)> }}
-      #- name: db_admin_credentials
-      #  secret:
-      #    defaultMode: 292
-      #    secretName: {{ .Values.postgres.<admin database user (un/pw)> }}
-      #{{- end }}
+      {{- if .Values.postgres.dbCredentialSecretName }}
+      - name: db-credentials
+        secret:
+          defaultMode: 292
+          secretName: {{ .Values.postgres.dbCredentialSecretName }}
+      {{- end }}
+      {{- if .Values.postgres.dbAdminCredentialSecretName }}
+      - name: db-admin-credentials
+        secret:
+          defaultMode: 292
+          secretName: {{ .Values.postgres.dbAdminCredentialSecretName }}
+      {{- end }}
 ---
 
 apiVersion: v1
