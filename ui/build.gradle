@@ -33,7 +33,7 @@ task npmInstall(type: Exec) {
         commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
     } catch (Exception e) {
         logger.error("The initial npm install failed: {}", e.getMessage())
-        logger.info("Trying to  run the npm install again.")
+        logger.info("Trying to run the npm install again.")
         commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
     }
 }
