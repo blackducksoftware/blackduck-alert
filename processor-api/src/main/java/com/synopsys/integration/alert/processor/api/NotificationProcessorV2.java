@@ -28,8 +28,6 @@ import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 
 @Component
-// TODO rename this
-//  RawNotificationProcessor? FrequencyBasedNotificationProcessor?
 public final class NotificationProcessorV2 {
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
