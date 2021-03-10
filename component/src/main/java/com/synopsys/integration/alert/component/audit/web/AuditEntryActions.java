@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +125,7 @@ public class AuditEntryActions {
         return new ActionResponse<>(HttpStatus.OK, new AuditJobStatusesModel(auditJobStatusModels));
     }
 
-    public ActionResponse<AuditEntryPageModel> resendNotification(Long notificationId, UUID commonConfigId) {
+    public ActionResponse<AuditEntryPageModel> resendNotification(Long notificationId, @Nullable UUID requestedJobId) {
         if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, descriptorKey)) {
             return new ActionResponse<>(HttpStatus.FORBIDDEN, ActionResponse.FORBIDDEN_MESSAGE);
         }
@@ -136,10 +137,10 @@ public class AuditEntryActions {
         }
         AlertNotificationModel notificationContent = notification.get();
 
-        if (null != commonConfigId) {
-            Optional<DistributionJobModel> optionalDistributionJob = jobAccessor.getJobById(commonConfigId);
+        if (null != requestedJobId) {
+            Optional<DistributionJobModel> optionalDistributionJob = jobAccessor.getJobById(requestedJobId);
             if (optionalDistributionJob.isEmpty()) {
-                String message = String.format("The Distribution Job with this id could not be found. %s", commonConfigId.toString());
+                String message = String.format("The Distribution Job with this id could not be found. %s", requestedJobId.toString());
                 return new ActionResponse<>(HttpStatus.GONE, message);
             }
             DistributionJobModel distributionJob = optionalDistributionJob.get();
