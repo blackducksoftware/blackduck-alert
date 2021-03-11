@@ -25,7 +25,6 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
     private final Gson gson;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
-    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
     public BlackDuckPropertiesFactory(ConfigurationAccessor configurationAccessor, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager) {
@@ -33,7 +32,6 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
         this.gson = gson;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
-        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
@@ -41,7 +39,7 @@ public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackD
         return new BlackDuckProperties(blackDuckConfigId, gson, alertProperties, proxyManager, fieldUtility);
     }
 
-    // TODO remote duplicate method
+    // TODO remove duplicate method
     public Optional<BlackDuckProperties> createPropertiesIfConfigExists(Long blackDuckConfigId) {
         return createProperties(blackDuckConfigId);
     }

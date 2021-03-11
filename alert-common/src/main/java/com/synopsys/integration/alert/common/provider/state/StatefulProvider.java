@@ -15,8 +15,6 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
-import com.synopsys.integration.alert.common.provider.notification.ProviderDistributionFilter;
-import com.synopsys.integration.alert.common.workflow.processor.ProviderMessageContentCollector;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public class StatefulProvider {
@@ -26,16 +24,12 @@ public class StatefulProvider {
     private final boolean configEnabled;
     private final List<ProviderTask> tasks;
     private final ProviderProperties properties;
-    private final ProviderDistributionFilter distributionFilter;
-    private final ProviderMessageContentCollector messageContentCollector;
 
     public static StatefulProvider create(
         ProviderKey providerKey,
         ConfigurationModel configurationModel,
         List<ProviderTask> tasks,
-        ProviderProperties properties,
-        ProviderDistributionFilter distributionFilter,
-        ProviderMessageContentCollector messageContentCollector
+        ProviderProperties properties
     ) {
         Map<String, ConfigurationFieldModel> keyToFieldMap = configurationModel.getCopyOfKeyToFieldMap();
         Boolean configEnabled = Optional.ofNullable(keyToFieldMap.get(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED))
@@ -45,7 +39,7 @@ public class StatefulProvider {
         String configName = Optional.ofNullable(keyToFieldMap.get(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME))
                                 .flatMap(ConfigurationFieldModel::getFieldValue)
                                 .orElse(ProviderProperties.UNKNOWN_CONFIG_NAME);
-        return new StatefulProvider(providerKey, configurationModel.getConfigurationId(), configName, configEnabled, tasks, properties, distributionFilter, messageContentCollector);
+        return new StatefulProvider(providerKey, configurationModel.getConfigurationId(), configName, configEnabled, tasks, properties);
     }
 
     private StatefulProvider(
@@ -54,9 +48,7 @@ public class StatefulProvider {
         String configName,
         boolean configEnabled,
         List<ProviderTask> tasks,
-        ProviderProperties properties,
-        ProviderDistributionFilter distributionFilter,
-        ProviderMessageContentCollector messageContentCollector
+        ProviderProperties properties
     ) {
         this.key = key;
         this.configId = configId;
@@ -64,8 +56,6 @@ public class StatefulProvider {
         this.configEnabled = configEnabled;
         this.tasks = tasks;
         this.properties = properties;
-        this.distributionFilter = distributionFilter;
-        this.messageContentCollector = messageContentCollector;
     }
 
     public ProviderKey getKey() {
@@ -90,14 +80,6 @@ public class StatefulProvider {
 
     public ProviderProperties getProperties() {
         return properties;
-    }
-
-    public ProviderDistributionFilter getDistributionFilter() {
-        return distributionFilter;
-    }
-
-    public ProviderMessageContentCollector getMessageContentCollector() {
-        return messageContentCollector;
     }
 
 }
