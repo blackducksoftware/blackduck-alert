@@ -222,7 +222,7 @@ public abstract class ChannelDescriptorTestIT {
     public void testDistributionConfig() {
         try {
             ChannelDistributionTestAction descriptorActionApi = getChannelDistributionTestAction();
-            descriptorActionApi.testConfig(distributionJobModel, optionalChannelGlobalConfig.orElse(null), "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT", null);
+            descriptorActionApi.testConfig(distributionJobModel, "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT", null);
         } catch (IntegrationException e) {
             e.printStackTrace();
             fail();
