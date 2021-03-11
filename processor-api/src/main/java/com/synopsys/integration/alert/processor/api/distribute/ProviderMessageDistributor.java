@@ -38,9 +38,7 @@ public class ProviderMessageDistributor {
 
     public void distribute(ProcessedNotificationDetails processedNotificationDetails, ProviderMessageHolder providerMessageHolder) {
         UUID jobId = processedNotificationDetails.getJobId();
-        //FIXME need to look for existing audit entries and relate the notificationIds to that entry if needed
-        // In the case of audit resending this is an issue because it will create a new audit entry rather than update the existing one
-        Long auditId = auditAccessor.createAuditEntryForJob(jobId, processedNotificationDetails.getNotificationIds());
+        Long auditId = auditAccessor.findOrCreatePendingAuditEntryForJob(jobId, processedNotificationDetails.getNotificationIds());
 
         String channelName = processedNotificationDetails.getChannelName();
         ChannelKey destinationKey = ChannelKeys.getChannelKey(channelName);

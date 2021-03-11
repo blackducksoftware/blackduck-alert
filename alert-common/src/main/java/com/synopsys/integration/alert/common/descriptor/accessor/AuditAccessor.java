@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -30,7 +31,7 @@ public interface AuditAccessor {
     AuditEntryPageModel getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
 
-    Long createAuditEntryForJob(UUID jobId, Collection<Long> notificationIds);
+    Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
 
     Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup content);
 

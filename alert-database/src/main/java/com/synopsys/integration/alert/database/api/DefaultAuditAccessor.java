@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
@@ -121,13 +122,30 @@ public class DefaultAuditAccessor implements AuditAccessor {
 
     @Override
     @Transactional
-    public Long createAuditEntryForJob(UUID jobId, Collection<Long> notificationIds) {
-        AuditEntryEntity auditEntryToSave = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, AuditEntryStatus.PENDING.name(), null, null);
-        AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
-        Long auditEntryId = savedAuditEntry.getId();
+    public Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds) {
+        Long auditEntryId;
+        Set<Long> notificationIdsToRelate = notificationIds;
+
+        Optional<AuditEntryEntity> optionalExistingEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
+        if (optionalExistingEntry.isPresent()) {
+            AuditEntryEntity exitingEntry = optionalExistingEntry.get();
+            exitingEntry.setStatus(AuditEntryStatus.PENDING.name());
+            AuditEntryEntity updatedEntry = auditEntryRepository.save(exitingEntry);
+
+            auditEntryId = updatedEntry.getId();
+            Set<Long> existingNotificationIds = auditNotificationRepository.findByAuditEntryId(auditEntryId)
+                                                    .stream()
+                                                    .map(AuditNotificationRelation::getNotificationId)
+                                                    .collect(Collectors.toSet());
+            notificationIdsToRelate = SetUtils.difference(notificationIds, existingNotificationIds);
+        } else {
+            AuditEntryEntity auditEntryToSave = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, AuditEntryStatus.PENDING.name(), null, null);
+            AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
+            auditEntryId = savedAuditEntry.getId();
+        }
 
         List<AuditNotificationRelation> auditNotificationRelationsToSave = new ArrayList<>(notificationIds.size());
-        for (Long notificationId : notificationIds) {
+        for (Long notificationId : notificationIdsToRelate) {
             AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryId, notificationId);
             auditNotificationRelationsToSave.add(auditNotificationRelation);
         }
