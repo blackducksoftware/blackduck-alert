@@ -10,15 +10,12 @@ package com.synopsys.integration.alert.common.channel;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public interface ChannelDistributionTestAction {
-    // FIXME remove ConfigurationModel parameter
     MessageResult testConfig(
         DistributionJobModel testJobModel,
-        @Nullable ConfigurationModel channelGlobalConfig,
         @Nullable String customTopic,
         @Nullable String customMessage,
         @Nullable String destination

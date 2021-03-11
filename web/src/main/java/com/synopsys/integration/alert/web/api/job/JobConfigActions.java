@@ -353,12 +353,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
                         return new ValidationActionResponse(HttpStatus.OK, responseModel);
                     }
 
-                    // Not all channels have a global config
-                    ConfigurationModel nullableChannelGlobalConfig = configurationAccessor.getConfigurationsByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL)
-                                                                         .stream()
-                                                                         .findFirst()
-                                                                         .orElse(null);
-
                     List<BlackDuckProjectDetailsModel> projectFilterDetails = Optional.ofNullable(resource.getConfiguredProviderProjects())
                                                                                   .orElse(List.of())
                                                                                   .stream()
@@ -368,10 +362,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                             .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
                                                             .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
-                    // FIXME remove nullableChannelGlobalConfig parameter
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
                         testJobModel,
-                        nullableChannelGlobalConfig,
                         topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
                         messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
                         destinationField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)

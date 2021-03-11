@@ -603,7 +603,7 @@ public class JobConfigActionsTest {
     }
 
     private ChannelDistributionTestAction createChannelDistributionTestAction() {
-        return (testJobModel, channelGlobalConfig, customTopic, customMessage, destination) -> new MessageResult("Test Status Message");
+        return (testJobModel, customTopic, customMessage, destination) -> new MessageResult("Test Status Message");
     }
 
     private JobDetailsExtractor createJobDetailsExtractor() {

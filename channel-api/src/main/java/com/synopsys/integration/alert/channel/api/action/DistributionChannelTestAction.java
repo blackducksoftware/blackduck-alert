@@ -17,13 +17,11 @@ import com.synopsys.integration.alert.common.channel.ChannelDistributionTestActi
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
-import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class DistributionChannelTestAction<D extends DistributionJobDetailsModel> implements ChannelDistributionTestAction {
     private final DistributionChannelV2<D> distributionChannel;
@@ -33,15 +31,6 @@ public abstract class DistributionChannelTestAction<D extends DistributionJobDet
     }
 
     @Override
-    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable ConfigurationModel channelGlobalConfig, @Nullable String customTopic, @Nullable String customMessage, @Nullable String destination)
-        throws IntegrationException {
-        return testConfig(testJobModel, customTopic, customMessage, destination);
-    }
-
-    public MessageResult testConfig(DistributionJobModel testJobModel) throws IntegrationException {
-        return testConfig(testJobModel, null, null, null);
-    }
-
     public final MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage, @Nullable String destination) throws AlertException {
         String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
         String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
