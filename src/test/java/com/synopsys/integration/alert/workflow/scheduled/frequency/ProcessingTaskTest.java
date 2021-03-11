@@ -67,7 +67,7 @@ public class ProcessingTaskTest {
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyCollection())).thenReturn(List.of());
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         Mockito.doNothing().when(notificationAccessor).setNotificationsProcessed(Mockito.anyList());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, jobNotificationMapper, null, null, null, null, List.of(), notificationAccessor);
+        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         ProcessingTask processingTask = Mockito.spy(task);
@@ -84,7 +84,7 @@ public class ProcessingTaskTest {
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(List.of());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null, null, null);
+        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         DateRange dateRange = task.getDateRange();
@@ -102,7 +102,7 @@ public class ProcessingTaskTest {
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(List.of());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null, null, null);
+        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         DateRange dateRange = task.getDateRange();
@@ -120,7 +120,7 @@ public class ProcessingTaskTest {
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(List.of());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null, null, null);
+        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         DateRange dateRange = task.getDateRange();
