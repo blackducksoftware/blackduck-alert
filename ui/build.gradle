@@ -39,7 +39,7 @@ task npmInstallRetry(type: Exec, dependsOn: [npmInstall]) {
     outputs.dir('node_modules')
     onlyIf {
         // don't run this if the npmInstall succeeded
-        tasks.npmInstall.state.failure != null
+        tasks.npmInstall.getExecResult().exitValue != 0
     }
     doFirst {
         logger.error('The initial npm install failed. Trying to run the npm install again.')
