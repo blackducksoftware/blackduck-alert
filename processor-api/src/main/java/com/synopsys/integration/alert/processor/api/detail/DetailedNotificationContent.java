@@ -14,11 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.util.Stringable;
 
-public class DetailedNotificationContent extends AlertSerializableModel {
+// NotificationContentWrapper is not serializable, so this class cannot be serializable (and doesn't need to be)
+public class DetailedNotificationContent extends Stringable {
     private final String projectName;
     private final String policyName;
     private final List<String> vulnerabilitySeverities;

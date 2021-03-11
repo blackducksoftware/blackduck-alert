@@ -19,9 +19,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.channel.AutoActionable;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
-import com.synopsys.integration.alert.common.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -30,7 +28,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 @Component
 public class DescriptorProcessor {
@@ -39,21 +36,10 @@ public class DescriptorProcessor {
     private final Map<String, ConfigurationAction> allConfigurationActions;
 
     @Autowired
-    public DescriptorProcessor(DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, List<ConfigurationAction> configurationActions, List<AutoActionable> autoActionables) {
+    public DescriptorProcessor(DescriptorMap descriptorMap, ConfigurationAccessor configurationAccessor, List<ConfigurationAction> configurationActions) {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
         this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
-        for (AutoActionable autoActionable : autoActionables) {
-            DistributionChannel channel = autoActionable.getChannel();
-            ChannelKey channelKey = autoActionable.getChannelKey();
-            ConfigurationAction configurationAction = allConfigurationActions.get(channelKey.getUniversalKey());
-
-            ChannelDistributionTestAction channelDistributionTestAction = new ChannelDistributionTestAction(channel) {
-            };
-
-            configurationAction.addDistributionTestAction(channelDistributionTestAction);
-            allConfigurationActions.put(configurationAction.getDescriptorKey().getUniversalKey(), configurationAction);
-        }
     }
 
     public Optional<JobDetailsExtractor> retrieveJobDetailsExtractor(String descriptorName) {

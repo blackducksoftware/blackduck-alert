@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.email.actions;
+package com.synopsys.integration.alert.channel.email2.action;
 
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -26,7 +27,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProj
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailTestActionHelper {
@@ -38,7 +38,7 @@ public class EmailTestActionHelper {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public Set<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel, @Nullable String destination) throws IntegrationException {
+    public Set<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel, @Nullable String destination) throws AlertException {
         Set<String> emailAddresses = new HashSet<>();
         if (StringUtils.isNotBlank(destination)) {
             emailAddresses.add(destination);
