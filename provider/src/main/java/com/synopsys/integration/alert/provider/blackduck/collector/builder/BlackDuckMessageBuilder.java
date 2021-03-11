@@ -20,15 +20,10 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
 public abstract class BlackDuckMessageBuilder<T> {
-    private final String providerName = "Black Duck";
     private final NotificationType notificationType;
 
     public BlackDuckMessageBuilder(NotificationType notificationType) {
         this.notificationType = notificationType;
-    }
-
-    public String getProviderName() {
-        return this.providerName;
     }
 
     public NotificationType getNotificationType() {
