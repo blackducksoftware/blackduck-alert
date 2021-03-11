@@ -31,6 +31,13 @@ task npmInstall(type: Exec) {
     outputs.dir('node_modules')
     ignoreExitValue = true
     commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
+    doLast {
+        if (execResult.getExitValue() != 0) {
+            logger.error('Deleting the node_modules directory before attempting the npm install again.')
+            // delete the node_modules directory if the npm install failed
+            delete 'node_modules'
+        }
+    }
 }
 
 task npmInstallRetry(type: Exec, dependsOn: [npmInstall]) {
@@ -43,7 +50,6 @@ task npmInstallRetry(type: Exec, dependsOn: [npmInstall]) {
     }
     doFirst {
         logger.error('The initial npm install failed. Trying to run the npm install again.')
-        commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
     }
     commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
 }
