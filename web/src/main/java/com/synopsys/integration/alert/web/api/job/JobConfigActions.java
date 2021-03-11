@@ -353,12 +353,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
                         return new ValidationActionResponse(HttpStatus.OK, responseModel);
                     }
 
-                    // Not all channels have a global config
-                    ConfigurationModel nullableChannelGlobalConfig = configurationAccessor.getConfigurationsByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL)
-                                                                         .stream()
-                                                                         .findFirst()
-                                                                         .orElse(null);
-
                     List<BlackDuckProjectDetailsModel> projectFilterDetails = Optional.ofNullable(resource.getConfiguredProviderProjects())
                                                                                   .orElse(List.of())
                                                                                   .stream()
@@ -370,7 +364,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
                         testJobModel,
-                        nullableChannelGlobalConfig,
                         topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
                         messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
                         destinationField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
