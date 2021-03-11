@@ -60,7 +60,7 @@ public class NotificationReceiverTest {
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyCollection())).thenReturn(List.of());
         notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
-        return new NotificationProcessorV2(detailExtractionDelegator, jobNotificationMapper, null, null, null, null, List.of(), notificationAccessor);
+        return new NotificationProcessorV2(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
     }
 
 }
