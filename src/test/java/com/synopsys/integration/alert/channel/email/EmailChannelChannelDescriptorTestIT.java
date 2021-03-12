@@ -9,16 +9,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
-import com.synopsys.integration.alert.channel.email.actions.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
-import com.synopsys.integration.alert.channel.email.actions.EmailTestActionHelper;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
-import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
+import com.synopsys.integration.alert.channel.email2.EmailChannelMessageConverter;
+import com.synopsys.integration.alert.channel.email2.EmailChannelMessageSender;
+import com.synopsys.integration.alert.channel.email2.EmailChannelV2;
+import com.synopsys.integration.alert.channel.email2.action.EmailDistributionTestAction;
+import com.synopsys.integration.alert.channel.email2.action.EmailTestActionHelper;
+import com.synopsys.integration.alert.channel.email2.util.EmailAddressGatherer;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
@@ -34,7 +38,9 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
+import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -44,7 +50,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -62,15 +67,13 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Autowired
     private Gson gson;
     @Autowired
-    private DefaultAuditAccessor auditUtility;
-    @Autowired
-    private EmailAddressHandler emailAddressHandler;
-    @Autowired
-    private EmailChannelMessageParser emailChannelMessageParser;
+    private ProviderDataAccessor providerDataAccessor;
     @Autowired
     private EmailGlobalTestAction emailGlobalTestAction;
     @Autowired
     private EmailTestActionHelper emailTestActionHelper;
+    @Autowired
+    private EmailChannelMessageConverter emailChannelMessageConverter;
 
     @Override
     public Optional<ConfigurationModel> saveGlobalConfiguration() {
@@ -194,7 +197,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         TestAlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
-        EmailChannel emailChannel = new EmailChannel(gson, alertProperties, auditUtility, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
+
+        EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(jobAccessor, providerDataAccessor);
+
+        ConfigurationAccessor mockConfigAccessor = Mockito.mock(ConfigurationAccessor.class);
+        Mockito.when(mockConfigAccessor.getProviderConfigurationByName(Mockito.anyString())).thenReturn(optionalChannelGlobalConfig);
+
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, alertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, mockConfigAccessor);
+        EmailChannelV2 emailChannel = new EmailChannelV2(emailChannelMessageConverter, emailChannelMessageSender);
 
         return new EmailDistributionTestAction(emailChannel, emailTestActionHelper);
     }

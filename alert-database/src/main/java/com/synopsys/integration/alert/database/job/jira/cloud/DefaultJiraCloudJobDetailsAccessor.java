@@ -35,6 +35,7 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<JiraCloudJobDetailsModel> retrieveDetails(UUID jobId) {
         return jiraCloudJobDetailsRepository.findById(jobId).map(this::convertToModel);
     }
@@ -69,7 +70,7 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
     }
 
     private JiraCloudJobDetailsModel convertToModel(JiraCloudJobDetailsEntity jobDetails) {
-        List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
+        List<JiraJobCustomFieldModel> customFields = jiraCloudJobCustomFieldRepository.findByJobId(jobDetails.getJobId())
                                                          .stream()
                                                          .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
                                                          .collect(Collectors.toList());

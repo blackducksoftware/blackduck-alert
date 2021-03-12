@@ -1,79 +1,45 @@
 package com.synopsys.integration.alert.workflow.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.ChannelEventManager;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.workflow.message.mocks.MockNotificationAccessor;
-import com.synopsys.integration.rest.RestConstants;
 
 public class NotificationReceiverTest {
     private NotificationAccessor notificationAccessor;
     private final Gson gson = new Gson();
 
     @Test
-    public void handleEventTest() throws Exception {
-        List<AlertNotificationModel> alertNotificationModels = List.of(createAlertNotificationModel(1L, false));
-        DistributionEvent distributionEvent = createDistributionEvent(1L);
+    public void handleEventTest() {
+        AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false);
+        List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
 
-        NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
-        ChannelEventManager channelEventManager = Mockito.mock(ChannelEventManager.class);
+        NotificationProcessorV2 notificationProcessor = mockNotificationProcessor(alertNotificationModels);
+        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessor, notificationProcessor);
 
-        notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
-
-        Mockito.when(notificationProcessor.processNotifications(Mockito.eq(FrequencyType.REAL_TIME), Mockito.eq(alertNotificationModels))).thenReturn(List.of(distributionEvent));
-
-        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessor, notificationProcessor, channelEventManager);
-        notificationReceiver.handleEvent(new NotificationReceivedEvent());
-
-        Mockito.verify(channelEventManager, Mockito.times(1)).sendEvents(Mockito.any());
-    }
-
-    //TODO: Once NotificationReceiver is updated and the MAX_NUMBER_PAGES_PROCESSED is removed this will no longer need to be tested
-    @Test
-    public void handleEventMaxPagesProcessedTest() throws Exception {
-        List<AlertNotificationModel> alertNotificationModels = List.of(createAlertNotificationModel(1L, false));
-        DistributionEvent distributionEvent = createDistributionEvent(1L);
-
-        Page<AlertNotificationModel> pageOfNotifications = new PageImpl<>(alertNotificationModels);
-
-        NotificationAccessor notificationAccessorMock = Mockito.mock(NotificationAccessor.class);
-        NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
-        ChannelEventManager channelEventManager = Mockito.mock(ChannelEventManager.class);
-
-        Mockito.when(notificationProcessor.processNotifications(Mockito.eq(FrequencyType.REAL_TIME), Mockito.eq(alertNotificationModels))).thenReturn(List.of(distributionEvent));
-        Mockito.when(notificationAccessorMock.getFirstPageOfNotificationsNotProcessed(100))
-            .thenReturn(new AlertPagedModel(pageOfNotifications.getTotalPages(), pageOfNotifications.getNumber(), pageOfNotifications.getSize(), pageOfNotifications.getContent()));
-
-        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessorMock, notificationProcessor, channelEventManager);
-        notificationReceiver.handleEvent(new NotificationReceivedEvent());
-
-        Mockito.verify(channelEventManager, Mockito.times(100)).sendEvents(Mockito.any());
+        try {
+            notificationReceiver.handleEvent(new NotificationReceivedEvent());
+        } catch (RuntimeException e) {
+            fail("Unable to handle event", e);
+        }
     }
 
     @Test
     public void getDestinationNameTest() {
-        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, null, null, null);
+        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, null, null);
 
         assertEquals(NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE, notificationReceiver.getDestinationName());
     }
@@ -89,16 +55,12 @@ public class NotificationReceiverTest {
             DateUtils.createCurrentDateTimestamp(), processed);
     }
 
-    private DistributionEvent createDistributionEvent(Long providerConfigId) throws Exception {
-        LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("testProvider", providerConfigId, "testProviderConfig")
-                                             .applyTopic("testTopic", "topic")
-                                             .applySubTopic(subTopic.getLabel(), subTopic.getValue())
-                                             .build();
-        DistributionJobModel emptyJob = DistributionJobModel.builder().build();
-        return new DistributionEvent("destination", RestConstants.formatDate(new Date()), 1L, "FORMAT",
-            MessageContentGroup.singleton(content), emptyJob, null);
+    private NotificationProcessorV2 mockNotificationProcessor(List<AlertNotificationModel> alertNotificationModels) {
+        NotificationDetailExtractionDelegator detailExtractionDelegator = new NotificationDetailExtractionDelegator(List.of());
+        JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
+        Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyCollection())).thenReturn(List.of());
+        notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
+        return new NotificationProcessorV2(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
     }
 
 }

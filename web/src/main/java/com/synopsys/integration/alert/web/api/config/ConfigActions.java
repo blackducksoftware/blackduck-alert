@@ -222,12 +222,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (IntegrationException e) {
                 // FIXME there are definitely other possibilities than this
-                responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
+                responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
                                     .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(id, e)
+                responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
                                     .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }

@@ -353,12 +353,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
                         return new ValidationActionResponse(HttpStatus.OK, responseModel);
                     }
 
-                    // Not all channels have a global config
-                    ConfigurationModel nullableChannelGlobalConfig = configurationAccessor.getConfigurationsByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL)
-                                                                         .stream()
-                                                                         .findFirst()
-                                                                         .orElse(null);
-
                     List<BlackDuckProjectDetailsModel> projectFilterDetails = Optional.ofNullable(resource.getConfiguredProviderProjects())
                                                                                   .orElse(List.of())
                                                                                   .stream()
@@ -370,7 +364,6 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
                     MessageResult testActionResult = channelDistributionTestAction.testConfig(
                         testJobModel,
-                        nullableChannelGlobalConfig,
                         topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
                         messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
                         destinationField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
@@ -397,12 +390,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
             logger.error(e.getMessage(), e);
             return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.generalError(e.getMessage()));
         } catch (IntegrationException e) {
-            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobIdString, e)
+            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(jobIdString, e)
+            responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }

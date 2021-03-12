@@ -141,14 +141,14 @@ public class ProjectIssueModelConverter {
 
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         LinkableItem component = bomComponent.getComponent();
-        Optional<LinkableItem> optionalComponentVersion = bomComponent.getComponentVersion();
+        Optional<String> optionalComponentVersionValue = bomComponent.getComponentVersion().map(LinkableItem::getValue);
 
         StringBuilder componentPieceBuilder = new StringBuilder();
         componentPieceBuilder.append(component.getValue());
 
-        if (optionalComponentVersion.isPresent()) {
+        if (optionalComponentVersionValue.isPresent()) {
             componentPieceBuilder.append('[');
-            componentPieceBuilder.append(optionalComponentVersion);
+            componentPieceBuilder.append(optionalComponentVersionValue.get());
             componentPieceBuilder.append(']');
         }
 
@@ -158,8 +158,9 @@ public class ProjectIssueModelConverter {
         if (optionalPolicyName.isPresent()) {
             componentConcernPieceBuilder.append(COMMA_SPACE);
             componentConcernPieceBuilder.append(ComponentConcernType.POLICY.name());
-            componentConcernPieceBuilder.append(": ");
-            componentConcernPieceBuilder.append(optionalPolicyName);
+            componentConcernPieceBuilder.append('[');
+            componentConcernPieceBuilder.append(optionalPolicyName.get());
+            componentConcernPieceBuilder.append(']');
         } else {
             componentConcernPieceBuilder.append(COMMA_SPACE);
             componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.name());
