@@ -8,10 +8,11 @@
 package com.synopsys.integration.alert.processor.api.filter;
 
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.blackduck.api.manual.component.NotificationContentComponent;
+import com.synopsys.integration.util.Stringable;
 
-public class NotificationContentWrapper extends AlertSerializableModel {
+// NotificationContentComponent is not serializable, so this class cannot be serializable (and doesn't need to be)
+public class NotificationContentWrapper extends Stringable {
     private final AlertNotificationModel alertNotificationModel;
     private final NotificationContentComponent notificationContent;
 

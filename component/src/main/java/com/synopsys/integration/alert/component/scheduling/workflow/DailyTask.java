@@ -11,15 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.channel.ChannelEventManager;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.common.workflow.processor.notification.NotificationProcessor;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
+import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.ProcessingTask;
 
 @Component
@@ -31,16 +30,17 @@ public class DailyTask extends ProcessingTask {
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public DailyTask(SchedulingDescriptorKey schedulingDescriptorKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor, ChannelEventManager eventManager,
-        TaskManager taskManager, ConfigurationAccessor configurationAccessor) {
-        super(taskScheduler, notificationAccessor, notificationProcessor, eventManager, taskManager);
+    public DailyTask(
+        SchedulingDescriptorKey schedulingDescriptorKey,
+        TaskScheduler taskScheduler,
+        NotificationAccessor notificationAccessor,
+        NotificationProcessorV2 notificationProcessor,
+        TaskManager taskManager,
+        ConfigurationAccessor configurationAccessor
+    ) {
+        super(taskScheduler, notificationAccessor, taskManager, notificationProcessor, FrequencyType.DAILY);
         this.schedulingDescriptorKey = schedulingDescriptorKey;
         this.configurationAccessor = configurationAccessor;
-    }
-
-    @Override
-    public FrequencyType getDigestType() {
-        return FrequencyType.DAILY;
     }
 
     @Override

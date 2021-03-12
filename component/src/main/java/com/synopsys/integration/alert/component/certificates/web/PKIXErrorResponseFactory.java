@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.action.SSLValidationResponseModel;
-import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 
@@ -32,15 +31,13 @@ public class PKIXErrorResponseFactory {
     private static final String PKIX_MESSAGE = "Certificate page: ";
 
     private final Gson gson;
-    private final ResponseFactory responseFactory;
 
     @Autowired
-    public PKIXErrorResponseFactory(Gson gson, ResponseFactory responseFactory) {
+    public PKIXErrorResponseFactory(Gson gson) {
         this.gson = gson;
-        this.responseFactory = responseFactory;
     }
 
-    public Optional<ValidationResponseModel> createSSLExceptionResponse(String id, Exception e) {
+    public Optional<ValidationResponseModel> createSSLExceptionResponse(Exception e) {
         if (isPKIXError(e)) {
             logger.debug("Found an error regarding PKIX, creating a unique response...");
             logger.debug(e.getMessage(), e);
@@ -62,7 +59,6 @@ public class PKIXErrorResponseFactory {
             }
             cause = cause.getCause();
         }
-
         return false;
     }
 

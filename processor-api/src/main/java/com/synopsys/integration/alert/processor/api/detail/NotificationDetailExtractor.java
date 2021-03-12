@@ -15,6 +15,8 @@ import com.synopsys.integration.blackduck.api.manual.component.NotificationConte
 import com.synopsys.integration.blackduck.api.manual.contract.NotificationContentData;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
+// TODO create an interface for this to implement avoid "raw use of parameterized class"
+//  List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel);
 public abstract class NotificationDetailExtractor<T extends NotificationContentComponent, U extends NotificationContentData<T>> {
     private final NotificationType notificationType;
     private final Class<U> notificationViewClass;
