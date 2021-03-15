@@ -35,7 +35,7 @@ task npmInstall(type: Exec) {
         if (execResult.getExitValue() != 0) {
             logger.error('Deleting the node_modules directory before attempting the npm install again.')
             // delete the node_modules directory if the npm install failed
-            File nodeModulesDir = new File("node_modules")
+            File nodeModulesDir = new File("${project.getProjectDir()}/node_modules")
             logger.error("Node Modules directory path:" + nodeModulesDir.getCanonicalPath())
             logger.error("Node Modules directory exists:" + nodeModulesDir.exists())
             nodeModulesDir.deleteDir()
@@ -53,7 +53,7 @@ task npmInstallRetry(type: Exec, dependsOn: [npmInstall]) {
         tasks.npmInstall.getExecResult().exitValue != 0
     }
     doFirst {
-        File nodeModulesDir = new File("node_modules");
+        File nodeModulesDir = new File("${project.getProjectDir()}/node_modules");
         logger.error("Node Modules directory exists before retry:" + nodeModulesDir.exists())
         logger.error('The initial npm install failed. Trying to run the npm install again.')
     }
