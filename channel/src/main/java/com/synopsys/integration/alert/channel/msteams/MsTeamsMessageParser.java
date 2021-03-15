@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.common.message.model.ProviderMessageConten
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 
 @Component
+@Deprecated
 public class MsTeamsMessageParser extends ChannelMessageParser {
     private static final Map<Character, String> reservedChars = Map.of(
         '*', "\\*",

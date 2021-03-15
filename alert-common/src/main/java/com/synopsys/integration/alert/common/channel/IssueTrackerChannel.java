@@ -12,12 +12,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.IssueTrackerCallbackEvent;
@@ -26,12 +24,13 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 
+@Deprecated
 public abstract class IssueTrackerChannel extends DistributionChannel implements ProviderCallbackEventProducer {
     private final IssueTrackerChannelKey channelKey;
     private final EventManager eventManager;
 
-    public IssueTrackerChannel(IssueTrackerChannelKey channelKey, Gson gson, AuditAccessor auditAccessor, EventManager eventManager) {
-        super(gson, auditAccessor);
+    public IssueTrackerChannel(IssueTrackerChannelKey channelKey, EventManager eventManager) {
+        super();
         this.channelKey = channelKey;
         this.eventManager = eventManager;
     }
@@ -51,12 +50,6 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
             sendProviderCallbackEvents(callbackEvents);
         }
         return new MessageResult(statusMessage);
-    }
-
-    @Override
-    public final String getDestinationName() {
-        //FIXME: Required to avoid conflicts when registering new JMS Listeners
-        return channelKey.getUniversalKey() + "_old";
     }
 
     @Override

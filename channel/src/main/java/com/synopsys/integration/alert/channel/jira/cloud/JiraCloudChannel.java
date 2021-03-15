@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
@@ -27,14 +26,17 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
+@Deprecated
 public class JiraCloudChannel extends IssueTrackerChannel {
+    private final Gson gson;
     private final JiraMessageContentConverter jiraContentConverter;
     private final JiraCloudContextBuilder jiraCloudContextBuilder;
 
     @Autowired
-    public JiraCloudChannel(Gson gson, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager,
+    public JiraCloudChannel(Gson gson, JiraMessageContentConverter jiraContentConverter, EventManager eventManager,
         JiraCloudContextBuilder jiraCloudContextBuilder) {
-        super(ChannelKeys.JIRA_CLOUD, gson, auditAccessor, eventManager);
+        super(ChannelKeys.JIRA_CLOUD, eventManager);
+        this.gson = gson;
         this.jiraContentConverter = jiraContentConverter;
         this.jiraCloudContextBuilder = jiraCloudContextBuilder;
     }
@@ -54,7 +56,7 @@ public class JiraCloudChannel extends IssueTrackerChannel {
 
     @Override
     public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
-        JiraCloudRequestDelegator jiraCloudService = new JiraCloudRequestDelegator(getGson(), context);
+        JiraCloudRequestDelegator jiraCloudService = new JiraCloudRequestDelegator(gson, context);
         return jiraCloudService.sendRequests(requests);
     }
 

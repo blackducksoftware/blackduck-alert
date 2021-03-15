@@ -192,7 +192,7 @@ public class EmailGlobalTestActionTest {
 
         Gson gson = new Gson();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
-        EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, auditAccessor, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
+        EmailChannel emailChannel = new EmailChannel(testAlertProperties, emailAddressHandler, freemarkerTemplatingService, emailChannelMessageParser, emailAttachmentFileCreator);
         //////////////////////////////////////
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannel);
 

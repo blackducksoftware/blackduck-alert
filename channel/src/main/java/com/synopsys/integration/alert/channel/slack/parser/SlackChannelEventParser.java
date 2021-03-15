@@ -33,6 +33,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
+@Deprecated
 public class SlackChannelEventParser {
     public static final String SLACK_DEFAULT_USERNAME = "Alert";
 

@@ -118,25 +118,6 @@ public class JiraServerRequestDelegatorTest {
     }
 
     @Test
-    public void testAppMissing() throws Exception {
-        JiraServerChannel jiraServerChannel = new JiraServerChannel(gson, null, null, null, null);
-        List<IssueTrackerRequest> requests = new ArrayList<>();
-        IssueContentModel content = createContentModel();
-        IssueSearchProperties searchProperties = createSearchProperties();
-        AlertIssueOrigin alertIssueOrigin = createTempIssueOrigin();
-        requests.add(IssueCreationRequest.of(searchProperties, content, alertIssueOrigin));
-        requests.add(IssueCommentRequest.of(searchProperties, content, alertIssueOrigin));
-        requests.add(IssueResolutionRequest.of(searchProperties, content, alertIssueOrigin));
-        Mockito.when(pluginManagerService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
-        try {
-            jiraServerChannel.sendRequests(createContext(), requests);
-            fail();
-        } catch (IssueTrackerException ex) {
-            assertTrue(ex.getMessage().contains("Please configure the Jira Server plugin"));
-        }
-    }
-
-    @Test
     public void testCreateIssue() throws Exception {
         Mockito.when(pluginManagerService.isAppInstalled(Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> projectComponents = new ArrayList<>();
