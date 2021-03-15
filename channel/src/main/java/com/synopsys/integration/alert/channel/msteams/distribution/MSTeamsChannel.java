@@ -14,9 +14,9 @@ import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 
 @Component
-public class MSTeamsChannelV2 extends MessageBoardChannel<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
+public class MSTeamsChannel extends MessageBoardChannel<MSTeamsJobDetailsModel, MSTeamsChannelMessageModel> {
     @Autowired
-    protected MSTeamsChannelV2(MSTeamsChannelMessageConverter msTeamsChannelMessageConverter, MSTeamsChannelMessageSender msTeamsChannelMessageSender) {
+    protected MSTeamsChannel(MSTeamsChannelMessageConverter msTeamsChannelMessageConverter, MSTeamsChannelMessageSender msTeamsChannelMessageSender) {
         super(msTeamsChannelMessageConverter, msTeamsChannelMessageSender);
     }
 

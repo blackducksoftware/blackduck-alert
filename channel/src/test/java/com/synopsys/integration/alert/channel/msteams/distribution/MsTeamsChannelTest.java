@@ -25,7 +25,7 @@ public class MsTeamsChannelTest extends AbstractChannelTest {
         MSTeamsChannelMessageConverter messageConverter = new MSTeamsChannelMessageConverter(new MSTeamsChannelMessageFormatter(markupEncoderUtil));
         MSTeamsChannelMessageSender messageSender = new MSTeamsChannelMessageSender(restChannelUtility, ChannelKeys.MS_TEAMS);
 
-        MSTeamsChannelV2 msTeamsChannel = new MSTeamsChannelV2(messageConverter, messageSender);
+        MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender);
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(UUID.randomUUID(), properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
 
         ChannelITTestAssertions.assertSendSimpleMessageSuccess(msTeamsChannel, msTeamsJobDetailsModel);
