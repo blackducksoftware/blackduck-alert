@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.slack2;
+package com.synopsys.integration.alert.channel.slack.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,4 +23,5 @@ public class SlackDistributionEventReceiver extends DistributionEventReceiver<Sl
     public SlackDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, SlackJobDetailsAccessor slackJobDetailsAccessor, SlackChannelV2 channel, SlackChannelKey channelKey) {
         super(gson, auditAccessor, slackJobDetailsAccessor, channel, channelKey);
     }
+
 }

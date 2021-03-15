@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.channel.slack2;
+package com.synopsys.integration.alert.channel.slack.distribution;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

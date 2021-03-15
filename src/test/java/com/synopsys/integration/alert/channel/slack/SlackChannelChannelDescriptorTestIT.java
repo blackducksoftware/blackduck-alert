@@ -10,9 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
+import com.synopsys.integration.alert.channel.slack.action.SlackDistributionTestAction;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.channel.slack2.SlackChannelV2;
-import com.synopsys.integration.alert.channel.slack2.action.SlackDistributionTestAction;
+import com.synopsys.integration.alert.channel.slack.distribution.SlackChannelV2;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
