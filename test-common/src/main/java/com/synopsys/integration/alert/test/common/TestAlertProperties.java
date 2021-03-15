@@ -32,7 +32,7 @@ public class TestAlertProperties extends AlertProperties {
         try {
             alertImagesDir = new ClassPathResource("images").getFile().getAbsolutePath();
         } catch (IOException e) {
-            alertImagesDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "../../../../src/main/resources/images/";
+            alertImagesDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "../../../../../src/main/resources/images/";
         }
 
         encryptionPassword = "changeme";

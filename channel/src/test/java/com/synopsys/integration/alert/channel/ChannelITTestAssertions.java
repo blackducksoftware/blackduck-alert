@@ -1,9 +1,11 @@
 package com.synopsys.integration.alert.channel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 
 import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
@@ -30,7 +32,7 @@ public final class ChannelITTestAssertions {
 
     private static final ProviderMessageHolder TEST_MESSAGE_HOLDER = new ProviderMessageHolder(List.of(), List.of(TEST_SIMPLE_MESSAGE));
 
-    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessage(DistributionChannelV2<D> channel, D distributionDetails) {
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannelV2<D> channel, D distributionDetails) {
         MessageResult messageResult = null;
         try {
             messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
@@ -41,5 +43,23 @@ public final class ChannelITTestAssertions {
         assertFalse(messageResult.hasErrors(), "The message result had errors");
         assertFalse(messageResult.hasWarnings(), "The message result had warnings");
     }
+
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannelV2<D> channel, D distributionDetails) {
+        assertSendSimpleMessageException(channel, distributionDetails, null);
+    }
+
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannelV2<D> channel, D distributionDetails, @Nullable String expectedExceptionMessage) {
+        try {
+            channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
+            Assertions.fail("Expected an exception to be thrown");
+        } catch (AlertException e) {
+            if (null != expectedExceptionMessage) {
+                String exceptionMessage = e.getMessage();
+                assertEquals(expectedExceptionMessage, exceptionMessage);
+            }
+        }
+    }
+
+    private ChannelITTestAssertions() {}
 
 }

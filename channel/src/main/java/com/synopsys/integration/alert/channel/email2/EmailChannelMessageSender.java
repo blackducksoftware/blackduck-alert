@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplati
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -92,8 +93,10 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     }
 
     private ConfigurationModel retrieveGlobalEmailConfig() throws AlertException {
-        return configurationAccessor.getProviderConfigurationByName(emailChannelKey.getUniversalKey())
-                   .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing global config."));
+        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+                   .stream()
+                   .findAny()
+                   .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
     }
 
     private void sendMessage(EmailMessagingService emailService, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {
