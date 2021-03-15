@@ -16,6 +16,7 @@ public class EmailJobDetailsModel extends DistributionJobDetailsModel {
     private final String subjectLine;
     private final boolean projectOwnerOnly;
     private final boolean additionalEmailAddressesOnly;
+    // TODO use enum: EmailAttachmentFormat
     private final String attachmentFileType;
     private final List<String> additionalEmailAddresses;
 

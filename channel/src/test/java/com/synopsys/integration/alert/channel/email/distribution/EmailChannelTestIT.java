@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.email;
+package com.synopsys.integration.alert.channel.email.distribution;
 
 import static com.synopsys.integration.alert.test.common.FieldModelUtils.addConfigurationFieldToMap;
 
@@ -12,11 +12,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
-import com.synopsys.integration.alert.channel.email.distribution.EmailAddressGatherer;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageConverter;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageFormatter;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
