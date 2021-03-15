@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.msteams2;
+package com.synopsys.integration.alert.channel.msteams.distribution;
 
 import java.util.UUID;
 
