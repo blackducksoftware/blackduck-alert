@@ -5,19 +5,19 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.slack2.action;
+package com.synopsys.integration.alert.channel.slack.action;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
-import com.synopsys.integration.alert.channel.slack2.SlackChannelV2;
+import com.synopsys.integration.alert.channel.slack.distribution.SlackChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component
 public class SlackDistributionTestAction extends DistributionChannelTestAction<SlackJobDetailsModel> {
     @Autowired
-    public SlackDistributionTestAction(SlackChannelV2 distributionChannel) {
+    public SlackDistributionTestAction(SlackChannel distributionChannel) {
         super(distributionChannel);
     }
 
