@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.channel.slack;
+package com.synopsys.integration.alert.channel.slack2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
@@ -29,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.AbstractChannelTest;
+import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.parser.SlackChannelEventParser;
 import com.synopsys.integration.alert.channel.slack.parser.SlackChannelMessageParser;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
@@ -62,20 +63,23 @@ public class SlackChannelTest extends AbstractChannelTest {
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void sendMessageTestIT() throws IOException, IntegrationException {
-        SlackChannel slackChannel = createSlackChannel();
-        ProviderMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
+    public void sendMessageTestIT() {
+        MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
+        SlackChannelMessageFormatter slackChannelMessageFormatter = new SlackChannelMessageFormatter(markupEncoderUtil);
+        SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
 
-        DistributionJobModel testJobModel = createTestJobModel(
+        SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(createRestChannelUtility(), ChannelKeys.SLACK);
+
+        SlackChannelV2 slackChannel = new SlackChannelV2(slackChannelMessageConverter, slackChannelMessageSender);
+
+        SlackJobDetailsModel distributionDetails = new SlackJobDetailsModel(
+            null,
             properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
             properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME)
         );
-        DistributionEvent event = new DistributionEvent(ChannelKeys.SLACK.getUniversalKey(), RestConstants.formatDate(new Date()), 1L, ProcessingType.DEFAULT.name(), MessageContentGroup.singleton(messageContent), testJobModel, null);
 
-        slackChannel.sendAuditedMessage(event);
-
-        Mockito.verify(auditAccessor).setAuditEntrySuccess(Mockito.any());
+        ChannelITTestAssertions.assertSendSimpleMessageSuccess(slackChannel, distributionDetails);
     }
 
     @Test
@@ -130,6 +134,7 @@ public class SlackChannelTest extends AbstractChannelTest {
             slackChannel.createRequests(event);
             fail("Expected an exception for missing channel name");
         } catch (IntegrationException e) {
+            // Pass
         }
     }
 
