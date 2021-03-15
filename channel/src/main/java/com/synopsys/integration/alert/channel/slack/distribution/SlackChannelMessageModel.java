@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.slack2;
+package com.synopsys.integration.alert.channel.slack.distribution;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
@@ -19,4 +19,5 @@ public class SlackChannelMessageModel extends AlertSerializableModel {
     public String getMarkdownContent() {
         return markdownContent;
     }
+
 }
