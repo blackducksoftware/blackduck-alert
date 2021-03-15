@@ -33,7 +33,7 @@ public class SlackChannelTestIT extends AbstractChannelTest {
 
         SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(createRestChannelUtility(), ChannelKeys.SLACK);
 
-        SlackChannelV2 slackChannel = new SlackChannelV2(slackChannelMessageConverter, slackChannelMessageSender);
+        SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender);
 
         SlackJobDetailsModel distributionDetails = new SlackJobDetailsModel(
             null,

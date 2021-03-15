@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 @Component
 public class SlackDistributionEventReceiver extends DistributionEventReceiver<SlackJobDetailsModel> {
     @Autowired
-    public SlackDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, SlackJobDetailsAccessor slackJobDetailsAccessor, SlackChannelV2 channel, SlackChannelKey channelKey) {
+    public SlackDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, SlackJobDetailsAccessor slackJobDetailsAccessor, SlackChannel channel, SlackChannelKey channelKey) {
         super(gson, auditAccessor, slackJobDetailsAccessor, channel, channelKey);
     }
 

@@ -14,9 +14,9 @@ import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 
 @Component
-public class SlackChannelV2 extends MessageBoardChannel<SlackJobDetailsModel, SlackChannelMessageModel> {
+public class SlackChannel extends MessageBoardChannel<SlackJobDetailsModel, SlackChannelMessageModel> {
     @Autowired
-    protected SlackChannelV2(SlackChannelMessageConverter slackChannelMessageConverter, SlackChannelMessageSender slackChannelMessageSender) {
+    protected SlackChannel(SlackChannelMessageConverter slackChannelMessageConverter, SlackChannelMessageSender slackChannelMessageSender) {
         super(slackChannelMessageConverter, slackChannelMessageSender);
     }
 
