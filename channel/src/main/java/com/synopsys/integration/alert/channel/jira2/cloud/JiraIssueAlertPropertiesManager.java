@@ -19,6 +19,7 @@ public class JiraIssueAlertPropertiesManager {
     private final Gson gson;
     private final IssuePropertyService issuePropertyService;
 
+    // TODO: Move to common package
     public JiraIssueAlertPropertiesManager(Gson gson, IssuePropertyService issuePropertyService) {
         this.gson = gson;
         this.issuePropertyService = issuePropertyService;
