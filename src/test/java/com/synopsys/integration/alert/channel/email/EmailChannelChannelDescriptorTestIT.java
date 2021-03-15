@@ -49,7 +49,6 @@ import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
-    public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     private static final String EMAIL_TEST_PROVIDER_CONFIG_NAME = "emailTestProviderConfig";
     private static final String DEFAULT_TEST_EMAIL_ADDRESS = "noreply@blackducksoftware.com";
 
