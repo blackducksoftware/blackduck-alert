@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.email2.action;
+package com.synopsys.integration.alert.channel.email.action;
 
 import java.util.HashSet;
 import java.util.List;
