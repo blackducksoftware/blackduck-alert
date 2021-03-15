@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.database.job.email.DefaultEmailJobDetailsA
 import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.server.DefaultJiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
@@ -57,7 +57,7 @@ class StaticJobAccessorTest {
     private DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
-    private JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
+    private DefaultJiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private JobAccessor jobAccessor;
 
@@ -71,7 +71,7 @@ class StaticJobAccessorTest {
         azureBoardsJobDetailsAccessor = Mockito.mock(DefaultAzureBoardsJobDetailsAccessor.class);
         emailJobDetailsAccessor = Mockito.mock(DefaultEmailJobDetailsAccessor.class);
         jiraCloudJobDetailsAccessor = Mockito.mock(DefaultJiraCloudJobDetailsAccessor.class);
-        jiraServerJobDetailsAccessor = Mockito.mock(JiraServerJobDetailsAccessor.class);
+        jiraServerJobDetailsAccessor = Mockito.mock(DefaultJiraServerJobDetailsAccessor.class);
         msTeamsJobDetailsAccessor = Mockito.mock(DefaultMSTeamsJobDetailsAccessor.class);
 
         Mockito.when(blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(Mockito.any())).thenReturn(Collections.emptyList());
