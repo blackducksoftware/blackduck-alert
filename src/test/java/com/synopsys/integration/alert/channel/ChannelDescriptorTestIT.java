@@ -32,8 +32,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validation.
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -60,7 +58,6 @@ import com.synopsys.integration.exception.IntegrationException;
 @AlertIntegrationTest
 public abstract class ChannelDescriptorTestIT {
     protected Gson gson;
-    protected DistributionEvent channelEvent;
 
     protected ContentConverter contentConverter;
     protected TestProperties testProperties;
@@ -91,7 +88,6 @@ public abstract class ChannelDescriptorTestIT {
         providerGlobalConfig = saveProviderGlobalConfig();
         optionalChannelGlobalConfig = saveGlobalConfiguration();
         eventDestinationName = getEventDestinationName();
-        channelEvent = createChannelEvent();
         distributionJobModel = saveDistributionJob();
     }
 
@@ -166,8 +162,6 @@ public abstract class ChannelDescriptorTestIT {
         return new FieldModel(descriptorName, context, keyToValues);
     }
 
-    public abstract DistributionEvent createChannelEvent() throws AlertException;
-
     public abstract Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception;
 
     public abstract DistributionJobDetailsModel createDistributionJobDetails();
@@ -241,13 +235,6 @@ public abstract class ChannelDescriptorTestIT {
             e.printStackTrace();
             fail();
         }
-    }
-
-    @Test
-    public void testCreateChannelEvent() throws Exception {
-        DistributionEvent channelEvent = createChannelEvent();
-        assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(eventDestinationName, channelEvent.getDestination());
     }
 
     @Test

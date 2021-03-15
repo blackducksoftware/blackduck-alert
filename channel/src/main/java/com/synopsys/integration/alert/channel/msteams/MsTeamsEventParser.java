@@ -22,13 +22,14 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 @Component
+@Deprecated
 public class MsTeamsEventParser {
     // There is a size limit in the request size that is allowed (20KB). This text limit is meant to hopefully keep the message under that size limit
     private static final int MAX_TEXT_LIMIT_REQUEST = 10000;
 
-    private FreemarkerTemplatingService freemarkerTemplatingService;
-    private Configuration freemarkerConfiguration;
-    private Template msTeamsTemplate;
+    private final FreemarkerTemplatingService freemarkerTemplatingService;
+    private final Configuration freemarkerConfiguration;
+    private final Template msTeamsTemplate;
 
     @Autowired
     public MsTeamsEventParser(FreemarkerTemplatingService freemarkerTemplatingService) throws IntegrationException {

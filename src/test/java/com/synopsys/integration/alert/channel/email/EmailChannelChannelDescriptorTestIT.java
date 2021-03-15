@@ -31,13 +31,6 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -49,13 +42,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
     public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
@@ -109,24 +100,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
             null,
             List.of("noreply@blackducksoftware.com")
         );
-    }
-
-    @Override
-    public DistributionEvent createChannelEvent() throws AlertException {
-        LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", UNIT_TEST_PROJECT_NAME)
-                                             .applySubTopic(subTopic.getLabel(), subTopic.getValue())
-                                             .build();
-
-        ConfigurationModel emailGlobalConfig = optionalChannelGlobalConfig
-                                                   .orElseThrow(() -> new AlertRuntimeException("Missing Email global config"));
-
-        String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
-        DistributionEvent event = new DistributionEvent(ChannelKeys.EMAIL.getUniversalKey(), createdAt, 1L, ProcessingType.DEFAULT.name(),
-            MessageContentGroup.singleton(content), distributionJobModel, emailGlobalConfig);
-        return event;
     }
 
     @Override
@@ -200,8 +173,10 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
 
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(jobAccessor, providerDataAccessor);
 
+        List<ConfigurationModel> configList = optionalChannelGlobalConfig.map(List::of).orElse(List.of());
+
         ConfigurationAccessor mockConfigAccessor = Mockito.mock(ConfigurationAccessor.class);
-        Mockito.when(mockConfigAccessor.getProviderConfigurationByName(Mockito.anyString())).thenReturn(optionalChannelGlobalConfig);
+        Mockito.when(mockConfigAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(ChannelKeys.EMAIL), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(configList);
 
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, alertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, mockConfigAccessor);
         EmailChannelV2 emailChannel = new EmailChannelV2(emailChannelMessageConverter, emailChannelMessageSender);

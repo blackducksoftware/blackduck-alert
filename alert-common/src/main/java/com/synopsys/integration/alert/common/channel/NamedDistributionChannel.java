@@ -7,18 +7,17 @@
  */
 package com.synopsys.integration.alert.common.channel;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 
+@Deprecated
 public abstract class NamedDistributionChannel extends DistributionChannel {
     private final ChannelKey channelKey;
 
-    public NamedDistributionChannel(ChannelKey channelKey, Gson gson, AuditAccessor auditAccessor) {
-        super(gson, auditAccessor);
+    public NamedDistributionChannel(ChannelKey channelKey) {
+        super();
         this.channelKey = channelKey;
     }
 
@@ -30,11 +29,5 @@ public abstract class NamedDistributionChannel extends DistributionChannel {
     }
 
     public abstract void distributeMessage(DistributionEvent event) throws IntegrationException;
-
-    @Override
-    public String getDestinationName() {
-        //FIXME: Required to avoid conflicts when registering new JMS Listeners
-        return channelKey.getUniversalKey() + "_old";
-    }
 
 }

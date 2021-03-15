@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueCo
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
@@ -37,6 +36,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AzureBoardsChannel extends IssueTrackerChannel {
+    private final Gson gson;
     private final ProxyManager proxyManager;
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final AzureBoardsRequestCreator azureBoardsRequestCreator;
@@ -44,10 +44,11 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
     private final AzureRedirectUtil azureRedirectUtil;
 
     @Autowired
-    public AzureBoardsChannel(Gson gson, AuditAccessor auditAccessor, EventManager eventManager, ProxyManager proxyManager,
+    public AzureBoardsChannel(Gson gson, EventManager eventManager, ProxyManager proxyManager,
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory, AzureBoardsRequestCreator azureBoardsRequestCreator, AzureBoardsMessageParser azureBoardsMessageParser,
         AzureRedirectUtil azureRedirectUtil) {
-        super(ChannelKeys.AZURE_BOARDS, gson, auditAccessor, eventManager);
+        super(ChannelKeys.AZURE_BOARDS, eventManager);
+        this.gson = gson;
         this.proxyManager = proxyManager;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
         this.azureBoardsRequestCreator = azureBoardsRequestCreator;
@@ -75,7 +76,7 @@ public class AzureBoardsChannel extends IssueTrackerChannel {
 
     @Override
     public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
-        AzureBoardsRequestDelegator issueTrackerService = new AzureBoardsRequestDelegator(getGson(), proxyManager, (AzureBoardsContext) context, azureBoardsMessageParser);
+        AzureBoardsRequestDelegator issueTrackerService = new AzureBoardsRequestDelegator(gson, proxyManager, (AzureBoardsContext) context, azureBoardsMessageParser);
         return issueTrackerService.sendRequests(requests);
     }
 

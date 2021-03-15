@@ -102,7 +102,7 @@ public class JiraCloudTestActionTest {
         TransitionsResponseModel transitionsResponseModel = new TestTransitionResponsesModel();
         Mockito.when(issueService.getTransitions(Mockito.anyString())).thenReturn(transitionsResponseModel);
 
-        JiraCloudChannel jiraCloudChannel = new JiraCloudChannel(gson, null, null, null, null);
+        JiraCloudChannel jiraCloudChannel = new JiraCloudChannel(gson, null, null, null);
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(jiraCloudChannel, gson, new TestIssueRequestCreator() {

@@ -16,11 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -31,15 +29,15 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
+@Deprecated
 public class MsTeamsChannel extends NamedDistributionChannel {
     private final RestChannelUtility restChannelUtility;
     private final MsTeamsEventParser msTeamsEventParser;
     private final MsTeamsMessageParser msTeamsMessageParser;
 
     @Autowired
-    public MsTeamsChannel(Gson gson, AuditAccessor auditAccessor, RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser,
-        MsTeamsMessageParser msTeamsMessageParser) {
-        super(ChannelKeys.MS_TEAMS, gson, auditAccessor);
+    public MsTeamsChannel(RestChannelUtility restChannelUtility, MsTeamsEventParser msTeamsEventParser, MsTeamsMessageParser msTeamsMessageParser) {
+        super(ChannelKeys.MS_TEAMS);
         this.restChannelUtility = restChannelUtility;
         this.msTeamsEventParser = msTeamsEventParser;
         this.msTeamsMessageParser = msTeamsMessageParser;

@@ -18,14 +18,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.template.EmailChannelMessageParser;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.NamedDistributionChannel;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
@@ -45,6 +43,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
+@Deprecated
 public class EmailChannel extends NamedDistributionChannel {
     public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
@@ -56,9 +55,9 @@ public class EmailChannel extends NamedDistributionChannel {
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
 
     @Autowired
-    public EmailChannel(Gson gson, AlertProperties alertProperties, AuditAccessor auditAccessor,
-        EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser, EmailAttachmentFileCreator emailAttachmentFileCreator) {
-        super(ChannelKeys.EMAIL, gson, auditAccessor);
+    public EmailChannel(AlertProperties alertProperties, EmailAddressHandler emailAddressHandler, FreemarkerTemplatingService freemarkerTemplatingService, EmailChannelMessageParser emailChannelMessageParser,
+        EmailAttachmentFileCreator emailAttachmentFileCreator) {
+        super(ChannelKeys.EMAIL);
         this.emailAddressHandler = emailAddressHandler;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
         this.alertProperties = alertProperties;

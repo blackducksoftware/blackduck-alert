@@ -38,12 +38,4 @@ public class EventManager {
         jmsTemplate.convertAndSend(destination, jsonMessage);
     }
 
-    public JmsTemplate getJmsTemplate() {
-        return jmsTemplate;
-    }
-
-    public ContentConverter getContentConverter() {
-        return contentConverter;
-    }
-
 }

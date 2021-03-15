@@ -11,7 +11,6 @@
  */
 package com.synopsys.integration.alert.channel;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -41,7 +40,7 @@ public abstract class AbstractChannelTest {
     protected AuditAccessor auditAccessor;
 
     @BeforeEach
-    public void init() throws IOException {
+    public void init() {
         gson = new Gson();
         properties = new TestProperties();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
