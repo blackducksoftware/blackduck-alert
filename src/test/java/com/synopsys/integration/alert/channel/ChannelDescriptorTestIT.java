@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -217,20 +216,6 @@ public abstract class ChannelDescriptorTestIT {
         try {
             ChannelDistributionTestAction descriptorActionApi = getChannelDistributionTestAction();
             descriptorActionApi.testConfig(distributionJobModel, "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT", null);
-        } catch (IntegrationException e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
-
-    @Test
-    public void testGlobalConfig() {
-        assumeTrue(optionalChannelGlobalConfig.isPresent(), "Cannot test channel global configuration because none was provided to test");
-        ConfigurationModel channelGlobalConfig = optionalChannelGlobalConfig.get();
-        FieldUtility fieldUtility = createValidGlobalFieldUtility(channelGlobalConfig);
-        try {
-            TestAction globalConfigTestAction = getGlobalTestAction();
-            globalConfigTestAction.testConfig(String.valueOf(channelGlobalConfig.getConfigurationId()), createTestConfigDestination(), fieldUtility);
         } catch (IntegrationException e) {
             e.printStackTrace();
             fail();

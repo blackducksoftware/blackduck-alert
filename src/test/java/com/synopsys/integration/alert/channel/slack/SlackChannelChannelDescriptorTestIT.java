@@ -104,11 +104,6 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public void testGlobalConfig() {
-        // Slack has no global config
-    }
-
-    @Override
     public void testGlobalValidate() {
         // Slack has no global config
     }
