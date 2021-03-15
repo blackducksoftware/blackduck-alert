@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearc
 import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
-import com.synopsys.integration.alert.channel.jira2.cloud.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraSearcherResponseModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
