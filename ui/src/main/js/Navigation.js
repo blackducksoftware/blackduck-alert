@@ -47,6 +47,11 @@ class Navigation extends Component {
             <>
                 {providers}
                 {channelGlobals}
+                <li key="slackV2">
+                    <NavLink to="slackV2" activeClassName="activeNav">
+                        SlackV2
+                    </NavLink>
+                </li>
                 <li className="navHeader">
                     Jobs
                 </li>

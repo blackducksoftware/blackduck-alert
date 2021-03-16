@@ -12,6 +12,7 @@ import { getDescriptors } from 'store/actions/descriptors';
 import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderTable from 'providers/ProviderTable';
+import SlackGlobalConfiguration from 'channels/SlackGlobalConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
@@ -115,6 +116,7 @@ class MainPage extends Component {
                 />
                 {providers}
                 {channels}
+                <Route exact path="/alert/channels/slackv2" component={SlackGlobalConfiguration} />
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
                 <Route exact path="/alert/general/about" component={AboutInfo} />
