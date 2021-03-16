@@ -57,8 +57,8 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         // TODO determine if source should be required everywhere
         ProjectIssueModel testProjectIssueModel = createPlaceholderProjectIssueModel(testJobModel.getBlackDuckGlobalConfigId());
 
-        // TODO create better post-create comment
-        IssueCreationModel creationRequest = IssueCreationModel.simple(topicString, messageString, List.of("Created while testing Alert"), testProjectIssueModel.getProvider());
+        String postCreateComment = String.format("Created by [ Test Configuration ] in the Alert Distribution Job: %s", testJobModel.getName());
+        IssueCreationModel creationRequest = IssueCreationModel.simple(topicString, messageString, List.of(postCreateComment), testProjectIssueModel.getProvider());
         IssueTrackerModelHolder<T> creationRequestModelHolder = new IssueTrackerModelHolder<>(List.of(creationRequest), List.of(), List.of());
 
         List<IssueTrackerIssueResponseModel> createdIssues;
