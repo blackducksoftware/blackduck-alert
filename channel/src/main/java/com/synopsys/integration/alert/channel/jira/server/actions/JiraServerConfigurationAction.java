@@ -10,16 +10,20 @@ package com.synopsys.integration.alert.channel.jira.server.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira2.server.action.JiraServerDistributionTestAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class JiraServerConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected JiraServerConfigurationAction(JiraServerGlobalTestAction jiraServerGlobalTestAction, JiraServerJobDetailsExtractor jiraServerJobDetailsExtractor) {
+    protected JiraServerConfigurationAction(
+        JiraServerDistributionTestAction jiraServerDistributionTestAction,
+        JiraServerGlobalTestAction jiraServerGlobalTestAction,
+        JiraServerJobDetailsExtractor jiraServerJobDetailsExtractor
+    ) {
         super(ChannelKeys.JIRA_SERVER);
-        // FIXME autowire JiraServerDistributionTestAction into the constructor when the channel is ready
-        //  addDistributionTestAction(jiraServerDistributionTestAction);
+        addDistributionTestAction(jiraServerDistributionTestAction);
         addGlobalTestAction(jiraServerGlobalTestAction);
         addJobDetailsExtractor(jiraServerJobDetailsExtractor);
     }
