@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.common.channel.IssueTrackerChannel;
 import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerContext;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerRequest;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
@@ -27,14 +26,14 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
+@Deprecated
 public class JiraServerChannel extends IssueTrackerChannel {
     private final JiraMessageContentConverter jiraContentConverter;
     private final JiraServerContextBuilder jiraServerContextBuilder;
 
     @Autowired
-    public JiraServerChannel(Gson gson, AuditAccessor auditAccessor, JiraMessageContentConverter jiraContentConverter, EventManager eventManager,
-        JiraServerContextBuilder jiraServerContextBuilder) {
-        super(ChannelKeys.JIRA_SERVER, gson, auditAccessor, eventManager);
+    public JiraServerChannel(JiraMessageContentConverter jiraContentConverter, EventManager eventManager, JiraServerContextBuilder jiraServerContextBuilder) {
+        super(ChannelKeys.JIRA_SERVER, eventManager);
         this.jiraContentConverter = jiraContentConverter;
         this.jiraServerContextBuilder = jiraServerContextBuilder;
     }
@@ -54,7 +53,7 @@ public class JiraServerChannel extends IssueTrackerChannel {
 
     @Override
     public IssueTrackerResponse sendRequests(IssueTrackerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
-        JiraServerRequestDelegator jiraServerService = new JiraServerRequestDelegator(getGson(), context);
+        JiraServerRequestDelegator jiraServerService = new JiraServerRequestDelegator(new Gson(), context);
         return jiraServerService.sendRequests(requests);
     }
 

@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,8 +31,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.validation.
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -60,7 +57,6 @@ import com.synopsys.integration.exception.IntegrationException;
 @AlertIntegrationTest
 public abstract class ChannelDescriptorTestIT {
     protected Gson gson;
-    protected DistributionEvent channelEvent;
 
     protected ContentConverter contentConverter;
     protected TestProperties testProperties;
@@ -91,7 +87,6 @@ public abstract class ChannelDescriptorTestIT {
         providerGlobalConfig = saveProviderGlobalConfig();
         optionalChannelGlobalConfig = saveGlobalConfiguration();
         eventDestinationName = getEventDestinationName();
-        channelEvent = createChannelEvent();
         distributionJobModel = saveDistributionJob();
     }
 
@@ -166,8 +161,6 @@ public abstract class ChannelDescriptorTestIT {
         return new FieldModel(descriptorName, context, keyToValues);
     }
 
-    public abstract DistributionEvent createChannelEvent() throws AlertException;
-
     public abstract Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception;
 
     public abstract DistributionJobDetailsModel createDistributionJobDetails();
@@ -227,27 +220,6 @@ public abstract class ChannelDescriptorTestIT {
             e.printStackTrace();
             fail();
         }
-    }
-
-    @Test
-    public void testGlobalConfig() {
-        assumeTrue(optionalChannelGlobalConfig.isPresent(), "Cannot test channel global configuration because none was provided to test");
-        ConfigurationModel channelGlobalConfig = optionalChannelGlobalConfig.get();
-        FieldUtility fieldUtility = createValidGlobalFieldUtility(channelGlobalConfig);
-        try {
-            TestAction globalConfigTestAction = getGlobalTestAction();
-            globalConfigTestAction.testConfig(String.valueOf(channelGlobalConfig.getConfigurationId()), createTestConfigDestination(), fieldUtility);
-        } catch (IntegrationException e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
-
-    @Test
-    public void testCreateChannelEvent() throws Exception {
-        DistributionEvent channelEvent = createChannelEvent();
-        assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(eventDestinationName, channelEvent.getDestination());
     }
 
     @Test

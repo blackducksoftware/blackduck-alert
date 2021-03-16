@@ -7,11 +7,7 @@
  */
 package com.synopsys.integration.alert.common.event;
 
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -19,12 +15,12 @@ import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
+@Deprecated
 public class DistributionEvent extends ContentEvent {
     private static final long serialVersionUID = -7858733753649257748L;
 
     private final DistributionJobModel distributionJobModel;
     private final ConfigurationModel channelGlobalConfig;
-    private Map<Long, Long> notificationIdToAuditId;
 
     public DistributionEvent(
         String destination,
@@ -46,25 +42,6 @@ public class DistributionEvent extends ContentEvent {
 
     public Optional<ConfigurationModel> getChannelGlobalConfig() {
         return Optional.ofNullable(channelGlobalConfig);
-    }
-
-    public Map<Long, Long> getNotificationIdToAuditId() {
-        return notificationIdToAuditId;
-    }
-
-    public void setNotificationIdToAuditId(Map<Long, Long> notificationIdToAuditId) {
-        this.notificationIdToAuditId = notificationIdToAuditId;
-    }
-
-    public Set<Long> getAuditIds() {
-        if (null != notificationIdToAuditId && !notificationIdToAuditId.isEmpty()) {
-            return notificationIdToAuditId.entrySet()
-                       .stream()
-                       .map(Map.Entry::getValue)
-                       .filter(Objects::nonNull)
-                       .collect(Collectors.toSet());
-        }
-        return Set.of();
     }
 
 }
