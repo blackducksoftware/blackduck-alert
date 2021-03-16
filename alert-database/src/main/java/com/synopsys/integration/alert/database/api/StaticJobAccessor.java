@@ -55,7 +55,7 @@ import com.synopsys.integration.alert.database.job.email.EmailJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.jira.cloud.DefaultJiraCloudJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.cloud.JiraCloudJobDetailsEntity;
-import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.database.job.jira.server.DefaultJiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.jira.server.JiraServerJobDetailsEntity;
 import com.synopsys.integration.alert.database.job.msteams.DefaultMSTeamsJobDetailsAccessor;
 import com.synopsys.integration.alert.database.job.msteams.MSTeamsJobDetailsEntity;
@@ -73,7 +73,7 @@ public class StaticJobAccessor implements JobAccessor {
     private final DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor;
     private final DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
     private final DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor;
-    private final JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
+    private final DefaultJiraServerJobDetailsAccessor jiraServerJobDetailsAccessor;
     private final DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor;
     private final DefaultSlackJobDetailsAccessor slackJobDetailsAccessor;
 
@@ -88,7 +88,7 @@ public class StaticJobAccessor implements JobAccessor {
         DefaultAzureBoardsJobDetailsAccessor azureBoardsJobDetailsAccessor,
         DefaultEmailJobDetailsAccessor emailJobDetailsAccessor,
         DefaultJiraCloudJobDetailsAccessor jiraCloudJobDetailsAccessor,
-        JiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
+        DefaultJiraServerJobDetailsAccessor jiraServerJobDetailsAccessor,
         DefaultMSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor,
         DefaultSlackJobDetailsAccessor slackJobDetailsAccessor,
         ProviderKey blackDuckProviderKey
