@@ -54,8 +54,14 @@ postgres:
   databaseName: alertdb
   adminUserName: postgres
   adminPassword: ""
-  dbCredentialSecretName: "" #Secret that contains both the database users username & password
-  dbAdminCredentialSecretName: "" #Secret that contains both the database admin username & password
+  dbCredential: #Secret that contains both the regular username & password
+    secretName: ""
+    usernameKey: "ALERT_DB_USERNAME"
+    passwordKey: "ALERT_DB_PASSWORD"
+  dbAdminCredential: #Secret that contains both the admin username & password
+    secretName: ""
+    usernameKey: "ALERT_DB_ADMIN_USERNAME"
+    passwordKey: "ALERT_DB_ADMIN_PASSWORD"
   # pvc related parameters for postgres container
   persistentVolumeClaimName: "" # set if you want to create your own PVC (used for migration)
   claimSize: "5Gi" # PVC claim size

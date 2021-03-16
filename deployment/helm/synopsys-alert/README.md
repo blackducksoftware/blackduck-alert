@@ -160,8 +160,12 @@ This contains a table briefly describing each parameter in the values.yaml file.
 | `postgres.databaseName` | Postgres database name where Alert data will be stored | `alertdb` |
 | `postgres.adminUserName` | Postgres database admin user | `postgres` |
 | `postgres.adminPassword` | Postgres database password for the admin user | `""` |
-| `postgres.dbCredentialSecretName` | The name of the secret that contains both the database user's username & password | `""` |
-| `postgres.dbAdminCredentialSecretName` | The name of the secret that contains both the database admin's username & password | `""` |
+| `postgres.dbCredential.secretName` | The name of the secret that contains the database user's username & password | `""` |
+| `postgres.dbCredential.usernameKey` | The key containing the database user's username | `"ALERT_DB_USERNAME"` |
+| `postgres.dbCredential.passwordKey` | The key containing the database user's password | `"ALERT_DB_PASSWORD"` |
+| `postgres.dbAdminCredential.secretName` | The name of the secret that contains both the database admin's username & password | `""` |
+| `postgres.dbAdminCredential.usernameKey` | The key containing the database admin's username | `"ALERT_DB_ADMIN_USERNAME"` |
+| `postgres.dbAdminCredential.passwordKey` | The key containing the database admin's username | `"ALERT_DB_ADMIN_PASSWORD"` |
 | `postgres.persistentVolumeClaimName` | Postgres node volume claim name | `""` | 
 | `postgres.claimSize` | Postgres node volume claim size | `"5Gi"` |
 | `postgres.storageClass` | Postgres node storage class for volume claim | `""` |
@@ -206,12 +210,14 @@ This section describes how to configure Alert using kubernetes secrets to set th
 - Execute the command
   ```bash 
    $ kubectl create secret generic <SECRET_NAME> -n <ALERT_NAMESPACE> \
-   --from-file=ALERT_DB_USERNAME=<USER_USERNAME> \
-   --from-file=ALERT_DB_PASSWORD=<USER_PASSWORD>
+   --from-file=<USERNAME_KEY>=<USER_USERNAME> \
+   --from-file=<PASSWORD_KEY>=<USER_PASSWORD>
   ```
   - Replace `<SECRET_NAME>` with the desired name for the secret.
   - Replace `<ALERT_NAMESPACE>` with the namespace being used for Alert.
-  - Replace `<USER_USERNAME>` with the database user owning the Alert database.
+  - Replace `<USERNAME_KEY>` with the key mapped to the user's username. By default, this is set to ALERT_DB_USERNAME in values.yaml.
+  - Replace `<USER_USERNAME>` with the database user's username.
+  - Replace `<PASSWORD_KEY>` with the key mapped to the user's password. By default, this is set to ALERT_DB_PASSWORD in values.yaml.
   - Replace `<USER_PASSWORD>` with the database user's password.
   - Note: Using this secret will take priority over setting userUserName and userPassword in the Configuration Parameters in values.yaml.
 
@@ -228,14 +234,16 @@ This section describes how to configure Alert using kubernetes secrets to set th
 - Execute the command
   ```bash 
    $ kubectl create secret generic <SECRET_NAME> -n <ALERT_NAMESPACE> \
-   --from-file=ALERT_DB_ADMIN_USERNAME=<ADMIN_USERNAME> \
-   --from-file=ALERT_DB_ADMIN_PASSWORD=<ADMIN_PASSWORD>
+   --from-file=<ADMIN_USERNAME_KEY>=<ADMIN_USERNAME> \
+   --from-file=<ADMIN_PASSWORD_KEY>=<ADMIN_PASSWORD>
   ```
   - Replace `<SECRET_NAME>` with the desired name for the secret.
   - Replace `<ALERT_NAMESPACE>` with the namespace being used for Alert.
+  - Replace `<ADMIN_USERNAME_KEY>` with the key mapped to the admin's username. By default, this is set to ALERT_DB_ADMIN_USERNAME in values.yaml.
   - Replace `<ADMIN_USERNAME>` with the database admin's username.
+  - Replace `<ADMIN_PASSWORD_KEY>` with the key mapped to the admin's password. By default, this is set to ALERT_DB_ADMIN_PASSWORD in values.yaml.
   - Replace `<ADMIN_PASSWORD>` with the database admin's password.
-   - Note: Using this secret will take priority over setting adminUserName and adminPassword in the Configuration Parameters in values.yaml.
+  - Note: Using this secret will take priority over setting adminUserName and adminPassword in the Configuration Parameters in values.yaml.
 
 - Example: 
     ```bash 
@@ -250,16 +258,23 @@ This section describes how to configure Alert using kubernetes secrets to set th
 Once you create the secrets with the correct credentials, you must then tell alert the name of the secret the credentials correspond to.
 - In the 'values.yaml' file, for the database user, set
   ```yaml
-  dbCredentialSecretName: "<SECRET_NAME>"
+  postgres.dbCredential.secretName: "<SECRET_NAME>"
+  postgres.dbCredential.usernameKey: "<USERNAME_KEY>"
+  postgres.dbCredential.passwordKey: "<PASSWORD_KEY>"
   ```
   - Replace `<SECRET_NAME>` with the name of the secret created in the step [Create the Database User Credentials Secret](#create-the-database-user-credentials-secret).
+  - Replace `<USERNAME_KEY>` with the username key used in the same step.
+  - Replace `<PASSWORD_KEY` with the password key used in the same step.
   
 - In the 'values.yaml' file, for the database admin, set
   ```yaml
-  dbAdminCredentialSecretName: "<SECRET_NAME>"
+  postgres.dbAdminCredential.secretName: "<SECRET_NAME>"
+  postgres.dbAdminCredential.usernameKey: "<ADMIN_USERNAME_KEY>"
+  postgres.dbAdminCredential.passwordKey: "<ADMIN_PASSWORD_KEY>"
   ```
   - Replace `<SECRET_NAME>` with the name of the secret created in the step [Create the Database Admin Credentials Secret](#create-the-database-admin-credentials-secret).
-  
+  - Replace `<ADMIN_USERNAME_KEY>` with the username key used in the same step.
+  - Replace `<ADMIN_PASSWORD_KEY>` with the password key used in the same step.
 
 ### Custom Certificates
 This section describes how to configure the Alert webserver with a custom certificate.

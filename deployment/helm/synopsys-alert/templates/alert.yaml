@@ -36,14 +36,36 @@ spec:
       - env:
         - name: RUN_SECRETS_DIR
           value: /tmp/secrets
-        {{- if not .Values.postgres.dbCredentialSecretName }}
-        - name: ALERT_DB_PASSWORD 
+        {{- if .Values.postgres.dbCredential.secretName }}
+        - name: ALERT_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbCredential.usernameKey is missing." .Values.postgres.dbCredential.usernameKey }}
+              name: {{ .Values.postgres.dbCredential.secretName }}
+        - name: ALERT_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbCredential.passwordKey is missing." .Values.postgres.dbCredential.passwordKey }}
+              name: {{ .Values.postgres.dbCredential.secretName }}
+        {{- else }}
+        - name: ALERT_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
         {{- end }}
-        {{- if not .Values.postgres.dbAdminCredentialSecretName }}
+        {{- if .Values.postgres.dbAdminCredential.secretName }}
+        - name: ALERT_DB_ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbAdminCredential.usernameKey is missing." .Values.postgres.dbAdminCredential.usernameKey }}
+              name: {{ .Values.postgres.dbAdminCredential.secretName }}
+        - name: ALERT_DB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbAdminCredential.passwordKey is missing." .Values.postgres.dbAdminCredential.passwordKey }}
+              name: {{ .Values.postgres.dbAdminCredential.secretName }}
+        {{- else }}
         - name: ALERT_DB_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -98,22 +120,6 @@ spec:
           name: java-keystore
           subPath: cacerts
         {{- end }}
-        {{- if .Values.postgres.dbCredentialSecretName }}
-        - mountPath: /tmp/secrets/ALERT_DB_USERNAME
-          name: db-credentials
-          subPath: ALERT_DB_USERNAME
-        - mountPath: /tmp/secrets/ALERT_DB_PASSWORD
-          name: db-credentials
-          subPath: ALERT_DB_PASSWORD
-        {{- end }}
-        {{- if .Values.postgres.dbAdminCredentialSecretName }}
-        - mountPath: /tmp/secrets/ALERT_DB_ADMIN_USERNAME
-          name: db-admin-credentials
-          subPath: ALERT_DB_ADMIN_USERNAME
-        - mountPath: /tmp/secrets/ALERT_DB_ADMIN_PASSWORD
-          name: db-admin-credentials
-          subPath: ALERT_DB_ADMIN_PASSWORD
-        {{- end }}
       dnsPolicy: ClusterFirst
       {{- include "alert.imagePullSecrets" . | nindent 6 -}}
       {{- with .Values.alert.nodeSelector }}
@@ -153,18 +159,7 @@ spec:
           defaultMode: 292
           secretName: {{ .Values.javaKeystoreSecretName }}
       {{- end }}
-      {{- if .Values.postgres.dbCredentialSecretName }}
-      - name: db-credentials
-        secret:
-          defaultMode: 292
-          secretName: {{ .Values.postgres.dbCredentialSecretName }}
-      {{- end }}
-      {{- if .Values.postgres.dbAdminCredentialSecretName }}
-      - name: db-admin-credentials
-        secret:
-          defaultMode: 292
-          secretName: {{ .Values.postgres.dbAdminCredentialSecretName }}
-      {{- end }}
+
 ---
 
 apiVersion: v1

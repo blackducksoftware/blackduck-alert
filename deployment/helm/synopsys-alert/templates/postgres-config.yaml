@@ -7,11 +7,11 @@ data:
   ALERT_DB_HOST: {{ required "must provide --set postgres.host=\"\"" .Values.postgres.host }}
   {{- end }}
   ALERT_DB_PORT: {{ .Values.postgres.port | quote }}
-  {{- if not .Values.postgres.dbCredentialSecretName }}
+  {{- if not .Values.postgres.dbCredential.secretName }}
   ALERT_DB_USERNAME: {{ .Values.postgres.userUserName }}
   {{- end }}
   ALERT_DB_NAME: {{ .Values.postgres.databaseName }}
-  {{- if not .Values.postgres.dbAdminCredentialSecretName }}
+  {{- if not .Values.postgres.dbAdminCredential.secretName }}
   ALERT_DB_ADMIN_USERNAME: {{ .Values.postgres.adminUserName }}
   {{- end }}
 kind: ConfigMap
