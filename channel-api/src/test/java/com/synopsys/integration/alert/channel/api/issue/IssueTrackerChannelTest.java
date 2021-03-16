@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel.api.issue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -34,8 +33,8 @@ public class IssueTrackerChannelTest {
 
         MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty());
 
-        IssueTrackerResponse messageSenderResponse = messageSender.sendMessages(List.of());
-        assertEquals(messageSenderResponse.getStatusMessage(), testResult.getStatusMessage());
+        IssueTrackerResponse processorResponse = processor.processMessages(ProviderMessageHolder.empty());
+        assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());
     }
 
     private IssueTrackerMessageSender<String> createMessageSender() {
