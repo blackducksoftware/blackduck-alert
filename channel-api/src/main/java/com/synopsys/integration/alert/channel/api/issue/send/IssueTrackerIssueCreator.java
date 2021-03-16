@@ -60,7 +60,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
             ProjectIssueModel alertIssueSource = optionalSource.get();
             assignAlertSearchProperties(createdIssueDetails, alertIssueSource);
             addPostCreateComments(createdIssueDetails, alertIssueCreationModel, alertIssueSource);
-            callbackInfo = callbackInfoCreator.createCallbackInfo(alertIssueSource);
+            callbackInfo = callbackInfoCreator.createCallbackInfo(alertIssueSource).orElse(null);
         }
 
         return new IssueTrackerIssueResponseModel(

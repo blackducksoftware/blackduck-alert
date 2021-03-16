@@ -24,7 +24,7 @@ public class IssueTrackerIssueResponseCreator {
     }
 
     public final <T extends Serializable> IssueTrackerIssueResponseModel createIssueResponse(ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
-        IssueTrackerCallbackInfo callbackInfo = callbackInfoCreator.createCallbackInfo(source);
+        IssueTrackerCallbackInfo callbackInfo = callbackInfoCreator.createCallbackInfo(source).orElse(null);
         return new IssueTrackerIssueResponseModel(
             existingIssueDetails.getIssueKey(),
             existingIssueDetails.getIssueUILink(),
