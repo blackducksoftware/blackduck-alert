@@ -19,8 +19,8 @@ import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCo
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
-import com.synopsys.integration.alert.channel.jira2.cloud.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropertiesUrlCorrector;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueSearchPropertyStringCompatibilityUtils;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraCustomFieldReplacementValues;
