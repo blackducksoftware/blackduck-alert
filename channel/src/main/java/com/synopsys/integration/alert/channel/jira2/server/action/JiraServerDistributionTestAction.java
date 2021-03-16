@@ -7,15 +7,17 @@
  */
 package com.synopsys.integration.alert.channel.jira2.server.action;
 
-import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
+import com.synopsys.integration.alert.channel.jira2.server.JiraServerChannelV2;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
-// FIXME make this a component and autowire the strongly-typed channel in the constructor
-//  @Component
+@Component
 public class JiraServerDistributionTestAction extends DistributionChannelTestAction<JiraServerJobDetailsModel> {
-    // @Autowired
-    public JiraServerDistributionTestAction(DistributionChannelV2<JiraServerJobDetailsModel> distributionChannel) {
+    @Autowired
+    public JiraServerDistributionTestAction(JiraServerChannelV2 distributionChannel) {
         super(distributionChannel);
     }
 
