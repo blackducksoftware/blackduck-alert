@@ -15,7 +15,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public interface ChannelDistributionTestAction {
     MessageResult testConfig(
-        DistributionJobModel testJobModel,
+        DistributionJobModel distributionJobModel,
         @Nullable String customTopic,
         @Nullable String customMessage,
         @Nullable String destination
