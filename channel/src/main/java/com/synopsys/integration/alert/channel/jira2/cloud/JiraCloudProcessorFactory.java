@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssu
 import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueTransitioner;
 import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.channel.jira2.common.JiraMessageFormatter;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;

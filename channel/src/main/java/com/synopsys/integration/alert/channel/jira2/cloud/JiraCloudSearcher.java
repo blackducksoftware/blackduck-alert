@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira2.common.JiraSearcher;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;

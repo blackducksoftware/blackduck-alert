@@ -5,11 +5,10 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopsys.integration.alert.channel.jira2.common;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
-import com.synopsys.integration.alert.channel.jira2.common.JiraIssuePropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.response.IssuePropertyResponseModel;
@@ -19,7 +18,6 @@ public class JiraIssueAlertPropertiesManager {
     private final Gson gson;
     private final IssuePropertyService issuePropertyService;
 
-    // TODO: Move to common package
     public JiraIssueAlertPropertiesManager(Gson gson, IssuePropertyService issuePropertyService) {
         this.gson = gson;
         this.issuePropertyService = issuePropertyService;
