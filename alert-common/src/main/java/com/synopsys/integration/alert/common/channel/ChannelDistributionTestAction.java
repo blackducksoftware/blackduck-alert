@@ -9,9 +9,9 @@ package com.synopsys.integration.alert.common.channel;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 public interface ChannelDistributionTestAction {
     MessageResult testConfig(
@@ -19,6 +19,6 @@ public interface ChannelDistributionTestAction {
         @Nullable String customTopic,
         @Nullable String customMessage,
         @Nullable String destination
-    ) throws IntegrationException;
+    ) throws AlertException;
 
 }
