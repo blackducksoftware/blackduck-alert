@@ -39,8 +39,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         this.jiraProjectKey = jiraProjectKey;
         this.issuePropertiesManager = issuePropertiesManager;
     }
-
-    // AlertIssueResponseModel
+    
     protected abstract List<JiraSearcherResponseModel> executeQueryForIssues(String jql) throws IntegrationException;
 
     @Override
