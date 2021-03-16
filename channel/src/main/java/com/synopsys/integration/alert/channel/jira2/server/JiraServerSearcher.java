@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropert
 import com.synopsys.integration.alert.channel.jira2.common.JiraSearcher;
 import com.synopsys.integration.alert.channel.jira2.common.model.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.server.service.IssueSearchService;
 
@@ -30,11 +31,13 @@ public class JiraServerSearcher extends JiraSearcher {
         IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssues(jql);
         return issueSearchResponseModel.getIssues()
                    .stream()
-                   .map(issue -> {
-                       String issueUrl = issue.getFields().getIssueType().getSelf();
-                       String summary = issue.getFields().getSummary();
-                       return new JiraSearcherResponseModel(issueUrl, issue.getKey(), issue.getId(), summary);
-                   })
+                   .map(this::convertModel)
                    .collect(Collectors.toList());
+    }
+
+    private JiraSearcherResponseModel convertModel(IssueSearchIssueComponent issue) {
+        String issueUrl = issue.getFields().getIssueType().getSelf();
+        String summary = issue.getFields().getSummary();
+        return new JiraSearcherResponseModel(issueUrl, issue.getKey(), issue.getId(), summary);
     }
 }

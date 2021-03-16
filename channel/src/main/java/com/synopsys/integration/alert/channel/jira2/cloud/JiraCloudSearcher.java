@@ -18,6 +18,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
+import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
@@ -32,14 +33,16 @@ public class JiraCloudSearcher extends JiraSearcher {
         IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssues(jql);
         return issueSearchResponseModel.getIssues()
                    .stream()
-                   .map(issue -> {
-                       IssueFieldsComponent nullableIssueFields = issue.getFields();
-                       String existingIssueSummary = Optional.ofNullable(nullableIssueFields)
-                                                         .map(IssueFieldsComponent::getSummary)
-                                                         .orElse(issue.getKey());
-                       return new JiraSearcherResponseModel(issue.getSelf(), issue.getKey(), issue.getId(), existingIssueSummary);
-                   })
+                   .map(this::convertModel)
                    .collect(Collectors.toList());
+    }
+
+    private JiraSearcherResponseModel convertModel(IssueResponseModel issue) {
+        IssueFieldsComponent nullableIssueFields = issue.getFields();
+        String existingIssueSummary = Optional.ofNullable(nullableIssueFields)
+                                          .map(IssueFieldsComponent::getSummary)
+                                          .orElse(issue.getKey());
+        return new JiraSearcherResponseModel(issue.getSelf(), issue.getKey(), issue.getId(), existingIssueSummary);
     }
 
 }
