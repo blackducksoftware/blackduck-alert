@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.email;
+package com.synopsys.integration.alert.channel.email.distribution;
 
 import static com.synopsys.integration.alert.test.common.FieldModelUtils.addConfigurationFieldToMap;
 
@@ -14,11 +14,6 @@ import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
-import com.synopsys.integration.alert.channel.email2.EmailChannelMessageConverter;
-import com.synopsys.integration.alert.channel.email2.EmailChannelMessageFormatter;
-import com.synopsys.integration.alert.channel.email2.EmailChannelMessageSender;
-import com.synopsys.integration.alert.channel.email2.EmailChannelV2;
-import com.synopsys.integration.alert.channel.email2.util.EmailAddressGatherer;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;

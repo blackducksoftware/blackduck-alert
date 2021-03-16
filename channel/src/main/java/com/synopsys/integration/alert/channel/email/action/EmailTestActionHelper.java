@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.email2.action;
+package com.synopsys.integration.alert.channel.email.action;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +15,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -30,11 +31,11 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 
 @Component
 public class EmailTestActionHelper {
-    private final EmailAddressHandler emailAddressHandler;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final ProviderDataAccessor providerDataAccessor;
 
-    public EmailTestActionHelper(EmailAddressHandler emailAddressHandler, ProviderDataAccessor providerDataAccessor) {
-        this.emailAddressHandler = emailAddressHandler;
+    public EmailTestActionHelper(ProviderDataAccessor providerDataAccessor) {
         this.providerDataAccessor = providerDataAccessor;
     }
 
@@ -86,7 +87,7 @@ public class EmailTestActionHelper {
         Set<String> emailAddresses = new HashSet<>();
         Set<String> projectsWithoutEmails = new HashSet<>();
         for (ProviderProject project : providerProjects) {
-            Set<String> emailsForProject = emailAddressHandler.getEmailAddressesForProject(providerConfigId, project, projectOwnerOnly);
+            Set<String> emailsForProject = retrieveEmailAddressesForProject(providerConfigId, project, projectOwnerOnly);
             if (emailsForProject.isEmpty()) {
                 projectsWithoutEmails.add(project.getName());
             }
@@ -106,6 +107,24 @@ public class EmailTestActionHelper {
                 errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
             }
             throw AlertFieldException.singleFieldError(errorField, errorMessage);
+        }
+        return emailAddresses;
+    }
+
+    private Set<String> retrieveEmailAddressesForProject(Long providerConfigId, ProviderProject project, boolean projectOwnerOnly) {
+        Set<String> emailAddresses;
+        if (projectOwnerOnly) {
+            String projectOwnerEmail = project.getProjectOwnerEmail();
+            if (StringUtils.isNotBlank(projectOwnerEmail)) {
+                emailAddresses = Set.of(projectOwnerEmail);
+            } else {
+                emailAddresses = Set.of();
+            }
+        } else {
+            emailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, project.getHref());
+        }
+        if (emailAddresses.isEmpty()) {
+            logger.error("Could not find any email addresses for project: {}", project.getName());
         }
         return emailAddresses;
     }
