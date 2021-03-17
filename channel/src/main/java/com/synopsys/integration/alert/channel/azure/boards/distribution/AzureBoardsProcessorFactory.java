@@ -22,12 +22,14 @@ import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFac
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
-import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCommenter;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCreator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueTransitioner;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -51,7 +53,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
     private final AzureBoardsChannelKey channelKey;
     private final AzureBoardsMessageFormatter formatter;
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
-    private final AzureRedirectUtil azureRedirectUtil;
+    private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
 
@@ -62,7 +64,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         AzureBoardsChannelKey channelKey,
         AzureBoardsMessageFormatter formatter,
         AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory,
-        AzureRedirectUtil azureRedirectUtil,
+        AzureRedirectUrlCreator azureRedirectUrlCreator,
         ConfigurationAccessor configurationAccessor,
         ProxyManager proxyManager
     ) {
@@ -71,7 +73,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         this.channelKey = channelKey;
         this.formatter = formatter;
         this.credentialDataStoreFactory = credentialDataStoreFactory;
-        this.azureRedirectUtil = azureRedirectUtil;
+        this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
     }
@@ -119,7 +121,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
                                                                 .stream()
                                                                 .findAny()
                                                                 .orElseThrow(() -> new AlertConfigurationException("Missing AzureBoards global configuration"));
-        return AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), azureBoardsGlobalConfiguration);
+        return AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), azureBoardsGlobalConfiguration);
     }
 
     private Credential retrieveOAuthCredential(AzureBoardsProperties azureBoardsProperties, HttpTransport httpTransport) throws AlertException {

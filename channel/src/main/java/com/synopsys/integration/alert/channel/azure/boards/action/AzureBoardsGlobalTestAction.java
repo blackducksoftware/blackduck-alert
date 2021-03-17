@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -38,14 +38,14 @@ public class AzureBoardsGlobalTestAction extends TestAction {
 
     private final Gson gson;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
-    private final AzureRedirectUtil azureRedirectUtil;
+    private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final ProxyManager proxyManager;
 
     @Autowired
-    public AzureBoardsGlobalTestAction(Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUtil azureRedirectUtil, ProxyManager proxyManager) {
+    public AzureBoardsGlobalTestAction(Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, AzureRedirectUrlCreator azureRedirectUrlCreator, ProxyManager proxyManager) {
         this.gson = gson;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
-        this.azureRedirectUtil = azureRedirectUtil;
+        this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.proxyManager = proxyManager;
     }
 
@@ -55,7 +55,7 @@ public class AzureBoardsGlobalTestAction extends TestAction {
             Optional<ConfigurationFieldModel> configurationFieldModel = registeredFieldValues.getField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
             String organizationName = configurationFieldModel.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null);
 
-            AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), registeredFieldValues);
+            AzureBoardsProperties azureBoardsProperties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), registeredFieldValues);
             AzureHttpService azureHttpService = createAzureHttpService(azureBoardsProperties);
             AzureProjectService azureProjectService = new AzureProjectService(azureHttpService, new AzureApiVersionAppender());
             azureProjectService.getProjects(organizationName);

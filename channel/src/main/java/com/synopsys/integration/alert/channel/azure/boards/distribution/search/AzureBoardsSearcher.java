@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azure.boards.distribution;
+package com.synopsys.integration.alert.channel.azure.boards.distribution.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +24,10 @@ import com.synopsys.integration.alert.channel.api.issue.search.ActionableIssueSe
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsWorkItemExtractionUtils;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureCustomFieldManager;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;

@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azure.boards.service;
+package com.synopsys.integration.alert.channel.azure.boards;
 
 import java.io.IOException;
 import java.util.List;

@@ -17,12 +17,11 @@ import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 
 @Component
-// TODO rename this class
-public class AzureRedirectUtil {
+public class AzureRedirectUrlCreator {
     private final AlertProperties alertProperties;
 
     @Autowired
-    public AzureRedirectUtil(AlertProperties alertProperties) {
+    public AzureRedirectUrlCreator(AlertProperties alertProperties) {
         this.alertProperties = alertProperties;
     }
 
@@ -34,9 +33,8 @@ public class AzureRedirectUtil {
      * @see #createOAuthRedirectUri()
      */
     public String createUIRedirectLocation() {
-        String uiRedirectURL = alertProperties.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL)
-                                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
-        return uiRedirectURL;
+        return alertProperties.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL)
+                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
     }
 
     /**
@@ -45,10 +43,9 @@ public class AzureRedirectUtil {
      * @return The URI string to redirect to from azure when obtaining the authorization code
      */
     public String createOAuthRedirectUri() {
-        String oAuthRedirectURL = alertProperties.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS,
+        return alertProperties.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS,
             AlertRestConstants.OAUTH, AzureOAuthCallbackController.AZURE)
-                                      .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
-        return oAuthRedirectURL;
+                   .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
     }
 
 }
