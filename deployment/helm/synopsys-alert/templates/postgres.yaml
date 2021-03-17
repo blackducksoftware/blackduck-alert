@@ -83,11 +83,19 @@ spec:
           value: "300"
         - name: POSTGRESQL_SHARED_BUFFERS
           value: 1024MB
+        {{- if .Values.postgres.dbCredential.secretName }}
+        - name: POSTGRESQL_USER
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbCredential.usernameKey is missing." .Values.postgres.dbCredential.usernameKey }}
+              name: {{ .Values.postgres.dbCredential.secretName }}
+        {{- else }}
         - name: POSTGRESQL_USER
           valueFrom:
             configMapKeyRef:
               key: ALERT_DB_USERNAME
               name: {{ .Release.Name }}-db-config
+        {{- end }}
         - name: POSTGRESQL_DATABASE
           valueFrom:
             configMapKeyRef:
@@ -103,16 +111,32 @@ spec:
             configMapKeyRef:
               key: ALERT_DB_PORT
               name: {{ .Release.Name }}-db-config
+        {{- if .Values.postgres.dbCredential.secretName }}
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbCredential.passwordKey is missing." .Values.postgres.dbCredential.passwordKey }}
+              name: {{ .Values.postgres.dbCredential.secretName }}
+        {{- else }}
         - name: POSTGRESQL_PASSWORD
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_USER_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
+        {{- end }}
+        {{- if .Values.postgres.dbAdminCredential.secretName }}
+        - name: POSTGRESQL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ required ".Values.postgres.dbAdminCredential.passwordKey is missing." .Values.postgres.dbAdminCredential.passwordKey }}
+              name: {{ .Values.postgres.dbAdminCredential.secretName }}
+        {{- else }}
         - name: POSTGRESQL_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               key: ALERT_POSTGRES_ADMIN_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
+        {{- end }}
         {{- if .Values.postgres.registry }}
         image: {{ .Values.postgres.registry }}/postgresql-12-centos7:1
         {{- else }}
@@ -184,3 +208,4 @@ spec:
   name: alert-postgres-data-volume
 {{- end -}}
 {{- end -}}
+
