@@ -12,8 +12,8 @@ import { getDescriptors } from 'store/actions/descriptors';
 import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderTable from 'providers/ProviderTable';
-import SlackGlobalConfiguration from 'channels/SlackGlobalConfiguration';
-import { SLACK_INFO } from 'channels/SlackModels';
+import SlackGlobalConfiguration from 'channels/slack/SlackGlobalConfiguration';
+import { SLACK_INFO } from 'channels/slack/SlackModels';
 
 class MainPage extends Component {
     constructor(props) {
