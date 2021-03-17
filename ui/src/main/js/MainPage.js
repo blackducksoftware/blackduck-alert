@@ -13,6 +13,7 @@ import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderTable from 'providers/ProviderTable';
 import SlackGlobalConfiguration from 'channels/SlackGlobalConfiguration';
+import { SLACK_INFO } from 'channels/SlackModels';
 
 class MainPage extends Component {
     constructor(props) {
@@ -80,7 +81,7 @@ class MainPage extends Component {
             );
         }
 
-        const renderComponent = (name === 'channel_slack') ? <SlackGlobalConfiguration /> : <GlobalConfiguration key={name} descriptor={component} />;
+        const renderComponent = (name === SLACK_INFO.key) ? <SlackGlobalConfiguration /> : <GlobalConfiguration key={name} descriptor={component} />;
 
         return (
             <Route

@@ -5,6 +5,7 @@ import { NavLink, withRouter } from 'react-router-dom';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { SLACK_INFO } from 'channels/SlackModels';
 
 class Navigation extends Component {
     constructor(props) {
@@ -22,13 +23,20 @@ class Navigation extends Component {
             return null;
         }
 
-        const contentList = descriptorList.map(({ name, urlName, label }) => (
-            <li key={name}>
-                <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
-                    {label}
-                </NavLink>
-            </li>
-        ));
+        const contentList = descriptorList.map(({ name, urlName, label }) => {
+            // Removes slack from the dynamic setup and manually inserts the static information
+            if (name === 'channel_slack') {
+                return this.createSlackNavItem(uriPrefix);
+            }
+
+            return (
+                <li key={name}>
+                    <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
+                        {label}
+                    </NavLink>
+                </li>
+            );
+        });
 
         if (header && contentList && contentList.length > 0) {
             contentList.unshift(<li className="navHeader" key={header}>
@@ -36,6 +44,16 @@ class Navigation extends Component {
             </li>);
         }
         return contentList;
+    }
+
+    createSlackNavItem(uriPrefix) {
+        return (
+            <li key={SLACK_INFO.key}>
+                <NavLink to={`${uriPrefix}${SLACK_INFO.url}`} activeClassName="activeNav">
+                    {SLACK_INFO.label}
+                </NavLink>
+            </li>
+        );
     }
 
     render() {
