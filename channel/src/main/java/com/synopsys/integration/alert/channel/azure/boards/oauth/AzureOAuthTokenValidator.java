@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.channel.azure.boards.oauth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ConfigValidationFunction;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -24,15 +24,15 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureOAuthTokenValidator implements ConfigValidationFunction {
-    private final AzureRedirectUtil azureRedirectUtil;
+    private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final ConfigurationFieldModelConverter configurationFieldModelConverter;
     private final ProxyManager proxyManager;
 
     @Autowired
-    public AzureOAuthTokenValidator(AzureRedirectUtil azureRedirectUtil, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
+    public AzureOAuthTokenValidator(AzureRedirectUrlCreator azureRedirectUrlCreator, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
         ConfigurationFieldModelConverter configurationFieldModelConverter, ProxyManager proxyManager) {
-        this.azureRedirectUtil = azureRedirectUtil;
+        this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.configurationFieldModelConverter = configurationFieldModelConverter;
         this.proxyManager = proxyManager;
@@ -44,7 +44,7 @@ public class AzureOAuthTokenValidator implements ConfigValidationFunction {
         try {
             ProxyInfo proxyInfo = proxyManager.createProxyInfo();
             FieldUtility fieldUtility = configurationFieldModelConverter.convertToFieldAccessor(fieldModel);
-            String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
+            String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
             AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
             if (!properties.hasOAuthCredentials(proxyInfo)) {
                 result = ValidationResult.warnings("OAuth token credentials missing. Please save then authenticate.");
@@ -54,4 +54,5 @@ public class AzureOAuthTokenValidator implements ConfigValidationFunction {
         }
         return result;
     }
+
 }
