@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azure.boards2;
+package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
 import java.io.IOException;
 
@@ -23,11 +23,11 @@ import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCommenter;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCreator;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueTransitioner;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
-import com.synopsys.integration.alert.channel.azure.boards2.delegate.AzureBoardsIssueCommenter;
-import com.synopsys.integration.alert.channel.azure.boards2.delegate.AzureBoardsIssueCreator;
-import com.synopsys.integration.alert.channel.azure.boards2.delegate.AzureBoardsIssueTransitioner;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;

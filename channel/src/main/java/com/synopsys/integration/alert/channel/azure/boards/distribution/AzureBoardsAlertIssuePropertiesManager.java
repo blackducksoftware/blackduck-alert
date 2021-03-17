@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.azure.boards2;
+package com.synopsys.integration.alert.channel.azure.boards.distribution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.channel.azure.boards.service.AzureCustomFieldManager;
-import com.synopsys.integration.alert.channel.azure.boards2.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperationModel;
