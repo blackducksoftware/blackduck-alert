@@ -80,12 +80,14 @@ class MainPage extends Component {
             );
         }
 
+        const renderComponent = (name === 'channel_slack') ? <SlackGlobalConfiguration /> : <GlobalConfiguration key={name} descriptor={component} />;
+
         return (
             <Route
                 exact
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
-                render={() => <GlobalConfiguration key={name} descriptor={component} />}
+                render={() => renderComponent}
             />
         );
     }
@@ -116,7 +118,6 @@ class MainPage extends Component {
                 />
                 {providers}
                 {channels}
-                <Route exact path="/alert/channels/slackv2" component={SlackGlobalConfiguration} />
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
                 <Route exact path="/alert/general/about" component={AboutInfo} />

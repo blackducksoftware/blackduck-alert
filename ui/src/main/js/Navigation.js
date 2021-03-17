@@ -22,10 +22,10 @@ class Navigation extends Component {
             return null;
         }
 
-        const contentList = descriptorList.map((component) => (
-            <li key={component.name}>
-                <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                    {component.label}
+        const contentList = descriptorList.map(({ name, urlName, label }) => (
+            <li key={name}>
+                <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
+                    {label}
                 </NavLink>
             </li>
         ));
@@ -47,11 +47,6 @@ class Navigation extends Component {
             <>
                 {providers}
                 {channelGlobals}
-                <li key="slackV2">
-                    <NavLink to="slackV2" activeClassName="activeNav">
-                        SlackV2
-                    </NavLink>
-                </li>
                 <li className="navHeader">
                     Jobs
                 </li>
