@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopsys.integration.alert.channel.jira.cloud.distribution;
 
 import java.util.List;
 import java.util.Optional;

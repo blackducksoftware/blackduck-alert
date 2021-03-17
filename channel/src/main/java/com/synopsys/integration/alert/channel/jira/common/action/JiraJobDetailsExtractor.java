@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira.common.actions;
+package com.synopsys.integration.alert.channel.jira.common.action;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 
 public abstract class JiraJobDetailsExtractor extends JobDetailsExtractor {
-    private Gson gson;
+    private final Gson gson;
 
     public JiraJobDetailsExtractor(Gson gson) {
         this.gson = gson;
@@ -29,4 +29,5 @@ public abstract class JiraJobDetailsExtractor extends JobDetailsExtractor {
                    .map(fieldMappingString -> gson.fromJson(fieldMappingString, JiraJobCustomFieldModel.class))
                    .collect(Collectors.toList());
     }
+
 }

@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud.delegate;
+package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
 
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.jira2.common.delegate.JiraIssueCommenter;
@@ -33,4 +33,5 @@ public class JiraCloudIssueCommenter extends JiraIssueCommenter {
     protected void addComment(IssueCommentRequestModel requestModel) throws IntegrationException {
         issueService.addComment(requestModel);
     }
+
 }

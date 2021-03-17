@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira2.cloud;
+package com.synopsys.integration.alert.channel.jira.cloud.distribution;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +20,10 @@ import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCommenter;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueTransitioner;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCommenter;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueCreator;
-import com.synopsys.integration.alert.channel.jira2.cloud.delegate.JiraCloudIssueTransitioner;
 import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropertiesManager;
