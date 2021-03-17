@@ -1,5 +1,5 @@
 /*
- * alert-common
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *

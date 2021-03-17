@@ -43,7 +43,7 @@ public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueT
                    .collect(Collectors.toList());
     }
 
-    private Optional<IssueTrackerCallbackEvent> createProviderCallbackEvent(IssueTrackerIssueResponseModel issueResponseModel) {
+    private Optional<IssueTrackerCallbackEvent> createProviderCallbackEvent(IssueTrackerIssueResponseModel<?> issueResponseModel) {
         return issueResponseModel.getCallbackInfo()
                    .map(callbackInfo ->
                             new IssueTrackerCallbackEvent(

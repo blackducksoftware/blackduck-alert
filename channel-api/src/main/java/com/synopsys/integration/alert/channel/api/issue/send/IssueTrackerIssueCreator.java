@@ -50,7 +50,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
      * @return {@link IssueTrackerIssueResponseModel}
      * @throws AlertException Thrown if there is a problem connecting to the issue-tracker or if the issue-tracker server responds with an error.
      */
-    public final IssueTrackerIssueResponseModel createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
+    public final IssueTrackerIssueResponseModel<T> createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
         ExistingIssueDetails<T> createdIssueDetails = createIssueAndExtractDetails(alertIssueCreationModel);
         logger.debug("Created new {} issue: {}", channelKey.getDisplayName(), createdIssueDetails);
 
@@ -63,7 +63,8 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
             callbackInfo = callbackInfoCreator.createCallbackInfo(alertIssueSource);
         }
 
-        return new IssueTrackerIssueResponseModel(
+        return new IssueTrackerIssueResponseModel<>(
+            createdIssueDetails.getIssueId(),
             createdIssueDetails.getIssueKey(),
             createdIssueDetails.getIssueUILink(),
             createdIssueDetails.getIssueSummary(),

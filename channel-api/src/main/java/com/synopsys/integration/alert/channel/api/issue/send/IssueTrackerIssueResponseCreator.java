@@ -23,9 +23,10 @@ public class IssueTrackerIssueResponseCreator {
         this.callbackInfoCreator = callbackInfoCreator;
     }
 
-    public final <T extends Serializable> IssueTrackerIssueResponseModel createIssueResponse(ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
+    public final <T extends Serializable> IssueTrackerIssueResponseModel<T> createIssueResponse(ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
         IssueTrackerCallbackInfo callbackInfo = callbackInfoCreator.createCallbackInfo(source);
-        return new IssueTrackerIssueResponseModel(
+        return new IssueTrackerIssueResponseModel<>(
+            existingIssueDetails.getIssueId(),
             existingIssueDetails.getIssueKey(),
             existingIssueDetails.getIssueUILink(),
             existingIssueDetails.getIssueSummary(),

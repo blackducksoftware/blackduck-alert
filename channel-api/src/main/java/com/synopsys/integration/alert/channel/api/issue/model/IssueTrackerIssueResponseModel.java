@@ -1,5 +1,5 @@
 /*
- * alert-common
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.api.issue.model;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,8 @@ import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.Is
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueTrackerIssueResponseModel extends AlertSerializableModel {
+public class IssueTrackerIssueResponseModel<T extends Serializable> extends AlertSerializableModel {
+    private final T issueId;
     private final String issueKey;
     private final String issueLink;
     private final String issueTitle;
@@ -24,17 +26,22 @@ public class IssueTrackerIssueResponseModel extends AlertSerializableModel {
     private final IssueTrackerCallbackInfo callbackInfo;
 
     public IssueTrackerIssueResponseModel(
-        String issueKey,
+        T issueId, String issueKey,
         String issueLink,
         String issueTitle,
         IssueOperation issueOperation,
         @Nullable IssueTrackerCallbackInfo callbackInfo
     ) {
+        this.issueId = issueId;
         this.issueKey = issueKey;
         this.issueLink = issueLink;
         this.issueTitle = issueTitle;
         this.issueOperation = issueOperation;
         this.callbackInfo = callbackInfo;
+    }
+
+    public T getIssueId() {
+        return issueId;
     }
 
     public String getIssueKey() {
