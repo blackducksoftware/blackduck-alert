@@ -15,9 +15,9 @@ import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePost
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 @Component
-public class AzureBoardsChannelV2 extends IssueTrackerChannel<AzureBoardsJobDetailsModel, Integer> {
+public class AzureBoardsChannel extends IssueTrackerChannel<AzureBoardsJobDetailsModel, Integer> {
     @Autowired
-    public AzureBoardsChannelV2(AzureBoardsProcessorFactory processorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
+    public AzureBoardsChannel(AzureBoardsProcessorFactory processorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
         super(processorFactory, responsePostProcessor);
     }
 

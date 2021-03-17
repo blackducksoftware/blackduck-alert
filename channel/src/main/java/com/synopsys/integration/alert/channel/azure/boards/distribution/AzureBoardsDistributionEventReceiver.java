@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 @Component
 public class AzureBoardsDistributionEventReceiver extends DistributionEventReceiver<AzureBoardsJobDetailsModel> {
     @Autowired
-    public AzureBoardsDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, AzureBoardsJobDetailsAccessor jobDetailsAccessor, AzureBoardsChannelV2 channel, AzureBoardsChannelKey channelKey) {
+    public AzureBoardsDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, AzureBoardsJobDetailsAccessor jobDetailsAccessor, AzureBoardsChannel channel, AzureBoardsChannelKey channelKey) {
         super(gson, auditAccessor, jobDetailsAccessor, channel, channelKey);
     }
 
