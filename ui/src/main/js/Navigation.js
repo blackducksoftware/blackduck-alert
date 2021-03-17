@@ -25,7 +25,7 @@ class Navigation extends Component {
 
         const contentList = descriptorList.map(({ name, urlName, label }) => {
             // Removes slack from the dynamic setup and manually inserts the static information
-            if (name === 'channel_slack') {
+            if (name === SLACK_INFO.key) {
                 return this.createSlackNavItem(uriPrefix);
             }
 
