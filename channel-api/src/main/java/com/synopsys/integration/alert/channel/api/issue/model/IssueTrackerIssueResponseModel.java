@@ -26,7 +26,8 @@ public class IssueTrackerIssueResponseModel<T extends Serializable> extends Aler
     private final IssueTrackerCallbackInfo callbackInfo;
 
     public IssueTrackerIssueResponseModel(
-        T issueId, String issueKey,
+        T issueId,
+        String issueKey,
         String issueLink,
         String issueTitle,
         IssueOperation issueOperation,
