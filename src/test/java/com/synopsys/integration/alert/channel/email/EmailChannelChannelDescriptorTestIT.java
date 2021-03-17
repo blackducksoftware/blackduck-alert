@@ -14,15 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
-import com.synopsys.integration.alert.channel.email.actions.EmailGlobalTestAction;
+import com.synopsys.integration.alert.channel.email.action.EmailDistributionTestAction;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
+import com.synopsys.integration.alert.channel.email.action.EmailTestActionHelper;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.distribution.EmailAddressGatherer;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageConverter;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
 import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
-import com.synopsys.integration.alert.channel.email2.EmailChannelMessageConverter;
-import com.synopsys.integration.alert.channel.email2.EmailChannelMessageSender;
-import com.synopsys.integration.alert.channel.email2.EmailChannelV2;
-import com.synopsys.integration.alert.channel.email2.action.EmailDistributionTestAction;
-import com.synopsys.integration.alert.channel.email2.action.EmailTestActionHelper;
-import com.synopsys.integration.alert.channel.email2.util.EmailAddressGatherer;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
@@ -49,7 +49,6 @@ import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 
 public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
-    public static final String UNIT_TEST_PROJECT_NAME = "TestProject1";
     private static final String EMAIL_TEST_PROVIDER_CONFIG_NAME = "emailTestProviderConfig";
     private static final String DEFAULT_TEST_EMAIL_ADDRESS = "noreply@blackducksoftware.com";
 

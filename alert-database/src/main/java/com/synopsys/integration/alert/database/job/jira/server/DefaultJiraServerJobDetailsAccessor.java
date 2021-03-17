@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.database.job.jira.server;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -16,21 +17,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.persistence.accessor.JiraServerJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldEntity;
 import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldRepository;
 
 @Component
-public class JiraServerJobDetailsAccessor {
+public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetailsAccessor {
     private final JiraServerJobDetailsRepository jiraServerJobDetailsRepository;
     private final JiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository;
 
     @Autowired
-    public JiraServerJobDetailsAccessor(JiraServerJobDetailsRepository jiraServerJobDetailsRepository,
+    public DefaultJiraServerJobDetailsAccessor(JiraServerJobDetailsRepository jiraServerJobDetailsRepository,
         JiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository) {
         this.jiraServerJobDetailsRepository = jiraServerJobDetailsRepository;
         this.jiraServerJobCustomFieldRepository = jiraServerJobCustomFieldRepository;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<JiraServerJobDetailsModel> retrieveDetails(UUID jobId) {
+        return jiraServerJobDetailsRepository.findById(jobId).map(this::covertToModel);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -63,4 +71,20 @@ public class JiraServerJobDetailsAccessor {
                    .collect(Collectors.toList());
     }
 
+    private JiraServerJobDetailsModel covertToModel(JiraServerJobDetailsEntity jobDetails) {
+        List<JiraJobCustomFieldModel> customFields = jiraServerJobCustomFieldRepository.findByJobId(jobDetails.getJobId())
+                                                         .stream()
+                                                         .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                                                         .collect(Collectors.toList());
+        return new JiraServerJobDetailsModel(
+            jobDetails.getJobId(),
+            jobDetails.getAddComments(),
+            jobDetails.getIssueCreatorUsername(),
+            jobDetails.getProjectNameOrKey(),
+            jobDetails.getIssueType(),
+            jobDetails.getResolveTransition(),
+            jobDetails.getReopenTransition(),
+            customFields
+        );
+    }
 }

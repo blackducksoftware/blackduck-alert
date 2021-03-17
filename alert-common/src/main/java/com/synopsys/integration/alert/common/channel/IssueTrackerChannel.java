@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKe
 import com.synopsys.integration.exception.IntegrationException;
 
 @Deprecated
-public abstract class IssueTrackerChannel extends DistributionChannel implements ProviderCallbackEventProducer {
+public abstract class IssueTrackerChannel {
     private final IssueTrackerChannelKey channelKey;
     private final EventManager eventManager;
 
@@ -35,7 +35,6 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
         this.eventManager = eventManager;
     }
 
-    @Override
     public final MessageResult sendMessage(DistributionEvent event) throws IntegrationException {
         IssueTrackerContext context = getIssueTrackerContext(event);
         List<IssueTrackerRequest> requests = createRequests(context, event);
@@ -52,7 +51,6 @@ public abstract class IssueTrackerChannel extends DistributionChannel implements
         return new MessageResult(statusMessage);
     }
 
-    @Override
     public final void sendProviderCallbackEvents(List<IssueTrackerCallbackEvent> callbackEvents) {
         eventManager.sendEvents(callbackEvents);
     }

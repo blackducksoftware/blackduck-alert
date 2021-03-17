@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.email2.util.ProjectMessageToMessageContentGroupConversionUtils;
+import com.synopsys.integration.alert.channel.email.distribution.ProjectMessageToMessageContentGroupConversionUtils;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
