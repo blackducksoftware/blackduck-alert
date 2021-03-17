@@ -12,9 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.function.ThrowingFunction;
 

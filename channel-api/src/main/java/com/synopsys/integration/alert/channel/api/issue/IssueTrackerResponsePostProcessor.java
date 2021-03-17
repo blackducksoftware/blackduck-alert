@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.api.issue;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 
 public interface IssueTrackerResponsePostProcessor {
     void postProcess(IssueTrackerResponse response);

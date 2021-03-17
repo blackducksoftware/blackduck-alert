@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.IssueTrackerCallbackEvent;
 

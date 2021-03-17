@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.channel.api.issue;
 import java.io.Serializable;
 
 import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
