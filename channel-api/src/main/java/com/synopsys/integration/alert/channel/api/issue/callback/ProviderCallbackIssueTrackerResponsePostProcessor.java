@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.api.issue.callback;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,12 +31,12 @@ public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueT
     }
 
     @Override
-    public void postProcess(IssueTrackerResponse response) {
+    public <T extends Serializable> void postProcess(IssueTrackerResponse<T> response) {
         List<IssueTrackerCallbackEvent> callbackEvents = createCallbackEvents(response);
         eventManager.sendEvents(callbackEvents);
     }
 
-    private List<IssueTrackerCallbackEvent> createCallbackEvents(IssueTrackerResponse issueTrackerResponse) {
+    private <T extends Serializable> List<IssueTrackerCallbackEvent> createCallbackEvents(IssueTrackerResponse<T> issueTrackerResponse) {
         return issueTrackerResponse.getUpdatedIssues()
                    .stream()
                    .map(this::createProviderCallbackEvent)
@@ -43,7 +44,7 @@ public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueT
                    .collect(Collectors.toList());
     }
 
-    private Optional<IssueTrackerCallbackEvent> createProviderCallbackEvent(IssueTrackerIssueResponseModel<?> issueResponseModel) {
+    private <T extends Serializable> Optional<IssueTrackerCallbackEvent> createProviderCallbackEvent(IssueTrackerIssueResponseModel<T> issueResponseModel) {
         return issueResponseModel.getCallbackInfo()
                    .map(callbackInfo ->
                             new IssueTrackerCallbackEvent(

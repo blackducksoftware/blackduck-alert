@@ -7,15 +7,16 @@
  */
 package com.synopsys.integration.alert.channel.api.issue.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class IssueTrackerResponse extends AlertSerializableModel {
+public class IssueTrackerResponse<T extends Serializable> extends AlertSerializableModel {
     private final String statusMessage;
-    private final Collection<IssueTrackerIssueResponseModel> updatedIssues;
+    private final Collection<IssueTrackerIssueResponseModel<T>> updatedIssues;
 
-    public IssueTrackerResponse(String statusMessage, Collection<IssueTrackerIssueResponseModel> updatedIssues) {
+    public IssueTrackerResponse(String statusMessage, Collection<IssueTrackerIssueResponseModel<T>> updatedIssues) {
         this.statusMessage = statusMessage;
         this.updatedIssues = updatedIssues;
     }
@@ -24,7 +25,7 @@ public class IssueTrackerResponse extends AlertSerializableModel {
         return statusMessage;
     }
 
-    public Collection<IssueTrackerIssueResponseModel> getUpdatedIssues() {
+    public Collection<IssueTrackerIssueResponseModel<T>> getUpdatedIssues() {
         return updatedIssues;
     }
 

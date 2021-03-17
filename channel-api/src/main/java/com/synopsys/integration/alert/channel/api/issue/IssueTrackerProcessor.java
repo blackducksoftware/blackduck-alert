@@ -25,7 +25,7 @@ public class IssueTrackerProcessor<T extends Serializable> {
         this.messageSender = messageSender;
     }
 
-    public final IssueTrackerResponse processMessages(ProviderMessageHolder messages) throws AlertException {
+    public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages) throws AlertException {
         List<IssueTrackerModelHolder<T>> channelMessages = modelExtractor.extractIssueTrackerModels(messages);
         return messageSender.sendMessages(channelMessages);
     }

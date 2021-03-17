@@ -31,11 +31,11 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
         this.issueResponseCreator = issueResponseCreator;
     }
 
-    public final Optional<IssueTrackerIssueResponseModel> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException {
+    public final Optional<IssueTrackerIssueResponseModel<T>> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException {
         IssueOperation issueOperation = issueTransitionModel.getIssueOperation();
         ExistingIssueDetails<T> existingIssueDetails = issueTransitionModel.getExistingIssueDetails();
 
-        Optional<IssueTrackerIssueResponseModel> transitionResponse = Optional.empty();
+        Optional<IssueTrackerIssueResponseModel<T>> transitionResponse = Optional.empty();
 
         Optional<String> optionalTransitionName = retrieveJobTransitionName(issueOperation);
         if (optionalTransitionName.isPresent()) {
@@ -44,7 +44,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
             boolean shouldAttemptTransition = isTransitionRequired(existingIssueDetails, issueOperation);
             if (shouldAttemptTransition) {
                 findAndPerformTransition(existingIssueDetails, transitionName);
-                IssueTrackerIssueResponseModel transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
+                IssueTrackerIssueResponseModel<T> transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
                 transitionResponse = Optional.of(transitionResponseModel);
             } else {
                 logger.debug("The issue is already in the status category that would result from this transition ({}). Issue Details: {}", transitionName, existingIssueDetails);

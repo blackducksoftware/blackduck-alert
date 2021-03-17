@@ -31,14 +31,14 @@ public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
         this.issueResponseCreator = issueResponseCreator;
     }
 
-    public final Optional<IssueTrackerIssueResponseModel> commentOnIssue(IssueCommentModel<T> issueCommentModel) throws AlertException {
+    public final Optional<IssueTrackerIssueResponseModel<T>> commentOnIssue(IssueCommentModel<T> issueCommentModel) throws AlertException {
         if (!isCommentingEnabled()) {
             logger.debug(COMMENTING_DISABLED_MESSAGE);
             return Optional.empty();
         }
 
         addComments(issueCommentModel);
-        IssueTrackerIssueResponseModel responseModel = issueResponseCreator.createIssueResponse(issueCommentModel.getSource(), issueCommentModel.getExistingIssueDetails(), IssueOperation.UPDATE);
+        IssueTrackerIssueResponseModel<T> responseModel = issueResponseCreator.createIssueResponse(issueCommentModel.getSource(), issueCommentModel.getExistingIssueDetails(), IssueOperation.UPDATE);
         return Optional.of(responseModel);
     }
 
