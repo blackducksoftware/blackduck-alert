@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
@@ -31,11 +31,11 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
         this.issueResponseCreator = issueResponseCreator;
     }
 
-    public final Optional<IssueTrackerIssueResponseModel> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException {
+    public final Optional<IssueTrackerIssueResponseModel<T>> transitionIssue(IssueTransitionModel<T> issueTransitionModel) throws AlertException {
         IssueOperation issueOperation = issueTransitionModel.getIssueOperation();
         ExistingIssueDetails<T> existingIssueDetails = issueTransitionModel.getExistingIssueDetails();
 
-        Optional<IssueTrackerIssueResponseModel> transitionResponse = Optional.empty();
+        Optional<IssueTrackerIssueResponseModel<T>> transitionResponse = Optional.empty();
 
         Optional<String> optionalTransitionName = retrieveJobTransitionName(issueOperation);
         if (optionalTransitionName.isPresent()) {
@@ -44,7 +44,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
             boolean shouldAttemptTransition = isTransitionRequired(existingIssueDetails, issueOperation);
             if (shouldAttemptTransition) {
                 findAndPerformTransition(existingIssueDetails, transitionName);
-                IssueTrackerIssueResponseModel transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
+                IssueTrackerIssueResponseModel<T> transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
                 transitionResponse = Optional.of(transitionResponseModel);
             } else {
                 logger.debug("The issue is already in the status category that would result from this transition ({}). Issue Details: {}", transitionName, existingIssueDetails);

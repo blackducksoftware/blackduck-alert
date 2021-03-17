@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
@@ -27,7 +28,6 @@ import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -61,7 +61,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         IssueCreationModel creationRequest = IssueCreationModel.simple(topicString, messageString, List.of(postCreateComment), testProjectIssueModel.getProvider());
         IssueTrackerModelHolder<T> creationRequestModelHolder = new IssueTrackerModelHolder<>(List.of(creationRequest), List.of(), List.of());
 
-        List<IssueTrackerIssueResponseModel> createdIssues;
+        List<IssueTrackerIssueResponseModel<T>> createdIssues;
         try {
             createdIssues = messageSender.sendMessages(creationRequestModelHolder);
         } catch (AlertException e) {
@@ -78,7 +78,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             return SUCCESS_RESULT;
         }
 
-        IssueTrackerIssueResponseModel createdIssue = createdIssues.get(0);
+        IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
         // FIXME get Issue ID
         ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(null, createdIssue.getIssueKey(), createdIssue.getIssueTitle(), createdIssue.getIssueLink());
 
@@ -104,7 +104,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         IssueTransitionModel<T> resolveRequest = new IssueTransitionModel<>(existingIssueDetails, operation, List.of(postTransitionComment), testProjectIssueModel);
         IssueTrackerModelHolder<T> resolveRequestModelHolder = new IssueTrackerModelHolder<>(List.of(), List.of(resolveRequest), List.of());
 
-        List<IssueTrackerIssueResponseModel> transitionedIssues;
+        List<IssueTrackerIssueResponseModel<T>> transitionedIssues;
         try {
             transitionedIssues = messageSender.sendMessages(resolveRequestModelHolder);
         } catch (IssueMissingTransitionException e) {

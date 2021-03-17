@@ -17,11 +17,11 @@ import org.slf4j.LoggerFactory;
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
@@ -50,7 +50,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
      * @return {@link IssueTrackerIssueResponseModel}
      * @throws AlertException Thrown if there is a problem connecting to the issue-tracker or if the issue-tracker server responds with an error.
      */
-    public final IssueTrackerIssueResponseModel createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
+    public final IssueTrackerIssueResponseModel<T> createIssueTrackerIssue(IssueCreationModel alertIssueCreationModel) throws AlertException {
         ExistingIssueDetails<T> createdIssueDetails = createIssueAndExtractDetails(alertIssueCreationModel);
         logger.debug("Created new {} issue: {}", channelKey.getDisplayName(), createdIssueDetails);
 
@@ -63,7 +63,8 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
             callbackInfo = callbackInfoCreator.createCallbackInfo(alertIssueSource).orElse(null);
         }
 
-        return new IssueTrackerIssueResponseModel(
+        return new IssueTrackerIssueResponseModel<>(
+            createdIssueDetails.getIssueId(),
             createdIssueDetails.getIssueKey(),
             createdIssueDetails.getIssueUILink(),
             createdIssueDetails.getIssueSummary(),
