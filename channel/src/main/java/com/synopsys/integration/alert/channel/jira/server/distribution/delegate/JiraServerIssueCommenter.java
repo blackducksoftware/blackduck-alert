@@ -5,20 +5,20 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
+package com.synopsys.integration.alert.channel.jira.server.distribution.delegate;
 
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.jira.common.distribution.delegate.JiraIssueCommenter;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.request.IssueCommentRequestModel;
+import com.synopsys.integration.jira.common.server.service.IssueService;
 
-public class JiraCloudIssueCommenter extends JiraIssueCommenter {
+public class JiraServerIssueCommenter extends JiraIssueCommenter {
     private final IssueService issueService;
-    private final JiraCloudJobDetailsModel distributionDetails;
+    private final JiraServerJobDetailsModel distributionDetails;
 
-    public JiraCloudIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator, IssueService issueService, JiraCloudJobDetailsModel distributionDetails) {
+    public JiraServerIssueCommenter(IssueTrackerIssueResponseCreator issueResponseCreator, IssueService issueService, JiraServerJobDetailsModel distributionDetails) {
         super(issueResponseCreator);
         this.issueService = issueService;
         this.distributionDetails = distributionDetails;
