@@ -15,9 +15,9 @@ import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePost
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component
-public class JiraServerChannelV2 extends IssueTrackerChannel<JiraServerJobDetailsModel, String> {
+public class JiraServerChannel extends IssueTrackerChannel<JiraServerJobDetailsModel, String> {
     @Autowired
-    protected JiraServerChannelV2(JiraServerProcessorFactory processorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
+    protected JiraServerChannel(JiraServerProcessorFactory processorFactory, IssueTrackerResponsePostProcessor responsePostProcessor) {
         super(processorFactory, responsePostProcessor);
     }
 

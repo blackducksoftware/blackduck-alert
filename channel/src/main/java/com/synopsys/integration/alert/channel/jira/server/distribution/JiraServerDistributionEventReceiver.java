@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 @Component
 public class JiraServerDistributionEventReceiver extends DistributionEventReceiver<JiraServerJobDetailsModel> {
     @Autowired
-    public JiraServerDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JiraServerJobDetailsAccessor jobDetailsAccessor, JiraServerChannelV2 channel, JiraServerChannelKey channelKey) {
+    public JiraServerDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JiraServerJobDetailsAccessor jobDetailsAccessor, JiraServerChannel channel, JiraServerChannelKey channelKey) {
         super(gson, auditAccessor, jobDetailsAccessor, channel, channelKey);
     }
 
