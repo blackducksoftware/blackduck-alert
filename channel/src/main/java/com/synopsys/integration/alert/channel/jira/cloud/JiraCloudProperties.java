@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -22,7 +21,7 @@ import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class JiraCloudProperties implements IssueTrackerServiceConfig {
+public class JiraCloudProperties {
     private final String url;
     private final String accessToken;
     private final String username;
