@@ -5,29 +5,28 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
+package com.synopsys.integration.alert.channel.jira.server.distribution.delegate;
 
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.jira.common.distribution.delegate.JiraIssueTransitioner;
-import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
+import com.synopsys.integration.jira.common.server.service.IssueService;
 
-public class JiraCloudIssueTransitioner extends JiraIssueTransitioner {
-
-    private final JiraCloudJobDetailsModel distributionDetails;
+public class JiraServerIssueTransitioner extends JiraIssueTransitioner {
+    private final JiraServerJobDetailsModel distributionDetails;
     private final IssueService issueService;
 
-    public JiraCloudIssueTransitioner(
-        JiraCloudIssueCommenter jiraCloudIssueCommenter,
+    public JiraServerIssueTransitioner(
+        JiraServerIssueCommenter jiraServerIssueCommenter,
         IssueTrackerIssueResponseCreator issueResponseCreator,
-        JiraCloudJobDetailsModel distributionDetails,
+        JiraServerJobDetailsModel distributionDetails,
         IssueService issueService
     ) {
-        super(jiraCloudIssueCommenter, issueResponseCreator);
+        super(jiraServerIssueCommenter, issueResponseCreator);
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;
     }

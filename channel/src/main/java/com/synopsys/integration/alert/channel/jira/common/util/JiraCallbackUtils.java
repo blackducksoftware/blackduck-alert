@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.jira.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.channel.jira2.common.model.JiraSearcherResponseModel;
+import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCallbackUtils {

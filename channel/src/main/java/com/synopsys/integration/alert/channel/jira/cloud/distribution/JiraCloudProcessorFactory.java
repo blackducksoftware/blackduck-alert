@@ -24,11 +24,11 @@ import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.J
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueTransitioner;
 import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira2.common.JiraCustomFieldResolver;
-import com.synopsys.integration.alert.channel.jira2.common.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.channel.jira2.common.JiraIssueAlertPropertiesManager;
-import com.synopsys.integration.alert.channel.jira2.common.JiraIssueCreationRequestCreator;
-import com.synopsys.integration.alert.channel.jira2.common.JiraMessageFormatter;
+import com.synopsys.integration.alert.channel.jira.common.distribution.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.channel.jira.common.distribution.JiraIssueCreationRequestCreator;
+import com.synopsys.integration.alert.channel.jira.common.distribution.JiraMessageFormatter;
+import com.synopsys.integration.alert.channel.jira.common.distribution.custom.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
