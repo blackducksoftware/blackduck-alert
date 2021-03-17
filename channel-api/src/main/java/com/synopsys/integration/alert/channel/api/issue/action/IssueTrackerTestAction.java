@@ -79,8 +79,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
-        // FIXME get Issue ID
-        ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(null, createdIssue.getIssueKey(), createdIssue.getIssueTitle(), createdIssue.getIssueLink());
+        ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(createdIssue.getIssueId(), createdIssue.getIssueKey(), createdIssue.getIssueTitle(), createdIssue.getIssueLink());
 
         Optional<MessageResult> optionalResolveFailure = transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel);
         if (optionalResolveFailure.isPresent()) {
