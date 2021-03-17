@@ -9,10 +9,9 @@ package com.synopsys.integration.alert.channel.jira.common;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueSearchProperties;
 import com.synopsys.integration.util.Stringable;
 
-public class JiraIssueSearchProperties extends Stringable implements Serializable, IssueSearchProperties {
+public class JiraIssueSearchProperties extends Stringable implements Serializable {
     private String provider;
     private String providerUrl;
     private String topicName;

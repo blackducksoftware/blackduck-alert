@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -57,19 +57,19 @@ public class AzureOAuthCallbackController {
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
-    private final AzureRedirectUtil azureRedirectUtil;
+    private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final AuthorizationManager authorizationManager;
 
     @Autowired
     public AzureOAuthCallbackController(ResponseFactory responseFactory, Gson gson, AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor,
-        AzureRedirectUtil azureRedirectUtil, OAuthRequestValidator oAuthRequestValidator, AuthorizationManager authorizationManager) {
+        AzureRedirectUrlCreator azureRedirectUrlCreator, OAuthRequestValidator oAuthRequestValidator, AuthorizationManager authorizationManager) {
         this.responseFactory = responseFactory;
         this.gson = gson;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
-        this.azureRedirectUtil = azureRedirectUtil;
+        this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.oAuthRequestValidator = oAuthRequestValidator;
         this.authorizationManager = authorizationManager;
     }
@@ -100,7 +100,7 @@ public class AzureOAuthCallbackController {
                     if (StringUtils.isBlank(authorizationCode)) {
                         logger.error(createOAuthRequestLoggerMessage(state, "Azure oauth callback: Authorization code isn't valid. Stop processing"));
                     } else {
-                        String oAuthRedirectUri = azureRedirectUtil.createOAuthRedirectUri();
+                        String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
                         AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
                         testOAuthConnection(properties, authorizationCode, state);
                     }
@@ -111,7 +111,7 @@ public class AzureOAuthCallbackController {
             logger.error(createOAuthRequestLoggerMessage(state, "Azure OAuth callback error occurred"), ex);
         }
         // redirect back to the global channel configuration URL in the Alert UI.
-        return responseFactory.createFoundRedirectResponse(azureRedirectUtil.createUIRedirectLocation());
+        return responseFactory.createFoundRedirectResponse(azureRedirectUrlCreator.createUIRedirectLocation());
     }
 
     private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestKey) {
