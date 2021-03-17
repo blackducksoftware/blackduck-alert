@@ -12,49 +12,49 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.function.ThrowingFunction;
 
 public class IssueTrackerMessageSender<T extends Serializable> {
-    private final IssueTrackerIssueCreator issueCreator;
+    private final IssueTrackerIssueCreator<T> issueCreator;
     private final IssueTrackerIssueTransitioner<T> issueTransitioner;
     private final IssueTrackerIssueCommenter<T> issueCommenter;
 
-    public IssueTrackerMessageSender(IssueTrackerIssueCreator issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommenter<T> issueCommenter) {
+    public IssueTrackerMessageSender(IssueTrackerIssueCreator<T> issueCreator, IssueTrackerIssueTransitioner<T> issueTransitioner, IssueTrackerIssueCommenter<T> issueCommenter) {
         this.issueCreator = issueCreator;
         this.issueTransitioner = issueTransitioner;
         this.issueCommenter = issueCommenter;
     }
 
-    public final IssueTrackerResponse sendMessages(List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
-        List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
+    public final IssueTrackerResponse<T> sendMessages(List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
+        List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
         for (IssueTrackerModelHolder<T> channelMessage : channelMessages) {
-            List<IssueTrackerIssueResponseModel> creationResponses = sendMessages(channelMessage.getIssueCreationModels(), issueCreator::createIssueTrackerIssue);
+            List<IssueTrackerIssueResponseModel<T>> creationResponses = sendMessages(channelMessage.getIssueCreationModels(), issueCreator::createIssueTrackerIssue);
             responses.addAll(creationResponses);
 
-            List<IssueTrackerIssueResponseModel> transitionResponses = sendOptionalMessages(channelMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
+            List<IssueTrackerIssueResponseModel<T>> transitionResponses = sendOptionalMessages(channelMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
             responses.addAll(transitionResponses);
 
-            List<IssueTrackerIssueResponseModel> commentResponses = sendOptionalMessages(channelMessage.getIssueCommentModels(), issueCommenter::commentOnIssue);
+            List<IssueTrackerIssueResponseModel<T>> commentResponses = sendOptionalMessages(channelMessage.getIssueCommentModels(), issueCommenter::commentOnIssue);
             responses.addAll(commentResponses);
         }
-        return new IssueTrackerResponse("Success", responses);
+        return new IssueTrackerResponse<>("Success", responses);
     }
 
-    private <U> List<IssueTrackerIssueResponseModel> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel, AlertException> sendMessage) throws AlertException {
-        List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
+    private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage) throws AlertException {
+        List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
         for (U message : messages) {
-            IssueTrackerIssueResponseModel response = sendMessage.apply(message);
+            IssueTrackerIssueResponseModel<T> response = sendMessage.apply(message);
             responses.add(response);
         }
         return responses;
     }
 
-    private <U> List<IssueTrackerIssueResponseModel> sendOptionalMessages(List<U> messages, ThrowingFunction<U, Optional<IssueTrackerIssueResponseModel>, AlertException> sendMessage) throws AlertException {
-        List<IssueTrackerIssueResponseModel> responses = new LinkedList<>();
+    private <U> List<IssueTrackerIssueResponseModel<T>> sendOptionalMessages(List<U> messages, ThrowingFunction<U, Optional<IssueTrackerIssueResponseModel<T>>, AlertException> sendMessage) throws AlertException {
+        List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
         for (U message : messages) {
             sendMessage
                 .apply(message)

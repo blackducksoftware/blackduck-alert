@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
@@ -25,7 +25,7 @@ public class IssueTrackerProcessor<T extends Serializable> {
         this.messageSender = messageSender;
     }
 
-    public final IssueTrackerResponse processMessages(ProviderMessageHolder messages) throws AlertException {
+    public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages) throws AlertException {
         List<IssueTrackerModelHolder<T>> channelMessages = modelExtractor.extractIssueTrackerModels(messages);
         return messageSender.sendMessages(channelMessages);
     }
