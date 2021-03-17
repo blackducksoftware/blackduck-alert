@@ -36,7 +36,6 @@ import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -47,7 +46,7 @@ import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCode
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class AzureBoardsProperties implements IssueTrackerServiceConfig {
+public class AzureBoardsProperties {
     private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final String organizationName;
