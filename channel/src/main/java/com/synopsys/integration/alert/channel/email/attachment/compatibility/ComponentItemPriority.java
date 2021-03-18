@@ -1,16 +1,17 @@
 /*
- * alert-common
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.channel.email.attachment.compatibility;
 
-public enum FieldContentIdentifier {
-    TOPIC,
-    TOPIC_URL,
-    SUB_TOPIC,
-    SUB_TOPIC_URL,
-    CATEGORY_ITEM
+public enum ComponentItemPriority {
+    HIGHEST,
+    HIGH,
+    MEDIUM,
+    LOW,
+    LOWEST,
+    NONE
 }
