@@ -1,6 +1,6 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'channels/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
 
 const EmptyGlobalConfiguration = ({ label, description }) => (
     <CommonGlobalConfiguration label={label} description={description}>

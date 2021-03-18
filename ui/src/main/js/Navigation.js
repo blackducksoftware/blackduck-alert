@@ -5,7 +5,7 @@ import { NavLink, withRouter } from 'react-router-dom';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import { SLACK_INFO } from 'channels/slack/SlackModels';
+import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 
 class Navigation extends Component {
     constructor(props) {
