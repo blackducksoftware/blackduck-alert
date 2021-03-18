@@ -217,7 +217,7 @@ public class NotificationContentRepositoryIT {
         DistributionJobModel jobModel = jobAccessor.createJob(jobRequestModel);
         UUID jobId = jobModel.getJobId();
 
-        // TODO gk: these tests were not working when I removed the old code
+        // TODO gk: these tests were not working before I removed the old code
         //  more investigation is needed
         for (NotificationEntity savedNotification : savedNotifications) {
             AuditEntryEntity newEntry = new AuditEntryEntity(jobId, OffsetDateTime.now(), null, AuditEntryStatus.PENDING.name(), null, null);
