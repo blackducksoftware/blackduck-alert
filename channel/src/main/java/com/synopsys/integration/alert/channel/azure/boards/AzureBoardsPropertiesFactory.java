@@ -37,7 +37,7 @@ public class AzureBoardsPropertiesFactory {
         ConfigurationModel azureBoardsGlobalConfiguration = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
                                                                 .stream()
                                                                 .findAny()
-                                                                .orElseThrow(() -> new AlertConfigurationException("Missing AzureBoards global configuration"));
+                                                                .orElseThrow(() -> new AlertConfigurationException("Missing Azure Boards global configuration"));
         return AzureBoardsProperties.fromGlobalConfig(credentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), azureBoardsGlobalConfiguration);
     }
 
