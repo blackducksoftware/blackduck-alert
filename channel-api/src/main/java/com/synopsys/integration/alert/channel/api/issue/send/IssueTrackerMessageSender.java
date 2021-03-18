@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.function.ThrowingFunction;
 
@@ -29,19 +28,19 @@ public class IssueTrackerMessageSender<T extends Serializable> {
         this.issueCommenter = issueCommenter;
     }
 
-    public final IssueTrackerResponse<T> sendMessages(List<IssueTrackerModelHolder<T>> channelMessages) throws AlertException {
+    public final List<IssueTrackerIssueResponseModel<T>> sendMessages(IssueTrackerModelHolder<T> issueTrackerMessage) throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> responses = new LinkedList<>();
-        for (IssueTrackerModelHolder<T> channelMessage : channelMessages) {
-            List<IssueTrackerIssueResponseModel<T>> creationResponses = sendMessages(channelMessage.getIssueCreationModels(), issueCreator::createIssueTrackerIssue);
-            responses.addAll(creationResponses);
 
-            List<IssueTrackerIssueResponseModel<T>> transitionResponses = sendOptionalMessages(channelMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
-            responses.addAll(transitionResponses);
+        List<IssueTrackerIssueResponseModel<T>> creationResponses = sendMessages(issueTrackerMessage.getIssueCreationModels(), issueCreator::createIssueTrackerIssue);
+        responses.addAll(creationResponses);
 
-            List<IssueTrackerIssueResponseModel<T>> commentResponses = sendOptionalMessages(channelMessage.getIssueCommentModels(), issueCommenter::commentOnIssue);
-            responses.addAll(commentResponses);
-        }
-        return new IssueTrackerResponse<>("Success", responses);
+        List<IssueTrackerIssueResponseModel<T>> transitionResponses = sendOptionalMessages(issueTrackerMessage.getIssueTransitionModels(), issueTransitioner::transitionIssue);
+        responses.addAll(transitionResponses);
+
+        List<IssueTrackerIssueResponseModel<T>> commentResponses = sendOptionalMessages(issueTrackerMessage.getIssueCommentModels(), issueCommenter::commentOnIssue);
+        responses.addAll(commentResponses);
+
+        return responses;
     }
 
     private <U> List<IssueTrackerIssueResponseModel<T>> sendMessages(List<U> messages, ThrowingFunction<U, IssueTrackerIssueResponseModel<T>, AlertException> sendMessage) throws AlertException {

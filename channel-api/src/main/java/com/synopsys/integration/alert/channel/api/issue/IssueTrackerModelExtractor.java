@@ -9,7 +9,6 @@ package com.synopsys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,6 @@ import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
@@ -41,28 +39,17 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
         this.issueTrackerSearcher = issueTrackerSearcher;
     }
 
-    public final List<IssueTrackerModelHolder<T>> extractIssueTrackerModels(ProviderMessageHolder messages) throws AlertException {
-        List<IssueTrackerModelHolder<T>> issueTrackerModels = new LinkedList<>();
-
-        List<SimpleMessage> simpleMessages = messages.getSimpleMessages();
+    public final IssueTrackerModelHolder<T> extractSimpleMessageIssueModels(List<SimpleMessage> simpleMessages) {
         List<IssueCreationModel> simpleMessageIssueCreationModels = new ArrayList<>(simpleMessages.size());
         for (SimpleMessage simpleMessage : simpleMessages) {
             IssueCreationModel simpleMessageIssueCreationModel = issueTrackerSimpleMessageConverter.convertToIssueCreationModel(simpleMessage);
             simpleMessageIssueCreationModels.add(simpleMessageIssueCreationModel);
         }
 
-        IssueTrackerModelHolder<T> simpleMessageHolder = new IssueTrackerModelHolder<>(simpleMessageIssueCreationModels, List.of(), List.of());
-        issueTrackerModels.add(simpleMessageHolder);
-
-        for (ProjectMessage projectMessage : messages.getProjectMessages()) {
-            IssueTrackerModelHolder<T> projectMessagesHolder = convertProjectMessage(projectMessage);
-            issueTrackerModels.add(projectMessagesHolder);
-        }
-
-        return issueTrackerModels;
+        return new IssueTrackerModelHolder<>(simpleMessageIssueCreationModels, List.of(), List.of());
     }
 
-    private IssueTrackerModelHolder<T> convertProjectMessage(ProjectMessage projectMessage) throws AlertException {
+    public final IssueTrackerModelHolder<T> extractProjectMessageIssueModels(ProjectMessage projectMessage) throws AlertException {
         IssueTrackerModelHolder<T> combinedResults = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
         List<ActionableIssueSearchResult<T>> searchResults = issueTrackerSearcher.findIssues(projectMessage);
         for (ActionableIssueSearchResult<T> searchResult : searchResults) {
