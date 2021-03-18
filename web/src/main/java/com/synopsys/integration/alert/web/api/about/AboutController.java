@@ -16,8 +16,6 @@ import com.synopsys.integration.alert.common.rest.api.BaseController;
 
 @RestController
 public class AboutController extends BaseController {
-    public static final String ERROR_ABOUT_MODEL_NOT_FOUND = "Could not find the About model.";
-
     private final AboutActions aboutActions;
 
     @Autowired
