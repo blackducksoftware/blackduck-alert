@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.email;
+package com.synopsys.integration.alert.channel.email.attachment;
 
 import java.util.ArrayList;
 import java.util.Collection;

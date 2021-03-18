@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.email;
+package com.synopsys.integration.alert.channel.email.attachment;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

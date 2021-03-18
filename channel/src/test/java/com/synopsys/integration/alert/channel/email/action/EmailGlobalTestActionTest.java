@@ -13,15 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
+import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.channel.email.distribution.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageConverter;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageFormatter;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
-import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;

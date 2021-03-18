@@ -12,10 +12,10 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
-import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
-import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
+import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
