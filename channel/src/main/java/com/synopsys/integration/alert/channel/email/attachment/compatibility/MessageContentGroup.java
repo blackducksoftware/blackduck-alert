@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.message.model;
+package com.synopsys.integration.alert.channel.email.attachment.compatibility;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageContentGroup extends AlertSerializableModel {
@@ -21,19 +22,9 @@ public class MessageContentGroup extends AlertSerializableModel {
     private LinkableItem comonProvider;
     private LinkableItem commonTopic;
 
-    public static MessageContentGroup singleton(ProviderMessageContent message) {
-        MessageContentGroup group = new MessageContentGroup();
-        group.add(message);
-        return group;
-    }
-
     public MessageContentGroup() {
         this.subContent = new LinkedList<>();
         this.commonTopic = null;
-    }
-
-    public boolean applies(ProviderMessageContent message) {
-        return null == commonTopic || commonTopic.getValue().equals(message.getTopic().getValue());
     }
 
     public void add(ProviderMessageContent message) {

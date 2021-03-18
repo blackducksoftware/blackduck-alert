@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.channel.email.attachment;
 
 import java.util.ArrayList;
 import java.util.HashMap;

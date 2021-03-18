@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.channel.email.attachment;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +22,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.synopsys.integration.alert.channel.email.distribution.ProjectMessageToMessageContentGroupConversionUtils;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 @Component

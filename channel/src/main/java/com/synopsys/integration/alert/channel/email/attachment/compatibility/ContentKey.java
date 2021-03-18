@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.message.model;
+package com.synopsys.integration.alert.channel.email.attachment.compatibility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +18,14 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public class ContentKey extends AlertSerializableModel {
     private static final String KEY_SEPARATOR = "_";
     private static final long serialVersionUID = 3508232762022869668L;
-    private String providerName;
-    private Long providerConfigId;
-    private String topicName;
-    private String topicValue;
-    private String subTopicName;
-    private String subTopicValue;
+    private final String providerName;
+    private final Long providerConfigId;
+    private final String topicName;
+    private final String topicValue;
+    private final String subTopicName;
+    private final String subTopicValue;
 
-    private String value;
+    private final String value;
 
     public ContentKey(String providerName, Long providerConfigId, String topicName, String topicValue, String subTopicName, String subTopicValue, ItemOperation action) {
         this.providerName = providerName;
@@ -86,4 +86,5 @@ public class ContentKey extends AlertSerializableModel {
     public String getValue() {
         return value;
     }
+
 }

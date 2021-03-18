@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * channel
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.email;
+package com.synopsys.integration.alert.channel.email.attachment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.ComponentItem;
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class MessageContentGroupCsvCreator {
