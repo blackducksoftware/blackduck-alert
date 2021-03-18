@@ -36,8 +36,6 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Distr
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 
 public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsModel, T extends Serializable> implements ChannelDistributionTestAction {
-    private static final MessageResult SUCCESS_RESULT = new MessageResult("Success");
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final IssueTrackerMessageSenderFactory<D, T> messageSenderFactory;
@@ -75,7 +73,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         if (!hasResolveTransition(distributionDetails)) {
-            return SUCCESS_RESULT;
+            return MessageResult.success();
         }
 
         IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
@@ -87,7 +85,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         if (!hasReopenTransition(distributionDetails)) {
-            return SUCCESS_RESULT;
+            return MessageResult.success();
         }
 
         Optional<MessageResult> optionalReopenFailure = transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.OPEN, existingIssueDetails, testProjectIssueModel);
@@ -95,7 +93,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             return optionalReopenFailure.get();
         }
 
-        return transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(SUCCESS_RESULT);
+        return transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(MessageResult.success());
     }
 
     private Optional<MessageResult> transitionTestIssueOrReturnFailureResult(IssueTrackerMessageSender<T> messageSender, IssueOperation operation, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel testProjectIssueModel) {
