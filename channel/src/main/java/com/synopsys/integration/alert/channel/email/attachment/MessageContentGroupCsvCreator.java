@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.ComponentItem;
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 
 @Component
 public class MessageContentGroupCsvCreator {

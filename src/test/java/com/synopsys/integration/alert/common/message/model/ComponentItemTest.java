@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.channel.email.attachment.compatibility.ComponentItem;
 import com.synopsys.integration.alert.common.enumeration.ComponentItemPriority;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 

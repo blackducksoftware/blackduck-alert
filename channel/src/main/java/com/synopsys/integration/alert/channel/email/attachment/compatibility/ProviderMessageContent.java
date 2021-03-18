@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.message.model;
+package com.synopsys.integration.alert.channel.email.attachment.compatibility;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.builder.Buildable;
 import com.synopsys.integration.datastructure.SetMap;
@@ -145,12 +146,6 @@ public class ProviderMessageContent extends AlertSerializableModel implements Bu
 
         public ContentKey getCurrentContentKey() {
             return ContentKey.of(providerName, providerConfigId, topicName, topicValue, subTopicName, subTopicValue, action);
-        }
-
-        public Builder applyCommonData(CommonMessageData commonMessageData) {
-            return applyNotificationId(commonMessageData.getNotificationId())
-                       .applyProvider(commonMessageData.getProviderName(), commonMessageData.getProviderConfigId(), commonMessageData.getProviderConfigName(), commonMessageData.getProviderURL())
-                       .applyProviderCreationTime(commonMessageData.getProviderCreationDate());
         }
 
         public Builder applyProvider(String providerName, Long providerConfigId, String providerConfigName) {

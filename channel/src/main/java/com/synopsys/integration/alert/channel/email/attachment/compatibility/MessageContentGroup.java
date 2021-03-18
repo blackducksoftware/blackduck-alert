@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.message.model;
+package com.synopsys.integration.alert.channel.email.attachment.compatibility;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageContentGroup extends AlertSerializableModel {
