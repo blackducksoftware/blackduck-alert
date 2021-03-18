@@ -31,17 +31,17 @@ task npmInstall(type: Exec) {
     outputs.dir('node_modules')
     ignoreExitValue = true
     commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
-    doLast {
-        if (execResult.getExitValue() != 0) {
-            logger.error('Deleting the node_modules directory before attempting the npm install again.')
-            // delete the node_modules directory if the npm install failed
-            File nodeModulesDir = new File("${project.getProjectDir()}/node_modules")
-            logger.error("Node Modules directory path: " + nodeModulesDir.getCanonicalPath())
-            logger.error("Node Modules directory exists: " + nodeModulesDir.exists())
-            logger.error("Delete directory result: " + nodeModulesDir.deleteDir());
-            logger.error("Node Modules directory exists after delete: " + nodeModulesDir.exists())
-        }
-    }
+    //    doLast {
+    //        if (execResult.getExitValue() != 0) {
+    //            logger.error('Deleting the node_modules directory before attempting the npm install again.')
+    //            // delete the node_modules directory if the npm install failed
+    //            File nodeModulesDir = new File("${project.getProjectDir()}/node_modules")
+    //            logger.error("Node Modules directory path: " + nodeModulesDir.getCanonicalPath())
+    //            logger.error("Node Modules directory exists: " + nodeModulesDir.exists())
+    //            logger.error("Delete directory result: " + nodeModulesDir.deleteDir());
+    //            logger.error("Node Modules directory exists after delete: " + nodeModulesDir.exists())
+    //        }
+    //    }
 }
 
 task npmCacheClean(type: Exec, dependsOn: [npmInstall]) {
@@ -63,12 +63,12 @@ task npmInstallRetry(type: Exec, dependsOn: [npmCacheClean]) {
         // don't run this if the npmInstall succeeded
         tasks.npmInstall.getExecResult().exitValue != 0
     }
-    doFirst {
-        File nodeModulesDir = new File("${project.getProjectDir()}/node_modules")
-        logger.error("Node Modules directory path: " + nodeModulesDir.getCanonicalPath())
-        logger.error("Node Modules directory exists before retry: " + nodeModulesDir.exists())
-        logger.error('The initial npm install failed. Trying to run the npm install again.')
-    }
+    //    doFirst {
+    //        File nodeModulesDir = new File("${project.getProjectDir()}/node_modules")
+    //        logger.error("Node Modules directory path: " + nodeModulesDir.getCanonicalPath())
+    //        logger.error("Node Modules directory exists before retry: " + nodeModulesDir.exists())
+    //        logger.error('The initial npm install failed. Trying to run the npm install again.')
+    //    }
     commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
 }
 
