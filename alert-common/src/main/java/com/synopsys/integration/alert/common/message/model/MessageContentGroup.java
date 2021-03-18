@@ -21,19 +21,9 @@ public class MessageContentGroup extends AlertSerializableModel {
     private LinkableItem comonProvider;
     private LinkableItem commonTopic;
 
-    public static MessageContentGroup singleton(ProviderMessageContent message) {
-        MessageContentGroup group = new MessageContentGroup();
-        group.add(message);
-        return group;
-    }
-
     public MessageContentGroup() {
         this.subContent = new LinkedList<>();
         this.commonTopic = null;
-    }
-
-    public boolean applies(ProviderMessageContent message) {
-        return null == commonTopic || commonTopic.getValue().equals(message.getTopic().getValue());
     }
 
     public void add(ProviderMessageContent message) {

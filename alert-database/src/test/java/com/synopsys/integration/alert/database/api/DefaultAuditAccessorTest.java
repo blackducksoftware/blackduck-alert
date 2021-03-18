@@ -8,9 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -32,7 +30,6 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.ComponentItem;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
@@ -50,7 +47,6 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
 public class DefaultAuditAccessorTest {
-
     private final Gson gson = new Gson();
 
     @Test
@@ -236,50 +232,6 @@ public class DefaultAuditAccessorTest {
         assertEquals(eventType, testJob.getEventType());
         assertEquals(AuditEntryStatus.SUCCESS.getDisplayName(), testAuditEntryModel.getOverallStatus());
         assertEquals(DateUtils.formatDate(timeLastSent, DateUtils.AUDIT_DATE_FORMAT), testAuditEntryModel.getLastSent());
-    }
-
-    @Test
-    public void createAuditEntryTest() throws Exception {
-        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, null, null, null, null);
-        ProviderMessageContent content = createMessageContent();
-        UUID commonConfigUUID = UUID.randomUUID();
-        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
-        final Long auditID = 10L;
-        savedAuditEntryEntity.setId(auditID);
-        Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedAuditEntryEntity));
-        mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
-
-        Map<Long, Long> existingNotificationIdToAuditId = new HashMap<>();
-        existingNotificationIdToAuditId.put(1L, auditID);
-        Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, commonConfigUUID, MessageContentGroup.singleton(content));
-        assertFalse(savedNotificationIdToAuditId.isEmpty());
-        assertEquals(2, savedNotificationIdToAuditId.size());
-        assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.get(1L));
-        assertEquals(AuditEntryStatus.PENDING.toString(), savedAuditEntryEntity.getStatus());
-        Mockito.verify(auditEntryRepository).findById(Mockito.anyLong());
-        Mockito.verify(auditNotificationRepository, Mockito.times(existingNotificationIdToAuditId.size())).save(Mockito.any(AuditNotificationRelation.class));
-    }
-
-    @Test
-    public void createAuditEntryNullEntryIdTest() throws Exception {
-        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        DefaultAuditAccessor auditUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, null, null, null, null);
-        ProviderMessageContent content = createMessageContent();
-        UUID commonConfigUUID = UUID.randomUUID();
-        AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
-        savedAuditEntryEntity.setId(10L);
-
-        mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
-        Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, commonConfigUUID, MessageContentGroup.singleton(content));
-        assertFalse(savedNotificationIdToAuditId.isEmpty());
-        assertEquals(2, savedNotificationIdToAuditId.size());
-        assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.values().iterator().next());
-        assertEquals(AuditEntryStatus.PENDING.toString(), savedAuditEntryEntity.getStatus());
-        Mockito.verify(auditEntryRepository, Mockito.times(0)).findById(Mockito.anyLong());
-        Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
     }
 
     @Test
