@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSenderFactory;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.delegate.AzureBoardsIssueCommenter;
@@ -38,6 +39,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     private final AzureBoardsChannelKey channelKey;
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
     private final ProxyManager proxyManager;
+    private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
 
     @Autowired
     public AzureBoardsMessageSenderFactory(
@@ -45,13 +47,15 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         AzureBoardsChannelKey channelKey,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
-        ProxyManager proxyManager
+        ProxyManager proxyManager,
+        AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover
     ) {
         this.gson = gson;
         this.callbackInfoCreator = callbackInfoCreator;
         this.channelKey = channelKey;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.proxyManager = proxyManager;
+        this.exceptionMessageImprover = exceptionMessageImprover;
     }
 
     @Override
@@ -91,7 +95,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
         // Message Sender Requirements
         AzureBoardsIssueCommenter commenter = new AzureBoardsIssueCommenter(issueResponseCreator, organizationName, distributionDetails, workItemCommentService);
         AzureBoardsIssueTransitioner transitioner = new AzureBoardsIssueTransitioner(commenter, issueResponseCreator, gson, organizationName, distributionDetails, workItemService, workItemTypeStateRetriever);
-        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey, commenter, callbackInfoCreator, gson, organizationName, distributionDetails, workItemService, issuePropertiesManager);
+        AzureBoardsIssueCreator creator = new AzureBoardsIssueCreator(channelKey, commenter, callbackInfoCreator, gson, organizationName, distributionDetails, workItemService, issuePropertiesManager, exceptionMessageImprover);
 
         return new IssueTrackerMessageSender<>(creator, transitioner, commenter);
     }

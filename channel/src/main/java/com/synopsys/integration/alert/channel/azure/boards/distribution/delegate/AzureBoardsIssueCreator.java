@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -40,6 +41,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     private final AzureBoardsJobDetailsModel distributionDetails;
     private final AzureWorkItemService workItemService;
     private final AzureBoardsAlertIssuePropertiesManager issuePropertiesManager;
+    private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
 
     public AzureBoardsIssueCreator(
         AzureBoardsChannelKey channelKey,
@@ -49,7 +51,8 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,
         AzureWorkItemService workItemService,
-        AzureBoardsAlertIssuePropertiesManager issuePropertiesManager
+        AzureBoardsAlertIssuePropertiesManager issuePropertiesManager,
+        AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover
     ) {
         super(channelKey, commenter, callbackInfoCreator);
         this.gson = gson;
@@ -57,6 +60,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         this.distributionDetails = distributionDetails;
         this.workItemService = workItemService;
         this.issuePropertiesManager = issuePropertiesManager;
+        this.exceptionMessageImprover = exceptionMessageImprover;
     }
 
     @Override
@@ -66,6 +70,10 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
             WorkItemResponseModel workItem = workItemService.createWorkItem(organizationName, distributionDetails.getProjectNameOrId(), distributionDetails.getWorkItemType(), workItemCreationRequest);
             return extractIssueDetails(workItem);
         } catch (HttpServiceException e) {
+            Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
+            if (improvedExceptionMessage.isPresent()) {
+                throw new AlertException(improvedExceptionMessage.get(), e);
+            }
             throw new AlertException("Failed to create a work item in Azure Boards", e);
         }
     }
