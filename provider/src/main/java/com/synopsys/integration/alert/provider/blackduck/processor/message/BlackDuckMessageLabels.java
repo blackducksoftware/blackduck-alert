@@ -23,7 +23,7 @@ public final class BlackDuckMessageLabels {
     public static final String LABEL_REMEDIATION_CLEAN = PREFIX_REMEDIATION + " - Without Vulnerabilities";
     public static final String LABEL_REMEDIATION_LATEST = PREFIX_REMEDIATION + " - Latest Version";
 
-    private static final String PREFIX_GUIDANCE = "Guidance";
+    private static final String PREFIX_GUIDANCE = "Upgrade Guidance";
     public static final String LABEL_GUIDANCE_SHORT_TERM = PREFIX_GUIDANCE + " - Short term";
     public static final String LABEL_GUIDANCE_LONG_TERM = PREFIX_GUIDANCE + " - Long term";
 
