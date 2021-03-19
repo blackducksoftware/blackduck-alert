@@ -72,12 +72,12 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             return new MessageResult(String.format("Expected [1] issue to be created, but there were actually [%d]", createdIssuesSize));
         }
 
-        if (!hasResolveTransition(distributionDetails)) {
-            return MessageResult.success();
-        }
-
         IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
         ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(createdIssue.getIssueId(), createdIssue.getIssueKey(), createdIssue.getIssueTitle(), createdIssue.getIssueLink());
+
+        if (!hasResolveTransition(distributionDetails)) {
+            return createSuccessMessageResult(existingIssueDetails);
+        }
 
         Optional<MessageResult> optionalResolveFailure = transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel);
         if (optionalResolveFailure.isPresent()) {
@@ -85,7 +85,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         if (!hasReopenTransition(distributionDetails)) {
-            return MessageResult.success();
+            return createSuccessMessageResult(existingIssueDetails);
         }
 
         Optional<MessageResult> optionalReopenFailure = transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.OPEN, existingIssueDetails, testProjectIssueModel);
@@ -93,7 +93,15 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             return optionalReopenFailure.get();
         }
 
-        return transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(MessageResult.success());
+        return transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails));
+    }
+
+    protected abstract boolean hasResolveTransition(D distributionDetails);
+
+    protected abstract boolean hasReopenTransition(D distributionDetails);
+
+    private MessageResult createSuccessMessageResult(ExistingIssueDetails<T> issueDetails) {
+        return new MessageResult(String.format("Success: %s", issueDetails.getIssueUILink()));
     }
 
     private Optional<MessageResult> transitionTestIssueOrReturnFailureResult(IssueTrackerMessageSender<T> messageSender, IssueOperation operation, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel testProjectIssueModel) {
@@ -119,10 +127,6 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
         return Optional.empty();
     }
-
-    protected abstract boolean hasResolveTransition(D distributionDetails);
-
-    protected abstract boolean hasReopenTransition(D distributionDetails);
 
     private ProjectIssueModel createPlaceholderProjectIssueModel(Long blackDuckConfigId) {
         LinkableItem providerItem = new LinkableItem("Provider Test Label", "Provider Config Test Name");
