@@ -10,36 +10,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
+import com.synopsys.integration.alert.channel.slack.action.SlackDistributionTestAction;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.channel.slack2.SlackChannelV2;
-import com.synopsys.integration.alert.channel.slack2.action.SlackDistributionTestAction;
+import com.synopsys.integration.alert.channel.slack.distribution.SlackChannel;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.event.DistributionEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
-import com.synopsys.integration.rest.RestConstants;
 
 public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT {
     @Autowired
     private SlackDescriptor slackDescriptor;
     @Autowired
-    private SlackChannelV2 slackChannel;
+    private SlackChannel slackChannel;
 
     @BeforeEach
     public void testSetup() {
@@ -72,28 +64,6 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
             testProperties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             getClass().getSimpleName()
         );
-    }
-
-    @Override
-    public DistributionEvent createChannelEvent() throws AlertException {
-        LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "")
-                                             .applySubTopic(subTopic.getLabel(), subTopic.getValue())
-                                             .build();
-
-        String createdAt = DateUtils.formatDate(DateUtils.createCurrentDateTimestamp(), RestConstants.JSON_DATE_FORMAT);
-        DistributionEvent event = new DistributionEvent(
-            ChannelKeys.SLACK.getUniversalKey(),
-            createdAt,
-            1L,
-            ProcessingType.DEFAULT.name(),
-            MessageContentGroup.singleton(content),
-            distributionJobModel,
-            null
-        );
-        return event;
     }
 
     @Override
@@ -131,11 +101,6 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     @Override
     public ChannelDistributionTestAction getChannelDistributionTestAction() {
         return new SlackDistributionTestAction(slackChannel) {};
-    }
-
-    @Override
-    public void testGlobalConfig() {
-        // Slack has no global config
     }
 
     @Override

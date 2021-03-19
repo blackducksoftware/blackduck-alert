@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.channel.jira.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCallbackUtils {
@@ -18,6 +19,10 @@ public class JiraCallbackUtils {
 
     public static String createUILink(IssueResponseModel issueResponseModel) {
         return createUILink(issueResponseModel.getSelf(), issueResponseModel.getKey());
+    }
+
+    public static String createUILink(JiraSearcherResponseModel issueResponseModel) {
+        return createUILink(issueResponseModel.getIssueUrl(), issueResponseModel.getIssueKey());
     }
 
     public static String createUILink(String issueUrl, String issueKey) {

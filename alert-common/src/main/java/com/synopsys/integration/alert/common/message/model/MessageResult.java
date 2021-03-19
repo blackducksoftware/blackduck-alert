@@ -16,6 +16,9 @@ import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageResult extends AlertSerializableModel {
+    private static final String STATUS_MESSAGE_SUCCESS = "Success";
+    private static final MessageResult MESSAGE_RESULT_SUCCESS = new MessageResult(STATUS_MESSAGE_SUCCESS);
+
     private final String statusMessage;
     private final List<AlertFieldStatus> fieldStatuses;
 
@@ -31,6 +34,10 @@ public class MessageResult extends AlertSerializableModel {
                    .stream()
                    .map(AlertFieldStatus::getSeverity)
                    .anyMatch(severity::equals);
+    }
+
+    public static MessageResult success() {
+        return MESSAGE_RESULT_SUCCESS;
     }
 
     public MessageResult(String statusMessage) {

@@ -12,6 +12,8 @@ import { getDescriptors } from 'store/actions/descriptors';
 import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderTable from 'providers/ProviderTable';
+import SlackGlobalConfiguration from 'channels/slack/SlackGlobalConfiguration';
+import { SLACK_INFO } from 'channels/slack/SlackModels';
 
 class MainPage extends Component {
     constructor(props) {
@@ -79,12 +81,14 @@ class MainPage extends Component {
             );
         }
 
+        const renderComponent = (name === SLACK_INFO.key) ? <SlackGlobalConfiguration /> : <GlobalConfiguration key={name} descriptor={component} />;
+
         return (
             <Route
                 exact
                 key={urlName}
                 path={`${uriPrefix}${urlName}`}
-                render={() => <GlobalConfiguration key={name} descriptor={component} />}
+                render={() => renderComponent}
             />
         );
     }
