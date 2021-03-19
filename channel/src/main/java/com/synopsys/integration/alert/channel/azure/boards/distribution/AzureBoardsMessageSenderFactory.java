@@ -57,7 +57,6 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
     @Override
     public IssueTrackerMessageSender<Integer> createMessageSender(AzureBoardsJobDetailsModel distributionDetails) throws AlertException {
         AzureBoardsProperties azureBoardsProperties = azureBoardsPropertiesFactory.createAzureBoardsProperties();
-        String organizationName = azureBoardsProperties.getOrganizationName();
         azureBoardsProperties.validateProperties();
 
         // Initialize Http Service
@@ -73,7 +72,7 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
             workItemService,
             workItemTypeStateService,
             workItemCommentService,
-            organizationName,
+            azureBoardsProperties.getOrganizationName(),
             distributionDetails
         );
     }
