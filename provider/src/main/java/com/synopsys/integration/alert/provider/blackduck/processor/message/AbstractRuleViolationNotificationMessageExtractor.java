@@ -10,14 +10,12 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageBomComponentDetailsUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageComponentConcernUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractRuleViolationNotificationContent;
@@ -31,19 +29,20 @@ import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent> extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final ItemOperation itemOperation;
+    private final BomComponent404Handler bomComponent404Handler;
 
     public AbstractRuleViolationNotificationMessageExtractor(
         NotificationType notificationType,
         Class<T> notificationContentClass,
         ItemOperation itemOperation,
         BlackDuckProviderKey blackDuckProviderKey,
-        NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache
+        NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache,
+        BomComponent404Handler bomComponent404Handler
     ) {
         super(notificationType, notificationContentClass, blackDuckProviderKey, servicesFactoryCache);
         this.itemOperation = itemOperation;
+        this.bomComponent404Handler = bomComponent404Handler;
     }
 
     @Override
@@ -64,11 +63,7 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
             ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentView.class);
             return BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(bomComponent, policyConcern, List.of());
         } catch (IntegrationRestException e) {
-            if (404 == e.getHttpStatusCode()) {
-                logger.debug("The BOM Component '{}[{}]' no longer exists", componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName());
-            } else {
-                throw e;
-            }
+            bomComponent404Handler.logIf404OrThrow(e, componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName());
         }
         return BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(
             componentVersionStatus.getComponentName(),
