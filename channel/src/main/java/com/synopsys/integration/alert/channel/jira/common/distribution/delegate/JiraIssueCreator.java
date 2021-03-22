@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.exception.JiraPreconditionNotMetException;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueCreationResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
@@ -69,6 +70,8 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink);
         } catch (IntegrationRestException restException) {
             throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
+        } catch (JiraPreconditionNotMetException jiraException) {
+            throw new AlertException(String.format("Failed to create an issue in Jira. %s", jiraException.getMessage()), jiraException);
         } catch (IntegrationException intException) {
             throw new AlertException("Failed to create an issue in Jira.", intException);
         }
