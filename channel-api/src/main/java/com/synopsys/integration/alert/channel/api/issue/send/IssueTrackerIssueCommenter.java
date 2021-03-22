@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.api.issue.send;
 import java.io.Serializable;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +39,13 @@ public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
         }
 
         addComments(issueCommentModel);
-        IssueTrackerIssueResponseModel<T> responseModel = issueResponseCreator.createIssueResponse(issueCommentModel.getSource(), issueCommentModel.getExistingIssueDetails(), IssueOperation.UPDATE);
+        IssueTrackerIssueResponseModel<T> responseModel = issueResponseCreator.createIssueResponse(issueCommentModel.getSource().orElse(null), issueCommentModel.getExistingIssueDetails(), IssueOperation.UPDATE);
         return Optional.of(responseModel);
     }
 
     protected abstract boolean isCommentingEnabled();
 
-    protected abstract void addComment(String comment, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel source) throws AlertException;
+    protected abstract void addComment(String comment, ExistingIssueDetails<T> existingIssueDetails, @Nullable ProjectIssueModel source) throws AlertException;
 
     protected void addComments(IssueCommentModel<T> issueCommentModel) throws AlertException {
         if (!isCommentingEnabled()) {
@@ -53,7 +54,7 @@ public abstract class IssueTrackerIssueCommenter<T extends Serializable> {
         }
 
         for (String comment : issueCommentModel.getComments()) {
-            addComment(comment, issueCommentModel.getExistingIssueDetails(), issueCommentModel.getSource());
+            addComment(comment, issueCommentModel.getExistingIssueDetails(), issueCommentModel.getSource().orElse(null));
         }
     }
 
