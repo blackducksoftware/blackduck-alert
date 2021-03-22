@@ -76,7 +76,7 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
         } else if (ItemOperation.ADD.equals(operation) && ItemOperation.DELETE.equals(otherModel.operation)) {
             return List.of();
         } else if (ItemOperation.DELETE.equals(operation) && ItemOperation.ADD.equals(otherModel.operation)) {
-            return List.of();
+            return List.of(otherModel);
         } else {
             return uncombinedModels;
         }
