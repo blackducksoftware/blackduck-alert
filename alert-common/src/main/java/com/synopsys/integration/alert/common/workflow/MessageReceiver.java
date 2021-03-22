@@ -39,8 +39,8 @@ public abstract class MessageReceiver<T extends AlertEvent> implements MessageLi
                 TextMessage textMessage = (TextMessage) message;
                 T event = gson.fromJson(textMessage.getText(), eventClass);
                 logger.trace("{} event {}", receiverClassName, event);
-                handleEvent(event);
                 logger.debug("Received Event ID: {}", event.getEventId());
+                handleEvent(event);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
