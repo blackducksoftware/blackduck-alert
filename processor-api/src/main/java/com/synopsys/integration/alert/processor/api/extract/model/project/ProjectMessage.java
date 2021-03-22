@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.processor.api.extract.model.project;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -106,7 +107,7 @@ public class ProjectMessage extends ProviderMessage<ProjectMessage> {
             }
         }
 
-        if (null == projectVersion || !projectVersion.equals(otherMessage.projectVersion)) {
+        if (!EqualsBuilder.reflectionEquals(projectVersion, otherMessage.projectVersion)) {
             return uncombinedMessages;
         }
 
