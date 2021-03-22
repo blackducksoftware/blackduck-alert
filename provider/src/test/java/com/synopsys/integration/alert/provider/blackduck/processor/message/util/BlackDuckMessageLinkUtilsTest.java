@@ -28,9 +28,10 @@ public class BlackDuckMessageLinkUtilsTest {
     @Test
     public void createComponentQueryLinkTest() throws IntegrationException {
         String componentName = "An Example Component";
+        String encodedComponentName = componentName.replace(" ", "%20");
 
         String componentsUrl = EXAMPLE_BLACKDUCK_PROJECT_VERSION_URL + BlackDuckMessageLinkUtils.URI_PIECE_COMPONENTS;
-        String expectedUrl = String.format("%s?q=%s:%s", componentsUrl, BlackDuckMessageLinkUtils.QUERY_PARAM_COMPONENT_NAME, componentName);
+        String expectedUrl = String.format("%s?q=%s:%s", componentsUrl, BlackDuckMessageLinkUtils.QUERY_PARAM_COMPONENT_NAME, encodedComponentName);
         String inputUrl = componentsUrl + "/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9b36b6b4-8221-4071-8685-8c567d68e90e/licenses/7cae335f-1193-421e-92f1-8802b4243e93";
         HttpUrl inputHttpUrl = new HttpUrl(inputUrl);
 
