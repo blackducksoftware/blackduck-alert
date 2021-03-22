@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.channel.jira.common.distribution.delegate
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
@@ -37,6 +39,8 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<String> {
+    private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";
+
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final String issueCreatorDescriptorKey;
@@ -71,9 +75,10 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         } catch (IntegrationRestException restException) {
             throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
         } catch (JiraPreconditionNotMetException jiraException) {
-            throw new AlertException(String.format("Failed to create an issue in Jira. %s", jiraException.getMessage()), jiraException);
+            String message = StringUtils.join(FAILED_TO_CREATE_ISSUE_MESSAGE, jiraException.getMessage(), " ");
+            throw new AlertException(message, jiraException);
         } catch (IntegrationException intException) {
-            throw new AlertException("Failed to create an issue in Jira.", intException);
+            throw new AlertException(FAILED_TO_CREATE_ISSUE_MESSAGE, intException);
         }
     }
 
