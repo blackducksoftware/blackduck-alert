@@ -113,7 +113,7 @@ public class ProjectMessageSummarizer {
             String stateTypeString = convertToUppercasePlural(concernGrouping.type);
             String stateAdjective = convertToAdjective(concernGrouping.type, concernGrouping.operation);
 
-            String label = String.format("(%s) %s %s count:", concernGrouping.severity, stateTypeString, stateAdjective);
+            String label = String.format("(%s) %s %s count", concernGrouping.severity, stateTypeString, stateAdjective);
             LinkableItem concernDetail = new LinkableItem(label, groupedConcernCount.getValue().toString());
             concernDetail.setNumericValueFlag(true);
             details.add(concernDetail);
