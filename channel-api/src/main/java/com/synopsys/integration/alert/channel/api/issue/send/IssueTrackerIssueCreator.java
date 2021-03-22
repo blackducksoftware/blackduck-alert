@@ -32,7 +32,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
     private final IssueTrackerIssueCommenter<T> commenter;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
 
-    public IssueTrackerIssueCreator(
+    protected IssueTrackerIssueCreator(
         IssueTrackerChannelKey channelKey,
         IssueTrackerIssueCommenter<T> commenter,
         IssueTrackerCallbackInfoCreator callbackInfoCreator) {
