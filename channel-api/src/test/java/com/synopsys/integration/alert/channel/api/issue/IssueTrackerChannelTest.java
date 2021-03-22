@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.Serializable;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
@@ -50,7 +51,7 @@ public class IssueTrackerChannelTest {
             }
 
             @Override
-            protected void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, ProjectIssueModel source) {
+            protected void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, @Nullable ProjectIssueModel source) {
             }
         };
         IssueTrackerIssueTransitioner<String> transitioner = new IssueTrackerIssueTransitioner<>(commenter, null) {

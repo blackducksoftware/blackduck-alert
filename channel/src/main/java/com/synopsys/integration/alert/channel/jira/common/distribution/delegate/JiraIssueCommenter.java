@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.common.distribution.delegate;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
@@ -22,7 +24,7 @@ public abstract class JiraIssueCommenter extends IssueTrackerIssueCommenter<Stri
     }
 
     @Override
-    protected final void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, ProjectIssueModel source) throws AlertException {
+    protected final void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, @Nullable ProjectIssueModel source) throws AlertException {
         try {
             IssueCommentRequestModel issueCommentRequestModel = new IssueCommentRequestModel(existingIssueDetails.getIssueKey(), comment);
             addComment(issueCommentRequestModel);

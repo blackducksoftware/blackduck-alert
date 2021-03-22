@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.distribution.delegate;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
@@ -39,7 +41,7 @@ public class AzureBoardsIssueCommenter extends IssueTrackerIssueCommenter<Intege
     }
 
     @Override
-    protected void addComment(String comment, ExistingIssueDetails<Integer> existingIssueDetails, ProjectIssueModel source) throws AlertException {
+    protected void addComment(String comment, ExistingIssueDetails<Integer> existingIssueDetails, @Nullable ProjectIssueModel source) throws AlertException {
         try {
             commentService.addComment(organizationName, distributionDetails.getProjectNameOrId(), existingIssueDetails.getIssueId(), comment);
         } catch (HttpServiceException e) {

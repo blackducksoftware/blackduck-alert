@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,9 +60,9 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
         if (optionalSource.isPresent()) {
             ProjectIssueModel alertIssueSource = optionalSource.get();
             assignAlertSearchProperties(createdIssueDetails, alertIssueSource);
-            addPostCreateComments(createdIssueDetails, alertIssueCreationModel, alertIssueSource);
             callbackInfo = callbackInfoCreator.createCallbackInfo(alertIssueSource).orElse(null);
         }
+        addPostCreateComments(createdIssueDetails, alertIssueCreationModel, optionalSource.orElse(null));
 
         return new IssueTrackerIssueResponseModel<>(
             createdIssueDetails.getIssueId(),
@@ -77,7 +78,7 @@ public abstract class IssueTrackerIssueCreator<T extends Serializable> {
 
     protected abstract void assignAlertSearchProperties(ExistingIssueDetails<T> createdIssueDetails, ProjectIssueModel alertIssueSource) throws AlertException;
 
-    private void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, ProjectIssueModel projectSource) throws AlertException {
+    private void addPostCreateComments(ExistingIssueDetails<T> issueDetails, IssueCreationModel creationModel, @Nullable ProjectIssueModel projectSource) throws AlertException {
         LinkedList<String> postCreateComments = new LinkedList<>(creationModel.getPostCreateComments());
         postCreateComments.addFirst("This issue was automatically created by Alert.");
 
