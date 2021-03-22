@@ -153,6 +153,7 @@ public class StaticJobAccessor implements JobAccessor {
                    .map(this::convertToDistributionJobModel);
     }
 
+    //TODO: Is this even used anymore? This is just used in tests
     @Override
     @Transactional(readOnly = true)
     public List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType) {
@@ -160,6 +161,7 @@ public class StaticJobAccessor implements JobAccessor {
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(frequency.name(), providerConfigId, notificationType.name()));
     }
 
+    //TODO: Is this even used anymore? This is just used in tests
     @Override
     @Transactional(readOnly = true)
     public List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType) {
@@ -167,9 +169,8 @@ public class StaticJobAccessor implements JobAccessor {
         return getMatchingEnabledJobs(() -> distributionJobRepository.findMatchingEnabledJob(providerConfigId, notificationType.name()));
     }
 
-    // TODO this should be paged
     @Override
-    public List<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel) {
+    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, int pageNumber, int pageLimit) {
         List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
                                           .stream()
                                           .map(Enum::name)
@@ -182,6 +183,7 @@ public class StaticJobAccessor implements JobAccessor {
         List<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         List<DistributionJobEntity> distributionJobEntities;
+        /*
         if (filteredDistributionJobRequestModel.isPolicyNotification()) {
             distributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectName, policyNames);
         } else if (filteredDistributionJobRequestModel.isVulnerabilityNotification()) {
@@ -189,12 +191,24 @@ public class StaticJobAccessor implements JobAccessor {
         } else {
             distributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName);
         }
+         */
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
+        Page<DistributionJobEntity> pageOfDistributionJobEntities;
+        if (filteredDistributionJobRequestModel.isPolicyNotification()) {
+            pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNames(frequencyTypes, notificationType.name(), projectName, policyNames, pageRequest);
+        } else if (filteredDistributionJobRequestModel.isVulnerabilityNotification()) {
+            pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeverities(frequencyTypes, notificationType.name(), projectName, vulnerabilitySeverities, pageRequest);
+        } else {
+            pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobs(frequencyTypes, notificationType.name(), projectName, pageRequest);
+        }
+        distributionJobEntities = pageOfDistributionJobEntities.getContent();
 
         // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
-        return distributionJobEntities.stream()
-                   .filter(distributionJobEntity -> filterByProjects(distributionJobEntity, projectName))
-                   .map(this::convertToFilteredDistributionJobResponseModel)
-                   .collect(Collectors.toList());
+        List<FilteredDistributionJobResponseModel> distributionJobResponseModels = distributionJobEntities.stream()
+                                                                                       .filter(distributionJobEntity -> filterByProjects(distributionJobEntity, projectName))
+                                                                                       .map(this::convertToFilteredDistributionJobResponseModel)
+                                                                                       .collect(Collectors.toList());
+        return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);
     }
 
     private boolean filterByProjects(DistributionJobEntity distributionJobEntity, String projectName) {
@@ -219,6 +233,7 @@ public class StaticJobAccessor implements JobAccessor {
         return new FilteredDistributionJobResponseModel(distributionJobEntity.getJobId(), processingType, distributionJobEntity.getChannelDescriptorName());
     }
 
+    //TODO: If the top 2 methods for getMatchingEnabledJobs are removed, this one should be too.
     private List<DistributionJobModel> getMatchingEnabledJobs(Supplier<List<DistributionJobEntity>> getJobs) {
         // TODO change this to return a page of jobs
         List<DistributionJobEntity> matchingEnabledJob = getJobs.get();

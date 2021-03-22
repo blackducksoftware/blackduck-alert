@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPagedModel;
 
 @Component
 public final class NotificationProcessorV2 {
@@ -68,19 +69,26 @@ public final class NotificationProcessorV2 {
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)
                                                                         .flatMap(List::stream)
                                                                         .collect(Collectors.toList());
-        List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications) {
-            List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
-            Set<Long> notificationIds = filteredNotifications
-                                            .stream()
-                                            .map(NotificationContentWrapper::getNotificationId)
-                                            .collect(Collectors.toSet());
+        StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
+        do {
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
+                processAndDistribute(jobNotificationWrapper);
+            }
+            mappedNotifications = mappedNotifications.retrieveNextPage();
+        } while (!mappedNotifications.getCurrentModels().isEmpty());
+    }
 
-            ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
-            ProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
+    private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
+        List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
+        Set<Long> notificationIds = filteredNotifications
+                                        .stream()
+                                        .map(NotificationContentWrapper::getNotificationId)
+                                        .collect(Collectors.toSet());
 
-            providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
-        }
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
+        ProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
+
+        providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
     }
 
     private void clearCaches() {

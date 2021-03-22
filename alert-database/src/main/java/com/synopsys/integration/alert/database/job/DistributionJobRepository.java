@@ -67,10 +67,11 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    AND jobEntity.distributionFrequency IN (:frequencies)"
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
     )
-    List<DistributionJobEntity> findMatchingEnabledJobs(
+    Page<DistributionJobEntity> findMatchingEnabledJobs(
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
-        @Param("projectName") String projectName
+        @Param("projectName") String projectName,
+        Pageable pageable
     );
 
     @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
@@ -84,11 +85,12 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
                        + "    AND (policyFilters.policyName IS NULL OR policyFilters.policyName IN (:policyNames))"
     )
-    List<DistributionJobEntity> findMatchingEnabledJobsWithPolicyNames(
+    Page<DistributionJobEntity> findMatchingEnabledJobsWithPolicyNames(
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
         @Param("projectName") String projectName,
-        @Param("policyNames") Collection<String> policyNames
+        @Param("policyNames") Collection<String> policyNames,
+        Pageable pageable
     );
 
     // FIXME these queries can be improved by using pattern searching in the query and returning a FilteredDistributionJobResponseModel
@@ -103,10 +105,11 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
                        + "    AND (vulnerabilitySeverityFilters.severityName IS NULL OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities))"
     )
-    List<DistributionJobEntity> findMatchingEnabledJobsWithVulnerabilitySeverities(
+    Page<DistributionJobEntity> findMatchingEnabledJobsWithVulnerabilitySeverities(
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationType") String notificationType,
         @Param("projectName") String projectName,
-        @Param("vulnerabilitySeverities") Collection<String> vulnerabilitySeverities
+        @Param("vulnerabilitySeverities") Collection<String> vulnerabilitySeverities,
+        Pageable pageable
     );
 }

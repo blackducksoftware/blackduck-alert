@@ -22,11 +22,13 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public interface JobAccessor {
+    //TODO: Only used in tests, should be deleted
     List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
 
+    //TODO: Only used in tests, should be deleted
     List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);
 
-    List<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel);
+    AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, int pageOffset, int pageLimit);
 
     List<DistributionJobModel> getJobsById(Collection<UUID> jobIds);
 
