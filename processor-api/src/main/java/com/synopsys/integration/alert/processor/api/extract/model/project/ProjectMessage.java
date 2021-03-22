@@ -100,11 +100,7 @@ public class ProjectMessage extends ProviderMessage<ProjectMessage> {
         }
 
         if (messageReason.equals(MessageReason.PROJECT_STATUS)) {
-            if (operation.equals(otherMessage.operation)) {
-                return List.of(this);
-            } else {
-                return List.of();
-            }
+            return combineOperations(otherMessage);
         }
 
         if (!EqualsBuilder.reflectionEquals(projectVersion, otherMessage.projectVersion)) {
@@ -112,14 +108,19 @@ public class ProjectMessage extends ProviderMessage<ProjectMessage> {
         }
 
         if (messageReason.equals(MessageReason.PROJECT_VERSION_STATUS)) {
-            if (operation.equals(otherMessage.operation)) {
-                return List.of(this);
-            } else {
-                return List.of();
-            }
+            return combineOperations(otherMessage);
         }
 
         return combineBomComponents(otherMessage.getBomComponents());
+    }
+
+    private List<ProjectMessage> combineOperations(ProjectMessage otherMessage) {
+        if (ProjectOperation.CREATE.equals(operation) && ProjectOperation.DELETE.equals(otherMessage.operation)) {
+            return List.of();
+        } else if (ProjectOperation.DELETE.equals(operation) && ProjectOperation.CREATE.equals(otherMessage.operation)) {
+            return List.of(otherMessage);
+        }
+        return List.of(this);
     }
 
     private List<ProjectMessage> combineBomComponents(List<BomComponentDetails> otherMessageBomComponents) {

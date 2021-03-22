@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.processor.api;
+package com.synopsys.integration.alert.processor.api.extract.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
 import com.synopsys.integration.blackduck.api.manual.enumeration.OperationType;
 
 public class CombinableModelTest {
