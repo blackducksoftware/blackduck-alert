@@ -25,19 +25,19 @@ public class ProjectVersionNotificationDetailExtractorTest {
     @Test
     public void extractDetailedContentTest() throws IOException {
         String jsonContent = TestResourceUtils.readFileToString(NOTIFICATION_JSON_PATH);
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", NotificationType.PROJECT_VERSION.name(), jsonContent, null, null, false);
+        ProjectVersionNotificationView projectNotificationView = gson.fromJson(jsonContent, ProjectVersionNotificationView.class);
+        ProjectVersionNotificationContent projectVersionNotificationContent = projectNotificationView.getContent();
 
-        ProjectVersionNotificationDetailExtractor extractor = new ProjectVersionNotificationDetailExtractor(gson);
-        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification);
+        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
+
+        ProjectVersionNotificationDetailExtractor extractor = new ProjectVersionNotificationDetailExtractor();
+        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, projectNotificationView);
         assertEquals(1, detailedNotificationContents.size());
 
         DetailedNotificationContent detailedNotificationContent = detailedNotificationContents.get(0);
 
         Optional<String> optionalProjectName = detailedNotificationContent.getProjectName();
         assertTrue(optionalProjectName.isPresent(), "Expect project name to be present");
-
-        ProjectVersionNotificationView projectNotificationView = gson.fromJson(jsonContent, ProjectVersionNotificationView.class);
-        ProjectVersionNotificationContent projectVersionNotificationContent = projectNotificationView.getContent();
 
         assertEquals(projectVersionNotificationContent.getProjectName(), optionalProjectName.get());
         assertTrue(detailedNotificationContent.getPolicyName().isEmpty(), "Expected no policy name to be present");

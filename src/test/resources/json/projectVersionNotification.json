@@ -1,0 +1,20 @@
+{
+  "content": {
+    "project": "https://int-bdstarlabs.dc1.lan/api/projects/666b1faf-28da-4206-984e-ea709b5bba7e",
+    "projectName": "CITestProject",
+    "projectVersion": "https://int-bdstarlabs.dc1.lan/api/projects/666b1faf-28da-4206-984e-ea709b5bba7e/versions/546b56fd-96fc-4b73-9c88-e72ab3dfa215",
+    "projectVersionName": "CITestVersion1",
+    "operationType": "CREATE"
+  },
+  "contentType": "application/json",
+  "type": "PROJECT_VERSION",
+  "createdAt": "2021-03-23T19:07:03.435Z",
+  "_meta": {
+    "allow": [
+      "GET"
+    ],
+    "href": "https://int-bdstarlabs.dc1.lan/api/notifications/17b36c27-1ddd-4b7a-8cbf-1fdc880dd508",
+    "links": [
+    ]
+  }
+}

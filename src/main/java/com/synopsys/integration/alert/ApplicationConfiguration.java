@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -32,7 +33,10 @@ import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 
@@ -99,12 +103,22 @@ public class ApplicationConfiguration {
 
     @Bean
     public Gson gson() {
-        return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
+        return BlackDuckServicesFactory.createDefaultGson();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return BlackDuckServicesFactory.createDefaultObjectMapper();
     }
 
     @Bean
     public BlackDuckResponseResolver blackDuckResponseResolver() {
         return new BlackDuckResponseResolver(gson());
+    }
+
+    @Bean
+    public BlackDuckJsonTransformer blackDuckJsonTransformer() {
+        return new BlackDuckJsonTransformer(gson(), objectMapper(), blackDuckResponseResolver(), new Slf4jIntLogger(logger));
     }
 
     @Bean

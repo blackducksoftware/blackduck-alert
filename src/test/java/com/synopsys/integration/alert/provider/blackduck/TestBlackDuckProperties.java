@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -55,16 +56,16 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public TestBlackDuckProperties(TestAlertProperties alertProperties, ProxyManager proxyManager) {
-        this(new Gson(), alertProperties, new TestProperties(), proxyManager);
+        this(new Gson(), new ObjectMapper(), alertProperties, new TestProperties(), proxyManager);
     }
 
-    public TestBlackDuckProperties(Gson gson, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {
-        this(1L, gson, alertProperties, testProperties, proxyManager, 300, true);
+    public TestBlackDuckProperties(Gson gson, ObjectMapper objectMapper, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {
+        this(1L, gson, objectMapper, alertProperties, testProperties, proxyManager, 300, true);
     }
 
-    public TestBlackDuckProperties(Long configId, Gson gson, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager, Integer blackDuckTimeout,
+    public TestBlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager, Integer blackDuckTimeout,
         boolean trustCertificates) {
-        super(configId, gson, alertProperties, proxyManager, getConfigurationModel(testProperties));
+        super(configId, gson, objectMapper, alertProperties, proxyManager, getConfigurationModel(testProperties));
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         this.testProperties = testProperties;

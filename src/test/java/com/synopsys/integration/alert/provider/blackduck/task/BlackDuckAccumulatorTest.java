@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.message.model.DateRange;
@@ -69,7 +70,7 @@ public class BlackDuckAccumulatorTest {
         testAlertProperties.setAlertConfigHome(testAccumulatorParent.getCanonicalPath());
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        testBlackDuckProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, new TestProperties(), proxyManager);
+        testBlackDuckProperties = new TestBlackDuckProperties(new Gson(), new ObjectMapper(), testAlertProperties, new TestProperties(), proxyManager);
 
         notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
         taskScheduler = Mockito.mock(TaskScheduler.class);
