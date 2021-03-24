@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
 public class EmailGlobalTestAction extends TestAction {
-    private static final String TEST_PROVIDER_NAME = "Provider Placeholder";
     private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
     private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
 
@@ -47,7 +46,7 @@ public class EmailGlobalTestAction extends TestAction {
         List<String> emailAddresses = extractAndValidateDestination(fieldModel);
         EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, TEST_SUBJECT_LINE, false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
-        EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, TEST_PROVIDER_NAME, "#");
+        EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 
         return emailChannelMessageSender.sendMessages(emailProperties, distributionDetails, List.of(testMessage));
     }
