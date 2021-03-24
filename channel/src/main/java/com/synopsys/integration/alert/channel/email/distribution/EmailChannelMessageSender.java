@@ -70,6 +70,10 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     @Override
     public MessageResult sendMessages(EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {
         EmailProperties emailProperties = new EmailProperties(retrieveGlobalEmailConfig());
+        return sendMessages(emailProperties, emailJobDetails, emailMessages);
+    }
+
+    public MessageResult sendMessages(EmailProperties emailProperties, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {
         EmailMessagingService emailMessagingService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
 
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
