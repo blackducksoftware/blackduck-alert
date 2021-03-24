@@ -28,7 +28,7 @@ public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessa
         appendSection(chunkedStringBuilder, simpleMessage.getSummary());
         appendSection(chunkedStringBuilder, simpleMessage.getDescription());
 
-        appendLinkableItem(chunkedStringBuilder, simpleMessage.getProvider(), true);
+        appendLinkableItem(chunkedStringBuilder, simpleMessage.getProvider(), false);
 
         for (LinkableItem detail : simpleMessage.getDetails()) {
             appendLinkableItem(chunkedStringBuilder, detail, false);

@@ -32,6 +32,12 @@ import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
 @Component
 public class EmailGlobalTestAction extends TestAction {
+    private static final String TEST_PROVIDER_LABEL = "Provider Label Placeholder";
+    private static final String TEST_PROVIDER_CONFIG_NAME = "Provider Config Name Placeholder";
+    private static final String TEST_SUMMARY = "Email Global Configuration Test";
+    private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
+    private static final String TEST_SUBJECT_LINE = "Custom Subject Line Placeholder";
+
     private final EmailChannelV2 emailChannel;
 
     @Autowired
@@ -47,17 +53,15 @@ public class EmailGlobalTestAction extends TestAction {
                                                      .map(EmailAttachmentFormat::getValueSafely)
                                                      .orElse(EmailAttachmentFormat.NONE);
 
-        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, "Subject Line", false, true, attachmentFormat.name(), emailAddresses);
+        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, TEST_SUBJECT_LINE, false, true, attachmentFormat.name(), emailAddresses);
 
-        LinkableItem provider = new LinkableItem("Test Provider", "Test Provider Config");
+        LinkableItem provider = new LinkableItem(TEST_PROVIDER_LABEL, TEST_PROVIDER_CONFIG_NAME);
         ProviderDetails providerDetails = new ProviderDetails(0L, provider);
 
-        SimpleMessage testMessage = SimpleMessage.original(providerDetails, "Test from Alert", "This is a test message from Alert.", List.of());
+        SimpleMessage testMessage = SimpleMessage.original(providerDetails, TEST_SUMMARY, TEST_MESSAGE_CONTENT, List.of());
         ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(List.of(), List.of(testMessage));
 
         return emailChannel.distributeMessages(distributionDetails, providerMessageHolder);
-        // TODO does this result string matter?
-        //  return new MessageResult("Message sent");
     }
 
     private List<String> extractAndValidateDestination(FieldModel fieldModel) throws AlertException {
