@@ -17,47 +17,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageModel;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
 import com.synopsys.integration.alert.common.action.TestAction;
+import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
 @Component
 public class EmailGlobalTestAction extends TestAction {
-    private final EmailChannelV2 emailChannel;
+    private static final String TEST_SUBJECT_LINE = "Email Global Configuration Test";
+    private static final String TEST_MESSAGE_CONTENT = "This is a test message from Alert to confirm your Global Email Configuration is valid.";
+
+    private final EmailChannelMessageSender emailChannelMessageSender;
 
     @Autowired
-    public EmailGlobalTestAction(EmailChannelV2 emailChannel) {
-        this.emailChannel = emailChannel;
+    public EmailGlobalTestAction(EmailChannelMessageSender emailChannelMessageSender) {
+        this.emailChannelMessageSender = emailChannelMessageSender;
     }
 
     @Override
     public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws AlertException {
+        EmailProperties emailProperties = new EmailProperties(registeredFieldValues);
+
         List<String> emailAddresses = extractAndValidateDestination(fieldModel);
+        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, TEST_SUBJECT_LINE, false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
-        EmailAttachmentFormat attachmentFormat = registeredFieldValues.getString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT)
-                                                     .map(EmailAttachmentFormat::getValueSafely)
-                                                     .orElse(EmailAttachmentFormat.NONE);
+        EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 
-        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, "Subject Line", false, true, attachmentFormat.name(), emailAddresses);
-
-        LinkableItem provider = new LinkableItem("Test Provider", "Test Provider Config");
-        ProviderDetails providerDetails = new ProviderDetails(0L, provider);
-
-        SimpleMessage testMessage = SimpleMessage.original(providerDetails, "Test from Alert", "This is a test message from Alert.", List.of());
-        ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(List.of(), List.of(testMessage));
-
-        return emailChannel.distributeMessages(distributionDetails, providerMessageHolder);
-        // TODO does this result string matter?
-        //  return new MessageResult("Message sent");
+        return emailChannelMessageSender.sendMessages(emailProperties, distributionDetails, List.of(testMessage));
     }
 
     private List<String> extractAndValidateDestination(FieldModel fieldModel) throws AlertException {

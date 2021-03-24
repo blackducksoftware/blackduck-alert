@@ -34,7 +34,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
     protected List<EmailChannelMessageModel> convertSimpleMessageToChannelMessages(EmailJobDetailsModel distributionDetails, SimpleMessage simpleMessage, List<String> messageChunks) {
         String subjectLine = String.format("%s | %s", distributionDetails.getSubjectLine(), simpleMessage.getSummary());
         subjectLine = StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
-        String messageContent = StringUtils.join(messageChunks);
+        String messageContent = StringUtils.join(messageChunks, "");
 
         LinkableItem provider = simpleMessage.getProvider();
         String providerName = provider.getValue();
@@ -54,11 +54,11 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
     @Override
     protected List<EmailChannelMessageModel> convertProjectMessageToChannelMessages(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage, List<String> messageChunks) {
         String subjectLine = createSubjectLine(distributionDetails, projectMessage);
-        String messageContent = StringUtils.join(messageChunks);
+        String messageContent = StringUtils.join(messageChunks, "");
         LinkableItem provider = projectMessage.getProvider();
 
-        EmailChannelMessageModel.project(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
-        return List.of();
+        EmailChannelMessageModel model = EmailChannelMessageModel.project(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
+        return List.of(model);
     }
 
     private String createSubjectLine(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage) {

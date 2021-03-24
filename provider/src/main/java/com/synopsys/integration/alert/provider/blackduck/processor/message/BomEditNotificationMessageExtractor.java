@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageBomComponentDetailsUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.BomEditWithProjectNameNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
@@ -26,12 +27,16 @@ import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
 public class BomEditNotificationMessageExtractor extends AbstractBlackDuckComponentConcernMessageExtractor<BomEditWithProjectNameNotificationContent> {
+    private final BomComponent404Handler bomComponent404Handler;
+
     @Autowired
-    public BomEditNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey, NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache) {
+    public BomEditNotificationMessageExtractor(BlackDuckProviderKey blackDuckProviderKey, NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache, BomComponent404Handler bomComponent404Handler) {
         super(NotificationType.BOM_EDIT, BomEditWithProjectNameNotificationContent.class, blackDuckProviderKey, servicesFactoryCache);
+        this.bomComponent404Handler = bomComponent404Handler;
     }
 
     @Override
@@ -42,9 +47,22 @@ public class BomEditNotificationMessageExtractor extends AbstractBlackDuckCompon
     @Override
     protected List<BomComponentDetails> createBomComponentDetails(BomEditWithProjectNameNotificationContent notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-        ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(notificationContent.getBomComponent()), ProjectVersionComponentView.class);
+        try {
+            ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(notificationContent.getBomComponent()), ProjectVersionComponentView.class);
+            BomComponentDetails bomComponentDetails = BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(bomComponent, List.of(), List.of());
+            return List.of(bomComponentDetails);
+        } catch (IntegrationRestException e) {
+            bomComponent404Handler.logIf404OrThrow(e, notificationContent.getComponentName(), notificationContent.getComponentVersionName());
+        }
 
-        BomComponentDetails bomComponentDetails = BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(bomComponent, List.of(), List.of());
+        BomComponentDetails bomComponentDetails = BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(
+            notificationContent.getComponentName(),
+            notificationContent.getBomComponent(),
+            notificationContent.getComponentVersionName(),
+            notificationContent.getBomComponent(),
+            List.of(),
+            List.of()
+        );
         return List.of(bomComponentDetails);
     }
 

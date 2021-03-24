@@ -69,7 +69,7 @@ public class ComponentConcernConverter {
             componentConcernSectionPieces.add(concernString);
         }
 
-        if (!StringUtils.endsWith(componentConcernSectionPieces.getLast(), formatter.getLineSeparator())) {
+        if (!componentConcernSectionPieces.isEmpty() && !StringUtils.endsWith(componentConcernSectionPieces.getLast(), formatter.getLineSeparator())) {
             componentConcernSectionPieces.add(formatter.getLineSeparator());
         }
         return componentConcernSectionPieces;
