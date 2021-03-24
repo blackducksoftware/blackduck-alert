@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
 
@@ -99,6 +100,11 @@ public class ApplicationConfiguration {
     @Bean
     public Gson gson() {
         return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
+    }
+
+    @Bean
+    public BlackDuckResponseResolver blackDuckResponseResolver() {
+        return new BlackDuckResponseResolver(gson());
     }
 
     @Bean

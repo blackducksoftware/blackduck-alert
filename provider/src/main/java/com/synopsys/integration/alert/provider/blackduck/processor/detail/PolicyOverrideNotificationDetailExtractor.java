@@ -13,25 +13,24 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.PolicyOverrideUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.PolicyOverrideNotificationView;
 
 @Component
-public class PolicyOverrideNotificationDetailExtractor extends NotificationDetailExtractor<PolicyOverrideNotificationContent, PolicyOverrideNotificationView> {
+public class PolicyOverrideNotificationDetailExtractor extends NotificationDetailExtractor<PolicyOverrideNotificationView> {
     @Autowired
-    public PolicyOverrideNotificationDetailExtractor(Gson gson) {
-        super(NotificationType.POLICY_OVERRIDE, PolicyOverrideNotificationView.class, gson);
+    public PolicyOverrideNotificationDetailExtractor() {
+        super(PolicyOverrideNotificationView.class);
     }
 
     @Override
-    protected List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, PolicyOverrideNotificationContent notificationContent) {
+    public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, PolicyOverrideNotificationView notificationView) {
+        PolicyOverrideNotificationContent notificationContent = notificationView.getContent();
         return notificationContent.getPolicyInfos()
                    .stream()
                    .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))
