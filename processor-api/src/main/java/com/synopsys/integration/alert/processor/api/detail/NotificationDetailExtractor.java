@@ -15,7 +15,7 @@ import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 // TODO create an interface for this to implement avoid "raw use of parameterized class"
 //  List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel);
 public abstract class NotificationDetailExtractor<U extends NotificationView> {
-    private Class<U> notificationViewClass;
+    private final Class<U> notificationViewClass;
 
     public NotificationDetailExtractor(Class<U> notificationViewClass) {
         this.notificationViewClass = notificationViewClass;
