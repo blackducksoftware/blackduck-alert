@@ -51,28 +51,25 @@ public class JobNotificationMapper {
      * @param frequencies      an Additional filter to specify when querying data from the DB
      * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
      */
+    //TODO, this might be better renamed to something like mapJobsToFirstPageOfNotifications? (It default starts at page 0, size 100)
     public StatefulAlertPagedModel<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies) {
         AlertPagedModel<FilteredJobNotificationWrapper> pageOfJobsToNotification = mapPageOfJobsToNotification(detailedContents, frequencies, PAGE_NUMBER, PAGE_SIZE);
-        //TODO rename size/number
         return new StatefulAlertPagedModel<>(
-            PAGE_SIZE,
-            PAGE_NUMBER,
+            pageOfJobsToNotification.getCurrentPage(),
+            pageOfJobsToNotification.getPageSize(),
             pageOfJobsToNotification.getModels(),
-            (size, number) -> mapPageOfJobsToNotification(detailedContents, frequencies, number, size)
+            (number, size) -> mapPageOfJobsToNotification(detailedContents, frequencies, number, size)
         );
     }
 
     private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies, int pageNumber, int pageSize) {
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
         int totalPages = 0; //What is the best way to get total pages? What if one notificationContent has more pages of Jobs than another? Perhaps get the highest total page?
-        //int currentPage = 0;
 
+        //Go over each notification, and find all jobs that map to it, saving them to memory
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
             AlertPagedModel<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(detailedNotificationContent, frequencies, pageNumber, pageSize);
-            //get totalPages and currentPage from the alertPagedModel here
-            //FIXME? if we loop over all the detailedContents, these values might change. Need to debug and see what happens here
-            //totalPages = filteredDistributionJobResponseModels.getTotalPages(); //we should accumulate instead totalPages += ?
-            //currentPage = filteredDistributionJobResponseModels.getCurrentPage();
+            //Find the DetailedNotificationContent with the most pages and set it to totalPages
             totalPages = Math.max(totalPages, filteredDistributionJobResponseModels.getTotalPages());
 
             //Loop over the list of jobs, and add them to the groupedFilterableNotifications map. Then, take the notificationContentWrapper from the notificaitonContent and add it to the map as a value in List form.

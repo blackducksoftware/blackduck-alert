@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -126,8 +128,8 @@ public class JmsNotificationReceiverTestIT {
     }
 
     @Test
-    //@Ignore
-    //@Disabled
+    @Ignore
+    @Disabled
     public void testJms() throws InterruptedException {
         // Set breakpoints throughout this test, there is nothing to assert against here. Suggestions for breakpoints:
         //      Registering listeners: EventListenerConfigurer
@@ -175,8 +177,16 @@ public class JmsNotificationReceiverTestIT {
         projectNotificationView.setContent(projectNotificationContent);
         String content = gson.toJson(projectNotificationView);
 
-        return new AlertNotificationModel(id, blackDuckGlobalConfigId, "provider_blackduck", "DELETED CONFIGURATION", NotificationType.PROJECT.name(), content, DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp(), processed);
+        return new AlertNotificationModel(
+            id,
+            blackDuckGlobalConfigId,
+            "provider_blackduck",
+            "DELETED CONFIGURATION",
+            NotificationType.PROJECT.name(),
+            content,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(),
+            processed);
     }
 
 }

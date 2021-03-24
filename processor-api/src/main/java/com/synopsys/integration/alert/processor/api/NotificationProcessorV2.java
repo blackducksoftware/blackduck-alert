@@ -75,7 +75,7 @@ public final class NotificationProcessorV2 {
                 processAndDistribute(jobNotificationWrapper);
             }
             mappedNotifications = mappedNotifications.retrieveNextPage();
-        } while (!mappedNotifications.getCurrentModels().isEmpty());
+        } while (mappedNotifications.hasNextPage());
     }
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {

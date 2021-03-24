@@ -1,8 +1,13 @@
 package com.synopsys.integration.alert.processor.api.filter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,7 +30,6 @@ import com.synopsys.integration.alert.provider.blackduck.processor.model.Vulnera
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @AlertIntegrationTest
@@ -48,9 +52,25 @@ public class JobNotificationMapperTestIT {
         createJobs(createDistributionJobModels());
 
         JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(jobAccessor);
-        jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        /*
+        StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        StatefulAlertPagedModel<FilteredJobNotificationWrapper> nextPage = mappedNotifications.retrieveNextPage();
+        StatefulAlertPagedModel<FilteredJobNotificationWrapper> nextPage2 = nextPage.retrieveNextPage();
+        StatefulAlertPagedModel<FilteredJobNotificationWrapper> lastPage = nextPage2.retrieveNextPage();
+         */
+        //List<NotificationContentWrapper> notificationContentWrappers = new ArrayList<>();
+        Set<NotificationContentWrapper> notificationContentWrappers = new HashSet<>();
+        StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        do {
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
+                notificationContentWrappers.addAll(jobNotificationWrapper.getJobNotifications());
+            }
+            //assertEquals(10, mappedNotifications.getCurrentModels().size());
+            mappedNotifications = mappedNotifications.retrieveNextPage();
+        } while (mappedNotifications.hasNextPage());
+        //} while (!mappedNotifications.getCurrentModels().isEmpty());
 
-        System.out.println();
+        assertEquals(2, notificationContentWrappers.size());
     }
 
     private void createJobs(List<DistributionJobRequestModel> jobs) {
@@ -62,6 +82,31 @@ public class JobNotificationMapperTestIT {
     }
 
     private List<DistributionJobRequestModel> createDistributionJobModels() {
+        List<DistributionJobRequestModel> jobModels = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            DistributionJobRequestModel distributionJobRequestModel = createJobRequestModel(
+                FrequencyType.REAL_TIME,
+                ProcessingType.DIGEST,
+                List.of(),
+                List.of(NotificationType.VULNERABILITY.name()),
+                List.of(VulnerabilitySeverityType.LOW.name()),
+                List.of()
+            );
+            jobModels.add(distributionJobRequestModel);
+        }
+        for (int i = 0; i < 10; i++) {
+            DistributionJobRequestModel distributionJobRequestModel = createJobRequestModel(
+                FrequencyType.REAL_TIME,
+                ProcessingType.DIGEST,
+                List.of(),
+                List.of(NotificationType.VULNERABILITY.name()),
+                List.of(VulnerabilitySeverityType.HIGH.name()),
+                List.of()
+            );
+            jobModels.add(distributionJobRequestModel);
+        }
+        return jobModels;
+        /*
         DistributionJobRequestModel distributionJobRequestModel1 = createJobRequestModel(
             FrequencyType.REAL_TIME,
             ProcessingType.DIGEST,
@@ -96,8 +141,10 @@ public class JobNotificationMapperTestIT {
         );
 
         return List.of(distributionJobRequestModel1, distributionJobRequestModel2, distributionJobRequestModel3, distributionJobRequestModel4);
+        */
     }
 
+    //Creates the slack jobs
     private DistributionJobRequestModel createJobRequestModel(
         FrequencyType frequencyType,
         ProcessingType processingType,
@@ -134,6 +181,7 @@ public class JobNotificationMapperTestIT {
         return vulnerabilityUniqueProjectNotificationContent;
     }
 
+    //Creates the Notifications
     private List<DetailedNotificationContent> createNotificationWrappers() {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
         DetailedNotificationContent test_project = DetailedNotificationContent.vulnerability(
@@ -142,6 +190,18 @@ public class JobNotificationMapperTestIT {
             PROJECT_NAME_1,
             List.of(VulnerabilitySeverityType.LOW.name())
         );
+
+        //delete this:
+        String projectName1 = "test_project1";
+        DetailedNotificationContent test_project2 = DetailedNotificationContent.vulnerability(
+            alertNotificationModel,
+            createVulnerabilityUniqueProjectNotificationContent(projectName1),
+            projectName1,
+            List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
+        );
+
+        return List.of(test_project, test_project2);
+        /*
         String projectName1 = "test_project1";
         DetailedNotificationContent test_project2 = DetailedNotificationContent.vulnerability(
             alertNotificationModel,
@@ -166,6 +226,7 @@ public class JobNotificationMapperTestIT {
         );
 
         return List.of(test_project, test_project2, test_project3, test_project4);
+         */
     }
 
     private AlertNotificationModel createAlertNotificationModel(NotificationType notificationType) {

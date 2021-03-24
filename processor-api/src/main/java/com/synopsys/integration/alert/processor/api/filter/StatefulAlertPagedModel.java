@@ -8,13 +8,13 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class StatefulAlertPagedModel<T extends AlertSerializableModel> {
     private final int pageSize;
-    private final int pageNumber;
+    private int pageNumber;
     private final List<T> currentModels;
     private final BiFunction<Integer, Integer, AlertPagedModel<T>> retrievePage;
 
-    public StatefulAlertPagedModel(int pageSize, int pageNumber, List<T> currentModels, BiFunction<Integer, Integer, AlertPagedModel<T>> retrievePage) {
-        this.pageSize = pageSize;
+    public StatefulAlertPagedModel(int pageNumber, int pageSize, List<T> currentModels, BiFunction<Integer, Integer, AlertPagedModel<T>> retrievePage) {
         this.pageNumber = pageNumber;
+        this.pageSize = pageSize;
         this.currentModels = currentModels;
         this.retrievePage = retrievePage;
     }
@@ -24,9 +24,8 @@ public class StatefulAlertPagedModel<T extends AlertSerializableModel> {
     }
 
     public StatefulAlertPagedModel<T> retrieveNextPage() {
-        //TODO: Confirm the parameter order
-        AlertPagedModel<T> nextPage = retrievePage.apply(pageSize, pageNumber);
-        return new StatefulAlertPagedModel<>(pageSize, pageNumber + 1, nextPage.getModels(), retrievePage);
+        AlertPagedModel<T> nextPage = retrievePage.apply(pageNumber + 1, pageSize);
+        return new StatefulAlertPagedModel<>(pageNumber + 1, pageSize, nextPage.getModels(), retrievePage);
     }
 
     public boolean hasNextPage() {
