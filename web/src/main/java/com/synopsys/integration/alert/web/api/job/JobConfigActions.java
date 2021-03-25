@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -475,7 +476,17 @@ public class JobConfigActions extends AbstractJobResourceActions {
         Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                       .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
-            return providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
+            MessageResult providerConfigTestResult = providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
+            if (!providerConfigTestResult.hasErrors()) {
+                return providerConfigTestResult;
+            } else {
+                List<AlertFieldStatus> deescalatedErrors = providerConfigTestResult.fieldErrors()
+                                                               .stream()
+                                                               .map(fieldStatus -> AlertFieldStatus.warning(fieldStatus.getFieldName(), fieldStatus.getFieldMessage()))
+                                                               .collect(Collectors.toList());
+                List<AlertFieldStatus> allWarnings = ListUtils.union(providerConfigTestResult.fieldWarnings(), deescalatedErrors);
+                return new MessageResult("Provider Config Invalid", allWarnings);
+            }
         }
         return new MessageResult("Provider Config Valid");
     }
