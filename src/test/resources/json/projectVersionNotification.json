@@ -1,8 +1,8 @@
 {
   "content": {
-    "project": "https://int-bdstarlabs.dc1.lan/api/projects/666b1faf-28da-4206-984e-ea709b5bba7e",
+    "project": "https://blackduck-project-url",
     "projectName": "CITestProject",
-    "projectVersion": "https://int-bdstarlabs.dc1.lan/api/projects/666b1faf-28da-4206-984e-ea709b5bba7e/versions/546b56fd-96fc-4b73-9c88-e72ab3dfa215",
+    "projectVersion": "https://blackduck-project-version-url",
     "projectVersionName": "CITestVersion1",
     "operationType": "CREATE"
   },
@@ -13,7 +13,7 @@
     "allow": [
       "GET"
     ],
-    "href": "https://int-bdstarlabs.dc1.lan/api/notifications/17b36c27-1ddd-4b7a-8cbf-1fdc880dd508",
+    "href": "https://blackduck-notification-url",
     "links": [
     ]
   }
