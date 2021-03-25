@@ -73,11 +73,11 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
 
     private void validateBlackDuckConfiguration(Long blackDuckConfigId) {
         BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createPropertiesIfConfigExists(blackDuckConfigId)
-                                                      .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested provider configuration does not exist"));
+                                                      .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The BlackDuck configuration used in this Job does not exist"));
 
         BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
         if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User permission failed, cannot read notifications from Black Duck.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid permissions. The BlackDuck user configured would not have proper access to notifications for these projects.");
         }
     }
 
