@@ -46,7 +46,8 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         Gson gson,
         JiraMessageFormatter jiraMessageFormatter,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
-        JiraServerMessageSenderFactory jiraServerMessageSenderFactory) {
+        JiraServerMessageSenderFactory jiraServerMessageSenderFactory
+    ) {
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
