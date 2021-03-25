@@ -317,7 +317,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
 
@@ -409,7 +408,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithIntegrationRestException()));
 

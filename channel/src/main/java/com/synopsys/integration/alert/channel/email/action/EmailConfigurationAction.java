@@ -16,10 +16,9 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class EmailConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected EmailConfigurationAction(EmailGlobalTestAction emailGlobalTestAction, EmailDistributionTestAction emailDistributionTestAction, EmailJobDetailsExtractor emailJobDetailsExtractor) {
+    protected EmailConfigurationAction(EmailGlobalTestAction emailGlobalTestAction, EmailJobDetailsExtractor emailJobDetailsExtractor) {
         super(ChannelKeys.EMAIL);
         addGlobalTestAction(emailGlobalTestAction);
-        addDistributionTestAction(emailDistributionTestAction);
         addJobDetailsExtractor(emailJobDetailsExtractor);
     }
 

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -53,10 +52,6 @@ public class DescriptorProcessor {
 
     public Optional<TestAction> retrieveTestAction(String descriptorName, ConfigContextEnum context) {
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
-    }
-
-    public Optional<DistributionChannelTestAction> retrieveChannelDistributionTestAction(String descriptorName) {
-        return retrieveConfigurationAction(descriptorName).flatMap(ConfigurationAction::getChannelDistributionTestAction);
     }
 
     public Optional<Descriptor> retrieveDescriptor(String descriptorName) {
