@@ -6,6 +6,7 @@ import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
+import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 
 class Navigation extends Component {
     constructor(props) {
@@ -24,9 +25,12 @@ class Navigation extends Component {
         }
 
         const contentList = descriptorList.map(({ name, urlName, label }) => {
-            // Removes slack from the dynamic setup and manually inserts the static information
+            // Removes these channels from the dynamic setup and manually inserts the static information
             if (name === SLACK_INFO.key) {
                 return this.createSlackNavItem(uriPrefix);
+            }
+            if (name === EMAIL_INFO.key) {
+                return this.createEmailNavItem(uriPrefix);
             }
 
             return (
@@ -51,6 +55,16 @@ class Navigation extends Component {
             <li key={SLACK_INFO.key}>
                 <NavLink to={`${uriPrefix}${SLACK_INFO.url}`} activeClassName="activeNav">
                     {SLACK_INFO.label}
+                </NavLink>
+            </li>
+        );
+    }
+
+    createEmailNavItem(uriPrefix) {
+        return (
+            <li key={EMAIL_INFO.key}>
+                <NavLink to={`${uriPrefix}${EMAIL_INFO.url}`} activeClassName="activeNav">
+                    {EMAIL_INFO.label}
                 </NavLink>
             </li>
         );
@@ -117,7 +131,6 @@ Navigation.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken,
     descriptors: state.descriptors.items,
     fetching: state.descriptors.fetching
 });

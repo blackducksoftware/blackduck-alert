@@ -14,6 +14,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderTable from 'providers/ProviderTable';
 import SlackGlobalConfiguration from 'global/channels/slack/SlackGlobalConfiguration';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
+import { EMAIL_INFO } from 'global/channels/email/EmailModels';
+import EmailGlobalConfiguration from 'global/channels/email/EmailGlobalConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
@@ -81,7 +83,20 @@ class MainPage extends Component {
             );
         }
 
-        const renderComponent = (name === SLACK_INFO.key) ? <SlackGlobalConfiguration /> : <GlobalConfiguration key={name} descriptor={component} />;
+        const { csrfToken } = this.props;
+
+        // This is needed until all dynamic code is gone where we will then statically add all these components
+        let renderComponent;
+        switch (name) {
+            case SLACK_INFO.key:
+                renderComponent = <SlackGlobalConfiguration />;
+                break;
+            case EMAIL_INFO.key:
+                renderComponent = <EmailGlobalConfiguration csrfToken={csrfToken} />;
+                break;
+            default:
+                renderComponent = <GlobalConfiguration key={name} descriptor={component} />;
+        }
 
         return (
             <Route
@@ -142,12 +157,14 @@ class MainPage extends Component {
 MainPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     fetching: PropTypes.bool.isRequired,
-    getDescriptors: PropTypes.func.isRequired
+    getDescriptors: PropTypes.func.isRequired,
+    csrfToken: PropTypes.string.isRequired
 };
 
 const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
-    fetching: state.descriptors.fetching
+    fetching: state.descriptors.fetching,
+    csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = (dispatch) => ({
