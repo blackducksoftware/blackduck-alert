@@ -84,7 +84,10 @@ public class BlackDuckGlobalTestAction extends TestAction {
 
         BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
         if (!blackDuckAPITokenValidator.isApiTokenValid()) {
-            throw AlertFieldException.singleFieldError(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "User permission failed, cannot read notifications from Black Duck.");
+            throw AlertFieldException.singleFieldError(
+                BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY,
+                "Invalid permissions. The BlackDuck user configured would not have proper access to notifications for these projects."
+            );
         }
         return new MessageResult("Successfully connected to BlackDuck server.");
     }
@@ -96,4 +99,5 @@ public class BlackDuckGlobalTestAction extends TestAction {
             throw new AlertException("There were issues with the configuration: " + errorMessage);
         }
     }
+
 }
