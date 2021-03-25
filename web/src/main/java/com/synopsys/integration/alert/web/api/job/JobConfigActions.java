@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.channel.DistributionChannelTestActi
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
+import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionMap;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -79,6 +80,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @Component
 public class JobConfigActions extends AbstractJobResourceActions {
     private final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
+
     private final ConfigurationAccessor configurationAccessor;
     private final JobAccessor jobAccessor;
     private final FieldModelProcessor fieldModelProcessor;
@@ -86,6 +88,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final GlobalConfigExistsValidator globalConfigExistsValidator;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final DescriptorActionMap<DistributionChannelTestAction> channelTestActionMap;
 
     private final ProviderProjectExistencePopulator providerProjectExistencePopulator;
 
@@ -101,7 +104,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         GlobalConfigExistsValidator globalConfigExistsValidator,
         PKIXErrorResponseFactory pkixErrorResponseFactory,
         DescriptorMap descriptorMap,
-        ProviderProjectExistencePopulator providerProjectExistencePopulator
+        ProviderProjectExistencePopulator providerProjectExistencePopulator,
+        List<DistributionChannelTestAction> channelTestActions
     ) {
         super(authorizationManager, descriptorAccessor, descriptorMap);
         this.configurationAccessor = configurationAccessor;
@@ -112,6 +116,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.jobAccessor = jobAccessor;
         this.providerProjectExistencePopulator = providerProjectExistencePopulator;
+        this.channelTestActionMap = new DescriptorActionMap<>(channelTestActions);
     }
 
     @Override
@@ -334,48 +339,40 @@ public class JobConfigActions extends AbstractJobResourceActions {
             FieldModel channelFieldModel = getChannelFieldModelAndPopulateOtherJobModels(resource, otherJobModels);
 
             if (null != channelFieldModel) {
-                String descriptorName = channelFieldModel.getDescriptorName();
-                Optional<DistributionChannelTestAction> optionalChannelDistributionTestAction = descriptorProcessor.retrieveChannelDistributionTestAction(descriptorName);
-                if (optionalChannelDistributionTestAction.isPresent()) {
-                    DistributionChannelTestAction distributionChannelTestAction = optionalChannelDistributionTestAction.get();
-                    Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
-                    // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
-                    // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
-                    Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_TOPIC);
-                    Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
-                    Optional<ConfigurationFieldModel> destinationField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_DESTINATION_NAME);
-                    topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
-                    messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
-                    destinationField.ifPresent(model -> fields.put(TestAction.KEY_DESTINATION_NAME, model));
+                String channelDescriptorName = channelFieldModel.getDescriptorName();
 
-                    MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobIdString, channelFieldModel);
-                    if (providerTestResult.hasErrors() || providerTestResult.hasWarnings()) {
-                        responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
-                        return new ValidationActionResponse(HttpStatus.OK, responseModel);
-                    }
+                Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
+                // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
+                // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
+                Optional<ConfigurationFieldModel> topicField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_TOPIC);
+                Optional<ConfigurationFieldModel> messageField = convertFieldToConfigurationField(channelFieldModel, TestAction.KEY_CUSTOM_MESSAGE);
+                topicField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_TOPIC, model));
+                messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
 
-                    List<BlackDuckProjectDetailsModel> projectFilterDetails = Optional.ofNullable(resource.getConfiguredProviderProjects())
-                                                                                  .orElse(List.of())
-                                                                                  .stream()
-                                                                                  .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
-                                                                                  .collect(Collectors.toList());
-                    DistributionJobModel testJobModel = descriptorProcessor.retrieveJobDetailsExtractor(descriptorName)
-                                                            .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
-                                                            .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
-
-                    MessageResult testActionResult = distributionChannelTestAction.testConfig(
-                        testJobModel,
-                        topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
-                        messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
-                    );
-                    List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
-                    responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
+                MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobIdString, channelFieldModel);
+                if (providerTestResult.hasErrors() || providerTestResult.hasWarnings()) {
+                    responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
                     return new ValidationActionResponse(HttpStatus.OK, responseModel);
-                } else {
-                    logger.error("Test action did not exist: {}", descriptorName);
-                    responseModel = ValidationResponseModel.generalError("Test functionality not implemented for " + descriptorName);
-                    return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, responseModel);
                 }
+
+                List<BlackDuckProjectDetailsModel> projectFilterDetails = Optional.ofNullable(resource.getConfiguredProviderProjects())
+                                                                              .orElse(List.of())
+                                                                              .stream()
+                                                                              .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
+                                                                              .collect(Collectors.toList());
+                DistributionJobModel testJobModel = descriptorProcessor.retrieveJobDetailsExtractor(channelDescriptorName)
+                                                        .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
+                                                        .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
+
+                DistributionChannelTestAction distributionChannelTestAction = channelTestActionMap.findRequiredAction(channelDescriptorName);
+                MessageResult testActionResult = distributionChannelTestAction.testConfig(
+                    testJobModel,
+                    topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
+                    messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
+                );
+                List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
+                responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
+                return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }
             responseModel = ValidationResponseModel.generalError("No field model of type channel was was sent to test.");
             return new ValidationActionResponse(HttpStatus.BAD_REQUEST, responseModel);
