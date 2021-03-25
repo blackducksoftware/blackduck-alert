@@ -349,7 +349,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     destinationField.ifPresent(model -> fields.put(TestAction.KEY_DESTINATION_NAME, model));
 
                     MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobIdString, channelFieldModel);
-                    if (providerTestResult.hasErrors()) {
+                    if (providerTestResult.hasErrors() || providerTestResult.hasWarnings()) {
                         responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
                         return new ValidationActionResponse(HttpStatus.OK, responseModel);
                     }
