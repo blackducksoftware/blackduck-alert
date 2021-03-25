@@ -1,11 +1,11 @@
 /*
- * web
+ * provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.web.api.provider.project;
+package com.synopsys.integration.alert.provider.blackduck.web;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,17 +31,28 @@ import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckApiTokenValidator;
 
 @Component
-public class ProviderProjectCustomFunctionAction extends PagedCustomFunctionAction<ProviderProjectOptions> {
-    private static final String MISSING_PROVIDER_ERROR = "Provider name is required to retrieve projects.";
+public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAction<ProviderProjectOptions> {
+    private static final String MISSING_PROVIDER_ERROR = "A provider configuration is required to retrieve projects.";
 
     private final ProviderDataAccessor providerDataAccessor;
+    private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
 
     @Autowired
-    public ProviderProjectCustomFunctionAction(AuthorizationManager authorizationManager, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility, ProviderDataAccessor providerDataAccessor) {
+    public BlackDuckProjectCustomFunctionAction(
+        AuthorizationManager authorizationManager,
+        DescriptorMap descriptorMap,
+        FieldValidationUtility fieldValidationUtility,
+        ProviderDataAccessor providerDataAccessor,
+        BlackDuckPropertiesFactory blackDuckPropertiesFactory
+    ) {
         super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, authorizationManager, descriptorMap, fieldValidationUtility);
         this.providerDataAccessor = providerDataAccessor;
+        this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
     }
 
     @Override
@@ -51,10 +62,23 @@ public class ProviderProjectCustomFunctionAction extends PagedCustomFunctionActi
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
 
-        return fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
-                   .map(Long::parseLong)
-                   .map(configId -> getBlackDuckProjectsActionResponse(configId, pageNumber, pageSize, searchTerm))
-                   .orElse(new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(0, pageNumber, pageSize, List.of())));
+        Long blackDuckConfigId = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
+                                     .map(Long::parseLong)
+                                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR));
+
+        validateBlackDuckConfiguration(blackDuckConfigId);
+
+        return getBlackDuckProjectsActionResponse(blackDuckConfigId, pageNumber, pageSize, searchTerm);
+    }
+
+    private void validateBlackDuckConfiguration(Long blackDuckConfigId) {
+        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createPropertiesIfConfigExists(blackDuckConfigId)
+                                                      .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The BlackDuck configuration used in this Job does not exist"));
+
+        BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
+        if (!blackDuckAPITokenValidator.isApiTokenValid()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid permissions. The BlackDuck user configured would not have proper access to notifications for these projects.");
+        }
     }
 
     private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize, String searchTerm) {
