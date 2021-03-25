@@ -14,12 +14,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.api.issue.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 @Component
 public class JiraServerDistributionTestAction extends IssueTrackerTestAction<JiraServerJobDetailsModel, String> {
     @Autowired
-    public JiraServerDistributionTestAction(JiraServerMessageSenderFactory messageSenderFactory) {
-        super(messageSenderFactory);
+    public JiraServerDistributionTestAction(JiraServerChannelKey channelKey, JiraServerMessageSenderFactory messageSenderFactory) {
+        super(channelKey, messageSenderFactory);
     }
 
     @Override
@@ -31,4 +32,5 @@ public class JiraServerDistributionTestAction extends IssueTrackerTestAction<Jir
     protected boolean hasReopenTransition(JiraServerJobDetailsModel distributionDetails) {
         return StringUtils.isNotBlank(distributionDetails.getReopenTransition());
     }
+
 }

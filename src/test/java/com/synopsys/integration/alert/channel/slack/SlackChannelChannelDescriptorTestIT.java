@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.channel.slack.action.SlackDistributionTest
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.slack.distribution.SlackChannel;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -99,8 +99,8 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ChannelDistributionTestAction getChannelDistributionTestAction() {
-        return new SlackDistributionTestAction(slackChannel) {};
+    public DistributionChannelTestAction getChannelDistributionTestAction() {
+        return new SlackDistributionTestAction(ChannelKeys.SLACK, slackChannel) {};
     }
 
     @Override

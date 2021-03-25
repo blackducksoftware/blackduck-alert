@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractJobResourceActions;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
@@ -335,9 +335,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
             if (null != channelFieldModel) {
                 String descriptorName = channelFieldModel.getDescriptorName();
-                Optional<ChannelDistributionTestAction> optionalChannelDistributionTestAction = descriptorProcessor.retrieveChannelDistributionTestAction(descriptorName);
+                Optional<DistributionChannelTestAction> optionalChannelDistributionTestAction = descriptorProcessor.retrieveChannelDistributionTestAction(descriptorName);
                 if (optionalChannelDistributionTestAction.isPresent()) {
-                    ChannelDistributionTestAction channelDistributionTestAction = optionalChannelDistributionTestAction.get();
+                    DistributionChannelTestAction distributionChannelTestAction = optionalChannelDistributionTestAction.get();
                     Map<String, ConfigurationFieldModel> fields = createFieldsMap(channelFieldModel, otherJobModels);
                     // The custom message fields are not written to the database or defined fields in the database.  Need to manually add them.
                     // TODO Create a mechanism to create the field accessor with a combination of fields in the database and fields that are not.
@@ -363,11 +363,10 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                             .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
                                                             .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
-                    MessageResult testActionResult = channelDistributionTestAction.testConfig(
+                    MessageResult testActionResult = distributionChannelTestAction.testConfig(
                         testJobModel,
                         topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
-                        messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
-                        destinationField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
+                        messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
                     );
                     List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
                     responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);

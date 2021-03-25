@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,7 +21,7 @@ import org.springframework.http.HttpStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
@@ -602,8 +603,18 @@ public class JobConfigActionsTest {
         return new ConfigurationModel(descriptorId, configurationId, createdAt, lastUpdated, configContextEnum, configuredFields);
     }
 
-    private ChannelDistributionTestAction createChannelDistributionTestAction() {
-        return (testJobModel, customTopic, customMessage, destination) -> new MessageResult("Test Status Message");
+    private DistributionChannelTestAction createChannelDistributionTestAction() {
+        return new DistributionChannelTestAction() {
+            @Override
+            public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
+                return new MessageResult("Test Status Message");
+            }
+
+            @Override
+            public DescriptorKey getDescriptorKey() {
+                return createChannelKey();
+            }
+        };
     }
 
     private JobDetailsExtractor createJobDetailsExtractor() {

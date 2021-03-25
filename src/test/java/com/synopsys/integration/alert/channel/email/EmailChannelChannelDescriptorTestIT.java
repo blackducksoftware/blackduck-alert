@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMes
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -165,7 +165,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ChannelDistributionTestAction getChannelDistributionTestAction() {
+    public DistributionChannelTestAction getChannelDistributionTestAction() {
         TestAlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
@@ -180,7 +180,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, alertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, mockConfigAccessor);
         EmailChannelV2 emailChannel = new EmailChannelV2(emailChannelMessageConverter, emailChannelMessageSender);
 
-        return new EmailDistributionTestAction(emailChannel, emailTestActionHelper);
+        return new EmailDistributionTestAction(ChannelKeys.EMAIL, emailChannel, emailTestActionHelper);
     }
 
     @Test

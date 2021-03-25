@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSenderFactory;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -33,19 +33,28 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 
-public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsModel, T extends Serializable> implements ChannelDistributionTestAction {
+public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannelTestAction {
+    private final IssueTrackerChannelKey issueTrackerChannelKey;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final IssueTrackerMessageSenderFactory<D, T> messageSenderFactory;
 
-    public IssueTrackerTestAction(IssueTrackerMessageSenderFactory<D, T> messageSenderFactory) {
+    public IssueTrackerTestAction(IssueTrackerChannelKey issueTrackerChannelKey, IssueTrackerMessageSenderFactory<D, T> messageSenderFactory) {
+        this.issueTrackerChannelKey = issueTrackerChannelKey;
         this.messageSenderFactory = messageSenderFactory;
     }
 
     @Override
-    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage, @Nullable String destination) throws AlertException {
+    @SuppressWarnings("SuspiciousGetterSetter")
+    public IssueTrackerChannelKey getDescriptorKey() {
+        return issueTrackerChannelKey;
+    }
+
+    @Override
+    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
         D distributionDetails = (D) testJobModel.getDistributionJobDetails();
         IssueTrackerMessageSender<T> messageSender = messageSenderFactory.createMessageSender(distributionDetails);
 

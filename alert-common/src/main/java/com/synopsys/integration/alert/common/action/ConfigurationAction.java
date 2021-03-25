@@ -11,7 +11,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -23,7 +23,7 @@ public abstract class ConfigurationAction {
 
     // FIXME there needs to be a better distinction between a global TestAction and a distribution TestAction
     //  for 6.4.0, this will have to suffice to avoid additional scope-creep of re-architecting TestActions
-    private ChannelDistributionTestAction channelDistributionTestAction;
+    private DistributionChannelTestAction distributionChannelTestAction;
 
     // TODO This Should probably receive the same fix as the channelDistributionTestAction object as well.
     private JobDetailsExtractor jobDetailsExtractor;
@@ -52,8 +52,8 @@ public abstract class ConfigurationAction {
         testActionMap.put(ConfigContextEnum.DISTRIBUTION, testAction);
     }
 
-    public void addDistributionTestAction(ChannelDistributionTestAction testAction) {
-        channelDistributionTestAction = testAction;
+    public void addDistributionTestAction(DistributionChannelTestAction testAction) {
+        distributionChannelTestAction = testAction;
     }
 
     public ApiAction getApiAction(ConfigContextEnum context) {
@@ -72,8 +72,8 @@ public abstract class ConfigurationAction {
         return Optional.ofNullable(jobDetailsExtractor);
     }
 
-    public Optional<ChannelDistributionTestAction> getChannelDistributionTestAction() {
-        return Optional.ofNullable(channelDistributionTestAction);
+    public Optional<DistributionChannelTestAction> getChannelDistributionTestAction() {
+        return Optional.ofNullable(distributionChannelTestAction);
     }
 
 }
