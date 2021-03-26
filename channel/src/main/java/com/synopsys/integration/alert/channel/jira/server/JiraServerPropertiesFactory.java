@@ -13,21 +13,26 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class JiraServerPropertiesFactory {
+    private final JiraServerChannelKey channelKey;
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public JiraServerPropertiesFactory(ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
+    public JiraServerPropertiesFactory(JiraServerChannelKey channelKey, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
+        this.channelKey = channelKey;
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
     }
@@ -49,6 +54,16 @@ public class JiraServerPropertiesFactory {
         boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK).map(Boolean::parseBoolean).orElse(false);
 
         return new JiraServerProperties(url, password, username, pluginCheckDisabled, proxyManager.createProxyInfo());
+    }
+
+    public JiraServerProperties createJiraProperties() throws AlertConfigurationException {
+        ConfigurationModel jiraServerGlobalConfig = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelKey, ConfigContextEnum.GLOBAL)
+                                                        .stream()
+                                                        .findAny()
+                                                        .orElseThrow(() -> new AlertConfigurationException("Missing Jira Server global configuration"));
+
+        FieldUtility fieldUtility = new FieldUtility(jiraServerGlobalConfig.getCopyOfKeyToFieldMap());
+        return createJiraProperties(fieldUtility);
     }
 
     private String getAppropriateAccessToken(FieldValueModel fieldAccessToken) {
