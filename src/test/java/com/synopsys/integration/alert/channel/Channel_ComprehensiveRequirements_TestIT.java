@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.channel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.LinkedList;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
 import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
 import com.synopsys.integration.alert.channel.api.issue.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
@@ -26,12 +28,28 @@ public class Channel_ComprehensiveRequirements_TestIT {
     @Autowired
     private List<ChannelKey> channelKeys;
     @Autowired
+    private List<DistributionChannelV2<?>> distributionChannels;
+    @Autowired
     private List<DistributionEventReceiver<?>> distributionEventReceivers;
     @Autowired
     private List<DistributionChannelTestAction> distributionChannelTestActions;
 
     @Test
-    public void checkIfChannelsHaveAllNecessarySpringComponents() {
+    public void channelKeysCountMatchesDistributionChannelsCountTest() {
+        assertEquals(
+            channelKeys.size(),
+            distributionChannels.size(),
+            String.format("The number of %ss does not match the number of %ss", ChannelKey.class.getSimpleName(), DistributionChannelV2.class.getSimpleName())
+        );
+    }
+
+    /**
+     * The purpose of this test is to determine if a Channel has created all of the necessary Spring components<br />
+     * in order for it to function properly within Alert. Currently that functionality includes receiving<br />
+     * distribution events and performing "test actions".
+     */
+    @Test
+    public void channelsHaveRequiredSpringComponentsTest() {
         List<String> channelFailureMessages = new LinkedList<>();
         for (ChannelKey channelKey : channelKeys) {
             List<String> missingComponents = findMissingComponents(channelKey);
@@ -49,16 +67,22 @@ public class Channel_ComprehensiveRequirements_TestIT {
 
     private List<String> findMissingComponents(ChannelKey channelKey) {
         List<String> missingComponents = new LinkedList<>();
+        createDistributionEventReceiverMissingMessage(channelKey).ifPresent(missingComponents::add);
+        createTestActionMissingMessage(channelKey).ifPresent(missingComponents::add);
+        return missingComponents;
+    }
 
-        // Distribution Event Receiver
+    private Optional<String> createDistributionEventReceiverMissingMessage(ChannelKey channelKey) {
         boolean hasReceiver = distributionEventReceivers
                                   .stream()
                                   .anyMatch(receiver -> receiver.getDestinationName().equals(channelKey.getUniversalKey()));
         if (!hasReceiver) {
-            missingComponents.add(COMPONENT_NAME_DISTRIBUTION_RECEIVER);
+            return Optional.of(COMPONENT_NAME_DISTRIBUTION_RECEIVER);
         }
+        return Optional.empty();
+    }
 
-        // Distribution Test Action
+    private Optional<String> createTestActionMissingMessage(ChannelKey channelKey) {
         Optional<DistributionChannelTestAction> foundTestAction = distributionChannelTestActions
                                                                       .stream()
                                                                       .filter(testAction -> testAction.getDescriptorKey().equals(channelKey))
@@ -66,13 +90,12 @@ public class Channel_ComprehensiveRequirements_TestIT {
         if (foundTestAction.isPresent()) {
             DistributionChannelTestAction testAction = foundTestAction.get();
             if (channelKey instanceof IssueTrackerChannelKey && !(testAction instanceof IssueTrackerTestAction)) {
-                missingComponents.add(COMPONENT_NAME_ISSUE_TRACKER_TEST_ACTION);
+                return Optional.of(COMPONENT_NAME_ISSUE_TRACKER_TEST_ACTION);
             }
         } else {
-            missingComponents.add(COMPONENT_NAME_DISTRIBUTION_TEST_ACTION);
+            return Optional.of(COMPONENT_NAME_DISTRIBUTION_TEST_ACTION);
         }
-
-        return missingComponents;
+        return Optional.empty();
     }
 
     private String createChannelFailureMessage(ChannelKey channelKey, List<String> missingComponents) {
