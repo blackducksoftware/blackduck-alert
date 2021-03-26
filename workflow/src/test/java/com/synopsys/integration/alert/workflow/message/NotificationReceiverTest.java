@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.workflow.message;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -16,14 +17,17 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
+import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.alert.workflow.message.mocks.MockNotificationAccessor;
+import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 public class NotificationReceiverTest {
     private NotificationAccessor notificationAccessor;
     private final Gson gson = new Gson();
+    private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(gson);
 
     @Test
-    public void handleEventTest() {
+    public void handleEventTest() throws IOException {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false);
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
 
@@ -44,11 +48,11 @@ public class NotificationReceiverTest {
         assertEquals(NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE, notificationReceiver.getDestinationName());
     }
 
-    private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) {
+    private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) throws IOException {
         Long providerConfigId = 2L;
         String provider = "provider-test";
-        String notificationType = "notificationType-test";
-        String content = "content";
+        String notificationType = "PROJECT_VERSION";
+        String content = TestResourceUtils.readFileToString("json/projectVersionNotification.json");
         String providerConfigName = "providerConfigName";
 
         return new AlertNotificationModel(id, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
@@ -56,7 +60,7 @@ public class NotificationReceiverTest {
     }
 
     private NotificationProcessorV2 mockNotificationProcessor(List<AlertNotificationModel> alertNotificationModels) {
-        NotificationDetailExtractionDelegator detailExtractionDelegator = new NotificationDetailExtractionDelegator(List.of());
+        NotificationDetailExtractionDelegator detailExtractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyCollection())).thenReturn(List.of());
         notificationAccessor = new MockNotificationAccessor(alertNotificationModels);

@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -36,19 +37,21 @@ import com.synopsys.integration.util.NoThreadExecutorService;
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
     private final Gson gson;
+    private final ObjectMapper objectMapper;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
     private final String url;
     private final Integer timeout;
     private final String apiToken;
 
-    public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationModel configurationModel) {
-        this(configId, gson, alertProperties, proxyManager, createFieldUtility(configurationModel));
+    public BlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, AlertProperties alertProperties, ProxyManager proxyManager, ConfigurationModel configurationModel) {
+        this(configId, gson, objectMapper, alertProperties, proxyManager, createFieldUtility(configurationModel));
     }
 
-    public BlackDuckProperties(Long configId, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager, FieldUtility fieldUtility) {
+    public BlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, AlertProperties alertProperties, ProxyManager proxyManager, FieldUtility fieldUtility) {
         super(configId, fieldUtility.getBooleanOrFalse(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED), fieldUtility.getString(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse(UNKNOWN_CONFIG_NAME));
         this.gson = gson;
+        this.objectMapper = objectMapper;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
         this.url = fieldUtility
@@ -81,7 +84,7 @@ public class BlackDuckProperties extends ProviderProperties {
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckHttpClient blackDuckHttpClient, IntLogger logger) {
         return new BlackDuckServicesFactory(
-            IntEnvironmentVariables.empty(), gson, BlackDuckServicesFactory.createDefaultObjectMapper(), new NoThreadExecutorService(), blackDuckHttpClient, logger, BlackDuckServicesFactory.createDefaultRequestFactory());
+            IntEnvironmentVariables.empty(), gson, objectMapper, new NoThreadExecutorService(), blackDuckHttpClient, logger, BlackDuckServicesFactory.createDefaultRequestFactory());
     }
 
     public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(Logger logger) {
