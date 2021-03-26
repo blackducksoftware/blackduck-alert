@@ -12,9 +12,10 @@ dependencies {
     implementation 'org.springframework:spring-tx'
     implementation 'jakarta.annotation:jakarta.annotation-api'
     implementation 'jakarta.jms:jakarta.jms-api'
-
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
-
+    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.synopsys.integration:integration-common'
     implementation 'org.springframework.data:spring-data-jpa'
+
     testImplementation 'org.mockito:mockito-core'
+    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 }
