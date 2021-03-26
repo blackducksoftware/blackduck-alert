@@ -10,24 +10,41 @@ package com.synopsys.integration.alert.channel.slack.action;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class SlackJobDetailsExtractor extends JobDetailsExtractor {
+public class SlackJobDetailsExtractor implements DistributionJobDetailsExtractor {
+    private final SlackChannelKey channelKey;
+    private final DistributionJobFieldExtractor fieldExtractor;
+
+    @Autowired
+    public SlackJobDetailsExtractor(SlackChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor) {
+        this.channelKey = channelKey;
+        this.fieldExtractor = fieldExtractor;
+    }
 
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    public DescriptorKey getDescriptorKey() {
+        return channelKey;
+    }
+
+    @Override
+    public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new SlackJobDetailsModel(
             jobId,
-            extractFieldValueOrEmptyString(SlackDescriptor.KEY_WEBHOOK, configuredFieldsMap),
-            extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_NAME, configuredFieldsMap),
-            extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_USERNAME, configuredFieldsMap)
+            fieldExtractor.extractFieldValueOrEmptyString(SlackDescriptor.KEY_WEBHOOK, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_NAME, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_USERNAME, configuredFieldsMap)
         );
     }
 

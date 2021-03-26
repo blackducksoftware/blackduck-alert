@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class ConfigurationAction {
@@ -21,7 +21,7 @@ public abstract class ConfigurationAction {
     private final Map<ConfigContextEnum, TestAction> testActionMap = new EnumMap<>(ConfigContextEnum.class);
 
     // TODO This Should probably receive the same fix as the channelDistributionTestAction object as well.
-    private JobDetailsExtractor jobDetailsExtractor;
+    private DistributionJobDetailsExtractor distributionJobModelExtractor;
 
     protected ConfigurationAction(DescriptorKey descriptorKey) {
         this.descriptorKey = descriptorKey;
@@ -55,12 +55,12 @@ public abstract class ConfigurationAction {
         return testActionMap.get(context);
     }
 
-    public void addJobDetailsExtractor(JobDetailsExtractor jobDetailsExtractor) {
-        this.jobDetailsExtractor = jobDetailsExtractor;
+    public void addJobDetailsExtractor(DistributionJobDetailsExtractor distributionJobModelExtractor) {
+        this.distributionJobModelExtractor = distributionJobModelExtractor;
     }
 
-    public Optional<JobDetailsExtractor> getJobDetailsExtractor() {
-        return Optional.ofNullable(jobDetailsExtractor);
+    public Optional<DistributionJobDetailsExtractor> getJobDetailsExtractor() {
+        return Optional.ofNullable(distributionJobModelExtractor);
     }
 
 }

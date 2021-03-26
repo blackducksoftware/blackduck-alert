@@ -10,7 +10,6 @@ package com.synopsys.integration.alert.channel.jira.cloud.action;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -19,24 +18,28 @@ import com.synopsys.integration.alert.channel.jira.common.action.JiraJobDetailsE
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {
-    @Autowired
-    public JiraCloudJobDetailsExtractor(Gson gson) {
-        super(gson);
+    private final DistributionJobFieldExtractor fieldExtractor;
+
+    public JiraCloudJobDetailsExtractor(JiraCloudChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor, Gson gson) {
+        super(channelKey, fieldExtractor, gson);
+        this.fieldExtractor = fieldExtractor;
     }
 
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new JiraCloudJobDetailsModel(
             jobId,
-            extractFieldValue(JiraCloudDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_TYPE, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, configuredFieldsMap),
+            fieldExtractor.extractFieldValue(JiraCloudDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_TYPE, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, configuredFieldsMap),
             extractJiraFieldMappings(JiraCloudDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap)
         );
     }

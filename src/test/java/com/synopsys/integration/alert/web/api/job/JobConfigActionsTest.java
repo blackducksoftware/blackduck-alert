@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.common.persistence.model.RegisteredDescrip
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobModelExtractor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
@@ -127,8 +127,8 @@ public class JobConfigActionsTest {
             pkixErrorResponseFactory,
             descriptorMap,
             providerProjectExistencePopulator,
-            List.of()
-        );
+            List.of(),
+            distributionJobModelExtractor);
 
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
         Mockito.when(authorizationManager.hasReadPermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
@@ -283,8 +283,8 @@ public class JobConfigActionsTest {
             pkixErrorResponseFactory,
             descriptorMap,
             null,
-            List.of(createChannelDistributionTestAction())
-        );
+            List.of(createChannelDistributionTestAction()),
+            distributionJobModelExtractor);
 
         fieldModel.setId("testID");
         Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
@@ -611,8 +611,8 @@ public class JobConfigActionsTest {
         };
     }
 
-    private JobDetailsExtractor createJobDetailsExtractor() {
-        return new JobDetailsExtractor() {
+    private DistributionJobModelExtractor createJobDetailsExtractor() {
+        return new DistributionJobModelExtractor() {
             @Override
             protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
                 return new DistributionJobDetailsModel(createChannelKey(), jobId) {};

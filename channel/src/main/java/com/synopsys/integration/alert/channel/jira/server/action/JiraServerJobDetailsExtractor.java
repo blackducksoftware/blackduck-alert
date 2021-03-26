@@ -19,24 +19,29 @@ import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerD
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 @Component
 public class JiraServerJobDetailsExtractor extends JiraJobDetailsExtractor {
+    private final DistributionJobFieldExtractor fieldExtractor;
+
     @Autowired
-    public JiraServerJobDetailsExtractor(Gson gson) {
-        super(gson);
+    public JiraServerJobDetailsExtractor(JiraServerChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor, Gson gson) {
+        super(channelKey, fieldExtractor, gson);
+        this.fieldExtractor = fieldExtractor;
     }
 
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+    public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new JiraServerJobDetailsModel(
             jobId,
-            extractFieldValue(JiraServerDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
-            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_TYPE, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, configuredFieldsMap),
-            extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, configuredFieldsMap),
+            fieldExtractor.extractFieldValue(JiraServerDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_TYPE, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, configuredFieldsMap),
             extractJiraFieldMappings(JiraServerDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap)
         );
     }

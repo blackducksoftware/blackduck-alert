@@ -57,6 +57,7 @@ import com.synopsys.integration.alert.common.persistence.model.PermissionKey;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobModelExtractor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
@@ -89,6 +90,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private final GlobalConfigExistsValidator globalConfigExistsValidator;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
     private final DescriptorActionMap<DistributionChannelTestAction> channelTestActionMap;
+    private final DistributionJobModelExtractor distributionJobModelExtractor;
 
     private final ProviderProjectExistencePopulator providerProjectExistencePopulator;
 
@@ -105,7 +107,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
         PKIXErrorResponseFactory pkixErrorResponseFactory,
         DescriptorMap descriptorMap,
         ProviderProjectExistencePopulator providerProjectExistencePopulator,
-        List<DistributionChannelTestAction> channelTestActions
+        List<DistributionChannelTestAction> channelTestActions,
+        DistributionJobModelExtractor distributionJobModelExtractor
     ) {
         super(authorizationManager, descriptorAccessor, descriptorMap);
         this.configurationAccessor = configurationAccessor;
@@ -117,6 +120,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         this.jobAccessor = jobAccessor;
         this.providerProjectExistencePopulator = providerProjectExistencePopulator;
         this.channelTestActionMap = new DescriptorActionMap<>(channelTestActions);
+        this.distributionJobModelExtractor = distributionJobModelExtractor;
     }
 
     @Override
@@ -360,10 +364,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                               .stream()
                                                                               .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                               .collect(Collectors.toList());
-                DistributionJobModel testJobModel = descriptorProcessor.retrieveJobDetailsExtractor(channelDescriptorName)
-                                                        .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails))
-                                                        .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
 
+                DistributionJobModel testJobModel = distributionJobModelExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails);
                 DistributionChannelTestAction distributionChannelTestAction = channelTestActionMap.findRequiredAction(channelDescriptorName);
                 MessageResult testActionResult = distributionChannelTestAction.testConfig(
                     testJobModel,
@@ -409,10 +411,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                                       .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
                                                                       .collect(Collectors.toList());
         Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
-        String descriptorName = Optional.ofNullable(configuredFieldsMap.get(ChannelDistributionUIConfig.KEY_CHANNEL_NAME)).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
-        DistributionJobModel fromResource = descriptorProcessor.retrieveJobDetailsExtractor(descriptorName)
-                                                .map(JobDetailsExtractor -> JobDetailsExtractor.convertToJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails))
-                                                .orElseThrow(() -> new AlertException("This job should have an associated job details processor."));
+        DistributionJobModel fromResource = distributionJobModelExtractor.convertToJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails);
 
         return new DistributionJobRequestModel(
             fromResource.isEnabled(),

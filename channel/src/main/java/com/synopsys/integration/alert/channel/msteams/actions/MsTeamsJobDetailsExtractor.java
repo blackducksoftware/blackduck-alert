@@ -10,19 +10,37 @@ package com.synopsys.integration.alert.channel.msteams.actions;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
+import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class MsTeamsJobDetailsExtractor extends JobDetailsExtractor {
+public class MsTeamsJobDetailsExtractor implements DistributionJobDetailsExtractor {
+    private final MsTeamsKey channelKey;
+    private final DistributionJobFieldExtractor fieldExtractor;
+
+    @Autowired
+    public MsTeamsJobDetailsExtractor(MsTeamsKey channelKey, DistributionJobFieldExtractor fieldExtractor) {
+        this.channelKey = channelKey;
+        this.fieldExtractor = fieldExtractor;
+    }
+
     @Override
-    protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-        return new MSTeamsJobDetailsModel(jobId, extractFieldValueOrEmptyString(MsTeamsDescriptor.KEY_WEBHOOK, configuredFieldsMap));
+    public DescriptorKey getDescriptorKey() {
+        return channelKey;
+    }
+
+    @Override
+    public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
+        return new MSTeamsJobDetailsModel(jobId, fieldExtractor.extractFieldValueOrEmptyString(MsTeamsDescriptor.KEY_WEBHOOK, configuredFieldsMap));
     }
 
 }
