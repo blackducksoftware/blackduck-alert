@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKe
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @AlertIntegrationTest
-public class Channel_ComprehensiveRequirements_ITTest {
+public class Channel_ComprehensiveRequirements_TestIT {
     private static final String COMPONENT_NAME_DISTRIBUTION_RECEIVER = DistributionEventReceiver.class.getSimpleName();
     private static final String COMPONENT_NAME_DISTRIBUTION_TEST_ACTION = DistributionChannelTestAction.class.getSimpleName();
     private static final String COMPONENT_NAME_ISSUE_TRACKER_TEST_ACTION = IssueTrackerTestAction.class.getSimpleName();
@@ -26,7 +26,7 @@ public class Channel_ComprehensiveRequirements_ITTest {
     @Autowired
     private List<ChannelKey> channelKeys;
     @Autowired
-    private List<DistributionEventReceiver> distributionEventReceivers;
+    private List<DistributionEventReceiver<?>> distributionEventReceivers;
     @Autowired
     private List<DistributionChannelTestAction> distributionChannelTestActions;
 
