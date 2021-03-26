@@ -13,6 +13,7 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,19 +27,23 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.rest.RestConstants;
-import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 @Configuration
 @AutoConfigureOrder(1)
 public class ApplicationConfiguration {
     private final Logger logger = LoggerFactory.getLogger(ApplicationConfiguration.class);
+
+    private final Gson gson;
+
+    @Autowired
+    public ApplicationConfiguration(Gson gson) {
+        this.gson = gson;
+    }
 
     @Bean
     public AlertProperties alertProperties() {
@@ -47,7 +52,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public FilePersistenceUtil filePersistenceUtil() {
-        return new FilePersistenceUtil(alertProperties(), gson());
+        return new FilePersistenceUtil(alertProperties(), gson);
     }
 
     @Bean
@@ -94,16 +99,6 @@ public class ApplicationConfiguration {
     @Bean
     public TaskExecutor taskExecutor() {
         return new SyncTaskExecutor();
-    }
-
-    @Bean
-    public Gson gson() {
-        return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
-    }
-
-    @Bean
-    public AuthenticationSupport authenticationSupport() {
-        return new AuthenticationSupport();
     }
 
     @Bean

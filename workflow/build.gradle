@@ -15,5 +15,7 @@ dependencies {
     implementation 'com.synopsys.integration:integration-rest'
     implementation 'com.synopsys.integration:integration-common'
     implementation 'org.springframework.data:spring-data-jpa'
+
     testImplementation 'org.mockito:mockito-core'
+    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 }

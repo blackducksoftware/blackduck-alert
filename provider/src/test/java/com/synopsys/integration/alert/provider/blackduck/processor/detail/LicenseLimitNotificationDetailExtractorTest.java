@@ -15,20 +15,17 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.view.LicenseLimitNotificationView;
 
 public class LicenseLimitNotificationDetailExtractorTest {
-    private final Gson gson = new Gson();
-
     @Test
     public void extractDetailedContentTest() {
-        LicenseLimitNotificationDetailExtractor extractor = new LicenseLimitNotificationDetailExtractor(gson);
+        LicenseLimitNotificationDetailExtractor extractor = new LicenseLimitNotificationDetailExtractor();
 
         LicenseLimitNotificationView notificationView = new LicenseLimitNotificationView();
         LicenseLimitNotificationContent notificationContent = new LicenseLimitNotificationContent();
         notificationView.setContent(notificationContent);
-        String notificationViewJson = gson.toJson(notificationView);
 
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", NotificationType.LICENSE_LIMIT.name(), notificationViewJson, null, null, false);
+        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
 
-        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification);
+        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);
         assertEquals(1, detailedNotificationContents.size());
 
         DetailedNotificationContent detailedNotificationContent = detailedNotificationContents.get(0);

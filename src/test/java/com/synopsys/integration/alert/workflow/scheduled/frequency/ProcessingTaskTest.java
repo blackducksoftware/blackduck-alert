@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.workflow.scheduled.frequency;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -24,14 +26,19 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
+import com.synopsys.integration.alert.test.common.TestResourceUtils;
+import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 public class ProcessingTaskTest {
+    private BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(new Gson());
+
     private List<AlertNotificationModel> modelList;
 
     @BeforeEach
-    public void initTest() {
+    public void initTest() throws IOException {
+        String notificationJson = TestResourceUtils.readFileToString("json/projectVersionNotification.json");
         AlertNotificationModel model = new AlertNotificationModel(
-            1L, 1L, "BlackDuck", "BlackDuck_1", "NotificationType", "{content: \"content is here\"}", DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), false);
+            1L, 1L, "BlackDuck", "BlackDuck_1", "PROJECT_VERSION", notificationJson, DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), false);
         modelList = List.of(model);
     }
 
@@ -62,7 +69,7 @@ public class ProcessingTaskTest {
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
         Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(OffsetDateTime.class), Mockito.any(OffsetDateTime.class))).thenReturn(modelList);
 
-        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(List.of());
+        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyCollection())).thenReturn(List.of());
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
@@ -83,7 +90,7 @@ public class ProcessingTaskTest {
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
-        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(List.of());
+        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
@@ -101,7 +108,7 @@ public class ProcessingTaskTest {
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
-        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(List.of());
+        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
@@ -119,7 +126,7 @@ public class ProcessingTaskTest {
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
-        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(List.of());
+        NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
