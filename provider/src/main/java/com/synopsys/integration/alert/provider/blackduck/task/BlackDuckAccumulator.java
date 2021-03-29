@@ -7,10 +7,8 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.task;
 
-import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,17 +30,18 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorDateRangeCreator;
+import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetriever;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.dataservice.NotificationService;
-import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 
 public class BlackDuckAccumulator extends ProviderTask {
     public static final String TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE = "last.search.end.date";
+    private static final List<NotificationType> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())
+                                                                                   .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
+                                                                                   .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
@@ -51,19 +50,25 @@ public class BlackDuckAccumulator extends ProviderTask {
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private final BlackDuckValidator blackDuckValidator;
     private final EventManager eventManager;
+    private final BlackDuckAccumulatorDateRangeCreator dateRangeCreator;
 
-    public BlackDuckAccumulator(BlackDuckProviderKey blackDuckProviderKey, TaskScheduler taskScheduler, NotificationAccessor notificationAccessor, ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
-        ProviderProperties providerProperties, BlackDuckValidator blackDuckValidator, EventManager eventManager) {
+    public BlackDuckAccumulator(
+        BlackDuckProviderKey blackDuckProviderKey,
+        TaskScheduler taskScheduler,
+        NotificationAccessor notificationAccessor,
+        ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
+        ProviderProperties providerProperties,
+        BlackDuckValidator blackDuckValidator,
+        EventManager eventManager,
+        BlackDuckAccumulatorDateRangeCreator dateRangeCreator
+    ) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationAccessor = notificationAccessor;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
         this.blackDuckValidator = blackDuckValidator;
         this.eventManager = eventManager;
-    }
-
-    public String formatDate(OffsetDateTime date) {
-        return DateUtils.formatDate(date, RestConstants.JSON_DATE_FORMAT);
+        this.dateRangeCreator = dateRangeCreator;
     }
 
     @Override
@@ -79,47 +84,28 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     public void accumulate() {
-        DateRange dateRange = createDateRange();
+        DateRange dateRange = dateRangeCreator.createDateRange(getTaskName());
         OffsetDateTime nextSearchStartTime = accumulate(dateRange);
         String nextSearchStartString = formatDate(nextSearchStartTime);
         logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
         saveNextSearchStart(nextSearchStartString);
     }
 
-    protected Optional<String> getNextSearchStart() {
-        return providerTaskPropertiesAccessor.getTaskProperty(getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
+    private String formatDate(OffsetDateTime date) {
+        return DateUtils.formatDate(date, RestConstants.JSON_DATE_FORMAT);
     }
 
     protected void saveNextSearchStart(String nextSearchStart) {
         providerTaskPropertiesAccessor.setTaskProperty(getProviderProperties().getConfigId(), getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, nextSearchStart);
     }
 
-    protected DateRange createDateRange() {
-        OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp();
-        OffsetDateTime startDate = endDate;
-        try {
-            Optional<String> nextSearchStartTime = getNextSearchStart();
-            if (nextSearchStartTime.isPresent()) {
-                String lastRunValue = nextSearchStartTime.get();
-                startDate = parseDateString(lastRunValue);
-            } else {
-                startDate = endDate.minusMinutes(1);
-            }
-        } catch (ParseException e) {
-            logger.error("Error creating date range", e);
-        }
-        return DateRange.of(startDate, endDate);
-    }
-
-    protected OffsetDateTime parseDateString(String date) throws ParseException {
-        return DateUtils.parseDate(date, RestConstants.JSON_DATE_FORMAT);
-    }
-
     protected OffsetDateTime accumulate(DateRange dateRange) {
         OffsetDateTime currentStartTime = dateRange.getStart();
         Optional<OffsetDateTime> latestNotificationCreatedAtDate = Optional.empty();
 
-        List<NotificationView> notifications = read(dateRange);
+        BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(getProviderProperties());
+
+        List<NotificationView> notifications = notificationRetriever.retrieveFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
         if (!notifications.isEmpty()) {
             List<NotificationView> sortedNotifications = sort(notifications);
             List<AlertNotificationModel> contentList = process(sortedNotifications);
@@ -127,32 +113,6 @@ public class BlackDuckAccumulator extends ProviderTask {
             latestNotificationCreatedAtDate = getLatestNotificationCreatedAtDate(sortedNotifications);
         }
         return calculateNextStartTime(latestNotificationCreatedAtDate, currentStartTime);
-    }
-
-    protected List<NotificationView> read(DateRange dateRange) {
-        Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = getProviderProperties().createBlackDuckHttpClientAndLogErrors(logger);
-        if (optionalBlackDuckHttpClient.isPresent()) {
-            try {
-                BlackDuckServicesFactory blackDuckServicesFactory = getProviderProperties().createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
-                OffsetDateTime startDate = dateRange.getStart();
-                OffsetDateTime endDate = dateRange.getEnd();
-                logger.info("Accumulating Notifications Between {} and {} ", DateUtils.formatDate(startDate, RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(endDate, RestConstants.JSON_DATE_FORMAT));
-
-                NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
-                List<NotificationView> notificationViews = notificationService.getFilteredNotifications(Date.from(startDate.toInstant()), Date.from(endDate.toInstant()), getNotificationTypes());
-                logger.debug("Read Notification Count: {}", notificationViews.size());
-                return notificationViews;
-            } catch (Exception ex) {
-                logger.error("Error Reading notifications", ex);
-            }
-        }
-        return List.of();
-    }
-
-    private List<String> getNotificationTypes() {
-        return Stream.of(NotificationType.values())
-                   .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
-                   .map(Enum::name).collect(Collectors.toList());
     }
 
     protected List<AlertNotificationModel> process(List<NotificationView> notifications) {
