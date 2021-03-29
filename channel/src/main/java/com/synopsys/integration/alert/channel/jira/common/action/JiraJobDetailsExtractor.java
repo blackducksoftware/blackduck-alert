@@ -17,22 +17,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJ
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public abstract class JiraJobDetailsExtractor implements DistributionJobDetailsExtractor {
-    private final ChannelKey channelKey;
+public abstract class JiraJobDetailsExtractor extends DistributionJobDetailsExtractor {
     private final DistributionJobFieldExtractor fieldExtractor;
     private final Gson gson;
 
     public JiraJobDetailsExtractor(ChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor, Gson gson) {
-        this.channelKey = channelKey;
+        super(channelKey);
         this.fieldExtractor = fieldExtractor;
         this.gson = gson;
-    }
-
-    @Override
-    public final DescriptorKey getDescriptorKey() {
-        return channelKey;
     }
 
     protected List<JiraJobCustomFieldModel> extractJiraFieldMappings(String fieldKey, Map<String, ConfigurationFieldModel> configuredFieldsMap) {

@@ -20,22 +20,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.MSTea
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class MsTeamsJobDetailsExtractor implements DistributionJobDetailsExtractor {
-    private final MsTeamsKey channelKey;
+public class MsTeamsJobDetailsExtractor extends DistributionJobDetailsExtractor {
     private final DistributionJobFieldExtractor fieldExtractor;
 
     @Autowired
     public MsTeamsJobDetailsExtractor(MsTeamsKey channelKey, DistributionJobFieldExtractor fieldExtractor) {
-        this.channelKey = channelKey;
+        super(channelKey);
         this.fieldExtractor = fieldExtractor;
-    }
-
-    @Override
-    public DescriptorKey getDescriptorKey() {
-        return channelKey;
     }
 
     @Override

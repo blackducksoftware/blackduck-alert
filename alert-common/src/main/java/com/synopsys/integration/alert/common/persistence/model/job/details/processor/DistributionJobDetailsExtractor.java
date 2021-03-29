@@ -13,8 +13,13 @@ import java.util.UUID;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorAction;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public interface DistributionJobDetailsExtractor extends DescriptorAction {
-    DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap);
+public abstract class DistributionJobDetailsExtractor extends DescriptorAction {
+    public DistributionJobDetailsExtractor(DescriptorKey descriptorKey) {
+        super(descriptorKey);
+    }
+
+    public abstract DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap);
 
 }

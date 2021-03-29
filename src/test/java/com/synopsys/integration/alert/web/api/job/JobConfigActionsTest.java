@@ -49,9 +49,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobModelExtractor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
@@ -604,20 +602,6 @@ public class JobConfigActionsTest {
             @Override
             public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) {
                 return new MessageResult("Test Status Message");
-            }
-        };
-    }
-
-    private DistributionJobDetailsExtractor createJobDetailsExtractor() {
-        return new DistributionJobDetailsExtractor() {
-            @Override
-            public DescriptorKey getDescriptorKey() {
-                return createChannelKey();
-            }
-
-            @Override
-            public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-                return createMockDistributionJobModel().getDistributionJobDetails();
             }
         };
     }

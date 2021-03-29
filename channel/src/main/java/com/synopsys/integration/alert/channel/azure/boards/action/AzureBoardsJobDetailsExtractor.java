@@ -19,22 +19,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class AzureBoardsJobDetailsExtractor implements DistributionJobDetailsExtractor {
-    private final AzureBoardsChannelKey channelKey;
+public class AzureBoardsJobDetailsExtractor extends DistributionJobDetailsExtractor {
     private final DistributionJobFieldExtractor fieldExtractor;
 
     @Autowired
     public AzureBoardsJobDetailsExtractor(AzureBoardsChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor) {
-        this.channelKey = channelKey;
+        super(channelKey);
         this.fieldExtractor = fieldExtractor;
-    }
-
-    @Override
-    public DescriptorKey getDescriptorKey() {
-        return channelKey;
     }
 
     @Override

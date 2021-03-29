@@ -19,22 +19,15 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Email
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
-public class EmailJobDetailsExtractor implements DistributionJobDetailsExtractor {
-    private final EmailChannelKey channelKey;
+public class EmailJobDetailsExtractor extends DistributionJobDetailsExtractor {
     private final DistributionJobFieldExtractor fieldExtractor;
 
     @Autowired
     public EmailJobDetailsExtractor(EmailChannelKey channelKey, DistributionJobFieldExtractor fieldExtractor) {
-        this.channelKey = channelKey;
+        super(channelKey);
         this.fieldExtractor = fieldExtractor;
-    }
-
-    @Override
-    public DescriptorKey getDescriptorKey() {
-        return channelKey;
     }
 
     @Override
