@@ -600,15 +600,10 @@ public class JobConfigActionsTest {
     }
 
     private DistributionChannelTestAction createChannelDistributionTestAction() {
-        return new DistributionChannelTestAction() {
+        return new DistributionChannelTestAction(createDescriptorKey()) {
             @Override
             public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) {
                 return new MessageResult("Test Status Message");
-            }
-
-            @Override
-            public DescriptorKey getDescriptorKey() {
-                return createDescriptorKey();
             }
         };
     }

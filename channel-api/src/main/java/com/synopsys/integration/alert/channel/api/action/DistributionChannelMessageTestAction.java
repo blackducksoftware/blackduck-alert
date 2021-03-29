@@ -24,19 +24,12 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
-public abstract class DistributionChannelMessageTestAction<D extends DistributionJobDetailsModel> implements DistributionChannelTestAction {
-    private final ChannelKey channelKey;
+public abstract class DistributionChannelMessageTestAction<D extends DistributionJobDetailsModel> extends DistributionChannelTestAction {
     private final DistributionChannelV2<D> distributionChannel;
 
     public DistributionChannelMessageTestAction(ChannelKey channelKey, DistributionChannelV2<D> distributionChannel) {
-        this.channelKey = channelKey;
+        super(channelKey);
         this.distributionChannel = distributionChannel;
-    }
-
-    @Override
-    @SuppressWarnings("SuspiciousGetterSetter")
-    public ChannelKey getDescriptorKey() {
-        return channelKey;
     }
 
     @Override

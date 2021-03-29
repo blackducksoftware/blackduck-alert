@@ -9,7 +9,15 @@ package com.synopsys.integration.alert.common.descriptor.action;
 
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public interface DescriptorAction {
-    DescriptorKey getDescriptorKey();
+public abstract class DescriptorAction {
+    private final DescriptorKey descriptorKey;
+
+    protected DescriptorAction(DescriptorKey descriptorKey) {
+        this.descriptorKey = descriptorKey;
+    }
+
+    public DescriptorKey getDescriptorKey() {
+        return descriptorKey;
+    }
 
 }
