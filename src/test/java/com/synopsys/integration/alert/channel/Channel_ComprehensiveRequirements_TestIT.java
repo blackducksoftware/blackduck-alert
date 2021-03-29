@@ -19,6 +19,9 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+/*
+ * This class uses underscores to indicate that it does not reference one particular class and instead tests an Alert concept.
+ */
 @AlertIntegrationTest
 public class Channel_ComprehensiveRequirements_TestIT {
     private static final String COMPONENT_NAME_DISTRIBUTION_RECEIVER = DistributionEventReceiver.class.getSimpleName();

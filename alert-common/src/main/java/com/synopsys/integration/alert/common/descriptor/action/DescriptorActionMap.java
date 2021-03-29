@@ -28,11 +28,8 @@ public final class DescriptorActionMap<T extends DescriptorAction> {
     }
 
     public final T findRequiredAction(String descriptorUniversalKey) throws AlertRuntimeException {
-        T foundAction = universalKeyToAction.get(descriptorUniversalKey);
-        if (null == foundAction) {
-            throw new AlertRuntimeException(String.format("Missing required action for descriptor: %s", descriptorUniversalKey));
-        }
-        return foundAction;
+        return findOptionalAction(descriptorUniversalKey)
+                   .orElseThrow(() -> new AlertRuntimeException(String.format("Missing required action for descriptor: %s", descriptorUniversalKey)));
     }
 
     public final Optional<T> findOptionalAction(DescriptorKey descriptorKey) {
