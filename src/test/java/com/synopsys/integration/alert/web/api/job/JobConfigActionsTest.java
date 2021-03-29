@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,7 +21,7 @@ import org.springframework.http.HttpStatus;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
@@ -125,7 +126,8 @@ public class JobConfigActionsTest {
             globalConfigExistsValidator,
             pkixErrorResponseFactory,
             descriptorMap,
-            providerProjectExistencePopulator
+            providerProjectExistencePopulator,
+            List.of()
         );
 
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
@@ -269,6 +271,21 @@ public class JobConfigActionsTest {
 
     @Test
     public void testTest() throws Exception {
+        JobConfigActions jobConfigActionsForTest = new JobConfigActions(
+            authorizationManager,
+            descriptorAccessor,
+            configurationAccessor,
+            jobAccessor,
+            fieldModelProcessor,
+            descriptorProcessor,
+            configurationFieldModelConverter,
+            globalConfigExistsValidator,
+            pkixErrorResponseFactory,
+            descriptorMap,
+            null,
+            List.of(createChannelDistributionTestAction())
+        );
+
         fieldModel.setId("testID");
         Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
 
@@ -276,11 +293,11 @@ public class JobConfigActionsTest {
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
-        Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
+        // Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
         Mockito.when(descriptorProcessor.retrieveJobDetailsExtractor(Mockito.anyString())).thenReturn(Optional.of(createJobDetailsExtractor()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("testKey", configurationFieldModel));
 
-        ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
+        ValidationActionResponse validationActionResponse = jobConfigActionsForTest.test(jobFieldModel);
 
         assertTrue(validationActionResponse.isSuccessful(), "Validation response was not successful");
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
@@ -300,7 +317,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
 
@@ -311,26 +327,6 @@ public class JobConfigActionsTest {
         assertTrue(validationActionResponse.hasContent(), "Expected response to have content");
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertTrue(validationResponseModel.hasErrors(), "Expected response to ");
-    }
-
-    @Test
-    public void testMethodNotAllowedTest() throws Exception {
-        fieldModel.setId("testID");
-        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
-
-        Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
-        Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
-        Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
-
-        Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.empty());
-
-        ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
-
-        assertTrue(validationActionResponse.isError());
-        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, validationActionResponse.getHttpStatus());
-        assertTrue(validationActionResponse.hasContent());
-        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
-        assertTrue(validationResponseModel.hasErrors());
     }
 
     @Test
@@ -412,7 +408,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
         Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, configurationFieldModel));
         Mockito.when(descriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithIntegrationRestException()));
 
@@ -602,8 +597,13 @@ public class JobConfigActionsTest {
         return new ConfigurationModel(descriptorId, configurationId, createdAt, lastUpdated, configContextEnum, configuredFields);
     }
 
-    private ChannelDistributionTestAction createChannelDistributionTestAction() {
-        return (testJobModel, customTopic, customMessage, destination) -> new MessageResult("Test Status Message");
+    private DistributionChannelTestAction createChannelDistributionTestAction() {
+        return new DistributionChannelTestAction(createDescriptorKey()) {
+            @Override
+            public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) {
+                return new MessageResult("Test Status Message");
+            }
+        };
     }
 
     private JobDetailsExtractor createJobDetailsExtractor() {

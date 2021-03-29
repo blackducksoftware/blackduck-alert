@@ -10,15 +10,16 @@ package com.synopsys.integration.alert.channel.slack.action;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
+import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.slack.distribution.SlackChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 
 @Component
-public class SlackDistributionTestAction extends DistributionChannelTestAction<SlackJobDetailsModel> {
+public class SlackDistributionTestAction extends DistributionChannelMessageTestAction<SlackJobDetailsModel> {
     @Autowired
-    public SlackDistributionTestAction(SlackChannel distributionChannel) {
-        super(distributionChannel);
+    public SlackDistributionTestAction(SlackChannelKey channelKey, SlackChannel distributionChannel) {
+        super(channelKey, distributionChannel);
     }
 
 }

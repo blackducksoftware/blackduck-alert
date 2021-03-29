@@ -13,34 +13,36 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
-public abstract class DistributionChannelTestAction<D extends DistributionJobDetailsModel> implements ChannelDistributionTestAction {
+public abstract class DistributionChannelMessageTestAction<D extends DistributionJobDetailsModel> extends DistributionChannelTestAction {
     private final DistributionChannelV2<D> distributionChannel;
 
-    public DistributionChannelTestAction(DistributionChannelV2<D> distributionChannel) {
+    public DistributionChannelMessageTestAction(ChannelKey channelKey, DistributionChannelV2<D> distributionChannel) {
+        super(channelKey);
         this.distributionChannel = distributionChannel;
     }
 
     @Override
-    public final MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage, @Nullable String destination) throws AlertException {
+    public final MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
         String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
         String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
 
-        D distributionJobDetails = resolveTestDistributionDetails(testJobModel, destination);
+        D distributionJobDetails = resolveTestDistributionDetails(testJobModel);
         ProviderMessageHolder messages = createTestMessageHolder(testJobModel, topicString, messageString);
         return distributionChannel.distributeMessages(distributionJobDetails, messages);
     }
 
-    protected D resolveTestDistributionDetails(DistributionJobModel testJobModel, @Nullable String destination) throws AlertException {
+    protected D resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {
         return (D) testJobModel.getDistributionJobDetails();
     }
 
