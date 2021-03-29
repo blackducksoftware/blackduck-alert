@@ -14,12 +14,13 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.api.issue.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsDistributionTestAction extends IssueTrackerTestAction<AzureBoardsJobDetailsModel, Integer> {
     @Autowired
-    public AzureBoardsDistributionTestAction(AzureBoardsMessageSenderFactory messageSenderFactory) {
-        super(messageSenderFactory);
+    public AzureBoardsDistributionTestAction(AzureBoardsChannelKey channelKey, AzureBoardsMessageSenderFactory messageSenderFactory) {
+        super(channelKey, messageSenderFactory);
     }
 
     @Override

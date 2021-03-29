@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -179,7 +179,7 @@ public abstract class ChannelDescriptorTestIT {
 
     public abstract TestAction getGlobalTestAction();
 
-    public abstract ChannelDistributionTestAction getChannelDistributionTestAction();
+    public abstract DistributionChannelTestAction getDistributionChannelTestAction();
 
     protected ConfigurationModel saveProviderGlobalConfig() {
         return configurationAccessor.createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of());
@@ -214,8 +214,8 @@ public abstract class ChannelDescriptorTestIT {
     @Test
     public void testDistributionConfig() {
         try {
-            ChannelDistributionTestAction descriptorActionApi = getChannelDistributionTestAction();
-            descriptorActionApi.testConfig(distributionJobModel, "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT", null);
+            DistributionChannelTestAction descriptorActionApi = getDistributionChannelTestAction();
+            descriptorActionApi.testConfig(distributionJobModel, "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT");
         } catch (IntegrationException e) {
             e.printStackTrace();
             fail();

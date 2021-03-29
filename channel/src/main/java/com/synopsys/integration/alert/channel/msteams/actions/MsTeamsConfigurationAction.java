@@ -16,10 +16,9 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class MsTeamsConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected MsTeamsConfigurationAction(MsTeamsJobDetailsExtractor msTeamsJobDetailsExtractor, MSTeamsDistributionTestAction msTeamsDistributionTestAction) {
+    protected MsTeamsConfigurationAction(MsTeamsJobDetailsExtractor msTeamsJobDetailsExtractor) {
         super(ChannelKeys.MS_TEAMS);
         addJobDetailsExtractor(msTeamsJobDetailsExtractor);
-        addDistributionTestAction(msTeamsDistributionTestAction);
     }
 
 }

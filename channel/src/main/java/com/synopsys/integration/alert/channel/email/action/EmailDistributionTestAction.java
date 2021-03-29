@@ -11,30 +11,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
+import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 
 @Component
-public class EmailDistributionTestAction extends DistributionChannelTestAction<EmailJobDetailsModel> {
+public class EmailDistributionTestAction extends DistributionChannelMessageTestAction<EmailJobDetailsModel> {
     private final EmailTestActionHelper emailTestActionHelper;
 
     @Autowired
-    public EmailDistributionTestAction(EmailChannelV2 distributionChannel, EmailTestActionHelper emailTestActionHelper) {
-        super(distributionChannel);
+    public EmailDistributionTestAction(EmailChannelKey channelKey, EmailChannelV2 distributionChannel, EmailTestActionHelper emailTestActionHelper) {
+        super(channelKey, distributionChannel);
         this.emailTestActionHelper = emailTestActionHelper;
     }
 
     @Override
-    protected EmailJobDetailsModel resolveTestDistributionDetails(DistributionJobModel testJobModel, @Nullable String destination) throws AlertException {
-        Set<String> updateEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(testJobModel, destination);
+    protected EmailJobDetailsModel resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {
+        Set<String> updateEmailAddresses = emailTestActionHelper.createUpdatedEmailAddresses(testJobModel);
         EmailJobDetailsModel originalEmailJobDetails = testJobModel.getDistributionJobDetails().getAs(DistributionJobDetailsModel.EMAIL);
 
         // For testing configuration, just use additional email addresses field

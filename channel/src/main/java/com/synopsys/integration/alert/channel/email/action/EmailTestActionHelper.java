@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,11 +38,8 @@ public class EmailTestActionHelper {
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    public Set<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel, @Nullable String destination) throws AlertException {
+    public Set<String> createUpdatedEmailAddresses(DistributionJobModel distributionJobModel) throws AlertException {
         Set<String> emailAddresses = new HashSet<>();
-        if (StringUtils.isNotBlank(destination)) {
-            emailAddresses.add(destination);
-        }
 
         DistributionJobDetailsModel distributionJobDetails = distributionJobModel.getDistributionJobDetails();
         EmailJobDetailsModel emailJobDetails = distributionJobDetails.getAs(DistributionJobDetailsModel.EMAIL);
