@@ -19,6 +19,9 @@ public class StatefulAlertPagedModel<T extends AlertSerializableModel> {
         this.retrievePage = retrievePage;
     }
 
+    //possibly create an exclusion list of UUID's specific for jobs
+    //Set<UUID>
+
     public List<T> getCurrentModels() {
         return currentModels;
     }
@@ -29,6 +32,8 @@ public class StatefulAlertPagedModel<T extends AlertSerializableModel> {
     }
 
     public boolean hasNextPage() {
-        return currentModels.size() < pageSize;
+        //return currentModels.size() < pageSize //FIXME, this may not work anymore
+        return !currentModels.isEmpty();
+        //TODO: case to test for: if a page comes back as empty, but there are still more pages to test we should keep going until we hit total pages?
     }
 }

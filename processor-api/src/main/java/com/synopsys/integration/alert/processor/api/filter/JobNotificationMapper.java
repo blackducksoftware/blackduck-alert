@@ -9,9 +9,12 @@ package com.synopsys.integration.alert.processor.api.filter;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModelV2;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
@@ -62,6 +66,101 @@ public class JobNotificationMapper {
         );
     }
 
+    //TODO:
+    private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies, int pageNumber, int pageSize) {
+
+        //Step1: Iterate over notifications and collect Sets of notification Types, vuln. severities, & policy names
+        //Step2: Create and execute a query to get a page of jobs matching any notificationTypes, severities, or policy names (from step 1).
+        //          If Policy Notification Type Filter or Vulnerability Notification Type Filer are null, then all notifications match
+        //Step3: Take 1 job and compare to all notifications in memory NOTE: We should create a new class to do this
+        //Step4: Create and return the FilteredJobNotificationWrappers and page number of the query we are doing
+
+        Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
+        int totalPages = 0;
+
+        //Step1:
+        //filtered might not be the best word to use, perhaps something like matchedNotifications?
+        Set<String> filteredProjectNames = new HashSet<>();
+        Set<String> filteredNotificationTypes = new HashSet<>();
+        Set<String> filteredVulnerabilitySeverities = new HashSet<>();
+        Set<String> filteredPolicyNames = new HashSet<>();
+        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
+            detailedNotificationContent.getProjectName().ifPresent(filteredProjectNames::add);
+            filteredNotificationTypes.add(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
+            filteredVulnerabilitySeverities.addAll(detailedNotificationContent.getVulnerabilitySeverities());
+            detailedNotificationContent.getPolicyName().ifPresent(filteredPolicyNames::add);
+        }
+
+        //Step2: get matching jobs using the filteredNotifications above
+        //Note: I can probably move this to its own private method later
+        FilteredDistributionJobRequestModelV2 filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModelV2(
+            frequencies,
+            filteredProjectNames,
+            filteredNotificationTypes,
+            filteredVulnerabilitySeverities,
+            filteredPolicyNames
+        );
+        AlertPagedModel<FilteredDistributionJobResponseModel> jobs = jobAccessor.getMatchingEnabledJobsByFilteredNotifications(filteredDistributionJobRequestModel, pageNumber, pageSize);
+
+        //Step3:
+        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
+            for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : jobs.getModels()) {
+                List<NotificationContentWrapper> applicableNotifications = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
+                applicableNotifications.add(detailedNotificationContent.getNotificationContentWrapper());
+            }
+        }
+
+        List<FilteredJobNotificationWrapper> filterableJobNotifications = new LinkedList<>();
+        for (Map.Entry<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
+            FilteredDistributionJobResponseModel filteredJob = groupedEntry.getKey();
+            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), groupedEntry.getValue());
+            filterableJobNotifications.add(wrappedJobNotifications);
+        }
+
+        return new AlertPagedModel<>(totalPages, pageNumber, pageSize, filterableJobNotifications);
+
+        //Old implementation:
+        /*
+        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
+            AlertPagedModel<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels;
+            //If there are grouped notifications already saved, then look for only id's that match those notifications.
+            if (groupedFilterableNotifications.size() > 0) {
+                List<UUID> uuids = new ArrayList<>();
+                for (Map.Entry<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
+                    uuids.add(groupedEntry.getKey().getId());
+                }
+                //NOTE: pageNumber needs to be tracked differently when calling this. On a second run through the pageNumber will be incorrect (should be 0, actually page 1)
+                //pageNumber = 0;
+                filteredDistributionJobResponseModels = retrieveMatchingEventsByJobIds(detailedNotificationContent, frequencies, uuids, 0, pageSize);
+                //differentiate between both types of Models to determine total pages?
+                if (filteredDistributionJobResponseModels.getTotalPages() > 1) {
+                    System.out.println(); //FIXME: If it gets to this point, I have a problem
+                }
+            } else { //If there are no jobs, get (up to) the next 10 jobs
+                filteredDistributionJobResponseModels = retrieveMatchingJobs(detailedNotificationContent, frequencies, pageNumber, pageSize);
+                //initial total page number
+            }
+            totalPages = Math.max(totalPages, filteredDistributionJobResponseModels.getTotalPages());
+
+            for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : filteredDistributionJobResponseModels.getModels()) {
+                List<NotificationContentWrapper> applicableNotifications = groupedFilterableNotifications.computeIfAbsent(filteredDistributionJobResponseModel, ignoredKey -> new LinkedList<>());
+                applicableNotifications.add(detailedNotificationContent.getNotificationContentWrapper());
+            }
+        }
+
+        List<FilteredJobNotificationWrapper> filterableJobNotifications = new LinkedList<>();
+        for (Map.Entry<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
+            FilteredDistributionJobResponseModel filteredJob = groupedEntry.getKey();
+            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), groupedEntry.getValue());
+            filterableJobNotifications.add(wrappedJobNotifications);
+        }
+
+        return new AlertPagedModel<>(totalPages, pageNumber, pageSize, filterableJobNotifications);
+
+         */
+    }
+
+    /*
     private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies, int pageNumber, int pageSize) {
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
         int totalPages = 0; //What is the best way to get total pages? What if one notificationContent has more pages of Jobs than another? Perhaps get the highest total page?
@@ -90,6 +189,19 @@ public class JobNotificationMapper {
         //TODO: fill in the requirements for AlertPagedModel
         return new AlertPagedModel<>(totalPages, pageNumber, pageSize, filterableJobNotifications);
     }
+    */
+
+    //WIP: see if we can use this to get the total number of pages for each notification
+    //TODO, if this doesn't get used, delete it
+    private Map<DetailedNotificationContent, Integer> getPageTotals(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies, int pageNumber, int pageSize) {
+        Map<DetailedNotificationContent, Integer> pageTotalsOfNotifications = new HashMap<>();
+
+        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
+            AlertPagedModel<FilteredDistributionJobResponseModel> filteredDistributionJobResponseModels = retrieveMatchingJobs(detailedNotificationContent, frequencies, pageNumber, pageSize);
+            pageTotalsOfNotifications.put(detailedNotificationContent, filteredDistributionJobResponseModels.getTotalPages());
+        }
+        return pageTotalsOfNotifications;
+    }
 
     //Get the jobs that map to the single notification passed in by detailedNotificationContent
     private AlertPagedModel<FilteredDistributionJobResponseModel> retrieveMatchingJobs(DetailedNotificationContent detailedNotificationContent, Collection<FrequencyType> frequencyTypes, int pageNumber, int pageSize) {
@@ -103,6 +215,19 @@ public class JobNotificationMapper {
         );
         //TODO: It might be better to return the FilteredDistributionJobRequestModel instead and run the jobAccessor elsewhere.
         return jobAccessor.getMatchingEnabledJobs(filteredDistributionJobRequestModel, pageNumber, pageSize);
+    }
+
+    private AlertPagedModel<FilteredDistributionJobResponseModel> retrieveMatchingEventsByJobIds(DetailedNotificationContent detailedNotificationContent, Collection<FrequencyType> frequencyTypes, List<UUID> jobIds, int pageNumber,
+        int pageSize) {
+        NotificationContentWrapper contentWrapper = detailedNotificationContent.getNotificationContentWrapper();
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
+            frequencyTypes,
+            EnumUtils.getEnum(NotificationType.class, contentWrapper.extractNotificationType()),
+            detailedNotificationContent.getProjectName().orElse(null),
+            detailedNotificationContent.getVulnerabilitySeverities(),
+            detailedNotificationContent.getPolicyName().map(List::of).orElse(List.of())
+        );
+        return jobAccessor.getMatchingEnabledJobsByJobIds(filteredDistributionJobRequestModel, jobIds, pageNumber, pageSize);
     }
 
 }

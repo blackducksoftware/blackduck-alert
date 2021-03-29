@@ -11,6 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -33,6 +34,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModelBuilder;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModelV2;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -211,6 +213,68 @@ public class StaticJobAccessor implements JobAccessor {
         return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);
     }
 
+    @Override
+    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(FilteredDistributionJobRequestModelV2 filteredDistributionJobRequestModel, int pageNumber, int pageLimit) {
+        List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
+                                          .stream()
+                                          .map(Enum::name)
+                                          .collect(Collectors.toList());
+
+        Set<String> projectNames = filteredDistributionJobRequestModel.getProjectName();
+        Set<String> notificationTypes = filteredDistributionJobRequestModel.getProjectName();
+        Set<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames();
+        Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
+        Page<DistributionJobEntity> pageOfDistributionJobEntities;
+        pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsByFilteredNotifications(frequencyTypes, notificationTypes, projectNames, policyNames, vulnerabilitySeverities, pageRequest);
+
+        List<DistributionJobEntity> distributionJobEntities = pageOfDistributionJobEntities.getContent();
+
+        List<FilteredDistributionJobResponseModel> distributionJobResponseModels = distributionJobEntities.stream()
+                                                                                       .filter(distributionJobEntity -> filterByProjects(distributionJobEntity, projectNames))
+                                                                                       .map(this::convertToFilteredDistributionJobResponseModel)
+                                                                                       .collect(Collectors.toList());
+        return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);
+    }
+
+    //TODO: Simplify this since its a near copy of the above method.
+    //TODO: Also, add this method to the JobAccessor interface
+    @Override
+    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByJobIds(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, List<UUID> jobIds, int pageNumber, int pageLimit) {
+        List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
+                                          .stream()
+                                          .map(Enum::name)
+                                          .collect(Collectors.toList());
+
+        NotificationType notificationType = filteredDistributionJobRequestModel.getNotificationType();
+        String projectName = filteredDistributionJobRequestModel.getProjectName();
+
+        List<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames();
+        List<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities();
+
+        List<DistributionJobEntity> distributionJobEntities;
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
+        Page<DistributionJobEntity> pageOfDistributionJobEntities;
+        //TODO: This is the only part thats different!
+        if (filteredDistributionJobRequestModel.isPolicyNotification()) {
+            pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithPolicyNamesByJobId(frequencyTypes, notificationType.name(), projectName, policyNames, jobIds, pageRequest);
+        } else if (filteredDistributionJobRequestModel.isVulnerabilityNotification()) {
+            pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsWithVulnerabilitySeveritiesByJobId(frequencyTypes, notificationType.name(), projectName, vulnerabilitySeverities, jobIds, pageRequest);
+        } else {
+            pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsByJobId(frequencyTypes, notificationType.name(), projectName, jobIds, pageRequest);
+        }
+        distributionJobEntities = pageOfDistributionJobEntities.getContent();
+
+        // TODO running project name pattern checks in java code, try to do this in SQL instead (Won't need to return DistributionJobEntity anymore if this happens
+        List<FilteredDistributionJobResponseModel> distributionJobResponseModels = distributionJobEntities.stream()
+                                                                                       .filter(distributionJobEntity -> filterByProjects(distributionJobEntity, projectName))
+                                                                                       .map(this::convertToFilteredDistributionJobResponseModel)
+                                                                                       .collect(Collectors.toList());
+        return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);
+    }
+
     private boolean filterByProjects(DistributionJobEntity distributionJobEntity, String projectName) {
         BlackDuckJobDetailsEntity blackDuckJobDetails = distributionJobEntity.getBlackDuckJobDetails();
         if (!blackDuckJobDetails.getFilterByProject()) {
@@ -226,6 +290,26 @@ public class StaticJobAccessor implements JobAccessor {
                    .stream()
                    .map(BlackDuckProjectDetailsModel::getName)
                    .anyMatch(projectName::equals);
+    }
+
+    //TODO: See if we can refactor this and the above method
+    private boolean filterByProjects(DistributionJobEntity distributionJobEntity, Set<String> projectNames) {
+        BlackDuckJobDetailsEntity blackDuckJobDetails = distributionJobEntity.getBlackDuckJobDetails();
+        if (!blackDuckJobDetails.getFilterByProject()) {
+            return true;
+        }
+
+        String projectNamePattern = blackDuckJobDetails.getProjectNamePattern();
+        for (String projectName : projectNames) {
+            if (projectNamePattern != null && Pattern.matches(projectNamePattern, projectName)) {
+                return true;
+            }
+        }
+
+        return blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(distributionJobEntity.getJobId())
+                   .stream()
+                   .map(BlackDuckProjectDetailsModel::getName)
+                   .anyMatch(projectNames::contains);
     }
 
     private FilteredDistributionJobResponseModel convertToFilteredDistributionJobResponseModel(DistributionJobEntity distributionJobEntity) {

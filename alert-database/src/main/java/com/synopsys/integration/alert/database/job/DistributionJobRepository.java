@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.database.job;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -112,4 +113,95 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
         @Param("vulnerabilitySeverities") Collection<String> vulnerabilitySeverities,
         Pageable pageable
     );
+
+    //TODO: These methods are pretty similar to the ones above. May need to look into seeing if theres a way to combine the Queries?
+
+    @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
+                       + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobPolicyFilters policyFilters ON jobEntity.jobId = policyFilters.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobVulnerabilitySeverityFilters vulnerabilitySeverityFilters ON jobEntity.jobId = vulnerabilitySeverityFilters.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
+                       + "    WHERE jobEntity.enabled = true"
+                       + "    AND notificationTypes.notificationType = :notificationType"
+                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
+                       + "    AND jobEntity.jobId IN (:existingJobIds)"
+    )
+    Page<DistributionJobEntity> findMatchingEnabledJobsByJobId(
+        @Param("frequencies") Collection<String> frequencies,
+        @Param("notificationType") String notificationType,
+        @Param("projectName") String projectName,
+        @Param("existingJobIds") List<UUID> existingJobIds,
+        Pageable pageable
+    );
+
+    @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
+                       + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobPolicyFilters policyFilters ON jobEntity.jobId = policyFilters.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
+                       + "    WHERE jobEntity.enabled = true"
+                       + "    AND notificationTypes.notificationType = :notificationType"
+                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
+                       + "    AND (policyFilters.policyName IS NULL OR policyFilters.policyName IN (:policyNames))"
+                       + "    AND jobEntity.jobId IN (:existingJobIds)"
+
+    )
+    Page<DistributionJobEntity> findMatchingEnabledJobsWithPolicyNamesByJobId(
+        @Param("frequencies") Collection<String> frequencies,
+        @Param("notificationType") String notificationType,
+        @Param("projectName") String projectName,
+        @Param("policyNames") Collection<String> policyNames,
+        @Param("existingJobIds") List<UUID> existingJobIds,
+        Pageable pageable
+    );
+
+    // FIXME these queries can be improved by using pattern searching in the query and returning a FilteredDistributionJobResponseModel
+    @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
+                       + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobVulnerabilitySeverityFilters vulnerabilitySeverityFilters ON jobEntity.jobId = vulnerabilitySeverityFilters.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
+                       + "    WHERE jobEntity.enabled = true"
+                       + "    AND notificationTypes.notificationType = :notificationType"
+                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName = :projectName)"
+                       + "    AND (vulnerabilitySeverityFilters.severityName IS NULL OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities))"
+                       + "    AND jobEntity.jobId IN (:existingJobIds)"
+
+    )
+    Page<DistributionJobEntity> findMatchingEnabledJobsWithVulnerabilitySeveritiesByJobId(
+        @Param("frequencies") Collection<String> frequencies,
+        @Param("notificationType") String notificationType,
+        @Param("projectName") String projectName,
+        @Param("vulnerabilitySeverities") Collection<String> vulnerabilitySeverities,
+        @Param("existingJobIds") List<UUID> existingJobIds,
+        Pageable pageable
+    );
+
+    //Get the superset of all jobs combining on all of the tables using our pre-filtered list
+    @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
+                       + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobPolicyFilters policyFilters ON jobEntity.jobId = policyFilters.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobVulnerabilitySeverityFilters vulnerabilitySeverityFilters ON jobEntity.jobId = vulnerabilitySeverityFilters.jobId "
+                       + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
+                       + "    WHERE jobEntity.enabled = true"
+                       + "    AND notificationTypes.notificationType IN (:notificationTypes)"
+                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
+                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
+                       + "    AND ((vulnerabilitySeverityFilters.severityName IS NULL OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities))"
+                       + "    OR (policyFilters.policyName IS NULL OR policyFilters.policyName IN (:policyNames)))"
+    )
+    Page<DistributionJobEntity> findMatchingEnabledJobsByFilteredNotifications(
+        @Param("frequencies") Collection<String> frequencies,
+        @Param("notificationTypes") Set<String> notificationTypes,
+        @Param("projectNames") Set<String> projectNames,
+        @Param("policyNames") Set<String> policyNames,
+        @Param("vulnerabilitySeverities") Set<String> vulnerabilitySeverities,
+        Pageable pageable
+    );
+
 }
