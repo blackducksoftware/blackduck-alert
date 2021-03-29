@@ -165,7 +165,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public DistributionChannelTestAction getChannelDistributionTestAction() {
+    public DistributionChannelTestAction getDistributionChannelTestAction() {
         TestAlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);

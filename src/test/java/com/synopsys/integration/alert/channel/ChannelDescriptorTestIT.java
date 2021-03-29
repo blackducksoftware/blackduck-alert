@@ -179,7 +179,7 @@ public abstract class ChannelDescriptorTestIT {
 
     public abstract TestAction getGlobalTestAction();
 
-    public abstract DistributionChannelTestAction getChannelDistributionTestAction();
+    public abstract DistributionChannelTestAction getDistributionChannelTestAction();
 
     protected ConfigurationModel saveProviderGlobalConfig() {
         return configurationAccessor.createConfiguration(providerKey, ConfigContextEnum.GLOBAL, List.of());
@@ -214,7 +214,7 @@ public abstract class ChannelDescriptorTestIT {
     @Test
     public void testDistributionConfig() {
         try {
-            DistributionChannelTestAction descriptorActionApi = getChannelDistributionTestAction();
+            DistributionChannelTestAction descriptorActionApi = getDistributionChannelTestAction();
             descriptorActionApi.testConfig(distributionJobModel, "Topic - Channel Descriptor Test IT", "Message - Channel Descriptor Test IT");
         } catch (IntegrationException e) {
             e.printStackTrace();

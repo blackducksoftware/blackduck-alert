@@ -99,7 +99,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public DistributionChannelTestAction getChannelDistributionTestAction() {
+    public DistributionChannelTestAction getDistributionChannelTestAction() {
         return new SlackDistributionTestAction(ChannelKeys.SLACK, slackChannel) {};
     }
 
