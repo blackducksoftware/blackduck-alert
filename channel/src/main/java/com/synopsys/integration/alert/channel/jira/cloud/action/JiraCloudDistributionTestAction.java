@@ -7,19 +7,29 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.action;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
-import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudChannel;
+import com.synopsys.integration.alert.channel.api.issue.action.IssueTrackerTestAction;
+import com.synopsys.integration.alert.channel.jira.cloud.distribution.JiraCloudMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 @Component
-public class JiraCloudDistributionTestAction extends DistributionChannelMessageTestAction<JiraCloudJobDetailsModel> {
+public class JiraCloudDistributionTestAction extends IssueTrackerTestAction<JiraCloudJobDetailsModel, String> {
     @Autowired
-    public JiraCloudDistributionTestAction(JiraCloudChannelKey channelKey, JiraCloudChannel distributionChannel) {
-        super(channelKey, distributionChannel);
+    public JiraCloudDistributionTestAction(JiraCloudChannelKey channelKey, JiraCloudMessageSenderFactory messageSenderFactory) {
+        super(channelKey, messageSenderFactory);
     }
 
+    @Override
+    protected boolean hasResolveTransition(JiraCloudJobDetailsModel distributionDetails) {
+        return StringUtils.isNotBlank(distributionDetails.getResolveTransition());
+    }
+
+    @Override
+    protected boolean hasReopenTransition(JiraCloudJobDetailsModel distributionDetails) {
+        return StringUtils.isNotBlank(distributionDetails.getReopenTransition());
+    }
 }
