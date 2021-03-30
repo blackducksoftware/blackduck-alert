@@ -37,7 +37,6 @@ import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationTyp
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 
 public class BlackDuckAccumulator extends ProviderTask {
-    public static final String TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE = "last.search.end.date";
     private static final List<NotificationType> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())
                                                                                    .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
                                                                                    .collect(Collectors.toList());
@@ -91,7 +90,8 @@ public class BlackDuckAccumulator extends ProviderTask {
             .ifPresent(searchDateManager::saveNextSearchStart);
     }
 
-    // FIXME this should not be protected just for the sake of testing
+    // FIXME methods should not be protected just for the sake of testing
+
     protected Optional<OffsetDateTime> retrieveAndStoreNotifications(DateRange dateRange) {
         BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(getProviderProperties());
         List<NotificationView> notifications = notificationRetriever.retrieveFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);

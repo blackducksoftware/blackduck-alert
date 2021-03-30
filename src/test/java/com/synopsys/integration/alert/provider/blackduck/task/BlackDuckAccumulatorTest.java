@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -113,7 +114,7 @@ public class BlackDuckAccumulatorTest {
         BlackDuckAccumulator notificationAccumulator = createAccumulator(testBlackDuckProperties);
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
-        assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
+        assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulatorSearchDateManager.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
         Mockito.verify(spiedAccumulator).retrieveAndStoreNotifications(Mockito.any());
     }
 
@@ -123,7 +124,7 @@ public class BlackDuckAccumulatorTest {
         BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.when(spiedAccumulator.getMillisecondsToNextRun()).thenReturn(Optional.of(Long.MAX_VALUE));
         spiedAccumulator.accumulate();
-        assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
+        assertTrue(providerTaskPropertiesAccessor.getTaskProperty(spiedAccumulator.getTaskName(), BlackDuckAccumulatorSearchDateManager.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE).isPresent());
         Mockito.verify(spiedAccumulator).retrieveAndStoreNotifications(Mockito.any());
     }
 
