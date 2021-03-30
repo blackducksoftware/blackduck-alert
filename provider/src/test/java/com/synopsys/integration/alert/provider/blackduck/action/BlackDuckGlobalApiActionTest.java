@@ -25,8 +25,8 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckCacheHttpClien
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
-import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
 import com.synopsys.integration.function.ThrowingBiFunction;
 
 public class BlackDuckGlobalApiActionTest {
