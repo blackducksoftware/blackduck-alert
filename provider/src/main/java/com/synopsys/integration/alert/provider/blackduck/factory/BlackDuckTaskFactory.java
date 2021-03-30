@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
-import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorDateRangeCreator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 
 @Component
@@ -35,7 +34,6 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
     private final BlackDuckValidator blackDuckValidator;
     private final EventManager eventManager;
-    private final BlackDuckAccumulatorDateRangeCreator dateRangeCreator;
 
     @Autowired
     public BlackDuckTaskFactory(
@@ -45,8 +43,7 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         NotificationAccessor notificationAccessor,
         ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
         BlackDuckValidator blackDuckValidator,
-        EventManager eventManager,
-        BlackDuckAccumulatorDateRangeCreator dateRangeCreator
+        EventManager eventManager
     ) {
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.taskScheduler = taskScheduler;
@@ -55,12 +52,11 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
         this.blackDuckValidator = blackDuckValidator;
         this.eventManager = eventManager;
-        this.dateRangeCreator = dateRangeCreator;
     }
 
     @Override
     public List<ProviderTask> createTasks(ProviderProperties providerProperties) {
-        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationAccessor, providerTaskPropertiesAccessor, providerProperties, blackDuckValidator, eventManager, dateRangeCreator);
+        BlackDuckAccumulator accumulator = new BlackDuckAccumulator(blackDuckProviderKey, taskScheduler, notificationAccessor, providerTaskPropertiesAccessor, providerProperties, blackDuckValidator, eventManager);
         BlackDuckDataSyncTask syncTask = new BlackDuckDataSyncTask(blackDuckProviderKey, taskScheduler, blackDuckDataAccessor, providerProperties);
         return List.of(accumulator, syncTask);
     }

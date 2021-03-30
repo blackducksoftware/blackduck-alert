@@ -13,31 +13,38 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
 import com.synopsys.integration.rest.RestConstants;
 
-@Component
-public class BlackDuckAccumulatorDateRangeCreator {
+public class BlackDuckAccumulatorSearchDateManager {
+    public static final String TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE = "last.search.end.date";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
+    private final Long providerConfigId;
+    private final String taskName;
 
-    @Autowired
-    public BlackDuckAccumulatorDateRangeCreator(ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor) {
+    public BlackDuckAccumulatorSearchDateManager(ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor, Long providerConfigId, String taskName) {
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
+        this.providerConfigId = providerConfigId;
+        this.taskName = taskName;
     }
 
-    public DateRange createDateRange(String taskName) {
+    public void saveNextSearchStart(OffsetDateTime nextSearchStartTime) {
+        String nextSearchStartTimeString = formatDate(nextSearchStartTime);
+        logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartTimeString);
+        providerTaskPropertiesAccessor.setTaskProperty(providerConfigId, taskName, TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, nextSearchStartTimeString);
+    }
+
+    public DateRange retrieveNextSearchDateRange() {
         OffsetDateTime endDate = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime startDate = endDate;
         try {
-            Optional<String> nextSearchStartTime = getNextSearchStart(taskName);
+            Optional<String> nextSearchStartTime = retrieveNextSearchStart();
             if (nextSearchStartTime.isPresent()) {
                 String lastRunValue = nextSearchStartTime.get();
                 startDate = parseDateString(lastRunValue);
@@ -45,13 +52,17 @@ public class BlackDuckAccumulatorDateRangeCreator {
                 startDate = endDate.minusMinutes(1);
             }
         } catch (ParseException e) {
-            logger.error("Error creating date range", e);
+            logger.error("Error creating accumulator search date range", e);
         }
         return DateRange.of(startDate, endDate);
     }
 
-    private Optional<String> getNextSearchStart(String taskName) {
-        return providerTaskPropertiesAccessor.getTaskProperty(taskName, BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
+    private Optional<String> retrieveNextSearchStart() {
+        return providerTaskPropertiesAccessor.getTaskProperty(taskName, TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
+    }
+
+    private String formatDate(OffsetDateTime date) {
+        return DateUtils.formatDate(date, RestConstants.JSON_DATE_FORMAT);
     }
 
     private OffsetDateTime parseDateString(String date) throws ParseException {

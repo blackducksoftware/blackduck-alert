@@ -45,8 +45,8 @@ public class BlackDuckNotificationRetrieverTest {
 
         Mockito.doReturn(notificationViewList).when(notificationService).getAllNotifications(Mockito.any(), Mockito.any());
 
-        BlackDuckAccumulatorDateRangeCreator dateRangeCreator = createDateRangeCreator();
-        DateRange dateRange = dateRangeCreator.createDateRange("Test");
+        BlackDuckAccumulatorSearchDateManager dateRangeCreator = createDateRangeCreator();
+        DateRange dateRange = dateRangeCreator.retrieveNextSearchDateRange();
 
         BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(mockedBlackDuckProperties);
         List<NotificationView> notificationViews = notificationRetriever.retrieveFilteredNotifications(dateRange, List.of());
@@ -66,8 +66,8 @@ public class BlackDuckNotificationRetrieverTest {
         Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService();
         Mockito.doReturn(notificationViewList).when(notificationService).getAllNotifications(Mockito.any(), Mockito.any());
 
-        BlackDuckAccumulatorDateRangeCreator dateRangeCreator = createDateRangeCreator();
-        DateRange dateRange = dateRangeCreator.createDateRange("Task");
+        BlackDuckAccumulatorSearchDateManager dateRangeCreator = createDateRangeCreator();
+        DateRange dateRange = dateRangeCreator.retrieveNextSearchDateRange();
         BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(mockedBlackDuckProperties);
 
         List<NotificationView> notificationViews = notificationRetriever.retrieveFilteredNotifications(dateRange, List.of());
@@ -80,18 +80,18 @@ public class BlackDuckNotificationRetrieverTest {
 
         Mockito.doReturn(Optional.empty()).when(mockedBlackDuckProperties).createBlackDuckHttpClientAndLogErrors(Mockito.any());
 
-        BlackDuckAccumulatorDateRangeCreator dateRangeCreator = createDateRangeCreator();
-        DateRange dateRange = dateRangeCreator.createDateRange("Task");
+        BlackDuckAccumulatorSearchDateManager dateRangeCreator = createDateRangeCreator();
+        DateRange dateRange = dateRangeCreator.retrieveNextSearchDateRange();
         BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(mockedBlackDuckProperties);
 
         List<NotificationView> notificationViews = notificationRetriever.retrieveFilteredNotifications(dateRange, List.of());
         assertTrue(notificationViews.isEmpty(), NON_EMPTY_RESULT_ERROR_MESSAGE);
     }
 
-    private BlackDuckAccumulatorDateRangeCreator createDateRangeCreator() {
+    private BlackDuckAccumulatorSearchDateManager createDateRangeCreator() {
         ProviderTaskPropertiesAccessor taskPropertiesAccessor = Mockito.mock(ProviderTaskPropertiesAccessor.class);
         Mockito.when(taskPropertiesAccessor.getTaskProperty(Mockito.anyString(), Mockito.anyString())).thenReturn(Optional.empty());
-        return new BlackDuckAccumulatorDateRangeCreator(taskPropertiesAccessor);
+        return new BlackDuckAccumulatorSearchDateManager(taskPropertiesAccessor, 0L, "Task");
     }
 
 }
