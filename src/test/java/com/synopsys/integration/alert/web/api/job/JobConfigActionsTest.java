@@ -49,9 +49,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobModelExtractor;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.provider.ProviderProjectExistencePopulator;
 import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
@@ -91,6 +90,7 @@ public class JobConfigActionsTest {
     private GlobalConfigExistsValidator globalConfigExistsValidator;
     private PKIXErrorResponseFactory pkixErrorResponseFactory;
     private DescriptorMap descriptorMap;
+    private DistributionJobModelExtractor jobModelExtractor;
 
     private JobConfigActions jobConfigActions;
 
@@ -115,6 +115,10 @@ public class JobConfigActionsTest {
         globalConfigExistsValidator = Mockito.mock(GlobalConfigExistsValidator.class);
         pkixErrorResponseFactory = Mockito.mock(PKIXErrorResponseFactory.class);
         descriptorMap = Mockito.mock(DescriptorMap.class);
+
+        jobModelExtractor = Mockito.mock(DistributionJobModelExtractor.class);
+        Mockito.when(jobModelExtractor.convertToJobModel(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyList())).thenReturn(createMockDistributionJobModel());
+
         jobConfigActions = new JobConfigActions(
             authorizationManager,
             descriptorAccessor,
@@ -127,7 +131,8 @@ public class JobConfigActionsTest {
             pkixErrorResponseFactory,
             descriptorMap,
             providerProjectExistencePopulator,
-            List.of()
+            List.of(),
+            jobModelExtractor
         );
 
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(true);
@@ -151,7 +156,6 @@ public class JobConfigActionsTest {
         Mockito.when(configurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.performAfterSaveAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(jobAccessor.createJob(Mockito.any())).thenReturn(distributionJobModel);
-        Mockito.when(descriptorProcessor.retrieveJobDetailsExtractor(Mockito.anyString())).thenReturn(Optional.of(createJobDetailsExtractor()));
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.create(jobFieldModel);
 
@@ -220,7 +224,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.performBeforeUpdateAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(fieldModelProcessor.fillFieldModelWithExistingData(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(configurationFieldModel));
         Mockito.when(fieldModelProcessor.performAfterUpdateAction(Mockito.any(), Mockito.any())).thenReturn(fieldModel);
-        Mockito.when(descriptorProcessor.retrieveJobDetailsExtractor(Mockito.anyString())).thenReturn(Optional.of(createJobDetailsExtractor()));
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = jobConfigActions.update(jobId, jobFieldModel);
 
@@ -283,7 +286,8 @@ public class JobConfigActionsTest {
             pkixErrorResponseFactory,
             descriptorMap,
             null,
-            List.of(createChannelDistributionTestAction())
+            List.of(createChannelDistributionTestAction()),
+            jobModelExtractor
         );
 
         fieldModel.setId("testID");
@@ -292,10 +296,6 @@ public class JobConfigActionsTest {
         Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(fieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
-
-        // Mockito.when(descriptorProcessor.retrieveChannelDistributionTestAction(Mockito.any())).thenReturn(Optional.of(createChannelDistributionTestAction()));
-        Mockito.when(descriptorProcessor.retrieveJobDetailsExtractor(Mockito.anyString())).thenReturn(Optional.of(createJobDetailsExtractor()));
-        Mockito.when(configurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of("testKey", configurationFieldModel));
 
         ValidationActionResponse validationActionResponse = jobConfigActionsForTest.test(jobFieldModel);
 
@@ -602,15 +602,6 @@ public class JobConfigActionsTest {
             @Override
             public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) {
                 return new MessageResult("Test Status Message");
-            }
-        };
-    }
-
-    private JobDetailsExtractor createJobDetailsExtractor() {
-        return new JobDetailsExtractor() {
-            @Override
-            protected DistributionJobDetailsModel convertToChannelJobDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-                return new DistributionJobDetailsModel(createChannelKey(), jobId) {};
             }
         };
     }
