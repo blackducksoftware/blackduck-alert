@@ -24,7 +24,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
@@ -39,10 +38,6 @@ public class DescriptorProcessor {
         this.descriptorMap = descriptorMap;
         this.configurationAccessor = configurationAccessor;
         this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
-    }
-
-    public Optional<JobDetailsExtractor> retrieveJobDetailsExtractor(String descriptorName) {
-        return retrieveConfigurationAction(descriptorName).flatMap(ConfigurationAction::getJobDetailsExtractor);
     }
 
     public Optional<TestAction> retrieveTestAction(FieldModel fieldModel) {

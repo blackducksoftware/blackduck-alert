@@ -16,10 +16,9 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 @Component
 public class JiraCloudConfigurationAction extends ConfigurationAction {
     @Autowired
-    public JiraCloudConfigurationAction(JiraCloudGlobalTestAction globalTestAction, JiraCloudJobDetailsExtractor jiraCloudJobDetailsExtractor) {
+    public JiraCloudConfigurationAction(JiraCloudGlobalTestAction globalTestAction) {
         super(ChannelKeys.JIRA_CLOUD);
         addGlobalTestAction(globalTestAction);
-        addJobDetailsExtractor(jiraCloudJobDetailsExtractor);
     }
 
 }
