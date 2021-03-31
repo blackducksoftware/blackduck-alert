@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPr
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
 
 @Component
 @Order(55)
@@ -65,9 +65,9 @@ public class LastSearchDataMigration extends StartupComponent {
                     Long configId = configurationModels.get(0).getConfigurationId();
                     String taskName = String.format("Task::Class[com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator]::Provider[provider_blackduck]::Configuration[id:%s]", configId);
                     String propertyValue = filePersistenceUtil.readFromFile(LAST_SEARCH_FILE);
-                    Optional<String> currentPropertyValue = providerTaskPropertiesAccessor.getTaskProperty(taskName, BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
+                    Optional<String> currentPropertyValue = providerTaskPropertiesAccessor.getTaskProperty(taskName, BlackDuckAccumulatorSearchDateManager.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE);
                     if (currentPropertyValue.isEmpty()) {
-                        providerTaskPropertiesAccessor.setTaskProperty(configId, taskName, BlackDuckAccumulator.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, propertyValue);
+                        providerTaskPropertiesAccessor.setTaskProperty(configId, taskName, BlackDuckAccumulatorSearchDateManager.TASK_PROPERTY_KEY_LAST_SEARCH_END_DATE, propertyValue);
                     }
                     filePersistenceUtil.delete(LAST_SEARCH_FILE);
                 }
