@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
 import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
@@ -22,6 +23,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 /*
  * This class uses underscores to indicate that it does not reference one particular class and instead tests an Alert concept.
  */
+@Transactional
 @AlertIntegrationTest
 public class Channel_ComprehensiveRequirements_TestIT {
     private static final String COMPONENT_NAME_DISTRIBUTION_RECEIVER = DistributionEventReceiver.class.getSimpleName();

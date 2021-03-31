@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -33,6 +34,7 @@ import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVe
 import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
+@Transactional
 @AlertIntegrationTest
 public class DefaultJobNotificationExtractorTestIT {
     private static final List<UUID> CREATED_JOBS = new LinkedList<>();

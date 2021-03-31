@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
@@ -22,6 +23,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 //TODO: This class depends on AlertIntegrationTest which cannot be moved into test-common yet due to it's dependencies.
 //  Move this class into the workflow subproject once the dependencies are resolved
+@Transactional
 @AlertIntegrationTest
 public class NotificationReceiverTestIT {
     @Autowired
