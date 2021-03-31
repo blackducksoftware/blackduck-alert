@@ -1,32 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
 import { EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO } from 'global/channels/email/EmailModels';
 import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import CheckboxInput from 'field/input/CheckboxInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import NumberInput from 'field/input/NumberInput';
+import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 
 const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
-    const [fieldModel, setFieldModel] = useState({});
-
-    const readRequest = () => ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, EMAIL_INFO.key);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await readRequest();
-            const data = await response.json();
-
-            const { fieldModels } = data;
-            const retrievedModel = (fieldModels && fieldModels.length > 0) ? fieldModels[0] : {};
-            setFieldModel(retrievedModel);
-        };
-
-        fetchData();
-    }, []);
+    const [fieldModel, setFieldModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, EMAIL_INFO.key));
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const handleChange = ({ target }) => {
         const { type, name, value } = target;
@@ -42,24 +28,35 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
             description="Configure the email server that Alert will send emails to."
             lastUpdated={fieldModel.lastUpdated}
         >
-            <CommonGlobalConfigurationForm>
+            <CommonGlobalConfigurationForm
+                csrfToken={csrfToken}
+                formData={fieldModel}
+                setErrors={(errors) => setFieldErrors(errors)}
+                setFormData={(content) => setFieldModel(content)}
+            >
                 <TextInput
                     key={EMAIL_GLOBAL_FIELD_KEYS.host}
                     name={EMAIL_GLOBAL_FIELD_KEYS.host}
                     label="SMTP Host"
                     description="The host name of the SMTP email server."
+                    required
                     readOnly={readonly}
                     onChange={handleChange}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.host)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.host)}
+                    errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.host]}
                 />
                 <TextInput
                     key={EMAIL_GLOBAL_FIELD_KEYS.from}
                     name={EMAIL_GLOBAL_FIELD_KEYS.from}
                     label="SMTP From"
                     description="The email address to use as the return address."
+                    required
                     readOnly={readonly}
                     onChange={handleChange}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.from)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.from)}
+                    errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.from]}
                 />
                 <CheckboxInput
                     key={EMAIL_GLOBAL_FIELD_KEYS.auth}
@@ -69,6 +66,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={handleChange}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.auth)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.auth)}
+                    errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.auth]}
                 />
                 <TextInput
                     key={EMAIL_GLOBAL_FIELD_KEYS.user}
@@ -78,6 +77,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={handleChange}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.user)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.user)}
+                    errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.user]}
                 />
                 <TextInput
                     key={EMAIL_GLOBAL_FIELD_KEYS.password}
@@ -87,6 +88,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={handleChange}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.password)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.password)}
+                    errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.password]}
                 />
 
                 <CollapsiblePane
@@ -102,6 +105,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.port)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.port)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.port]}
                     />
                     <NumberInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.connectionTimeout}
@@ -111,6 +116,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.connectionTimeout)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.connectionTimeout)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.connectionTimeout]}
                     />
                     <NumberInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.timeout}
@@ -120,6 +127,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.timeout)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.timeout)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.timeout]}
                     />
                     <NumberInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.writeTimeout}
@@ -129,6 +138,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.writeTimeout)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.writeTimeout)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.writeTimeout]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.localhost}
@@ -138,6 +149,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.localhost)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.localhost)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.localhost]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.localAddress}
@@ -147,6 +160,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.localAddress)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.localAddress)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.localAddress]}
                     />
                     <NumberInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.localPort}
@@ -156,6 +171,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.localPort)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.localPort)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.localPort]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.ehlo}
@@ -165,6 +182,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.ehlo)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.ehlo)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.ehlo]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.authMechanisms}
@@ -174,6 +193,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.authMechanisms)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.authMechanisms)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.authMechanisms]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.loginDisable}
@@ -183,6 +204,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.loginDisable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.loginDisable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.loginDisable]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.authPlainDisable}
@@ -192,6 +215,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.authPlainDisable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.authPlainDisable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.authPlainDisable]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.authDigestMd5Disable}
@@ -201,6 +226,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.authDigestMd5Disable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.authDigestMd5Disable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.authDigestMd5Disable]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.authNtlmDisable}
@@ -210,6 +237,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.authNtlmDisable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.authNtlmDisable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.authNtlmDisable]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.authNtlmDomain}
@@ -219,6 +248,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.authNtlmDomain)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.authNtlmDomain)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.authNtlmDomain]}
                     />
                     <NumberInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.authNtlmFlags}
@@ -228,6 +259,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.authNtlmFlags)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.authNtlmFlags)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.authNtlmFlags]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.authXoauth2Disable}
@@ -237,6 +270,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.authXoauth2Disable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.authXoauth2Disable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.authXoauth2Disable]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.submitter}
@@ -246,6 +281,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.submitter)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.submitter)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.submitter]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.dsnNotify}
@@ -255,6 +292,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.dsnNotify)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.dsnNotify)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.dsnNotify]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.dsnRet}
@@ -264,6 +303,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.dsnRet)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.dsnRet)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.dsnRet]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.allow8BitMime}
@@ -273,6 +314,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.allow8BitMime)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.allow8BitMime)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.allow8BitMime]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.sendPartial}
@@ -282,6 +325,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.sendPartial)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.sendPartial)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.sendPartial]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.saslEnable}
@@ -291,6 +336,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.saslEnable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.saslEnable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.saslEnable]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.saslMechanism}
@@ -300,6 +347,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.saslMechanism)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.saslMechanism)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.saslMechanism]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.saslAuthorizationId}
@@ -309,6 +358,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.saslAuthorizationId)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.saslAuthorizationId)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.saslAuthorizationId]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.saslRealm}
@@ -318,6 +369,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.saslRealm)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.saslRealm)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.saslRealm]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.saslUseCanonicalHostname}
@@ -327,6 +380,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.saslUseCanonicalHostname)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.saslUseCanonicalHostname)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.saslUseCanonicalHostname]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.quitWait}
@@ -336,6 +391,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.quitWait)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.quitWait)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.quitWait]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.reportSuccess}
@@ -345,6 +402,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.reportSuccess)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.reportSuccess)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.reportSuccess]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.sslEnable}
@@ -354,6 +413,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.sslEnable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.sslEnable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.sslEnable]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.sslCheckServerIdentity}
@@ -363,6 +424,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.sslCheckServerIdentity)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.sslCheckServerIdentity)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.sslCheckServerIdentity]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.sslTrust}
@@ -372,6 +435,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.sslTrust)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.sslTrust)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.sslTrust]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.sslProtocols}
@@ -381,6 +446,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.sslProtocols)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.sslProtocols)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.sslProtocols]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.sslCipherSuites}
@@ -390,6 +457,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.sslCipherSuites)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.sslCipherSuites)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.sslCipherSuites]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.startTlsEnable}
@@ -399,6 +468,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.startTlsEnable)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.startTlsEnable)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.startTlsEnable]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.startTlsRequired}
@@ -408,6 +479,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.startTlsRequired)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.startTlsRequired)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.startTlsRequired]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.proxyHost}
@@ -417,6 +490,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.proxyHost)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.proxyHost)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.proxyHost]}
                     />
                     <NumberInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.proxyPort}
@@ -426,6 +501,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.proxyPort)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.proxyPort)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.proxyPort]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.socksHost}
@@ -435,6 +512,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.socksHost)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.socksHost)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.socksHost]}
                     />
                     <NumberInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.socksPort}
@@ -444,6 +523,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.socksPort)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.socksPort)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.socksPort]}
                     />
                     <TextInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.mailExtensions}
@@ -453,6 +534,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.mailExtensions)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.mailExtensions)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.mailExtensions]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.userSet}
@@ -462,6 +545,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.userSet)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.userSet)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.userSet]}
                     />
                     <CheckboxInput
                         key={EMAIL_GLOBAL_FIELD_KEYS.noopStrict}
@@ -471,6 +556,8 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         readOnly={readonly}
                         onChange={handleChange}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.noopStrict)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.noopStrict)}
+                        errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.noopStrict]}
                     />
                 </CollapsiblePane>
             </CommonGlobalConfigurationForm>
