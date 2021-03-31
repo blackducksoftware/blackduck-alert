@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
-import com.synopsys.integration.alert.database.user.AuthenticationTypeRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
@@ -37,8 +36,6 @@ import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 public class UserAccessorTestIT {
     @Autowired
     private DefaultUserAccessor userAccessor;
-    @Autowired
-    private AuthenticationTypeRepository authenticationTypeRepository;
 
     @BeforeEach
     public void cleanUpUsers() {

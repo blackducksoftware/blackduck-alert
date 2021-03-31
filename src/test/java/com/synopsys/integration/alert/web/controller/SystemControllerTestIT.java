@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.web.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -18,7 +17,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
-import com.synopsys.integration.alert.web.api.system.SystemActions;
 
 @Transactional
 @AlertIntegrationTest
@@ -29,12 +27,10 @@ public class SystemControllerTestIT {
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
-    private SystemActions systemActions;
 
     @BeforeEach
     public void initialize() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
-        systemActions = Mockito.mock(SystemActions.class);
     }
 
     @Test
