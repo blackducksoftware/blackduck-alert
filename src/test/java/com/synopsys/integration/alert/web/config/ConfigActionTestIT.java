@@ -12,6 +12,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -34,6 +35,7 @@ import com.synopsys.integration.alert.web.api.config.ConfigActions;
 
 import junit.framework.AssertionFailedError;
 
+@Transactional
 @AlertIntegrationTest
 public class ConfigActionTestIT {
     @Autowired

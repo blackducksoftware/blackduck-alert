@@ -29,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -66,8 +65,6 @@ public class NotificationContentRepositoryIT {
     private AuditEntryRepository auditEntryRepository;
     @Autowired
     private AuditNotificationRepository auditNotificationRepository;
-    @Autowired
-    private AuditAccessor auditAccessor;
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired

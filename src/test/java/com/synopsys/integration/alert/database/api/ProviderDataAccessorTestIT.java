@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -43,6 +44,7 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
+@Transactional
 @AlertIntegrationTest
 public class ProviderDataAccessorTestIT {
     private static final String PROVIDER_CONFIG_NAME = "Test Black Duck configuration";
@@ -52,8 +54,8 @@ public class ProviderDataAccessorTestIT {
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
 
-    private Gson gson = new Gson();
-    private BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(gson, new ObjectMapper(), new BlackDuckResponseResolver(gson), new SilentIntLogger());
+    private final Gson gson = new Gson();
+    private final BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(gson, new ObjectMapper(), new BlackDuckResponseResolver(gson), new SilentIntLogger());
 
     private BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private ProjectService projectService;

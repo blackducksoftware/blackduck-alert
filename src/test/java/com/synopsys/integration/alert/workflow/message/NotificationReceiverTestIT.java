@@ -11,16 +11,19 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
-import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
+import com.synopsys.integration.alert.database.notification.NotificationEntity;
+import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 //TODO: This class depends on AlertIntegrationTest which cannot be moved into test-common yet due to it's dependencies.
 //  Move this class into the workflow subproject once the dependencies are resolved
+@Transactional
 @AlertIntegrationTest
 public class NotificationReceiverTestIT {
     @Autowired
@@ -29,6 +32,8 @@ public class NotificationReceiverTestIT {
     private DefaultNotificationAccessor defaultNotificationAccessor;
     @Autowired
     private NotificationReceiver notificationReceiver;
+
+    MockNotificationContent notificationMocker = new MockNotificationContent();
 
     int pageSize = 10;
 
@@ -82,8 +87,18 @@ public class NotificationReceiverTestIT {
     }
 
     private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) {
-        return new AlertNotificationModel(id, 1L, "provider", "providerConfigName", "notificationType", "{content: \"content is here...\"}", DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp(), processed);
+        NotificationEntity entity = notificationMocker.createEntity();
+        return new AlertNotificationModel(
+            id,
+            entity.getProviderConfigId(),
+            entity.getProvider(),
+            "providerConfigName",
+            entity.getNotificationType(),
+            entity.getContent(),
+            entity.getCreatedAt(),
+            entity.getProviderCreationTime(),
+            processed
+        );
     }
 
     private void testAlertNotificationModels(List<AlertNotificationModel> models) {

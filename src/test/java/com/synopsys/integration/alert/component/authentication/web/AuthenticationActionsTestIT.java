@@ -36,6 +36,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
@@ -58,6 +59,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
+@Transactional
 @AlertIntegrationTest
 public class AuthenticationActionsTestIT {
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
