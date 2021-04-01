@@ -42,6 +42,8 @@ const CommonGlobalConfigurationForm = ({
         event.preventDefault();
         event.stopPropagation();
 
+        setErrorMessage(null);
+        setErrors({});
         const validateResponse = await validateRequest();
         const validateJson = await validateResponse.json();
         if (validateResponse.ok) {
@@ -61,7 +63,9 @@ const CommonGlobalConfigurationForm = ({
 
                 const { fieldModels } = reloadedData;
                 const retrievedModel = (fieldModels && fieldModels.length > 0) ? fieldModels[0] : {};
+
                 setFormData(retrievedModel);
+                setActionMessage('Save Successful');
             }
         }
     };
@@ -69,6 +73,7 @@ const CommonGlobalConfigurationForm = ({
     const performDeleteRequest = async () => {
         await deleteRequest();
         setFormData({});
+        setActionMessage('Delete Successful');
     };
 
     return (
