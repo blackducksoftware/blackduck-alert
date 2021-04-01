@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.3.9.RELEASE'
+        springBootVersion = '2.4.4'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
@@ -129,8 +129,8 @@ dependencies {
     // =============
     testImplementation 'org.testcontainers:postgresql'
     if (getGradle().getStartParameter().taskNames.contains('runServer')) {
-        runtimeClasspath 'org.springframework.cloud:spring-cloud-starter:2.2.3.RELEASE'
-        runtimeClasspath "com.playtika.testcontainers:embedded-postgresql:1.78"
+        runtimeClasspath 'com.playtika.testcontainers:embedded-postgresql:2.0.5'
+        runtimeClasspath 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.1'
         runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
     }
 
