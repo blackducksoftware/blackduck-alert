@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.2.1.RELEASE'
+        springBootVersion = '2.3.9.RELEASE'
     }
 
     apply from: 'https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle', to: buildscript
