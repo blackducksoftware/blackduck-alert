@@ -8,13 +8,16 @@
 package com.synopsys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class IssueTrackerProcessor<T extends Serializable> {
     private final IssueTrackerModelExtractor<T> modelExtractor;
@@ -26,8 +29,19 @@ public class IssueTrackerProcessor<T extends Serializable> {
     }
 
     public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages) throws AlertException {
-        List<IssueTrackerModelHolder<T>> channelMessages = modelExtractor.extractIssueTrackerModels(messages);
-        return messageSender.sendMessages(channelMessages);
+        List<IssueTrackerIssueResponseModel<T>> issueResponseModels = new LinkedList<>();
+
+        IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages());
+        List<IssueTrackerIssueResponseModel<T>> simpleMessageResponseModels = messageSender.sendMessages(simpleMessageHolder);
+        issueResponseModels.addAll(simpleMessageResponseModels);
+
+        for (ProjectMessage projectMessage : messages.getProjectMessages()) {
+            IssueTrackerModelHolder<T> projectMessageHolder = modelExtractor.extractProjectMessageIssueModels(projectMessage);
+            List<IssueTrackerIssueResponseModel<T>> projectMessageResponseModels = messageSender.sendMessages(projectMessageHolder);
+            issueResponseModels.addAll(projectMessageResponseModels);
+        }
+
+        return new IssueTrackerResponse<>("Success", issueResponseModels);
     }
 
 }

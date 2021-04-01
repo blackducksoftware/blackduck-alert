@@ -17,18 +17,18 @@ import com.synopsys.integration.alert.channel.ChannelDescriptorTestIT;
 import com.synopsys.integration.alert.channel.email.action.EmailDistributionTestAction;
 import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.action.EmailTestActionHelper;
+import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
+import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.distribution.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageConverter;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
-import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -165,7 +165,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
     }
 
     @Override
-    public ChannelDistributionTestAction getChannelDistributionTestAction() {
+    public DistributionChannelTestAction getDistributionChannelTestAction() {
         TestAlertProperties alertProperties = new TestAlertProperties();
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(alertProperties, new MessageContentGroupCsvCreator(), gson);
@@ -180,7 +180,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTestIT
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, alertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, mockConfigAccessor);
         EmailChannelV2 emailChannel = new EmailChannelV2(emailChannelMessageConverter, emailChannelMessageSender);
 
-        return new EmailDistributionTestAction(emailChannel, emailTestActionHelper);
+        return new EmailDistributionTestAction(ChannelKeys.EMAIL, emailChannel, emailTestActionHelper);
     }
 
     @Test

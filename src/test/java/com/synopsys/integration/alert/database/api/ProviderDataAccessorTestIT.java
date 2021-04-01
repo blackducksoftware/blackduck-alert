@@ -12,7 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -30,14 +33,18 @@ import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathMultipl
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
+import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
 
+@Transactional
 @AlertIntegrationTest
 public class ProviderDataAccessorTestIT {
     private static final String PROVIDER_CONFIG_NAME = "Test Black Duck configuration";
@@ -46,6 +53,9 @@ public class ProviderDataAccessorTestIT {
     private ConfigurationAccessor configurationAccessor;
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
+
+    private final Gson gson = new Gson();
+    private final BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(gson, new ObjectMapper(), new BlackDuckResponseResolver(gson), new SilentIntLogger());
 
     private BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private ProjectService projectService;
@@ -95,7 +105,7 @@ public class ProviderDataAccessorTestIT {
         Set<UserView> userViews = createUserViews();
         Mockito.when(projectUsersService.getAllActiveUsersForProject(Mockito.any(ProjectView.class))).thenReturn(userViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, href);
         assertEquals(3, foundEmailAddresses.size());
     }
@@ -105,7 +115,7 @@ public class ProviderDataAccessorTestIT {
         Mockito.when(blackDuckService.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectView.class))).thenThrow(new IntegrationException("Could not find the project."));
 
         Long providerConfigId = providerConfiguration.getConfigurationId();
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         Set<String> foundEmailAddresses = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, "expecting no results");
         assertEquals(0, foundEmailAddresses.size());
     }
@@ -117,7 +127,7 @@ public class ProviderDataAccessorTestIT {
         List<UserView> userViews = new ArrayList<>(createUserViews());
         Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
         assertEquals(3, allProviderUsers.size());
     }
@@ -127,7 +137,7 @@ public class ProviderDataAccessorTestIT {
         List<UserView> userViews = new ArrayList<>(createUserViews());
         Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigName(PROVIDER_CONFIG_NAME);
         assertEquals(3, allProviderUsers.size());
     }
@@ -139,7 +149,7 @@ public class ProviderDataAccessorTestIT {
         List<ProjectView> projectViews = createProjectViews();
         Mockito.when(projectService.getAllProjects()).thenReturn(projectViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         assertEquals(projectViews.size(), allProviderUsers.size());
     }
@@ -149,7 +159,7 @@ public class ProviderDataAccessorTestIT {
         List<ProjectView> projectViews = createProjectViews();
         Mockito.when(projectService.getAllProjects()).thenReturn(projectViews);
 
-        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory);
+        BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderProject> allProviderUsers = providerDataAccessor.getProjectsByProviderConfigName(PROVIDER_CONFIG_NAME);
         assertEquals(projectViews.size(), allProviderUsers.size());
     }

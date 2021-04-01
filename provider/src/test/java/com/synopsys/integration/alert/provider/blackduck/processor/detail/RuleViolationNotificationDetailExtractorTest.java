@@ -26,14 +26,14 @@ public class RuleViolationNotificationDetailExtractorTest {
     @Test
     public void extractDetailedContentTest() throws IOException {
         String jsonContent = TestResourceUtils.readFileToString(NOTIFICATION_JSON_PATH);
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", NotificationType.RULE_VIOLATION.name(), jsonContent, null, null, false);
-
-        RuleViolationNotificationDetailExtractor extractor = new RuleViolationNotificationDetailExtractor(gson);
-        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification);
-        assertEquals(2, detailedNotificationContents.size());
-
         RuleViolationNotificationView notificationView = gson.fromJson(jsonContent, RuleViolationNotificationView.class);
         RuleViolationNotificationContent notificationContent = notificationView.getContent();
+
+        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
+
+        RuleViolationNotificationDetailExtractor extractor = new RuleViolationNotificationDetailExtractor();
+        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, notificationView);
+        assertEquals(2, detailedNotificationContents.size());
 
         for (DetailedNotificationContent detailedContent : detailedNotificationContents) {
             Optional<String> optionalProjectName = detailedContent.getProjectName();

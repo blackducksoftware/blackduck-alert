@@ -13,25 +13,24 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractor;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationClearedNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.RuleViolationClearedNotificationView;
 
 @Component
-public class RuleViolationClearedNotificationDetailExtractor extends NotificationDetailExtractor<RuleViolationClearedNotificationContent, RuleViolationClearedNotificationView> {
+public class RuleViolationClearedNotificationDetailExtractor extends NotificationDetailExtractor<RuleViolationClearedNotificationView> {
     @Autowired
-    public RuleViolationClearedNotificationDetailExtractor(Gson gson) {
-        super(NotificationType.RULE_VIOLATION_CLEARED, RuleViolationClearedNotificationView.class, gson);
+    public RuleViolationClearedNotificationDetailExtractor() {
+        super(RuleViolationClearedNotificationView.class);
     }
 
     @Override
-    protected List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, RuleViolationClearedNotificationContent notificationContent) {
+    public List<DetailedNotificationContent> extractDetailedContent(AlertNotificationModel alertNotificationModel, RuleViolationClearedNotificationView notificationView) {
+        RuleViolationClearedNotificationContent notificationContent = notificationView.getContent();
         return notificationContent.getPolicyInfos()
                    .stream()
                    .map(policyInfo -> createFlattenedContent(notificationContent, policyInfo))

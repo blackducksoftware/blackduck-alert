@@ -15,13 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.event.AlertEvent;
 
-public abstract class MessageReceiver<T> implements MessageListener {
+public abstract class MessageReceiver<T extends AlertEvent> implements MessageListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
     private final Class<T> eventClass;
 
-    public MessageReceiver(Gson gson, Class<T> eventClass) {
+    protected MessageReceiver(Gson gson, Class<T> eventClass) {
         this.gson = gson;
         this.eventClass = eventClass;
     }
@@ -38,6 +39,7 @@ public abstract class MessageReceiver<T> implements MessageListener {
                 TextMessage textMessage = (TextMessage) message;
                 T event = gson.fromJson(textMessage.getText(), eventClass);
                 logger.trace("{} event {}", receiverClassName, event);
+                logger.debug("Received Event ID: {}", event.getEventId());
                 handleEvent(event);
             }
         } catch (Exception e) {

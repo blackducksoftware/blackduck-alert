@@ -7,18 +7,30 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.action;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
-import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerChannel;
+import com.synopsys.integration.alert.channel.api.issue.action.IssueTrackerTestAction;
+import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.JiraServerChannelKey;
 
 @Component
-public class JiraServerDistributionTestAction extends DistributionChannelTestAction<JiraServerJobDetailsModel> {
+public class JiraServerDistributionTestAction extends IssueTrackerTestAction<JiraServerJobDetailsModel, String> {
     @Autowired
-    public JiraServerDistributionTestAction(JiraServerChannel distributionChannel) {
-        super(distributionChannel);
+    public JiraServerDistributionTestAction(JiraServerChannelKey channelKey, JiraServerMessageSenderFactory messageSenderFactory) {
+        super(channelKey, messageSenderFactory);
+    }
+
+    @Override
+    protected boolean hasResolveTransition(JiraServerJobDetailsModel distributionDetails) {
+        return StringUtils.isNotBlank(distributionDetails.getResolveTransition());
+    }
+
+    @Override
+    protected boolean hasReopenTransition(JiraServerJobDetailsModel distributionDetails) {
+        return StringUtils.isNotBlank(distributionDetails.getReopenTransition());
     }
 
 }

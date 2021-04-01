@@ -15,7 +15,9 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
+import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 public class ProjectNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/projectNotification.json";
@@ -25,19 +27,19 @@ public class ProjectNotificationDetailExtractorTest {
     @Test
     public void extractDetailedContentTest() throws IOException {
         String jsonContent = TestResourceUtils.readFileToString(NOTIFICATION_JSON_PATH);
-        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", NotificationType.PROJECT.name(), jsonContent, null, null, false);
+        ProjectNotificationView projectNotificationView = gson.fromJson(jsonContent, ProjectNotificationView.class);
+        ProjectNotificationContent projectNotificationContent = projectNotificationView.getContent();
 
-        ProjectNotificationDetailExtractor extractor = new ProjectNotificationDetailExtractor(gson);
-        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification);
+        AlertNotificationModel notification = new AlertNotificationModel(0L, 0L, "BlackDuck", "Config 1", null, null, null, null, false);
+
+        ProjectNotificationDetailExtractor extractor = new ProjectNotificationDetailExtractor();
+        List<DetailedNotificationContent> detailedNotificationContents = extractor.extractDetailedContent(notification, projectNotificationView);
         assertEquals(1, detailedNotificationContents.size());
 
         DetailedNotificationContent detailedNotificationContent = detailedNotificationContents.get(0);
 
         Optional<String> optionalProjectName = detailedNotificationContent.getProjectName();
         assertTrue(optionalProjectName.isPresent(), "Expect project name to be present");
-
-        ProjectNotificationView projectNotificationView = gson.fromJson(jsonContent, ProjectNotificationView.class);
-        ProjectNotificationContent projectNotificationContent = projectNotificationView.getContent();
 
         assertEquals(projectNotificationContent.getProjectName(), optionalProjectName.get());
         assertTrue(detailedNotificationContent.getPolicyName().isEmpty(), "Expected no policy name to be present");

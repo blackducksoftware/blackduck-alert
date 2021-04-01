@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -29,6 +30,7 @@ import com.synopsys.integration.alert.component.authentication.web.Authenticatio
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+@Transactional
 @AlertIntegrationTest
 public class ConfigurationOverridesStartupComponentTest {
     private static final String DEFAULT_ADMIN_USER = "sysadmin";
@@ -195,4 +197,5 @@ public class ConfigurationOverridesStartupComponentTest {
         return UserModel.existingUser(oldUserModel.getId(), newUsername,
             newPassword, oldUserModel.getEmailAddress(), oldUserModel.getAuthenticationType(), oldUserModel.getRoles(), oldUserModel.isEnabled());
     }
+
 }

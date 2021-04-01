@@ -8,6 +8,9 @@
 package com.synopsys.integration.alert.channel.api.issue.send;
 
 import java.io.Serializable;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
@@ -23,8 +26,10 @@ public class IssueTrackerIssueResponseCreator {
         this.callbackInfoCreator = callbackInfoCreator;
     }
 
-    public final <T extends Serializable> IssueTrackerIssueResponseModel<T> createIssueResponse(ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
-        IssueTrackerCallbackInfo callbackInfo = callbackInfoCreator.createCallbackInfo(source);
+    public final <T extends Serializable> IssueTrackerIssueResponseModel<T> createIssueResponse(@Nullable ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
+        IssueTrackerCallbackInfo callbackInfo = Optional.ofNullable(source)
+                                                    .flatMap(callbackInfoCreator::createCallbackInfo)
+                                                    .orElse(null);
         return new IssueTrackerIssueResponseModel<>(
             existingIssueDetails.getIssueId(),
             existingIssueDetails.getIssueKey(),

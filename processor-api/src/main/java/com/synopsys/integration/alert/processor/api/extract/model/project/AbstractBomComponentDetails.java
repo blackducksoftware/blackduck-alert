@@ -61,6 +61,7 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
         return additionalAttributes;
     }
 
+    // TODO make optional
     public String getBlackDuckIssuesUrl() {
         return blackDuckIssuesUrl;
     }

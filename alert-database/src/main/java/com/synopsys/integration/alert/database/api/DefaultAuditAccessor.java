@@ -12,15 +12,12 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +36,6 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
@@ -152,51 +146,6 @@ public class DefaultAuditAccessor implements AuditAccessor {
 
         auditNotificationRepository.saveAll(auditNotificationRelationsToSave);
         return auditEntryId;
-    }
-
-    @Override
-    @Transactional
-    public Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup contentGroup) {
-        Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-        List<ProviderMessageContent> subContent = contentGroup.getSubContent();
-        Set<Long> componentNotificationIds = subContent
-                                                 .stream()
-                                                 .map(ProviderMessageContent::getComponentItems)
-                                                 .flatMap(Collection::stream)
-                                                 .map(ComponentItem::getNotificationIds)
-                                                 .flatMap(Set::stream)
-                                                 .collect(Collectors.toSet());
-        Set<Long> topLevelActionNotificationIds = subContent
-                                                      .stream()
-                                                      .filter(ProviderMessageContent::isTopLevelActionOnly)
-                                                      .map(ProviderMessageContent::getNotificationId)
-                                                      .flatMap(Optional::stream)
-                                                      .collect(Collectors.toSet());
-        Set<Long> allMessageNotificationIds = Stream
-                                                  .concat(componentNotificationIds.stream(), topLevelActionNotificationIds.stream())
-                                                  .collect(Collectors.toSet());
-        for (Long notificationId : allMessageNotificationIds) {
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, null, null, null);
-
-            boolean didAuditEntryExist = false;
-            if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
-                Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
-                didAuditEntryExist = null != auditEntryId;
-                if (didAuditEntryExist) {
-                    auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
-                }
-            }
-
-            auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
-            AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-
-            notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
-            if (!didAuditEntryExist) {
-                AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-                auditNotificationRepository.save(auditNotificationRelation);
-            }
-        }
-        return notificationIdToAuditId;
     }
 
     @Override
