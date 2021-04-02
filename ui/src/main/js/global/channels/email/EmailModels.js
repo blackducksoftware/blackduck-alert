@@ -4,6 +4,12 @@ export const EMAIL_INFO = {
     label: 'Email'
 };
 
+export const EMAIL_TEST_FIELD = {
+    key: 'test.field.destination.name',
+    label: 'Email address',
+    description: 'The email address to send a message to.'
+};
+
 export const EMAIL_GLOBAL_FIELD_KEYS = {
     user: 'mail.smtp.user',
     host: 'mail.smtp.host',

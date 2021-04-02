@@ -10,17 +10,14 @@ const GlobalTestModal = ({
             <Modal.Title>Test Your Configuration</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <form className="form-horizontal" onSubmit={handleTest} noValidate>
-                <div>
-                    {children}
-                </div>
-            </form>
+            {children}
         </Modal.Body>
         <Modal.Footer>
             <button
                 id="testSend"
                 type="submit"
                 className="btn btn-primary"
+                onClick={handleTest}
             >
                 Send Test Message
             </button>

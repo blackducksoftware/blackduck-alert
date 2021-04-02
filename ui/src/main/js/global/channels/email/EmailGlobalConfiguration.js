@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
-import { EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO } from 'global/channels/email/EmailModels';
+import { EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD } from 'global/channels/email/EmailModels';
 import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -13,6 +13,7 @@ import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [fieldModel, setFieldModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, EMAIL_INFO.key));
     const [fieldErrors, setFieldErrors] = useState({});
+    const [testFieldData, setTestFieldData] = useState({});
 
     const handleChange = ({ target }) => {
         const { type, name, value } = target;
@@ -20,6 +21,24 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
         const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(fieldModel, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(fieldModel, name, updatedValue);
         setFieldModel(newState);
     };
+
+    const handleTestChange = ({ target }) => {
+        const { type, name, value } = target;
+        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+        const newState = { [name]: updatedValue };
+        setTestFieldData(newState);
+    };
+
+    const testField = (
+        <TextInput
+            key={EMAIL_TEST_FIELD.key}
+            name={EMAIL_TEST_FIELD.key}
+            label={EMAIL_TEST_FIELD.label}
+            description={EMAIL_TEST_FIELD.description}
+            onChange={handleTestChange}
+            value={testFieldData[EMAIL_TEST_FIELD.key]}
+        />
+    );
 
     // FIXME collapsible pane needs to be open if data exists for the advanced section
     return (
@@ -33,6 +52,9 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                 formData={fieldModel}
                 setErrors={(errors) => setFieldErrors(errors)}
                 setFormData={(content) => setFieldModel(content)}
+                testFields={testField}
+                testFormData={testFieldData}
+                setTestFormData={(values) => setTestFieldData(values)}
             >
                 <TextInput
                     key={EMAIL_GLOBAL_FIELD_KEYS.host}

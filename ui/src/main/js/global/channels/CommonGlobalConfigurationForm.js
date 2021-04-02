@@ -7,16 +7,15 @@ import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'field/StatusMessage';
 
 const CommonGlobalConfigurationForm = ({
-    formData, csrfToken, setFormData, setErrors, displaySave, displayTest, displayDelete, children, testFields
+    formData, setFormData, testFormData, setTestFormData, csrfToken, setErrors, displaySave, displayTest, displayDelete, children, testFields
 }) => {
     const [showTest, setShowTest] = useState(false);
-    const [testFormData, setTestFormData] = useState({});
     const [errorMessage, setErrorMessage] = useState(null);
     const [actionMessage, setActionMessage] = useState(null);
     const [errorIsDetailed, setErrorIsDetailed] = useState(false);
 
     const readRequest = () => ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, formData.descriptorName);
-    const testRequest = () => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, FieldModelUtilities.getFieldModelId(formData));
+    const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, fieldModel);
     const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, FieldModelUtilities.getFieldModelId(formData));
     const validateRequest = () => ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, formData);
 
@@ -38,15 +37,46 @@ const CommonGlobalConfigurationForm = ({
         setTestFormData({});
     };
 
-    const saveRequest = async (event) => {
+    const performTestRequest = async () => {
+        let copy = JSON.parse(JSON.stringify(formData));
+        Object.keys(testFormData).forEach((key) => {
+            copy = FieldModelUtilities.updateFieldModelSingleValue(copy, key, testFormData[key]);
+        });
+
+        const response = await testRequest(copy);
+        if (response.ok) {
+            const json = await response.json();
+            if (json.hasErrors) {
+                setErrorMessage(json.message);
+                setErrors(json.errors);
+            } else {
+                setActionMessage('Test Successful');
+            }
+        }
+
+        handleTestCancel();
+    };
+
+    const handleTestClick = () => {
+        setErrorMessage(null);
+        setErrors({});
+
+        if (testFields) {
+            setShowTest(true);
+        } else {
+            performTestRequest();
+        }
+    };
+
+    const performSaveRequest = async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
         setErrorMessage(null);
         setErrors({});
         const validateResponse = await validateRequest();
-        const validateJson = await validateResponse.json();
         if (validateResponse.ok) {
+            const validateJson = await validateResponse.json();
             if (validateJson.hasErrors) {
                 setErrorMessage(validateJson.message);
                 setErrors(validateJson.errors);
@@ -84,7 +114,7 @@ const CommonGlobalConfigurationForm = ({
                 actionMessage={actionMessage}
                 errorIsDetailed={errorIsDetailed}
             />
-            <form className="form-horizontal" onSubmit={saveRequest} noValidate>
+            <form className="form-horizontal" onSubmit={performSaveRequest} noValidate>
                 <div>
                     {children}
                 </div>
@@ -93,13 +123,13 @@ const CommonGlobalConfigurationForm = ({
                     includeTest={displayTest}
                     includeDelete={displayDelete}
                     type="submit"
-                    onTestClick={() => setShowTest(true)}
+                    onTestClick={handleTestClick}
                     onDeleteClick={performDeleteRequest}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
                 />
                 <GlobalTestModal
                     showTestModal={showTest}
-                    handleTest={testRequest}
+                    handleTest={performTestRequest}
                     handleCancel={handleTestCancel}
                 >
                     <div>
@@ -120,14 +150,18 @@ CommonGlobalConfigurationForm.propTypes = {
     displaySave: PropTypes.bool,
     displayTest: PropTypes.bool,
     displayDelete: PropTypes.bool,
-    testFields: PropTypes.node
+    testFields: PropTypes.node,
+    testFormData: PropTypes.object,
+    setTestFormData: PropTypes.func
 };
 
 CommonGlobalConfigurationForm.defaultProps = {
     displaySave: true,
     displayTest: true,
     displayDelete: true,
-    testFields: null
+    testFields: null,
+    testFormData: {},
+    setTestFormData: null
 };
 
 export default CommonGlobalConfigurationForm;
