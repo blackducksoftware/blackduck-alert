@@ -27,10 +27,10 @@ class Navigation extends Component {
         const contentList = descriptorList.map(({ name, urlName, label }) => {
             // Removes these channels from the dynamic setup and manually inserts the static information
             if (name === SLACK_INFO.key) {
-                return this.createSlackNavItem(uriPrefix);
+                return this.createStaticNavItem(SLACK_INFO, uriPrefix);
             }
             if (name === EMAIL_INFO.key) {
-                return this.createEmailNavItem(uriPrefix);
+                return this.createStaticNavItem(EMAIL_INFO, uriPrefix);
             }
 
             return (
@@ -50,21 +50,11 @@ class Navigation extends Component {
         return contentList;
     }
 
-    createSlackNavItem(uriPrefix) {
+    createStaticNavItem(itemObject, uriPrefix) {
         return (
-            <li key={SLACK_INFO.key}>
-                <NavLink to={`${uriPrefix}${SLACK_INFO.url}`} activeClassName="activeNav">
-                    {SLACK_INFO.label}
-                </NavLink>
-            </li>
-        );
-    }
-
-    createEmailNavItem(uriPrefix) {
-        return (
-            <li key={EMAIL_INFO.key}>
-                <NavLink to={`${uriPrefix}${EMAIL_INFO.url}`} activeClassName="activeNav">
-                    {EMAIL_INFO.label}
+            <li key={itemObject.key}>
+                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
+                    {itemObject.label}
                 </NavLink>
             </li>
         );
