@@ -92,7 +92,7 @@ class MainPage extends Component {
                 renderComponent = <SlackGlobalConfiguration />;
                 break;
             case EMAIL_INFO.key:
-                renderComponent = <EmailGlobalConfiguration csrfToken={csrfToken} />;
+                renderComponent = <EmailGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
                 break;
             default:
                 renderComponent = <GlobalConfiguration key={name} descriptor={component} />;

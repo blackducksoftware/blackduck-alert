@@ -127,16 +127,16 @@ const CommonGlobalConfigurationForm = ({
                     onDeleteClick={performDeleteRequest}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
                 />
-                <GlobalTestModal
-                    showTestModal={showTest}
-                    handleTest={performTestRequest}
-                    handleCancel={handleTestCancel}
-                >
-                    <div>
-                        {testFields}
-                    </div>
-                </GlobalTestModal>
             </form>
+            <GlobalTestModal
+                showTestModal={showTest}
+                handleTest={performTestRequest}
+                handleCancel={handleTestCancel}
+            >
+                <div>
+                    {testFields}
+                </div>
+            </GlobalTestModal>
         </div>
     );
 };
