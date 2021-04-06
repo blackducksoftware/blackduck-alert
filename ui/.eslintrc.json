@@ -3,11 +3,15 @@
   "parserOptions": {
     "allowImportExportEverywhere": true
   },
-  "extends": "airbnb",
+  "extends": [
+    "airbnb",
+    "plugin:react-hooks/recommended"
+  ],
   "plugins": [
     "react",
     "jsx-a11y",
-    "import"
+    "import",
+    "react-hooks"
   ],
   "rules": {
     "jsx-a11y/label-has-for": 0,
