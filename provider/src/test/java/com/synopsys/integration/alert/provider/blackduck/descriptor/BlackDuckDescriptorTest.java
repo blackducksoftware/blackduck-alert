@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Set;
 

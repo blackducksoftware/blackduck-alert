@@ -11,7 +11,7 @@
  */
 package com.synopsys.integration.alert.common.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,4 +51,5 @@ public class ResponseBodyBuilderTest {
 
         assertEquals("{\"id\":\"33L\",\"message\":\"There were errors\",\"errors\":{\"Field\":{\"severity\":\"ERROR\",\"fieldMessage\":\"Terrible error\"}}}", responseBodyBuilder.build());
     }
+
 }
