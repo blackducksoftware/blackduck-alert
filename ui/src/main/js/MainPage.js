@@ -16,6 +16,8 @@ import SlackGlobalConfiguration from 'global/channels/slack/SlackGlobalConfigura
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 import EmailGlobalConfiguration from 'global/channels/email/EmailGlobalConfiguration';
+import { JIRA_CLOUD_INFO } from './global/channels/jira/cloud/JiraCloudModel';
+import JiraCloudGlobalConfiguration from './global/channels/jira/cloud/JiraCloudGlobalConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
@@ -93,6 +95,9 @@ class MainPage extends Component {
                 break;
             case EMAIL_INFO.key:
                 renderComponent = <EmailGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
+                break;
+            case JIRA_CLOUD_INFO.key:
+                renderComponent = <JiraCloudGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
                 break;
             default:
                 renderComponent = <GlobalConfiguration key={name} descriptor={component} />;

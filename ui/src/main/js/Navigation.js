@@ -7,6 +7,7 @@ import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
+import { JIRA_CLOUD_INFO } from "./global/channels/jira/cloud/JiraCloudModel";
 
 class Navigation extends Component {
     constructor(props) {
@@ -26,20 +27,22 @@ class Navigation extends Component {
 
         const contentList = descriptorList.map(({ name, urlName, label }) => {
             // Removes these channels from the dynamic setup and manually inserts the static information
-            if (name === SLACK_INFO.key) {
-                return this.createStaticNavItem(SLACK_INFO, uriPrefix);
+            switch (name) {
+                case SLACK_INFO.key:
+                    return this.createStaticNavItem(SLACK_INFO, uriPrefix);
+                case EMAIL_INFO.key:
+                    return this.createStaticNavItem(EMAIL_INFO, uriPrefix);
+                case JIRA_CLOUD_INFO.key:
+                    return this.createStaticNavItem(JIRA_CLOUD_INFO, uriPrefix);
+                default:
+                    return (
+                        <li key={name}>
+                            <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
+                                {label}
+                            </NavLink>
+                        </li>
+                    );
             }
-            if (name === EMAIL_INFO.key) {
-                return this.createStaticNavItem(EMAIL_INFO, uriPrefix);
-            }
-
-            return (
-                <li key={name}>
-                    <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
-                        {label}
-                    </NavLink>
-                </li>
-            );
         });
 
         if (header && contentList && contentList.length > 0) {
