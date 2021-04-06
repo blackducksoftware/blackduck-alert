@@ -25,6 +25,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
         <CommonGlobalConfiguration
             label={JIRA_CLOUD_INFO.label}
             description="Configure the Jira Cloud instance that Alert will send issue updates to."
+            lastUpdated={formData.lastUpdated}
         >
             <CommonGlobalConfigurationForm
                 setErrors={(data) => setErrors(data)}

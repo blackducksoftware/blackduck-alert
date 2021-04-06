@@ -7,7 +7,8 @@ import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
-import { JIRA_CLOUD_INFO } from "./global/channels/jira/cloud/JiraCloudModel";
+import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
 
 class Navigation extends Component {
     constructor(props) {
@@ -34,6 +35,8 @@ class Navigation extends Component {
                     return this.createStaticNavItem(EMAIL_INFO, uriPrefix);
                 case JIRA_CLOUD_INFO.key:
                     return this.createStaticNavItem(JIRA_CLOUD_INFO, uriPrefix);
+                case JIRA_SERVER_INFO.key:
+                    return this.createStaticNavItem(JIRA_SERVER_INFO, uriPrefix);
                 default:
                     return (
                         <li key={name}>
