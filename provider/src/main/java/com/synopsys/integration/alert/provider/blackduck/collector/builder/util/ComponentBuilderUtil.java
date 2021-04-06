@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.collector.builder.util;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.MessageBuilderConstants;
 import com.synopsys.integration.alert.provider.blackduck.collector.builder.model.ComponentData;
 import com.synopsys.integration.alert.provider.blackduck.collector.util.AlertBlackDuckService;
+import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentLicensesView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.UsageType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.PolicyInfo;
@@ -26,16 +28,19 @@ public final class ComponentBuilderUtil {
     private ComponentBuilderUtil() {
     }
 
-    public static List<LinkableItem> getLicenseLinkableItems(ProjectVersionComponentView bomComponentView) {
-        return bomComponentView.getLicenses()
+    public static List<LinkableItem> getLicenseLinkableItems(ProjectVersionComponentView projectVersionComponentView) {
+        return projectVersionComponentView.getLicenses()
                    .stream()
-                   .map(licenseView -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_LICENSE, licenseView.getLicenseDisplay()))
+                   .filter(Objects::nonNull)
+                   .map(ProjectVersionComponentLicensesView::getLicenseDisplay)
+                   .map(licenseDisplay -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_LICENSE, licenseDisplay))
                    .collect(Collectors.toList());
     }
 
-    public static List<LinkableItem> getUsageLinkableItems(ProjectVersionComponentView bomComponentView) {
-        return bomComponentView.getUsages()
+    public static List<LinkableItem> getUsageLinkableItems(ProjectVersionComponentView projectVersionComponentView) {
+        return projectVersionComponentView.getUsages()
                    .stream()
+                   .filter(Objects::nonNull)
                    .map(UsageType::prettyPrint)
                    .map(usage -> new LinkableItem(MessageBuilderConstants.LABEL_COMPONENT_USAGE, usage))
                    .collect(Collectors.toList());
