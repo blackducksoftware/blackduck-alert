@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.common.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;
@@ -39,7 +39,7 @@ public class DateUtilsTest {
         OffsetDateTime jsonDateTime = DateUtils.parseDate(jsonDateString, dateFormat);
 
         if (!alertDateTime.getOffset().equals(jsonDateTime.getOffset())) {
-            assertTrue("Either hour or minute cannot match", alertDateTime.getHour() != jsonDateTime.getHour() || alertDateTime.getMinute() != alertDateTime.getMinute());
+            assertTrue(alertDateTime.getHour() != jsonDateTime.getHour() || alertDateTime.getMinute() != alertDateTime.getMinute(), "Either hour or minute cannot match");
         }
 
         OffsetDateTime expectedDateTime = OffsetDateTime.ofInstant(alertDateTime.toInstant(), ZoneOffset.UTC);
