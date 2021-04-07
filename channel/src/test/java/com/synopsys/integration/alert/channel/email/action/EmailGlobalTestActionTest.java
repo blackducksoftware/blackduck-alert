@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -93,12 +94,15 @@ public class EmailGlobalTestActionTest {
     }
 
     @Test
-    @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
+    @Tags(value = {
+        @Tag(TestTags.DEFAULT_INTEGRATION),
+        @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
+    })
     public void testConfigITTest() {
         TestProperties testProperties = new TestProperties();
         String emailAddress = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
-        EmailChannelMessageSender emailChannelMessageSender = createValidEmailChannelMessageSender(emailAddress, testProperties);
+        EmailChannelMessageSender emailChannelMessageSender = createValidEmailChannelMessageSender(emailAddress);
 
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessageSender);
 
@@ -125,7 +129,7 @@ public class EmailGlobalTestActionTest {
         return new FieldModel(null, null, keyToValues);
     }
 
-    private EmailChannelMessageSender createValidEmailChannelMessageSender(String emailAddress, TestProperties testProperties) {
+    private EmailChannelMessageSender createValidEmailChannelMessageSender(String emailAddress) {
         TestAlertProperties testAlertProperties = new TestAlertProperties();
 
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
