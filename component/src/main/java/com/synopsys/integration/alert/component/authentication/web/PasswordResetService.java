@@ -71,7 +71,7 @@ public class PasswordResetService {
 
     private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress, String username, String tempPassword) throws AlertException {
         try {
-            String alertLogo = alertProperties.getAlertLogo();
+            String alertLogo = alertProperties.constructSynopsysLogoPath();
 
             Map<String, String> contentIdsToFilePaths = new HashMap<>();
             EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);

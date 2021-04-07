@@ -42,14 +42,11 @@ public class AlertResourceLoader {
         return new ClassPathResource(path);
     }
 
-    public String getImagePath(String channelDirectory) throws AlertException {
-        return getPath(alertProperties.getAlertImagesDir(), channelDirectory);
-    }
-
     private String getPath(String directory, String subDirectory) throws AlertException {
         if (StringUtils.isNotBlank(directory)) {
             return String.format("%s/%s", directory, subDirectory);
         }
         throw new AlertException(String.format("Could not find the resource directory '%s'", directory));
     }
+
 }
