@@ -77,6 +77,8 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     label="Microsoft OAuth"
                     description="This will redirect you to Microsoft's OAuth login.  Please note you will remain logged in; for security reasons you may want to logout of your Microsoft account after authenticating the application."
                     endpoint="/api/function"
+                    csrfToken={csrfToken}
+                    currentConfig={formData}
                     fieldKey={AZURE_GLOBAL_FIELD_KEYS.configureOAuth}
                     requiredRelatedFields={[
                         AZURE_GLOBAL_FIELD_KEYS.organization,
