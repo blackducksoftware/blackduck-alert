@@ -22,6 +22,8 @@ import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'global/channels/msteams/MSTeamsGlobalConfiguration';
+import { AZURE_INFO } from 'global/channels/azure/AzureModel';
+import AzureGlobalConfiguration from 'global/channels/azure/AzureGlobalConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
@@ -108,6 +110,9 @@ class MainPage extends Component {
                 break;
             case JIRA_SERVER_INFO.key:
                 renderComponent = <JiraServerGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
+                break;
+            case AZURE_INFO.key:
+                renderComponent = <AzureGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
                 break;
             default:
                 renderComponent = <GlobalConfiguration key={name} descriptor={component} />;
