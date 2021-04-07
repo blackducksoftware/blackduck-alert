@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.common;
 
 import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -95,7 +96,8 @@ public class AlertProperties {
     public String constructSynopsysLogoPath() throws AlertException {
         String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
-            return imagesDirectory + "/" + FILE_NAME_SYNOPSYS_LOGO;
+            Path synopsysLogoPath = Path.of(imagesDirectory, FILE_NAME_SYNOPSYS_LOGO);
+            return synopsysLogoPath.toString();
         }
         throw new AlertException(String.format("Could not find the Alert logo in the images directory '%s'", imagesDirectory));
     }
