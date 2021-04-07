@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 
 public class MockAlertProperties extends AlertProperties {
     private static final String SUB_PROJECT_DIR_NAME = "test-common";
+    private static final String SUB_PROJECT_BUILD_DIR_IDENTIFIER = Path.of(SUB_PROJECT_DIR_NAME, "build").toString();
     private static final String RESOURCE_DIR = "src/main/resources";
     private static final String IMAGES_DIR = "images";
 
@@ -118,7 +119,7 @@ public class MockAlertProperties extends AlertProperties {
         ProtectionDomain protectionDomain = getClass().getProtectionDomain();
         CodeSource codeSource = protectionDomain.getCodeSource();
         String codeSourcePath = codeSource.getLocation().getPath();
-        String projectRootPath = StringUtils.substringBeforeLast(codeSourcePath, SUB_PROJECT_DIR_NAME);
+        String projectRootPath = StringUtils.substringBeforeLast(codeSourcePath, SUB_PROJECT_BUILD_DIR_IDENTIFIER);
         return Path.of(projectRootPath, SUB_PROJECT_DIR_NAME, RESOURCE_DIR, IMAGES_DIR);
     }
 
