@@ -161,7 +161,7 @@ CommonGlobalConfigurationForm.defaultProps = {
     displayDelete: true,
     testFields: null,
     testFormData: {},
-    setTestFormData: null
+    setTestFormData: () => null
 };
 
 export default CommonGlobalConfigurationForm;

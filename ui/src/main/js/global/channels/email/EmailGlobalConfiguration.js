@@ -110,6 +110,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={handleChange}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.password)}
+                    isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, EMAIL_GLOBAL_FIELD_KEYS.password)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.password)}
                     errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.password]}
                 />
