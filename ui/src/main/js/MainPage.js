@@ -20,8 +20,8 @@ import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
-import { MSTEAMS_INFO } from "./global/channels/msteams/MSTeamsModel";
-import MSTeamsGlobalConfiguration from "./global/channels/msteams/MSTeamsGlobalConfiguration";
+import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
+import MSTeamsGlobalConfiguration from 'global/channels/msteams/MSTeamsGlobalConfiguration';
 
 class MainPage extends Component {
     constructor(props) {

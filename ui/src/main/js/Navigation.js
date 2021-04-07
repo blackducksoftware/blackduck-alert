@@ -9,7 +9,7 @@ import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
-import { MSTEAMS_INFO } from './global/channels/msteams/MSTeamsModel';
+import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
 
 class Navigation extends Component {
     constructor(props) {
