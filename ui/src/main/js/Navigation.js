@@ -9,6 +9,7 @@ import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from './global/channels/msteams/MSTeamsModel';
 
 class Navigation extends Component {
     constructor(props) {
@@ -26,17 +27,27 @@ class Navigation extends Component {
             return null;
         }
 
+        const createStaticNavItem = (itemObject) => (
+            <li key={itemObject.key}>
+                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
+                    {itemObject.label}
+                </NavLink>
+            </li>
+        );
+
         const contentList = descriptorList.map(({ name, urlName, label }) => {
             // Removes these channels from the dynamic setup and manually inserts the static information
             switch (name) {
                 case SLACK_INFO.key:
-                    return this.createStaticNavItem(SLACK_INFO, uriPrefix);
+                    return createStaticNavItem(SLACK_INFO);
+                case MSTEAMS_INFO.key:
+                    return createStaticNavItem(MSTEAMS_INFO);
                 case EMAIL_INFO.key:
-                    return this.createStaticNavItem(EMAIL_INFO, uriPrefix);
+                    return createStaticNavItem(EMAIL_INFO);
                 case JIRA_CLOUD_INFO.key:
-                    return this.createStaticNavItem(JIRA_CLOUD_INFO, uriPrefix);
+                    return createStaticNavItem(JIRA_CLOUD_INFO);
                 case JIRA_SERVER_INFO.key:
-                    return this.createStaticNavItem(JIRA_SERVER_INFO, uriPrefix);
+                    return createStaticNavItem(JIRA_SERVER_INFO);
                 default:
                     return (
                         <li key={name}>
@@ -54,16 +65,6 @@ class Navigation extends Component {
             </li>);
         }
         return contentList;
-    }
-
-    createStaticNavItem(itemObject, uriPrefix) {
-        return (
-            <li key={itemObject.key}>
-                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
-                    {itemObject.label}
-                </NavLink>
-            </li>
-        );
     }
 
     render() {
