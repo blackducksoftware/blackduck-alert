@@ -93,7 +93,7 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertImagesDir);
     }
 
-    public String constructSynopsysLogoPath() throws AlertException {
+    public String createSynopsysLogoPath() throws AlertException {
         String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
             Path synopsysLogoPath = Path.of(imagesDirectory, FILE_NAME_SYNOPSYS_LOGO);

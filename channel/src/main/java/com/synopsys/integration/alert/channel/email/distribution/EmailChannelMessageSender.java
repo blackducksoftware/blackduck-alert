@@ -113,7 +113,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertProperties.getRootURL());
 
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertProperties.constructSynopsysLogoPath());
+        emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertProperties.createSynopsysLogoPath());
 
         EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
         Optional<File> optionalAttachment = message.getSource().flatMap(projectMessage -> addAttachment(emailTarget, attachmentFormat, projectMessage));
