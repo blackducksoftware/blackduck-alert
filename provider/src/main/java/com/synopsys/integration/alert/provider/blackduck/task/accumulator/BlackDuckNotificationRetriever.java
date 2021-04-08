@@ -8,6 +8,8 @@
 package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -52,8 +54,9 @@ public class BlackDuckNotificationRetriever {
     private BlackDuckRequestBuilder createNotificationRequestBuilder(DateRange dateRange, List<String> notificationTypesToInclude) {
         SimpleDateFormat sdf = new SimpleDateFormat(RestConstants.JSON_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String startDateString = sdf.format(dateRange.getStart());
-        String endDateString = sdf.format(dateRange.getEnd());
+
+        String startDateString = toDateString(sdf, dateRange.getStart());
+        String endDateString = toDateString(sdf, dateRange.getEnd());
 
         BlackDuckRequestFilter notificationTypeFilter = BlackDuckRequestFilter.createFilterWithMultipleValues("notificationType", notificationTypesToInclude);
         return blackDuckRequestFactory
@@ -61,6 +64,11 @@ public class BlackDuckNotificationRetriever {
                    .addQueryParameter("startDate", startDateString)
                    .addQueryParameter("endDate", endDateString)
                    .addBlackDuckFilter(notificationTypeFilter);
+    }
+
+    private String toDateString(SimpleDateFormat sdf, OffsetDateTime offsetDateTime) {
+        Date date = Date.from(offsetDateTime.toInstant());
+        return sdf.format(date);
     }
 
     public static class BlackDuckNotificationPage {
