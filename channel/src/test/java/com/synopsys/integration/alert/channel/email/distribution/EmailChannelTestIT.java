@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
@@ -32,7 +32,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() {
-        TestAlertProperties testAlertProperties = new TestAlertProperties();
+        MockAlertProperties testAlertProperties = new MockAlertProperties();
         EmailChannelKey emailChannelKey = ChannelKeys.EMAIL;
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);

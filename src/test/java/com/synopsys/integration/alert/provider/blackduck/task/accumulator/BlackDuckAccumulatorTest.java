@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
-import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
@@ -58,7 +58,7 @@ public class BlackDuckAccumulatorTest {
         testAccumulatorParent.mkdirs();
         System.out.println(testAccumulatorParent.getCanonicalPath());
 
-        TestAlertProperties testAlertProperties = new TestAlertProperties();
+        MockAlertProperties testAlertProperties = new MockAlertProperties();
         testAlertProperties.setAlertConfigHome(testAccumulatorParent.getCanonicalPath());
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
