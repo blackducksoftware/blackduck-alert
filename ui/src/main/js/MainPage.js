@@ -13,9 +13,15 @@ import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ProviderTable from 'providers/ProviderTable';
 import SlackGlobalConfiguration from 'global/channels/slack/SlackGlobalConfiguration';
+import EmailGlobalConfiguration from 'global/channels/email/EmailGlobalConfiguration';
+import JiraCloudGlobalConfiguration from 'global/channels/jira/cloud/JiraCloudGlobalConfiguration';
+import JiraServerGlobalConfiguration from 'global/channels/jira/server/JiraServerGlobalConfiguration';
+import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
-import EmailGlobalConfiguration from 'global/channels/email/EmailGlobalConfiguration';
+import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
+import MSTeamsGlobalConfiguration from 'global/channels/msteams/MSTeamsGlobalConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
@@ -91,8 +97,17 @@ class MainPage extends Component {
             case SLACK_INFO.key:
                 renderComponent = <SlackGlobalConfiguration />;
                 break;
+            case MSTEAMS_INFO.key:
+                renderComponent = <MSTeamsGlobalConfiguration />;
+                break;
             case EMAIL_INFO.key:
                 renderComponent = <EmailGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
+                break;
+            case JIRA_CLOUD_INFO.key:
+                renderComponent = <JiraCloudGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
+                break;
+            case JIRA_SERVER_INFO.key:
+                renderComponent = <JiraServerGlobalConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
                 break;
             default:
                 renderComponent = <GlobalConfiguration key={name} descriptor={component} />;
