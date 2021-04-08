@@ -1,24 +1,49 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 
 function noOptionsMessage() {
     return null;
 }
 
-class SelectInput extends Component {
-    render() {
-        const {
-            onChange, id, inputClass, options, isSearchable, placeholder, value, removeSelected, hasMultipleValues, components, selectSpacingClass, readOnly, clearable
-        } = this.props;
-        const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
-        let closeOnSelect = true;
-        if (hasMultipleValues) {
-            closeOnSelect = false;
-        }
-
-        const field = (
+const SelectInput = ({
+    onChange,
+    id,
+    inputClass,
+    options,
+    isSearchable,
+    placeholder,
+    value,
+    removeSelected,
+    hasMultipleValues,
+    components,
+    selectSpacingClass,
+    readOnly,
+    clearable,
+    labelClass,
+    description,
+    showDescriptionPlaceHolder,
+    label,
+    errorName,
+    errorValue,
+    required
+}) => {
+    const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
+    let closeOnSelect = true;
+    if (hasMultipleValues) {
+        closeOnSelect = false;
+    }
+    return (
+        <LabeledField
+            labelClass={labelClass}
+            description={description}
+            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+            label={label}
+            errorName={errorName}
+            errorValue={errorValue}
+            required={required}
+        >
             <div className={selectClasses}>
                 <Select
                     id={id}
@@ -37,12 +62,9 @@ class SelectInput extends Component {
                     isDisabled={readOnly}
                 />
             </div>
-        );
-        return (
-            <LabeledField field={field} {...this.props} />
-        );
-    }
-}
+        </LabeledField>
+    );
+};
 
 SelectInput.propTypes = {
     id: PropTypes.string,
@@ -54,11 +76,17 @@ SelectInput.propTypes = {
     isSearchable: PropTypes.bool,
     removeSelected: PropTypes.bool,
     readOnly: PropTypes.bool,
-    multiSelect: PropTypes.bool,
     clearable: PropTypes.bool,
     hasMultipleValues: PropTypes.bool,
     value: PropTypes.object,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    description: PropTypes.string,
+    showDescriptionPlaceHolder: PropTypes.bool,
+    errorName: PropTypes.string,
+    errorValue: PropTypes.object,
+    required: PropTypes.bool
 };
 
 SelectInput.defaultProps = {
@@ -71,10 +99,15 @@ SelectInput.defaultProps = {
     isSearchable: false,
     removeSelected: false,
     readOnly: false,
-    multiSelect: false,
     clearable: false,
     hasMultipleValues: false,
-    value: {}
+    value: {},
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default SelectInput;

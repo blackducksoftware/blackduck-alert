@@ -1,34 +1,40 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 
-class PasswordInput extends Component {
-    render() {
-        const {
-            readOnly, isSet, inputClass, id, name, value, onChange
-        } = this.props;
+const PasswordInput = ({
+    readOnly, isSet, inputClass, id, name, value, onChange, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
+}) => {
+    const placeholderText = (isSet) ? '***********' : null;
 
-        const placeholderText = (isSet) ? '***********' : null;
-
-        let field;
-        if (readOnly) {
-            field = (
-                <div className="d-inline-flex flex-column p-2 col-sm-8">
-                    <input id={id} type="password" readOnly className={inputClass} name={name} value={value} placeholder={placeholderText} />
-                </div>
-            );
-        } else {
-            field = (
-                <div className="d-inline-flex flex-column p-2 col-sm-8">
-                    <input id={id} type="password" className={inputClass} name={name} value={value} onChange={onChange} placeholder={placeholderText} />
-                </div>
-            );
-        }
-        return (
-            <LabeledField field={field} {...this.props} />
+    let field;
+    if (readOnly) {
+        field = (
+            <div className="d-inline-flex flex-column p-2 col-sm-8">
+                <input id={id} type="password" readOnly className={inputClass} name={name} value={value} placeholder={placeholderText} />
+            </div>
+        );
+    } else {
+        field = (
+            <div className="d-inline-flex flex-column p-2 col-sm-8">
+                <input id={id} type="password" className={inputClass} name={name} value={value} onChange={onChange} placeholder={placeholderText} />
+            </div>
         );
     }
-}
+    return (
+        <LabeledField
+            labelClass={labelClass}
+            description={description}
+            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+            label={label}
+            errorName={errorName}
+            errorValue={errorValue}
+            required={required}
+        >
+            {field}
+        </LabeledField>
+    );
+};
 
 PasswordInput.propTypes = {
     id: PropTypes.string,
@@ -37,7 +43,14 @@ PasswordInput.propTypes = {
     inputClass: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    description: PropTypes.string,
+    showDescriptionPlaceHolder: PropTypes.bool,
+    errorName: PropTypes.string,
+    errorValue: PropTypes.object,
+    required: PropTypes.bool
 };
 
 PasswordInput.defaultProps = {
@@ -47,7 +60,13 @@ PasswordInput.defaultProps = {
     readOnly: false,
     inputClass: 'form-control',
     name: 'name',
-    onChange: () => true
+    onChange: () => true,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default PasswordInput;
