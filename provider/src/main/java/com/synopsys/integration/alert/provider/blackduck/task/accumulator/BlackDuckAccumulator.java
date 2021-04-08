@@ -72,15 +72,15 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     @Override
-    public void runProviderTask() {
-        if (blackDuckValidator.validate(getProviderProperties())) {
-            accumulate();
-        }
+    public String scheduleCronExpression() {
+        return ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION;
     }
 
     @Override
-    public String scheduleCronExpression() {
-        return ScheduledTask.EVERY_MINUTE_CRON_EXPRESSION;
+    protected void runProviderTask() {
+        if (blackDuckValidator.validate(getProviderProperties())) {
+            accumulateNotifications();
+        }
     }
 
     @Override
@@ -88,14 +88,10 @@ public class BlackDuckAccumulator extends ProviderTask {
         return (BlackDuckProperties) super.getProviderProperties();
     }
 
-    public void accumulate() {
-        DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
-        accumulateInDateRange(dateRange);
-    }
-
-    private void accumulateInDateRange(DateRange dateRange) {
+    private void accumulateNotifications() {
         Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
         if (optionalNotificationRetriever.isPresent()) {
+            DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
             logger.info("Accumulating notifications between {} and {} ", DateUtils.formatDate(dateRange.getStart(), RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(dateRange.getEnd(), RestConstants.JSON_DATE_FORMAT));
             retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
         }
