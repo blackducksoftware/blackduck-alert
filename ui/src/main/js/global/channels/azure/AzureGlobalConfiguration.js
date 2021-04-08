@@ -6,8 +6,8 @@ import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration
 import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
-import EndpointButtonField from 'field/EndpointButtonField';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'global/channels/azure/AzureModel';
+import OAuthEndpointButtonField from 'field/OAuthEndpointButtonField';
 
 const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_INFO.key));
@@ -70,7 +70,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.clientSecret)}
                     errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.clientSecret]}
                 />
-                <EndpointButtonField
+                <OAuthEndpointButtonField
                     key={AZURE_GLOBAL_FIELD_KEYS.configureOAuth}
                     name={AZURE_GLOBAL_FIELD_KEYS.configureOAuth}
                     buttonLabel="Authenticate"
