@@ -94,6 +94,8 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                         JIRA_SERVER_GLOBAL_FIELD_KEYS.username,
                         JIRA_SERVER_GLOBAL_FIELD_KEYS.password
                     ]}
+                    csrfToken={csrfToken}
+                    currentConfig={formData}
                     readOnly={readonly}
                     onChange={handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin)}
