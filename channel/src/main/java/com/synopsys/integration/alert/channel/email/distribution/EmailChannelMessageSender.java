@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +39,6 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 
 @Component
 public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobDetailsModel, EmailChannelMessageModel, MessageResult> {
-    public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
     public static final String FILE_NAME_MESSAGE_TEMPLATE = "message_content.ftl";
 
     private final EmailChannelKey emailChannelKey;
@@ -115,7 +113,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertProperties.getRootURL());
 
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), getImagePath(FILE_NAME_SYNOPSYS_LOGO));
+        emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertProperties.createSynopsysLogoPath());
 
         EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
         Optional<File> optionalAttachment = message.getSource().flatMap(projectMessage -> addAttachment(emailTarget, attachmentFormat, projectMessage));
@@ -132,14 +130,6 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
             emailTarget.setAttachmentFilePath(attachmentFile.getPath());
         }
         return optionalAttachmentFile;
-    }
-
-    private String getImagePath(String imageFileName) throws AlertException {
-        String imagesDirectory = alertProperties.getAlertImagesDir();
-        if (StringUtils.isNotBlank(imagesDirectory)) {
-            return imagesDirectory + "/" + imageFileName;
-        }
-        throw new AlertException(String.format("Could not find the email image directory '%s'", imagesDirectory));
     }
 
 }

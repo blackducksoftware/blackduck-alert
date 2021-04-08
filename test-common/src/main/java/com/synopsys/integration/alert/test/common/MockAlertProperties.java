@@ -7,15 +7,22 @@
  */
 package com.synopsys.integration.alert.test.common;
 
-import java.io.IOException;
+import java.nio.file.Path;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.Optional;
 
-import org.springframework.core.io.ClassPathResource;
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.exception.AlertException;
 
-// TODO rename class to include "Mock"
-public class TestAlertProperties extends AlertProperties {
+public class MockAlertProperties extends AlertProperties {
+    private static final String SUB_PROJECT_DIR_NAME = "test-common";
+    private static final String SUB_PROJECT_BUILD_DIR_IDENTIFIER = Path.of(SUB_PROJECT_DIR_NAME, "build").toString();
+    private static final String RESOURCE_DIR = "src/main/resources";
+    private static final String IMAGES_DIR = "images";
+
     private String alertConfigHome;
     private String alertImagesDir;
     private String alertSecretsDir;
@@ -28,12 +35,8 @@ public class TestAlertProperties extends AlertProperties {
     private String encryptionPassword;
     private String encryptionSalt;
 
-    public TestAlertProperties() {
-        try {
-            alertImagesDir = new ClassPathResource("images").getFile().getAbsolutePath();
-        } catch (IOException e) {
-            alertImagesDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "../../../../../src/main/resources/images/";
-        }
+    public MockAlertProperties() {
+        alertImagesDir = computeImagesDirPath().toString();
 
         encryptionPassword = "changeme";
         encryptionSalt = "changeme";
@@ -52,6 +55,15 @@ public class TestAlertProperties extends AlertProperties {
     @Override
     public String getAlertImagesDir() {
         return alertImagesDir;
+    }
+
+    @Override
+    public String createSynopsysLogoPath() throws AlertException {
+        String imagesDirectory = getAlertImagesDir();
+        if (StringUtils.isNotBlank(imagesDirectory)) {
+            return Path.of(imagesDirectory, "test_logo.png").toString();
+        }
+        throw new AlertException(String.format("Could not find the Alert logo in the images directory '%s'", imagesDirectory));
     }
 
     public void setAlertImagesDir(String alertImagesDir) {
@@ -101,6 +113,14 @@ public class TestAlertProperties extends AlertProperties {
 
     public void setAlertSecretsDir(String alertSecretsDir) {
         this.alertSecretsDir = alertSecretsDir;
+    }
+
+    private Path computeImagesDirPath() {
+        ProtectionDomain protectionDomain = getClass().getProtectionDomain();
+        CodeSource codeSource = protectionDomain.getCodeSource();
+        String codeSourcePath = codeSource.getLocation().getPath();
+        String projectRootPath = StringUtils.substringBeforeLast(codeSourcePath, SUB_PROJECT_BUILD_DIR_IDENTIFIER);
+        return Path.of(projectRootPath, SUB_PROJECT_DIR_NAME, RESOURCE_DIR, IMAGES_DIR);
     }
 
 }
