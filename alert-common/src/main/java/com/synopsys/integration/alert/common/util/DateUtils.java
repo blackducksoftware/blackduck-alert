@@ -15,6 +15,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
+import com.synopsys.integration.rest.RestConstants;
+
 public final class DateUtils {
     public static final String DOCKER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
     public static final String AUDIT_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
@@ -34,6 +36,10 @@ public final class DateUtils {
         return dtf.format(date);
     }
 
+    public static String formatDateAsJsonString(OffsetDateTime dateTime) {
+        return formatDate(dateTime, RestConstants.JSON_DATE_FORMAT);
+    }
+
     public static OffsetDateTime fromDateUTC(Date date) {
         return OffsetDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
     }
@@ -46,6 +52,10 @@ public final class DateUtils {
         } catch (DateTimeParseException e) {
             throw new ParseException(e.getParsedString(), e.getErrorIndex());
         }
+    }
+
+    public static OffsetDateTime parseDateFromJsonString(String dateTime) throws ParseException {
+        return parseDate(dateTime, RestConstants.JSON_DATE_FORMAT);
     }
 
     private DateUtils() {

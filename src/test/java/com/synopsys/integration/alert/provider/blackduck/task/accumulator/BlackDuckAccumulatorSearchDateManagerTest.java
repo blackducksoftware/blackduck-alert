@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.rest.RestConstants;
 
 public class BlackDuckAccumulatorSearchDateManagerTest {
     @Test
@@ -47,7 +46,7 @@ public class BlackDuckAccumulatorSearchDateManagerTest {
                                                .withNano(0)
                                                .minusMinutes(5)
                                                .toOffsetDateTime();
-        String expectedStartDateString = DateUtils.formatDate(expectedStartDate, RestConstants.JSON_DATE_FORMAT);
+        String expectedStartDateString = DateUtils.formatDateAsJsonString(expectedStartDate);
 
         BlackDuckAccumulatorSearchDateManager dateRangeCreator = createDateManager(expectedStartDateString);
         DateRange dateRange = dateRangeCreator.retrieveNextSearchDateRange();
@@ -66,8 +65,8 @@ public class BlackDuckAccumulatorSearchDateManagerTest {
         OffsetDateTime currentDate = DateUtils.createCurrentDateTimestamp();
         dateManager.saveNextSearchStart(currentDate);
 
-        String currentDateString = DateUtils.formatDate(currentDate, RestConstants.JSON_DATE_FORMAT);
-        OffsetDateTime currentDateDeserialized = DateUtils.parseDate(currentDateString, RestConstants.JSON_DATE_FORMAT);
+        String currentDateString = DateUtils.formatDateAsJsonString(currentDate);
+        OffsetDateTime currentDateDeserialized = DateUtils.parseDateFromJsonString(currentDateString);
 
         DateRange dateRange = dateManager.retrieveNextSearchDateRange();
 

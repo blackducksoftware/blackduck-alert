@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckVali
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.RestConstants;
 
 public class BlackDuckAccumulator extends ProviderTask {
     private static final List<String> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())
@@ -92,7 +91,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         Optional<BlackDuckNotificationRetriever> optionalNotificationRetriever = notificationRetrieverFactory.createBlackDuckNotificationRetriever(getProviderProperties());
         if (optionalNotificationRetriever.isPresent()) {
             DateRange dateRange = searchDateManager.retrieveNextSearchDateRange();
-            logger.info("Accumulating notifications between {} and {} ", DateUtils.formatDate(dateRange.getStart(), RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(dateRange.getEnd(), RestConstants.JSON_DATE_FORMAT));
+            logger.info("Accumulating notifications between {} and {} ", DateUtils.formatDateAsJsonString(dateRange.getStart()), DateUtils.formatDateAsJsonString(dateRange.getEnd()));
             retrieveAndStoreNotificationsSafely(optionalNotificationRetriever.get(), dateRange);
         }
     }

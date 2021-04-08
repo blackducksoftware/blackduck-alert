@@ -27,13 +27,12 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.rest.RestConstants;
 
 @Component
 @Transactional
 public class DefaultSystemMessageAccessor implements SystemMessageAccessor {
 
-    private Logger logger = LoggerFactory.getLogger(DefaultSystemMessageAccessor.class);
+    private final Logger logger = LoggerFactory.getLogger(DefaultSystemMessageAccessor.class);
     private final SystemMessageRepository systemMessageRepository;
 
     @Autowired
@@ -112,13 +111,13 @@ public class DefaultSystemMessageAccessor implements SystemMessageAccessor {
     }
 
     private SystemMessageModel convertToSystemMessageModel(SystemMessageEntity systemMessage) {
-        String createdAt = DateUtils.formatDate(systemMessage.getCreated(), RestConstants.JSON_DATE_FORMAT);
+        String createdAt = DateUtils.formatDateAsJsonString(systemMessage.getCreated());
         return new SystemMessageModel(String.valueOf(systemMessage.getId()), systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
 
     private SystemMessageEntity convertToSystemMessage(SystemMessageModel systemMessageModel) {
         try {
-            OffsetDateTime date = DateUtils.parseDate(systemMessageModel.getCreatedAt(), RestConstants.JSON_DATE_FORMAT);
+            OffsetDateTime date = DateUtils.parseDateFromJsonString(systemMessageModel.getCreatedAt());
             SystemMessageEntity entity = new SystemMessageEntity(date, systemMessageModel.getSeverity(), systemMessageModel.getContent(), systemMessageModel.getType());
             entity.setId(Long.valueOf(systemMessageModel.getId()));
             return entity;
