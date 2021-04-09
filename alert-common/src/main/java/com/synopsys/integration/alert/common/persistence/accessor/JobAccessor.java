@@ -12,29 +12,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModelV2;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public interface JobAccessor {
-    //TODO: Only used in tests, should be deleted
-    List<DistributionJobModel> getMatchingEnabledJobs(FrequencyType frequency, Long providerConfigId, NotificationType notificationType);
-
-    //TODO: Only used in tests, should be deleted
-    List<DistributionJobModel> getMatchingEnabledJobs(Long providerConfigId, NotificationType notificationType);
-
-    AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobs(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, int pageOffset, int pageLimit);
-
-    AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(FilteredDistributionJobRequestModelV2 filteredDistributionJobRequestModel, int pageOffset, int pageLimit);
-
-    AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByJobIds(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, List<UUID> jobIds, int pageNumber, int pageLimit);
-
     List<DistributionJobModel> getJobsById(Collection<UUID> jobIds);
 
     AlertPagedModel<DistributionJobModel> getPageOfJobs(int pageOffset, int pageLimit);
