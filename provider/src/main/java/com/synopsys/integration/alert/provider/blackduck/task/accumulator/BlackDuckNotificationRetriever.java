@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
@@ -23,6 +24,7 @@ import com.synopsys.integration.blackduck.http.BlackDuckRequestFilter;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingFunction;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.RestConstants;
 
 public class BlackDuckNotificationRetriever {
@@ -51,7 +53,9 @@ public class BlackDuckNotificationRetriever {
         return blackDuckApiClient.getPageResponse(requestBuilder, NotificationView.class, pageDefinition);
     }
 
-    private BlackDuckRequestBuilder createNotificationRequestBuilder(DateRange dateRange, List<String> notificationTypesToInclude) {
+    private BlackDuckRequestBuilder createNotificationRequestBuilder(DateRange dateRange, List<String> notificationTypesToInclude) throws IntegrationException {
+        HttpUrl requestUrl = blackDuckApiClient.getUrl(ApiDiscovery.NOTIFICATIONS_LINK);
+
         SimpleDateFormat sdf = new SimpleDateFormat(RestConstants.JSON_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -61,6 +65,7 @@ public class BlackDuckNotificationRetriever {
         BlackDuckRequestFilter notificationTypeFilter = BlackDuckRequestFilter.createFilterWithMultipleValues("notificationType", notificationTypesToInclude);
         return blackDuckRequestFactory
                    .createCommonGetRequestBuilder()
+                   .url(requestUrl)
                    .addQueryParameter("startDate", startDateString)
                    .addQueryParameter("endDate", endDateString)
                    .addBlackDuckFilter(notificationTypeFilter);
