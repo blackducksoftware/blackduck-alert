@@ -26,6 +26,8 @@ import { AZURE_INFO } from 'global/channels/azure/AzureModel';
 import AzureGlobalConfiguration from 'global/channels/azure/AzureGlobalConfiguration';
 import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'global/components/scheduling/SchedulingConfiguration';
+import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
+import SettingsConfiguration from 'global/components/settings/SettingsConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
@@ -118,6 +120,9 @@ class MainPage extends Component {
                 break;
             case SCHEDULING_INFO.key:
                 renderComponent = <SchedulingConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
+                break;
+            case SETTINGS_INFO.key:
+                renderComponent = <SettingsConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
                 break;
             default:
                 renderComponent = <GlobalConfiguration key={name} descriptor={component} />;
