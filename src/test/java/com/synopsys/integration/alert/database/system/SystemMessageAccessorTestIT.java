@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.rest.RestConstants;
 
 @Transactional
 @AlertIntegrationTest
@@ -162,7 +161,7 @@ public class SystemMessageAccessorTestIT {
     }
 
     private SystemMessageModel convertToSystemMessage(SystemMessageEntity systemMessage) {
-        String date = DateUtils.formatDate(systemMessage.getCreated(), RestConstants.JSON_DATE_FORMAT);
+        String date = DateUtils.formatDateAsJsonString(systemMessage.getCreated());
         return new SystemMessageModel(String.valueOf(systemMessage.getId()), date, systemMessage.getSeverity(), systemMessage.getContent(), systemMessage.getType());
     }
 
