@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.common.persistence.model.job;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -39,12 +40,19 @@ public class FilteredDistributionJobRequestModelV2 extends AlertSerializableMode
         return notificationTypes;
     }
 
-    public Set<String> getVulnerabilitySeverities() {
-        return vulnerabilitySeverities;
+    public Optional<Set<String>> getVulnerabilitySeverities() {
+        //may not need this, check if empty in the accessor.
+        if (vulnerabilitySeverities.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(vulnerabilitySeverities);
     }
 
-    public Set<String> getPolicyNames() {
-        return policyNames;
+    public Optional<Set<String>> getPolicyNames() {
+        if (policyNames.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(policyNames);
     }
 
     public boolean isVulnerabilityNotification() {

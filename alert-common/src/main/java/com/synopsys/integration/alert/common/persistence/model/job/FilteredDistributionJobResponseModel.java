@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model.job;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -16,11 +17,33 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
     private final UUID id;
     private final ProcessingType processingType;
     private final String channelName;
+    private final List<String> notificationTypes;
+    private final List<BlackDuckProjectDetailsModel> projectDetails;
+    private final List<String> policyNames;
+    private final List<String> vulnerabilitySeverityNames;
+    private final boolean filterByProject;
+    private final String projectNamePattern;
 
-    public FilteredDistributionJobResponseModel(UUID id, ProcessingType processingType, String channelName) {
+    public FilteredDistributionJobResponseModel(
+        UUID id,
+        ProcessingType processingType,
+        String channelName,
+        List<String> notificationTypes,
+        List<BlackDuckProjectDetailsModel> projectDetails,
+        List<String> policyNames,
+        List<String> vulnerabilitySeverityNames,
+        boolean filterByProject,
+        String projectNamePattern
+    ) {
         this.processingType = processingType;
         this.id = id;
         this.channelName = channelName;
+        this.notificationTypes = notificationTypes;
+        this.projectDetails = projectDetails;
+        this.policyNames = policyNames;
+        this.vulnerabilitySeverityNames = vulnerabilitySeverityNames;
+        this.filterByProject = filterByProject;
+        this.projectNamePattern = projectNamePattern;
     }
 
     public UUID getId() {
@@ -35,4 +58,27 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
         return channelName;
     }
 
+    public List<String> getNotificationTypes() {
+        return notificationTypes;
+    }
+
+    public List<BlackDuckProjectDetailsModel> getProjectDetails() {
+        return projectDetails;
+    }
+
+    public List<String> getPolicyNames() {
+        return policyNames;
+    }
+
+    public List<String> getVulnerabilitySeverityNames() {
+        return vulnerabilitySeverityNames;
+    }
+
+    public boolean isFilterByProject() {
+        return filterByProject;
+    }
+
+    public String getProjectNamePattern() {
+        return projectNamePattern;
+    }
 }

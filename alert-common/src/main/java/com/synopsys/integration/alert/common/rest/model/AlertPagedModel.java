@@ -23,6 +23,10 @@ public class AlertPagedModel<M extends AlertSerializableModel> extends AlertSeri
     private final int pageSize;
     private final List<M> models;
 
+    public static <M extends AlertSerializableModel> AlertPagedModel<M> empty() {
+        return new AlertPagedModel<>(0, 0, 0, List.of());
+    }
+
     public AlertPagedModel(int totalPages, int currentPage, int pageSize, List<M> models) {
         this.totalPages = totalPages;
         this.currentPage = currentPage;
