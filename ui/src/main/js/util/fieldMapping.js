@@ -1,5 +1,5 @@
 import React from 'react';
-import SelectInput from 'field/input/DynamicSelect';
+import SelectInput from 'field/input/SelectInput';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import PasswordInput from 'field/input/PasswordInput';
@@ -239,16 +239,20 @@ function buildOAuthEndpointField(items, field) {
 }
 
 function buildFieldMappingField(items, field) {
-    const { value } = items
-    const { leftSide, rightSide, mappingTitle, key } = field
-    return <FieldMappingField
-        storedMappings={value}
-        leftSideMapping={leftSide}
-        rightSideMapping={rightSide}
-        newMappingTitle={mappingTitle}
-        fieldMappingKey={key}
-        {...items}
-    />
+    const { value } = items;
+    const {
+        leftSide, rightSide, mappingTitle, key
+    } = field;
+    return (
+        <FieldMappingField
+            storedMappings={value}
+            leftSideMapping={leftSide}
+            rightSideMapping={rightSide}
+            newMappingTitle={mappingTitle}
+            fieldMappingKey={key}
+            {...items}
+        />
+    );
 }
 
 export const FIELDS = {

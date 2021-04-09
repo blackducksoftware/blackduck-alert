@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import {
     clearUserFieldErrors, deleteUser, fetchUsers, saveUser, validateUser
 } from 'store/actions/users';
-import DynamicSelectInput from 'field/input/DynamicSelect';
+import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 

@@ -17,23 +17,6 @@ const TextInput = ({
         );
     }
 
-    const field = (
-        <div className="d-inline-flex flex-column p-2 col-sm-8">
-            <input
-                id={id}
-                type="text"
-                readOnly={readOnly}
-                autoFocus={autoFocus}
-                className={inputClass}
-                name={name}
-                value={value}
-                onChange={onChange}
-                list={listId}
-            />
-            {dataListOptions}
-        </div>
-    );
-
     return (
         <LabeledField
             labelClass={labelClass}
@@ -44,7 +27,20 @@ const TextInput = ({
             errorValue={errorValue}
             required={required}
         >
-            {field}
+            <div className="d-inline-flex flex-column p-2 col-sm-8">
+                <input
+                    id={id}
+                    type="text"
+                    readOnly={readOnly}
+                    autoFocus={autoFocus}
+                    className={inputClass}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    list={listId}
+                />
+                {dataListOptions}
+            </div>
         </LabeledField>
     );
 };

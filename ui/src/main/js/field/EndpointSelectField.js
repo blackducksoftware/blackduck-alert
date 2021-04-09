@@ -1,50 +1,49 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
-import DynamicSelectInput from 'field/input/DynamicSelect';
+import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import { LabelFieldPropertyDefaults } from './LabeledField';
 
-class EndpointSelectField extends Component {
-    constructor(props) {
-        super(props);
+const EndpointSelectField = (props) => {
+    const {
+        currentConfig, fieldKey, csrfToken, endpoint, requiredRelatedFields, value, errorValue, onChange,
+        id,
+        inputClass,
+        searchable,
+        placeholder,
+        removeSelected,
+        multiSelect,
+        selectSpacingClass,
+        readOnly,
+        clearable,
+        labelClass,
+        description,
+        showDescriptionPlaceHolder,
+        label,
+        errorName,
+        required
+    } = props;
+    const [options, setOptions] = useState([]);
 
-        this.onSendClick = this.onSendClick.bind(this);
-        this.emptyFieldValue = this.emptyFieldValue.bind(this);
-        this.state = ({
-            options: [],
-            progress: false
-        });
-    }
+    const emptyFieldValue = () => {
+        const eventObject = {
+            target: {
+                name: fieldKey,
+                value: []
+            }
+        };
 
-    componentDidMount() {
-        this.onSendClick();
-    }
+        onChange(eventObject);
+    };
 
-    componentDidUpdate(prevProps) {
-        const oldValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(prevProps.currentConfig);
-        const currentValuesEmpty = FieldModelUtilities.areKeyToValuesEmpty(this.props.currentConfig);
-        if (oldValuesEmpty && !currentValuesEmpty) {
-            this.onSendClick();
-        }
-    }
-
-    onSendClick() {
-        this.setState({
-            fieldError: this.props.errorValue,
-            success: false
-        });
-        const {
-            fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields, value
-        } = this.props;
-
+    const onSendClick = () => {
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const { options } = data;
-                    const selectOptions = options.map((item) => {
+                    const selectOptions = data.options.map((item) => {
                         const dataValue = item.value;
                         return {
                             key: dataValue,
@@ -54,72 +53,106 @@ class EndpointSelectField extends Component {
                     });
                     const selectedValues = selectOptions.filter((option) => value.includes(option.value));
                     if (selectOptions.length === 0 || selectedValues.length === 0) {
-                        this.emptyFieldValue();
+                        emptyFieldValue();
                     }
 
-                    this.setState({
-                        options: selectOptions,
-                        success: true
-                    });
+                    setOptions(selectOptions);
                 });
             } else {
                 response.json()
-                    .then((data) => {
-                        this.setState({
-                            options: [],
-                            fieldError: {
-                                severity: 'ERROR',
-                                fieldMessage: data.message
-                            }
-                        }, this.emptyFieldValue);
-                    });
+                    .then(() => {
+                        setOptions([]);
+                        // setFieldError({
+                        //     severity: 'ERROR',
+                        //     fieldMessage: data.message
+                        // });
+                    })
+                    .then(() => emptyFieldValue());
             }
         });
-    }
+    };
 
-    emptyFieldValue() {
-        const { fieldKey, onChange } = this.props;
-        const eventObject = {
-            target: {
-                name: fieldKey,
-                value: []
-            }
-        };
+    useEffect(() => {
+        onSendClick();
+    }, []);
 
-        onChange(eventObject);
-    }
+    useEffect(() => {
+        onSendClick();
+    }, [currentConfig]);
 
-    render() {
-        return (
-            <div>
-                <DynamicSelectInput
-                    onChange={this.props.onChange}
-                    onFocus={this.onSendClick}
-                    options={this.state.options}
-                    {...this.props}
-                />
-            </div>
-        );
-    }
-}
+    return (
+        <div>
+            <DynamicSelectInput
+                onChange={onChange}
+                onFocus={onSendClick}
+                options={options}
+                id={id}
+                inputClass={inputClass}
+                searchable={searchable}
+                placeholder={placeholder}
+                value={value}
+                removeSelected={removeSelected}
+                multiSelect={multiSelect}
+                selectSpacingClass={selectSpacingClass}
+                readOnly={readOnly}
+                clearable={clearable}
+                labelClass={labelClass}
+                description={description}
+                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+                label={label}
+                errorName={errorName}
+                errorValue={errorValue}
+                required={required}
+            />
+        </div>
+    );
+};
 
 EndpointSelectField.propTypes = {
     id: PropTypes.string,
     currentConfig: PropTypes.object,
+    csrfToken: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     endpoint: PropTypes.string.isRequired,
     fieldKey: PropTypes.string.isRequired,
-    requiredRelatedFields: PropTypes.array
+    requiredRelatedFields: PropTypes.array,
+    inputClass: PropTypes.string,
+    selectSpacingClass: PropTypes.string,
+    value: PropTypes.array,
+    placeholder: PropTypes.string,
+    searchable: PropTypes.bool,
+    removeSelected: PropTypes.bool,
+    readOnly: PropTypes.bool,
+    multiSelect: PropTypes.bool,
+    clearable: PropTypes.bool,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    description: PropTypes.string,
+    showDescriptionPlaceHolder: PropTypes.bool,
+    errorName: PropTypes.string,
+    errorValue: PropTypes.object,
+    required: PropTypes.bool
 };
 
 EndpointSelectField.defaultProps = {
     id: 'endpointSelectFieldId',
     currentConfig: {},
-    requiredRelatedFields: []
+    requiredRelatedFields: [],
+    value: [],
+    placeholder: 'Choose a value',
+    inputClass: 'typeAheadField',
+    labelClass: 'col-sm-3',
+    selectSpacingClass: 'col-sm-8',
+    searchable: false,
+    removeSelected: false,
+    readOnly: false,
+    multiSelect: false,
+    clearable: true,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
-const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken
-});
-
-export default connect(mapStateToProps, null)(EndpointSelectField);
+export default EndpointSelectField;
