@@ -76,6 +76,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     name={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
                     label="Daily Digest Hour Of Day"
                     description="Select the hour of the day to run the daily digest distribution jobs."
+                    required
                     readOnly={readonly}
                     onChange={handleChange}
                     options={digestHours}
@@ -99,6 +100,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     name={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
                     label="Purge Data Frequency In Days"
                     description="Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted."
+                    required
                     readOnly={readonly}
                     onChange={handleChange}
                     options={purgeFrequencies}

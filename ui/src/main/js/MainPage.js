@@ -24,8 +24,8 @@ import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
 import MSTeamsGlobalConfiguration from 'global/channels/msteams/MSTeamsGlobalConfiguration';
 import { AZURE_INFO } from 'global/channels/azure/AzureModel';
 import AzureGlobalConfiguration from 'global/channels/azure/AzureGlobalConfiguration';
-import { SCHEDULING_INFO } from "./global/components/scheduling/SchedulingModel";
-import SchedulingConfiguration from "./global/components/scheduling/SchedulingConfiguration";
+import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
+import SchedulingConfiguration from 'global/components/scheduling/SchedulingConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
