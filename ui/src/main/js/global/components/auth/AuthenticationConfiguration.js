@@ -33,7 +33,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
     const handleTestChange = ({ target }) => {
         const { type, name, value } = target;
         const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = { [name]: updatedValue };
+        const newState = { ...testFieldData, [name]: updatedValue };
         setTestFieldData(newState);
     };
 
@@ -47,9 +47,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 description="The user name to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={readonly}
                 onChange={handleTestChange}
-                value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_TEST_FIELD_KEYS.username)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_TEST_FIELD_KEYS.username)}
-                errorValue={errors[AUTHENTICATION_TEST_FIELD_KEYS.username]}
+                value={testFieldData[AUTHENTICATION_TEST_FIELD_KEYS.username]}
             />
             <PasswordInput
                 key={AUTHENTICATION_TEST_FIELD_KEYS.password}
@@ -58,10 +56,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 description="The password to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={readonly}
                 onChange={handleTestChange}
-                value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_TEST_FIELD_KEYS.password)}
-                isSet={FieldModelUtilities.isFieldModelValueSet(formData, AUTHENTICATION_TEST_FIELD_KEYS.password)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_TEST_FIELD_KEYS.password)}
-                errorValue={errors[AUTHENTICATION_TEST_FIELD_KEYS.password]}
+                value={testFieldData[AUTHENTICATION_TEST_FIELD_KEYS.password]}
             />
             <h2>SAML Configuration</h2>
             <ReadOnlyField
@@ -69,10 +64,6 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 name={AUTHENTICATION_TEST_FIELD_KEYS.noInput}
                 label="No Input Required"
                 description="No input required here. SAML metadata fields will be tested by the server."
-                onChange={handleTestChange}
-                value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_TEST_FIELD_KEYS.noInput)}
-                errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_TEST_FIELD_KEYS.noInput)}
-                errorValue={errors[AUTHENTICATION_TEST_FIELD_KEYS.noInput]}
             />
         </div>
     );
@@ -88,6 +79,9 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
         { label: 'Follow', value: 'follow' },
         { label: 'Throw', value: 'throw' }
     ];
+
+    const hasLdapConfig = Object.keys(AUTHENTICATION_LDAP_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS[key]));
+    const hasSamlConfig = Object.keys(AUTHENTICATION_SAML_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_SAML_FIELD_KEYS[key]));
 
     return (
         <CommonGlobalConfiguration
@@ -105,7 +99,10 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 testFormData={testFieldData}
                 setTestFormData={(values) => setTestFieldData(values)}
             >
-                <CollapsiblePane title="LDAP Configuration">
+                <CollapsiblePane
+                    title="LDAP Configuration"
+                    expanded={hasLdapConfig}
+                >
                     <h2>LDAP Configuration</h2>
                     <CheckboxInput
                         key={AUTHENTICATION_LDAP_FIELD_KEYS.enabled}
@@ -256,7 +253,10 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute]}
                     />
                 </CollapsiblePane>
-                <CollapsiblePane title="SAML Configuration">
+                <CollapsiblePane
+                    title="SAML Configuration"
+                    expanded={hasSamlConfig}
+                >
                     <h2>SAML Configuration</h2>
                     <CheckboxInput
                         key={AUTHENTICATION_SAML_FIELD_KEYS.enabled}
@@ -309,6 +309,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                             'application/xml',
                             '.xml'
                         ]}
+                        currentConfig={formData}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.metadataFile)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.metadataFile)}
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.metadataFile]}
