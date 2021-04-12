@@ -52,7 +52,7 @@ class ChannelTestModal extends Component {
     }
 
     render() {
-        const { showTestModal, testFields } = this.props;
+        const { showTestModal, testFields, csrfToken } = this.props;
 
         return (
             <Modal show={showTestModal} onHide={this.handleHide}>
@@ -66,6 +66,7 @@ class ChannelTestModal extends Component {
                         fieldErrors={null}
                         stateName="testFieldModel"
                         currentConfig={this.state.testFieldModel}
+                        csrfToken={csrfToken}
                     />
                 </Modal.Body>
                 <Modal.Footer>
@@ -92,7 +93,8 @@ ChannelTestModal
         sendTestMessage: PropTypes.func.isRequired,
         handleCancel: PropTypes.func.isRequired,
         fieldModel: PropTypes.object.isRequired,
-        testFields: PropTypes.arrayOf(PropTypes.object)
+        testFields: PropTypes.arrayOf(PropTypes.object),
+        csrfToken: PropTypes.string.isRequired
     };
 
 ChannelTestModal

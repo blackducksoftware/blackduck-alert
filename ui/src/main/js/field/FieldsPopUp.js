@@ -32,7 +32,7 @@ class FieldsPopUp extends Component {
 
     render() {
         const {
-            fields, show, title, cancelLabel, okLabel
+            fields, show, title, cancelLabel, okLabel, csrfToken
         } = this.props;
         const { modalConfig, fieldErrors } = this.state;
 
@@ -43,6 +43,7 @@ class FieldsPopUp extends Component {
                 fieldErrors={fieldErrors}
                 self={this}
                 stateName="modalConfig"
+                csrfToken={csrfToken}
             />
         );
         return (
@@ -69,7 +70,8 @@ FieldsPopUp.propTypes = {
     show: PropTypes.bool,
     title: PropTypes.string,
     cancelLabel: PropTypes.string,
-    okLabel: PropTypes.string
+    okLabel: PropTypes.string,
+    csrfToken: PropTypes.string.isRequired
 };
 
 FieldsPopUp.defaultProps = {
