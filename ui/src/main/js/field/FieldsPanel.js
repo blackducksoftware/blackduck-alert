@@ -130,7 +130,9 @@ class FieldsPanel extends React.Component {
     }
 
     createFields(fields) {
-        const { currentConfig, fieldErrors, metadata } = this.props;
+        const {
+            currentConfig, fieldErrors, metadata, csrfToken
+        } = this.props;
         const createdFields = [];
         const { additionalFields } = metadata;
         const currentConfigCopy = JSON.parse(JSON.stringify(currentConfig));
@@ -146,7 +148,7 @@ class FieldsPanel extends React.Component {
             const fieldKey = field.key;
             if (!this.state.hiddenFieldKeys.includes(fieldKey)) {
                 const fieldError = fieldErrors ? fieldErrors[fieldKey] : null;
-                const newField = FieldMapping.createField(field, currentConfigCopy, fieldError, this.handleChange);
+                const newField = FieldMapping.createField(field, currentConfigCopy, fieldError, this.handleChange, csrfToken);
                 createdFields.push(newField);
             }
         });
@@ -177,7 +179,8 @@ FieldsPanel.propTypes = {
     stateName: PropTypes.string.isRequired,
     metadata: PropTypes.shape({
         additionalFields: PropTypes.object
-    })
+    }),
+    csrfToken: PropTypes.string.isRequired
 };
 
 FieldsPanel.defaultProps = {

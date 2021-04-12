@@ -4,12 +4,7 @@ import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
 import {
-    clearConfigFieldErrors,
-    deleteConfig,
-    getAllConfigs,
-    testConfig,
-    updateConfig,
-    validateConfig
+    clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig, validateConfig
 } from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -201,7 +196,9 @@ class ProviderTable extends Component {
 
     createModalFields() {
         const { providerConfig } = this.state;
-        const { fieldErrors, descriptors, descriptorName } = this.props;
+        const {
+            fieldErrors, descriptors, descriptorName, csrfToken
+        } = this.props;
         const newConfig = this.combineModelWithDefaults(providerConfig);
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (descriptor) {
@@ -213,6 +210,7 @@ class ProviderTable extends Component {
                         fieldErrors={fieldErrors}
                         stateName="providerConfig"
                         currentConfig={newConfig}
+                        csrfToken={csrfToken}
                     />
                 </div>
             );
@@ -346,7 +344,8 @@ ProviderTable.propTypes = {
     fieldErrors: PropTypes.object,
     getAllConfigs: PropTypes.func.isRequired,
     descriptorName: PropTypes.string.isRequired,
-    validateConfig: PropTypes.func.isRequired
+    validateConfig: PropTypes.func.isRequired,
+    csrfToken: PropTypes.string.isRequired
 };
 
 ProviderTable.defaultProps = {
@@ -372,7 +371,8 @@ const mapStateToProps = (state) => ({
     errorMessage: state.globalConfiguration.error.message,
     errorIsDetailed: state.globalConfiguration.error.isDetailed,
     actionMessage: state.globalConfiguration.actionMessage,
-    fieldErrors: state.globalConfiguration.error.fieldErrors
+    fieldErrors: state.globalConfiguration.error.fieldErrors,
+    csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = (dispatch) => ({

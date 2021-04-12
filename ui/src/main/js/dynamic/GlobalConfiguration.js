@@ -6,11 +6,7 @@ import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import {
-    deleteConfig,
-    getConfig,
-    testConfig,
-    updateConfig,
-    validateConfig
+    deleteConfig, getConfig, testConfig, updateConfig, validateConfig
 } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -130,7 +126,7 @@ class GlobalConfiguration extends React.Component {
             label, description, fields, type, testFields
         } = currentDescriptor;
         const {
-            errorMessage, actionMessage, fieldErrors, testConfigAction, errorIsDetailed
+            errorMessage, actionMessage, fieldErrors, testConfigAction, errorIsDetailed, csrfToken
         } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
@@ -151,6 +147,7 @@ class GlobalConfiguration extends React.Component {
                             handleChange={this.handleChange}
                             self={this}
                             stateName="currentConfig"
+                            csrfToken={csrfToken}
                         />
                     </div>
                     <ConfigButtons
@@ -168,6 +165,7 @@ class GlobalConfiguration extends React.Component {
                         handleCancel={this.handleTestCancel}
                         fieldModel={currentConfig}
                         testFields={testFields}
+                        csrfToken={csrfToken}
                     />
                 </form>
             );
@@ -205,7 +203,8 @@ GlobalConfiguration.propTypes = {
     updateConfigAction: PropTypes.func.isRequired,
     testConfigAction: PropTypes.func.isRequired,
     deleteConfigAction: PropTypes.func.isRequired,
-    validateConfigAction: PropTypes.func.isRequired
+    validateConfigAction: PropTypes.func.isRequired,
+    csrfToken: PropTypes.string.isRequired
 };
 
 // Default values
@@ -225,7 +224,8 @@ const mapStateToProps = (state) => ({
     updateStatus: state.globalConfiguration.updateStatus,
     errorMessage: state.globalConfiguration.error.message,
     errorIsDetailed: state.globalConfiguration.error.isDetailed,
-    fieldErrors: state.globalConfiguration.error.fieldErrors
+    fieldErrors: state.globalConfiguration.error.fieldErrors,
+    csrfToken: state.session.csrfToken
 });
 
 // Mapping redux actions -> react props
