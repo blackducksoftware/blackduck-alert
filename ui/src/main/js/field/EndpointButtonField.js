@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
 import FieldsPopUp from 'field/FieldsPopUp';
@@ -8,48 +8,32 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 
-class EndpointButtonField extends Component {
-    constructor(props) {
-        super(props);
+const EndpointButtonField = (props) => {
+    const {
+        buttonLabel, fields, value, fieldKey, name, successBox, readOnly, statusMessage, errorValue, csrfToken, onChange, currentConfig, endpoint, requiredRelatedFields
+    } = props;
+    const [showModal, setShowModal] = useState(false);
+    const [fieldError, setFieldError] = useState(errorValue);
+    const [success, setSuccess] = useState(false);
+    const [progress, setProgress] = useState(false);
 
-        this.onSendClick = this.onSendClick.bind(this);
-        this.flipShowModal = this.flipShowModal.bind(this);
-
-        this.state = {
-            showModal: false,
-            fieldError: this.props.errorValue,
-            success: false,
-            progress: false
-        };
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        const { errorValue } = prevProps;
-        const currentError = this.props.errorValue;
-        if (errorValue !== currentError) {
-            this.setState({
-                fieldError: currentError,
-                success: false
-            });
+    useEffect(() => {
+        if (fieldError !== errorValue) {
+            setFieldError(errorValue);
+            setSuccess(false);
         }
-    }
+    }, [errorValue]);
 
-    onSendClick(event, popupData) {
-        this.setState({
-            fieldError: this.props.errorValue,
-            progress: true,
-            success: false
-        });
-        const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint, requiredRelatedFields
-        } = this.props;
+    const onSendClick = (event, popupData) => {
+        setFieldError(errorValue);
+        setProgress(true);
+        setSuccess(false);
+
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
-            this.setState({
-                progress: false
-            });
+            setProgress(false);
             if (response.ok) {
                 const target = {
                     name: [fieldKey],
@@ -57,9 +41,7 @@ class EndpointButtonField extends Component {
                     type: 'checkbox'
                 };
                 onChange({ target });
-                this.setState({
-                    success: true
-                });
+                setSuccess(true);
             } else {
                 response.json()
                     .then((data) => {
@@ -69,83 +51,68 @@ class EndpointButtonField extends Component {
                             type: 'checkbox'
                         };
                         onChange({ target });
-                        this.setState({
-                            fieldError: {
-                                severity: 'ERROR',
-                                fieldMessage: data.message
-                            }
+                        setFieldError({
+                            severity: 'ERROR',
+                            fieldMessage: data.message
                         });
                     });
             }
         });
-    }
+    };
 
-    flipShowModal() {
-        const { fields } = this.props;
+    const flipShowModal = () => {
         if (fields.length > 0) {
-            this.setState({
-                showModal: !this.state.showModal
-            });
+            setShowModal(!showModal);
         } else {
-            this.onSendClick({});
+            onSendClick({});
         }
-    }
+    };
+    return (
+        <div>
+            <LabeledField
+                {...props}
+                errorName={fieldKey}
+                errorValue={fieldError}
+            >
+                <div className="d-inline-flex p-2 col-sm-8">
+                    <GeneralButton
+                        id={fieldKey}
+                        onClick={flipShowModal}
+                        disabled={readOnly}
+                        performingAction={progress}
+                    >
+                        {buttonLabel}
+                    </GeneralButton>
+                    {successBox
+                    && (
+                        <div className="d-inline-flex p-2 checkbox">
+                            <input
+                                className="form-control"
+                                id={`${fieldKey}-confirmation`}
+                                type="checkbox"
+                                name={name}
+                                checked={value}
+                                readOnly
+                            />
+                        </div>
+                    )}
+                    {success
+                    && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
 
-    render() {
-        const {
-            buttonLabel, fields, value, fieldKey, name, successBox, readOnly, statusMessage
-        } = this.props;
+                </div>
+            </LabeledField>
+            <FieldsPopUp
+                onCancel={flipShowModal}
+                fields={fields}
+                handleSubmit={onSendClick}
+                title={buttonLabel}
+                show={showModal}
+                okLabel="Send"
+            />
+        </div>
 
-        const endpointField = (
-            <div className="d-inline-flex p-2 col-sm-8">
-                <GeneralButton
-                    id={fieldKey}
-                    onClick={this.flipShowModal}
-                    disabled={readOnly}
-                    performingAction={this.state.progress}
-                >
-                    {buttonLabel}
-                </GeneralButton>
-                {successBox
-                && (
-                    <div className="d-inline-flex p-2 checkbox">
-                        <input
-                            className="form-control"
-                            id={`${fieldKey}-confirmation`}
-                            type="checkbox"
-                            name={name}
-                            checked={value}
-                            readOnly
-                        />
-                    </div>
-                )}
-                {this.state.success
-                && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
-
-            </div>
-        );
-
-        return (
-            <div>
-                <LabeledField
-                    field={endpointField}
-                    {...this.props}
-                    errorName={fieldKey}
-                    errorValue={this.state.fieldError}
-                />
-                <FieldsPopUp
-                    onCancel={this.flipShowModal}
-                    fields={fields}
-                    handleSubmit={this.onSendClick}
-                    title={buttonLabel}
-                    show={this.state.showModal}
-                    okLabel="Send"
-                />
-            </div>
-
-        );
-    }
-}
+    );
+};
 
 EndpointButtonField.propTypes = {
     id: PropTypes.string,

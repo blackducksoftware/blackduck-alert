@@ -1,13 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-class MessageFormatter extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    createDetailedMessage(messageBody) {
+const MessageFormatter = (props) => {
+    const {
+        id, errorIsDetailed
+    } = props;
+    const createDetailedMessage = (messageBody) => {
         const {
             header, title, message, componentLabel, componentLink
         } = messageBody;
@@ -24,31 +23,28 @@ class MessageFormatter extends Component {
                 </div>
             </div>
         );
-    }
+    };
 
-    createMessage() {
+    const createMessage = () => {
+        const { message } = props;
         try {
-            const { errorIsDetailed, message } = this.props;
             const parsedMessaged = JSON.parse(message);
             if (errorIsDetailed) {
-                return this.createDetailedMessage(parsedMessaged);
+                return createDetailedMessage(parsedMessaged);
             }
             return parsedMessaged;
         } catch (e) {
-            return this.props.message;
+            return message;
         }
-    }
-
-    render() {
-        const { id } = this.props;
-        const message = this.props.message && this.createMessage();
-        return (
-            <div id={id}>
-                {message}
-            </div>
-        );
-    }
-}
+    };
+    const { message } = props;
+    const formattedMessage = message && createMessage();
+    return (
+        <div id={id}>
+            {formattedMessage}
+        </div>
+    );
+};
 
 MessageFormatter.propTypes = {
     id: PropTypes.string,
