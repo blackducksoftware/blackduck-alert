@@ -25,19 +25,19 @@ const EndpointSelectField = (props) => {
         required
     } = props;
     const [options, setOptions] = useState([]);
+    const [requestErrorValue, setRequestErrorValue] = useState(null);
 
-    const emptyFieldValue = () => {
+    const emptyFieldValue = async () => {
         const eventObject = {
             target: {
                 name: fieldKey,
                 value: []
             }
         };
-
         onChange(eventObject);
     };
 
-    const onSendClick = () => {
+    const onSendClick = async () => {
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
         request.then((response) => {
@@ -55,19 +55,19 @@ const EndpointSelectField = (props) => {
                     if (selectOptions.length === 0 || selectedValues.length === 0) {
                         emptyFieldValue();
                     }
-
                     setOptions(selectOptions);
                 });
             } else {
                 response.json()
-                    .then(() => {
+                    .then((data) => {
                         setOptions([]);
-                        // setFieldError({
-                        //     severity: 'ERROR',
-                        //     fieldMessage: data.message
-                        // });
-                    })
-                    .then(() => emptyFieldValue());
+                        setRequestErrorValue({
+                            severity: 'ERROR',
+                            fieldMessage: data.message
+                        });
+
+                        emptyFieldValue();
+                    });
             }
         });
     };
@@ -75,10 +75,6 @@ const EndpointSelectField = (props) => {
     useEffect(() => {
         onSendClick();
     }, []);
-
-    useEffect(() => {
-        onSendClick();
-    }, [currentConfig]);
 
     return (
         <div>
@@ -101,7 +97,7 @@ const EndpointSelectField = (props) => {
                 showDescriptionPlaceHolder={showDescriptionPlaceHolder}
                 label={label}
                 errorName={errorName}
-                errorValue={errorValue}
+                errorValue={errorValue || requestErrorValue}
                 required={required}
             />
         </div>

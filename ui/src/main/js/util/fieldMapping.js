@@ -1,5 +1,5 @@
 import React from 'react';
-import SelectInput from 'field/input/SelectInput';
+import SelectInput from 'field/input/DynamicSelectInput';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import PasswordInput from 'field/input/PasswordInput';

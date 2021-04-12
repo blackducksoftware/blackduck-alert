@@ -93,7 +93,7 @@ class OAuthEndpointButtonField extends Component {
 
     render() {
         const {
-            buttonLabel, fields, fieldKey, readOnly, statusMessage
+            buttonLabel, fields, fieldKey, readOnly, statusMessage, csrfToken
         } = this.props;
         const {
             authenticated, progress, success
@@ -124,6 +124,7 @@ class OAuthEndpointButtonField extends Component {
                     errorValue={this.state.fieldError}
                 />
                 <FieldsPopUp
+                    csrfToken={csrfToken}
                     onCancel={this.flipShowModal}
                     fields={fields}
                     handleSubmit={this.onSendClick}
