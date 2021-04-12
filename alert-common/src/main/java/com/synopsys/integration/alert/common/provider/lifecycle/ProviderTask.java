@@ -34,7 +34,7 @@ public abstract class ProviderTask extends ScheduledTask {
         runProviderTask();
     }
 
-    public abstract void runProviderTask();
+    protected abstract void runProviderTask();
 
     @Override
     public String getTaskName() {

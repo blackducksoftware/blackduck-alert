@@ -10,6 +10,8 @@ import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
 import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
 import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
+import { AZURE_INFO } from 'global/channels/azure/AzureModel';
+import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 
 class Navigation extends Component {
     constructor(props) {
@@ -48,6 +50,10 @@ class Navigation extends Component {
                     return createStaticNavItem(JIRA_CLOUD_INFO);
                 case JIRA_SERVER_INFO.key:
                     return createStaticNavItem(JIRA_SERVER_INFO);
+                case AZURE_INFO.key:
+                    return createStaticNavItem(AZURE_INFO);
+                case SCHEDULING_INFO.key:
+                    return createStaticNavItem(SCHEDULING_INFO);
                 default:
                     return (
                         <li key={name}>

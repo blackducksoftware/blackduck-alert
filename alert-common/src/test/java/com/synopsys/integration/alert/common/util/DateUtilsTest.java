@@ -57,4 +57,22 @@ public class DateUtilsTest {
         assertTrue(firstTimeStamp.isBefore(currentDateTimestamp));
     }
 
+    @Test
+    public void formatDateAsJsonStringTest() {
+        OffsetDateTime dateTime = OffsetDateTime.now();
+        String formattedDateTimeString = DateUtils.formatDate(dateTime, RestConstants.JSON_DATE_FORMAT);
+        String jsonDateTimeString = DateUtils.formatDateAsJsonString(dateTime);
+        assertEquals(formattedDateTimeString, jsonDateTimeString);
+    }
+
+    @Test
+    public void parseDateFromJsonString() throws ParseException {
+        OffsetDateTime dateTime = OffsetDateTime.now();
+        String formattedDateTimeString = DateUtils.formatDate(dateTime, RestConstants.JSON_DATE_FORMAT);
+
+        OffsetDateTime parsedDate = DateUtils.parseDate(formattedDateTimeString, RestConstants.JSON_DATE_FORMAT);
+        OffsetDateTime jsonDateTime = DateUtils.parseDateFromJsonString(formattedDateTimeString);
+        assertEquals(parsedDate, jsonDateTime);
+    }
+
 }

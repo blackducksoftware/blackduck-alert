@@ -11,9 +11,8 @@ import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageA
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class SystemActions {
@@ -64,13 +62,13 @@ public class SystemActions {
     }
 
     private ActionResponse<MultiSystemMessageModel> getSystemMessagesAfter(String startDate) throws ParseException {
-        OffsetDateTime date = DateUtils.parseDate(startDate, RestConstants.JSON_DATE_FORMAT);
+        OffsetDateTime date = DateUtils.parseDateFromJsonString(startDate);
         List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessagesAfter(date);
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
 
     private ActionResponse<MultiSystemMessageModel> getSystemMessagesBefore(String endDate) throws ParseException {
-        OffsetDateTime date = DateUtils.parseDate(endDate, RestConstants.JSON_DATE_FORMAT);
+        OffsetDateTime date = DateUtils.parseDateFromJsonString(endDate);
         List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessagesBefore(date);
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
@@ -85,4 +83,5 @@ public class SystemActions {
         List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessages();
         return new ActionResponse<>(HttpStatus.OK, new MultiSystemMessageModel(messages));
     }
+
 }

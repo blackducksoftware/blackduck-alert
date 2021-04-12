@@ -94,6 +94,8 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                         JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress,
                         JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken
                     ]}
+                    csrfToken={csrfToken}
+                    currentConfig={formData}
                     readOnly={readonly}
                     onChange={handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin)}
