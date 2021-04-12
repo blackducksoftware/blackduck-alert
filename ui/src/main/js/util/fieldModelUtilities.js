@@ -96,6 +96,16 @@ export function hasAnyValuesExcludingId(fieldModel) {
     return false;
 }
 
+export function hasValue(fieldModel, key) {
+    const { keyToValues } = fieldModel;
+    if (keyToValues && keyToValues[key]) {
+        const { values, isSet } = keyToValues[key];
+        return isSet || values;
+    }
+
+    return false;
+}
+
 export function updateFieldModelSingleValue(fieldModel, key, value) {
     // This is required to be sure we get the proper values from fieldModel
     const copy = JSON.parse(JSON.stringify(fieldModel));
