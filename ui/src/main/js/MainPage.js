@@ -28,6 +28,8 @@ import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import SchedulingConfiguration from 'global/components/scheduling/SchedulingConfiguration';
 import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
 import SettingsConfiguration from 'global/components/settings/SettingsConfiguration';
+import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
+import AuthenticationConfiguration from 'global/components/auth/AuthenticationConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
@@ -123,6 +125,9 @@ class MainPage extends Component {
                 break;
             case SETTINGS_INFO.key:
                 renderComponent = <SettingsConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
+                break;
+            case AUTHENTICATION_INFO.key:
+                renderComponent = <AuthenticationConfiguration csrfToken={csrfToken} readonly={component.readonly} />;
                 break;
             default:
                 renderComponent = <GlobalConfiguration key={name} descriptor={component} />;
