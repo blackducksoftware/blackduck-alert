@@ -23,13 +23,6 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
     const [errors, setErrors] = useState({});
     const [testFieldData, setTestFieldData] = useState({});
 
-    const handleTestChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = { ...testFieldData, [name]: updatedValue };
-        setTestFieldData(newState);
-    };
-
     const testFields = (
         <div>
             <h2>LDAP Configuration</h2>
@@ -39,7 +32,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 label="User Name"
                 description="The user name to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={readonly}
-                onChange={handleTestChange}
+                onChange={FieldModelUtilities.handleTestChange(testFieldData, setTestFieldData)}
                 value={testFieldData[AUTHENTICATION_TEST_FIELD_KEYS.username]}
             />
             <PasswordInput
@@ -48,7 +41,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 label="Password"
                 description="The password to test LDAP authentication; if LDAP authentication is enabled."
                 readOnly={readonly}
-                onChange={handleTestChange}
+                onChange={FieldModelUtilities.handleTestChange(testFieldData, setTestFieldData)}
                 value={testFieldData[AUTHENTICATION_TEST_FIELD_KEYS.password]}
             />
             <h2>SAML Configuration</h2>

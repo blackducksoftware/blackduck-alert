@@ -17,20 +17,13 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [fieldErrors, setFieldErrors] = useState({});
     const [testFieldData, setTestFieldData] = useState({});
 
-    const handleTestChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = { [name]: updatedValue };
-        setTestFieldData(newState);
-    };
-
     const testField = (
         <TextInput
             key={EMAIL_TEST_FIELD.key}
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
             description={EMAIL_TEST_FIELD.description}
-            onChange={handleTestChange}
+            onChange={FieldModelUtilities.handleTestChange(testFieldData, setTestFieldData)}
             value={testFieldData[EMAIL_TEST_FIELD.key]}
         />
     );

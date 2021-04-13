@@ -312,3 +312,10 @@ export const handleChange = (data, setData) => ({ target }) => {
     const newState = Array.isArray(updatedValue) ? updateFieldModelValues(data, name, updatedValue) : updateFieldModelSingleValue(data, name, updatedValue);
     setData(newState);
 };
+
+export const handleTestChange = (testData, setTestData) => ({ target }) => {
+    const { type, name, value } = target;
+    const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+    const newState = { ...testData, [name]: updatedValue };
+    setTestData(newState);
+};
