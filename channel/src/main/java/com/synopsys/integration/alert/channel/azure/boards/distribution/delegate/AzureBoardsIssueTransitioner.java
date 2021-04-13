@@ -131,11 +131,7 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
         try {
             return workItemService.getWorkItem(organizationName, issueId);
         } catch (HttpServiceException e) {
-            Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
-            if (improvedExceptionMessage.isPresent()) {
-                throw new AlertException(improvedExceptionMessage.get(), e);
-            }
-            throw new AlertException(String.format("Failed to retrieve available state categories from Azure. Work Item ID: %s", issueId), e);
+            throw improveExceptionOrDefault(e, String.format("Failed to retrieve available state categories from Azure. Work Item ID: %s", issueId));
         }
     }
 
@@ -149,12 +145,14 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
         try {
             return workItemTypeStateRetriever.retrieveAvailableWorkItemStates(organizationName, issueId);
         } catch (HttpServiceException e) {
-            Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
-            if (improvedExceptionMessage.isPresent()) {
-                throw new AlertException(improvedExceptionMessage.get(), e);
-            }
-            throw new AlertException(String.format("Failed to retrieve available work item states from Azure. Work Item ID: %s", issueId), e);
+            throw improveExceptionOrDefault(e, String.format("Failed to retrieve available work item states from Azure. Work Item ID: %s", issueId));
         }
+    }
+
+    private AlertException improveExceptionOrDefault(HttpServiceException e, String defaultExceptionMessage) {
+        return exceptionMessageImprover.extractImprovedMessage(e)
+                   .map(improvedException -> new AlertException(improvedException, e))
+                   .orElseGet(() -> new AlertException(defaultExceptionMessage, e));
     }
 
 }
