@@ -21,8 +21,10 @@ import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDeta
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueTransitioner;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsWorkItemTypeStateRetriever;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -48,6 +50,7 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
     private final AzureBoardsJobDetailsModel distributionDetails;
     private final AzureWorkItemService workItemService;
     private final AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever;
+    private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
 
     public AzureBoardsIssueTransitioner(
         IssueTrackerIssueCommenter<Integer> commenter,
@@ -56,7 +59,8 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
         String organizationName,
         AzureBoardsJobDetailsModel distributionDetails,
         AzureWorkItemService workItemService,
-        AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever
+        AzureBoardsWorkItemTypeStateRetriever workItemTypeStateRetriever,
+        AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover
     ) {
         super(commenter, issueResponseCreator);
         this.gson = gson;
@@ -64,6 +68,7 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
         this.distributionDetails = distributionDetails;
         this.workItemService = workItemService;
         this.workItemTypeStateRetriever = workItemTypeStateRetriever;
+        this.exceptionMessageImprover = exceptionMessageImprover;
     }
 
     @Override
@@ -106,16 +111,19 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
     }
 
     @Override
-    protected void findAndPerformTransition(ExistingIssueDetails<Integer> existingIssueDetails, String transitionName) {
+    protected void findAndPerformTransition(ExistingIssueDetails<Integer> existingIssueDetails, String transitionName) throws AlertException {
         WorkItemElementOperationModel replaceSystemStateField = WorkItemElementOperationModel.fieldElement(WorkItemElementOperation.REPLACE, WorkItemResponseFields.System_State, transitionName);
         WorkItemRequest request = new WorkItemRequest(List.of(replaceSystemStateField));
 
         Integer issueId = existingIssueDetails.getIssueId();
         try {
             workItemService.updateWorkItem(organizationName, distributionDetails.getProjectNameOrId(), issueId, request);
-        } catch (HttpServiceException ex) {
-            // TODO determine if catching this exception is correct
-            logger.error("Error transitioning work item {} to {}: cause: {}", issueId, transitionName, ex);
+        } catch (HttpServiceException e) {
+            List<String> availableStates = retrieveAvailableStates(existingIssueDetails.getIssueId())
+                                               .stream()
+                                               .map(WorkItemTypeStateResponseModel::getName)
+                                               .collect(Collectors.toList());
+            throw new IssueMissingTransitionException(existingIssueDetails.getIssueKey(), transitionName, availableStates);
         }
     }
 
@@ -123,6 +131,10 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
         try {
             return workItemService.getWorkItem(organizationName, issueId);
         } catch (HttpServiceException e) {
+            Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
+            if (improvedExceptionMessage.isPresent()) {
+                throw new AlertException(improvedExceptionMessage.get(), e);
+            }
             throw new AlertException(String.format("Failed to retrieve available state categories from Azure. Work Item ID: %s", issueId), e);
         }
     }
@@ -137,6 +149,10 @@ public class AzureBoardsIssueTransitioner extends IssueTrackerIssueTransitioner<
         try {
             return workItemTypeStateRetriever.retrieveAvailableWorkItemStates(organizationName, issueId);
         } catch (HttpServiceException e) {
+            Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
+            if (improvedExceptionMessage.isPresent()) {
+                throw new AlertException(improvedExceptionMessage.get(), e);
+            }
             throw new AlertException(String.format("Failed to retrieve available work item states from Azure. Work Item ID: %s", issueId), e);
         }
     }
