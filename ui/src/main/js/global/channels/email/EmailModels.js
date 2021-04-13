@@ -11,18 +11,22 @@ export const EMAIL_TEST_FIELD = {
 };
 
 export const EMAIL_GLOBAL_FIELD_KEYS = {
-    user: 'mail.smtp.user',
     host: 'mail.smtp.host',
+    from: 'mail.smtp.from',
+    auth: 'mail.smtp.auth',
+    user: 'mail.smtp.user',
+    password: 'mail.smtp.password'
+};
+
+export const EMAIL_GLOBAL_ADVANCED_FIELD_KEYS = {
     port: 'mail.smtp.port',
     connectionTimeout: 'mail.smtp.connectiontimeout',
     timeout: 'mail.smtp.timeout',
     writeTimeout: 'mail.smtp.writetimeout',
-    from: 'mail.smtp.from',
     localhost: 'mail.smtp.localhost',
     localAddress: 'mail.smtp.localaddress',
     localPort: 'mail.smtp.localport',
     ehlo: 'mail.smtp.ehlo',
-    auth: 'mail.smtp.auth',
     authMechanisms: 'mail.smtp.auth.mechanisms',
     loginDisable: 'mail.smtp.auth.login.disable',
     authPlainDisable: 'mail.smtp.auth.plain.disable',
@@ -56,8 +60,7 @@ export const EMAIL_GLOBAL_FIELD_KEYS = {
     socksPort: 'mail.smtp.socks.port',
     mailExtensions: 'mail.smtp.mailextension',
     userSet: 'mail.smtp.userset',
-    noopStrict: 'mail.smtp.noop.strict',
-    password: 'mail.smtp.password'
+    noopStrict: 'mail.smtp.noop.strict'
 };
 
 /*

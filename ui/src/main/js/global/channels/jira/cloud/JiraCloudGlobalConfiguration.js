@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import { JIRA_CLOUD_GLOBAL_FIELD_KEYS, JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
-import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import PasswordInput from 'field/input/PasswordInput';
@@ -13,13 +13,6 @@ import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key));
     const [errors, setErrors] = useState({});
-
-    const handleChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(formData, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(formData, name, updatedValue);
-        setFormData(newState);
-    };
 
     return (
         <CommonGlobalConfiguration
@@ -40,7 +33,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The URL of the Jira Cloud server."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.url)}
                     errorValue={errors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.url]}
@@ -52,7 +45,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The email address of the Jira Cloud user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress)}
                     errorValue={errors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.emailAddress]}
@@ -64,7 +57,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The API token of the specified Jira user."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.accessToken)}
@@ -76,7 +69,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                     label="Disable Plugin Check"
                     description="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly."
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck)}
                     errorValue={errors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.disablePluginCheck]}
@@ -97,7 +90,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                     csrfToken={csrfToken}
                     currentConfig={formData}
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin)}
                     errorValue={errors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin]}
                 />

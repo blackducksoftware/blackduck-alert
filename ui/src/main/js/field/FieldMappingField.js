@@ -6,7 +6,7 @@ import LabeledField from 'field/LabeledField';
 
 const FieldMappingField = (props) => {
     const {
-        newMappingTitle, editMappingTitle, leftSideMapping, rightSideMapping, onChange, fieldMappingKey, storedMappings
+        newMappingTitle, editMappingTitle, leftSideMapping, rightSideMapping, onChange, fieldMappingKey, storedMappings, autoRefresh
     } = props;
     const [fieldMappingRow, setFieldMappingRow] = useState({
         rowId: -1,

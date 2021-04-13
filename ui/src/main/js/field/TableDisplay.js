@@ -5,7 +5,6 @@ import {
 } from 'react-bootstrap-table';
 import AutoRefresh from 'component/common/AutoRefresh';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
-import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PopUp from 'field/PopUp';
 import ConfirmModal from 'component/common/ConfirmModal';
@@ -526,8 +525,4 @@ TableDisplay.defaultProps = {
     ignoredActionMessages: []
 };
 
-const mapStateToProps = (state) => ({
-    autoRefresh: state.refresh.autoRefresh
-});
-
-export default connect(mapStateToProps, null)(TableDisplay);
+export default TableDisplay;

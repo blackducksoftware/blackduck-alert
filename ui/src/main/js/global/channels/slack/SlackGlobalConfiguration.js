@@ -1,5 +1,5 @@
 import React from 'react';
-import EmptyGlobalConfiguration from 'global/channels/EmptyGlobalConfiguration';
+import EmptyGlobalConfiguration from 'global/EmptyGlobalConfiguration';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 
 const SlackGlobalConfiguration = () => (

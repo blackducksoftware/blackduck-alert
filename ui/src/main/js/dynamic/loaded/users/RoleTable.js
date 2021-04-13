@@ -5,11 +5,7 @@ import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
 import {
-    clearRoleFieldErrors,
-    deleteRole,
-    fetchRoles,
-    saveRole,
-    validateRole
+    clearRoleFieldErrors, deleteRole, fetchRoles, saveRole, validateRole
 } from 'store/actions/roles';
 
 class RoleTable extends Component {
@@ -244,7 +240,7 @@ class RoleTable extends Component {
 
     render() {
         const {
-            canCreate, canDelete, fieldErrors, roleError, inProgress, fetching, roles
+            canCreate, canDelete, fieldErrors, roleError, inProgress, fetching, roles, autoRefresh
         } = this.props;
         const fieldErrorKeys = Object.keys(fieldErrors);
         const hasErrors = roleError || (fieldErrorKeys && fieldErrorKeys.length > 0);
@@ -252,6 +248,7 @@ class RoleTable extends Component {
             <div>
                 <TableDisplay
                     id="roles"
+                    autoRefresh={autoRefresh}
                     newConfigFields={this.createModalFields}
                     modalTitle="Role"
                     onEditState={this.onEdit}
@@ -283,7 +280,8 @@ RoleTable.defaultProps = {
     fetching: false,
     roles: [],
     descriptors: [],
-    saveStatus: null
+    saveStatus: null,
+    autoRefresh: true
 };
 
 RoleTable.propTypes = {
@@ -300,7 +298,8 @@ RoleTable.propTypes = {
     inProgress: PropTypes.bool,
     fetching: PropTypes.bool,
     saveStatus: PropTypes.string,
-    roles: PropTypes.array
+    roles: PropTypes.array,
+    autoRefresh: PropTypes.bool
 };
 
 const mapStateToProps = (state) => ({
@@ -310,7 +309,8 @@ const mapStateToProps = (state) => ({
     fieldErrors: state.roles.error.fieldErrors,
     inProgress: state.roles.inProgress,
     fetching: state.roles.fetching,
-    saveStatus: state.roles.saveStatus
+    saveStatus: state.roles.saveStatus,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -96,6 +96,25 @@ export function hasAnyValuesExcludingId(fieldModel) {
     return false;
 }
 
+function isCheckboxValue(values) {
+    if (values && values.length > 0) {
+        const value = values[0];
+        return value === 'true' || value === 'false';
+    }
+    return false;
+}
+
+export function hasValue(fieldModel, key) {
+    const { keyToValues } = fieldModel;
+    if (keyToValues && keyToValues[key]) {
+        const { values, isSet } = keyToValues[key];
+        const hasCheckboxValue = checkboxHasValue(keyToValues[key]);
+        return hasCheckboxValue || (isSet && !isCheckboxValue(values)) || (values && !isCheckboxValue(values));
+    }
+
+    return false;
+}
+
 export function updateFieldModelSingleValue(fieldModel, key, value) {
     // This is required to be sure we get the proper values from fieldModel
     const copy = JSON.parse(JSON.stringify(fieldModel));
@@ -286,3 +305,17 @@ export function createFieldModelFromRequestedFields(fieldModel, requestedFields)
     }
     return newModel;
 }
+
+export const handleChange = (data, setData) => ({ target }) => {
+    const { type, name, value } = target;
+    const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+    const newState = Array.isArray(updatedValue) ? updateFieldModelValues(data, name, updatedValue) : updateFieldModelSingleValue(data, name, updatedValue);
+    setData(newState);
+};
+
+export const handleTestChange = (testData, setTestData) => ({ target }) => {
+    const { type, name, value } = target;
+    const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
+    const newState = { ...testData, [name]: updatedValue };
+    setTestData(newState);
+};

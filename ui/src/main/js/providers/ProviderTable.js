@@ -274,7 +274,7 @@ class ProviderTable extends Component {
 
     render() {
         const {
-            providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, errorIsDetailed, actionMessage, descriptors, descriptorName
+            providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, errorIsDetailed, actionMessage, descriptors, descriptorName, autoRefresh
         } = this.props;
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
 
@@ -300,6 +300,7 @@ class ProviderTable extends Component {
                 <div>
                     <TableDisplay
                         id="providers"
+                        autoRefresh={autoRefresh}
                         newConfigFields={this.createModalFields}
                         modalTitle="Black Duck Provider"
                         clearModalFieldState={this.clearModalFieldState}

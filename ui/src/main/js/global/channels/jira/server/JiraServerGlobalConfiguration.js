@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import { JIRA_SERVER_GLOBAL_FIELD_KEYS, JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
-import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import PasswordInput from 'field/input/PasswordInput';
@@ -13,13 +13,6 @@ import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_SERVER_INFO.key));
     const [errors, setErrors] = useState({});
-
-    const handleChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(formData, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(formData, name, updatedValue);
-        setFormData(newState);
-    };
 
     return (
         <CommonGlobalConfiguration
@@ -40,7 +33,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The URL of the Jira Server server."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.url)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.url)}
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.url]}
@@ -52,7 +45,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.username)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.username)}
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.username]}
@@ -64,7 +57,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The password of the specified Jira Server user."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.password)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.password)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.password)}
@@ -76,7 +69,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     label="Disable Plugin Check"
                     description="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly."
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck)}
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck]}
@@ -97,7 +90,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     csrfToken={csrfToken}
                     currentConfig={formData}
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin)}
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin]}
                 />

@@ -2,11 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-    clearCertificateFieldErrors,
-    deleteCertificate,
-    fetchCertificates,
-    saveCertificate,
-    validateCertificate
+    clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate
 } from 'store/actions/certificates';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import TableDisplay from 'field/TableDisplay';
@@ -189,7 +185,7 @@ class CertificatesPage extends Component {
 
     render() {
         const {
-            fetching, inProgress, certificates, errorMessage, label, description, fieldErrors, descriptors
+            fetching, inProgress, certificates, errorMessage, label, description, fieldErrors, descriptors, autoRefresh
         } = this.props;
 
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
@@ -204,6 +200,7 @@ class CertificatesPage extends Component {
                 </div>
                 <div>
                     <TableDisplay
+                        autoRefresh={autoRefresh}
                         id="certificates"
                         newConfigFields={this.createModalFields}
                         modalTitle="Certificate"
@@ -246,7 +243,8 @@ CertificatesPage.propTypes = {
     fieldErrors: PropTypes.object,
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    saveStatus: PropTypes.string.isRequired
+    saveStatus: PropTypes.string.isRequired,
+    autoRefresh: PropTypes.bool
 };
 
 CertificatesPage.defaultProps = {
@@ -255,7 +253,8 @@ CertificatesPage.defaultProps = {
     errorMessage: '',
     fetching: false,
     certificates: [],
-    fieldErrors: {}
+    fieldErrors: {},
+    autoRefresh: true
 };
 
 const mapStateToProps = (state) => ({
@@ -266,7 +265,8 @@ const mapStateToProps = (state) => ({
     errorMessage: state.certificates.error.message,
     fieldErrors: state.certificates.error.fieldErrors,
     saveStatus: state.certificates.saveStatus,
-    deleteSuccess: state.certificates.deleteSuccess
+    deleteSuccess: state.certificates.deleteSuccess,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = (dispatch) => ({

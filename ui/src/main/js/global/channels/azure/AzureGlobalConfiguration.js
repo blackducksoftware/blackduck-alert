@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
-import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
-import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
+import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
+import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'global/channels/azure/AzureModel';
@@ -12,13 +12,6 @@ import OAuthEndpointButtonField from 'field/OAuthEndpointButtonField';
 const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_INFO.key));
     const [errors, setErrors] = useState({});
-
-    const handleChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(formData, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(formData, name, updatedValue);
-        setFormData(newState);
-    };
 
     return (
         <CommonGlobalConfiguration
@@ -39,7 +32,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The name of the Azure DevOps organization."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, AZURE_GLOBAL_FIELD_KEYS.organization)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.organization)}
                     errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.organization]}
@@ -51,7 +44,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The App ID created for Alert when registering your Azure DevOps Client Application."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, AZURE_GLOBAL_FIELD_KEYS.clientId)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, AZURE_GLOBAL_FIELD_KEYS.clientId)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.clientId)}
@@ -64,7 +57,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     description="The Client secret created for Alert when registering your Azure DevOps Application."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, AZURE_GLOBAL_FIELD_KEYS.clientSecret)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, AZURE_GLOBAL_FIELD_KEYS.clientSecret)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.clientSecret)}
@@ -86,7 +79,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                         AZURE_GLOBAL_FIELD_KEYS.clientSecret
                     ]}
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.configureOAuth)}
                     errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.configureOAuth]}
                 />
