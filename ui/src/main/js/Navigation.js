@@ -13,6 +13,7 @@ import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
 import { AZURE_INFO } from 'global/channels/azure/AzureModel';
 import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
+import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
 
 class Navigation extends Component {
     constructor(props) {
@@ -57,6 +58,8 @@ class Navigation extends Component {
                     return createStaticNavItem(SCHEDULING_INFO);
                 case SETTINGS_INFO.key:
                     return createStaticNavItem(SETTINGS_INFO);
+                case AUTHENTICATION_INFO.key:
+                    return createStaticNavItem(AUTHENTICATION_INFO);
                 default:
                     return (
                         <li key={name}>

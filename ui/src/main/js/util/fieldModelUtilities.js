@@ -96,11 +96,20 @@ export function hasAnyValuesExcludingId(fieldModel) {
     return false;
 }
 
+function isCheckboxValue(values) {
+    if (values && values.length > 0) {
+        const value = values[0];
+        return value === 'true' || value === 'false';
+    }
+    return false;
+}
+
 export function hasValue(fieldModel, key) {
     const { keyToValues } = fieldModel;
     if (keyToValues && keyToValues[key]) {
         const { values, isSet } = keyToValues[key];
-        return isSet || values;
+        const hasCheckboxValue = checkboxHasValue(keyToValues[key]);
+        return hasCheckboxValue || (isSet && !isCheckboxValue(values)) || (values && !isCheckboxValue(values));
     }
 
     return false;
