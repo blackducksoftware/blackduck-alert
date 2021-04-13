@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import ConfigButtons from 'component/common/ConfigButtons';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import GlobalTestModal from 'global/GlobalTestModal';
-import StatusMessage from 'field/StatusMessage';
+import ConfigButtons from 'js/component/common/ConfigButtons';
+import * as ConfigRequestBuilder from 'js/util/configurationRequestBuilder';
+import * as FieldModelUtilities from 'js/util/fieldModelUtilities';
+import GlobalTestModal from 'js/global/GlobalTestModal';
+import StatusMessage from 'js/field/StatusMessage';
 
 const CommonGlobalConfigurationForm = ({
     formData, setFormData, testFormData, setTestFormData, csrfToken, setErrors, displaySave, displayTest, displayDelete, children, testFields

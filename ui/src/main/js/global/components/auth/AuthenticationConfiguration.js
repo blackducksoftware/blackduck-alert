@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import TextInput from 'field/input/TextInput';
 import {
     AUTHENTICATION_INFO,

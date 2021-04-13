@@ -1,5 +1,5 @@
 import React from 'react';
-import EmptyGlobalConfiguration from 'global/channels/EmptyGlobalConfiguration';
+import EmptyGlobalConfiguration from 'global/EmptyGlobalConfiguration';
 import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
 
 const MSTeamsGlobalConfiguration = () => (

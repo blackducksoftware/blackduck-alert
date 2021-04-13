@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import { SCHEDULING_FIELD_KEYS, SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import ReadOnlyField from 'field/ReadOnlyField';
 

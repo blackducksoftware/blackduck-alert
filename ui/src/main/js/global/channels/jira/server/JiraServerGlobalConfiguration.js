@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import { JIRA_SERVER_GLOBAL_FIELD_KEYS, JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
-import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import PasswordInput from 'field/input/PasswordInput';
