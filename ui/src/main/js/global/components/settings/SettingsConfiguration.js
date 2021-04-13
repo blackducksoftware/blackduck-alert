@@ -14,13 +14,6 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SETTINGS_INFO.key));
     const [errors, setErrors] = useState({});
 
-    const handleChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(formData, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(formData, name, updatedValue);
-        setFormData(newState);
-    };
-
     const shouldExpand = FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyHost)
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyPort)
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyPassword)
@@ -48,7 +41,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                     description="The password used when encrypting sensitive fields. Must be at least 8 characters long."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.encryptionPassword)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, SETTINGS_FIELD_KEYS.encryptionPassword)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.encryptionPassword)}
@@ -61,7 +54,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                     description="The salt used when encrypting sensitive fields. Must be at least 8 characters long."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.encryptionGlobalSalt)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, SETTINGS_FIELD_KEYS.encryptionGlobalSalt)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.encryptionGlobalSalt)}
@@ -74,7 +67,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         label="Proxy Host"
                         description="The host name of the proxy server to use."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyHost)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyHost)}
                         errorValue={errors[SETTINGS_FIELD_KEYS.proxyHost]}
@@ -85,7 +78,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         label="Proxy Port"
                         description="The port of the proxy server to use."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyPort)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyPort)}
                         errorValue={errors[SETTINGS_FIELD_KEYS.proxyPort]}
@@ -96,7 +89,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         label="Proxy Username"
                         description="If the proxy server requires authentication, the username to authenticate with the proxy server."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyUsername)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyUsername)}
                         errorValue={errors[SETTINGS_FIELD_KEYS.proxyUsername]}
@@ -107,7 +100,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         label="Proxy Password"
                         description="If the proxy server requires authentication, the password to authenticate with the proxy server."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyPassword)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(formData, SETTINGS_FIELD_KEYS.proxyPassword)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyPassword)}

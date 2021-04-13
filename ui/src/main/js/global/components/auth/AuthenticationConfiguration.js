@@ -23,13 +23,6 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
     const [errors, setErrors] = useState({});
     const [testFieldData, setTestFieldData] = useState({});
 
-    const handleChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(formData, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(formData, name, updatedValue);
-        setFormData(newState);
-    };
-
     const handleTestChange = ({ target }) => {
         const { type, name, value } = target;
         const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
@@ -110,7 +103,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Enabled"
                         description="If true, Alert with attempt to authenticate using the LDAP configuration."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.enabled)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.enabled)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.enabled]}
@@ -121,7 +114,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Server"
                         description="The URL of the LDAP server."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.server)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.server)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.server]}
@@ -132,7 +125,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Manager DN"
                         description="The distinguished name of the LDAP manager."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.managerDn)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.managerDn)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.managerDn]}
@@ -143,7 +136,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Manager Password"
                         description="The password of the LDAP manager."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(formData, AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword)}
@@ -156,7 +149,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Authentication Type"
                         description="The type of authentication required to connect to the LDAP server."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         options={authTypes}
                         value={FieldModelUtilities.getFieldModelValues(formData, AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType)}
@@ -169,7 +162,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Referral"
                         description="Set the method to handle referrals."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         options={referralTypes}
                         value={FieldModelUtilities.getFieldModelValues(formData, AUTHENTICATION_LDAP_FIELD_KEYS.referral)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.referral)}
@@ -181,7 +174,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP User Search Base"
                         description="The part of the LDAP directory in which user searches should be done."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase]}
@@ -192,7 +185,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP User Search Filter"
                         description="The filter used to search for user membership."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter]}
@@ -203,7 +196,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP User DN Patterns"
                         description="The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns]}
@@ -214,7 +207,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP User Attributes"
                         description="User attributes to retrieve for users."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes]}
@@ -225,7 +218,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Group Search Base"
                         description="The part of the LDAP directory in which group searches should be done."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase]}
@@ -236,7 +229,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Group Search Filter"
                         description="The filter used to search for group membership."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValueOrDefault(formData, AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter, 'uniqueMember={0}')}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter]}
@@ -247,7 +240,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="LDAP Group Role Attribute"
                         description="The ID of the attribute which contains the role name for a group."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValueOrDefault(formData, AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute)}
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute]}
@@ -264,7 +257,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="SAML Enabled"
                         description="If true, Alert will attempt to authenticate using the SAML configuration."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.enabled]}
@@ -275,7 +268,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="Force Auth"
                         description="If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.forceAuth)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.forceAuth)}
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.forceAuth]}
@@ -286,7 +279,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="Identity Provider Metadata URL"
                         description="The Metadata URL from the external Identity Provider."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl)}
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl]}
@@ -298,7 +291,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="Identity Provider Metadata File"
                         description="The file to upload to the server containing the Metadata from the external Identity Provider."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         buttonLabel="Upload"
                         endpoint="/api/function/upload"
                         csrfToken={csrfToken}
@@ -320,7 +313,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="Entity ID"
                         description="The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.entityId)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.entityId)}
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.entityId]}
@@ -331,7 +324,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="Entity Base URL"
                         description="This should be the URL of the Alert system."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl)}
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl]}
@@ -342,7 +335,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         label="SAML Role Attribute Mapping"
                         description="The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert.  The roles contained in the Attribute Statement can be the role names defined in the mapping fields above."
                         readOnly={readonly}
-                        onChange={handleChange}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping)}
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping]}
