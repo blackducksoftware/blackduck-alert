@@ -52,9 +52,9 @@ public class JobNotificationMapper {
      * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
      */
     //TODO, this might be better renamed to something like mapJobsToFirstPageOfNotifications? (It default starts at page 0, size 100)
-    public StatefulAlertPagedModel<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies) {
+    public StatefulAlertPage<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies) {
         AlertPagedModel<FilteredJobNotificationWrapper> pageOfJobsToNotification = mapPageOfJobsToNotification(detailedContents, frequencies, INITIAL_PAGE_NUMBER, PAGE_SIZE);
-        return new StatefulAlertPagedModel<>(
+        return new StatefulAlertPage<>(
             pageOfJobsToNotification.getTotalPages(),
             pageOfJobsToNotification.getCurrentPage(),
             pageOfJobsToNotification.getPageSize(),
