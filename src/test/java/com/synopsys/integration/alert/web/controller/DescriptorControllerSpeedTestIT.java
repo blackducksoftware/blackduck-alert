@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
@@ -26,6 +27,7 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorController;
 
+@Transactional
 @AlertIntegrationTest
 public class DescriptorControllerSpeedTestIT {
     @Autowired

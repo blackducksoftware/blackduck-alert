@@ -29,10 +29,36 @@ task npmInstall(type: Exec) {
     inputs.file('package.json')
     inputs.file('package-lock.json')
     outputs.dir('node_modules')
+    ignoreExitValue = true
     commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
 }
 
-task npmBuild(type: Exec, dependsOn: [npmInstall]) {
+task npmCacheClean(type: Exec, dependsOn: [npmInstall]) {
+    inputs.file('package.json')
+    inputs.file('package-lock.json')
+    outputs.dir('node_modules')
+    onlyIf {
+        // don't run this if the npmInstall succeeded
+        tasks.npmInstall?.getExecResult()?.exitValue ?: 0 != 0
+    }
+    commandLine 'npm', 'cache', 'clean', '--force', '--cache', "${project.buildDir}/npm_cache"
+}
+
+task npmInstallRetry(type: Exec, dependsOn: [npmCacheClean]) {
+    inputs.file('package.json')
+    inputs.file('package-lock.json')
+    outputs.dir('node_modules')
+    onlyIf {
+        // don't run this if the npmInstall succeeded
+        tasks.npmInstall?.getExecResult()?.exitValue ?: 0 != 0
+    }
+    doFirst {
+        logger.error('The initial npm install failed. Trying to run the npm install again.')
+    }
+    commandLine 'npm', 'install', '--cache', "${project.buildDir}/npm_cache"
+}
+
+task npmBuild(type: Exec, dependsOn: [npmInstallRetry]) {
     inputs.file('package-lock.json')
     inputs.dir('src/main/js')
     inputs.dir('src/main/css')

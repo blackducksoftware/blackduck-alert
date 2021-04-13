@@ -58,8 +58,6 @@ public class AuditEntryControllerTestIT {
     @Autowired
     private AuditNotificationRepository auditNotificationRepository;
     @Autowired
-    private ConfigurationAccessor baseConfigurationAccessor;
-    @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private FieldValueRepository fieldValueRepository;

@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.common;
 
 import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -18,6 +19,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 public class AlertProperties {
+    public static final String FILE_NAME_SYNOPSYS_LOGO = "synopsys.png";
+
     @Value("${alert.config.home:}")
     private String alertConfigHome;
 
@@ -90,10 +93,11 @@ public class AlertProperties {
         return StringUtils.trimToNull(alertImagesDir);
     }
 
-    public String getAlertLogo() throws AlertException {
+    public String createSynopsysLogoPath() throws AlertException {
         String imagesDirectory = getAlertImagesDir();
         if (StringUtils.isNotBlank(imagesDirectory)) {
-            return imagesDirectory + "/synopsys.png";
+            Path synopsysLogoPath = Path.of(imagesDirectory, FILE_NAME_SYNOPSYS_LOGO);
+            return synopsysLogoPath.toString();
         }
         throw new AlertException(String.format("Could not find the Alert logo in the images directory '%s'", imagesDirectory));
     }
@@ -215,4 +219,5 @@ public class AlertProperties {
         return uriComponentsBuilder.toUriString();
 
     }
+
 }

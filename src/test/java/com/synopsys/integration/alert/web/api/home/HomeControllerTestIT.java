@@ -20,12 +20,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 
+@Transactional
 @AlertIntegrationTest
 public class HomeControllerTestIT {
     private static final String HOME_VERIFY_URL = AlertRestConstants.BASE_PATH + "/verify";

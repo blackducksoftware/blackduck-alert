@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+@Transactional
 @AlertIntegrationTest
 public class AuditEntryRepositoryTestIT {
     @Autowired

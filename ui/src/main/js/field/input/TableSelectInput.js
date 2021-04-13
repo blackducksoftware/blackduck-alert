@@ -300,8 +300,9 @@ class TableSelectInput extends Component {
             dataTotalSize: totalPageCount * currentPageSize
         };
 
+        const noTableDataMessage = this.state.fieldError || 'No data found';
         const tableOptions = {
-            noDataText: 'No data found',
+            noDataText: noTableDataMessage,
             clearSearch: true,
             defaultSortName,
             defaultSortOrder: 'asc',

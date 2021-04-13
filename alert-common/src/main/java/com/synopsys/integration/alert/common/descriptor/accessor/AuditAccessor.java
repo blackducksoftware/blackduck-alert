@@ -9,13 +9,11 @@ package com.synopsys.integration.alert.common.descriptor.accessor;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -32,8 +30,6 @@ public interface AuditAccessor {
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
 
     Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
-
-    Map<Long, Long> createAuditEntry(Map<Long, Long> existingNotificationIdToAuditId, UUID jobId, MessageContentGroup content);
 
     void setAuditEntrySuccess(Collection<Long> auditEntryIds);
 

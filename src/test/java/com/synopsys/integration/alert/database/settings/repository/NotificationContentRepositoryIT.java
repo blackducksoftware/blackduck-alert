@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiFunction;
 
 import org.junit.jupiter.api.AfterEach;
@@ -29,15 +29,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.message.model.ComponentItem;
-import com.synopsys.integration.alert.common.message.model.MessageContentGroup;
-import com.synopsys.integration.alert.common.message.model.ProviderMessageContent;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -46,7 +42,10 @@ import com.synopsys.integration.alert.common.persistence.model.job.DistributionJ
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
@@ -65,7 +64,7 @@ public class NotificationContentRepositoryIT {
     @Autowired
     private AuditEntryRepository auditEntryRepository;
     @Autowired
-    private AuditAccessor auditAccessor;
+    private AuditNotificationRepository auditNotificationRepository;
     @Autowired
     private JobAccessor jobAccessor;
     @Autowired
@@ -123,15 +122,15 @@ public class NotificationContentRepositoryIT {
     public void testFindByDate() throws Exception {
         Set<String> validResultDates = new HashSet<>();
         NotificationEntity savedEntity = createEntity("2017-10-15T1:00:00.000Z");
-        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
+        validResultDates.add(DateUtils.formatDateAsJsonString(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-21T14:00:00.000Z");
-        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
+        validResultDates.add(DateUtils.formatDateAsJsonString(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-22T14:00:00.000Z");
-        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
+        validResultDates.add(DateUtils.formatDateAsJsonString(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-23T14:00:00.000Z");
-        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
+        validResultDates.add(DateUtils.formatDateAsJsonString(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-30T14:00:00.000Z");
-        validResultDates.add(DateUtils.formatDate(savedEntity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT));
+        validResultDates.add(DateUtils.formatDateAsJsonString(savedEntity.getCreatedAt()));
 
         createEntity("2017-10-10T16:00:00.000Z");
         createEntity("2017-10-31T15:00:00.000Z");
@@ -146,7 +145,7 @@ public class NotificationContentRepositoryIT {
         assertEquals(5, foundEntityList.size());
 
         foundEntityList.forEach(entity -> {
-            String createdAtString = DateUtils.formatDate(entity.getCreatedAt(), RestConstants.JSON_DATE_FORMAT);
+            String createdAtString = DateUtils.formatDateAsJsonString(entity.getCreatedAt());
             assertTrue(validResultDates.contains(createdAtString));
         });
     }
@@ -188,8 +187,8 @@ public class NotificationContentRepositoryIT {
 
         assertEquals(numberOfSearchTermMatches, matchingNotifications.getTotalElements());
     }
-    
-    private Long initializeNotificationRepo(String searchTerm, int numberToCreate) throws ParseException, AlertException {
+
+    private Long initializeNotificationRepo(String searchTerm, int numberToCreate) throws ParseException {
         List<NotificationEntity> notifications = new ArrayList<>(numberToCreate);
         long searchableCount = 0;
 
@@ -213,10 +212,16 @@ public class NotificationContentRepositoryIT {
 
         DistributionJobRequestModel jobRequestModel = createJobRequestModel();
         DistributionJobModel jobModel = jobAccessor.createJob(jobRequestModel);
+        UUID jobId = jobModel.getJobId();
 
-        for (NotificationEntity notification : savedNotifications) {
-            MessageContentGroup messageContentGroup = createMessageGroup(notification.getId());
-            auditAccessor.createAuditEntry(Map.of(), jobModel.getJobId(), messageContentGroup);
+        // TODO gk: these tests were not working before I removed the old code
+        //  more investigation is needed
+        for (NotificationEntity savedNotification : savedNotifications) {
+            AuditEntryEntity newEntry = new AuditEntryEntity(jobId, OffsetDateTime.now(), null, AuditEntryStatus.PENDING.name(), null, null);
+            AuditEntryEntity savedEntry = auditEntryRepository.save(newEntry);
+
+            AuditNotificationRelation notifAudit = new AuditNotificationRelation(savedEntry.getId(), savedNotification.getId());
+            auditNotificationRepository.save(notifAudit);
         }
 
         auditEntryRepository.flush();
@@ -229,26 +234,12 @@ public class NotificationContentRepositoryIT {
     }
 
     private NotificationEntity createEntity(String dateString, String content) throws ParseException {
-        OffsetDateTime providerCreationTime = DateUtils.parseDate(dateString, RestConstants.JSON_DATE_FORMAT);
+        OffsetDateTime providerCreationTime = DateUtils.parseDateFromJsonString(dateString);
         final String provider = "provider_blackduck";
         final String notificationType = "type_1";
         NotificationEntity entity = new MockNotificationContent(providerCreationTime, provider, providerCreationTime, notificationType, content, null, providerConfigModel.getConfigurationId()).createEntity();
         NotificationEntity savedEntity = notificationContentRepository.save(entity);
         return savedEntity;
-    }
-
-    private MessageContentGroup createMessageGroup(Long notificationId) throws AlertException {
-        ComponentItem componentItem = new ComponentItem.Builder()
-                                          .applyComponentData("", "")
-                                          .applyOperation(ItemOperation.UPDATE)
-                                          .applyNotificationId(notificationId)
-                                          .build();
-        ProviderMessageContent content = new ProviderMessageContent.Builder()
-                                             .applyProvider("testProvider", 1L, "testProviderConfig")
-                                             .applyTopic("testTopic", "")
-                                             .applyAllComponentItems(List.of(componentItem))
-                                             .build();
-        return MessageContentGroup.singleton(content);
     }
 
     private DistributionJobRequestModel createJobRequestModel() {

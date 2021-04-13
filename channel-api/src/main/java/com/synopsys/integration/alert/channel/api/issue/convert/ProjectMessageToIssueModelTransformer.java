@@ -51,8 +51,10 @@ public final class ProjectMessageToIssueModelTransformer {
             .map(concern -> createPolicyProjectIssueModel(projectMessage, issueBomComponent, concern))
             .forEach(projectIssueModels::add);
 
-        ProjectIssueModel vulnerabilityProjectIssueModel = createVulnerabilityProjectIssueModel(projectMessage, issueBomComponent, vulnerabilityConcerns);
-        projectIssueModels.add(vulnerabilityProjectIssueModel);
+        if (!vulnerabilityConcerns.isEmpty()) {
+            ProjectIssueModel vulnerabilityProjectIssueModel = createVulnerabilityProjectIssueModel(projectMessage, issueBomComponent, vulnerabilityConcerns);
+            projectIssueModels.add(vulnerabilityProjectIssueModel);
+        }
 
         return projectIssueModels;
     }

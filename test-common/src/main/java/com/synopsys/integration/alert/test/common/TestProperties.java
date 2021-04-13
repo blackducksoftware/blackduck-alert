@@ -7,8 +7,10 @@
  */
 package com.synopsys.integration.alert.test.common;
 
+import java.util.Optional;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assumptions;
 
 public class TestProperties {
@@ -56,6 +58,15 @@ public class TestProperties {
     public String getProperty(String propertyKey) {
         assumeTrue(propertyKey);
         return getProperties().getProperty(propertyKey);
+    }
+
+    public Optional<String> getOptionalProperty(TestPropertyKey propertyKey) {
+        return getOptionalProperty(propertyKey.getPropertyKey());
+    }
+
+    public Optional<String> getOptionalProperty(String propertyKey) {
+        String property = getProperties().getProperty(propertyKey);
+        return Optional.ofNullable(property).filter(StringUtils::isNotBlank);
     }
 
     public void assumeTrue(TestPropertyKey propertyKey) {

@@ -19,13 +19,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.channel.ChannelDistributionTestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.job.details.processor.JobDetailsExtractor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
@@ -42,10 +40,6 @@ public class DescriptorProcessor {
         this.allConfigurationActions = DataStructureUtils.mapToValues(configurationActions, action -> action.getDescriptorKey().getUniversalKey());
     }
 
-    public Optional<JobDetailsExtractor> retrieveJobDetailsExtractor(String descriptorName) {
-        return retrieveConfigurationAction(descriptorName).flatMap(ConfigurationAction::getJobDetailsExtractor);
-    }
-
     public Optional<TestAction> retrieveTestAction(FieldModel fieldModel) {
         ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         return retrieveTestAction(fieldModel.getDescriptorName(), descriptorContext);
@@ -53,10 +47,6 @@ public class DescriptorProcessor {
 
     public Optional<TestAction> retrieveTestAction(String descriptorName, ConfigContextEnum context) {
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getTestAction(context));
-    }
-
-    public Optional<ChannelDistributionTestAction> retrieveChannelDistributionTestAction(String descriptorName) {
-        return retrieveConfigurationAction(descriptorName).flatMap(ConfigurationAction::getChannelDistributionTestAction);
     }
 
     public Optional<Descriptor> retrieveDescriptor(String descriptorName) {

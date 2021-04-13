@@ -8,13 +8,16 @@
 package com.synopsys.integration.alert.channel.api.issue.send;
 
 import java.io.Serializable;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerIssueResponseModel;
 
 public class IssueTrackerIssueResponseCreator {
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
@@ -23,9 +26,12 @@ public class IssueTrackerIssueResponseCreator {
         this.callbackInfoCreator = callbackInfoCreator;
     }
 
-    public final <T extends Serializable> IssueTrackerIssueResponseModel createIssueResponse(ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
-        IssueTrackerCallbackInfo callbackInfo = callbackInfoCreator.createCallbackInfo(source);
-        return new IssueTrackerIssueResponseModel(
+    public final <T extends Serializable> IssueTrackerIssueResponseModel<T> createIssueResponse(@Nullable ProjectIssueModel source, ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) {
+        IssueTrackerCallbackInfo callbackInfo = Optional.ofNullable(source)
+                                                    .flatMap(callbackInfoCreator::createCallbackInfo)
+                                                    .orElse(null);
+        return new IssueTrackerIssueResponseModel<>(
+            existingIssueDetails.getIssueId(),
             existingIssueDetails.getIssueKey(),
             existingIssueDetails.getIssueUILink(),
             existingIssueDetails.getIssueSummary(),

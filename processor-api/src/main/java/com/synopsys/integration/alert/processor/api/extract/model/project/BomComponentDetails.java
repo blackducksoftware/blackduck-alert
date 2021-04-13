@@ -8,8 +8,8 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -47,18 +47,16 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
             return uncombinedDetails;
         }
 
-        Optional<LinkableItem> optionalComponentVersion = getComponentVersion();
-        if (optionalComponentVersion.isPresent()) {
-            LinkableItem componentVersion = optionalComponentVersion.get();
-            if (!componentVersion.equals(otherDetails.getComponentVersion().orElse(null))) {
-                return uncombinedDetails;
-            }
-        } else if (otherDetails.getComponentVersion().isPresent()) {
+        LinkableItem nullableComponentVersion = getComponentVersion().orElse(null);
+        LinkableItem nullableOtherComponentVersion = otherDetails.getComponentVersion().orElse(null);
+        if (!EqualsBuilder.reflectionEquals(nullableComponentVersion, nullableOtherComponentVersion)) {
             return uncombinedDetails;
         }
 
-        // Either both component-versions are missing, or they are equal to each other.
-        // Either way, their component-concerns are candidates for combination.
+        if (hasComponentConcerns() != otherDetails.hasComponentConcerns()) {
+            return uncombinedDetails;
+        }
+
         return combineComponentConcerns(otherDetails.componentConcerns);
     }
 
@@ -67,7 +65,8 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
         BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(
             getComponent(),
             getComponentVersion().orElse(null),
-            combinedComponentConcerns, getLicense(),
+            combinedComponentConcerns,
+            getLicense(),
             getUsage(),
             getAdditionalAttributes(),
             getBlackDuckIssuesUrl()

@@ -12,10 +12,10 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
-import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFileCreator;
-import com.synopsys.integration.alert.channel.email.template.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
+import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.email.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.test.common.TestTags;
 
@@ -32,7 +32,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() {
-        TestAlertProperties testAlertProperties = new TestAlertProperties();
+        MockAlertProperties testAlertProperties = new MockAlertProperties();
         EmailChannelKey emailChannelKey = ChannelKeys.EMAIL;
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);

@@ -1,13 +1,13 @@
 package com.synopsys.integration.alert.channel.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
@@ -32,7 +32,7 @@ public class ChannelRestConnectionFactoryTest {
         proxyBuilder.setNtlmWorkstation(null);
         ProxyInfo expectedProxyInfo = proxyBuilder.build();
 
-        TestAlertProperties testAlertProperties = new TestAlertProperties();
+        MockAlertProperties testAlertProperties = new MockAlertProperties();
         testAlertProperties.setAlertTrustCertificate(true);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);

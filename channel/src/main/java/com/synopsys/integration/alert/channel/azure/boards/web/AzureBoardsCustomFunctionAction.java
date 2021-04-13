@@ -22,11 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUtil;
+import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
+import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreator;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.channel.azure.boards.service.AzureBoardsProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
@@ -54,7 +54,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
-    private final AzureRedirectUtil azureRedirectUtil;
+    private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final ConfigResourceActions configActions;
@@ -65,7 +65,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
-        AzureRedirectUtil azureRedirectUtil,
+        AzureRedirectUrlCreator azureRedirectUrlCreator,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator,
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
@@ -77,7 +77,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
-        this.azureRedirectUtil = azureRedirectUtil;
+        this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.proxyManager = proxyManager;
         this.oAuthRequestValidator = oAuthRequestValidator;
         this.configActions = configActions;
@@ -146,7 +146,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     }
 
     private boolean isAuthenticated(FieldUtility fieldUtility) {
-        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUtil.createOAuthRedirectUri(), fieldUtility);
+        AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), fieldUtility);
         return properties.hasOAuthCredentials(proxyManager.createProxyInfo());
     }
 
@@ -159,7 +159,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
 
     private String createQueryString(String clientId, String requestKey) {
         List<String> scopes = List.of(AzureOAuthScopes.PROJECTS_READ.getScope(), AzureOAuthScopes.WORK_FULL.getScope());
-        String authorizationUrl = azureRedirectUtil.createOAuthRedirectUri();
+        String authorizationUrl = azureRedirectUrlCreator.createOAuthRedirectUri();
         StringBuilder queryBuilder = new StringBuilder(250);
         queryBuilder.append("&client_id=");
         queryBuilder.append(clientId);

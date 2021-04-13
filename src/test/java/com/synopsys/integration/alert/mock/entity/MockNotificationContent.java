@@ -8,7 +8,9 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class MockNotificationContent extends MockEntityUtil<NotificationEntity> {
+    private static final String DEFAULT_NOTIFICATION_TYPE_NAME = NotificationType.BOM_EDIT.name();
     private static final String BOM_EDIT_CONTENT = "{"
+                                                       + "\"type\":\"" + DEFAULT_NOTIFICATION_TYPE_NAME + "\","
                                                        + "\"content\": {"
                                                        + "\"projectVersion\": \"test\","
                                                        + "\"bomComponent\": \"test\","
@@ -26,7 +28,7 @@ public class MockNotificationContent extends MockEntityUtil<NotificationEntity> 
     private Long providerConfigId;
 
     public MockNotificationContent() {
-        this(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), NotificationType.BOM_EDIT.name(), BOM_EDIT_CONTENT, 1L, 1L);
+        this(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), DEFAULT_NOTIFICATION_TYPE_NAME, BOM_EDIT_CONTENT, 1L, 1L);
     }
 
     public MockNotificationContent(OffsetDateTime createdAt, String provider, OffsetDateTime providerCreationTime, String notificationType, String content, Long id, Long providerConfigId) {

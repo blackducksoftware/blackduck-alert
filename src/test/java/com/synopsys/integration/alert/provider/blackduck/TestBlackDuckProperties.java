@@ -17,13 +17,14 @@ import java.util.Optional;
 
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.test.common.TestAlertProperties;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -32,7 +33,7 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
-    private final TestAlertProperties testAlertProperties;
+    private final MockAlertProperties testAlertProperties;
     private final TestProperties testProperties;
     private Integer blackDuckTimeout;
     private String blackDuckUrl;
@@ -54,17 +55,17 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         return proxyManager;
     }
 
-    public TestBlackDuckProperties(TestAlertProperties alertProperties, ProxyManager proxyManager) {
-        this(new Gson(), alertProperties, new TestProperties(), proxyManager);
+    public TestBlackDuckProperties(MockAlertProperties alertProperties, ProxyManager proxyManager) {
+        this(new Gson(), new ObjectMapper(), alertProperties, new TestProperties(), proxyManager);
     }
 
-    public TestBlackDuckProperties(Gson gson, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {
-        this(1L, gson, alertProperties, testProperties, proxyManager, 300, true);
+    public TestBlackDuckProperties(Gson gson, ObjectMapper objectMapper, MockAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {
+        this(1L, gson, objectMapper, alertProperties, testProperties, proxyManager, 300, true);
     }
 
-    public TestBlackDuckProperties(Long configId, Gson gson, TestAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager, Integer blackDuckTimeout,
+    public TestBlackDuckProperties(Long configId, Gson gson, ObjectMapper objectMapper, MockAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager, Integer blackDuckTimeout,
         boolean trustCertificates) {
-        super(configId, gson, alertProperties, proxyManager, getConfigurationModel(testProperties));
+        super(configId, gson, objectMapper, alertProperties, proxyManager, getConfigurationModel(testProperties));
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         this.testProperties = testProperties;

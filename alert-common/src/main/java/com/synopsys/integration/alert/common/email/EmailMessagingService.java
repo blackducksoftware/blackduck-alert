@@ -178,11 +178,12 @@ public class EmailMessagingService {
             }
         }
         if (!errorMessages.isEmpty()) {
+            String joinedErrorMessages = StringUtils.join(errorMessages, ", ");
             String errorMessage;
             if (invalidRecipients.isEmpty()) {
-                errorMessage = "Errors sending emails. " + StringUtils.join(errorMessages, ", ");
+                errorMessage = "Errors sending emails. " + joinedErrorMessages;
             } else {
-                errorMessage = "Error sending emails to the following recipients: " + invalidRecipients;
+                errorMessage = String.format("Error sending emails to the following recipients: %s. %s.", invalidRecipients, joinedErrorMessages);
             }
             throw new AlertException(errorMessage);
         }

@@ -5,6 +5,15 @@ import { NavLink, withRouter } from 'react-router-dom';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { SLACK_INFO } from 'global/channels/slack/SlackModels';
+import { EMAIL_INFO } from 'global/channels/email/EmailModels';
+import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
+import { AZURE_INFO } from 'global/channels/azure/AzureModel';
+import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
+import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
+import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
 
 class Navigation extends Component {
     constructor(props) {
@@ -22,13 +31,45 @@ class Navigation extends Component {
             return null;
         }
 
-        const contentList = descriptorList.map((component) => (
-            <li key={component.name}>
-                <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                    {component.label}
+        const createStaticNavItem = (itemObject) => (
+            <li key={itemObject.key}>
+                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
+                    {itemObject.label}
                 </NavLink>
             </li>
-        ));
+        );
+
+        const contentList = descriptorList.map(({ name, urlName, label }) => {
+            // Removes these channels from the dynamic setup and manually inserts the static information
+            switch (name) {
+                case SLACK_INFO.key:
+                    return createStaticNavItem(SLACK_INFO);
+                case MSTEAMS_INFO.key:
+                    return createStaticNavItem(MSTEAMS_INFO);
+                case EMAIL_INFO.key:
+                    return createStaticNavItem(EMAIL_INFO);
+                case JIRA_CLOUD_INFO.key:
+                    return createStaticNavItem(JIRA_CLOUD_INFO);
+                case JIRA_SERVER_INFO.key:
+                    return createStaticNavItem(JIRA_SERVER_INFO);
+                case AZURE_INFO.key:
+                    return createStaticNavItem(AZURE_INFO);
+                case SCHEDULING_INFO.key:
+                    return createStaticNavItem(SCHEDULING_INFO);
+                case SETTINGS_INFO.key:
+                    return createStaticNavItem(SETTINGS_INFO);
+                case AUTHENTICATION_INFO.key:
+                    return createStaticNavItem(AUTHENTICATION_INFO);
+                default:
+                    return (
+                        <li key={name}>
+                            <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
+                                {label}
+                            </NavLink>
+                        </li>
+                    );
+            }
+        });
 
         if (header && contentList && contentList.length > 0) {
             contentList.unshift(<li className="navHeader" key={header}>
@@ -99,7 +140,6 @@ Navigation.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken,
     descriptors: state.descriptors.items,
     fetching: state.descriptors.fetching
 });
