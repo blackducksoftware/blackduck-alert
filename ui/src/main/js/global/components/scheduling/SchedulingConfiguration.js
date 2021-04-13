@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
-import CommonGlobalConfigurationForm from 'global/channels/CommonGlobalConfigurationForm';
+import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import { SCHEDULING_FIELD_KEYS, SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
-import CommonGlobalConfiguration from 'global/channels/CommonGlobalConfiguration';
+import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import DynamicSelectInput from 'field/input/DynamicSelect';
 import ReadOnlyField from 'field/ReadOnlyField';
 
 const SchedulingConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SCHEDULING_INFO.key));
     const [errors, setErrors] = useState({});
-
-    const handleChange = ({ target }) => {
-        const { type, name, value } = target;
-        const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(formData, name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(formData, name, updatedValue);
-        setFormData(newState);
-    };
 
     const digestHours = [
         { label: '12 am', value: '0' },
@@ -78,7 +71,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     description="Select the hour of the day to run the daily digest distribution jobs."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     options={digestHours}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
@@ -89,7 +82,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     name={SCHEDULING_FIELD_KEYS.dailyProcessorNextRun}
                     label="Daily Digest Cron Next Run"
                     description="This is the next time daily digest distribution jobs will run."
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.dailyProcessorNextRun)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorNextRun)}
                     errorValue={errors[SCHEDULING_FIELD_KEYS.dailyProcessorNextRun]}
@@ -102,7 +95,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     description="Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted."
                     required
                     readOnly={readonly}
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     options={purgeFrequencies}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
@@ -113,7 +106,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     name={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
                     label="Purge Cron Next Run"
                     description="This is the next time Alert will purge provider data."
-                    onChange={handleChange}
+                    onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
                     errorValue={errors[SCHEDULING_FIELD_KEYS.purgeDataNextRun]}
