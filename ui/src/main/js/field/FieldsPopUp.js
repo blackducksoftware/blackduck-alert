@@ -1,67 +1,47 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import FieldsPanel from 'field/FieldsPanel';
 import PopUp from 'field/PopUp';
 
-class FieldsPopUp extends Component {
-    constructor(props) {
-        super(props);
+const FieldsPopUp = ({
+    fields, show, title, cancelLabel, okLabel, csrfToken, onCancel, handleSubmit
+}) => {
+    const [modalConfig, setModalConfig] = useState({});
+    const [fieldErrors, setFieldErrors] = useState({});
 
-        this.internalCancel = this.internalCancel.bind(this);
-        this.internalHandleSubmit = this.internalHandleSubmit.bind(this);
+    const internalCancel = () => {
+        onCancel();
+        setModalConfig({});
+    };
 
-        this.state = {
-            modalConfig: {},
-            fieldErrors: {}
-        };
-    }
-
-    internalCancel() {
-        this.props.onCancel();
-        this.setState({
-            modalConfig: {}
-        });
-    }
-
-    internalHandleSubmit(event) {
+    const internalHandleSubmit = (event) => {
         event.preventDefault();
-        const { modalConfig } = this.state;
-        this.props.handleSubmit(event, modalConfig);
-        this.internalCancel();
-    }
+        handleSubmit(event, modalConfig);
+        internalCancel();
+    };
 
-    render() {
-        const {
-            fields, show, title, cancelLabel, okLabel, csrfToken
-        } = this.props;
-        const { modalConfig, fieldErrors } = this.state;
-
-        const fieldsPanel = (
-            <FieldsPanel
-                descriptorFields={fields}
-                currentConfig={modalConfig}
-                fieldErrors={fieldErrors}
-                self={this}
-                stateName="modalConfig"
-                csrfToken={csrfToken}
-            />
-        );
-        return (
-            <div>
-                <PopUp
-                    show={show}
-                    title={title}
-                    cancelLabel={cancelLabel}
-                    okLabel={okLabel}
-                    onCancel={this.internalCancel}
-                    handleSubmit={this.internalHandleSubmit}
-                >
-                    {fieldsPanel}
-                </PopUp>
-            </div>
-        );
-    }
-}
+    return (
+        <div>
+            <PopUp
+                show={show}
+                title={title}
+                cancelLabel={cancelLabel}
+                okLabel={okLabel}
+                onCancel={internalCancel}
+                handleSubmit={internalHandleSubmit}
+            >
+                <FieldsPanel
+                    descriptorFields={fields}
+                    currentConfig={modalConfig}
+                    fieldErrors={fieldErrors}
+                    self={this}
+                    stateName="modalConfig"
+                    csrfToken={csrfToken}
+                />
+            </PopUp>
+        </div>
+    );
+};
 
 FieldsPopUp.propTypes = {
     onCancel: PropTypes.func.isRequired,

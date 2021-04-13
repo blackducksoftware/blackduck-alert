@@ -1,25 +1,25 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import LabeledField from 'field/LabeledField';
 
-class FieldMappingField extends Component {
-    constructor(props) {
-        super(props);
-
-        this.createNewRow = this.createNewRow.bind(this);
-        this.createColumns = this.createColumns.bind(this);
-        this.onEdit = this.onEdit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.saveModalData = this.saveModalData.bind(this);
-        this.clearModal = this.clearModal.bind(this);
-        this.onDelete = this.onDelete.bind(this);
-
+const FieldMappingField = (props) => {
+    const {
+        newMappingTitle, editMappingTitle, leftSideMapping, rightSideMapping, onChange, fieldMappingKey, storedMappings
+    } = props;
+    const [fieldMappingRow, setFieldMappingRow] = useState({
+        rowId: -1,
+        fieldName: '',
+        fieldValue: ''
+    });
+    const [tableData, setTableData] = useState([]);
+    const [id, setId] = useState(0);
+    const [modalError, setModalError] = useState(null);
+    const [modalTitle, setModalTitle] = useState(newMappingTitle);
+    useEffect(() => {
         let currentId = 0;
         let fieldMappings = [];
-        const { storedMappings } = props;
         if (storedMappings) {
             fieldMappings = storedMappings.map((mapping) => JSON.parse(mapping));
             fieldMappings.forEach((parsedMapping) => {
@@ -28,108 +28,86 @@ class FieldMappingField extends Component {
             });
         }
 
-        this.state = ({
-            fieldMappingRow: {
-                rowId: -1,
-                fieldName: '',
-                fieldValue: ''
-            },
-            tableData: fieldMappings,
-            id: currentId,
-            modalError: null,
-            modalTitle: props.newMappingTitle
-        });
-    }
+        setId(currentId);
+        setTableData(fieldMappings);
+    }, []);
 
-    handleChange({ target }) {
+    const handleChange = ({ target }) => {
         const { name, value } = target;
-        this.setState({
-            fieldMappingRow: {
-                ...this.state.fieldMappingRow,
-                [name]: value
-            }
-        });
-    }
+        setFieldMappingRow({
+            ...fieldMappingRow,
+            [name]: value
 
-    createNewRow() {
-        const { leftSideMapping, rightSideMapping } = this.props;
-        const { fieldName, fieldValue } = this.state.fieldMappingRow;
+        });
+    };
+
+    const createNewRow = () => {
+        const { fieldName, fieldValue } = fieldMappingRow;
         const valueOptions = ['{{providerName}}', '{{projectName}}', '{{projectVersion}}', '{{componentName}}', '{{componentVersion}}'];
 
         return (
             <div>
                 <TextInput
                     name="fieldName"
-                    onChange={this.handleChange}
+                    onChange={handleChange}
                     label={leftSideMapping}
                     value={fieldName}
                 />
                 <TextInput
                     name="fieldValue"
-                    onChange={this.handleChange}
+                    onChange={handleChange}
                     label={rightSideMapping}
                     value={fieldValue}
                     optionList={valueOptions}
                 />
             </div>
         );
-    }
+    };
 
-    createColumns() {
-        const { leftSideMapping, rightSideMapping } = this.props;
-        return [
-            {
-                header: 'id',
-                headerLabel: 'id',
-                isKey: true,
-                hidden: true
-            },
-            {
-                header: 'fieldName',
-                headerLabel: leftSideMapping,
-                isKey: false,
-                hidden: false
-            },
-            {
-                header: 'fieldValue',
-                headerLabel: rightSideMapping,
-                isKey: false,
-                hidden: false
-            }
-        ];
-    }
+    const createColumns = () => [
+        {
+            header: 'id',
+            headerLabel: 'id',
+            isKey: true,
+            hidden: true
+        },
+        {
+            header: 'fieldName',
+            headerLabel: leftSideMapping,
+            isKey: false,
+            hidden: false
+        },
+        {
+            header: 'fieldValue',
+            headerLabel: rightSideMapping,
+            isKey: false,
+            hidden: false
+        }
+    ];
 
-    onEdit(selectedRow, callback) {
-        const { editMappingTitle } = this.props;
-        const entireRow = this.state.tableData.filter((row) => row.id === selectedRow.id)[0];
-        this.setState({
-            fieldMappingRow: {
-                rowId: entireRow.id,
-                fieldName: entireRow.fieldName,
-                fieldValue: entireRow.fieldValue
-            },
-            modalTitle: editMappingTitle
-        }, callback);
-    }
-
-    clearModal() {
-        this.setState({
-            fieldMappingRow: {
-                rowId: -1,
-                fieldName: '',
-                fieldValue: ''
-            }
+    const onEdit = (selectedRow, callback) => {
+        const entireRow = tableData.filter((row) => row.id === selectedRow.id)[0];
+        setFieldMappingRow({
+            rowId: entireRow.id,
+            fieldName: entireRow.fieldName,
+            fieldValue: entireRow.fieldValue
         });
-    }
+        setModalTitle(editMappingTitle);
+        callback();
+    };
 
-    onDelete(configsToDelete, callback) {
-        const { tableData } = this.state;
+    const clearModal = () => {
+        setFieldMappingRow({
+            rowId: -1,
+            fieldName: '',
+            fieldValue: ''
+        });
+    };
+
+    const onDelete = (configsToDelete, callback) => {
         if (configsToDelete) {
             const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.id));
-            this.setState({
-                tableData: filteredTable
-            });
-            const { onChange, fieldMappingKey } = this.props;
+            setTableData(filteredTable);
             const fieldMappingValue = filteredTable.map((mappingEntry) => JSON.stringify(mappingEntry));
             onChange({
                 target: {
@@ -139,11 +117,9 @@ class FieldMappingField extends Component {
             });
         }
         callback();
-    }
+    };
 
-    saveModalData(callback) {
-        const { tableData, fieldMappingRow, id } = this.state;
-        const { newMappingTitle } = this.props;
+    const saveModalData = (callback) => {
         const { rowId, fieldName, fieldValue } = fieldMappingRow;
         let currentId = id;
         const mappingIndex = tableData.findIndex((mapping) => mapping.id === rowId);
@@ -159,14 +135,11 @@ class FieldMappingField extends Component {
             currentId += 1;
         }
 
-        this.setState({
-            tableData,
-            id: currentId,
-            modalError: null,
-            modalTitle: newMappingTitle
-        });
+        setTableData(tableData);
+        setId(currentId);
+        setModalError(null);
+        setModalTitle(newMappingTitle);
 
-        const { onChange, fieldMappingKey } = this.props;
         const fieldMappingValue = tableData.map((mappingEntry) => JSON.stringify(mappingEntry));
         onChange({
             target: {
@@ -177,33 +150,28 @@ class FieldMappingField extends Component {
 
         callback(true);
         return true;
-    }
-
-    render() {
-        const { tableData, modalError, modalTitle } = this.state;
-        const table = (
+    };
+    return (
+        <LabeledField {...props}>
             <TableDisplay
                 modalTitle={modalTitle}
-                columns={this.createColumns()}
-                newConfigFields={this.createNewRow}
+                columns={createColumns()}
+                newConfigFields={createNewRow}
                 refreshData={() => tableData}
-                onEditState={this.onEdit}
-                onConfigSave={this.saveModalData}
-                onConfigDelete={this.onDelete}
+                onEditState={onEdit}
+                onConfigSave={saveModalData}
+                onConfigDelete={onDelete}
                 data={tableData}
                 enableCopy={false}
                 tableSearchable={false}
                 autoRefresh={false}
                 tableRefresh={false}
-                clearModalFieldState={this.clearModal}
+                clearModalFieldState={clearModal}
                 errorDialogMessage={modalError}
             />
-        );
-        return (
-            <LabeledField field={table} {...this.props} />
-        );
-    }
-}
+        </LabeledField>
+    );
+};
 
 FieldMappingField.propTypes = {
     id: PropTypes.string,
@@ -223,8 +191,4 @@ FieldMappingField.defaultProps = {
     editMappingTitle: 'Edit mapping'
 };
 
-const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken
-});
-
-export default connect(mapStateToProps, null)(FieldMappingField);
+export default FieldMappingField;

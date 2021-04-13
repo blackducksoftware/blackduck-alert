@@ -1,76 +1,67 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'component/common/ConfigButtons';
 import MessageFormatter from 'field/MessageFormatter';
 
-class PopUp extends Component {
-    constructor(props) {
-        super(props);
+const PopUp = ({
+    id, children, show, title, cancelLabel, okLabel, includeSave, handleSubmit, performingAction, includeTest, testLabel, handleTest, actionMessage, onCancel
+}) => {
+    const internalCancel = () => {
+        onCancel();
+    };
 
-        this.internalCancel = this.internalCancel.bind(this);
-        this.internalTest = this.internalTest.bind(this);
-    }
+    const internalTest = () => {
+        handleTest();
+    };
 
-    internalCancel() {
-        this.props.onCancel();
-    }
-
-    internalTest() {
-        this.props.handleTest();
-    }
-
-    render() {
-        const {
-            id, children, show, title, cancelLabel, okLabel, includeSave, handleSubmit, performingAction, includeTest, testLabel, handleTest, actionMessage
-        } = this.props;
-        return (
-            <div id={id}>
-                <Modal size="lg" show={show} onHide={this.internalCancel}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>{title}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <form
-                            className="form-horizontal"
-                            noValidate
-                            onSubmit={(event) => {
-                                handleSubmit(event);
+    return (
+        <div id={id}>
+            <Modal size="lg" show={show} onHide={internalCancel}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{title}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form
+                        className="form-horizontal"
+                        noValidate
+                        onSubmit={(event) => {
+                            handleSubmit(event);
+                        }}
+                    >
+                        {children}
+                        <ConfigButtons
+                            cancelId="popup-cancel"
+                            submitId="popup-submit"
+                            testId="popup-test"
+                            includeCancel
+                            includeSave={includeSave}
+                            includeTest={includeTest}
+                            onCancelClick={() => {
+                                internalCancel();
                             }}
-                        >
-                            {children}
-                            <ConfigButtons
-                                cancelId="popup-cancel"
-                                submitId="popup-submit"
-                                testId="popup-test"
-                                includeCancel
-                                includeSave={includeSave}
-                                includeTest={includeTest}
-                                onCancelClick={() => {
-                                    this.internalCancel();
-                                }}
-                                onTestClick={() => {
-                                    if (handleTest) {
-                                        this.internalTest();
-                                    }
-                                }}
-                                cancelLabel={cancelLabel}
-                                submitLabel={okLabel}
-                                isFixed={false}
-                                performingAction={performingAction}
-                            />
-                            <MessageFormatter
-                                id={`${id}-action-message`}
-                                name="actionMessage"
-                                message={actionMessage}
-                            />
-                        </form>
-                    </Modal.Body>
-                </Modal>
-            </div>
-        );
-    }
-}
+                            onTestClick={() => {
+                                if (handleTest) {
+                                    internalTest();
+                                }
+                            }}
+                            cancelLabel={cancelLabel}
+                            submitLabel={okLabel}
+                            testLabel={testLabel}
+                            isFixed={false}
+                            performingAction={performingAction}
+                        />
+                        <MessageFormatter
+                            id={`${id}-action-message`}
+                            name="actionMessage"
+                            message={actionMessage}
+                        />
+                    </form>
+                </Modal.Body>
+            </Modal>
+        </div>
+    );
+};
 
 PopUp.propTypes = {
     id: PropTypes.string,

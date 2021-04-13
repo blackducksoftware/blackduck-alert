@@ -5,7 +5,6 @@ import FieldsPopUp from 'field/FieldsPopUp';
 import LabeledField from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
-import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 
 const EndpointButtonField = (props) => {
@@ -143,8 +142,4 @@ EndpointButtonField.defaultProps = {
     statusMessage: 'Success'
 };
 
-const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken
-});
-
-export default connect(mapStateToProps, null)(EndpointButtonField);
+export default EndpointButtonField;
