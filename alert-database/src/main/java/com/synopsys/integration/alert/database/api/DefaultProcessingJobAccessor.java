@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModelV2;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.database.job.DistributionJobEntity;
@@ -33,7 +33,7 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
     }
 
     @Override
-    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(FilteredDistributionJobRequestModelV2 filteredDistributionJobRequestModel, int pageNumber, int pageLimit) {
+    public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, int pageNumber, int pageLimit) {
         List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
                                           .stream()
                                           .map(Enum::name)
