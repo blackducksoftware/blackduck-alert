@@ -12,8 +12,6 @@ import java.util.List;
 import com.synopsys.integration.alert.common.rest.api.ReadPageController;
 import com.synopsys.integration.util.Stringable;
 
-import net.minidev.json.annotate.JsonIgnore;
-
 public class AlertPagedDetails<M extends Stringable> {
     public static final Integer DEFAULT_PAGE_NUMBER = Integer.valueOf(ReadPageController.DEFAULT_PAGE_NUMBER);
     public static final Integer DEFAULT_PAGE_SIZE = Integer.valueOf(ReadPageController.DEFAULT_PAGE_SIZE);
@@ -47,7 +45,6 @@ public class AlertPagedDetails<M extends Stringable> {
         return pageSize;
     }
 
-    @JsonIgnore
     public List<M> getModels() {
         return models;
     }
