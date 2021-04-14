@@ -14,7 +14,7 @@ import com.synopsys.integration.util.Stringable;
 
 import net.minidev.json.annotate.JsonIgnore;
 
-public class AlertPagedBase<M extends Stringable> {
+public class AlertPagedDetails<M extends Stringable> {
     public static final Integer DEFAULT_PAGE_NUMBER = Integer.valueOf(ReadPageController.DEFAULT_PAGE_NUMBER);
     public static final Integer DEFAULT_PAGE_SIZE = Integer.valueOf(ReadPageController.DEFAULT_PAGE_SIZE);
 
@@ -24,11 +24,11 @@ public class AlertPagedBase<M extends Stringable> {
     private final int pageSize;
     private final List<M> models;
 
-    public static <M extends AlertSerializableModel> AlertPagedBase<M> EMPTY_PAGE() {
-        return new AlertPagedBase<>(0, 0, 0, List.of());
+    public static <M extends Stringable> AlertPagedDetails<M> EMPTY_PAGE() {
+        return new AlertPagedDetails<>(0, 0, 0, List.of());
     }
 
-    public AlertPagedBase(int totalPages, int currentPage, int pageSize, List<M> models) {
+    public AlertPagedDetails(int totalPages, int currentPage, int pageSize, List<M> models) {
         this.totalPages = totalPages;
         this.currentPage = currentPage;
         this.pageSize = pageSize;

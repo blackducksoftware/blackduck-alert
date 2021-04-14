@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.common.rest.model;
 import java.io.Serializable;
 import java.util.List;
 
-public class AlertPagedModel<M extends AlertSerializableModel> extends AlertPagedBase<M> implements Serializable {
+public class AlertPagedModel<M extends AlertSerializableModel> extends AlertPagedDetails<M> implements Serializable {
     public AlertPagedModel(int totalPages, int currentPage, int pageSize, List<M> models) {
         super(totalPages, currentPage, pageSize, models);
     }
-    
+
 }

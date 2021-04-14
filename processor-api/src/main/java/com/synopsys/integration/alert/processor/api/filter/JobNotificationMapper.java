@@ -54,11 +54,7 @@ public class JobNotificationMapper {
     //TODO, this might be better renamed to something like mapJobsToFirstPageOfNotifications? (It default starts at page 0, size 100)
     public StatefulAlertPage<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies) {
         AlertPagedModel<FilteredJobNotificationWrapper> pageOfJobsToNotification = mapPageOfJobsToNotification(detailedContents, frequencies, INITIAL_PAGE_NUMBER, PAGE_SIZE);
-        return new StatefulAlertPage<>(
-            pageOfJobsToNotification.getTotalPages(),
-            pageOfJobsToNotification.getCurrentPage(),
-            pageOfJobsToNotification.getPageSize(),
-            pageOfJobsToNotification.getModels(),
+        return new StatefulAlertPage<>(pageOfJobsToNotification,
             (number, size) -> mapPageOfJobsToNotification(detailedContents, frequencies, number, size)
         );
     }

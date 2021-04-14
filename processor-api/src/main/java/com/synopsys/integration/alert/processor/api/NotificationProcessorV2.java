@@ -71,7 +71,7 @@ public final class NotificationProcessorV2 {
                                                                         .collect(Collectors.toList());
         StatefulAlertPage<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
         do {
-            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getModels()) {
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentPage().getModels()) {
                 processAndDistribute(jobNotificationWrapper);
             }
             mappedNotifications = mappedNotifications.retrieveNextPage();
