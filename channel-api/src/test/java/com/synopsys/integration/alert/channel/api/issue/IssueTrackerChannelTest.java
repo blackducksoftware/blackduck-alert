@@ -2,12 +2,14 @@ package com.synopsys.integration.alert.channel.api.issue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
@@ -15,7 +17,6 @@ import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCr
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -29,13 +30,17 @@ public class IssueTrackerChannelTest {
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
         IssueTrackerProcessorFactory<DistributionJobDetailsModel, String> processorFactory = x -> processor;
-        IssueTrackerResponsePostProcessor postProcessor = x -> {};
+        IssueTrackerResponsePostProcessor postProcessor = new IssueTrackerResponsePostProcessor() {
+            @Override
+            public <T extends Serializable> void postProcess(IssueTrackerResponse<T> response) {
+            }
+        };
         IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory, postProcessor) {};
 
         MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty());
 
-        IssueTrackerResponse messageSenderResponse = messageSender.sendMessages(List.of());
-        assertEquals(messageSenderResponse.getStatusMessage(), testResult.getStatusMessage());
+        IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty());
+        assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());
     }
 
     private IssueTrackerMessageSender<String> createMessageSender() {
@@ -46,7 +51,7 @@ public class IssueTrackerChannelTest {
             }
 
             @Override
-            protected void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, ProjectIssueModel source) {
+            protected void addComment(String comment, ExistingIssueDetails<String> existingIssueDetails, @Nullable ProjectIssueModel source) {
             }
         };
         IssueTrackerIssueTransitioner<String> transitioner = new IssueTrackerIssueTransitioner<>(commenter, null) {

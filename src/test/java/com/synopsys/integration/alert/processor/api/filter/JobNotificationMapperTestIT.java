@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -35,6 +36,7 @@ import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVe
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
+@Transactional
 @AlertIntegrationTest
 public class JobNotificationMapperTestIT {
     private static final List<UUID> CREATED_JOBS = new LinkedList<>();

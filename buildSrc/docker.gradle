@@ -10,8 +10,6 @@ buildscript {
 
 apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-
 task untarArchiveForDocker(type: Copy, dependsOn: [build]) {
     from tarTree("${project.buildDir}/distributions/blackduck-alert-boot-${project.version}.tar")
     into "${project.buildDir}/docker"
@@ -28,7 +26,7 @@ task stageDocker(type: Copy, dependsOn: [untarArchiveForDocker]) {
     }
 }
 
-task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
+task buildDockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: [stageDocker]) {
     inputDir = file("${project.buildDir}/docker")
     buildArgs = ['VERSION': "${project.version}"]
     images.add("blackducksoftware/${project.name}:${project.version}")

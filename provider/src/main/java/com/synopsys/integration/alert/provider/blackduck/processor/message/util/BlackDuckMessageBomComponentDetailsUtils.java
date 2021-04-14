@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.util
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
@@ -41,6 +42,30 @@ public final class BlackDuckMessageBomComponentDetailsUtils {
         String issuesUrl = BlackDuckMessageAttributesUtils.extractIssuesUrl(bomComponent).orElse(null);
 
         return new BomComponentDetails(component, componentVersion, componentConcerns, licenseInfo, usageInfo, additionalAttributes, issuesUrl);
+    }
+
+    public static BomComponentDetails createBomComponentDetails(
+        String componentName,
+        @Nullable String componentUrl,
+        @Nullable String componentVersionName,
+        @Nullable String componentVersionUrl,
+        List<ComponentConcern> componentConcerns,
+        List<LinkableItem> additionalAttributes
+    ) {
+        LinkableItem component;
+        LinkableItem componentVersion = null;
+
+        if (StringUtils.isNotBlank(componentVersionUrl)) {
+            component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, componentName);
+            componentVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT_VERSION, componentVersionName, componentVersionUrl);
+        } else {
+            component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, componentName, componentUrl);
+        }
+
+        LinkableItem licenseInfo = new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, BlackDuckMessageLabels.VALUE_UNKNOWN_LICENSE);
+        String usageInfo = BlackDuckMessageLabels.VALUE_UNKNOWN_USAGE;
+
+        return new BomComponentDetails(component, componentVersion, componentConcerns, licenseInfo, usageInfo, additionalAttributes, null);
     }
 
     private BlackDuckMessageBomComponentDetailsUtils() {

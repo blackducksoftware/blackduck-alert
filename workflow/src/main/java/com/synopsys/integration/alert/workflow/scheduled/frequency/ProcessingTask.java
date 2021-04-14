@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
-import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -71,7 +70,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
             String taskName = getTaskName();
             OffsetDateTime startDate = dateRange.getStart();
             OffsetDateTime endDate = dateRange.getEnd();
-            logger.info("{} Reading Notifications Between {} and {} ", taskName, DateUtils.formatDate(startDate, RestConstants.JSON_DATE_FORMAT), DateUtils.formatDate(endDate, RestConstants.JSON_DATE_FORMAT));
+            logger.info("{} Reading Notifications Between {} and {} ", taskName, DateUtils.formatDateAsJsonString(startDate), DateUtils.formatDateAsJsonString(endDate));
             List<AlertNotificationModel> entityList = notificationAccessor.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 return List.of();

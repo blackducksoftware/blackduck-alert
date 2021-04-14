@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.workflow.startup;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.OutputLogger;
-import com.synopsys.integration.alert.test.common.TestAlertProperties;
 import com.synopsys.integration.alert.workflow.startup.component.ConfigurationLogger;
 
 public class StartupLogTest {
@@ -32,7 +32,7 @@ public class StartupLogTest {
 
     @Test
     public void testLogConfiguration() throws Exception {
-        TestAlertProperties testAlertProperties = new TestAlertProperties();
+        MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
 
         Mockito.when(proxyManager.getProxyHost()).thenReturn(Optional.of("google.com"));

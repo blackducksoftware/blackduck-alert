@@ -19,11 +19,11 @@ public class DateRange extends AlertSerializableModel {
     private final OffsetDateTime start;
     private final OffsetDateTime end;
 
-    public static final DateRange of(OffsetDateTime start, OffsetDateTime end) {
+    public static DateRange of(OffsetDateTime start, OffsetDateTime end) {
         return new DateRange(start, end);
     }
 
-    public static final DateRange of(String start, String end) throws ParseException {
+    public static DateRange of(String start, String end) throws ParseException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(RestConstants.JSON_DATE_FORMAT);
         try {
             OffsetDateTime startDateTime = OffsetDateTime.parse(start, dtf);

@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
 import com.synopsys.integration.alert.web.documentation.SwaggerConfiguration;
-import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Component
@@ -52,7 +51,7 @@ public class AboutReader {
         try {
             String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            String startupDate = systemStatusAccessor.getStartupTime() != null ? DateUtils.formatDate(systemStatusAccessor.getStartupTime(), RestConstants.JSON_DATE_FORMAT) : "";
+            String startupDate = systemStatusAccessor.getStartupTime() != null ? DateUtils.formatDateAsJsonString(systemStatusAccessor.getStartupTime()) : "";
             Set<DescriptorMetadata> providers = getDescriptorData(DescriptorType.PROVIDER);
             Set<DescriptorMetadata> channels = getDescriptorData(DescriptorType.CHANNEL);
             AboutModel model = new AboutModel(aboutModel.getVersion(), aboutModel.getCreated(), aboutModel.getDescription(), aboutModel.getProjectUrl(),

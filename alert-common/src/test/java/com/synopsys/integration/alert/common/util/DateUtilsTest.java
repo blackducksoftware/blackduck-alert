@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.common.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;
@@ -39,7 +39,7 @@ public class DateUtilsTest {
         OffsetDateTime jsonDateTime = DateUtils.parseDate(jsonDateString, dateFormat);
 
         if (!alertDateTime.getOffset().equals(jsonDateTime.getOffset())) {
-            assertTrue("Either hour or minute cannot match", alertDateTime.getHour() != jsonDateTime.getHour() || alertDateTime.getMinute() != alertDateTime.getMinute());
+            assertTrue(alertDateTime.getHour() != jsonDateTime.getHour() || alertDateTime.getMinute() != alertDateTime.getMinute(), "Either hour or minute cannot match");
         }
 
         OffsetDateTime expectedDateTime = OffsetDateTime.ofInstant(alertDateTime.toInstant(), ZoneOffset.UTC);
@@ -55,6 +55,24 @@ public class DateUtilsTest {
 
         assertTrue(currentDateTimestamp.isAfter(firstTimeStamp));
         assertTrue(firstTimeStamp.isBefore(currentDateTimestamp));
+    }
+
+    @Test
+    public void formatDateAsJsonStringTest() {
+        OffsetDateTime dateTime = OffsetDateTime.now();
+        String formattedDateTimeString = DateUtils.formatDate(dateTime, RestConstants.JSON_DATE_FORMAT);
+        String jsonDateTimeString = DateUtils.formatDateAsJsonString(dateTime);
+        assertEquals(formattedDateTimeString, jsonDateTimeString);
+    }
+
+    @Test
+    public void parseDateFromJsonString() throws ParseException {
+        OffsetDateTime dateTime = OffsetDateTime.now();
+        String formattedDateTimeString = DateUtils.formatDate(dateTime, RestConstants.JSON_DATE_FORMAT);
+
+        OffsetDateTime parsedDate = DateUtils.parseDate(formattedDateTimeString, RestConstants.JSON_DATE_FORMAT);
+        OffsetDateTime jsonDateTime = DateUtils.parseDateFromJsonString(formattedDateTimeString);
+        assertEquals(parsedDate, jsonDateTime);
     }
 
 }

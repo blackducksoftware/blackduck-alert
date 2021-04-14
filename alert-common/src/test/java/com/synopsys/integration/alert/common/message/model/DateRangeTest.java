@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.common.message.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.OffsetDateTime;
 

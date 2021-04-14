@@ -10,15 +10,16 @@ package com.synopsys.integration.alert.channel.msteams.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.action.DistributionChannelTestAction;
+import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.msteams.distribution.MSTeamsChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 
 @Component
-public class MSTeamsDistributionTestAction extends DistributionChannelTestAction<MSTeamsJobDetailsModel> {
+public class MSTeamsDistributionTestAction extends DistributionChannelMessageTestAction<MSTeamsJobDetailsModel> {
     @Autowired
-    public MSTeamsDistributionTestAction(MSTeamsChannel distributionChannel) {
-        super(distributionChannel);
+    public MSTeamsDistributionTestAction(MsTeamsKey channelKey, MSTeamsChannel distributionChannel) {
+        super(channelKey, distributionChannel);
     }
 
 }

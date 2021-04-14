@@ -10,7 +10,6 @@ package com.synopsys.integration.alert.channel.jira.server;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.channel.issuetracker.config.IssueTrackerServiceConfig;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.jira.common.rest.JiraHttpClient;
 import com.synopsys.integration.jira.common.server.configuration.JiraServerRestConfig;
@@ -19,7 +18,7 @@ import com.synopsys.integration.jira.common.server.service.JiraServerServiceFact
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-public class JiraServerProperties implements IssueTrackerServiceConfig {
+public class JiraServerProperties {
     private final String url;
     private final String password;
     private final String username;

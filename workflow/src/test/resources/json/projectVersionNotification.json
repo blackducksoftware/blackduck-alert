@@ -1,0 +1,20 @@
+{
+  "content": {
+    "project": "https://blackduck-project-url",
+    "projectName": "CITestProject",
+    "projectVersion": "https://blackduck-project-version-url",
+    "projectVersionName": "CITestVersion1",
+    "operationType": "CREATE"
+  },
+  "contentType": "application/json",
+  "type": "PROJECT_VERSION",
+  "createdAt": "2021-03-23T19:07:03.435Z",
+  "_meta": {
+    "allow": [
+      "GET"
+    ],
+    "href": "https://blackduck-notification-url",
+    "links": [
+    ]
+  }
+}

@@ -44,6 +44,7 @@ import com.synopsys.integration.blackduck.http.PagedRequest;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckResponsesTransformer;
+import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
@@ -62,11 +63,13 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     private final IntLogger logger = new Slf4jIntLogger(LoggerFactory.getLogger(getClass()));
     private final ConfigurationAccessor configurationAccessor;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
+    private final BlackDuckJsonTransformer blackDuckJsonTransformer;
 
     @Autowired
-    public BlackDuckProviderDataAccessor(ConfigurationAccessor configurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory) {
+    public BlackDuckProviderDataAccessor(ConfigurationAccessor configurationAccessor, BlackDuckPropertiesFactory blackDuckPropertiesFactory, BlackDuckJsonTransformer blackDuckJsonTransformer) {
         this.configurationAccessor = configurationAccessor;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
+        this.blackDuckJsonTransformer = blackDuckJsonTransformer;
     }
 
     @Override
@@ -330,7 +333,6 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
     }
 
     private <T extends BlackDuckResponse> BlackDuckPageResponse<T> retrievePage(BlackDuckServicesFactory blackDuckServicesFactory, Class<T> responseClass, PagedRequest pagedRequest, Predicate<T> searchFilter) throws IntegrationException {
-        BlackDuckJsonTransformer blackDuckJsonTransformer = new BlackDuckJsonTransformer(blackDuckServicesFactory.getGson(), blackDuckServicesFactory.getObjectMapper(), blackDuckServicesFactory.getLogger());
         BlackDuckResponsesTransformer blackDuckResponsesTransformer = new BlackDuckResponsesTransformer(blackDuckServicesFactory.getBlackDuckHttpClient(), blackDuckJsonTransformer);
         return blackDuckResponsesTransformer.getSomeMatchingResponses(pagedRequest, responseClass, searchFilter, pagedRequest.getLimit());
     }

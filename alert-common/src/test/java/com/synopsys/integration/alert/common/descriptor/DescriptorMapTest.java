@@ -1,10 +1,9 @@
 package com.synopsys.integration.alert.common.descriptor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DescriptorMapTest {
-
     @Test
     public void testInit() throws AlertException {
         ChannelDescriptor channelDescriptor1 = Mockito.mock(ChannelDescriptor.class);
@@ -38,8 +36,7 @@ public class DescriptorMapTest {
         Mockito.when(channelDescriptor2.getType()).thenReturn(DescriptorType.CHANNEL);
         Mockito.when(providerDescriptor.getType()).thenReturn(DescriptorType.PROVIDER);
 
-        DescriptorMap descriptorMap = new DescriptorMap(List.of(channelDescriptor1Key, channelDescriptor2Key, providerDescriptorKey), List.of(channelDescriptor1, channelDescriptor2), Arrays.asList(providerDescriptor),
-            Arrays.asList());
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(channelDescriptor1Key, channelDescriptor2Key, providerDescriptorKey), List.of(channelDescriptor1, channelDescriptor2), List.of(providerDescriptor), List.of());
 
         assertEquals(3, descriptorMap.getDescriptorMap().size());
         assertEquals(2, descriptorMap.getChannelDescriptorMap().size());
