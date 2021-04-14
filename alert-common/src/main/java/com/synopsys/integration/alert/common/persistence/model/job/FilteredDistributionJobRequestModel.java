@@ -1,36 +1,29 @@
-/*
- * alert-common
- *
- * Copyright (c) 2021 Synopsys, Inc.
- *
- * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
- */
 package com.synopsys.integration.alert.common.persistence.model.job;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
     private Collection<FrequencyType> frequencyTypes;
-    private NotificationType notificationType;
-    private String projectName;
-    private List<String> vulnerabilitySeverities;
-    private List<String> policyNames;
+    private Set<String> projectNames;
+    private Set<String> notificationTypes;
+    private Set<String> vulnerabilitySeverities;
+    private Set<String> policyNames;
 
     public FilteredDistributionJobRequestModel(
         Collection<FrequencyType> frequencyTypes,
-        NotificationType notificationType,
-        String projectName,
-        List<String> vulnerabilitySeverities,
-        List<String> policyNames
+        Set<String> projectNames,
+        Set<String> notificationTypes,
+        Set<String> vulnerabilitySeverities,
+        Set<String> policyNames
     ) {
         this.frequencyTypes = frequencyTypes;
-        this.notificationType = notificationType;
-        this.projectName = projectName;
+        this.projectNames = projectNames;
+        this.notificationTypes = notificationTypes;
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.policyNames = policyNames;
     }
@@ -39,20 +32,32 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
         return frequencyTypes;
     }
 
-    public NotificationType getNotificationType() {
-        return notificationType;
+    public Set<String> getProjectName() {
+        return projectNames;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public Set<String> getNotificationTypes() {
+        return notificationTypes;
     }
 
-    public List<String> getVulnerabilitySeverities() {
-        return vulnerabilitySeverities;
+    public Optional<Set<String>> getVulnerabilitySeverities() {
+        //TODO: Determine if we want to return without the optional
+        //public Set<String> getVulnerabilitySeverities() {
+        //return this.vulnerabilitySeverities.isEmpty() ? null : this.vulnerabilitySeverities;
+        if (vulnerabilitySeverities.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(vulnerabilitySeverities);
     }
 
-    public List<String> getPolicyNames() {
-        return policyNames;
+    public Optional<Set<String>> getPolicyNames() {
+        //TODO: Determine if we want to return without the optional
+        //public Set<String> getPolicyNames() {
+        //return this.policyNames.isEmpty() ? null : this.policyNames;
+        if (policyNames.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(policyNames);
     }
 
     public boolean isVulnerabilityNotification() {
@@ -63,3 +68,4 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
         return !getPolicyNames().isEmpty();
     }
 }
+

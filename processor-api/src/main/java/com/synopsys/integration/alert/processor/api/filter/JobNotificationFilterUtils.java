@@ -18,9 +18,12 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class JobNotificationFilterUtils {
+    private static List<String> POLICY_NOTIFICATION_TYPES = List.of(NotificationType.POLICY_OVERRIDE.name(), NotificationType.RULE_VIOLATION.name(), NotificationType.RULE_VIOLATION_CLEARED.name());
 
     public static boolean doesNotificationApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, DetailedNotificationContent detailedNotificationContent) {
         String notificationType = detailedNotificationContent.getNotificationContentWrapper().extractNotificationType();
+        NotificationType notificationTypeEnum = NotificationType.valueOf(notificationType);
+
         if (!doesNotificationTypeMatch(filteredDistributionJobResponseModel, notificationType)) {
             return false;
         }
@@ -28,12 +31,26 @@ public class JobNotificationFilterUtils {
         if (!doesProjectApplyToJob(filteredDistributionJobResponseModel, projectName)) {
             return false;
         }
-        List<String> notificationSeverities = detailedNotificationContent.getVulnerabilitySeverities();
-        if (!doVulnerabilitySeveritiesApplyToJob(filteredDistributionJobResponseModel, notificationType, notificationSeverities)) {
-            return false;
+        //TODO test if notificationTypeEnum is null
+        switch (notificationTypeEnum) {
+            case VULNERABILITY:
+                List<String> notificationSeverities = detailedNotificationContent.getVulnerabilitySeverities();
+                if (!doVulnerabilitySeveritiesApplyToJob(filteredDistributionJobResponseModel, notificationSeverities)) {
+                    return false;
+                }
+                break;
+            case POLICY_OVERRIDE:
+            case RULE_VIOLATION:
+            case RULE_VIOLATION_CLEARED:
+                String policyName = detailedNotificationContent.getPolicyName().orElse("");
+                if (!doesPolicyApplyToJob(filteredDistributionJobResponseModel, policyName)) {
+                    return false;
+                }
+                break;
+            default:
+                break;
         }
-        String policyName = detailedNotificationContent.getPolicyName().orElse("");
-        return doesPolicyApplyToJob(filteredDistributionJobResponseModel, notificationType, policyName);
+        return true;
     }
 
     public static boolean doesNotificationTypeMatch(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String notificationType) {
@@ -57,26 +74,20 @@ public class JobNotificationFilterUtils {
                    .anyMatch(projectName::equals);
     }
 
-    public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String notificationType, List<String> notificationSeverities) {
-        if (NotificationType.VULNERABILITY.name().equals(notificationType)) {
-            List<String> jobVulnerabilitySeverityFilters = filteredDistributionJobResponseModel.getVulnerabilitySeverityNames();
-            if (jobVulnerabilitySeverityFilters.isEmpty()) {
-                return true;
-            }
-            return CollectionUtils.containsAny(notificationSeverities, jobVulnerabilitySeverityFilters);
+    public static boolean doVulnerabilitySeveritiesApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, List<String> notificationSeverities) {
+        List<String> jobVulnerabilitySeverityFilters = filteredDistributionJobResponseModel.getVulnerabilitySeverityNames();
+        if (jobVulnerabilitySeverityFilters.isEmpty()) {
+            return true;
         }
-        return true;
+        return CollectionUtils.containsAny(notificationSeverities, jobVulnerabilitySeverityFilters);
     }
 
-    public static boolean doesPolicyApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String notificationType, String policyName) {
-        if (NotificationType.POLICY_OVERRIDE.name().equals(notificationType)) {
-            List<String> policyNamesFilters = filteredDistributionJobResponseModel.getPolicyNames();
-            if (policyNamesFilters.isEmpty()) {
-                return true;
-            }
-            return policyNamesFilters.contains(policyName);
+    public static boolean doesPolicyApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, String policyName) {
+        List<String> policyNamesFilters = filteredDistributionJobResponseModel.getPolicyNames();
+        if (policyNamesFilters.isEmpty()) {
+            return true;
         }
-        return true;
+        return policyNamesFilters.contains(policyName);
     }
 
     private JobNotificationFilterUtils() {

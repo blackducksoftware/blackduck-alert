@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
-import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModelV2;
+import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
@@ -59,9 +59,7 @@ public class JobNotificationMapper {
         );
     }
 
-    //TODO:
     private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies, int pageNumber, int pageSize) {
-
         //Step1: Iterate over notifications and collect Sets of notification Types, vuln. severities, & policy names
         //Step2: Create and execute a query to get a page of jobs matching any notificationTypes, severities, or policy names (from step 1).
         //          If Policy Notification Type Filter or Vulnerability Notification Type Filer are null, then all notifications match
@@ -85,7 +83,7 @@ public class JobNotificationMapper {
 
         //Step2: get matching jobs using the filteredNotifications above
         //Note: I can probably move this to its own private method later
-        FilteredDistributionJobRequestModelV2 filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModelV2(
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
             frequencies,
             filteredProjectNames,
             filteredNotificationTypes,
