@@ -56,6 +56,7 @@ public class JobNotificationMapperTestIT {
 
     @Test
     public void test2Notifications15JobsMultiSeverity() {
+        //Test the case where a job may have one or multiple types of vulnerability severities across multiple pages.
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 100));
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name()), 15));
         List<DetailedNotificationContent> notifications = new ArrayList<>();
@@ -67,6 +68,7 @@ public class JobNotificationMapperTestIT {
 
     @Test
     public void test3Notifications30JobsMultiSeverity() {
+        //Test the case where a multiple jobs of differing vulnerability severities appear across multiple pages.
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 115));
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.HIGH.name()), 100));
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.CRITICAL.name()), 50));
