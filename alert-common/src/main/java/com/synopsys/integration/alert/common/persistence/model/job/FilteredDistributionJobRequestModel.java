@@ -1,31 +1,38 @@
 package com.synopsys.integration.alert.common.persistence.model.job;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
-    private Collection<FrequencyType> frequencyTypes;
-    private Set<String> projectNames;
-    private Set<String> notificationTypes;
-    private Set<String> vulnerabilitySeverities;
-    private Set<String> policyNames;
+    private List<FrequencyType> frequencyTypes;
+    private Set<String> projectNames = new HashSet<>();
+    private Set<String> notificationTypes = new HashSet<>();
+    private Set<String> vulnerabilitySeverities = new HashSet<>();
+    private Set<String> policyNames = new HashSet<>();
 
-    public FilteredDistributionJobRequestModel(
-        Collection<FrequencyType> frequencyTypes,
-        Set<String> projectNames,
-        Set<String> notificationTypes,
-        Set<String> vulnerabilitySeverities,
-        Set<String> policyNames
-    ) {
+    public FilteredDistributionJobRequestModel(List<FrequencyType> frequencyTypes) {
         this.frequencyTypes = frequencyTypes;
-        this.projectNames = projectNames;
-        this.notificationTypes = notificationTypes;
-        this.vulnerabilitySeverities = vulnerabilitySeverities;
-        this.policyNames = policyNames;
+    }
+
+    public void addProjectName(String projectName) {
+        projectNames.add(projectName);
+    }
+
+    public void addNotificationType(String notificationType) {
+        notificationTypes.add(notificationType);
+    }
+
+    public void addVulnerabilitySeverities(Collection<String> vulnerabilitySeverities) {
+        this.vulnerabilitySeverities.addAll(vulnerabilitySeverities);
+    }
+
+    public void addPolicyName(String policyName) {
+        policyNames.add(policyName);
     }
 
     public Collection<FrequencyType> getFrequencyTypes() {
@@ -40,24 +47,12 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
         return notificationTypes;
     }
 
-    public Optional<Set<String>> getVulnerabilitySeverities() {
-        //TODO: Determine if we want to return without the optional
-        //public Set<String> getVulnerabilitySeverities() {
-        //return this.vulnerabilitySeverities.isEmpty() ? null : this.vulnerabilitySeverities;
-        if (vulnerabilitySeverities.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(vulnerabilitySeverities);
+    public Set<String> getVulnerabilitySeverities() {
+        return vulnerabilitySeverities;
     }
-
-    public Optional<Set<String>> getPolicyNames() {
-        //TODO: Determine if we want to return without the optional
-        //public Set<String> getPolicyNames() {
-        //return this.policyNames.isEmpty() ? null : this.policyNames;
-        if (policyNames.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(policyNames);
+    
+    public Set<String> getPolicyNames() {
+        return policyNames;
     }
 
     public boolean isVulnerabilityNotification() {

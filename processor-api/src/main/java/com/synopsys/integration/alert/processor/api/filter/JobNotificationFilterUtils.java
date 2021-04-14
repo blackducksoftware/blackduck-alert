@@ -18,8 +18,6 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class JobNotificationFilterUtils {
-    private static List<String> POLICY_NOTIFICATION_TYPES = List.of(NotificationType.POLICY_OVERRIDE.name(), NotificationType.RULE_VIOLATION.name(), NotificationType.RULE_VIOLATION_CLEARED.name());
-
     public static boolean doesNotificationApplyToJob(FilteredDistributionJobResponseModel filteredDistributionJobResponseModel, DetailedNotificationContent detailedNotificationContent) {
         String notificationType = detailedNotificationContent.getNotificationContentWrapper().extractNotificationType();
         NotificationType notificationTypeEnum = NotificationType.valueOf(notificationType);

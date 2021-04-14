@@ -15,7 +15,7 @@ import com.synopsys.integration.util.Stringable;
 public class StatefulAlertPage<T extends Stringable> {
     private final BiFunction<Integer, Integer, AlertPagedDetails<T>> retrievePage;
     private final AlertPagedDetails alertPagedDetails;
-
+    
     public StatefulAlertPage(AlertPagedDetails alertPagedDetails, BiFunction<Integer, Integer, AlertPagedDetails<T>> retrievePage) {
         this.alertPagedDetails = alertPagedDetails;
         this.retrievePage = retrievePage;

@@ -50,9 +50,9 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
         Set<String> notificationTypes = filteredDistributionJobRequestModel.getNotificationTypes();
 
         // If no policies and/or vulnerabilitySeverities exist the repository query expects a null to be passed
-        Set<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames().orElse(null);
-        Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().orElse(null);
-
+        Set<String> policyNames = filteredDistributionJobRequestModel.getPolicyNames().isEmpty() ? null : filteredDistributionJobRequestModel.getPolicyNames();
+        Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty() ? null : filteredDistributionJobRequestModel.getVulnerabilitySeverities();
+        
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
         Page<DistributionJobEntity> pageOfDistributionJobEntities;
 
