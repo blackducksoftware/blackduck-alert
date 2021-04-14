@@ -13,13 +13,13 @@ const NumberInput = ({
     }
     return (
         <LabeledField
-            labelClass={labelClass}
             description={description}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
-            label={label}
             errorName={errorName}
             errorValue={errorValue}
+            label={label}
+            labelClass={labelClass}
             required={required}
+            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
             {field}
         </LabeledField>
@@ -33,13 +33,13 @@ NumberInput.propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
     onChange: PropTypes.func,
-    label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     description: PropTypes.string,
-    showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    required: PropTypes.bool
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 NumberInput.defaultProps = {
     id: 'numberInputId',
@@ -48,12 +48,12 @@ NumberInput.defaultProps = {
     inputClass: 'form-control',
     name: 'name',
     onChange: () => true,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default NumberInput;

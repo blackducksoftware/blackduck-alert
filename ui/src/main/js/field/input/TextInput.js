@@ -3,19 +3,10 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 
 const TextInput = ({
-    inputClass, id, readOnly, autoFocus, name, value, onChange, optionList, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
+    id, autoFocus, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, optionList, readOnly, required, showDescriptionPlaceHolder, value
 }) => {
-    let listId = null;
-    let dataListOptions = null;
-    if (optionList) {
-        listId = 'listOptions';
-        const dataListOptionObjects = optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
-        dataListOptions = (
-            <datalist id={listId}>
-                {dataListOptionObjects}
-            </datalist>
-        );
-    }
+    const listId = optionList ? 'listOptions' : null;
+    const dataListOptionObjects = !optionList ? null : optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
 
     return (
         <LabeledField
@@ -39,7 +30,12 @@ const TextInput = ({
                     onChange={onChange}
                     list={listId}
                 />
-                {dataListOptions}
+                {optionList
+                && (
+                    <datalist id={listId}>
+                        {dataListOptionObjects}
+                    </datalist>
+                )}
             </div>
         </LabeledField>
     );
@@ -54,30 +50,31 @@ TextInput.propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func,
     optionList: PropTypes.array,
-    label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     description: PropTypes.string,
-    showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    required: PropTypes.bool
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
+
 };
 
 TextInput.defaultProps = {
     id: 'textInputId',
-    value: '',
-    readOnly: false,
     autoFocus: false,
     inputClass: 'form-control',
     name: 'name',
     onChange: () => true,
     optionList: null,
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    readOnly: false,
+    value: '',
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default TextInput;

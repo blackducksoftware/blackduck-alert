@@ -24,14 +24,11 @@ class FieldsPanel extends React.Component {
     }
 
     handleChange({ target }) {
-        const { self, stateName } = this.props;
+        const { getCurrentState, setStateFunction } = this.props;
         const { type, name, value } = target;
         const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(self.state[stateName], name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(self.state[stateName], name, updatedValue);
-
-        self.setState({
-            [stateName]: newState
-        });
+        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(getCurrentState(), name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(getCurrentState(), name, updatedValue);
+        setStateFunction(newState);
     }
 
     initializeFieldMapping(fields) {
@@ -175,8 +172,8 @@ FieldsPanel.propTypes = {
     descriptorFields: PropTypes.array.isRequired,
     currentConfig: PropTypes.object.isRequired,
     fieldErrors: PropTypes.object.isRequired,
-    self: PropTypes.object.isRequired,
-    stateName: PropTypes.string.isRequired,
+    getCurrentState: PropTypes.func.isRequired,
+    setStateFunction: PropTypes.func.isRequired,
     metadata: PropTypes.shape({
         additionalFields: PropTypes.object
     }),

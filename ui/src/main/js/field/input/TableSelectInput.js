@@ -1,12 +1,7 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import {
-    BootstrapTable,
-    SearchField,
-    TableHeaderColumn
-} from 'react-bootstrap-table';
+import React, { useEffect, useState } from 'react';
+import { BootstrapTable, SearchField, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import Select, { components } from 'react-select';
 import DescriptorOption from 'component/common/DescriptorOption';
 import GeneralButton from 'field/input/GeneralButton';
@@ -56,50 +51,34 @@ const container = ({ children, getValue, ...props }) => {
     );
 };
 
-class TableSelectInput extends Component {
-    constructor(props) {
-        super(props);
+const TableSelectInput = (props) => {
+    const {
+        id, value, columns, useRowAsValue, onChange, fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields, paged, searchable, readOnly,
+        description,
+        errorName,
+        errorValue,
+        label,
+        required,
+        showDescriptionPlaceHolder
+    } = props;
+    const [progress, setProgress] = useState(false);
+    const [showTable, setShowTable] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPageSize, setCurrentPageSize] = useState(10);
+    const [totalPageCount, setTotalPageCount] = useState(0);
+    const [currentSearchTerm, setCurrentSearchTerm] = useState('');
+    const [data, setData] = useState([]);
+    const [selectedData, setSelectedData] = useState([]);
+    const [displayedData, setDisplayedData] = useState([]);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [fieldError, setFieldError] = useState(null);
 
-        this.loadSelectedValues = this.loadSelectedValues.bind(this);
-        this.retrieveTableData = this.retrieveTableData.bind(this);
-        this.createTable = this.createTable.bind(this);
-        this.createSelect = this.createSelect.bind(this);
-        this.onRowSelected = this.onRowSelected.bind(this);
-        this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
-        this.selectOnClick = this.selectOnClick.bind(this);
-        this.createDataList = this.createDataList.bind(this);
-        this.handleClearClick = this.handleClearClick.bind(this);
-        this.handleShowClearConfirm = this.handleShowClearConfirm.bind(this);
-        this.handleHideClearConfirm = this.handleHideClearConfirm.bind(this);
-        this.onHideTableSelectModal = this.onHideTableSelectModal.bind(this);
-
-        this.state = {
-            progress: false,
-            showTable: false,
-            currentPage: 1,
-            currentPageSize: 10,
-            totalPageCount: 0,
-            currentSearchTerm: '',
-            data: [],
-            selectedData: [],
-            displayedData: [],
-            showClearConfirm: false
-        };
-    }
-
-    componentDidMount() {
-        this.loadSelectedValues();
-    }
-
-    loadSelectedValues() {
-        const { value, columns, useRowAsValue } = this.props;
-        const { selectedData } = this.state;
-
+    const loadSelectedValues = () => {
         let valueToUse = value;
         if (useRowAsValue && value && value.length > 0) {
-            const areStringValues = value.every(option => typeof option === "string");
+            const areStringValues = value.every((option) => typeof option === 'string');
             if (areStringValues) {
-                valueToUse = value.map(option => JSON.parse(option));
+                valueToUse = value.map((option) => JSON.parse(option));
             }
         }
 
@@ -115,88 +94,79 @@ class TableSelectInput extends Component {
                 missing: isMissing
             };
         });
-        this.setState({
-            displayedData: convertedValues
-        });
-    }
+        setDisplayedData(convertedValues);
+    };
 
-    handleShowClearConfirm() {
-        this.setState({
-            showClearConfirm: true
-        });
-    }
+    useEffect(() => {
+        loadSelectedValues();
+    }, []);
 
-    handleHideClearConfirm() {
-        this.setState({
-            showClearConfirm: false
-        });
-    }
+    const handleShowClearConfirm = () => {
+        setShowClearConfirm(true);
+    };
 
-    handleClearClick() {
-        this.setState({
-            selectedData: [],
-            displayedData: [],
-            showClearConfirm: false
-        });
+    const handleHideClearConfirm = () => {
+        setShowClearConfirm(false);
+    };
 
-        this.props.onChange({
+    const handleClearClick = () => {
+        setSelectedData([]);
+        setDisplayedData([]);
+        setShowClearConfirm(false);
+
+        onChange({
             target: {
-                name: this.props.fieldKey,
+                name: fieldKey,
                 value: []
             }
         });
-    }
+    };
 
-    onRowSelectedAll(isSelected, rows) {
-        if (rows) {
-            const selected = Object.assign([], this.state.selectedData);
-            rows.forEach((row) => {
-                this.createSelectedArray(selected, row, isSelected);
-            });
-            this.setState({
-                selectedData: selected
-            });
-        } else {
-            this.setState({
-                selectedData: []
-            });
-        }
-    }
-
-    onRowSelected(row, isSelected) {
-        const selected = Object.assign([], this.state.selectedData);
-        this.createSelectedArray(selected, row, isSelected);
-        this.setState({
-            selectedData: selected
-        });
-    }
-
-    createSelectedArray(selectedArray, row, isSelected) {
-        const { columns, useRowAsValue } = this.props;
+    const createSelectedArray = (selectedArray, row, isSelected) => {
         const keyColumnHeader = columns.find((column) => column.isKey).header;
         const rowKeyValue = row[keyColumnHeader];
 
         if (isSelected) {
             const itemFound = selectedArray.find((selectedItem) => (useRowAsValue ? selectedItem[keyColumnHeader] === rowKeyValue : selectedItem === rowKeyValue));
             if (!itemFound) {
-                useRowAsValue ? selectedArray.push(row) : selectedArray.push(rowKeyValue);
+                if (useRowAsValue) {
+                    selectedArray.push(row);
+                } else {
+                    selectedArray.push(rowKeyValue);
+                }
             }
         } else {
-            const index = useRowAsValue ? selectedArray.findIndex(selection => selection[keyColumnHeader] === rowKeyValue) : selectedArray.indexOf(rowKeyValue);
+            const index = useRowAsValue ? selectedArray.findIndex((selection) => selection[keyColumnHeader] === rowKeyValue) : selectedArray.indexOf(rowKeyValue);
             if (index >= 0) {
                 // if found, remove that element from selected array
                 selectedArray.splice(index, 1);
             }
         }
-    }
+    };
 
-    createRowSelectionProps() {
-        const { selectedData } = this.state;
-        const { columns, useRowAsValue } = this.props;
+    const onRowSelectedAll = (isSelected, rows) => {
+        if (rows) {
+            const selected = Object.assign([], selectedData);
+            rows.forEach((row) => {
+                createSelectedArray(selected, row, isSelected);
+            });
+            setSelectedData(selected);
+        } else {
+            setSelectedData([]);
+        }
+    };
+
+    const onRowSelected = (row, isSelected) => {
+        const selected = Object.assign([], selectedData);
+        createSelectedArray(selected, row, isSelected);
+        setSelectedData(selected);
+    };
+
+    const createRowSelectionProps = () => {
         const keyColumnHeader = columns.find((column) => column.isKey).header;
 
         const condition = selectedData && useRowAsValue;
-        let selectedRowData = null;
+        let selectedRowData;
         if (condition) {
             selectedRowData = selectedData.map((itemData) => itemData[keyColumnHeader]);
         } else {
@@ -207,19 +177,13 @@ class TableSelectInput extends Component {
             clickToSelect: true,
             showOnlySelected: true,
             selected: selectedRowData,
-            onSelect: this.onRowSelected,
-            onSelectAll: this.onRowSelectedAll
+            onSelect: onRowSelected,
+            onSelectAll: onRowSelectedAll
         };
-    }
+    };
 
-    async retrieveTableData(uiPageNumber, pageSize, searchTerm) {
-        this.setState({
-            progress: true,
-            success: false
-        });
-        const {
-            fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields
-        } = this.props;
+    const retrieveTableData = async (uiPageNumber, pageSize, searchTerm) => {
+        setProgress(true);
 
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const pageNumber = uiPageNumber ? uiPageNumber - 1 : 0;
@@ -227,30 +191,22 @@ class TableSelectInput extends Component {
         const apiUrl = `/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}`;
         const request = createNewConfigurationRequest(apiUrl, csrfToken, newFieldModel);
         return request.then((response) => {
-            this.setState({
-                progress: false
-            });
+            setProgress(false);
             if (response.ok) {
-                return response.json().then((data) => {
-                    const { options, totalPages } = data;
-                    this.setState({
-                        data: options,
-                        success: true,
-                        totalPageCount: totalPages
-                    });
-                    return data;
+                return response.json().then((responseData) => {
+                    const { options, totalPages } = responseData;
+                    setData(options);
+                    setTotalPageCount(totalPages);
+                    return responseData;
                 });
             }
-            response.json().then((data) => {
-                this.setState({
-                    fieldError: data.message
-                });
+            response.json().then((responseData) => {
+                setFieldError(responseData.message);
             });
         });
-    }
+    };
 
-    createDataList() {
-        const { data, selectedData } = this.state;
+    const createDataList = () => {
         const dataList = data.map((itemData) => Object.assign(itemData, { missing: false }));
         selectedData.forEach((selected) => {
             const missingAttribute = selected.missing;
@@ -259,48 +215,34 @@ class TableSelectInput extends Component {
             }
         });
         return dataList;
-    }
+    };
 
-    createTable() {
-        const { columns, useRowAsValue } = this.props;
+    const createTable = () => {
         const defaultSortName = columns.find((column) => column.sortBy).header;
 
         const onPageChange = (page, sizePerPage) => {
-            const { currentSearchTerm } = this.state;
-            this.setState({
-                currentPage: page,
-                currentPageSize: sizePerPage
-            });
-            this.retrieveTableData(page, sizePerPage, currentSearchTerm);
+            setCurrentPage(page);
+            setCurrentPageSize(sizePerPage);
+            retrieveTableData(page, sizePerPage, currentSearchTerm);
         };
 
         const onSizePerPageListChange = (sizePerPage) => {
-            const { currentPage, currentSearchTerm } = this.state;
-            this.setState({
-                currentPageSize: sizePerPage
-            });
-            this.retrieveTableData(currentPage, sizePerPage, currentSearchTerm);
+            setCurrentPageSize(sizePerPage);
+            retrieveTableData(currentPage, sizePerPage, currentSearchTerm);
         };
 
         const onSearchChange = (searchTerm, colInfos, multiColumnSearch) => {
-            const { currentPageSize } = this.state;
-            this.setState({
-                currentSearchTerm: searchTerm,
-                currentPage: 1
-            });
-            this.retrieveTableData(1, currentPageSize, searchTerm);
+            setCurrentSearchTerm(searchTerm);
+            setCurrentPage(1);
+            retrieveTableData(1, currentPageSize, searchTerm);
         };
-
-        const {
-            currentPage, currentPageSize, totalPageCount, currentSearchTerm
-        } = this.state;
 
         // Displays the # of pages for the table
         const tableFetchInfo = {
             dataTotalSize: totalPageCount * currentPageSize
         };
 
-        const noTableDataMessage = this.state.fieldError || 'No data found';
+        const noTableDataMessage = fieldError || 'No data found';
         const tableOptions = {
             noDataText: noTableDataMessage,
             clearSearch: true,
@@ -308,14 +250,12 @@ class TableSelectInput extends Component {
             defaultSortOrder: 'asc',
 
             searchDelayTime: 750,
-            searchField: (searchFieldProps) => {
-                return (
-                    <SearchField
-                        defaultValue={currentSearchTerm}
-                        placeholder='Search'
-                    />
-                );
-            },
+            searchField: (searchFieldProps) => (
+                <SearchField
+                    defaultValue={currentSearchTerm}
+                    placeholder="Search"
+                />
+            ),
 
             sizePerPage: currentPageSize,
             page: currentPage,
@@ -324,7 +264,7 @@ class TableSelectInput extends Component {
             onSearchChange
         };
 
-        const projectsSelectRowProp = this.createRowSelectionProps();
+        const projectsSelectRowProp = createRowSelectionProps();
 
         const assignDataFormat = (cell, row) => {
             const cellContent = (row.missing && cell && cell !== '')
@@ -354,7 +294,6 @@ class TableSelectInput extends Component {
             );
         };
 
-        const { selectedData } = this.state;
         const keyColumnHeader = columns.find((column) => column.isKey).header;
         const okClicked = () => {
             const convertedValues = selectedData.map((selected) => {
@@ -366,19 +305,16 @@ class TableSelectInput extends Component {
                     missing: isMissing
                 };
             });
-            this.setState({
-                showTable: false,
-                displayedData: convertedValues,
-                currentPage: 1,
-                currentPageSize: 10,
-                currentSearchTerm: ''
-            });
+            setShowTable(false);
+            setDisplayedData(convertedValues);
+            setCurrentPage(1);
+            setCurrentPageSize(10);
+            setCurrentSearchTerm('');
 
-            const { onChange } = this.props;
             onChange({
                 target: {
-                    name: this.props.fieldKey,
-                    value: this.state.selectedData
+                    name: fieldKey,
+                    value: selectedData
                 }
             });
         };
@@ -401,9 +337,7 @@ class TableSelectInput extends Component {
         // Need to add this column to the array as you can't display tableColumns dynamically and statically https://github.com/AllenFang/react-bootstrap-table/issues/1814
         tableColumns.push(<TableHeaderColumn key="missingHeaderKey" dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>);
 
-        const { paged, searchable, fieldKey } = this.props;
-
-        const displayTable = (this.state.progress)
+        const displayTable = (progress)
             ? (
                 <div className="progressIcon">
                     <span className="fa-layers fa-fw">
@@ -413,9 +347,8 @@ class TableSelectInput extends Component {
             )
             : (
                 <BootstrapTable
-                    ref
                     version="4"
-                    data={this.createDataList()}
+                    data={createDataList()}
                     containerClass="table"
                     hover
                     condensed
@@ -424,7 +357,6 @@ class TableSelectInput extends Component {
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
-
                     search={searchable}
                     pagination={paged}
                     remote
@@ -448,24 +380,22 @@ class TableSelectInput extends Component {
                 </div>
             </div>
         );
-    }
+    };
 
-    selectOnClick(event) {
-        const { currentPage, currentPageSize } = this.state;
+    const selectOnClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
-        this.retrieveTableData(currentPage, currentPageSize, '');
-        this.setState({ showTable: true });
-    }
+        retrieveTableData(currentPage, currentPageSize, '');
+        setShowTable(true);
+    };
 
-    createSelect() {
-        const components = {
+    const createSelect = () => {
+        const selectComponents = {
             MultiValue: typeLabel,
             ValueContainer: container,
             DropdownIndicator: null,
             MultiValueRemove: () => <div />
         };
-        const { fieldKey } = this.props;
         const selectFieldId = `${fieldKey}-selectField`;
         const selectButtonId = `${fieldKey}_select`;
         const clearButtonId = `${fieldKey}_clear`;
@@ -479,27 +409,27 @@ class TableSelectInput extends Component {
                         onChange={null}
                         options={[]}
                         isMulti
-                        components={components}
+                        components={selectComponents}
                         noOptionsMessage={null}
                         isDisabled
                         clearable={false}
-                        value={this.state.displayedData}
+                        value={displayedData}
                     />
                     <div className="d-inline-flex float-right">
                         <GeneralButton
                             id={selectButtonId}
                             className="selectButton"
-                            onClick={this.selectOnClick}
-                            disabled={this.state.showTable || this.props.readOnly}
+                            onClick={selectOnClick}
+                            disabled={showTable || readOnly}
                         >
                             Select
                         </GeneralButton>
-                        {this.state.selectedData && this.state.selectedData.length > 0
+                        {selectedData && selectedData.length > 0
                         && (
                             <GeneralButton
                                 id={clearButtonId}
                                 className="selectClearButton"
-                                onClick={this.handleShowClearConfirm}
+                                onClick={handleShowClearConfirm}
                             >
                                 Clear
                             </GeneralButton>
@@ -509,52 +439,58 @@ class TableSelectInput extends Component {
                         id={confirmModalId}
                         title="Clear Input"
                         message="Are you sure you want to clear all selected items?"
-                        showModal={this.state.showClearConfirm}
-                        affirmativeAction={this.handleClearClick}
-                        negativeAction={this.handleHideClearConfirm}
+                        showModal={showClearConfirm}
+                        affirmativeAction={handleClearClick}
+                        negativeAction={handleHideClearConfirm}
                     />
                 </div>
             </div>
         );
-    }
+    };
 
-    onHideTableSelectModal() {
-        const { displayedData } = this.state;
-        const previousSelectedData = displayedData.map((currentValue) => {
-            return {
-                ...currentValue.value
-            };
-        });
-        this.setState({
-            showTable: false,
-            selectedData: previousSelectedData
-        });
-    }
+    const onHideTableSelectModal = () => {
+        const previousSelectedData = displayedData.map((currentValue) => ({
+            ...currentValue.value
+        }));
 
-    render() {
-        const tableModal = (
-            <Modal dialogClassName="topLevelModal" size="lg" show={this.state.showTable} onHide={this.onHideTableSelectModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{this.props.label}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {this.createTable()}
-                </Modal.Body>
-            </Modal>
-        );
+        setShowTable(false);
+        setSelectedData(previousSelectedData);
+    };
 
-        return (
+    const tableModal = (
+        <Modal dialogClassName="topLevelModal" size="lg" show={showTable} onHide={onHideTableSelectModal}>
+            <Modal.Header closeButton>
+                <Modal.Title>{label}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {createTable()}
+            </Modal.Body>
+        </Modal>
+    );
+
+    return (
+        <div>
             <div>
-                <div>
-                    <LabeledField field={this.createSelect()} labelClass="col-sm-3" {...this.props} />
-                </div>
-                {this.state.showTable && tableModal}
+                <LabeledField
+                    id={id}
+                    description={description}
+                    errorName={errorName}
+                    errorValue={errorValue}
+                    label={label}
+                    labelClass="col-sm-3"
+                    required={required}
+                    showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+                >
+                    {createSelect()}
+                </LabeledField>
             </div>
-        );
-    }
-}
+            {showTable && tableModal}
+        </div>
+    );
+};
 
 TableSelectInput.propTypes = {
+    id: PropTypes.string,
     fieldKey: PropTypes.string.isRequired,
     endpoint: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
@@ -562,19 +498,34 @@ TableSelectInput.propTypes = {
     columns: PropTypes.array.isRequired,
     requiredRelatedFields: PropTypes.array,
     searchable: PropTypes.bool,
+    onChange: PropTypes.func,
     paged: PropTypes.bool,
-    useRowAsValue: PropTypes.bool
+    readOnly: PropTypes.bool,
+    useRowAsValue: PropTypes.bool,
+    value: PropTypes.array,
+    description: PropTypes.string,
+    errorName: PropTypes.string,
+    errorValue: PropTypes.object,
+    label: PropTypes.string.isRequired,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 TableSelectInput.defaultProps = {
+    id: 'tableSelectInputId',
     requiredRelatedFields: [],
     searchable: true,
+    onChange: () => {
+    },
     paged: false,
-    useRowAsValue: false
+    readOnly: false,
+    useRowAsValue: false,
+    value: [],
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
-const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken
-});
-
-export default connect(mapStateToProps)(TableSelectInput);
+export default TableSelectInput;

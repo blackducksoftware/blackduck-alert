@@ -35,6 +35,8 @@ class DistributionConfiguration extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.setSendMessageVisible = this.setSendMessageVisible.bind(this);
+        this.updateChannelConfigState = this.updateChannelConfigState.bind(this);
+        this.updateProviderConfigState = this.updateProviderConfigState.bind(this);
 
         const { descriptors, validateDescriptorForGlobalConfig } = props;
         const defaultDescriptor = descriptors.find((descriptor) => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -211,6 +213,18 @@ class DistributionConfiguration extends Component {
         validateDistribution(jsonBody);
     }
 
+    updateProviderConfigState(newState) {
+        this.setState({
+            providerConfig: newState
+        });
+    }
+
+    updateChannelConfigState(newState) {
+        this.setState({
+            channelConfig: newState
+        });
+    }
+
     renderProviderConfigNameForm() {
         // TODO: Find a better way to order fields.
         // TODO: Perhaps have a config name key such as common, channel, and provider to create the config objects and some ordering attributes.
@@ -226,8 +240,8 @@ class DistributionConfiguration extends Component {
                     metadata={{ additionalFields: channelConfig.keyToValues }}
                     currentConfig={providerConfig}
                     fieldErrors={fieldErrors}
-                    self={this}
-                    stateName="providerConfig"
+                    getCurrentState={() => providerConfig}
+                    setStateFunction={this.updateProviderConfigState}
                     csrfToken={csrfToken}
                 />
             </div>
@@ -252,8 +266,8 @@ class DistributionConfiguration extends Component {
                     metadata={{ additionalFields: channelConfig.keyToValues }}
                     currentConfig={providerConfig}
                     fieldErrors={fieldErrors}
-                    self={this}
-                    stateName="providerConfig"
+                    getCurrentState={() => providerConfig}
+                    setStateFunction={this.updateProviderConfigState}
                     csrfToken={csrfToken}
                 />
                 <ConfigButtons
@@ -335,8 +349,8 @@ class DistributionConfiguration extends Component {
                                     descriptorFields={commonFields}
                                     currentConfig={channelConfig}
                                     fieldErrors={fieldErrors}
-                                    self={this}
-                                    stateName="channelConfig"
+                                    getCurrentState={() => channelConfig}
+                                    setStateFunction={this.updateChannelConfigState}
                                     csrfToken={csrfToken}
                                 />
                                 {currentChannel && selectedProvider && this.renderProviderConfigNameForm()}
@@ -347,8 +361,8 @@ class DistributionConfiguration extends Component {
                                         metadata={{ additionalFields: providerConfig.keyToValues }}
                                         currentConfig={channelConfig}
                                         fieldErrors={fieldErrors}
-                                        self={this}
-                                        stateName="channelConfig"
+                                        getCurrentState={() => channelConfig}
+                                        setStateFunction={this.updateChannelConfigState}
                                         csrfToken={csrfToken}
                                     />
                                 )}

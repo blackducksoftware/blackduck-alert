@@ -23,6 +23,7 @@ class GlobalConfiguration extends React.Component {
         this.handleTestCancel = this.handleTestCancel.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.createEmptyModel = this.createEmptyModel.bind(this);
+        this.updateCurrentConfigState = this.updateCurrentConfigState.bind(this);
 
         const { descriptor } = this.props;
         const { fields, name } = descriptor;
@@ -120,6 +121,12 @@ class GlobalConfiguration extends React.Component {
         }
     }
 
+    updateCurrentConfigState(newState) {
+        this.setState({
+            currentConfig: newState
+        });
+    }
+
     render() {
         const { currentDescriptor, showTest } = this.state;
         const {
@@ -145,8 +152,8 @@ class GlobalConfiguration extends React.Component {
                             currentConfig={currentConfig}
                             fieldErrors={fieldErrors}
                             handleChange={this.handleChange}
-                            self={this}
-                            stateName="currentConfig"
+                            getCurrentState={() => currentConfig}
+                            setStateFunction={this.updateCurrentConfigState}
                             csrfToken={csrfToken}
                         />
                     </div>

@@ -2,20 +2,37 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
 import FieldsPopUp from 'field/FieldsPopUp';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import StatusMessage from 'field/StatusMessage';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import FieldsPanel from './FieldsPanel';
 
-const OAuthEndpointButtonField = (props) => {
-    const {
-        buttonLabel, fields, fieldKey, readOnly, statusMessage, csrfToken, errorValue, onChange, currentConfig, endpoint, requiredRelatedFields
-    } = props;
+const OAuthEndpointButtonField = ({
+    id,
+    buttonLabel,
+    csrfToken,
+    currentConfig,
+    description,
+    endpoint,
+    errorValue,
+    fields,
+    fieldKey,
+    label,
+    labelClass,
+    onChange,
+    readOnly,
+    required,
+    requiredRelatedFields,
+    showDescriptionPlaceHolder,
+    statusMessage
+}) => {
     const [showModal, setShowModal] = useState(false);
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
+    const [modalConfig, setModalConfig] = useState({});
 
     useEffect(() => {
         setFieldError(errorValue);
@@ -33,7 +50,7 @@ const OAuthEndpointButtonField = (props) => {
             response.json()
                 .then((data) => {
                     const {
-                        authenticated, authorizationUrl, message
+                        authorizationUrl, message
                     } = data;
                     const target = {
                         name: [fieldKey],
@@ -67,9 +84,14 @@ const OAuthEndpointButtonField = (props) => {
     return (
         <div>
             <LabeledField
-                {...props}
+                id={id}
+                description={description}
                 errorName={fieldKey}
                 errorValue={fieldError}
+                label={label}
+                labelClass={labelClass}
+                required={required}
+                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
                     <GeneralButton
@@ -86,14 +108,21 @@ const OAuthEndpointButtonField = (props) => {
                 </div>
             </LabeledField>
             <FieldsPopUp
-                csrfToken={csrfToken}
                 onCancel={flipShowModal}
-                fields={fields}
                 handleSubmit={onSendClick}
                 title={buttonLabel}
                 show={showModal}
                 okLabel="Send"
-            />
+            >
+                <FieldsPanel
+                    descriptorFields={fields}
+                    currentConfig={currentConfig}
+                    getCurrentState={() => modalConfig}
+                    setStateFunction={setModalConfig}
+                    csrfToken={csrfToken}
+                    fieldErrors={{}}
+                />
+            </FieldsPopUp>
         </div>
     );
 };
@@ -108,22 +137,28 @@ OAuthEndpointButtonField.propTypes = {
     onChange: PropTypes.func.isRequired,
     fields: PropTypes.array,
     requiredRelatedFields: PropTypes.array,
-    value: PropTypes.bool,
-    name: PropTypes.string,
     errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
-    statusMessage: PropTypes.string
+    statusMessage: PropTypes.string,
+    description: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 OAuthEndpointButtonField.defaultProps = {
     id: 'oauthEndpointButtonFieldId',
-    value: false,
     fields: [],
-    requiredRelatedFields: [],
-    name: '',
-    errorValue: null,
     readOnly: false,
-    statusMessage: 'Success'
+    requiredRelatedFields: [],
+    statusMessage: 'Success',
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+
 };
 
 export default OAuthEndpointButtonField;

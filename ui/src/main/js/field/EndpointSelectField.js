@@ -5,25 +5,31 @@ import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { LabelFieldPropertyDefaults } from './LabeledField';
 
-const EndpointSelectField = (props) => {
-    const {
-        currentConfig, fieldKey, csrfToken, endpoint, requiredRelatedFields, value, errorValue, onChange,
-        id,
-        inputClass,
-        searchable,
-        placeholder,
-        removeSelected,
-        multiSelect,
-        selectSpacingClass,
-        readOnly,
-        clearable,
-        labelClass,
-        description,
-        showDescriptionPlaceHolder,
-        label,
-        errorName,
-        required
-    } = props;
+const EndpointSelectField = ({
+    id,
+    clearable,
+    csrfToken,
+    currentConfig,
+    description,
+    endpoint,
+    errorName,
+    errorValue,
+    fieldKey,
+    inputClass,
+    label,
+    labelClass,
+    multiSelect,
+    onChange,
+    placeholder,
+    readOnly,
+    removeSelected,
+    required,
+    requiredRelatedFields,
+    searchable,
+    selectSpacingClass,
+    showDescriptionPlaceHolder,
+    value
+}) => {
     const [options, setOptions] = useState([]);
     const [requestErrorValue, setRequestErrorValue] = useState(null);
 
@@ -106,49 +112,50 @@ const EndpointSelectField = (props) => {
 
 EndpointSelectField.propTypes = {
     id: PropTypes.string,
-    currentConfig: PropTypes.object,
+    clearable: PropTypes.bool,
     csrfToken: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
+    currentConfig: PropTypes.object,
     endpoint: PropTypes.string.isRequired,
     fieldKey: PropTypes.string.isRequired,
-    requiredRelatedFields: PropTypes.array,
     inputClass: PropTypes.string,
+    multiSelect: PropTypes.bool,
+    placeholder: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool,
+    removeSelected: PropTypes.bool,
+    requiredRelatedFields: PropTypes.array,
+    searchable: PropTypes.bool,
     selectSpacingClass: PropTypes.string,
     value: PropTypes.array,
-    placeholder: PropTypes.string,
-    searchable: PropTypes.bool,
-    removeSelected: PropTypes.bool,
-    readOnly: PropTypes.bool,
-    multiSelect: PropTypes.bool,
-    clearable: PropTypes.bool,
-    label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
     description: PropTypes.string,
-    showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    required: PropTypes.bool
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
+
 };
 
 EndpointSelectField.defaultProps = {
     id: 'endpointSelectFieldId',
+    clearable: true,
     currentConfig: {},
-    requiredRelatedFields: [],
-    value: [],
-    placeholder: 'Choose a value',
     inputClass: 'typeAheadField',
     labelClass: 'col-sm-3',
-    selectSpacingClass: 'col-sm-8',
-    searchable: false,
-    removeSelected: false,
-    readOnly: false,
     multiSelect: false,
-    clearable: true,
+    placeholder: 'Choose a value',
+    readOnly: false,
+    removeSelected: false,
+    requiredRelatedFields: [],
+    searchable: false,
+    selectSpacingClass: 'col-sm-8',
+    value: [],
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default EndpointSelectField;

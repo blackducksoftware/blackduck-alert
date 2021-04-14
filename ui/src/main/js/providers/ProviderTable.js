@@ -33,6 +33,7 @@ class ProviderTable extends Component {
         this.onEdit = this.onEdit.bind(this);
         this.onCopy = this.onCopy.bind(this);
         this.combineModelWithDefaults = this.combineModelWithDefaults.bind(this);
+        this.updateModalState = this.updateModalState.bind(this);
 
         this.state = {
             providerConfig: {},
@@ -194,6 +195,12 @@ class ProviderTable extends Component {
         this.retrieveData();
     }
 
+    updateModalState(newState) {
+        this.setState({
+            providerConfig: newState
+        });
+    }
+
     createModalFields() {
         const { providerConfig } = this.state;
         const {
@@ -208,7 +215,8 @@ class ProviderTable extends Component {
                         descriptorFields={descriptor.fields}
                         self={this}
                         fieldErrors={fieldErrors}
-                        stateName="providerConfig"
+                        getCurrentState={() => providerConfig}
+                        setStateFunction={this.updateModalState}
                         currentConfig={newConfig}
                         csrfToken={csrfToken}
                     />

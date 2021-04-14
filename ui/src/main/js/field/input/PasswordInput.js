@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 
 const PasswordInput = ({
-    readOnly, isSet, inputClass, id, name, value, onChange, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
+    id, description, errorName, errorValue, inputClass, isSet, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, value
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
 

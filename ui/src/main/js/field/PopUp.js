@@ -5,7 +5,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import MessageFormatter from 'field/MessageFormatter';
 
 const PopUp = ({
-    id, children, show, title, cancelLabel, okLabel, includeSave, handleSubmit, performingAction, includeTest, testLabel, handleTest, actionMessage, onCancel
+    id, actionMessage, cancelLabel, children, handleSubmit, handleTest, includeSave, includeTest, okLabel, onCancel, performingAction, show, testLabel, title
 }) => {
     const internalCancel = () => {
         onCancel();
@@ -25,9 +25,7 @@ const PopUp = ({
                     <form
                         className="form-horizontal"
                         noValidate
-                        onSubmit={(event) => {
-                            handleSubmit(event);
-                        }}
+                        onSubmit={handleSubmit}
                     >
                         {children}
                         <ConfigButtons
@@ -65,34 +63,34 @@ const PopUp = ({
 
 PopUp.propTypes = {
     id: PropTypes.string,
-    onCancel: PropTypes.func.isRequired,
+    actionMessage: PropTypes.string,
+    cancelLabel: PropTypes.string,
     children: PropTypes.any.isRequired,
     handleSubmit: PropTypes.func,
     handleTest: PropTypes.func,
-    show: PropTypes.bool,
-    title: PropTypes.string,
-    cancelLabel: PropTypes.string,
-    okLabel: PropTypes.string,
-    testLabel: PropTypes.string,
-    performingAction: PropTypes.bool,
-    actionMessage: PropTypes.string,
     includeSave: PropTypes.bool,
-    includeTest: PropTypes.bool
+    includeTest: PropTypes.bool,
+    okLabel: PropTypes.string,
+    onCancel: PropTypes.func.isRequired,
+    performingAction: PropTypes.bool,
+    testLabel: PropTypes.string,
+    title: PropTypes.string,
+    show: PropTypes.bool
 };
 
 PopUp.defaultProps = {
     id: 'popupId',
-    show: true,
-    title: 'Pop up',
-    cancelLabel: 'Cancel',
-    okLabel: 'Ok',
-    testLabel: null,
-    handleSubmit: (event) => true,
-    handleTest: null,
-    performingAction: false,
     actionMessage: null,
+    cancelLabel: 'Cancel',
+    handleSubmit: () => true,
+    handleTest: null,
     includeSave: true,
-    includeTest: false
+    includeTest: false,
+    okLabel: 'Ok',
+    performingAction: false,
+    show: true,
+    testLabel: null,
+    title: 'Pop up'
 };
 
 export default PopUp;

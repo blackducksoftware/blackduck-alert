@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const CancelButton = ({ onClick, children, id }) => (
+const CancelButton = ({ id, children, onClick }) => (
     <button id={id} className="btn btn-md btn-link" type="button" onClick={onClick}>{children}</button>
 );
 

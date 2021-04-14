@@ -69,13 +69,13 @@ const DynamicSelectInput = ({
     const selectValue = options.filter((option) => value.includes(option.value));
     return (
         <LabeledField
-            labelClass={labelClass}
             description={description}
-            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
-            label={label}
             errorName={errorName}
             errorValue={errorValue}
+            label={label}
+            labelClass={labelClass}
             required={required}
+            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
             <div className={selectClasses}>
                 <Select
@@ -137,11 +137,11 @@ DynamicSelectInput.defaultProps = {
     multiSelect: false,
     clearable: true,
     onFocus: () => null,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default DynamicSelectInput;

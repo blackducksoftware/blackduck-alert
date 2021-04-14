@@ -38,10 +38,9 @@ const MessageFormatter = (props) => {
         }
     };
     const { message } = props;
-    const formattedMessage = message && createMessage();
     return (
         <div id={id}>
-            {formattedMessage}
+            {message && createMessage()}
         </div>
     );
 };

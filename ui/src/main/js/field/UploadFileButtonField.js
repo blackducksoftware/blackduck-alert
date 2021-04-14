@@ -7,9 +7,8 @@ import GeneralButton from 'field/input/GeneralButton';
 
 const UploadFileButtonField = (props) => {
     const {
-        errorValue, statusMessage, fieldKey, csrfToken, endpoint, buttonLabel, value, accept, capture, name, readOnly
+        errorValue, statusMessage, fieldKey, csrfToken, endpoint, buttonLabel, accept, capture, name, readOnly
     } = props;
-    const [showModal, setShowModal] = useState(false);
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
@@ -137,7 +136,6 @@ UploadFileButtonField.propTypes = {
     fieldKey: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    value: PropTypes.bool,
     name: PropTypes.string,
     errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
@@ -149,7 +147,6 @@ UploadFileButtonField.propTypes = {
 
 UploadFileButtonField.defaultProps = {
     id: 'uploadFileButtonFieldId',
-    value: false,
     name: '',
     errorValue: null,
     readOnly: false,

@@ -2,33 +2,46 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import TableDisplay from 'field/TableDisplay';
 import TextInput from 'field/input/TextInput';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 
-const FieldMappingField = (props) => {
-    const {
-        newMappingTitle, editMappingTitle, leftSideMapping, rightSideMapping, onChange, fieldMappingKey, storedMappings, autoRefresh
-    } = props;
+const FieldMappingField = ({
+    id,
+    description,
+    editMappingTitle,
+    errorName,
+    errorValue,
+    fieldMappingKey,
+    label,
+    labelClass,
+    leftSideMapping,
+    newMappingTitle,
+    onChange,
+    required,
+    rightSideMapping,
+    showDescriptionPlaceHolder,
+    storedMappings
+}) => {
     const [fieldMappingRow, setFieldMappingRow] = useState({
         rowId: -1,
         fieldName: '',
         fieldValue: ''
     });
     const [tableData, setTableData] = useState([]);
-    const [id, setId] = useState(0);
+    const [tableId, setTableId] = useState(0);
     const [modalError, setModalError] = useState(null);
     const [modalTitle, setModalTitle] = useState(newMappingTitle);
     useEffect(() => {
-        let currentId = 0;
+        let currenttableId = 0;
         let fieldMappings = [];
         if (storedMappings) {
             fieldMappings = storedMappings.map((mapping) => JSON.parse(mapping));
             fieldMappings.forEach((parsedMapping) => {
-                parsedMapping.id = currentId;
-                currentId += 1;
+                parsedMapping.tableId = currenttableId;
+                currenttableId += 1;
             });
         }
 
-        setId(currentId);
+        setTableId(currenttableId);
         setTableData(fieldMappings);
     }, []);
 
@@ -66,8 +79,8 @@ const FieldMappingField = (props) => {
 
     const createColumns = () => [
         {
-            header: 'id',
-            headerLabel: 'id',
+            header: 'tableId',
+            headerLabel: 'tableId',
             isKey: true,
             hidden: true
         },
@@ -86,9 +99,9 @@ const FieldMappingField = (props) => {
     ];
 
     const onEdit = (selectedRow, callback) => {
-        const entireRow = tableData.filter((row) => row.id === selectedRow.id)[0];
+        const entireRow = tableData.filter((row) => row.tableId === selectedRow.tableId)[0];
         setFieldMappingRow({
-            rowId: entireRow.id,
+            rowId: entireRow.tableId,
             fieldName: entireRow.fieldName,
             fieldValue: entireRow.fieldValue
         });
@@ -106,7 +119,7 @@ const FieldMappingField = (props) => {
 
     const onDelete = (configsToDelete, callback) => {
         if (configsToDelete) {
-            const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.id));
+            const filteredTable = tableData.filter((data) => !configsToDelete.includes(data.tableId));
             setTableData(filteredTable);
             const fieldMappingValue = filteredTable.map((mappingEntry) => JSON.stringify(mappingEntry));
             onChange({
@@ -121,22 +134,22 @@ const FieldMappingField = (props) => {
 
     const saveModalData = (callback) => {
         const { rowId, fieldName, fieldValue } = fieldMappingRow;
-        let currentId = id;
-        const mappingIndex = tableData.findIndex((mapping) => mapping.id === rowId);
+        let currenttableId = tableId;
+        const mappingIndex = tableData.findIndex((mapping) => mapping.tableId === rowId);
         if (mappingIndex >= 0) {
             tableData[mappingIndex].fieldName = fieldName;
             tableData[mappingIndex].fieldValue = fieldValue;
         } else {
             tableData.push({
-                id,
+                tableId,
                 fieldName,
                 fieldValue
             });
-            currentId += 1;
+            currenttableId += 1;
         }
 
         setTableData(tableData);
-        setId(currentId);
+        setTableId(currenttableId);
         setModalError(null);
         setModalTitle(newMappingTitle);
 
@@ -152,7 +165,16 @@ const FieldMappingField = (props) => {
         return true;
     };
     return (
-        <LabeledField {...props}>
+        <LabeledField
+            id={id}
+            description={description}
+            errorName={errorName}
+            errorValue={errorValue}
+            label={label}
+            labelClass={labelClass}
+            required={required}
+            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+        >
             <TableDisplay
                 modalTitle={modalTitle}
                 columns={createColumns()}
@@ -181,14 +203,27 @@ FieldMappingField.propTypes = {
     leftSideMapping: PropTypes.string.isRequired,
     rightSideMapping: PropTypes.string.isRequired,
     newMappingTitle: PropTypes.string,
-    editMappingTitle: PropTypes.string
+    editMappingTitle: PropTypes.string,
+    description: PropTypes.string,
+    errorName: PropTypes.string,
+    errorValue: PropTypes.object,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 FieldMappingField.defaultProps = {
     id: 'fieldMappingFieldId',
     storedMappings: [],
     newMappingTitle: 'Create new mapping',
-    editMappingTitle: 'Edit mapping'
+    editMappingTitle: 'Edit mapping',
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default FieldMappingField;

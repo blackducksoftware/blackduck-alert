@@ -8,26 +8,27 @@ function noOptionsMessage() {
 }
 
 const SelectInput = ({
-    onChange,
     id,
-    inputClass,
-    options,
-    isSearchable,
-    placeholder,
-    value,
-    removeSelected,
-    hasMultipleValues,
-    components,
-    selectSpacingClass,
-    readOnly,
     clearable,
-    labelClass,
+    components,
     description,
-    showDescriptionPlaceHolder,
-    label,
     errorName,
     errorValue,
-    required
+    hasMultipleValues,
+    inputClass,
+    isSearchable,
+    label,
+    labelClass,
+    onChange,
+    options,
+    placeholder,
+    readOnly,
+    removeSelected,
+    required,
+    selectSpacingClass,
+    showDescriptionPlaceHolder,
+    value
+
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
     let closeOnSelect = true;
@@ -68,46 +69,46 @@ const SelectInput = ({
 
 SelectInput.propTypes = {
     id: PropTypes.string,
-    inputClass: PropTypes.string,
-    selectSpacingClass: PropTypes.string,
-    options: PropTypes.array,
-    components: PropTypes.object,
-    placeholder: PropTypes.string,
-    isSearchable: PropTypes.bool,
-    removeSelected: PropTypes.bool,
-    readOnly: PropTypes.bool,
     clearable: PropTypes.bool,
+    components: PropTypes.object,
     hasMultipleValues: PropTypes.bool,
-    value: PropTypes.object,
+    inputClass: PropTypes.string,
+    isSearchable: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
+    options: PropTypes.array,
+    placeholder: PropTypes.string,
+    readOnly: PropTypes.bool,
+    removeSelected: PropTypes.bool,
+    selectSpacingClass: PropTypes.string,
+    value: PropTypes.object,
     description: PropTypes.string,
-    showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    required: PropTypes.bool
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 SelectInput.defaultProps = {
     id: 'selectInputId',
+    clearable: false,
+    components: {},
+    hasMultipleValues: false,
+    inputClass: 'form-control',
+    isSearchable: false,
     placeholder: 'Choose a value',
     options: [],
-    components: {},
-    inputClass: 'form-control',
-    selectSpacingClass: 'col-sm-4',
-    isSearchable: false,
     removeSelected: false,
     readOnly: false,
-    clearable: false,
-    hasMultipleValues: false,
+    selectSpacingClass: 'col-sm-4',
     value: {},
-    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
-    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
-    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default SelectInput;

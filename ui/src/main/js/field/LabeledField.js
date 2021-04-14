@@ -14,7 +14,7 @@ export const LabelFieldPropertyDefaults = {
 };
 
 const LabeledField = ({
-    id, field, children, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
+    id, children, description, errorName, errorValue, label, labelClass, required, showDescriptionPlaceHolder
 }) => {
     const [showDescription, setShowDescription] = useState(false);
     const target = useRef(null);
@@ -25,41 +25,35 @@ const LabeledField = ({
     const fieldMessage = errorValue ? errorValue.fieldMessage : '';
     const fieldErrorClass = severity === 'ERROR' ? 'fieldError' : 'fieldWarning';
     const errorMessage = severity === 'WARNING' ? `Warning: ${fieldMessage}` : fieldMessage;
-    let descriptionField = null;
-    if (description) {
-        descriptionField = (
-            <div className="d-inline-flex">
-                <span
-                    className="descriptionIcon"
-                    onClick={() => setShowDescription(!showDescription)}
-                    ref={(icon) => {
-                        target.current = icon;
-                    }}
-                >
-                    <FontAwesomeIcon icon="question-circle" className="alert-icon" size="lg" />
-                </span>
-                <Overlay
-                    rootClose
-                    placement="top"
-                    show={showDescription}
-                    onHide={() => setShowDescription(false)}
-                    target={() => target.current}
-                >
-                    <Tooltip id="description-tooltip">
-                        {description}
-                    </Tooltip>
-                </Overlay>
-            </div>
-        );
-    } else if (showDescriptionPlaceHolder) {
-        descriptionField = (<div className="descriptionPlaceHolder" />);
-    }
 
     return (
         <div key={label} className="form-group">
             <label id={`${id}-label`} className={labelClasses}>{label}</label>
-            {descriptionField}
-            {field}
+            {description && (
+                <div className="d-inline-flex">
+                    <span
+                        className="descriptionIcon"
+                        onClick={() => setShowDescription(!showDescription)}
+                        ref={(icon) => {
+                            target.current = icon;
+                        }}
+                    >
+                        <FontAwesomeIcon icon="question-circle" className="alert-icon" size="lg" />
+                    </span>
+                    <Overlay
+                        rootClose
+                        placement="top"
+                        show={showDescription}
+                        onHide={() => setShowDescription(false)}
+                        target={() => target.current}
+                    >
+                        <Tooltip id="description-tooltip">
+                            {description}
+                        </Tooltip>
+                    </Overlay>
+                </div>
+            )}
+            {!description && showDescriptionPlaceHolder && (<div className="descriptionPlaceHolder" />)}
             {children}
             {errorName && errorValue
             && (
@@ -73,27 +67,25 @@ const LabeledField = ({
 
 LabeledField.propTypes = {
     id: PropTypes.string,
-    field: PropTypes.node,
-    children: PropTypes.element, // TODO make this required allows for a single child
-    label: PropTypes.string.isRequired,
-    labelClass: PropTypes.string,
+    children: PropTypes.element,
     description: PropTypes.string,
-    showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    required: PropTypes.bool
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 LabeledField.defaultProps = {
     id: 'labeledFieldId',
-    field: null,
-    children: null, // TODO remove this when it is required
-    labelClass: 'col-sm-3 col-form-label',
-    errorName: null,
-    errorValue: null,
-    description: null,
-    showDescriptionPlaceHolder: true,
-    required: false
+    children: null,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default LabeledField;
