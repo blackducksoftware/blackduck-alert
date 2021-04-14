@@ -7,13 +7,10 @@
  */
 package com.synopsys.integration.alert.processor.api.filter;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,10 +46,9 @@ public class JobNotificationMapper {
      * Filter by Policy name (From notification if applicable)
      * @param detailedContents List of notifications that will be iterated over and applied to jobs that are found
      * @param frequencies      an Additional filter to specify when querying data from the DB
-     * @return a {@code Map} where the distribution job is used to map to a list of notifications that were passed in.
+     * @return a {@code StatefulAlertPagedModel} where a page of distributions job is used to map to a list of notifications that were passed in.
      */
-    //TODO, this might be better renamed to something like mapJobsToFirstPageOfNotifications? (It default starts at page 0, size 100)
-    public StatefulAlertPagedModel<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies) {
+    public StatefulAlertPagedModel<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
         AlertPagedModel<FilteredJobNotificationWrapper> pageOfJobsToNotification = mapPageOfJobsToNotification(detailedContents, frequencies, INITIAL_PAGE_NUMBER, PAGE_SIZE);
         return new StatefulAlertPagedModel<>(
             pageOfJobsToNotification.getTotalPages(),
@@ -63,44 +59,18 @@ public class JobNotificationMapper {
         );
     }
 
-    private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, Collection<FrequencyType> frequencies, int pageNumber, int pageSize) {
-        //Step1: Iterate over notifications and collect Sets of notification Types, vuln. severities, & policy names
-        //Step2: Create and execute a query to get a page of jobs matching any notificationTypes, severities, or policy names (from step 1).
-        //          If Policy Notification Type Filter or Vulnerability Notification Type Filer are null, then all notifications match
-        //Step3: Take 1 job and compare to all notifications in memory NOTE: We should create a new class to do this
-        //Step4: Create and return the FilteredJobNotificationWrappers and page number of the query we are doing
-
+    private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
 
-        //Step1:
-        //filtered might not be the best word to use, perhaps something like matchedNotifications?
-        Set<String> filteredProjectNames = new HashSet<>();
-        Set<String> filteredNotificationTypes = new HashSet<>();
-        Set<String> filteredVulnerabilitySeverities = new HashSet<>();
-        Set<String> filteredPolicyNames = new HashSet<>();
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(frequencies);
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
-            detailedNotificationContent.getProjectName().ifPresent(filteredProjectNames::add);
-            filteredNotificationTypes.add(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
-            filteredVulnerabilitySeverities.addAll(detailedNotificationContent.getVulnerabilitySeverities());
-            detailedNotificationContent.getPolicyName().ifPresent(filteredPolicyNames::add);
+            detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
+            filteredDistributionJobRequestModel.addNotificationType(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
+            filteredDistributionJobRequestModel.addVulnerabilitySeverities(detailedNotificationContent.getVulnerabilitySeverities());
+            detailedNotificationContent.getPolicyName().ifPresent(filteredDistributionJobRequestModel::addPolicyName);
         }
 
-        //Step2: get matching jobs using the filteredNotifications above
-        //Note: I can probably move this to its own private method later
-        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(
-            frequencies,
-            filteredProjectNames,
-            filteredNotificationTypes,
-            filteredVulnerabilitySeverities,
-            filteredPolicyNames
-        );
         AlertPagedModel<FilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(filteredDistributionJobRequestModel, pageNumber, pageSize);
-
-        //Step3:
-        //possibly also break this into its own method. We need some kind of check here to make sure that jobs != 0, most likely need to skip it.
-        // throw a debug message that notifications discovered but no jobs were mapped?
-        // otherwise this will fail in retreieveMachingEventsByJobIds
-
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
             for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : jobs.getModels()) {
                 if (JobNotificationFilterUtils.doesNotificationApplyToJob(filteredDistributionJobResponseModel, detailedNotificationContent)) {

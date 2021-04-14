@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.processor.api;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,7 +53,7 @@ public final class NotificationProcessorV2 {
         this.notificationAccessor = notificationAccessor;
     }
 
-    public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
+    public final void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         try {
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
@@ -63,7 +62,7 @@ public final class NotificationProcessorV2 {
         }
     }
 
-    private void processAndDistribute(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
+    private void processAndDistribute(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
                                                                         .stream()
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)

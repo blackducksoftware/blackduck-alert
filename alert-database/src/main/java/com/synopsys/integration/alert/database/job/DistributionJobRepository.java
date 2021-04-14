@@ -38,6 +38,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
     )
     Page<DistributionJobEntity> findByChannelDescriptorNamesAndSearchTerm(@Param("channelDescriptorNames") Collection<String> channelDescriptorNames, @Param("searchTerm") String searchTerm, Pageable pageable);
 
+    //TODO: Determine if its possible to pass in a RequestModel directly into  the JPA repository methods
     @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
                        + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
@@ -61,29 +62,4 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
         @Param("vulnerabilitySeverities") Set<String> vulnerabilitySeverities,
         Pageable pageable
     );
-
-    /*
-    //TODO: Determine if its possible to pass in a RequestModel directly into  the JPA repository methods
-    @Query(value = "SELECT DISTINCT jobEntity FROM DistributionJobEntity jobEntity "
-                       + "    LEFT JOIN jobEntity.blackDuckJobDetails blackDuckDetails ON jobEntity.jobId = blackDuckDetails.jobId "
-                       + "    LEFT JOIN blackDuckDetails.blackDuckJobNotificationTypes notificationTypes ON jobEntity.jobId = notificationTypes.jobId "
-                       + "    LEFT JOIN blackDuckDetails.blackDuckJobPolicyFilters policyFilters ON jobEntity.jobId = policyFilters.jobId "
-                       + "    LEFT JOIN blackDuckDetails.blackDuckJobVulnerabilitySeverityFilters vulnerabilitySeverityFilters ON jobEntity.jobId = vulnerabilitySeverityFilters.jobId "
-                       + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
-                       + "    WHERE jobEntity.enabled = true"
-                       + "    AND notificationTypes.notificationType IN (:notificationTypeSet)"
-                       + "    AND jobEntity.distributionFrequency IN (:frequencies)"
-                       + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
-                       + "    AND ("
-                       + "        (vulnerabilitySeverityFilters.severityName IS NULL OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities))"
-                       + "        OR (policyFilters.policyName IS NULL OR policyFilters.policyName IN (:policyNames))"
-                       + "    )"
-    )
-    Page<DistributionJobEntity> findMatchingEnabledJobsByFilteredNotificationsByRequestModel(
-        @Param("foo") FilteredDistributionJobRequestModel requestModel,
-        Pageable pageable
-    );
-
-     */
-
 }
