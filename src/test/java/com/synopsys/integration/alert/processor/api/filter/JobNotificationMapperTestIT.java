@@ -91,7 +91,7 @@ public class JobNotificationMapperTestIT {
                 jobNotifications.addAll(jobNotificationWrapper.getJobNotifications());
             }
             mappedNotifications = mappedNotifications.retrieveNextPage();
-        } while (mappedNotifications.hasNextPage());
+        } while (mappedNotifications.hasNextPage() || !mappedNotifications.isEmpty());
 
         assertEquals(expectedNumOfJobs, notificationWrappers.size());
         assertEquals(notifications.size(), jobNotifications.size());

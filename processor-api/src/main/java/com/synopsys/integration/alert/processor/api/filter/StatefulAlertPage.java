@@ -31,7 +31,7 @@ public class StatefulAlertPage<T extends Stringable> {
     }
 
     public boolean hasNextPage() {
-        return alertPagedDetails.getCurrentPage() < alertPagedDetails.getTotalPages();
+        return alertPagedDetails.getCurrentPage() < alertPagedDetails.getTotalPages() - 1;
     }
 
     public AlertPagedDetails<T> getCurrentPage() {
