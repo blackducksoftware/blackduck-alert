@@ -35,6 +35,7 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Vulnerabilit
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
 @AlertIntegrationTest
@@ -55,7 +56,7 @@ public class JobNotificationMapperTestIT {
     }
 
     @Test
-    public void test2Notifications15JobsMultiSeverity() {
+    public void test2Notifications15JobsMultiSeverity() throws IntegrationException {
         //Test the case where a job may have one or multiple types of vulnerability severities across multiple pages.
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 100));
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name()), 15));
@@ -67,7 +68,7 @@ public class JobNotificationMapperTestIT {
     }
 
     @Test
-    public void test3Notifications30JobsMultiSeverity() {
+    public void test3Notifications30JobsMultiSeverity() throws IntegrationException {
         //Test the case where a multiple jobs of differing vulnerability severities appear across multiple pages.
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 115));
         createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.HIGH.name()), 100));
@@ -81,7 +82,7 @@ public class JobNotificationMapperTestIT {
         runTest(notifications, 265);
     }
 
-    private void runTest(List<DetailedNotificationContent> notifications, int expectedNumOfJobs) {
+    private void runTest(List<DetailedNotificationContent> notifications, int expectedNumOfJobs) throws IntegrationException {
         JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
         Set<FilteredJobNotificationWrapper> notificationWrappers = new HashSet<>();
         Set<NotificationContentWrapper> jobNotifications = new HashSet<>();

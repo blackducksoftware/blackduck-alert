@@ -7,27 +7,26 @@
  */
 package com.synopsys.integration.alert.processor.api.filter;
 
-import java.util.function.BiFunction;
-
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.util.Stringable;
 
 public class StatefulAlertPage<T extends Stringable> {
-    private final BiFunction<Integer, Integer, AlertPagedDetails<T>> retrievePage;
+    private final NextPageRetriever nextPageRetriever;
     private final AlertPagedDetails alertPagedDetails;
-    
-    public StatefulAlertPage(AlertPagedDetails alertPagedDetails, BiFunction<Integer, Integer, AlertPagedDetails<T>> retrievePage) {
+
+    public StatefulAlertPage(AlertPagedDetails alertPagedDetails, NextPageRetriever<T> nextPageRetriever) {
         this.alertPagedDetails = alertPagedDetails;
-        this.retrievePage = retrievePage;
+        this.nextPageRetriever = nextPageRetriever;
     }
 
     public boolean isEmpty() {
         return alertPagedDetails.getModels().isEmpty();
     }
 
-    public StatefulAlertPage<T> retrieveNextPage() {
-        AlertPagedDetails<T> nextPage = retrievePage.apply(alertPagedDetails.getCurrentPage() + 1, alertPagedDetails.getPageSize());
-        return new StatefulAlertPage<>(nextPage, retrievePage);
+    public StatefulAlertPage<T> retrieveNextPage() throws IntegrationException {
+        AlertPagedDetails<T> nextPage = nextPageRetriever.retrieveNextPage(alertPagedDetails.getCurrentPage(), alertPagedDetails.getPageSize());
+        return new StatefulAlertPage<>(nextPage, nextPageRetriever);
     }
 
     public boolean hasNextPage() {
