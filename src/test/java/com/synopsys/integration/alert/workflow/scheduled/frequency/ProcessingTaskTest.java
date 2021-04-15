@@ -18,12 +18,15 @@ import org.springframework.scheduling.TaskScheduler;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
+import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPagedModel;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
@@ -59,7 +62,6 @@ public class ProcessingTaskTest {
         assertDateIsEqual(expectedEndDay, actualEndDay);
     }
 
-    /* //FIXME
     @Test
     public void testRun() {
         TaskManager taskManager = Mockito.mock(TaskManager.class);
@@ -70,7 +72,7 @@ public class ProcessingTaskTest {
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
-        Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyCollection())).thenReturn(List.of());
+        Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(StatefulAlertPagedModel.empty());
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         Mockito.doNothing().when(notificationAccessor).setNotificationsProcessed(Mockito.anyList());
         NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
@@ -82,8 +84,6 @@ public class ProcessingTaskTest {
         Mockito.verify(processingTask).getDateRange();
         Mockito.verify(processingTask).read(Mockito.any());
     }
-
-     */
 
     @Test
     public void testRead() {

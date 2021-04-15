@@ -1,5 +1,3 @@
-//FIXME
-/*
 package com.synopsys.integration.alert.workflow.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,6 +17,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPagedModel;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.alert.workflow.message.mocks.MockNotificationAccessor;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
@@ -64,12 +63,9 @@ public class NotificationReceiverTest {
     private NotificationProcessorV2 mockNotificationProcessor(List<AlertNotificationModel> alertNotificationModels) {
         NotificationDetailExtractionDelegator detailExtractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
-        Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyCollection())).thenReturn(List.of());
+        Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(StatefulAlertPagedModel.empty());
         notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
         return new NotificationProcessorV2(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
     }
 
 }
-
-
- */
