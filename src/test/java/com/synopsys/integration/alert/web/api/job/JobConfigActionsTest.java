@@ -67,6 +67,8 @@ import com.synopsys.integration.alert.component.certificates.web.PKIXErrorRespon
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpMethod;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class JobConfigActionsTest {
@@ -622,7 +624,7 @@ public class JobConfigActionsTest {
         TestAction testAction = new TestAction() {
             @Override
             public MessageResult testConfig(String configId, FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
-                throw new IntegrationRestException(HttpStatus.OK.value(), "httpStatusMessageTest", "httpResponseContentTest", "IntegrationRestExceptionForAlertTest");
+                throw new IntegrationRestException(HttpMethod.GET, new HttpUrl("https://google.com"), HttpStatus.OK.value(), "httpStatusMessageTest", "httpResponseContentTest", "IntegrationRestExceptionForAlertTest");
             }
         };
         return testAction;
