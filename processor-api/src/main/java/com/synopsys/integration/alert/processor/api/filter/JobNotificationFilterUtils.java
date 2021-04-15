@@ -29,7 +29,6 @@ public class JobNotificationFilterUtils {
         if (!doesProjectApplyToJob(filteredDistributionJobResponseModel, projectName)) {
             return false;
         }
-        //TODO test if notificationTypeEnum is null
         switch (notificationTypeEnum) {
             case VULNERABILITY:
                 List<String> notificationSeverities = detailedNotificationContent.getVulnerabilitySeverities();
