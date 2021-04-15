@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
@@ -56,7 +57,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public TestBlackDuckProperties(MockAlertProperties alertProperties, ProxyManager proxyManager) {
-        this(new Gson(), new ObjectMapper(), alertProperties, new TestProperties(), proxyManager);
+        this(new Gson(), BlackDuckServicesFactory.createDefaultObjectMapper(), alertProperties, new TestProperties(), proxyManager);
     }
 
     public TestBlackDuckProperties(Gson gson, ObjectMapper objectMapper, MockAlertProperties alertProperties, TestProperties testProperties, ProxyManager proxyManager) {

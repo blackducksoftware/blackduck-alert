@@ -51,7 +51,7 @@ public class NotificationExtractorBlackDuckServicesFactoryCache implements Notif
     }
 
     private BlackDuckServicesFactory createBlackDuckServicesFactory(Long blackDuckConfigId) throws AlertConfigurationException {
-        Optional<BlackDuckProperties> optionalProperties = blackDuckPropertiesFactory.createPropertiesIfConfigExists(blackDuckConfigId);
+        Optional<BlackDuckProperties> optionalProperties = blackDuckPropertiesFactory.createProperties(blackDuckConfigId);
         if (optionalProperties.isPresent()) {
             BlackDuckProperties blackDuckProperties = optionalProperties.get();
             Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);

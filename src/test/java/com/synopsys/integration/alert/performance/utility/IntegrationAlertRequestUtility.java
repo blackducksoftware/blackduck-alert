@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.rest.HttpMethod;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -29,7 +31,7 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
     @Override
     public String executeGetRequest(String path, String error) throws IntegrationException {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(path);
-        return executeRequest(requestBuilder, error);
+        return executeRequest(HttpMethod.GET, requestBuilder, error);
     }
 
     @Override
@@ -37,7 +39,7 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(path)
                                                            .content(requestBody)
                                                            .contentType(contentType);
-        return executeRequest(requestBuilder, error);
+        return executeRequest(HttpMethod.POST, requestBuilder, error);
     }
 
     @Override
@@ -45,10 +47,10 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(path)
                                                            .content(requestBody)
                                                            .contentType(contentType);
-        return executeRequest(requestBuilder, error);
+        return executeRequest(HttpMethod.PUT, requestBuilder, error);
     }
 
-    private String executeRequest(MockHttpServletRequestBuilder requestBuilder, String error) throws IntegrationException {
+    private String executeRequest(HttpMethod httpMethod, MockHttpServletRequestBuilder requestBuilder, String error) throws IntegrationException {
         MockHttpServletRequestBuilder request = requestBuilder
                                                     .with(
                                                         SecurityMockMvcRequestPostProcessors
@@ -64,7 +66,7 @@ public class IntegrationAlertRequestUtility implements AlertRequestUtility {
                 intLogger.error(String.format("Error code: %s", status));
                 intLogger.error(String.format("Response: %s", responseContent));
                 intLogger.error(error);
-                throw new IntegrationRestException(status, null, responseContent, error);
+                throw new IntegrationRestException(httpMethod, new HttpUrl("https://google.com"), status, "Bad Request", responseContent, error);
             }
             return responseContent;
         } catch (IntegrationRestException e) {

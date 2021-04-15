@@ -30,6 +30,8 @@ import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBui
 import com.synopsys.integration.builder.BuilderStatus;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.HttpMethod;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.client.ConnectionResult;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -77,7 +79,9 @@ public class BlackDuckGlobalTestAction extends TestAction {
                 throw AlertFieldException
                           .singleFieldError(String.format("Invalid credential(s) for: %s. %s", url, failureMessage), BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "This API Key isn't valid, try a different one.");
             } else if (connectionResult.getHttpStatusCode() > 0) {
-                throw new IntegrationRestException(connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), null, failureMessage, errorException);
+                // TODO why are we throwing a non-alert exception?
+                HttpUrl connectionUrl = new HttpUrl(url);
+                throw new IntegrationRestException(HttpMethod.GET, connectionUrl, connectionResult.getHttpStatusCode(), String.format("Could not connect to: %s", url), failureMessage, errorException);
             }
             throw new AlertException(String.format("Could not connect to: %s. %s", url, failureMessage), errorException);
         }
