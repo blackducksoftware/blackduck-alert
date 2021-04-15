@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificati
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public final class NotificationProcessorV2 {
@@ -72,17 +71,13 @@ public final class NotificationProcessorV2 {
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)
                                                                         .flatMap(List::stream)
                                                                         .collect(Collectors.toList());
-        StatefulAlertPage<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        try {
-            do {
-                for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentPage().getModels()) {
-                    processAndDistribute(jobNotificationWrapper);
-                }
-                mappedNotifications = mappedNotifications.retrieveNextPage();
-            } while (mappedNotifications.hasNextPage() || !mappedNotifications.isEmpty());
-        } catch (IntegrationException e) {
-            logger.error("Got an error retrieving the next page of jobs mapped to the current list of notifications.");
-        }
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
+        do {
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
+                processAndDistribute(jobNotificationWrapper);
+            }
+            mappedNotifications = mappedNotifications.retrieveNextPage();
+        } while (mappedNotifications.hasNextPage() || !mappedNotifications.isEmpty());
     }
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {

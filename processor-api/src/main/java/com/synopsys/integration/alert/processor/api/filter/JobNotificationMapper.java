@@ -20,9 +20,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobA
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobResponseModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
-import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class JobNotificationMapper {
@@ -50,13 +48,13 @@ public class JobNotificationMapper {
      * @param frequencies      an Additional filter to specify when querying data from the DB
      * @return a {@code StatefulAlertPage} where a page of distributions job is used to map to a list of notifications that were passed in.
      */
-    public StatefulAlertPage<FilteredJobNotificationWrapper> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
-        AlertPagedModel<FilteredJobNotificationWrapper> pageOfJobsToNotification = mapPageOfJobsToNotification(detailedContents, frequencies, INITIAL_PAGE_NUMBER, PAGE_SIZE);
+    public StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
+        AlertPagedDetails<FilteredJobNotificationWrapper> pageOfJobsToNotification = mapPageOfJobsToNotification(detailedContents, frequencies, INITIAL_PAGE_NUMBER, PAGE_SIZE);
         NextFilteredJobWrapperPageRetriever nextFilteredJobWrapperPageRetriever = new NextFilteredJobWrapperPageRetriever(detailedContents, frequencies);
         return new StatefulAlertPage<>(pageOfJobsToNotification, nextFilteredJobWrapperPageRetriever);
     }
 
-    private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
+    private AlertPagedDetails<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
 
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(frequencies);
@@ -67,7 +65,7 @@ public class JobNotificationMapper {
             detailedNotificationContent.getPolicyName().ifPresent(filteredDistributionJobRequestModel::addPolicyName);
         }
 
-        AlertPagedModel<FilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(filteredDistributionJobRequestModel, pageNumber, pageSize);
+        AlertPagedDetails<FilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(filteredDistributionJobRequestModel, pageNumber, pageSize);
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
             for (FilteredDistributionJobResponseModel filteredDistributionJobResponseModel : jobs.getModels()) {
                 if (JobNotificationFilterUtils.doesNotificationApplyToJob(filteredDistributionJobResponseModel, detailedNotificationContent)) {
@@ -84,10 +82,10 @@ public class JobNotificationMapper {
             filterableJobNotifications.add(wrappedJobNotifications);
         }
 
-        return new AlertPagedModel<>(jobs.getTotalPages(), pageNumber, pageSize, filterableJobNotifications);
+        return new AlertPagedDetails<>(jobs.getTotalPages(), pageNumber, pageSize, filterableJobNotifications);
     }
 
-    private class NextFilteredJobWrapperPageRetriever implements NextPageRetriever<FilteredJobNotificationWrapper> {
+    private class NextFilteredJobWrapperPageRetriever implements NextPageRetriever<FilteredJobNotificationWrapper, RuntimeException> {
         private final List<DetailedNotificationContent> detailedContents;
         private final List<FrequencyType> frequencies;
 
@@ -97,7 +95,7 @@ public class JobNotificationMapper {
         }
 
         @Override
-        public AlertPagedDetails<FilteredJobNotificationWrapper> retrieveNextPage(int currentOffset, int currentLimit) throws IntegrationException {
+        public AlertPagedDetails<FilteredJobNotificationWrapper> retrieveNextPage(int currentOffset, int currentLimit) throws RuntimeException {
             return mapPageOfJobsToNotification(detailedContents, frequencies, currentOffset + 1, currentLimit);
         }
     }

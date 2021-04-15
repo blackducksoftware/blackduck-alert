@@ -7,15 +7,15 @@
  */
 package com.synopsys.integration.alert.processor.api.filter;
 
-import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.util.Stringable;
+import java.util.List;
 
-public class StatefulAlertPage<T extends Stringable> {
-    private final NextPageRetriever nextPageRetriever;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+
+public class StatefulAlertPage<T, E extends Exception> {
+    private final NextPageRetriever<T, E> nextPageRetriever;
     private final AlertPagedDetails alertPagedDetails;
 
-    public StatefulAlertPage(AlertPagedDetails alertPagedDetails, NextPageRetriever<T> nextPageRetriever) {
+    public StatefulAlertPage(AlertPagedDetails alertPagedDetails, NextPageRetriever<T, E> nextPageRetriever) {
         this.alertPagedDetails = alertPagedDetails;
         this.nextPageRetriever = nextPageRetriever;
     }
@@ -24,16 +24,19 @@ public class StatefulAlertPage<T extends Stringable> {
         return alertPagedDetails.getModels().isEmpty();
     }
 
-    public StatefulAlertPage<T> retrieveNextPage() throws IntegrationException {
-        AlertPagedDetails<T> nextPage = nextPageRetriever.retrieveNextPage(alertPagedDetails.getCurrentPage(), alertPagedDetails.getPageSize());
-        return new StatefulAlertPage<>(nextPage, nextPageRetriever);
+    public StatefulAlertPage<T, E> retrieveNextPage() throws E {
+        if (hasNextPage()) {
+            AlertPagedDetails<T> nextPage = nextPageRetriever.retrieveNextPage(alertPagedDetails.getCurrentPage(), alertPagedDetails.getPageSize());
+            return new StatefulAlertPage<>(nextPage, nextPageRetriever);
+        }
+        return new StatefulAlertPage<>(AlertPagedDetails.EMPTY_PAGE(), nextPageRetriever);
     }
 
     public boolean hasNextPage() {
         return alertPagedDetails.getCurrentPage() < alertPagedDetails.getTotalPages() - 1;
     }
 
-    public AlertPagedDetails<T> getCurrentPage() {
-        return alertPagedDetails;
+    public List<T> getCurrentModels() {
+        return alertPagedDetails.getModels();
     }
 }

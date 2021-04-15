@@ -9,12 +9,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.api.ReadPageController;
-import com.synopsys.integration.util.Stringable;
-
-public class AlertPagedDetails<M extends Stringable> {
-    public static final Integer DEFAULT_PAGE_NUMBER = Integer.valueOf(ReadPageController.DEFAULT_PAGE_NUMBER);
-    public static final Integer DEFAULT_PAGE_SIZE = Integer.valueOf(ReadPageController.DEFAULT_PAGE_SIZE);
+public class AlertPagedDetails<M> {
 
     // FIXME we should use terminology based on "offset" and "limit" which are standard REST API paging terms
     private final int totalPages;
@@ -22,7 +17,7 @@ public class AlertPagedDetails<M extends Stringable> {
     private final int pageSize;
     private final List<M> models;
 
-    public static <M extends Stringable> AlertPagedDetails<M> EMPTY_PAGE() {
+    public static <M> AlertPagedDetails<M> EMPTY_PAGE() {
         return new AlertPagedDetails<>(0, 0, 0, List.of());
     }
 
