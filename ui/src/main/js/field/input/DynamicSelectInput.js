@@ -29,6 +29,7 @@ const DynamicSelectInput = ({
     required
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
+    const selectValue = options.filter((option) => value.includes(option.value));
 
     const handleChange = (option) => {
         const optionValue = option ? option.value : null;
@@ -66,7 +67,6 @@ const DynamicSelectInput = ({
         MultiValue: multiTypeLabel
     };
 
-    const selectValue = options.filter((option) => value.includes(option.value));
     return (
         <LabeledField
             description={description}

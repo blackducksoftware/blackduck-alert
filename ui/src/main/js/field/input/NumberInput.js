@@ -5,12 +5,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 const NumberInput = ({
     readOnly, inputClass, id, name, value, onChange, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required
 }) => {
-    let field;
-    if (readOnly) {
-        field = <div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" readOnly className={inputClass} name={name} value={value} /></div>;
-    } else {
-        field = <div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" className={inputClass} name={name} value={value} onChange={onChange} /></div>;
-    }
+    const onChangeHandler = readOnly ? null : onChange;
     return (
         <LabeledField
             description={description}
@@ -21,7 +16,9 @@ const NumberInput = ({
             required={required}
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
-            {field}
+            <div className="d-inline-flex flex-column p-2 col-sm-3">
+                <input id={id} type="number" className={inputClass} readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} />
+            </div>
         </LabeledField>
     );
 };

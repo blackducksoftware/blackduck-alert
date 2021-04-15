@@ -31,10 +31,7 @@ const SelectInput = ({
 
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
-    let closeOnSelect = true;
-    if (hasMultipleValues) {
-        closeOnSelect = false;
-    }
+
     return (
         <LabeledField
             labelClass={labelClass}
@@ -57,7 +54,7 @@ const SelectInput = ({
                     placeholder={placeholder}
                     value={value}
                     isMulti={hasMultipleValues}
-                    closeMenuOnSelect={closeOnSelect}
+                    closeMenuOnSelect={!hasMultipleValues}
                     components={components}
                     noOptionsMessage={noOptionsMessage}
                     isDisabled={readOnly}

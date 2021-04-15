@@ -4,43 +4,40 @@ import { NavLink } from 'react-router-dom';
 
 const MessageFormatter = (props) => {
     const {
-        id, errorIsDetailed
+        id, errorIsDetailed, message
     } = props;
-    const createDetailedMessage = (messageBody) => {
-        const {
-            header, title, message, componentLabel, componentLink
-        } = messageBody;
 
-        return (
-            <div>
-                <h3>{header}</h3>
-                <div>{title}</div>
-                <div>
-                    {message}
-                    <NavLink to={componentLink}>
-                        {componentLabel}
-                    </NavLink>
-                </div>
-            </div>
-        );
-    };
-
-    const createMessage = () => {
-        const { message } = props;
+    const determineDisplayMessage = () => {
+        if (!message) {
+            return [false, message];
+        }
         try {
             const parsedMessaged = JSON.parse(message);
             if (errorIsDetailed) {
-                return createDetailedMessage(parsedMessaged);
+                return [true, parsedMessaged];
             }
-            return parsedMessaged;
+            return [false, parsedMessaged];
         } catch (e) {
-            return message;
+            return [false, message];
         }
     };
-    const { message } = props;
+
+    const [isMessageDetailed, displayMessage] = determineDisplayMessage();
     return (
         <div id={id}>
-            {message && createMessage()}
+            {!isMessageDetailed && displayMessage}
+            {isMessageDetailed && (
+                <div>
+                    <h3>{displayMessage.header}</h3>
+                    <div>{displayMessage.title}</div>
+                    <div>
+                        {displayMessage.message}
+                        <NavLink to={displayMessage.componentLink}>
+                            {displayMessage.componentLabel}
+                        </NavLink>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

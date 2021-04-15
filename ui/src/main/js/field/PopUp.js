@@ -7,17 +7,15 @@ import MessageFormatter from 'field/MessageFormatter';
 const PopUp = ({
     id, actionMessage, cancelLabel, children, handleSubmit, handleTest, includeSave, includeTest, okLabel, onCancel, performingAction, show, testLabel, title
 }) => {
-    const internalCancel = () => {
-        onCancel();
-    };
-
     const internalTest = () => {
-        handleTest();
+        if (handleTest) {
+            handleTest();
+        }
     };
 
     return (
         <div id={id}>
-            <Modal size="lg" show={show} onHide={internalCancel}>
+            <Modal size="lg" show={show} onHide={onCancel}>
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
@@ -35,14 +33,8 @@ const PopUp = ({
                             includeCancel
                             includeSave={includeSave}
                             includeTest={includeTest}
-                            onCancelClick={() => {
-                                internalCancel();
-                            }}
-                            onTestClick={() => {
-                                if (handleTest) {
-                                    internalTest();
-                                }
-                            }}
+                            onCancelClick={onCancel}
+                            onTestClick={internalTest}
                             cancelLabel={cancelLabel}
                             submitLabel={okLabel}
                             testLabel={testLabel}

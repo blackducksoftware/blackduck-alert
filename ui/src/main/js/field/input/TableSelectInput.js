@@ -267,28 +267,17 @@ const TableSelectInput = (props) => {
         const projectsSelectRowProp = createRowSelectionProps();
 
         const assignDataFormat = (cell, row) => {
-            const cellContent = (row.missing && cell && cell !== '')
-                ? (
-                    <span className="missingData">
-                        <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
-                        {cell}
-                    </span>
-                )
-                : cell;
-
-            if (cell) {
-                return (
-                    <div title={cell.toString()}>
-                        {' '}
-                        {cellContent}
-                        {' '}
-                    </div>
-                );
-            }
+            const missingData = row.missing && cell && cell !== '';
             return (
-                <div>
+                <div title={cell && cell.toString()}>
                     {' '}
-                    {cellContent}
+                    {!missingData && cell}
+                    {missingData && (
+                        <span className="missingData">
+                            <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                            {cell}
+                        </span>
+                    )}
                     {' '}
                 </div>
             );
@@ -337,38 +326,35 @@ const TableSelectInput = (props) => {
         // Need to add this column to the array as you can't display tableColumns dynamically and statically https://github.com/AllenFang/react-bootstrap-table/issues/1814
         tableColumns.push(<TableHeaderColumn key="missingHeaderKey" dataField="missing" dataFormat={assignDataFormat} hidden>Missing Data</TableHeaderColumn>);
 
-        const displayTable = (progress)
-            ? (
-                <div className="progressIcon">
-                    <span className="fa-layers fa-fw">
-                        <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
-                    </span>
-                </div>
-            )
-            : (
-                <BootstrapTable
-                    version="4"
-                    data={createDataList()}
-                    containerClass="table"
-                    hover
-                    condensed
-                    selectRow={projectsSelectRowProp}
-                    options={tableOptions}
-                    trClassName="tableRow"
-                    headerContainerClass="scrollable"
-                    bodyContainerClass="tableScrollableBody"
-                    search={searchable}
-                    pagination={paged}
-                    remote
-                    fetchInfo={tableFetchInfo}
-                >
-                    {tableColumns}
-                </BootstrapTable>
-            );
-
         return (
             <div>
-                {displayTable}
+                {progress && (
+                    <div className="progressIcon">
+                        <span className="fa-layers fa-fw">
+                            <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />
+                        </span>
+                    </div>
+                )}
+                {!progress && (
+                    <BootstrapTable
+                        version="4"
+                        data={createDataList()}
+                        containerClass="table"
+                        hover
+                        condensed
+                        selectRow={projectsSelectRowProp}
+                        options={tableOptions}
+                        trClassName="tableRow"
+                        headerContainerClass="scrollable"
+                        bodyContainerClass="tableScrollableBody"
+                        search={searchable}
+                        pagination={paged}
+                        remote
+                        fetchInfo={tableFetchInfo}
+                    >
+                        {tableColumns}
+                    </BootstrapTable>
+                )}
                 <div>
                     <GeneralButton
                         id={`${fieldKey}-confirmation`}

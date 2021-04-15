@@ -6,21 +6,7 @@ const PasswordInput = ({
     id, description, errorName, errorValue, inputClass, isSet, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, value
 }) => {
     const placeholderText = (isSet) ? '***********' : null;
-
-    let field;
-    if (readOnly) {
-        field = (
-            <div className="d-inline-flex flex-column p-2 col-sm-8">
-                <input id={id} type="password" readOnly className={inputClass} name={name} value={value} placeholder={placeholderText} />
-            </div>
-        );
-    } else {
-        field = (
-            <div className="d-inline-flex flex-column p-2 col-sm-8">
-                <input id={id} type="password" className={inputClass} name={name} value={value} onChange={onChange} placeholder={placeholderText} />
-            </div>
-        );
-    }
+    const onChangeHandler = readOnly ? null : onChange;
     return (
         <LabeledField
             labelClass={labelClass}
@@ -31,7 +17,9 @@ const PasswordInput = ({
             errorValue={errorValue}
             required={required}
         >
-            {field}
+            <div className="d-inline-flex flex-column p-2 col-sm-8">
+                <input id={id} type="password" className={inputClass} readOnly={readOnly} name={name} value={value} onChange={onChangeHandler} placeholder={placeholderText} />
+            </div>
         </LabeledField>
     );
 };
