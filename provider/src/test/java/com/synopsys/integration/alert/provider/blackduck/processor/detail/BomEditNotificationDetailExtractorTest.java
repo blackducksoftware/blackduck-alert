@@ -48,7 +48,7 @@ public class BomEditNotificationDetailExtractorTest {
         DetailedNotificationContent detailedNotificationContent = detailedNotificationContents.get(0);
 
         Optional<String> detailedProjectName = detailedNotificationContent.getProjectName();
-        assertTrue(detailedProjectName.isPresent(), "Expected no project name to be present");
+        assertTrue(detailedProjectName.isPresent(), "Expected project name to be present");
         assertEquals(projectName, detailedProjectName.get());
 
         assertTrue(detailedNotificationContent.getPolicyName().isEmpty(), "Expected no policy name to be present");
