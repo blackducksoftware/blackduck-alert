@@ -1,0 +1,40 @@
+{
+  "content": {
+    "projectVersion": "https://a-hub-server.blackduck.com/api/projects/6576e57d-ea6e-41a4-83f8-051dab0070cc/versions/984a9fca-b66f-497f-b9f6-a1e4bb61dea6",
+    "componentVersion": "https://a-hub-server.blackduck.com/api/components/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9a779a18-d99f-4f54-abf3-e86d00e2860a",
+    "projectName": "test-project",
+    "projectVersionName": "1.0.0-SNAPSHOT",
+    "componentName": "Apache Struts",
+    "componentVersionName": "1.3.5",
+    "firstName": "System",
+    "lastName": "Administrator",
+    "policyInfos": [
+      {
+        "policy": "https://a-hub-server.blackduck.com/api/policy-rules/d678e168-43b3-45d2-ab71-3942a7442a29",
+        "policyName": "Test Rule 01",
+        "severity": "MINOR"
+      },
+      {
+        "policy": "https://a-hub-server.blackduck.com/api/policy-rules/d678e168-43b3-45d2-ab71-3942a7442a30",
+        "policyName": "Test Rule 02",
+        "severity": "BLOCKER"
+      }
+    ],
+    "policies": [
+      "https://a-hub-server.blackduck.com/api/policy-rules/d678e168-43b3-45d2-ab71-3942a7442a29"
+    ],
+    "bomComponentVersionPolicyStatus": "https://a-hub-server.blackduck.com/api/projects/6576e57d-ea6e-41a4-83f8-051dab0070cc/versions/984a9fca-b66f-497f-b9f6-a1e4bb61dea6/components/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9a779a18-d99f-4f54-abf3-e86d00e2860a/policy-status",
+    "bomComponent": "https://a-hub-server.blackduck.com/api/projects/6576e57d-ea6e-41a4-83f8-051dab0070cc/versions/984a9fca-b66f-497f-b9f6-a1e4bb61dea6/components/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9a779a18-d99f-4f54-abf3-e86d00e2860a",
+    "comment": "This is an override comment"
+  },
+  "contentType": "application/json",
+  "type": "POLICY_OVERRIDE",
+  "createdAt": "2021-04-15T18:27:51.257Z",
+  "_meta": {
+    "allow": [
+      "GET"
+    ],
+    "href": "https://a-hub-server.blackduck.com/api/notifications/9d007b45-909b-4928-a7e8-f839fe89eb73",
+    "links": []
+  }
+}
