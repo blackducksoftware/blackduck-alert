@@ -1,0 +1,18 @@
+{
+  "content": {
+    "projectVersion": "https://a-hub-server.blackduck.com/api/projects/6576e57d-ea6e-41a4-83f8-051dab0070cc/versions/984a9fca-b66f-497f-b9f6-a1e4bb61dea6",
+    "bomComponent": "https://a-hub-server.blackduck.com/api/projects/6576e57d-ea6e-41a4-83f8-051dab0070cc/versions/984a9fca-b66f-497f-b9f6-a1e4bb61dea6/components/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9a779a18-d99f-4f54-abf3-e86d00e2860a",
+    "componentName": "Apache Struts",
+    "componentVersionName": "1.3.5"
+  },
+  "contentType": "application/json",
+  "type": "BOM_EDIT",
+  "createdAt": "2021-04-15T18:01:30.867Z",
+  "_meta": {
+    "allow": [
+      "GET"
+    ],
+    "href": "https://a-hub-server.blackduck.com/api/notifications/9ce50936-459e-4c9e-a44c-50bf4fb5a7f6",
+    "links": []
+  }
+}
