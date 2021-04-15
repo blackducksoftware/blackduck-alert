@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.TimeZone;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
+import com.synopsys.integration.alert.processor.api.filter.NextPageRetriever;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
@@ -23,7 +26,6 @@ import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestFilter;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.function.ThrowingFunction;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -39,14 +41,15 @@ public class BlackDuckNotificationRetriever {
         this.blackDuckApiClient = blackDuckApiClient;
     }
 
-    public BlackDuckNotificationPage retrievePageOfFilteredNotifications(DateRange dateRange, List<String> types) throws IntegrationException {
+    public StatefulAlertPage<NotificationView, IntegrationException> retrievePageOfFilteredNotifications(DateRange dateRange, List<String> types) throws IntegrationException {
         BlackDuckRequestBuilder requestBuilder = createNotificationRequestBuilder(dateRange, types);
-        NotificationPageRetriever notificationRetriever = pageDef -> retrievePageOfFilteredNotifications(requestBuilder, pageDef);
+        BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(DEFAULT_PAGE_SIZE, INITIAL_PAGE_OFFSET);
 
-        BlackDuckPageDefinition firstPageDef = new BlackDuckPageDefinition(DEFAULT_PAGE_SIZE, INITIAL_PAGE_OFFSET);
-        BlackDuckPageResponse<NotificationView> firstPage = notificationRetriever.apply(firstPageDef);
+        BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(requestBuilder, pageDefinition);
+        AlertPagedDetails firstPage = new AlertPagedDetails(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE, notificationPage.getTotalCount(), notificationPage.getItems());
 
-        return new BlackDuckNotificationPage(firstPageDef.getOffset(), firstPageDef.getLimit(), firstPage.getTotalCount(), firstPage.getItems(), notificationRetriever);
+        NextNotificationPageRetriever notificationRetriever = new NextNotificationPageRetriever(requestBuilder);
+        return new StatefulAlertPage(firstPage, notificationRetriever);
     }
 
     private BlackDuckPageResponse<NotificationView> retrievePageOfFilteredNotifications(BlackDuckRequestBuilder requestBuilder, BlackDuckPageDefinition pageDefinition) throws IntegrationException {
@@ -76,52 +79,21 @@ public class BlackDuckNotificationRetriever {
         return sdf.format(date);
     }
 
-    public static class BlackDuckNotificationPage {
-        private final int currentOffset;
-        private final int currentLimit;
-        private final int currentTotal;
-        private final List<NotificationView> currentNotifications;
-        private final NotificationPageRetriever notificationPageRetriever;
+    private class NextNotificationPageRetriever implements NextPageRetriever<NotificationView, IntegrationException> {
 
-        private BlackDuckNotificationPage(
-            int currentOffset,
-            int currentLimit,
-            int currentTotal,
-            List<NotificationView> currentNotifications,
-            NotificationPageRetriever notificationPageRetriever
-        ) {
-            this.currentOffset = currentOffset;
-            this.currentLimit = currentLimit;
-            this.currentTotal = currentTotal;
-            this.currentNotifications = currentNotifications;
-            this.notificationPageRetriever = notificationPageRetriever;
+        private final BlackDuckRequestBuilder blackDuckRequestBuilder;
+
+        public NextNotificationPageRetriever(BlackDuckRequestBuilder blackDuckRequestBuilder) {
+            this.blackDuckRequestBuilder = blackDuckRequestBuilder;
         }
 
-        public BlackDuckNotificationPage retrieveNextPage() throws IntegrationException {
+        @Override
+        public AlertPagedDetails<NotificationView> retrieveNextPage(int currentOffset, int currentLimit) throws IntegrationException {
             int newOffset = currentOffset + currentLimit;
-            if (hasNextPage()) {
-                BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(currentLimit, newOffset);
-                BlackDuckPageResponse<NotificationView> notificationPage = notificationPageRetriever.apply(pageDefinition);
-                return new BlackDuckNotificationPage(newOffset, currentLimit, notificationPage.getTotalCount(), notificationPage.getItems(), notificationPageRetriever);
-            }
-            return new BlackDuckNotificationPage(newOffset, currentLimit, 0, List.of(), notificationPageRetriever);
+            BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(currentLimit, newOffset);
+            BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(blackDuckRequestBuilder, pageDefinition);
+            return new AlertPagedDetails(newOffset, currentLimit, notificationPage.getTotalCount(), notificationPage.getItems());
         }
-
-        public List<NotificationView> getCurrentNotifications() {
-            return currentNotifications;
-        }
-
-        public boolean isEmpty() {
-            return currentTotal == 0;
-        }
-
-        private boolean hasNextPage() {
-            return currentTotal == currentLimit;
-        }
-
-    }
-
-    private interface NotificationPageRetriever extends ThrowingFunction<BlackDuckPageDefinition, BlackDuckPageResponse<NotificationView>, IntegrationException> {
     }
 
 }

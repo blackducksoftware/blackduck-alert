@@ -12,9 +12,11 @@ import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
+import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.processor.api.filter.NextPageRetriever;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetriever.BlackDuckNotificationPage;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
@@ -33,7 +35,7 @@ public class BlackDuckAccumulatorTest {
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckValidator validator = createBlackDuckValidator(blackDuckProperties, true);
 
-        BlackDuckNotificationPage notificationPage = createMockNotificationPage();
+        StatefulAlertPage<NotificationView, IntegrationException> notificationPage = createMockNotificationPage();
         BlackDuckNotificationRetriever notificationRetriever = Mockito.mock(BlackDuckNotificationRetriever.class);
         Mockito.when(notificationRetriever.retrievePageOfFilteredNotifications(Mockito.any(), Mockito.anyList())).thenReturn(notificationPage);
         BlackDuckNotificationRetrieverFactory notificationRetrieverFactory = createBlackDuckNotificationRetrieverFactory(blackDuckProperties, notificationRetriever);
@@ -111,15 +113,11 @@ public class BlackDuckAccumulatorTest {
         return notificationRetrieverFactory;
     }
 
-    private BlackDuckNotificationPage createMockNotificationPage() throws IntegrationException {
-        BlackDuckNotificationPage notificationPage = Mockito.mock(BlackDuckNotificationPage.class);
-        Mockito.when(notificationPage.isEmpty()).thenReturn(false, true);
-        Mockito.when(notificationPage.retrieveNextPage()).thenReturn(notificationPage);
-
+    private StatefulAlertPage<NotificationView, IntegrationException> createMockNotificationPage() throws IntegrationException {
         NotificationView notificationView = createMockNotificationView();
-        Mockito.when(notificationPage.getCurrentNotifications()).thenReturn(List.of(notificationView));
-
-        return notificationPage;
+        AlertPagedDetails alertPagedDetails = new AlertPagedDetails(1, 1, 1, List.of(notificationView));
+        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, Mockito.mock(NextPageRetriever.class));
+        return statefulAlertPage;
     }
 
     private NotificationView createMockNotificationView() {
