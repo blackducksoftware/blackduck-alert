@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
@@ -30,18 +29,13 @@ public class BlackDuckConfiguration {
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        return BlackDuckServicesFactory.createDefaultObjectMapper();
-    }
-
-    @Bean
     public BlackDuckResponseResolver blackDuckResponseResolver() {
         return new BlackDuckResponseResolver(gson());
     }
 
     @Bean
     public BlackDuckJsonTransformer blackDuckJsonTransformer() {
-        return new BlackDuckJsonTransformer(gson(), objectMapper(), blackDuckResponseResolver(), new Slf4jIntLogger(logger));
+        return new BlackDuckJsonTransformer(gson(), BlackDuckServicesFactory.createDefaultObjectMapper(), blackDuckResponseResolver(), new Slf4jIntLogger(logger));
     }
 
     @Bean
