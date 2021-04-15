@@ -63,10 +63,7 @@ const OAuthEndpointButtonField = ({
                     // REDIRECT: This is where we redirect the current tab to the Azure OAuth URL.
                         window.location.replace(authorizationUrl);
                     } else {
-                        setFieldError({
-                            severity: 'ERROR',
-                            fieldMessage: message
-                        });
+                        setFieldError(HTTPErrorUtils.createFieldError(message));
                         setProgress(false);
                     }
                 });

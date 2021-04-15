@@ -6,6 +6,7 @@ import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import StatusMessage from 'field/StatusMessage';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import FieldsPanel from './FieldsPanel';
 
 const EndpointButtonField = ({
@@ -70,10 +71,7 @@ const EndpointButtonField = ({
                             type: 'checkbox'
                         };
                         onChange({ target });
-                        setFieldError({
-                            severity: 'ERROR',
-                            fieldMessage: data.message
-                        });
+                        setFieldError(HTTPErrorUtils.createFieldError(data.message));
                     });
             }
         });
@@ -162,7 +160,7 @@ EndpointButtonField.propTypes = {
     successBox: PropTypes.bool.isRequired,
     value: PropTypes.bool,
     description: PropTypes.string,
-    errorValue: PropTypes.string,
+    errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,

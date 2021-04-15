@@ -16,13 +16,47 @@ const VALIDATION_STATE = {
     FAILED: 'FAILED'
 };
 
-const TableDisplay = (props) => {
-    const {
-        id, autoRefresh, clearModalFieldState, tableNewButtonLabel, tableDeleteButtonLabel, tableRefresh, onConfigClose, modalTitle, newConfigFields, inProgress, saveButton, testButton, testButtonLabel, errorDialogMessage, errorIsDetailed,
-        actionMessage, hasFieldErrors, ignoredActionMessages, onConfigDelete, onEditState, copyColumnIcon, copyColumnText, editColumnText,
-        enableCopy, enableEdit, sortName, sortOrder, selectRowBox, data, newButton, deleteButton, tableSearchable, editColumnIcon, refreshData,
-        onConfigSave, onConfigTest, nestedInAnotherModal
-    } = props;
+const TableDisplay = ({
+    id,
+    actionMessage,
+    autoRefresh,
+    clearModalFieldState,
+    columns,
+    copyColumnIcon,
+    copyColumnText,
+    data,
+    deleteButton,
+    editColumnIcon,
+    editColumnText,
+    enableCopy,
+    enableEdit,
+    errorDialogMessage,
+    errorIsDetailed,
+    inProgress,
+    hasFieldErrors,
+    ignoredActionMessages,
+    modalTitle,
+    nestedInAnotherModal,
+    newButton,
+    newConfigFields,
+    onConfigClose,
+    onConfigCopy,
+    onConfigDelete,
+    onConfigSave,
+    onConfigTest,
+    onEditState,
+    refreshData,
+    saveButton,
+    sortName,
+    sortOrder,
+    selectRowBox,
+    tableNewButtonLabel,
+    tableDeleteButtonLabel,
+    tableRefresh,
+    tableSearchable,
+    testButton,
+    testButtonLabel
+}) => {
     const [currentRowSelected, setCurrentRowSelected] = useState(null);
     const [uiValidation, setUiValidation] = useState(VALIDATION_STATE.NONE);
     const [showConfiguration, setShowConfiguration] = useState(false);
@@ -41,13 +75,6 @@ const TableDisplay = (props) => {
     const handleClose = () => {
         setCurrentRowSelected(null);
         setHandleCloseCalled(true);
-    };
-
-    const isShowModal = () => showConfiguration || hasFieldErrors;
-
-    const hideModal = () => {
-        setShowConfiguration(false);
-        setIsInsertModal(false);
     };
 
     useEffect(() => {
@@ -81,6 +108,13 @@ const TableDisplay = (props) => {
             onConfigClose(closeCallback);
         }
     }, [handleCloseCalled]);
+
+    const isShowModal = () => showConfiguration || hasFieldErrors;
+
+    const hideModal = () => {
+        setShowConfiguration(false);
+        setIsInsertModal(false);
+    };
 
     const onAutoRefresh = () => {
         if (!showConfiguration) {
@@ -134,7 +168,6 @@ const TableDisplay = (props) => {
             );
         };
 
-        const { columns } = props;
         return columns.map((column) => {
             const assignedDataFormat = column.dataFormat ? column.dataFormat : defaultDataFormat;
             const searchable = Object.prototype.hasOwnProperty.call(column, 'searchable') ? column.searchable : true;
@@ -329,7 +362,6 @@ const TableDisplay = (props) => {
     const editColumnFormatter = () => createTableCellFormatter(editColumnIcon, editColumnText, editButtonClicked);
 
     const copyButtonClicked = (selectedRow) => {
-        const { onConfigCopy } = props;
         const callback = () => {
             setCurrentRowSelected(selectedRow);
             setShowConfiguration(true);
@@ -442,87 +474,87 @@ const TableDisplay = (props) => {
 
 TableDisplay.propTypes = {
     id: PropTypes.string,
-    refreshData: PropTypes.func.isRequired,
-    data: PropTypes.array,
+    actionMessage: PropTypes.string,
+    autoRefresh: PropTypes.bool,
     columns: PropTypes.arrayOf(PropTypes.shape({
         header: PropTypes.string.isRequired,
         headerLabel: PropTypes.string.isRequired,
         isKey: PropTypes.bool.isRequired,
         hidden: PropTypes.bool.isRequired
     })).isRequired,
-    newConfigFields: PropTypes.func.isRequired,
-    onEditState: PropTypes.func.isRequired,
-    onConfigSave: PropTypes.func,
-    onConfigTest: PropTypes.func,
-    onConfigDelete: PropTypes.func,
-    onConfigClose: PropTypes.func,
-    onConfigCopy: PropTypes.func,
-    clearModalFieldState: PropTypes.func,
-    sortName: PropTypes.string,
-    sortOrder: PropTypes.string,
-    selectRowBox: PropTypes.bool,
-    autoRefresh: PropTypes.bool,
-    newButton: PropTypes.bool,
+    copyColumnIcon: PropTypes.string,
+    copyColumnText: PropTypes.string,
+    data: PropTypes.array,
     deleteButton: PropTypes.bool,
-    saveButton: PropTypes.bool,
-    testButton: PropTypes.bool,
-    inProgress: PropTypes.bool,
-    modalTitle: PropTypes.string,
-    tableNewButtonLabel: PropTypes.string,
-    tableDeleteButtonLabel: PropTypes.string,
-    tableSearchable: PropTypes.bool,
-    tableRefresh: PropTypes.bool,
-    hasFieldErrors: PropTypes.bool,
-    errorDialogMessage: PropTypes.string,
-    errorIsDetailed: PropTypes.bool,
-    actionMessage: PropTypes.string,
-    nestedInAnotherModal: PropTypes.bool,
-    enableEdit: PropTypes.bool,
     editColumnText: PropTypes.string,
     editColumnIcon: PropTypes.string,
     enableCopy: PropTypes.bool,
-    copyColumnText: PropTypes.string,
-    copyColumnIcon: PropTypes.string,
-    testButtonLabel: PropTypes.string,
-    ignoredActionMessages: PropTypes.arrayOf(PropTypes.string)
+    enableEdit: PropTypes.bool,
+    errorDialogMessage: PropTypes.string,
+    errorIsDetailed: PropTypes.bool,
+    hasFieldErrors: PropTypes.bool,
+    ignoredActionMessages: PropTypes.arrayOf(PropTypes.string),
+    inProgress: PropTypes.bool,
+    modalTitle: PropTypes.string,
+    nestedInAnotherModal: PropTypes.bool,
+    newButton: PropTypes.bool,
+    newConfigFields: PropTypes.func.isRequired,
+    onConfigClose: PropTypes.func,
+    onConfigCopy: PropTypes.func,
+    onConfigDelete: PropTypes.func,
+    onConfigSave: PropTypes.func,
+    onConfigTest: PropTypes.func,
+    onEditState: PropTypes.func.isRequired,
+    clearModalFieldState: PropTypes.func,
+    refreshData: PropTypes.func.isRequired,
+    sortName: PropTypes.string,
+    sortOrder: PropTypes.string,
+    saveButton: PropTypes.bool,
+    selectRowBox: PropTypes.bool,
+    tableDeleteButtonLabel: PropTypes.string,
+    tableNewButtonLabel: PropTypes.string,
+    tableRefresh: PropTypes.bool,
+    tableSearchable: PropTypes.bool,
+    testButton: PropTypes.bool,
+    testButtonLabel: PropTypes.string
 };
 
 TableDisplay.defaultProps = {
     id: 'tableDisplayId',
-    data: [],
-    sortName: '',
-    sortOrder: 'asc',
-    selectRowBox: true,
-    autoRefresh: true,
-    newButton: true,
-    deleteButton: true,
-    saveButton: true,
-    testButton: false,
-    inProgress: false,
-    onConfigSave: () => true,
-    onConfigTest: () => true,
-    onConfigDelete: () => null,
-    onConfigClose: () => null,
-    onConfigCopy: () => null,
-    clearModalFieldState: () => null,
-    modalTitle: 'New',
-    tableNewButtonLabel: 'New',
-    tableDeleteButtonLabel: 'Delete',
-    tableSearchable: true,
-    tableRefresh: true,
-    hasFieldErrors: false,
-    errorDialogMessage: null,
-    errorIsDetailed: false,
     actionMessage: null,
-    nestedInAnotherModal: false,
-    enableEdit: true,
-    editColumnText: 'Edit',
-    editColumnIcon: 'pencil-alt',
-    enableCopy: true,
+    autoRefresh: true,
+    clearModalFieldState: () => null,
     copyColumnText: 'Copy',
     copyColumnIcon: 'copy',
-    testButtonLabel: 'Test Configuration',
-    ignoredActionMessages: []
+    data: [],
+    deleteButton: true,
+    editColumnIcon: 'pencil-alt',
+    editColumnText: 'Edit',
+    enableEdit: true,
+    enableCopy: true,
+    errorDialogMessage: null,
+    errorIsDetailed: false,
+    hasFieldErrors: false,
+    ignoredActionMessages: [],
+    inProgress: false,
+    modalTitle: 'New',
+    nestedInAnotherModal: false,
+    newButton: true,
+    onConfigClose: () => null,
+    onConfigCopy: () => null,
+    onConfigDelete: () => null,
+    onConfigSave: () => true,
+    onConfigTest: () => true,
+    saveButton: true,
+    selectRowBox: true,
+    sortName: '',
+    sortOrder: 'asc',
+    tableNewButtonLabel: 'New',
+    tableDeleteButtonLabel: 'Delete',
+    tableRefresh: true,
+    tableSearchable: true,
+    testButton: false,
+    testButtonLabel: 'Test Configuration'
 };
 
 export default TableDisplay;

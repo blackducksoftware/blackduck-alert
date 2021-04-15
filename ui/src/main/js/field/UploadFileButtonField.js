@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
 import StatusMessage from 'field/StatusMessage';
 import GeneralButton from 'field/input/GeneralButton';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
-const UploadFileButtonField = (props) => {
-    const {
-        errorValue, statusMessage, fieldKey, csrfToken, endpoint, buttonLabel, accept, capture, name, readOnly
-    } = props;
+const UploadFileButtonField = ({
+    id, accept, capture, buttonLabel, csrfToken, description, endpoint, errorValue, fieldKey, label, labelClass, name, readOnly, required, showDescriptionPlaceHolder, statusMessage
+}) => {
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
@@ -58,7 +58,7 @@ const UploadFileButtonField = (props) => {
                     setFileUploaded(true);
                 } else {
                     response.json().then((data) => {
-                        setFieldError(data.message);
+                        setFieldError(HTTPErrorUtils.createFieldError(data.message));
                     });
                 }
             });
@@ -89,9 +89,14 @@ const UploadFileButtonField = (props) => {
     return (
         <div>
             <LabeledField
-                {...props}
+                id={id}
+                description={description}
                 errorName={fieldKey}
                 errorValue={fieldError}
+                label={label}
+                labelClass={labelClass}
+                required={required}
+                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
                     <div>
@@ -130,30 +135,35 @@ const UploadFileButtonField = (props) => {
 
 UploadFileButtonField.propTypes = {
     id: PropTypes.string,
-    endpoint: PropTypes.string.isRequired,
+    accept: PropTypes.array,
     buttonLabel: PropTypes.string.isRequired,
-    currentConfig: PropTypes.object.isRequired,
-    fieldKey: PropTypes.string.isRequired,
+    capture: PropTypes.string,
     csrfToken: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
+    endpoint: PropTypes.string.isRequired,
+    fieldKey: PropTypes.string.isRequired,
     name: PropTypes.string,
-    errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
     statusMessage: PropTypes.string,
-    accept: PropTypes.array,
-    capture: PropTypes.string,
-    multiple: PropTypes.bool
+    description: PropTypes.string,
+    errorValue: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 UploadFileButtonField.defaultProps = {
     id: 'uploadFileButtonFieldId',
+    accept: null,
+    capture: null,
     name: '',
-    errorValue: null,
     readOnly: false,
     statusMessage: 'Upload Metadata File Success',
-    capture: null,
-    accept: null,
-    multiple: false
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default UploadFileButtonField;

@@ -7,7 +7,6 @@ import NumberInput from 'field/input/NumberInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import CounterField from 'field/CounterField';
 import TableSelectInput from 'field/input/TableSelectInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
@@ -140,16 +139,6 @@ function buildReadOnlyField(items, field) {
     return <ReadOnlyField {...trimmedValue} />;
 }
 
-function buildCounterField(items, field) {
-    const { countdown } = field;
-    const trimmedValue = extractFirstValue(items);
-    Object.assign(items, {
-        countdown,
-        value: trimmedValue
-    });
-    return <CounterField {...items} />;
-}
-
 function buildEndpointField(items, field, csrfToken) {
     const { value } = items;
     const {
@@ -269,7 +258,6 @@ export const FIELDS = {
     HideCheckboxInput: buildHideCheckboxInput,
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
-    CountdownField: buildCounterField,
     TableSelectInput: buildTableSelectInput,
     EndpointButtonField: buildEndpointField,
     UploadFileButtonField: buildUploadFileButtonField,

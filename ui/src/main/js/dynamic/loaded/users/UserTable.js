@@ -10,6 +10,7 @@ import {
 import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const KEY_CONFIRM_PASSWORD_ERROR = 'confirmPasswordError';
 
@@ -183,11 +184,7 @@ class UserTable extends Component {
         let passwordError = {};
         let matching = true;
         if ((user[passwordKey] || user[confirmPasswordKey]) && (user[passwordKey] !== user[confirmPasswordKey])) {
-            passwordError = {
-                severity: 'ERROR',
-                fieldMessage: 'Passwords do not match.'
-            };
-            console.log(passwordError);
+            passwordError = HTTPErrorUtils.createFieldError('Passwords do not match.');
             matching = false;
         }
         const newUser = Object.assign(user, { [confirmPasswordError]: passwordError });

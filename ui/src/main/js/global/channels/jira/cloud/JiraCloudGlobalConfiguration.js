@@ -93,6 +93,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin)}
                     errorValue={errors[JIRA_CLOUD_GLOBAL_FIELD_KEYS.configurePlugin]}
+                    successBox
                 />
             </CommonGlobalConfigurationForm>
         </CommonGlobalConfiguration>

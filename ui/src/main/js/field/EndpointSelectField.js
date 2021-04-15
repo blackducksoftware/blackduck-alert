@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import { LabelFieldPropertyDefaults } from './LabeledField';
 
 const EndpointSelectField = ({
@@ -67,11 +68,7 @@ const EndpointSelectField = ({
                 response.json()
                     .then((data) => {
                         setOptions([]);
-                        setRequestErrorValue({
-                            severity: 'ERROR',
-                            fieldMessage: data.message
-                        });
-
+                        setRequestErrorValue(HTTPErrorUtils.createFieldError(data.message));
                         emptyFieldValue();
                     });
             }
