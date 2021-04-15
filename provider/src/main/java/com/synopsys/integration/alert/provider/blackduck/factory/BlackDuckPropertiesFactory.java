@@ -7,12 +7,9 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.factory;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -20,31 +17,25 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderPropertiesFactory;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 
 @Component
 public class BlackDuckPropertiesFactory extends ProviderPropertiesFactory<BlackDuckProperties> {
     private final Gson gson;
-    private final ObjectMapper objectMapper;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
 
     @Autowired
-    public BlackDuckPropertiesFactory(ConfigurationAccessor configurationAccessor, Gson gson, ObjectMapper objectMapper, AlertProperties alertProperties, ProxyManager proxyManager) {
+    public BlackDuckPropertiesFactory(ConfigurationAccessor configurationAccessor, Gson gson, AlertProperties alertProperties, ProxyManager proxyManager) {
         super(configurationAccessor);
         this.gson = gson;
-        this.objectMapper = objectMapper;
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
     }
 
     @Override
     public BlackDuckProperties createProperties(Long blackDuckConfigId, FieldUtility fieldUtility) {
-        return new BlackDuckProperties(blackDuckConfigId, gson, objectMapper, alertProperties, proxyManager, fieldUtility);
-    }
-
-    // TODO remove duplicate method
-    public Optional<BlackDuckProperties> createPropertiesIfConfigExists(Long blackDuckConfigId) {
-        return createProperties(blackDuckConfigId);
+        return new BlackDuckProperties(blackDuckConfigId, gson, BlackDuckServicesFactory.createDefaultObjectMapper(), alertProperties, proxyManager, fieldUtility);
     }
 
 }

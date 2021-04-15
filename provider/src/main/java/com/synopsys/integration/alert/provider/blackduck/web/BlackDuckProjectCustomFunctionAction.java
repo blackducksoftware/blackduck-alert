@@ -72,7 +72,7 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
     }
 
     private void validateBlackDuckConfiguration(Long blackDuckConfigId) {
-        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createPropertiesIfConfigExists(blackDuckConfigId)
+        BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(blackDuckConfigId)
                                                       .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The BlackDuck configuration used in this Job does not exist"));
 
         BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
