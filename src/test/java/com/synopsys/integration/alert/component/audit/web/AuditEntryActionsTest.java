@@ -159,8 +159,8 @@ public class AuditEntryActionsTest {
         ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
         DistributionJobModel distributionJob = DistributionJobModel.builder()
-                                                   .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name")
-                                                   .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of()).processingType(ProcessingType.DEFAULT).build();
+                                                   .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name").createdAt(OffsetDateTime.now())
+                                                   .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of("type")).processingType(ProcessingType.DEFAULT).build();
 
         Mockito.doReturn(Optional.of(distributionJob)).when(jobAccessor).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
@@ -214,8 +214,8 @@ public class AuditEntryActionsTest {
         NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
                                                      .createEntity();
         DistributionJobModel distributionJob = DistributionJobModel.builder()
-                                                   .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name")
-                                                   .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of()).processingType(ProcessingType.DEFAULT).build();
+                                                   .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name").createdAt(OffsetDateTime.now())
+                                                   .distributionFrequency(FrequencyType.REAL_TIME).filterByProject(false).notificationTypes(List.of("type")).processingType(ProcessingType.DEFAULT).build();
 
         Mockito.doReturn(Optional.of(distributionJob)).when(jobAccessor).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
