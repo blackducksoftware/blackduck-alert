@@ -4,12 +4,7 @@ import { withRouter } from 'react-router-dom';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import PropTypes from 'prop-types';
 import {
-    clearConfigFieldErrors,
-    deleteConfig,
-    getAllConfigs,
-    testConfig,
-    updateConfig,
-    validateConfig
+    clearConfigFieldErrors, deleteConfig, getAllConfigs, testConfig, updateConfig, validateConfig
 } from 'store/actions/globalConfiguration';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -38,6 +33,7 @@ class ProviderTable extends Component {
         this.onEdit = this.onEdit.bind(this);
         this.onCopy = this.onCopy.bind(this);
         this.combineModelWithDefaults = this.combineModelWithDefaults.bind(this);
+        this.updateModalState = this.updateModalState.bind(this);
 
         this.state = {
             providerConfig: {},
@@ -199,9 +195,17 @@ class ProviderTable extends Component {
         this.retrieveData();
     }
 
+    updateModalState(newState) {
+        this.setState({
+            providerConfig: newState
+        });
+    }
+
     createModalFields() {
         const { providerConfig } = this.state;
-        const { fieldErrors, descriptors, descriptorName } = this.props;
+        const {
+            fieldErrors, descriptors, descriptorName, csrfToken
+        } = this.props;
         const newConfig = this.combineModelWithDefaults(providerConfig);
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (descriptor) {
@@ -211,8 +215,10 @@ class ProviderTable extends Component {
                         descriptorFields={descriptor.fields}
                         self={this}
                         fieldErrors={fieldErrors}
-                        stateName="providerConfig"
+                        getCurrentState={() => providerConfig}
+                        setStateFunction={this.updateModalState}
                         currentConfig={newConfig}
+                        csrfToken={csrfToken}
                     />
                 </div>
             );
@@ -276,7 +282,7 @@ class ProviderTable extends Component {
 
     render() {
         const {
-            providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, errorIsDetailed, actionMessage, descriptors, descriptorName
+            providerConfigs, descriptorFetching, configFetching, testInProgress, updateStatus, fieldErrors, errorMessage, errorIsDetailed, actionMessage, descriptors, descriptorName, autoRefresh
         } = this.props;
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, descriptorName, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
 
@@ -302,6 +308,7 @@ class ProviderTable extends Component {
                 <div>
                     <TableDisplay
                         id="providers"
+                        autoRefresh={autoRefresh}
                         newConfigFields={this.createModalFields}
                         modalTitle="Black Duck Provider"
                         clearModalFieldState={this.clearModalFieldState}
@@ -346,7 +353,8 @@ ProviderTable.propTypes = {
     fieldErrors: PropTypes.object,
     getAllConfigs: PropTypes.func.isRequired,
     descriptorName: PropTypes.string.isRequired,
-    validateConfig: PropTypes.func.isRequired
+    validateConfig: PropTypes.func.isRequired,
+    csrfToken: PropTypes.string.isRequired
 };
 
 ProviderTable.defaultProps = {
@@ -372,7 +380,8 @@ const mapStateToProps = (state) => ({
     errorMessage: state.globalConfiguration.error.message,
     errorIsDetailed: state.globalConfiguration.error.isDetailed,
     actionMessage: state.globalConfiguration.actionMessage,
-    fieldErrors: state.globalConfiguration.error.fieldErrors
+    fieldErrors: state.globalConfiguration.error.fieldErrors,
+    csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = (dispatch) => ({

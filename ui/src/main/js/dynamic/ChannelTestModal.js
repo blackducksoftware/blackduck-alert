@@ -23,6 +23,7 @@ class ChannelTestModal extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSendTestMessage = this.handleSendTestMessage.bind(this);
         this.handleHide = this.handleHide.bind(this);
+        this.updateTestModelState = this.updateTestModelState.bind(this);
     }
 
     handleChange(event) {
@@ -51,8 +52,15 @@ class ChannelTestModal extends Component {
         this.props.handleCancel();
     }
 
+    updateTestModelState(newState) {
+        this.setState({
+            testFieldModel: newState
+        });
+    }
+
     render() {
-        const { showTestModal, testFields } = this.props;
+        const { showTestModal, testFields, csrfToken } = this.props;
+        const { testFieldModel } = this.state;
 
         return (
             <Modal show={showTestModal} onHide={this.handleHide}>
@@ -62,10 +70,12 @@ class ChannelTestModal extends Component {
                 <Modal.Body>
                     <FieldsPanel
                         descriptorFields={testFields}
-                        self={this}
                         fieldErrors={null}
                         stateName="testFieldModel"
-                        currentConfig={this.state.testFieldModel}
+                        currentConfig={testFieldModel}
+                        getCurrentState={() => testFieldModel}
+                        setStateFunction={this.updateTestModelState}
+                        csrfToken={csrfToken}
                     />
                 </Modal.Body>
                 <Modal.Footer>
@@ -92,7 +102,8 @@ ChannelTestModal
         sendTestMessage: PropTypes.func.isRequired,
         handleCancel: PropTypes.func.isRequired,
         fieldModel: PropTypes.object.isRequired,
-        testFields: PropTypes.arrayOf(PropTypes.object)
+        testFields: PropTypes.arrayOf(PropTypes.object),
+        csrfToken: PropTypes.string.isRequired
     };
 
 ChannelTestModal

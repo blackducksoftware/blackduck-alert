@@ -7,9 +7,10 @@ import { connect } from 'react-redux';
 import {
     clearUserFieldErrors, deleteUser, fetchUsers, saveUser, validateUser
 } from 'store/actions/users';
-import DynamicSelectInput from 'field/input/DynamicSelect';
+import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const KEY_CONFIRM_PASSWORD_ERROR = 'confirmPasswordError';
 
@@ -183,11 +184,7 @@ class UserTable extends Component {
         let passwordError = {};
         let matching = true;
         if ((user[passwordKey] || user[confirmPasswordKey]) && (user[passwordKey] !== user[confirmPasswordKey])) {
-            passwordError = {
-                severity: 'ERROR',
-                fieldMessage: 'Passwords do not match.'
-            };
-            console.log(passwordError);
+            passwordError = HTTPErrorUtils.createFieldError('Passwords do not match.');
             matching = false;
         }
         const newUser = Object.assign(user, { [confirmPasswordError]: passwordError });
@@ -299,7 +296,7 @@ class UserTable extends Component {
 
     render() {
         const {
-            canCreate, canDelete, fieldErrors, errorMessage, inProgress, fetching, users
+            canCreate, canDelete, fieldErrors, errorMessage, inProgress, fetching, users, autoRefresh
         } = this.props;
         const { user } = this.state;
         const fieldErrorKeys = Object.keys(fieldErrors);
@@ -310,6 +307,7 @@ class UserTable extends Component {
                 <div>
                     <TableDisplay
                         id="users"
+                        autoRefresh={autoRefresh}
                         newConfigFields={this.createModalFields}
                         modalTitle="User"
                         clearModalFieldState={this.clearModalFieldState}
@@ -343,7 +341,8 @@ UserTable.defaultProps = {
     fetching: false,
     saveStatus: null,
     users: [],
-    roles: []
+    roles: [],
+    autoRefresh: true
 };
 
 UserTable.propTypes = {
@@ -361,7 +360,8 @@ UserTable.propTypes = {
     fetching: PropTypes.bool,
     saveStatus: PropTypes.string,
     users: PropTypes.array,
-    roles: PropTypes.array
+    roles: PropTypes.array,
+    autoRefresh: PropTypes.bool
 };
 
 const mapStateToProps = (state) => ({
@@ -371,7 +371,8 @@ const mapStateToProps = (state) => ({
     fieldErrors: state.users.error.fieldErrors,
     inProgress: state.users.inProgress,
     fetching: state.users.fetching,
-    saveStatus: state.users.saveStatus
+    saveStatus: state.users.saveStatus,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -1,55 +1,59 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
 import FieldsPopUp from 'field/FieldsPopUp';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
-import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import FieldsPanel from './FieldsPanel';
 
-class EndpointButtonField extends Component {
-    constructor(props) {
-        super(props);
+const EndpointButtonField = ({
+    id,
+    buttonLabel,
+    csrfToken,
+    currentConfig,
+    description,
+    endpoint,
+    errorValue,
+    fieldKey,
+    fields,
+    label,
+    labelClass,
+    name,
+    onChange,
+    readOnly,
+    required,
+    requiredRelatedFields,
+    showDescriptionPlaceHolder,
+    statusMessage,
+    successBox,
+    value
+}) => {
+    const [showModal, setShowModal] = useState(false);
+    const [fieldError, setFieldError] = useState(errorValue);
+    const [success, setSuccess] = useState(false);
+    const [progress, setProgress] = useState(false);
+    const [modalConfig, setModalConfig] = useState({});
 
-        this.onSendClick = this.onSendClick.bind(this);
-        this.flipShowModal = this.flipShowModal.bind(this);
-
-        this.state = {
-            showModal: false,
-            fieldError: this.props.errorValue,
-            success: false,
-            progress: false
-        };
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        const { errorValue } = prevProps;
-        const currentError = this.props.errorValue;
-        if (errorValue !== currentError) {
-            this.setState({
-                fieldError: currentError,
-                success: false
-            });
+    useEffect(() => {
+        if (fieldError !== errorValue) {
+            setFieldError(errorValue);
+            setSuccess(false);
         }
-    }
+    }, [errorValue]);
 
-    onSendClick(event, popupData) {
-        this.setState({
-            fieldError: this.props.errorValue,
-            progress: true,
-            success: false
-        });
-        const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint, requiredRelatedFields
-        } = this.props;
+    const onSendClick = (event, popupData) => {
+        setFieldError(errorValue);
+        setProgress(true);
+        setSuccess(false);
+
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
-            this.setState({
-                progress: false
-            });
+            setProgress(false);
             if (response.ok) {
                 const target = {
                     name: [fieldKey],
@@ -57,9 +61,7 @@ class EndpointButtonField extends Component {
                     type: 'checkbox'
                 };
                 onChange({ target });
-                this.setState({
-                    success: true
-                });
+                setSuccess(true);
             } else {
                 response.json()
                     .then((data) => {
@@ -69,115 +71,115 @@ class EndpointButtonField extends Component {
                             type: 'checkbox'
                         };
                         onChange({ target });
-                        this.setState({
-                            fieldError: {
-                                severity: 'ERROR',
-                                fieldMessage: data.message
-                            }
-                        });
+                        setFieldError(HTTPErrorUtils.createFieldError(data.message));
                     });
             }
         });
-    }
+    };
 
-    flipShowModal() {
-        const { fields } = this.props;
+    const flipShowModal = () => {
         if (fields.length > 0) {
-            this.setState({
-                showModal: !this.state.showModal
-            });
+            setShowModal(!showModal);
         } else {
-            this.onSendClick({});
+            onSendClick({});
         }
-    }
+    };
+    return (
+        <div>
+            <LabeledField
+                id={id}
+                labelClass={labelClass}
+                description={description}
+                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+                label={label}
+                required={required}
+                errorName={fieldKey}
+                errorValue={fieldError}
+            >
+                <div className="d-inline-flex p-2 col-sm-8">
+                    <GeneralButton
+                        id={fieldKey}
+                        onClick={flipShowModal}
+                        disabled={readOnly}
+                        performingAction={progress}
+                    >
+                        {buttonLabel}
+                    </GeneralButton>
+                    {successBox
+                    && (
+                        <div className="d-inline-flex p-2 checkbox">
+                            <input
+                                className="form-control"
+                                id={`${fieldKey}-confirmation`}
+                                type="checkbox"
+                                name={name}
+                                checked={value}
+                                readOnly
+                            />
+                        </div>
+                    )}
+                    {success
+                    && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
 
-    render() {
-        const {
-            buttonLabel, fields, value, fieldKey, name, successBox, readOnly, statusMessage
-        } = this.props;
-
-        const endpointField = (
-            <div className="d-inline-flex p-2 col-sm-8">
-                <GeneralButton
-                    id={fieldKey}
-                    onClick={this.flipShowModal}
-                    disabled={readOnly}
-                    performingAction={this.state.progress}
-                >
-                    {buttonLabel}
-                </GeneralButton>
-                {successBox
-                && (
-                    <div className="d-inline-flex p-2 checkbox">
-                        <input
-                            className="form-control"
-                            id={`${fieldKey}-confirmation`}
-                            type="checkbox"
-                            name={name}
-                            checked={value}
-                            readOnly
-                        />
-                    </div>
-                )}
-                {this.state.success
-                && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
-
-            </div>
-        );
-
-        return (
-            <div>
-                <LabeledField
-                    field={endpointField}
-                    {...this.props}
-                    errorName={fieldKey}
-                    errorValue={this.state.fieldError}
+                </div>
+            </LabeledField>
+            <FieldsPopUp
+                onCancel={flipShowModal}
+                handleSubmit={onSendClick}
+                title={buttonLabel}
+                show={showModal}
+                okLabel="Send"
+            >
+                <FieldsPanel
+                    descriptorFields={fields}
+                    currentConfig={currentConfig}
+                    getCurrentState={() => modalConfig}
+                    setStateFunction={setModalConfig}
+                    csrfToken={csrfToken}
+                    fieldErrors={{}}
                 />
-                <FieldsPopUp
-                    onCancel={this.flipShowModal}
-                    fields={fields}
-                    handleSubmit={this.onSendClick}
-                    title={buttonLabel}
-                    show={this.state.showModal}
-                    okLabel="Send"
-                />
-            </div>
+            </FieldsPopUp>
+        </div>
 
-        );
-    }
-}
+    );
+};
 
 EndpointButtonField.propTypes = {
     id: PropTypes.string,
-    endpoint: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
-    currentConfig: PropTypes.object.isRequired,
-    fieldKey: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
+    currentConfig: PropTypes.object.isRequired,
+    endpoint: PropTypes.string.isRequired,
     fields: PropTypes.array,
-    requiredRelatedFields: PropTypes.array,
-    value: PropTypes.bool,
+    fieldKey: PropTypes.string.isRequired,
     name: PropTypes.string,
-    successBox: PropTypes.bool.isRequired,
-    errorValue: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
-    statusMessage: PropTypes.string
+    requiredRelatedFields: PropTypes.array,
+    statusMessage: PropTypes.string,
+    successBox: PropTypes.bool.isRequired,
+    value: PropTypes.bool,
+    description: PropTypes.string,
+    errorValue: PropTypes.object,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 EndpointButtonField.defaultProps = {
     id: 'endpointButtonFieldId',
-    value: false,
     fields: [],
-    requiredRelatedFields: [],
     name: '',
-    errorValue: null,
     readOnly: false,
-    statusMessage: 'Success'
+    requiredRelatedFields: [],
+    statusMessage: 'Success',
+    value: false,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
-const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken
-});
-
-export default connect(mapStateToProps, null)(EndpointButtonField);
+export default EndpointButtonField;

@@ -1,219 +1,169 @@
-import React, { Component } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
-import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 import GeneralButton from 'field/input/GeneralButton';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
-class UploadFileButtonField extends Component {
-    constructor(props) {
-        super(props);
+const UploadFileButtonField = ({
+    id, accept, capture, buttonLabel, csrfToken, description, endpoint, errorValue, fieldKey, label, labelClass, name, readOnly, required, showDescriptionPlaceHolder, statusMessage
+}) => {
+    const [fieldError, setFieldError] = useState(errorValue);
+    const [success, setSuccess] = useState(false);
+    const [progress, setProgress] = useState(false);
+    const [uploadStatusMessage, setUploadStatusMessage] = useState(statusMessage);
+    const [fileUploaded, setFileUploaded] = useState(false);
+    const fileInputField = useRef(null);
 
-        this.onUploadClick = this.onUploadClick.bind(this);
-        this.onDeleteClick = this.onDeleteClick.bind(this);
-        this.checkFileExists = this.checkFileExists.bind(this);
-
-        this.state = {
-            showModal: false,
-            fieldError: this.props.errorValue,
-            success: false,
-            progress: false,
-            statusMessage: this.props.statusMessage,
-            fileUploaded: false
-        };
-    }
-
-    componentDidMount() {
-        this.checkFileExists();
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        const { errorValue } = prevProps;
-        const currentError = this.props.errorValue;
-        if (errorValue !== currentError) {
-            this.setState({
-                fieldError: currentError,
-                success: false
-            });
-        }
-    }
-
-    checkFileExists() {
-        const {
-            fieldKey, csrfToken, endpoint
-        } = this.props;
+    const checkFileExists = () => {
         const request = createReadRequest(`/alert${endpoint}/${fieldKey}/exists`, csrfToken);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
                     const { exists } = data;
-                    this.setState({
-                        fileUploaded: exists
-                    });
+                    setFileUploaded(exists);
                 });
             } else {
-                this.setState({
-                    fileUploaded: false
-                });
+                setFileUploaded(false);
             }
         });
-    }
+    };
 
-    onUploadClick() {
-        const fileData = this.refs.fileInputField.files;
-        this.setState({
-            fieldError: this.props.errorValue,
-            progress: true,
-            success: false
-        });
+    useEffect(() => {
+        checkFileExists();
+    }, []);
+
+    useEffect(() => {
+        setFieldError(errorValue);
+        setSuccess(false);
+    }, [errorValue]);
+
+    const onUploadClick = () => {
+        const fileData = fileInputField.current.files;
+        setFieldError(errorValue);
+        setProgress(true);
+        setSuccess(false);
 
         if (!fileData || fileData.length <= 0) {
-            this.setState({
-                progress: false,
-                fieldError: 'Please select a file to upload.'
-            });
+            setProgress(false);
+            setFieldError('Please select a file to upload.');
         } else {
-            const {
-                fieldKey, csrfToken, endpoint
-            } = this.props;
             const request = createFileUploadRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, 'file', fileData);
-
             request.then((response) => {
-                this.setState({
-                    progress: false
-                });
+                setProgress(false);
                 if (response.ok) {
-                    this.setState({
-                        success: true,
-                        statusMessage: 'Upload Metadata File Success',
-                        fileUploaded: true
-                    });
+                    setSuccess(true);
+                    setUploadStatusMessage('Upload Metadata File Success');
+                    setFileUploaded(true);
                 } else {
                     response.json().then((data) => {
-                        this.setState({
-                            fieldError: data.message
-                        });
+                        setFieldError(HTTPErrorUtils.createFieldError(data.message));
                     });
                 }
             });
         }
-    }
+    };
 
-    onDeleteClick() {
-        this.setState({
-            fieldError: this.props.errorValue,
-            progress: true,
-            success: false
-        });
-        const {
-            fieldKey, csrfToken, endpoint
-        } = this.props;
+    const onDeleteClick = () => {
+        setFieldError(errorValue);
+        setProgress(true);
+        setSuccess(false);
         const request = createDeleteRequest(`/alert${endpoint}/${fieldKey}`, csrfToken);
         request.then((response) => {
-            this.setState({
-                progress: false
-            });
+            setProgress(false);
             if (response.ok) {
-                this.setState({
-                    success: true,
-                    statusMessage: 'Delete Metadata File Success',
-                    fileUploaded: false
-                });
+                setSuccess(true);
+                setUploadStatusMessage('Delete Metadata File Success');
+                setFileUploaded(false);
             } else {
                 response.json().then((data) => {
-                    this.setState({
-                        fieldError: data.message
-                    });
+                    setFieldError(data.message);
                 });
             }
         });
-    }
+    };
 
-    render() {
-        const {
-            buttonLabel, value, accept, capture, fieldKey, name, readOnly
-        } = this.props;
+    const acceptedContentTypes = accept ? accept.join(',') : null;
 
-        const acceptedContentTypes = accept ? accept.join(',') : null;
-        const endpointField = (
-            <div className="d-inline-flex p-2 col-sm-8">
-                <div>
-                    <input
-                        ref="fileInputField"
-                        type="file"
-                        id={fieldKey}
-                        name={name}
-                        disabled={readOnly}
-                        accept={acceptedContentTypes}
-                        capture={capture}
-                    />
+    return (
+        <div>
+            <LabeledField
+                id={id}
+                description={description}
+                errorName={fieldKey}
+                errorValue={fieldError}
+                label={label}
+                labelClass={labelClass}
+                required={required}
+                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+            >
+                <div className="d-inline-flex p-2 col-sm-8">
                     <div>
-                        <div className="d-inline-flex">
-                            <GeneralButton
-                                id={fieldKey}
-                                className="uploadButton"
-                                onClick={this.onUploadClick}
-                                disabled={readOnly}
-                                performingAction={this.state.progress}
-                            >
-                                {buttonLabel}
-                            </GeneralButton>
-                            {this.state.fileUploaded
-                            && <button id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={this.onDeleteClick}>Remove Uploaded File</button>}
+                        <input
+                            ref={fileInputField}
+                            type="file"
+                            id={fieldKey}
+                            name={name}
+                            disabled={readOnly}
+                            accept={acceptedContentTypes}
+                            capture={capture}
+                        />
+                        <div>
+                            <div className="d-inline-flex">
+                                <GeneralButton
+                                    id={fieldKey}
+                                    className="uploadButton"
+                                    onClick={onUploadClick}
+                                    disabled={readOnly}
+                                    performingAction={progress}
+                                >
+                                    {buttonLabel}
+                                </GeneralButton>
+                                {fileUploaded
+                                && <button id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={onDeleteClick}>Remove Uploaded File</button>}
+                            </div>
                         </div>
                     </div>
+                    {success
+                    && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={uploadStatusMessage} />}
                 </div>
-                {this.state.success
-                && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={this.state.statusMessage} />}
-            </div>
-        );
-
-        return (
-            <div>
-                <LabeledField
-                    field={endpointField}
-                    {...this.props}
-                    errorName={fieldKey}
-                    errorValue={this.state.fieldError}
-                />
-            </div>
-        );
-    }
-}
+            </LabeledField>
+        </div>
+    );
+};
 
 UploadFileButtonField.propTypes = {
     id: PropTypes.string,
-    endpoint: PropTypes.string.isRequired,
+    accept: PropTypes.array,
     buttonLabel: PropTypes.string.isRequired,
-    currentConfig: PropTypes.object.isRequired,
-    fieldKey: PropTypes.string.isRequired,
+    capture: PropTypes.string,
     csrfToken: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    value: PropTypes.bool,
+    endpoint: PropTypes.string.isRequired,
+    fieldKey: PropTypes.string.isRequired,
     name: PropTypes.string,
-    errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
     statusMessage: PropTypes.string,
-    accept: PropTypes.array,
-    capture: PropTypes.string,
-    multiple: PropTypes.bool
+    description: PropTypes.string,
+    errorValue: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 UploadFileButtonField.defaultProps = {
     id: 'uploadFileButtonFieldId',
-    value: false,
+    accept: null,
+    capture: null,
     name: '',
-    errorValue: null,
     readOnly: false,
     statusMessage: 'Upload Metadata File Success',
-    capture: null,
-    accept: null,
-    multiple: false
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
-const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken
-});
-
-export default connect(mapStateToProps, null)(UploadFileButtonField);
+export default UploadFileButtonField;
