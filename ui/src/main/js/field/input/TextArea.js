@@ -1,53 +1,60 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 
-class TextArea extends Component {
-    render() {
-        const {
-            inputClass, sizeClass, readOnly, name, value, onChange, id
-        } = this.props;
-        const divClasses = `${sizeClass} d-inline-flex`;
-
-        let field;
-        if (readOnly) {
-            field = (
-                <div className={divClasses}>
-                    <textarea id={id} rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />
-                </div>
-            );
-        } else {
-            field = (
-                <div className={divClasses}>
-                    <textarea id={id} rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />
-                </div>
-            );
-        }
-
-        return (
-            <LabeledField field={field} {...this.props} />
-        );
-    }
-}
+const TextArea = ({
+    id, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, sizeClass, value
+}) => {
+    const divClasses = `${sizeClass} d-inline-flex`;
+    const onChangeHandler = readOnly ? null : onChange;
+    return (
+        <LabeledField
+            labelClass={labelClass}
+            description={description}
+            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+            label={label}
+            errorName={errorName}
+            errorValue={errorValue}
+            required={required}
+        >
+            <div className={divClasses}>
+                <textarea id={id} rows="8" cols="60" readOnly={readOnly} className={inputClass} name={name} value={value} onChange={onChangeHandler} />
+            </div>
+        </LabeledField>
+    );
+};
 
 TextArea.propTypes = {
     id: PropTypes.string,
-    readOnly: PropTypes.bool,
     inputClass: PropTypes.string,
-    sizeClass: PropTypes.string,
     name: PropTypes.string,
+    onChange: PropTypes.func,
+    readOnly: PropTypes.bool,
+    sizeClass: PropTypes.string,
     value: PropTypes.string,
-    onChange: PropTypes.func
+    description: PropTypes.string,
+    errorName: PropTypes.string,
+    errorValue: PropTypes.object,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 TextArea.defaultProps = {
     id: 'textAreaId',
-    value: '',
-    readOnly: false,
     inputClass: 'form-control',
-    sizeClass: 'col-sm-8',
     name: 'name',
-    onChange: () => true
+    onChange: () => true,
+    readOnly: false,
+    sizeClass: 'col-sm-8',
+    value: '',
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT
 };
 
 export default TextArea;

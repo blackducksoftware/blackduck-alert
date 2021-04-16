@@ -1,5 +1,5 @@
 import React from 'react';
-import SelectInput from 'field/input/DynamicSelect';
+import SelectInput from 'field/input/DynamicSelectInput';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import PasswordInput from 'field/input/PasswordInput';
@@ -7,7 +7,6 @@ import NumberInput from 'field/input/NumberInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import CounterField from 'field/CounterField';
 import TableSelectInput from 'field/input/TableSelectInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import EndpointSelectField from 'field/EndpointSelectField';
@@ -66,7 +65,7 @@ function buildSelectInput(items, field) {
     return <SelectInput {...items} />;
 }
 
-function buildEndpointSelectInput(items, field) {
+function buildEndpointSelectInput(items, field, csrfToken) {
     const {
         searchable, multiSelect, readOnly, url, key, removeSelected, clearable, requiredRelatedFields
     } = field;
@@ -87,6 +86,7 @@ function buildEndpointSelectInput(items, field) {
             requiredRelatedFields={requiredRelatedFields}
             endpoint={url}
             fieldKey={key}
+            csrfToken={csrfToken}
             {...items}
         />
     );
@@ -139,17 +139,7 @@ function buildReadOnlyField(items, field) {
     return <ReadOnlyField {...trimmedValue} />;
 }
 
-function buildCounterField(items, field) {
-    const { countdown } = field;
-    const trimmedValue = extractFirstValue(items);
-    Object.assign(items, {
-        countdown,
-        value: trimmedValue
-    });
-    return <CounterField {...items} />;
-}
-
-function buildEndpointField(items, field) {
+function buildEndpointField(items, field, csrfToken) {
     const { value } = items;
     const {
         buttonLabel, url, successBox, subFields, key, requiredRelatedFields, readOnly
@@ -169,12 +159,13 @@ function buildEndpointField(items, field) {
             endpoint={url}
             successBox={successBox}
             fieldKey={key}
+            csrfToken={csrfToken}
             {...items}
         />
     );
 }
 
-function buildTableSelectInput(items, field) {
+function buildTableSelectInput(items, field, csrfToken) {
     const {
         url, key, columns, paged, searchable, useRowAsValue, requiredRelatedFields
     } = field;
@@ -187,10 +178,10 @@ function buildTableSelectInput(items, field) {
         useRowAsValue
     });
 
-    return <TableSelectInput endpoint={url} fieldKey={key} columns={columns} requiredRelatedFields={requiredRelatedFields} {...items} />;
+    return <TableSelectInput endpoint={url} fieldKey={key} columns={columns} requiredRelatedFields={requiredRelatedFields} csrfToken={csrfToken} {...items} />;
 }
 
-function buildUploadFileButtonField(items, field) {
+function buildUploadFileButtonField(items, field, csrfToken) {
     const {
         buttonLabel, url, successBox, subFields, key, readOnly, accept, multiple
     } = field;
@@ -208,12 +199,13 @@ function buildUploadFileButtonField(items, field) {
             fieldKey={key}
             accept={accept}
             multiple={multiple}
+            csrfToken={csrfToken}
             {...items}
         />
     );
 }
 
-function buildOAuthEndpointField(items, field) {
+function buildOAuthEndpointField(items, field, csrfToken) {
     const { value } = items;
     const {
         buttonLabel, url, successBox, subFields, key, requiredRelatedFields, readOnly
@@ -233,22 +225,27 @@ function buildOAuthEndpointField(items, field) {
             endpoint={url}
             successBox={successBox}
             fieldKey={key}
+            csrfToken={csrfToken}
             {...items}
         />
     );
 }
 
 function buildFieldMappingField(items, field) {
-    const { value } = items
-    const { leftSide, rightSide, mappingTitle, key } = field
-    return <FieldMappingField
-        storedMappings={value}
-        leftSideMapping={leftSide}
-        rightSideMapping={rightSide}
-        newMappingTitle={mappingTitle}
-        fieldMappingKey={key}
-        {...items}
-    />
+    const { value } = items;
+    const {
+        leftSide, rightSide, mappingTitle, key
+    } = field;
+    return (
+        <FieldMappingField
+            storedMappings={value}
+            leftSideMapping={leftSide}
+            rightSideMapping={rightSide}
+            newMappingTitle={mappingTitle}
+            fieldMappingKey={key}
+            {...items}
+        />
+    );
 }
 
 export const FIELDS = {
@@ -261,7 +258,6 @@ export const FIELDS = {
     HideCheckboxInput: buildHideCheckboxInput,
     CheckboxInput: buildCheckboxInput,
     ReadOnlyField: buildReadOnlyField,
-    CountdownField: buildCounterField,
     TableSelectInput: buildTableSelectInput,
     EndpointButtonField: buildEndpointField,
     UploadFileButtonField: buildUploadFileButtonField,
@@ -269,9 +265,9 @@ export const FIELDS = {
     FieldMappingField: buildFieldMappingField
 };
 
-export function getField(fieldType, props, field) {
+export function getField(fieldType, props, field, csrfToken) {
     const fieldFunction = FIELDS[fieldType];
-    return fieldFunction(props, field);
+    return fieldFunction(props, field, csrfToken);
 }
 
 export function retrieveKeys(descriptorFields) {
@@ -285,7 +281,7 @@ export function retrieveKeys(descriptorFields) {
     return fieldKeys;
 }
 
-export function createField(field, currentConfig, fieldError, onChange) {
+export function createField(field, currentConfig, fieldError, onChange, csrfToken) {
     const {
         key, label, description, type, required
     } = field;
@@ -308,5 +304,5 @@ export function createField(field, currentConfig, fieldError, onChange) {
         currentConfig
     };
 
-    return getField(type, propMapping, field);
+    return getField(type, propMapping, field, csrfToken);
 }

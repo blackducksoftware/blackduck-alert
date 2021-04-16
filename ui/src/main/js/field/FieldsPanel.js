@@ -24,14 +24,11 @@ class FieldsPanel extends React.Component {
     }
 
     handleChange({ target }) {
-        const { self, stateName } = this.props;
+        const { getCurrentState, setStateFunction } = this.props;
         const { type, name, value } = target;
         const updatedValue = type === 'checkbox' ? target.checked.toString() : value;
-        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(self.state[stateName], name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(self.state[stateName], name, updatedValue);
-
-        self.setState({
-            [stateName]: newState
-        });
+        const newState = Array.isArray(updatedValue) ? FieldModelUtilities.updateFieldModelValues(getCurrentState(), name, updatedValue) : FieldModelUtilities.updateFieldModelSingleValue(getCurrentState(), name, updatedValue);
+        setStateFunction(newState);
     }
 
     initializeFieldMapping(fields) {
@@ -130,7 +127,9 @@ class FieldsPanel extends React.Component {
     }
 
     createFields(fields) {
-        const { currentConfig, fieldErrors, metadata } = this.props;
+        const {
+            currentConfig, fieldErrors, metadata, csrfToken
+        } = this.props;
         const createdFields = [];
         const { additionalFields } = metadata;
         const currentConfigCopy = JSON.parse(JSON.stringify(currentConfig));
@@ -146,7 +145,7 @@ class FieldsPanel extends React.Component {
             const fieldKey = field.key;
             if (!this.state.hiddenFieldKeys.includes(fieldKey)) {
                 const fieldError = fieldErrors ? fieldErrors[fieldKey] : null;
-                const newField = FieldMapping.createField(field, currentConfigCopy, fieldError, this.handleChange);
+                const newField = FieldMapping.createField(field, currentConfigCopy, fieldError, this.handleChange, csrfToken);
                 createdFields.push(newField);
             }
         });
@@ -173,11 +172,12 @@ FieldsPanel.propTypes = {
     descriptorFields: PropTypes.array.isRequired,
     currentConfig: PropTypes.object.isRequired,
     fieldErrors: PropTypes.object.isRequired,
-    self: PropTypes.object.isRequired,
-    stateName: PropTypes.string.isRequired,
+    getCurrentState: PropTypes.func.isRequired,
+    setStateFunction: PropTypes.func.isRequired,
     metadata: PropTypes.shape({
         additionalFields: PropTypes.object
-    })
+    }),
+    csrfToken: PropTypes.string.isRequired
 };
 
 FieldsPanel.defaultProps = {

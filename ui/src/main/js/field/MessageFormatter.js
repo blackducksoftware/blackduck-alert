@@ -1,54 +1,44 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-class MessageFormatter extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    createDetailedMessage(messageBody) {
-        const {
-            header, title, message, componentLabel, componentLink
-        } = messageBody;
-
-        return (
-            <div>
-                <h3>{header}</h3>
-                <div>{title}</div>
-                <div>
-                    {message}
-                    <NavLink to={componentLink}>
-                        {componentLabel}
-                    </NavLink>
-                </div>
-            </div>
-        );
-    }
-
-    createMessage() {
+const MessageFormatter = ({
+    id, errorIsDetailed, message
+}) => {
+    const determineDisplayMessage = () => {
+        if (!message) {
+            return [false, message];
+        }
         try {
-            const { errorIsDetailed, message } = this.props;
             const parsedMessaged = JSON.parse(message);
             if (errorIsDetailed) {
-                return this.createDetailedMessage(parsedMessaged);
+                return [true, parsedMessaged];
             }
-            return parsedMessaged;
+            return [false, parsedMessaged];
         } catch (e) {
-            return this.props.message;
+            return [false, message];
         }
-    }
+    };
 
-    render() {
-        const { id } = this.props;
-        const message = this.props.message && this.createMessage();
-        return (
-            <div id={id}>
-                {message}
-            </div>
-        );
-    }
-}
+    const [isMessageDetailed, displayMessage] = determineDisplayMessage();
+    return (
+        <div id={id}>
+            {!isMessageDetailed && displayMessage}
+            {isMessageDetailed && (
+                <div>
+                    <h3>{displayMessage.header}</h3>
+                    <div>{displayMessage.title}</div>
+                    <div>
+                        {displayMessage.message}
+                        <NavLink to={displayMessage.componentLink}>
+                            {displayMessage.componentLabel}
+                        </NavLink>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 MessageFormatter.propTypes = {
     id: PropTypes.string,

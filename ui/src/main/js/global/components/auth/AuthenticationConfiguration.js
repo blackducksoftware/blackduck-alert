@@ -6,14 +6,11 @@ import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import TextInput from 'field/input/TextInput';
 import {
-    AUTHENTICATION_INFO,
-    AUTHENTICATION_LDAP_FIELD_KEYS,
-    AUTHENTICATION_SAML_FIELD_KEYS,
-    AUTHENTICATION_TEST_FIELD_KEYS
+    AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS
 } from 'global/components/auth/AuthenticationModel';
 import CheckboxInput from 'field/input/CheckboxInput';
 import PasswordInput from 'field/input/PasswordInput';
-import DynamicSelectInput from 'field/input/DynamicSelect';
+import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import UploadFileButtonField from 'field/UploadFileButtonField';
 import ReadOnlyField from 'field/ReadOnlyField';

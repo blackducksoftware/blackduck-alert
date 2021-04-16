@@ -6,11 +6,7 @@ import FieldsPanel from 'field/FieldsPanel';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
 
 import {
-    deleteConfig,
-    getConfig,
-    testConfig,
-    updateConfig,
-    validateConfig
+    deleteConfig, getConfig, testConfig, updateConfig, validateConfig
 } from 'store/actions/globalConfiguration';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -27,6 +23,7 @@ class GlobalConfiguration extends React.Component {
         this.handleTestCancel = this.handleTestCancel.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.createEmptyModel = this.createEmptyModel.bind(this);
+        this.updateCurrentConfigState = this.updateCurrentConfigState.bind(this);
 
         const { descriptor } = this.props;
         const { fields, name } = descriptor;
@@ -124,13 +121,19 @@ class GlobalConfiguration extends React.Component {
         }
     }
 
+    updateCurrentConfigState(newState) {
+        this.setState({
+            currentConfig: newState
+        });
+    }
+
     render() {
         const { currentDescriptor, showTest } = this.state;
         const {
             label, description, fields, type, testFields
         } = currentDescriptor;
         const {
-            errorMessage, actionMessage, fieldErrors, testConfigAction, errorIsDetailed
+            errorMessage, actionMessage, fieldErrors, testConfigAction, errorIsDetailed, csrfToken
         } = this.props;
         const { currentConfig } = this.state;
         const { lastUpdated } = currentConfig;
@@ -149,8 +152,9 @@ class GlobalConfiguration extends React.Component {
                             currentConfig={currentConfig}
                             fieldErrors={fieldErrors}
                             handleChange={this.handleChange}
-                            self={this}
-                            stateName="currentConfig"
+                            getCurrentState={() => currentConfig}
+                            setStateFunction={this.updateCurrentConfigState}
+                            csrfToken={csrfToken}
                         />
                     </div>
                     <ConfigButtons
@@ -168,6 +172,7 @@ class GlobalConfiguration extends React.Component {
                         handleCancel={this.handleTestCancel}
                         fieldModel={currentConfig}
                         testFields={testFields}
+                        csrfToken={csrfToken}
                     />
                 </form>
             );
@@ -205,7 +210,8 @@ GlobalConfiguration.propTypes = {
     updateConfigAction: PropTypes.func.isRequired,
     testConfigAction: PropTypes.func.isRequired,
     deleteConfigAction: PropTypes.func.isRequired,
-    validateConfigAction: PropTypes.func.isRequired
+    validateConfigAction: PropTypes.func.isRequired,
+    csrfToken: PropTypes.string.isRequired
 };
 
 // Default values
@@ -225,7 +231,8 @@ const mapStateToProps = (state) => ({
     updateStatus: state.globalConfiguration.updateStatus,
     errorMessage: state.globalConfiguration.error.message,
     errorIsDetailed: state.globalConfiguration.error.isDetailed,
-    fieldErrors: state.globalConfiguration.error.fieldErrors
+    fieldErrors: state.globalConfiguration.error.fieldErrors,
+    csrfToken: state.session.csrfToken
 });
 
 // Mapping redux actions -> react props

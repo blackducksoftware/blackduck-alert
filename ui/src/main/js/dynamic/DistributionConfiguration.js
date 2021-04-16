@@ -6,12 +6,7 @@ import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { OPERATIONS } from 'util/descriptorUtilities';
 import FieldsPanel from 'field/FieldsPanel';
 import {
-    checkDescriptorForGlobalConfig,
-    getDistributionJob,
-    saveDistributionJob,
-    testDistributionJob,
-    updateDistributionJob,
-    validateDistributionJob
+    checkDescriptorForGlobalConfig, getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob, validateDistributionJob
 } from 'store/actions/distributionConfigs';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { Modal } from 'react-bootstrap';
@@ -40,6 +35,8 @@ class DistributionConfiguration extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.setSendMessageVisible = this.setSendMessageVisible.bind(this);
+        this.updateChannelConfigState = this.updateChannelConfigState.bind(this);
+        this.updateProviderConfigState = this.updateProviderConfigState.bind(this);
 
         const { descriptors, validateDescriptorForGlobalConfig } = props;
         const defaultDescriptor = descriptors.find((descriptor) => descriptor.type === DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL && descriptor.context === DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
@@ -216,13 +213,25 @@ class DistributionConfiguration extends Component {
         validateDistribution(jsonBody);
     }
 
+    updateProviderConfigState(newState) {
+        this.setState({
+            providerConfig: newState
+        });
+    }
+
+    updateChannelConfigState(newState) {
+        this.setState({
+            channelConfig: newState
+        });
+    }
+
     renderProviderConfigNameForm() {
         // TODO: Find a better way to order fields.
         // TODO: Perhaps have a config name key such as common, channel, and provider to create the config objects and some ordering attributes.
         const {
             providerConfig, channelConfig, currentProvider
         } = this.state;
-        const { fieldErrors } = this.props;
+        const { fieldErrors, csrfToken } = this.props;
         const configNameFields = currentProvider.fields.filter((field) => field.key === KEY_PROVIDER_CONFIG_ID);
         return (
             <div>
@@ -231,8 +240,9 @@ class DistributionConfiguration extends Component {
                     metadata={{ additionalFields: channelConfig.keyToValues }}
                     currentConfig={providerConfig}
                     fieldErrors={fieldErrors}
-                    self={this}
-                    stateName="providerConfig"
+                    getCurrentState={() => providerConfig}
+                    setStateFunction={this.updateProviderConfigState}
+                    csrfToken={csrfToken}
                 />
             </div>
         );
@@ -243,7 +253,7 @@ class DistributionConfiguration extends Component {
             providerConfig, channelConfig, currentChannel, currentProvider, showSendMessage
         } = this.state;
         const {
-            success, inProgress, fieldErrors, testDistribution, configurationMessage
+            success, inProgress, fieldErrors, testDistribution, configurationMessage, csrfToken
         } = this.props;
         const displayTest = !currentChannel.readOnly && DescriptorUtilities.isOperationAssigned(currentChannel, OPERATIONS.EXECUTE);
         const displaySave = !currentChannel.readOnly && DescriptorUtilities.isOneOperationAssigned(currentChannel, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
@@ -256,8 +266,9 @@ class DistributionConfiguration extends Component {
                     metadata={{ additionalFields: channelConfig.keyToValues }}
                     currentConfig={providerConfig}
                     fieldErrors={fieldErrors}
-                    self={this}
-                    stateName="providerConfig"
+                    getCurrentState={() => providerConfig}
+                    setStateFunction={this.updateProviderConfigState}
+                    csrfToken={csrfToken}
                 />
                 <ConfigButtons
                     cancelId="job-cancel"
@@ -307,7 +318,7 @@ class DistributionConfiguration extends Component {
         const {
             loading, providerConfig, channelConfig, currentProvider, currentChannel, show
         } = this.state;
-        const { jobModificationState, fieldErrors } = this.props;
+        const { jobModificationState, fieldErrors, csrfToken } = this.props;
         const selectedProvider = (currentProvider) ? currentProvider.name : null;
 
         const modalTitle = `${jobModificationState} Distribution Job`;
@@ -325,34 +336,39 @@ class DistributionConfiguration extends Component {
                 <Modal size="lg" show={show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>
-                            {modalTitle}&nbsp;{loading && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
+                            {modalTitle}
+                            {loading && <FontAwesomeIcon icon="spinner" className="alert-icon" size="lg" spin />}
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         {loading && 'Loading...'}
-                        {!loading &&
-                        <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
-                            <FieldsPanel
-                                descriptorFields={commonFields}
-                                currentConfig={channelConfig}
-                                fieldErrors={fieldErrors}
-                                self={this}
-                                stateName="channelConfig"
-                            />
-                            {currentChannel && selectedProvider && this.renderProviderConfigNameForm()}
-                            {currentChannel && selectedProvider
-                            && (
+                        {!loading
+                        && (
+                            <form className="form-horizontal" onSubmit={this.handleSubmit} noValidate>
                                 <FieldsPanel
-                                    descriptorFields={channelFields}
-                                    metadata={{ additionalFields: providerConfig.keyToValues }}
+                                    descriptorFields={commonFields}
                                     currentConfig={channelConfig}
                                     fieldErrors={fieldErrors}
-                                    self={this}
-                                    stateName="channelConfig"
+                                    getCurrentState={() => channelConfig}
+                                    setStateFunction={this.updateChannelConfigState}
+                                    csrfToken={csrfToken}
                                 />
-                            )}
-                            {currentChannel && selectedProvider && this.renderProviderForm()}
-                        </form>}
+                                {currentChannel && selectedProvider && this.renderProviderConfigNameForm()}
+                                {currentChannel && selectedProvider
+                                && (
+                                    <FieldsPanel
+                                        descriptorFields={channelFields}
+                                        metadata={{ additionalFields: providerConfig.keyToValues }}
+                                        currentConfig={channelConfig}
+                                        fieldErrors={fieldErrors}
+                                        getCurrentState={() => channelConfig}
+                                        setStateFunction={this.updateChannelConfigState}
+                                        csrfToken={csrfToken}
+                                    />
+                                )}
+                                {currentChannel && selectedProvider && this.renderProviderForm()}
+                            </form>
+                        )}
                     </Modal.Body>
                 </Modal>
             </div>
@@ -382,7 +398,8 @@ DistributionConfiguration.propTypes = {
     validateDescriptorForGlobalConfig: PropTypes.func.isRequired,
     validateDistribution: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    status: PropTypes.string.isRequired
+    status: PropTypes.string.isRequired,
+    csrfToken: PropTypes.string.isRequired
 };
 
 DistributionConfiguration.defaultProps = {
@@ -407,17 +424,20 @@ const mapDispatchToProps = (dispatch) => ({
     validateDistribution: (config) => dispatch(validateDistributionJob(config))
 });
 
-const mapStateToProps = (state) => ({
-    job: state.distributionConfigs.job,
-    fieldErrors: state.distributionConfigs.error.fieldErrors,
-    fetching: state.distributionConfigs.fetching,
-    inProgress: state.distributionConfigs.inProgress,
-    descriptors: state.descriptors.items,
-    saving: state.distributionConfigs.saving,
-    success: state.distributionConfigs.success,
-    testingConfig: state.distributionConfigs.testingConfig,
-    configurationMessage: state.distributionConfigs.configurationMessage,
-    status: state.distributionConfigs.status
-});
+const mapStateToProps = (state) => (
+    {
+        job: state.distributionConfigs.job,
+        fieldErrors: state.distributionConfigs.error.fieldErrors,
+        fetching: state.distributionConfigs.fetching,
+        inProgress: state.distributionConfigs.inProgress,
+        descriptors: state.descriptors.items,
+        saving: state.distributionConfigs.saving,
+        success: state.distributionConfigs.success,
+        testingConfig: state.distributionConfigs.testingConfig,
+        configurationMessage: state.distributionConfigs.configurationMessage,
+        status: state.distributionConfigs.status,
+        csrfToken: state.session.csrfToken
+    }
+);
 
 export default connect(mapStateToProps, mapDispatchToProps)(DistributionConfiguration);
