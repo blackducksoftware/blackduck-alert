@@ -231,7 +231,7 @@ function buildOAuthEndpointField(items, field, csrfToken) {
     );
 }
 
-function buildFieldMappingField(items, field, csrfToken) {
+function buildFieldMappingField(items, field) {
     const { value } = items;
     const {
         leftSide, rightSide, mappingTitle, key
