@@ -12,12 +12,12 @@ import java.util.List;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 
 public class StatefulAlertPage<T, E extends Exception> {
-    private final NextPageRetriever<T, E> nextPageRetriever;
+    private final PageRetriever<T, E> pageRetriever;
     private final AlertPagedDetails alertPagedDetails;
 
-    public StatefulAlertPage(AlertPagedDetails alertPagedDetails, NextPageRetriever<T, E> nextPageRetriever) {
+    public StatefulAlertPage(AlertPagedDetails alertPagedDetails, PageRetriever<T, E> pageRetriever) {
         this.alertPagedDetails = alertPagedDetails;
-        this.nextPageRetriever = nextPageRetriever;
+        this.pageRetriever = pageRetriever;
     }
 
     public boolean isEmpty() {
@@ -26,10 +26,10 @@ public class StatefulAlertPage<T, E extends Exception> {
 
     public StatefulAlertPage<T, E> retrieveNextPage() throws E {
         if (hasNextPage()) {
-            AlertPagedDetails<T> nextPage = nextPageRetriever.retrieveNextPage(alertPagedDetails.getCurrentPage(), alertPagedDetails.getPageSize());
-            return new StatefulAlertPage<>(nextPage, nextPageRetriever);
+            AlertPagedDetails<T> nextPage = pageRetriever.retrieveNextPage(alertPagedDetails.getCurrentPage(), alertPagedDetails.getPageSize());
+            return new StatefulAlertPage<>(nextPage, pageRetriever);
         }
-        return new StatefulAlertPage<>(AlertPagedDetails.EMPTY_PAGE(), nextPageRetriever);
+        return new StatefulAlertPage<>(AlertPagedDetails.emptyPage(), pageRetriever);
     }
 
     public boolean hasNextPage() {

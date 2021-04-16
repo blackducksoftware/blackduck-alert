@@ -17,7 +17,7 @@ public class AlertPagedDetails<M> {
     private final int pageSize;
     private final List<M> models;
 
-    public static <M> AlertPagedDetails<M> EMPTY_PAGE() {
+    public static <M> AlertPagedDetails<M> emptyPage() {
         return new AlertPagedDetails<>(0, 0, 0, List.of());
     }
 

@@ -49,9 +49,9 @@ public class JobNotificationMapper {
      * @return a {@code StatefulAlertPage} where a page of distributions job is used to map to a list of notifications that were passed in.
      */
     public StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
-        AlertPagedDetails<FilteredJobNotificationWrapper> pageOfJobsToNotification = mapPageOfJobsToNotification(detailedContents, frequencies, INITIAL_PAGE_NUMBER, PAGE_SIZE);
-        NextFilteredJobWrapperPageRetriever nextFilteredJobWrapperPageRetriever = new NextFilteredJobWrapperPageRetriever(detailedContents, frequencies);
-        return new StatefulAlertPage<>(pageOfJobsToNotification, nextFilteredJobWrapperPageRetriever);
+        FilteredJobWrapperPageRetriever filteredJobWrapperPageRetriever = new FilteredJobWrapperPageRetriever(detailedContents, frequencies);
+        AlertPagedDetails<FilteredJobNotificationWrapper> firstPage = filteredJobWrapperPageRetriever.retrievePage(INITIAL_PAGE_NUMBER, PAGE_SIZE);
+        return new StatefulAlertPage<>(firstPage, filteredJobWrapperPageRetriever);
     }
 
     private AlertPagedDetails<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
@@ -85,18 +85,23 @@ public class JobNotificationMapper {
         return new AlertPagedDetails<>(jobs.getTotalPages(), pageNumber, pageSize, filterableJobNotifications);
     }
 
-    private class NextFilteredJobWrapperPageRetriever implements NextPageRetriever<FilteredJobNotificationWrapper, RuntimeException> {
+    private class FilteredJobWrapperPageRetriever implements PageRetriever<FilteredJobNotificationWrapper, RuntimeException> {
         private final List<DetailedNotificationContent> detailedContents;
         private final List<FrequencyType> frequencies;
 
-        public NextFilteredJobWrapperPageRetriever(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
+        public FilteredJobWrapperPageRetriever(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
             this.detailedContents = detailedContents;
             this.frequencies = frequencies;
         }
 
         @Override
         public AlertPagedDetails<FilteredJobNotificationWrapper> retrieveNextPage(int currentOffset, int currentLimit) throws RuntimeException {
-            return mapPageOfJobsToNotification(detailedContents, frequencies, currentOffset + 1, currentLimit);
+            return retrievePage(currentOffset + 1, currentLimit);
+        }
+
+        @Override
+        public AlertPagedDetails<FilteredJobNotificationWrapper> retrievePage(int currentOffset, int currentLimit) throws RuntimeException {
+            return mapPageOfJobsToNotification(detailedContents, frequencies, currentOffset, currentLimit);
         }
     }
 }

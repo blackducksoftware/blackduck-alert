@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.processor.api.filter.NextPageRetriever;
+import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
@@ -116,7 +116,7 @@ public class BlackDuckAccumulatorTest {
     private StatefulAlertPage<NotificationView, IntegrationException> createMockNotificationPage() throws IntegrationException {
         NotificationView notificationView = createMockNotificationView();
         AlertPagedDetails alertPagedDetails = new AlertPagedDetails(1, 1, 1, List.of(notificationView));
-        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, Mockito.mock(NextPageRetriever.class));
+        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, Mockito.mock(PageRetriever.class));
         return statefulAlertPage;
     }
 

@@ -15,7 +15,7 @@ import java.util.TimeZone;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
-import com.synopsys.integration.alert.processor.api.filter.NextPageRetriever;
+import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
@@ -43,12 +43,8 @@ public class BlackDuckNotificationRetriever {
 
     public StatefulAlertPage<NotificationView, IntegrationException> retrievePageOfFilteredNotifications(DateRange dateRange, List<String> types) throws IntegrationException {
         BlackDuckRequestBuilder requestBuilder = createNotificationRequestBuilder(dateRange, types);
-        BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(DEFAULT_PAGE_SIZE, INITIAL_PAGE_OFFSET);
-
-        BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(requestBuilder, pageDefinition);
-        AlertPagedDetails firstPage = new AlertPagedDetails(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE, notificationPage.getTotalCount(), notificationPage.getItems());
-
-        NextNotificationPageRetriever notificationRetriever = new NextNotificationPageRetriever(requestBuilder);
+        NotificationPageRetriever notificationRetriever = new NotificationPageRetriever(requestBuilder);
+        AlertPagedDetails<NotificationView> firstPage = notificationRetriever.retrievePage(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE);
         return new StatefulAlertPage(firstPage, notificationRetriever);
     }
 
@@ -79,20 +75,25 @@ public class BlackDuckNotificationRetriever {
         return sdf.format(date);
     }
 
-    private class NextNotificationPageRetriever implements NextPageRetriever<NotificationView, IntegrationException> {
+    private class NotificationPageRetriever implements PageRetriever<NotificationView, IntegrationException> {
 
         private final BlackDuckRequestBuilder blackDuckRequestBuilder;
 
-        public NextNotificationPageRetriever(BlackDuckRequestBuilder blackDuckRequestBuilder) {
+        public NotificationPageRetriever(BlackDuckRequestBuilder blackDuckRequestBuilder) {
             this.blackDuckRequestBuilder = blackDuckRequestBuilder;
         }
 
         @Override
         public AlertPagedDetails<NotificationView> retrieveNextPage(int currentOffset, int currentLimit) throws IntegrationException {
             int newOffset = currentOffset + currentLimit;
-            BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(currentLimit, newOffset);
+            return retrievePage(newOffset, currentLimit);
+        }
+
+        @Override
+        public AlertPagedDetails<NotificationView> retrievePage(int currentOffset, int currentLimit) throws IntegrationException {
+            BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(currentLimit, currentOffset);
             BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(blackDuckRequestBuilder, pageDefinition);
-            return new AlertPagedDetails(newOffset, currentLimit, notificationPage.getTotalCount(), notificationPage.getItems());
+            return new AlertPagedDetails(currentOffset, currentLimit, notificationPage.getTotalCount(), notificationPage.getItems());
         }
     }
 
