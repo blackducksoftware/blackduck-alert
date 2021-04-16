@@ -175,6 +175,7 @@ public class JmsNotificationReceiverTestIT {
         projectNotificationContent.setOperationType(OperationType.CREATE);
         ProjectNotificationView projectNotificationView = new ProjectNotificationView();
         projectNotificationView.setContent(projectNotificationContent);
+        projectNotificationView.setType(NotificationType.PROJECT);
         String content = gson.toJson(projectNotificationView);
 
         return new AlertNotificationModel(

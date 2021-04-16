@@ -69,12 +69,16 @@ public final class NotificationProcessorV2 {
                                                                         .flatMap(List::stream)
                                                                         .collect(Collectors.toList());
         StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        do {
+        while (mappedNotifications.hasModels()) {
             for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
                 processAndDistribute(jobNotificationWrapper);
             }
-            mappedNotifications = mappedNotifications.retrieveNextPage();
-        } while (mappedNotifications.hasNextPage());
+            if (mappedNotifications.hasNextPage()) {
+                mappedNotifications = mappedNotifications.retrieveNextPage();
+            } else {
+                mappedNotifications = StatefulAlertPagedModel.empty();
+            }
+        }
     }
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
