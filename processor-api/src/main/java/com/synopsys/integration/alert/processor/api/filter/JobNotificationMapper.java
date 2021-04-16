@@ -62,13 +62,7 @@ public class JobNotificationMapper {
     private AlertPagedModel<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
 
-        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(frequencies);
-        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
-            detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
-            filteredDistributionJobRequestModel.addNotificationType(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
-            filteredDistributionJobRequestModel.addVulnerabilitySeverities(detailedNotificationContent.getVulnerabilitySeverities());
-            detailedNotificationContent.getPolicyName().ifPresent(filteredDistributionJobRequestModel::addPolicyName);
-        }
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = createRequestModelFromNotifications(detailedContents, frequencies);
 
         AlertPagedModel<FilteredDistributionJobResponseModel> jobs = processingJobAccessor.getMatchingEnabledJobsByFilteredNotifications(filteredDistributionJobRequestModel, pageNumber, pageSize);
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
@@ -88,5 +82,16 @@ public class JobNotificationMapper {
         }
 
         return new AlertPagedModel<>(jobs.getTotalPages(), pageNumber, pageSize, filterableJobNotifications);
+    }
+
+    private FilteredDistributionJobRequestModel createRequestModelFromNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(frequencies);
+        for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
+            detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
+            filteredDistributionJobRequestModel.addNotificationType(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
+            filteredDistributionJobRequestModel.addVulnerabilitySeverities(detailedNotificationContent.getVulnerabilitySeverities());
+            detailedNotificationContent.getPolicyName().ifPresent(filteredDistributionJobRequestModel::addPolicyName);
+        }
+        return filteredDistributionJobRequestModel;
     }
 }
