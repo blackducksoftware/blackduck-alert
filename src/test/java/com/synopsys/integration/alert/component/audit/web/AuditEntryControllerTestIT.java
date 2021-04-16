@@ -211,7 +211,7 @@ public class AuditEntryControllerTestIT {
             mockNotificationContent.getProviderConfigId(),
             false,
             null,
-            List.of(),
+            List.of("notificationType"),
             List.of(),
             List.of(),
             List.of(),

@@ -90,7 +90,7 @@ public abstract class DatabaseConfiguredFieldTest {
             blackDuckGlobalConfigId,
             false,
             null,
-            List.of(),
+            List.of("notificationType"),
             List.of(),
             List.of(),
             List.of(),

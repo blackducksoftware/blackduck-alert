@@ -12,12 +12,16 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public class DistributionJobModelBuilder {
+    private static final String NOTIFICATION_TYPES_FIELD_NAME = "notificationTypes";
+
     private UUID jobId;
     private boolean enabled = true;
     private String name;
@@ -31,14 +35,29 @@ public class DistributionJobModelBuilder {
     private boolean filterByProject = false;
     private String projectNamePattern;
     private List<String> notificationTypes;
-    private List<BlackDuckProjectDetailsModel> projectFilterDetails;
-    private List<String> policyFilterPolicyNames;
-    private List<String> vulnerabilityFilterSeverityNames;
+    private List<BlackDuckProjectDetailsModel> projectFilterDetails = List.of();
+    private List<String> policyFilterPolicyNames = List.of();
+    private List<String> vulnerabilityFilterSeverityNames = List.of();
 
     private DistributionJobDetailsModel distributionJobDetails;
 
     public DistributionJobModel build() {
-        // TODO validate required fields are present
+        throwExceptionIfBlank(name, "name");
+        throwExceptionIfNull(distributionFrequency, "distributionFrequency");
+        throwExceptionIfNull(processingType, "processingType");
+        throwExceptionIfBlank(channelDescriptorName, "channelDescriptorName");
+        throwExceptionIfNull(createdAt, "createdAt");
+        throwExceptionIfNull(blackDuckGlobalConfigId, "blackDuckGlobalConfigId");
+
+        throwExceptionIfNull(notificationTypes, NOTIFICATION_TYPES_FIELD_NAME);
+        if (notificationTypes.isEmpty()) {
+            throw createMissingFieldException(NOTIFICATION_TYPES_FIELD_NAME);
+        }
+
+        if (filterByProject && StringUtils.isBlank(projectNamePattern) && projectFilterDetails.isEmpty()) {
+            throw new AlertRuntimeException("Missing project details");
+        }
+
         return new DistributionJobModel(
             jobId,
             enabled,
@@ -151,6 +170,22 @@ public class DistributionJobModelBuilder {
     public DistributionJobModelBuilder distributionJobDetails(DistributionJobDetailsModel distributionJobDetails) {
         this.distributionJobDetails = distributionJobDetails;
         return this;
+    }
+
+    private void throwExceptionIfBlank(String field, String fieldName) {
+        if (StringUtils.isBlank(field)) {
+            throw createMissingFieldException(fieldName);
+        }
+    }
+
+    private void throwExceptionIfNull(Object field, String fieldName) {
+        if (null == field) {
+            throw createMissingFieldException(fieldName);
+        }
+    }
+
+    private AlertRuntimeException createMissingFieldException(String fieldName) {
+        return new AlertRuntimeException(String.format("Missing required field: '%s'", fieldName));
     }
 
 }
