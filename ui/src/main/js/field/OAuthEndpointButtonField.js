@@ -1,50 +1,48 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
 import FieldsPopUp from 'field/FieldsPopUp';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
-import { connect } from 'react-redux';
 import StatusMessage from 'field/StatusMessage';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import FieldsPanel from './FieldsPanel';
 
-class OAuthEndpointButtonField extends Component {
-    constructor(props) {
-        super(props);
+const OAuthEndpointButtonField = ({
+    id,
+    buttonLabel,
+    csrfToken,
+    currentConfig,
+    description,
+    endpoint,
+    errorValue,
+    fields,
+    fieldKey,
+    label,
+    labelClass,
+    onChange,
+    readOnly,
+    required,
+    requiredRelatedFields,
+    showDescriptionPlaceHolder,
+    statusMessage
+}) => {
+    const [showModal, setShowModal] = useState(false);
+    const [fieldError, setFieldError] = useState(errorValue);
+    const [success, setSuccess] = useState(false);
+    const [progress, setProgress] = useState(false);
+    const [modalConfig, setModalConfig] = useState({});
 
-        this.onSendClick = this.onSendClick.bind(this);
-        this.flipShowModal = this.flipShowModal.bind(this);
+    useEffect(() => {
+        setFieldError(errorValue);
+        setSuccess(false);
+    }, [errorValue]);
 
-        this.state = {
-            showModal: false,
-            fieldError: this.props.errorValue,
-            success: false,
-            progress: false,
-            authenticated: false
-        };
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        const { errorValue } = prevProps;
-        const currentError = this.props.errorValue;
-        if (errorValue !== currentError) {
-            this.setState({
-                fieldError: currentError,
-                success: false
-            });
-        }
-    }
-
-    onSendClick(event, popupData) {
-        this.setState({
-            fieldError: this.props.errorValue,
-            progress: true,
-            success: false
-        });
-        const {
-            fieldKey, csrfToken, onChange, currentConfig, endpoint, requiredRelatedFields
-        } = this.props;
+    const onSendClick = (event, popupData) => {
+        setFieldError(errorValue);
+        setProgress(true);
+        setSuccess(false);
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
@@ -52,7 +50,7 @@ class OAuthEndpointButtonField extends Component {
             response.json()
                 .then((data) => {
                     const {
-                        authenticated, authorizationUrl, message
+                        authorizationUrl, message
                     } = data;
                     const target = {
                         name: [fieldKey],
@@ -61,81 +59,70 @@ class OAuthEndpointButtonField extends Component {
                     };
                     onChange({ target });
                     const okRequest = HTTPErrorUtils.isOk(response.status);
-                    this.setState({
-                        authenticated
-                    });
                     if (okRequest) {
                     // REDIRECT: This is where we redirect the current tab to the Azure OAuth URL.
                         window.location.replace(authorizationUrl);
                     } else {
-                        this.setState({
-                            fieldError: {
-                                severity: 'ERROR',
-                                fieldMessage: message,
-                                progress: false
-                            }
-                        });
+                        setFieldError(HTTPErrorUtils.createFieldError(message));
+                        setProgress(false);
                     }
                 });
         });
-    }
+    };
 
-    flipShowModal() {
-        const { fields } = this.props;
+    const flipShowModal = () => {
         if (fields.length > 0) {
-            this.setState({
-                showModal: !this.state.showModal
-            });
+            setShowModal(!showModal);
         } else {
-            this.onSendClick({});
+            onSendClick({});
         }
-    }
+    };
 
-    render() {
-        const {
-            buttonLabel, fields, fieldKey, readOnly, statusMessage
-        } = this.props;
-        const {
-            authenticated, progress, success
-        } = this.state;
+    return (
+        <div>
+            <LabeledField
+                id={id}
+                description={description}
+                errorName={fieldKey}
+                errorValue={fieldError}
+                label={label}
+                labelClass={labelClass}
+                required={required}
+                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+            >
+                <div className="d-inline-flex p-2 col-sm-8">
+                    <GeneralButton
+                        id={fieldKey}
+                        onClick={flipShowModal}
+                        disabled={readOnly}
+                        performingAction={progress}
+                    >
+                        {buttonLabel}
+                    </GeneralButton>
+                    {success
+                    && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
 
-        const endpointField = (
-            <div className="d-inline-flex p-2 col-sm-8">
-                <GeneralButton
-                    id={fieldKey}
-                    onClick={this.flipShowModal}
-                    disabled={readOnly}
-                    performingAction={progress}
-                >
-                    {buttonLabel}
-                </GeneralButton>
-                {success
-                && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
-
-            </div>
-        );
-
-        return (
-            <div>
-                <LabeledField
-                    field={endpointField}
-                    {...this.props}
-                    errorName={fieldKey}
-                    errorValue={this.state.fieldError}
+                </div>
+            </LabeledField>
+            <FieldsPopUp
+                onCancel={flipShowModal}
+                handleSubmit={onSendClick}
+                title={buttonLabel}
+                show={showModal}
+                okLabel="Send"
+            >
+                <FieldsPanel
+                    descriptorFields={fields}
+                    currentConfig={currentConfig}
+                    getCurrentState={() => modalConfig}
+                    setStateFunction={setModalConfig}
+                    csrfToken={csrfToken}
+                    fieldErrors={{}}
                 />
-                <FieldsPopUp
-                    onCancel={this.flipShowModal}
-                    fields={fields}
-                    handleSubmit={this.onSendClick}
-                    title={buttonLabel}
-                    show={this.state.showModal}
-                    okLabel="Send"
-                />
-            </div>
-
-        );
-    }
-}
+            </FieldsPopUp>
+        </div>
+    );
+};
 
 OAuthEndpointButtonField.propTypes = {
     id: PropTypes.string,
@@ -147,26 +134,28 @@ OAuthEndpointButtonField.propTypes = {
     onChange: PropTypes.func.isRequired,
     fields: PropTypes.array,
     requiredRelatedFields: PropTypes.array,
-    value: PropTypes.bool,
-    name: PropTypes.string,
     errorValue: PropTypes.string,
     readOnly: PropTypes.bool,
-    statusMessage: PropTypes.string
+    statusMessage: PropTypes.string,
+    description: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
 };
 
 OAuthEndpointButtonField.defaultProps = {
     id: 'oauthEndpointButtonFieldId',
-    value: false,
     fields: [],
-    requiredRelatedFields: [],
-    name: '',
-    errorValue: null,
     readOnly: false,
-    statusMessage: 'Success'
+    requiredRelatedFields: [],
+    statusMessage: 'Success',
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+
 };
 
-const mapStateToProps = (state) => ({
-    csrfToken: state.session.csrfToken
-});
-
-export default connect(mapStateToProps, null)(OAuthEndpointButtonField);
+export default OAuthEndpointButtonField;

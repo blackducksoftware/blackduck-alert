@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function DescriptorOption(props) {
+function DescriptorOption({ label, value, style }) {
     return (
-        <div style={props.style}>
-            <span key={`name-${props.value}`}>{props.label}</span>
+        <div style={style}>
+            <span key={`name-${value}`}>{label}</span>
         </div>
     );
 }

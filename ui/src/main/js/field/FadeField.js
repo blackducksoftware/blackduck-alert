@@ -1,81 +1,31 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-class FadeField extends Component {
-    constructor(props) {
-        super(props);
+const FadeField = ({ timeout, children }) => {
+    const [showChildren, setShowChildren] = useState(true);
+    const [removeChildren, setRemoveChildren] = useState(false);
 
-        this.state = {
-            showChildren: true,
-            removeChildren: false
+    useEffect(() => {
+        const displayTimer = setTimeout(() => {
+            setShowChildren(false);
+        }, timeout);
+        const hideTimer = setTimeout(() => {
+            setRemoveChildren(true);
+        }, timeout + 2000);
+        return () => {
+            clearTimeout(displayTimer);
+            clearTimeout(hideTimer);
         };
+    }, [children]);
 
-        this.displayTimer = null;
-        this.hideTimer = null;
-    }
-
-    componentDidMount() {
-        const self = this;
-        this.displayTimer = setTimeout(() => {
-            self.setState({
-                showChildren: false
-            });
-        }, this.props.timeout);
-
-        this.hideTimer = setTimeout(() => {
-            self.setState({
-                removeChildren: true
-            });
-        }, this.props.timeout + 2000);
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.children !== prevProps.children) {
-            if (this.displayTimer !== null) {
-                clearTimeout(this.displayTimer);
-            }
-            if (this.hideTimer !== null) {
-                clearTimeout(this.hideTimer);
-            }
-
-            const self = this;
-            // This will trigger the fade after the specified time
-            this.displayTimer = setTimeout(() => {
-                self.setState({
-                    showChildren: false
-                });
-            }, this.props.timeout);
-
-            // This should remove the children after the fade
-            this.hideTimer = setTimeout(() => {
-                self.setState({
-                    removeChildren: true
-                });
-            }, this.props.timeout + 2000);
-        }
-    }
-
-    componentWillUnmount() {
-        clearTimeout(this.displayTimer);
-        clearTimeout(this.hideTimer);
-    }
-
-    render() {
-        let { children } = this.props;
-        let clazz = 'visibleField';
-        if (!this.state.showChildren) {
-            clazz = 'fadingField';
-        }
-        if (this.state.removeChildren) {
-            children = null;
-        }
-        return (
-            <div className={clazz}>
-                {children}
-            </div>
-        );
-    }
-}
+    const componentChildren = removeChildren ? null : children;
+    const clazz = !showChildren ? 'fadingField' : 'visibleField';
+    return (
+        <div className={clazz}>
+            {componentChildren}
+        </div>
+    );
+};
 
 FadeField.propTypes = {
     children: PropTypes.any,

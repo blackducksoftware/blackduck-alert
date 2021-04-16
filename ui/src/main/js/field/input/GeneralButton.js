@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const GeneralButton = ({
-    onClick, children, className, id, disabled, performingAction
+    id, children, className, disabled, onClick, performingAction
 }) => (
     <div>
         <button
@@ -30,17 +30,17 @@ const GeneralButton = ({
 GeneralButton.defaultProps = {
     children: 'Click Me',
     className: 'btn-md',
-    id: 'generalButtonId',
     disabled: false,
+    id: 'generalButtonId',
     performingAction: false
 };
 
 GeneralButton.propTypes = {
     children: PropTypes.string,
     className: PropTypes.string,
+    disabled: PropTypes.bool,
     id: PropTypes.string,
     onClick: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
     performingAction: PropTypes.bool
 };
 

@@ -138,7 +138,7 @@ class TaskManagement extends Component {
 
     render() {
         const {
-            label, description, fetching, errorMessage
+            label, description, fetching, errorMessage, autoRefresh
         } = this.props;
         return (
             <div>
@@ -148,6 +148,7 @@ class TaskManagement extends Component {
                 />
                 <TableDisplay
                     id="task-management"
+                    autoRefresh={autoRefresh}
                     newConfigFields={this.createModalFields}
                     modalTitle="Task Details"
                     clearModalFieldState={this.clearModalFieldState}
@@ -178,7 +179,8 @@ TaskManagement.propTypes = {
     description: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
-    getTasks: PropTypes.func.isRequired
+    getTasks: PropTypes.func.isRequired,
+    autoRefresh: PropTypes.bool
 };
 
 TaskManagement.defaultProps = {
@@ -189,7 +191,8 @@ TaskManagement.defaultProps = {
 const mapStateToProps = (state) => ({
     tasks: state.tasks.data,
     errorMessage: state.tasks.error.message,
-    fetching: state.tasks.fetching
+    fetching: state.tasks.fetching,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +29,6 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 
 @Component
 public final class NotificationProcessorV2 {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
     private final NotificationContentProcessor notificationContentProcessor;
@@ -71,13 +68,13 @@ public final class NotificationProcessorV2 {
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)
                                                                         .flatMap(List::stream)
                                                                         .collect(Collectors.toList());
-        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        do {
-            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
+        while (!statefulAlertPage.isEmpty()) {
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : statefulAlertPage.getCurrentModels()) {
                 processAndDistribute(jobNotificationWrapper);
             }
-            mappedNotifications = mappedNotifications.retrieveNextPage();
-        } while (mappedNotifications.hasNextPage() || !mappedNotifications.isEmpty());
+            statefulAlertPage = statefulAlertPage.retrieveNextPage();
+        }
     }
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {

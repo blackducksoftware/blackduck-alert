@@ -1,26 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import LabeledField from 'field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 
-class TextInput extends Component {
-    render() {
-        const {
-            inputClass, id, readOnly, autoFocus, name, value, onChange, optionList
-        } = this.props;
+const TextInput = ({
+    id, autoFocus, description, errorName, errorValue, inputClass, label, labelClass, name, onChange, optionList, readOnly, required, showDescriptionPlaceHolder, value
+}) => {
+    const listId = optionList ? 'listOptions' : null;
+    const dataListOptionObjects = !optionList ? null : optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
 
-        let listId = null;
-        let dataListOptions = null;
-        if (optionList) {
-            listId = 'listOptions';
-            const dataListOptionObjects = optionList.map((currentOption) => (<option key={`${currentOption}Key`} value={currentOption} />));
-            dataListOptions = (
-                <datalist id={listId}>
-                    {dataListOptionObjects}
-                </datalist>
-            );
-        }
-
-        const field = (
+    return (
+        <LabeledField
+            labelClass={labelClass}
+            description={description}
+            showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+            label={label}
+            errorName={errorName}
+            errorValue={errorValue}
+            required={required}
+        >
             <div className="d-inline-flex flex-column p-2 col-sm-8">
                 <input
                     id={id}
@@ -33,38 +30,51 @@ class TextInput extends Component {
                     onChange={onChange}
                     list={listId}
                 />
-                {dataListOptions}
+                {optionList
+                && (
+                    <datalist id={listId}>
+                        {dataListOptionObjects}
+                    </datalist>
+                )}
             </div>
-        );
-
-        return (
-            <LabeledField field={field} {...this.props} />
-        );
-    }
-}
+        </LabeledField>
+    );
+};
 
 TextInput.propTypes = {
     id: PropTypes.string,
-    isSet: PropTypes.bool,
     readOnly: PropTypes.bool,
     autoFocus: PropTypes.bool,
     inputClass: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.string,
     onChange: PropTypes.func,
-    optionList: PropTypes.array
+    optionList: PropTypes.array,
+    description: PropTypes.string,
+    errorName: PropTypes.string,
+    errorValue: PropTypes.object,
+    label: PropTypes.string.isRequired,
+    labelClass: PropTypes.string,
+    required: PropTypes.bool,
+    showDescriptionPlaceHolder: PropTypes.bool
+
 };
 
 TextInput.defaultProps = {
     id: 'textInputId',
-    isSet: false,
-    value: '',
-    readOnly: false,
     autoFocus: false,
     inputClass: 'form-control',
     name: 'name',
     onChange: () => true,
-    optionList: null
+    optionList: null,
+    readOnly: false,
+    value: '',
+    description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
+    errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
+    errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
+    labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
+    required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
 };
 
 export default TextInput;

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SubmitButton = ({ children, id }) => (
+const SubmitButton = ({ id, children }) => (
     <button id={id} className="btn btn-md btn-primary" type="submit">{children}</button>
 );
 

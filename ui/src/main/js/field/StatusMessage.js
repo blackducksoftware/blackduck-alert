@@ -1,76 +1,67 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'react-bootstrap/Alert';
 import FadeField from 'field/FadeField';
 import MessageFormatter from 'field/MessageFormatter';
 
-class StatusMessage extends Component {
-    constructor(props) {
-        super(props);
+const StatusMessage = ({
+    id, errorMessage, actionMessage, errorIsDetailed
+}) => {
+    const [showError, setShowError] = useState(false);
+    const [showMessage, setShowMessage] = useState(false);
 
-        this.state = {
-            showError: true,
-            showMessage: true
-        };
-    }
-
-    componentDidUpdate(prevProps) {
-        const { showError, showMessage } = this.state;
-        const { actionMessage, errorMessage } = this.props;
-        if (errorMessage !== prevProps.errorMessage && !showError) {
-            this.setState({ showError: true });
+    const alwaysInFront = {
+        // It's over 9000!!!
+        overlay: { zIndex: 9001 }
+    };
+    const onErrorClose = () => {
+        setShowError(false);
+    };
+    const onMessageClose = () => {
+        setShowMessage(false);
+    };
+    useEffect(() => {
+        if (!showError) {
+            setShowError(true);
         }
-
-        if (actionMessage !== prevProps.actionMessage && !showMessage) {
-            this.setState({ showMessage: true });
+    }, [errorMessage]);
+    useEffect(() => {
+        if (!showMessage) {
+            setShowMessage(true);
         }
-    }
+    }, [actionMessage]);
 
-    render() {
-        const { showError, showMessage } = this.state;
-        const { id, errorMessage, actionMessage, errorIsDetailed } = this.props;
-        const onErrorClose = () => {
-            this.setState({ showError: false });
-        };
-        const onMessageClose = () => {
-            this.setState({ showMessage: false });
-        };
-        const alwaysInFront = {
-            // It's over 9000!!!
-            overlay: { zIndex: 9001 }
-        };
-        return (
-            <div id={id}>
-                {errorMessage && showError
-                && (
+    return (
+        <div id={id}>
+            {errorMessage && showError
+            && (
+                <Alert
+                    style={alwaysInFront}
+                    bsPrefix="statusAlert alert"
+                    dismissible
+                    onClose={onErrorClose}
+                    variant="danger"
+                >
+                    <MessageFormatter message={errorMessage} errorIsDetailed={errorIsDetailed} />
+                </Alert>
+            )}
+
+            {actionMessage && !errorMessage && showMessage
+            && (
+                <FadeField>
                     <Alert
-                        style={alwaysInFront}
                         bsPrefix="statusAlert alert"
                         dismissible
-                        onClose={onErrorClose}
-                        variant="danger"
+                        onClose={onMessageClose}
+                        variant="success"
                     >
-                        <MessageFormatter message={errorMessage} errorIsDetailed={errorIsDetailed} />
+                        {actionMessage}
                     </Alert>
-                )}
-
-                {actionMessage && !errorMessage && showMessage
-                && (
-                    <FadeField>
-                        <Alert
-                            bsPrefix="statusAlert alert"
-                            dismissible
-                            onClose={onMessageClose}
-                            variant="success"
-                        >
-                            {actionMessage}
-                        </Alert>
-                    </FadeField>
-                )}
-            </div>
-        );
-    }
-}
+                </FadeField>
+            )}
+        </div>
+    );
+};
 
 StatusMessage.propTypes = {
     id: PropTypes.string,

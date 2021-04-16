@@ -3,6 +3,13 @@ export const MESSAGES = {
     FORBIDDEN_READ: 'You are not permitted to view this information.'
 };
 
+export function createFieldError(message) {
+    return {
+        severity: 'ERROR',
+        fieldMessage: message
+    };
+}
+
 export function createEmptyErrorObject() {
     return {
         message: '',
