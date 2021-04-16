@@ -54,7 +54,7 @@ public class DistributionJobModelBuilder {
             throw createMissingFieldException(NOTIFICATION_TYPES_FIELD_NAME);
         }
 
-        if (filterByProject && (StringUtils.isBlank(projectNamePattern) || projectFilterDetails.isEmpty())) {
+        if (filterByProject && StringUtils.isBlank(projectNamePattern) && projectFilterDetails.isEmpty()) {
             throw new AlertRuntimeException("Missing project details");
         }
 
@@ -70,7 +70,7 @@ public class DistributionJobModelBuilder {
             blackDuckGlobalConfigId,
             filterByProject,
             projectNamePattern,
-            this.notificationTypes,
+            notificationTypes,
             projectFilterDetails,
             policyFilterPolicyNames,
             vulnerabilityFilterSeverityNames,
