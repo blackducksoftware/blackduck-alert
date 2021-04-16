@@ -46,7 +46,7 @@ public class JobNotificationMapper {
      * Filter by Policy name (From notification if applicable)
      * @param detailedContents List of notifications that will be iterated over and applied to jobs that are found
      * @param frequencies      an Additional filter to specify when querying data from the DB
-     * @return a {@code StatefulAlertPage} where a page of distributions job is used to map to a list of notifications that were passed in.
+     * @return a {@code StatefulAlertPage} where a page of distribution jobs is used to map to a list of notifications that were passed in.
      */
     public StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
         FilteredJobWrapperPageRetriever filteredJobWrapperPageRetriever = new FilteredJobWrapperPageRetriever(detailedContents, frequencies);

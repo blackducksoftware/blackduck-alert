@@ -11,12 +11,10 @@ import java.util.List;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.util.Stringable;
 
 // NotificationContentWrapper is not serializable, so this class cannot be serializable (and doesn't need to be)
-//FIXME: This can't extend AlertSerializableModel
-//public class FilteredJobNotificationWrapper extends Stringable {
-public class FilteredJobNotificationWrapper extends AlertSerializableModel {
+public class FilteredJobNotificationWrapper extends Stringable {
     private final UUID jobId;
     private final ProcessingType processingType;
     private final String channelName;
