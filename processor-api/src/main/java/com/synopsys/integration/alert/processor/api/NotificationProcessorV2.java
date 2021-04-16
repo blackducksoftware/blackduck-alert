@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
-import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPagedModel;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 
 @Component
 public final class NotificationProcessorV2 {
@@ -68,16 +68,12 @@ public final class NotificationProcessorV2 {
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)
                                                                         .flatMap(List::stream)
                                                                         .collect(Collectors.toList());
-        StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        while (mappedNotifications.hasModels()) {
-            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
+        while (!statefulAlertPage.isEmpty()) {
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : statefulAlertPage.getCurrentModels()) {
                 processAndDistribute(jobNotificationWrapper);
             }
-            if (mappedNotifications.hasNextPage()) {
-                mappedNotifications = mappedNotifications.retrieveNextPage();
-            } else {
-                mappedNotifications = StatefulAlertPagedModel.empty();
-            }
+            statefulAlertPage = statefulAlertPage.retrieveNextPage();
         }
     }
 

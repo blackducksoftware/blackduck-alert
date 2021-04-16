@@ -86,17 +86,13 @@ public class JobNotificationMapperTestIT {
         Set<FilteredJobNotificationWrapper> notificationWrappers = new HashSet<>();
         Set<NotificationContentWrapper> jobNotifications = new HashSet<>();
 
-        StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-        while (mappedNotifications.hasModels()) {
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(notifications, List.of(FrequencyType.REAL_TIME));
+        while (!mappedNotifications.isEmpty()) {
             notificationWrappers.addAll(mappedNotifications.getCurrentModels());
             for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
                 jobNotifications.addAll(jobNotificationWrapper.getJobNotifications());
             }
-            if (mappedNotifications.hasNextPage()) {
-                mappedNotifications = mappedNotifications.retrieveNextPage();
-            } else {
-                mappedNotifications = StatefulAlertPagedModel.empty();
-            }
+            mappedNotifications = mappedNotifications.retrieveNextPage();
         }
 
         assertEquals(expectedNumOfJobs, notificationWrappers.size());
@@ -108,9 +104,8 @@ public class JobNotificationMapperTestIT {
         createJobs(createDistributionJobModels());
 
         JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
-        StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
 
-        assertEquals(1, mappedNotifications.getTotalPages());
         assertEquals(3, mappedNotifications.getCurrentModels().size());
         for (FilteredJobNotificationWrapper mappedJobNotifications : mappedNotifications.getCurrentModels()) {
             List<NotificationContentWrapper> jobNotifications = mappedJobNotifications.getJobNotifications();
@@ -122,8 +117,8 @@ public class JobNotificationMapperTestIT {
     @Test
     public void mapNoJobsTest() {
         JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
-        StatefulAlertPagedModel<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
-        assertEquals(0, mappedNotifications.getTotalPages(), "Expected the list to be empty");
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        assertEquals(0, mappedNotifications.getCurrentModels().size(), "Expected the list to be empty");
     }
 
     @Test
@@ -208,10 +203,9 @@ public class JobNotificationMapperTestIT {
         createJobs(List.of(jobRequestModel));
 
         JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
-        StatefulAlertPagedModel<FilteredJobNotificationWrapper> pageMappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> pageMappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
         List<FilteredJobNotificationWrapper> mappedNotifications = pageMappedNotifications.getCurrentModels();
 
-        assertEquals(1, pageMappedNotifications.getTotalPages());
         assertEquals(1, mappedNotifications.size());
         FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
 
@@ -222,7 +216,7 @@ public class JobNotificationMapperTestIT {
     private void testProjectJob() {
         JobNotificationMapper defaultJobNotificationExtractor = new JobNotificationMapper(processingJobAccessor);
         List<DetailedNotificationContent> notificationWrappers = createNotificationWrappers();
-        StatefulAlertPagedModel<FilteredJobNotificationWrapper> pageMappedNotifications = defaultJobNotificationExtractor.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> pageMappedNotifications = defaultJobNotificationExtractor.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
         List<FilteredJobNotificationWrapper> filteredJobNotificationWrappers = pageMappedNotifications.getCurrentModels();
 
         assertEquals(1, filteredJobNotificationWrappers.size());
