@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck.mock;
+package com.synopsys.integration.alert.provider.blackduck;
 
 import java.util.ArrayList;
 import java.util.Collection;

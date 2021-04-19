@@ -21,20 +21,27 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
+import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckMessageBomComponentDetailsCreator {
+    private static final LinkMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> VULNERABILITIES_LINK =
+        new LinkMultipleResponses<>("vulnerabilities", BlackDuckProjectVersionComponentVulnerabilitiesView.class);
+
     private final BlackDuckApiClient blackDuckApiClient;
+    private final BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator;
     private final BlackDuckComponentPolicyDetailsCreator policyDetailsCreator;
 
     public BlackDuckMessageBomComponentDetailsCreator(
         BlackDuckApiClient blackDuckApiClient,
+        BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator,
         BlackDuckComponentPolicyDetailsCreator policyDetailsCreator
     ) {
         this.blackDuckApiClient = blackDuckApiClient;
+        this.vulnerabilityDetailsCreator = vulnerabilityDetailsCreator;
         this.policyDetailsCreator = policyDetailsCreator;
     }
 
@@ -56,7 +63,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             component = new LinkableItem(BlackDuckMessageLabels.LABEL_COMPONENT, bomComponent.getComponentName(), componentQueryLink);
         }
 
-        ComponentVulnerabilities componentVulnerabilities = retrieveComponentVulnerabilities();
+        ComponentVulnerabilities componentVulnerabilities = retrieveComponentVulnerabilities(bomComponent);
         List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent);
 
         LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
@@ -110,8 +117,13 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
-    private ComponentVulnerabilities retrieveComponentVulnerabilities() {
-        return ComponentVulnerabilities.none();
+    private ComponentVulnerabilities retrieveComponentVulnerabilities(ProjectVersionComponentView bomComponent) throws IntegrationException {
+        if (!vulnerabilityDetailsCreator.hasSecurityRisk(bomComponent)) {
+            return ComponentVulnerabilities.none();
+        }
+
+        List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(bomComponent, VULNERABILITIES_LINK);
+        return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilities);
     }
 
     private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentView bomComponent) throws IntegrationException {
