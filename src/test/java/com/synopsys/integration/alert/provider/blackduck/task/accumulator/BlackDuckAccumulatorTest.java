@@ -30,14 +30,16 @@ public class BlackDuckAccumulatorTest {
      * This test should simulate a normal run of the accumulator with notifications present.
      */
     @Test
-    public void runTest() throws IntegrationException {
+    public void runTest() throws Exception {
         ProviderTaskPropertiesAccessor taskPropertiesAccessor = Mockito.mock(ProviderTaskPropertiesAccessor.class);
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckValidator validator = createBlackDuckValidator(blackDuckProperties, true);
 
-        StatefulAlertPage<NotificationView, IntegrationException> notificationPage = createMockNotificationPage();
+        PageRetriever pageRetriever = Mockito.mock(PageRetriever.class);
+        StatefulAlertPage<NotificationView, IntegrationException> notificationPage = createMockNotificationPage(pageRetriever);
         BlackDuckNotificationRetriever notificationRetriever = Mockito.mock(BlackDuckNotificationRetriever.class);
         Mockito.when(notificationRetriever.retrievePageOfFilteredNotifications(Mockito.any(), Mockito.anyList())).thenReturn(notificationPage);
+        Mockito.when(pageRetriever.retrieveNextPage(Mockito.anyInt(), Mockito.anyInt())).thenReturn(AlertPagedDetails.emptyPage());
         BlackDuckNotificationRetrieverFactory notificationRetrieverFactory = createBlackDuckNotificationRetrieverFactory(blackDuckProperties, notificationRetriever);
 
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
@@ -113,10 +115,10 @@ public class BlackDuckAccumulatorTest {
         return notificationRetrieverFactory;
     }
 
-    private StatefulAlertPage<NotificationView, IntegrationException> createMockNotificationPage() throws IntegrationException {
+    private StatefulAlertPage<NotificationView, IntegrationException> createMockNotificationPage(PageRetriever pageRetriever) throws IntegrationException {
         NotificationView notificationView = createMockNotificationView();
         AlertPagedDetails alertPagedDetails = new AlertPagedDetails(1, 1, 1, List.of(notificationView));
-        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, Mockito.mock(PageRetriever.class));
+        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, pageRetriever);
         return statefulAlertPage;
     }
 
