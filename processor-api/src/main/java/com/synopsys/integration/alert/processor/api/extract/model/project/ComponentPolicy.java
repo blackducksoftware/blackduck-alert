@@ -11,11 +11,13 @@ public class ComponentPolicy {
     private final String policyName;
     private final ComponentConcernSeverity severity;
     private final boolean overridden;
+    private final boolean vulnerabilityPolicy;
 
-    public ComponentPolicy(String policyName, ComponentConcernSeverity severity, boolean overridden) {
+    public ComponentPolicy(String policyName, ComponentConcernSeverity severity, boolean overridden, boolean vulnerabilityPolicy) {
         this.policyName = policyName;
         this.severity = severity;
         this.overridden = overridden;
+        this.vulnerabilityPolicy = vulnerabilityPolicy;
     }
 
     public String getPolicyName() {
@@ -28,6 +30,10 @@ public class ComponentPolicy {
 
     public boolean isOverridden() {
         return overridden;
+    }
+
+    public boolean isVulnerabilityPolicy() {
+        return vulnerabilityPolicy;
     }
 
 }
