@@ -23,27 +23,13 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
         @Nullable LinkableItem componentVersion,
         ComponentVulnerabilities componentVulnerabilities,
         List<ComponentPolicy> componentPolicies,
-        LinkableItem license,
-        String usage,
-        List<LinkableItem> additionalAttributes,
-        String blackDuckIssuesUrl,
-        List<ComponentConcern> componentConcerns
-    ) {
-        super(component, componentVersion, componentVulnerabilities, componentPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
-        this.componentConcerns = componentConcerns;
-    }
-
-    @Deprecated
-    public BomComponentDetails(
-        LinkableItem component,
-        @Nullable LinkableItem componentVersion,
         List<ComponentConcern> componentConcerns,
         LinkableItem license,
         String usage,
         List<LinkableItem> additionalAttributes,
         String blackDuckIssuesUrl
     ) {
-        super(component, componentVersion, ComponentVulnerabilities.none(), List.of(), license, usage, additionalAttributes, blackDuckIssuesUrl);
+        super(component, componentVersion, componentVulnerabilities, componentPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
         this.componentConcerns = componentConcerns;
     }
 
@@ -81,6 +67,8 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
         BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(
             getComponent(),
             getComponentVersion().orElse(null),
+            getComponentVulnerabilities(),
+            getComponentPolicies(),
             combinedComponentConcerns,
             getLicense(),
             getUsage(),
