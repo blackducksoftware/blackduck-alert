@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.processor.api;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +25,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 
 @Component
 public final class NotificationProcessorV2 {
@@ -53,7 +53,7 @@ public final class NotificationProcessorV2 {
         this.notificationAccessor = notificationAccessor;
     }
 
-    public final void processNotifications(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
+    public final void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         try {
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
@@ -62,25 +62,32 @@ public final class NotificationProcessorV2 {
         }
     }
 
-    private void processAndDistribute(List<AlertNotificationModel> notifications, Collection<FrequencyType> frequencies) {
+    private void processAndDistribute(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
                                                                         .stream()
                                                                         .map(notificationDetailExtractionDelegator::wrapNotification)
                                                                         .flatMap(List::stream)
                                                                         .collect(Collectors.toList());
-        List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications) {
-            List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
-            Set<Long> notificationIds = filteredNotifications
-                                            .stream()
-                                            .map(NotificationContentWrapper::getNotificationId)
-                                            .collect(Collectors.toSet());
-
-            ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
-            ProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
-
-            providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
+        while (!statefulAlertPage.isEmpty()) {
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : statefulAlertPage.getCurrentModels()) {
+                processAndDistribute(jobNotificationWrapper);
+            }
+            statefulAlertPage = statefulAlertPage.retrieveNextPage();
         }
+    }
+
+    private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
+        List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
+        Set<Long> notificationIds = filteredNotifications
+                                        .stream()
+                                        .map(NotificationContentWrapper::getNotificationId)
+                                        .collect(Collectors.toSet());
+
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
+        ProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
+
+        providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
     }
 
     private void clearCaches() {

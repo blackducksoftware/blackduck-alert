@@ -48,7 +48,6 @@ import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;
@@ -289,38 +288,6 @@ class StaticJobAccessorTest {
         assertEquals(0, pageOfJobs.getCurrentPage());
         assertEquals(10, pageOfJobs.getPageSize());
         assertEquals(0, pageOfJobs.getModels().size());
-    }
-
-    @Test
-    void getMatchingEnabledJobsTest() {
-        UUID jobId = UUID.randomUUID();
-        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
-
-        Mockito.when(distributionJobRepository.findMatchingEnabledJob(Mockito.any(), Mockito.any())).thenReturn(List.of(distributionJobEntity));
-
-        List<DistributionJobModel> matchingEnabledJobs = jobAccessor.getMatchingEnabledJobs(3L, NotificationType.BOM_EDIT);
-
-        assertEquals(1, matchingEnabledJobs.size());
-        DistributionJobModel distributionJobModel = matchingEnabledJobs.get(0);
-        assertEquals(jobId, distributionJobModel.getJobId());
-        assertEquals(jobName, distributionJobModel.getName());
-    }
-
-    @Test
-    void getMatchingEnabledJobsWithFrequencyTest() {
-        UUID jobId = UUID.randomUUID();
-        DistributionJobEntity distributionJobEntity = createSlackDistributionJobEntity(jobId);
-        distributionJobEntity.setBlackDuckJobDetails(new BlackDuckJobDetailsEntity(jobId, 3L, true, "*"));
-
-        Mockito.when(distributionJobRepository.findMatchingEnabledJob(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(List.of(distributionJobEntity));
-
-        List<DistributionJobModel> matchingEnabledJobs = jobAccessor.getMatchingEnabledJobs(FrequencyType.DAILY, 3L, NotificationType.BOM_EDIT);
-
-        assertEquals(1, matchingEnabledJobs.size());
-        DistributionJobModel distributionJobModel = matchingEnabledJobs.get(0);
-        assertEquals(jobId, distributionJobModel.getJobId());
-        assertEquals(jobName, distributionJobModel.getName());
     }
 
     @Test

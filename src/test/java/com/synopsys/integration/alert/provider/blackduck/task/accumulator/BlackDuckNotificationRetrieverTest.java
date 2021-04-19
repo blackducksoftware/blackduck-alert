@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
-import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetriever.BlackDuckNotificationPage;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
@@ -31,8 +31,8 @@ public class BlackDuckNotificationRetrieverTest {
         BlackDuckAccumulatorSearchDateManager dateRangeCreator = createDateRangeCreator();
 
         BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(new BlackDuckRequestFactory(), blackDuckApiClient);
-        BlackDuckNotificationPage notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRangeCreator.retrieveNextSearchDateRange(), List.of());
-        assertEquals(pageResponse.getItems(), notificationPage.getCurrentNotifications());
+        StatefulAlertPage<NotificationView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRangeCreator.retrieveNextSearchDateRange(), List.of());
+        assertEquals(pageResponse.getItems(), notificationPage.getCurrentModels());
     }
 
     private BlackDuckAccumulatorSearchDateManager createDateRangeCreator() {

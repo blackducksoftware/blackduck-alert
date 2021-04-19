@@ -2,24 +2,26 @@ package com.synopsys.integration.alert.processor.api.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobRequestModel;
@@ -31,35 +33,81 @@ import com.synopsys.integration.alert.provider.blackduck.processor.model.Vulnera
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.generated.enumeration.VulnerabilitySeverityType;
 import com.synopsys.integration.blackduck.api.manual.component.AffectedProjectVersion;
-import com.synopsys.integration.blackduck.api.manual.component.PolicyOverrideNotificationContent;
+import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Transactional
 @AlertIntegrationTest
-public class DefaultJobNotificationExtractorTestIT {
+public class JobNotificationMapperTestIT {
     private static final List<UUID> CREATED_JOBS = new LinkedList<>();
     private static final String PROJECT_NAME_1 = "test_project";
     private static final String POLICY_FILTER_NAME = "policyName";
 
     @Autowired
     public JobAccessor jobAccessor;
+    @Autowired
+    public ProcessingJobAccessor processingJobAccessor;
 
     @AfterEach
     public void removeCreatedJobsIfExist() {
         CREATED_JOBS.forEach(jobAccessor::deleteJob);
         CREATED_JOBS.clear();
     }
+    
+    @Test
+    public void test2Notifications15JobsMultiSeverity() {
+        //Test the case where a job may have one or multiple types of vulnerability severities across multiple pages.
+        createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 100));
+        createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name()), 15));
+        List<DetailedNotificationContent> notifications = new ArrayList<>();
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), "testProject1"));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), "testProject2"));
+
+        runTest(notifications, 115);
+    }
+
+    @Test
+    public void test3Notifications30JobsMultiSeverity() {
+        //Test the case where a multiple jobs of differing vulnerability severities appear across multiple pages.
+        createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.LOW.name()), 115));
+        createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.HIGH.name()), 100));
+        createJobs(createDistributionJobModels(List.of(VulnerabilitySeverityType.CRITICAL.name()), 50));
+
+        List<DetailedNotificationContent> notifications = new ArrayList<>();
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.LOW.name()), "testProject1"));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.HIGH.name()), "testProject2"));
+        notifications.addAll(createVulnerabilityNotificationWrappers(List.of(VulnerabilitySeverityType.CRITICAL.name()), "testProject3"));
+
+        runTest(notifications, 265);
+    }
+
+    private void runTest(List<DetailedNotificationContent> notifications, int expectedNumOfJobs) {
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
+        Set<FilteredJobNotificationWrapper> notificationWrappers = new HashSet<>();
+        Set<NotificationContentWrapper> jobNotifications = new HashSet<>();
+
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(notifications, List.of(FrequencyType.REAL_TIME));
+        while (!mappedNotifications.isEmpty()) {
+            notificationWrappers.addAll(mappedNotifications.getCurrentModels());
+            for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
+                jobNotifications.addAll(jobNotificationWrapper.getJobNotifications());
+            }
+            mappedNotifications = mappedNotifications.retrieveNextPage();
+        }
+
+        assertEquals(expectedNumOfJobs, notificationWrappers.size());
+        assertEquals(notifications.size(), jobNotifications.size());
+    }
 
     @Test
     public void mapJobsTest() {
         createJobs(createDistributionJobModels());
 
-        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(jobAccessor);
-        List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
 
-        assertNotNull(mappedNotifications);
-        assertEquals(3, mappedNotifications.size());
-        for (FilteredJobNotificationWrapper mappedJobNotifications : mappedNotifications) {
+        assertEquals(3, mappedNotifications.getCurrentModels().size());
+        for (FilteredJobNotificationWrapper mappedJobNotifications : mappedNotifications.getCurrentModels()) {
             List<NotificationContentWrapper> jobNotifications = mappedJobNotifications.getJobNotifications();
             assertFalse(jobNotifications.isEmpty(), "Expected the list not to be empty");
             assertTrue(jobNotifications.size() < 4, "Expected the list to contain fewer elements");
@@ -68,9 +116,9 @@ public class DefaultJobNotificationExtractorTestIT {
 
     @Test
     public void mapNoJobsTest() {
-        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(jobAccessor);
-        List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
-        assertTrue(mappedNotifications.isEmpty(), "Expected the list to be empty");
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        assertEquals(0, mappedNotifications.getCurrentModels().size(), "Expected the list to be empty");
     }
 
     @Test
@@ -124,7 +172,6 @@ public class DefaultJobNotificationExtractorTestIT {
                 List.of()
             ))
         );
-
         testProjectJob();
     }
 
@@ -152,10 +199,25 @@ public class DefaultJobNotificationExtractorTestIT {
         testProjectJob();
     }
 
+    private void testSingleJob(DistributionJobRequestModel jobRequestModel, int expectedMappedNotifications) {
+        createJobs(List.of(jobRequestModel));
+
+        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(processingJobAccessor);
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> pageMappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
+        List<FilteredJobNotificationWrapper> mappedNotifications = pageMappedNotifications.getCurrentModels();
+
+        assertEquals(1, mappedNotifications.size());
+        FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
+
+        List<NotificationContentWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
+        assertEquals(expectedMappedNotifications, filterableNotificationWrappers.size());
+    }
+
     private void testProjectJob() {
-        JobNotificationMapper defaultJobNotificationExtractor = new JobNotificationMapper(jobAccessor);
+        JobNotificationMapper defaultJobNotificationExtractor = new JobNotificationMapper(processingJobAccessor);
         List<DetailedNotificationContent> notificationWrappers = createNotificationWrappers();
-        List<FilteredJobNotificationWrapper> filteredJobNotificationWrappers = defaultJobNotificationExtractor.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> pageMappedNotifications = defaultJobNotificationExtractor.mapJobsToNotifications(notificationWrappers, List.of(FrequencyType.REAL_TIME));
+        List<FilteredJobNotificationWrapper> filteredJobNotificationWrappers = pageMappedNotifications.getCurrentModels();
 
         assertEquals(1, filteredJobNotificationWrappers.size());
 
@@ -171,25 +233,28 @@ public class DefaultJobNotificationExtractorTestIT {
 
     }
 
-    private void testSingleJob(DistributionJobRequestModel jobRequestModel, int expectedMappedNotifications) {
-        createJobs(List.of(jobRequestModel));
-
-        JobNotificationMapper jobNotificationMapper = new JobNotificationMapper(jobAccessor);
-        List<FilteredJobNotificationWrapper> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(createNotificationWrappers(), List.of(FrequencyType.REAL_TIME));
-
-        assertEquals(1, mappedNotifications.size());
-        FilteredJobNotificationWrapper jobNotificationWrapper = mappedNotifications.get(0);
-
-        List<NotificationContentWrapper> filterableNotificationWrappers = jobNotificationWrapper.getJobNotifications();
-        assertEquals(expectedMappedNotifications, filterableNotificationWrappers.size());
-    }
-
     private void createJobs(List<DistributionJobRequestModel> jobs) {
         jobs
             .stream()
             .map(jobAccessor::createJob)
             .map(DistributionJobModel::getJobId)
             .forEach(CREATED_JOBS::add);
+    }
+
+    private List<DistributionJobRequestModel> createDistributionJobModels(List<String> vulnTypes, int numberOfJobs) {
+        List<DistributionJobRequestModel> jobModels = new ArrayList<>();
+        for (int i = 0; i < numberOfJobs; i++) {
+            DistributionJobRequestModel distributionJobRequestModel = createJobRequestModel(
+                FrequencyType.REAL_TIME,
+                ProcessingType.DIGEST,
+                List.of(),
+                List.of(NotificationType.VULNERABILITY.name()),
+                vulnTypes,
+                List.of()
+            );
+            jobModels.add(distributionJobRequestModel);
+        }
+        return jobModels;
     }
 
     private List<DistributionJobRequestModel> createDistributionJobModels() {
@@ -258,11 +323,20 @@ public class DefaultJobNotificationExtractorTestIT {
     }
 
     private VulnerabilityUniqueProjectNotificationContent createVulnerabilityUniqueProjectNotificationContent(String projectName) {
-        VulnerabilityUniqueProjectNotificationContent vulnerabilityUniqueProjectNotificationContent = Mockito.mock(VulnerabilityUniqueProjectNotificationContent.class);
         AffectedProjectVersion affectedProjectVersion = new AffectedProjectVersion();
         affectedProjectVersion.setProjectName(projectName);
-        Mockito.when(vulnerabilityUniqueProjectNotificationContent.getAffectedProjectVersion()).thenReturn(affectedProjectVersion);
-        return vulnerabilityUniqueProjectNotificationContent;
+        return new VulnerabilityUniqueProjectNotificationContent(new VulnerabilityNotificationContent(), affectedProjectVersion);
+    }
+
+    private List<DetailedNotificationContent> createVulnerabilityNotificationWrappers(List<String> vulnerabilitySeverities, String projectName) {
+        AlertNotificationModel alertNotificationModel = createAlertNotificationModel(NotificationType.VULNERABILITY);
+        DetailedNotificationContent test_project = DetailedNotificationContent.vulnerability(
+            alertNotificationModel,
+            createVulnerabilityUniqueProjectNotificationContent(projectName),
+            projectName,
+            vulnerabilitySeverities
+        );
+        return List.of(test_project);
     }
 
     private List<DetailedNotificationContent> createNotificationWrappers() {
@@ -287,7 +361,6 @@ public class DefaultJobNotificationExtractorTestIT {
             projectName2,
             List.of(VulnerabilitySeverityType.LOW.name(), VulnerabilitySeverityType.HIGH.name())
         );
-        PolicyOverrideNotificationContent policyOverrideNotificationContent = Mockito.mock(PolicyOverrideNotificationContent.class);
         AlertNotificationModel alertPolicyNotificationModel = createAlertNotificationModel(NotificationType.POLICY_OVERRIDE);
         DetailedNotificationContent test_project4 = DetailedNotificationContent.policy(
             alertPolicyNotificationModel,

@@ -175,10 +175,19 @@ public class JmsNotificationReceiverTestIT {
         projectNotificationContent.setOperationType(OperationType.CREATE);
         ProjectNotificationView projectNotificationView = new ProjectNotificationView();
         projectNotificationView.setContent(projectNotificationContent);
+        projectNotificationView.setType(NotificationType.PROJECT);
         String content = gson.toJson(projectNotificationView);
 
-        return new AlertNotificationModel(id, blackDuckGlobalConfigId, "provider_blackduck", "DELETED CONFIGURATION", NotificationType.PROJECT.name(), content, DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp(), processed);
+        return new AlertNotificationModel(
+            id,
+            blackDuckGlobalConfigId,
+            "provider_blackduck",
+            "DELETED CONFIGURATION",
+            NotificationType.PROJECT.name(),
+            content,
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp(),
+            processed);
     }
 
 }

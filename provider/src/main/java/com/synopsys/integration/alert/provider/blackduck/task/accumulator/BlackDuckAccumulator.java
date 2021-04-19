@@ -29,8 +29,8 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetriever.BlackDuckNotificationPage;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
@@ -105,9 +105,9 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void retrieveAndStoreNotifications(BlackDuckNotificationRetriever notificationRetriever, DateRange dateRange) throws IntegrationException {
-        BlackDuckNotificationPage notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
+        StatefulAlertPage<NotificationView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
         while (!notificationPage.isEmpty()) {
-            List<NotificationView> currentNotifications = notificationPage.getCurrentNotifications();
+            List<NotificationView> currentNotifications = notificationPage.getCurrentModels();
             logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
             storeNotifications(currentNotifications);
 
