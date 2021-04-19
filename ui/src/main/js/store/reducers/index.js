@@ -1,5 +1,5 @@
-import { routerReducer as routing } from 'react-router-redux';
 import { combineReducers } from 'redux';
+import { connectRouter } from 'connected-react-router'
 
 import about from 'store/reducers/about';
 import audit from 'store/reducers/audit';
@@ -15,7 +15,8 @@ import roles from 'store/reducers/roles';
 import tasks from 'store/reducers/tasks';
 import users from 'store/reducers/users';
 
-const rootReducer = combineReducers({
+const rootReducer = (history) => combineReducers({
+    router: connectRouter(history),
     about,
     audit,
     certificates,
@@ -26,7 +27,6 @@ const rootReducer = combineReducers({
     session,
     system,
     refresh,
-    routing,
     roles,
     tasks,
     users

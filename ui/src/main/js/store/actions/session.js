@@ -1,4 +1,3 @@
-import { push } from 'react-router-redux';
 import {
     SAML_ENABLED,
     SESSION_CANCEL_LOGOUT,
@@ -11,6 +10,7 @@ import {
     SESSION_LOGOUT
 } from 'store/actions/types';
 import HeaderUtilities from 'util/HeaderUtilities';
+import { push } from 'connected-react-router';
 
 /**
  * Triggers Logging In Reducer
