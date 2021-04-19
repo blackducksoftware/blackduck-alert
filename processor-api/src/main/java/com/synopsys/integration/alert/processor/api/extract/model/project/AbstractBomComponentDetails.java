@@ -19,6 +19,9 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
     private final LinkableItem component;
     private final LinkableItem componentVersion;
 
+    private final ComponentVulnerabilities componentVulnerabilities;
+    private final List<ComponentPolicy> componentPolicies;
+
     private final LinkableItem license;
     private final String usage;
     private final List<LinkableItem> additionalAttributes;
@@ -28,6 +31,8 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
     protected AbstractBomComponentDetails(
         LinkableItem component,
         @Nullable LinkableItem componentVersion,
+        ComponentVulnerabilities componentVulnerabilities,
+        List<ComponentPolicy> componentPolicies,
         LinkableItem license,
         String usage,
         List<LinkableItem> additionalAttributes,
@@ -35,6 +40,8 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
     ) {
         this.component = component;
         this.componentVersion = componentVersion;
+        this.componentVulnerabilities = componentVulnerabilities;
+        this.componentPolicies = componentPolicies;
         this.license = license;
         this.usage = usage;
         this.additionalAttributes = additionalAttributes;
@@ -47,6 +54,14 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
 
     public Optional<LinkableItem> getComponentVersion() {
         return Optional.ofNullable(componentVersion);
+    }
+
+    public ComponentVulnerabilities getComponentVulnerabilities() {
+        return componentVulnerabilities;
+    }
+
+    public List<ComponentPolicy> getComponentPolicies() {
+        return componentPolicies;
     }
 
     public LinkableItem getLicense() {
