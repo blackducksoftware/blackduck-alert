@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 public class DefaultAuditAccessorTest {
     private final Gson gson = new Gson();
@@ -210,8 +211,9 @@ public class DefaultAuditAccessorTest {
                                                    .name("test-channel.common.name-value")
                                                    .distributionFrequency(FrequencyType.REAL_TIME)
                                                    .filterByProject(false)
-                                                   .notificationTypes(List.of())
+                                                   .notificationTypes(List.of(NotificationType.LICENSE_LIMIT.name()))
                                                    .processingType(ProcessingType.DEFAULT)
+                                                   .createdAt(DateUtils.createCurrentDateTimestamp())
                                                    .build();
         Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJob));
 
