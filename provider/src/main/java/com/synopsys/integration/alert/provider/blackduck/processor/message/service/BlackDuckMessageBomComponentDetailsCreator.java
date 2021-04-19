@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
@@ -45,7 +46,17 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
         String issuesUrl = BlackDuckMessageAttributesUtils.extractIssuesUrl(bomComponent).orElse(null);
 
-        return new BomComponentDetails(component, componentVersion, componentConcerns, licenseInfo, usageInfo, additionalAttributes, issuesUrl);
+        return new BomComponentDetails(
+            component,
+            componentVersion,
+            ComponentVulnerabilities.none(),
+            List.of(),
+            componentConcerns,
+            licenseInfo,
+            usageInfo,
+            additionalAttributes,
+            issuesUrl
+        );
     }
 
     public BomComponentDetails createMissingBomComponentDetails(
@@ -69,7 +80,17 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         LinkableItem licenseInfo = new LinkableItem(BlackDuckMessageLabels.LABEL_LICENSE, BlackDuckMessageLabels.VALUE_UNKNOWN_LICENSE);
         String usageInfo = BlackDuckMessageLabels.VALUE_UNKNOWN_USAGE;
 
-        return new BomComponentDetails(component, componentVersion, componentConcerns, licenseInfo, usageInfo, additionalAttributes, null);
+        return new BomComponentDetails(
+            component,
+            componentVersion,
+            ComponentVulnerabilities.none(),
+            List.of(),
+            componentConcerns,
+            licenseInfo,
+            usageInfo,
+            additionalAttributes,
+            null
+        );
     }
 
 }
