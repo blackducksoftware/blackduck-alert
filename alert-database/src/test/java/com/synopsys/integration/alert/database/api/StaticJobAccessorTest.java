@@ -74,11 +74,12 @@ class StaticJobAccessorTest {
         jiraServerJobDetailsAccessor = Mockito.mock(DefaultJiraServerJobDetailsAccessor.class);
         msTeamsJobDetailsAccessor = Mockito.mock(DefaultMSTeamsJobDetailsAccessor.class);
 
-        Mockito.when(blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(Mockito.any())).thenReturn(Collections.emptyList());
+        Mockito.when(blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(Mockito.any())).thenReturn(List.of(NotificationType.LICENSE_LIMIT.name()));
         Mockito.when(blackDuckJobDetailsAccessor.retrieveProjectDetailsForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrievePolicyNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
         Mockito.when(blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(Mockito.any())).thenReturn(Collections.emptyList());
-        jobAccessor = new StaticJobAccessor(distributionJobRepository,
+        jobAccessor = new StaticJobAccessor(
+            distributionJobRepository,
             blackDuckJobDetailsAccessor,
             azureBoardsJobDetailsAccessor,
             emailJobDetailsAccessor,
@@ -86,7 +87,8 @@ class StaticJobAccessorTest {
             jiraServerJobDetailsAccessor,
             msTeamsJobDetailsAccessor,
             slackJobDetailsAccessor,
-            new BlackDuckProviderKey());
+            new BlackDuckProviderKey()
+        );
     }
 
     @Test
@@ -471,7 +473,16 @@ class StaticJobAccessorTest {
 
     private DistributionJobEntity createSlackDistributionJobEntity(UUID jobId) {
         SlackJobDetailsEntity slackJobDetailsEntity = new SlackJobDetailsEntity();
-        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(jobId, jobName, true, null, null, ChannelKeys.SLACK.getUniversalKey(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp());
+        DistributionJobEntity distributionJobEntity = new DistributionJobEntity(
+            jobId,
+            jobName,
+            true,
+            FrequencyType.REAL_TIME.name(),
+            ProcessingType.DEFAULT.name(),
+            ChannelKeys.SLACK.getUniversalKey(),
+            DateUtils.createCurrentDateTimestamp(),
+            DateUtils.createCurrentDateTimestamp()
+        );
         distributionJobEntity.setSlackJobDetails(slackJobDetailsEntity);
         return distributionJobEntity;
     }
