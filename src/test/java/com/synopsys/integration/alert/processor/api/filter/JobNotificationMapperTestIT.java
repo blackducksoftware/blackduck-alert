@@ -53,7 +53,7 @@ public class JobNotificationMapperTestIT {
         CREATED_JOBS.forEach(jobAccessor::deleteJob);
         CREATED_JOBS.clear();
     }
-
+    
     @Test
     public void test2Notifications15JobsMultiSeverity() {
         //Test the case where a job may have one or multiple types of vulnerability severities across multiple pages.

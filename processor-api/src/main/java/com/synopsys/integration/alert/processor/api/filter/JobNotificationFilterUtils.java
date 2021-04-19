@@ -32,18 +32,12 @@ public class JobNotificationFilterUtils {
         switch (notificationTypeEnum) {
             case VULNERABILITY:
                 List<String> notificationSeverities = detailedNotificationContent.getVulnerabilitySeverities();
-                if (!doVulnerabilitySeveritiesApplyToJob(filteredDistributionJobResponseModel, notificationSeverities)) {
-                    return false;
-                }
-                break;
+                return doVulnerabilitySeveritiesApplyToJob(filteredDistributionJobResponseModel, notificationSeverities);
             case POLICY_OVERRIDE:
             case RULE_VIOLATION:
             case RULE_VIOLATION_CLEARED:
                 String policyName = detailedNotificationContent.getPolicyName().orElse("");
-                if (!doesPolicyApplyToJob(filteredDistributionJobResponseModel, policyName)) {
-                    return false;
-                }
-                break;
+                return doesPolicyApplyToJob(filteredDistributionJobResponseModel, policyName);
             default:
                 break;
         }

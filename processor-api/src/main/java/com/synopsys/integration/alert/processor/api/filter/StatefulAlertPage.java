@@ -33,7 +33,7 @@ public class StatefulAlertPage<T, E extends Exception> {
     }
 
     public boolean hasNextPage() {
-        return alertPagedDetails.getCurrentPage() < alertPagedDetails.getTotalPages() - 1;
+        return !isEmpty() && alertPagedDetails.getModels().size() == alertPagedDetails.getPageSize();
     }
 
     public List<T> getCurrentModels() {
