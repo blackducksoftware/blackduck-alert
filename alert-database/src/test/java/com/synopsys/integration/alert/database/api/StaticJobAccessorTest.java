@@ -48,6 +48,7 @@ import com.synopsys.integration.alert.database.job.slack.SlackJobDetailsEntity;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 class StaticJobAccessorTest {
     private DistributionJobRepository distributionJobRepository;
