@@ -21,13 +21,29 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
     public BomComponentDetails(
         LinkableItem component,
         @Nullable LinkableItem componentVersion,
+        ComponentVulnerabilities componentVulnerabilities,
+        List<ComponentPolicy> componentPolicies,
+        LinkableItem license,
+        String usage,
+        List<LinkableItem> additionalAttributes,
+        String blackDuckIssuesUrl,
+        List<ComponentConcern> componentConcerns
+    ) {
+        super(component, componentVersion, componentVulnerabilities, componentPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
+        this.componentConcerns = componentConcerns;
+    }
+
+    @Deprecated
+    public BomComponentDetails(
+        LinkableItem component,
+        @Nullable LinkableItem componentVersion,
         List<ComponentConcern> componentConcerns,
         LinkableItem license,
         String usage,
         List<LinkableItem> additionalAttributes,
         String blackDuckIssuesUrl
     ) {
-        super(component, componentVersion, license, usage, additionalAttributes, blackDuckIssuesUrl);
+        super(component, componentVersion, ComponentVulnerabilities.none(), List.of(), license, usage, additionalAttributes, blackDuckIssuesUrl);
         this.componentConcerns = componentConcerns;
     }
 

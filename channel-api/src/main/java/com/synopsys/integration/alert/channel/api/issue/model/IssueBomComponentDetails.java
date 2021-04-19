@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class IssueBomComponentDetails extends AbstractBomComponentDetails {
     private static final String UNKNOWN_USAGE = "Unknown Usage";
@@ -40,8 +41,10 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
         );
     }
 
+    // FIXME include component vulns and component policies
+    @Deprecated
     public IssueBomComponentDetails(LinkableItem component, @Nullable LinkableItem componentVersion, LinkableItem license, String usage, List<LinkableItem> additionalAttributes, String blackDuckIssuesUrl) {
-        super(component, componentVersion, license, usage, additionalAttributes, blackDuckIssuesUrl);
+        super(component, componentVersion, ComponentVulnerabilities.none(), List.of(), license, usage, additionalAttributes, blackDuckIssuesUrl);
     }
 
 }
