@@ -30,7 +30,5 @@ dependencies {
     // Documentation
     implementation 'io.springfox:springfox-boot-starter'
 
-    testImplementation 'org.mockito:mockito-core'
-    testImplementation 'org.springframework:spring-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testImplementation project(':test-common')
 }

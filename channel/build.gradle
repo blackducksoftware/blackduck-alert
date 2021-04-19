@@ -22,5 +22,4 @@ dependencies {
     implementation 'org.freemarker:freemarker'
 
     testImplementation project(':test-common')
-    testImplementation 'org.mockito:mockito-core'
 }

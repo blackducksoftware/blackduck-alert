@@ -30,5 +30,5 @@ dependencies {
 
     implementation 'org.springframework.security.extensions:spring-security-saml2-core'
 
-    testImplementation 'org.mockito:mockito-core'
+    testImplementation project(':test-common')
 }

@@ -4,11 +4,11 @@ dependencies {
 
     implementation 'com.synopsys.integration:integration-common'
 
-    implementation 'org.springframework:spring-test'
-    implementation 'org.springframework.security:spring-security-test'
-    implementation 'org.springframework.boot:spring-boot-test-autoconfigure'
-    implementation 'org.junit.jupiter:junit-jupiter-params'
-    implementation 'com.github.springtestdbunit:spring-test-dbunit'
-    implementation 'org.mockito:mockito-core'
-    implementation 'org.skyscreamer:jsonassert'
+    api 'org.springframework:spring-test'
+    api 'org.springframework.security:spring-security-test'
+    api 'org.springframework.boot:spring-boot-test-autoconfigure'
+    api 'org.junit.jupiter:junit-jupiter-params'
+    api 'com.github.springtestdbunit:spring-test-dbunit'
+    api 'org.mockito:mockito-core'
+    api 'org.skyscreamer:jsonassert'
 }
