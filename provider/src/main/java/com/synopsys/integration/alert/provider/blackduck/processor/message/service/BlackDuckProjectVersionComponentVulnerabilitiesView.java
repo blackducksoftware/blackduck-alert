@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 
 import java.math.BigDecimal;
 
+import com.google.gson.JsonElement;
 import com.synopsys.integration.blackduck.api.core.BlackDuckView;
 import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss2View;
 import com.synopsys.integration.blackduck.api.generated.component.ProjectVersionComponentVersionVulnerabilityRemediationCvss3View;
@@ -19,8 +20,7 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Vulnerabilit
 public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDuckView {
     private String comment;
     private java.util.Date createdAt;
-    private String createdBy;
-    private String createdByUser;
+    private JsonElement createdBy;
     private ProjectVersionComponentVersionVulnerabilityRemediationCvss2View cvss2;
     private ProjectVersionComponentVersionVulnerabilityRemediationCvss3View cvss3;
     private java.util.Date disclosureDate;
@@ -39,8 +39,7 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
     private String technicalDescription;
     private String title;
     private java.util.Date updatedAt;
-    private String updatedBy;
-    private String updatedByUser;
+    private JsonElement updatedBy;
     private Boolean useCvss3;
     private Boolean workaroundAvailable;
 
@@ -60,20 +59,12 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
         this.createdAt = createdAt;
     }
 
-    public String getCreatedBy() {
+    public JsonElement getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(String createdBy) {
+    public void setCreatedBy(JsonElement createdBy) {
         this.createdBy = createdBy;
-    }
-
-    public String getCreatedByUser() {
-        return createdByUser;
-    }
-
-    public void setCreatedByUser(String createdByUser) {
-        this.createdByUser = createdByUser;
     }
 
     public ProjectVersionComponentVersionVulnerabilityRemediationCvss2View getCvss2() {
@@ -220,20 +211,12 @@ public class BlackDuckProjectVersionComponentVulnerabilitiesView extends BlackDu
         this.updatedAt = updatedAt;
     }
 
-    public String getUpdatedBy() {
+    public JsonElement getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(JsonElement updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public String getUpdatedByUser() {
-        return updatedByUser;
-    }
-
-    public void setUpdatedByUser(String updatedByUser) {
-        this.updatedByUser = updatedByUser;
     }
 
     public Boolean getUseCvss3() {
