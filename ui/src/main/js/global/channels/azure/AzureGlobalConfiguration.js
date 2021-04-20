@@ -26,7 +26,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                 csrfToken={csrfToken}
             >
                 <TextInput
-                    key={AZURE_GLOBAL_FIELD_KEYS.organization}
+                    id={AZURE_GLOBAL_FIELD_KEYS.organization}
                     name={AZURE_GLOBAL_FIELD_KEYS.organization}
                     label="Organization Name"
                     description="The name of the Azure DevOps organization."
@@ -38,7 +38,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.organization]}
                 />
                 <PasswordInput
-                    key={AZURE_GLOBAL_FIELD_KEYS.clientId}
+                    id={AZURE_GLOBAL_FIELD_KEYS.clientId}
                     name={AZURE_GLOBAL_FIELD_KEYS.clientId}
                     label="App ID"
                     description="The App ID created for Alert when registering your Azure DevOps Client Application."
@@ -51,7 +51,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.clientId]}
                 />
                 <PasswordInput
-                    key={AZURE_GLOBAL_FIELD_KEYS.clientSecret}
+                    id={AZURE_GLOBAL_FIELD_KEYS.clientSecret}
                     name={AZURE_GLOBAL_FIELD_KEYS.clientSecret}
                     label="Client Secret"
                     description="The Client secret created for Alert when registering your Azure DevOps Application."
@@ -64,7 +64,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.clientSecret]}
                 />
                 <OAuthEndpointButtonField
-                    key={AZURE_GLOBAL_FIELD_KEYS.configureOAuth}
+                    id={AZURE_GLOBAL_FIELD_KEYS.configureOAuth}
                     name={AZURE_GLOBAL_FIELD_KEYS.configureOAuth}
                     buttonLabel="Authenticate"
                     label="Microsoft OAuth"

@@ -24,7 +24,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
         <div>
             <h2>LDAP Configuration</h2>
             <TextInput
-                key={AUTHENTICATION_TEST_FIELD_KEYS.username}
+                id={AUTHENTICATION_TEST_FIELD_KEYS.username}
                 name={AUTHENTICATION_TEST_FIELD_KEYS.username}
                 label="User Name"
                 description="The user name to test LDAP authentication; if LDAP authentication is enabled."
@@ -33,7 +33,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 value={testFieldData[AUTHENTICATION_TEST_FIELD_KEYS.username]}
             />
             <PasswordInput
-                key={AUTHENTICATION_TEST_FIELD_KEYS.password}
+                id={AUTHENTICATION_TEST_FIELD_KEYS.password}
                 name={AUTHENTICATION_TEST_FIELD_KEYS.password}
                 label="Password"
                 description="The password to test LDAP authentication; if LDAP authentication is enabled."
@@ -43,7 +43,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
             />
             <h2>SAML Configuration</h2>
             <ReadOnlyField
-                key={AUTHENTICATION_TEST_FIELD_KEYS.noInput}
+                id={AUTHENTICATION_TEST_FIELD_KEYS.noInput}
                 name={AUTHENTICATION_TEST_FIELD_KEYS.noInput}
                 label="No Input Required"
                 description="No input required here. SAML metadata fields will be tested by the server."
@@ -88,7 +88,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 >
                     <h2>LDAP Configuration</h2>
                     <CheckboxInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.enabled}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.enabled}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.enabled}
                         label="LDAP Enabled"
                         description="If true, Alert with attempt to authenticate using the LDAP configuration."
@@ -99,7 +99,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.enabled]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.server}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.server}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.server}
                         label="LDAP Server"
                         description="The URL of the LDAP server."
@@ -110,7 +110,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.server]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.managerDn}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.managerDn}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.managerDn}
                         label="LDAP Manager DN"
                         description="The distinguished name of the LDAP manager."
@@ -121,7 +121,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.managerDn]}
                     />
                     <PasswordInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword}
                         label="LDAP Manager Password"
                         description="The password of the LDAP manager."
@@ -134,7 +134,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                     />
                     <DynamicSelectInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
                         label="LDAP Authentication Type"
                         description="The type of authentication required to connect to the LDAP server."
@@ -147,7 +147,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                     />
                     <DynamicSelectInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
                         label="LDAP Referral"
                         description="Set the method to handle referrals."
@@ -159,7 +159,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.referral]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase}
                         label="LDAP User Search Base"
                         description="The part of the LDAP directory in which user searches should be done."
@@ -170,7 +170,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter}
                         label="LDAP User Search Filter"
                         description="The filter used to search for user membership."
@@ -181,7 +181,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns}
                         label="LDAP User DN Patterns"
                         description="The pattern used used to supply a DN for the user. The pattern should be the name relative to the root DN."
@@ -192,7 +192,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes}
                         label="LDAP User Attributes"
                         description="User attributes to retrieve for users."
@@ -203,7 +203,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase}
                         label="LDAP Group Search Base"
                         description="The part of the LDAP directory in which group searches should be done."
@@ -214,7 +214,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter}
                         label="LDAP Group Search Filter"
                         description="The filter used to search for group membership."
@@ -225,7 +225,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute}
+                        id={AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute}
                         label="LDAP Group Role Attribute"
                         description="The ID of the attribute which contains the role name for a group."
@@ -242,7 +242,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 >
                     <h2>SAML Configuration</h2>
                     <CheckboxInput
-                        key={AUTHENTICATION_SAML_FIELD_KEYS.enabled}
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.enabled}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.enabled}
                         label="SAML Enabled"
                         description="If true, Alert will attempt to authenticate using the SAML configuration."
@@ -253,7 +253,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.enabled]}
                     />
                     <CheckboxInput
-                        key={AUTHENTICATION_SAML_FIELD_KEYS.forceAuth}
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.forceAuth}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.forceAuth}
                         label="Force Auth"
                         description="If true, the forceAuthn flag is set to true in the SAML request to the IDP. Please check the IDP if this is supported."
@@ -264,7 +264,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.forceAuth]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl}
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl}
                         label="Identity Provider Metadata URL"
                         description="The Metadata URL from the external Identity Provider."
@@ -275,7 +275,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl]}
                     />
                     <UploadFileButtonField
-                        key={AUTHENTICATION_SAML_FIELD_KEYS.metadataFile}
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.metadataFile}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.metadataFile}
                         fieldKey={AUTHENTICATION_SAML_FIELD_KEYS.metadataFile}
                         label="Identity Provider Metadata File"
@@ -298,7 +298,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.metadataFile]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_SAML_FIELD_KEYS.entityId}
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.entityId}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.entityId}
                         label="Entity ID"
                         description="The Entity ID of the Service Provider. EX: This should be the Audience defined in Okta."
@@ -309,7 +309,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.entityId]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl}
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl}
                         label="Entity Base URL"
                         description="This should be the URL of the Alert system."
@@ -320,7 +320,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl]}
                     />
                     <TextInput
-                        key={AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping}
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping}
                         label="SAML Role Attribute Mapping"
                         description="The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert.  The roles contained in the Attribute Statement can be the role names defined in the mapping fields above."
