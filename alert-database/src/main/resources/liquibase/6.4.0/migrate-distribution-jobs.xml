@@ -116,14 +116,9 @@
 
     <!-- Create joined blackduck job detail tables -->
 
-    <changeSet author="gavink" id="join-blackduck-job-detail-entries">
+    <changeSet author="gavink" id="join-blackduck-job-notification-types">
         <preConditions onFail="MARK_RAN">
-            <and>
-                <rowCount schemaName="alert" tableName="blackduck_job_notification_types" expectedRows="0"/>
-                <rowCount schemaName="alert" tableName="blackduck_job_policy_filters" expectedRows="0"/>
-                <rowCount schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters" expectedRows="0"/>
-                <rowCount schemaName="alert" tableName="blackduck_job_projects" expectedRows="0"/>
-            </and>
+            <rowCount schemaName="alert" tableName="blackduck_job_notification_types" expectedRows="0"/>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_notification_types (job_id, notification_type)
@@ -131,27 +126,49 @@
                 FROM alert.distribution_jobs job
                 LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
                 WHERE jobFields.source_key = 'provider.distribution.notification.types'
+                ON CONFLICT DO NOTHING
         </sql>
+    </changeSet>
+
+    <changeSet author="gavink" id="join-blackduck-job-policy-filters">
+        <preConditions onFail="MARK_RAN">
+                <rowCount schemaName="alert" tableName="blackduck_job_policy_filters" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_policy_filters (job_id, policy_name)
                 SELECT jobFields.job_id, jobFields.field_value
                 FROM alert.distribution_jobs job
                 LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
                 WHERE jobFields.source_key = 'blackduck.policy.notification.filter'
+                ON CONFLICT DO NOTHING
         </sql>
+    </changeSet>
+
+    <changeSet author="gavink" id="join-blackduck-job-vulnerability-severity-filters">
+        <preConditions onFail="MARK_RAN">
+                <rowCount schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_vulnerability_severity_filters (job_id, severity_name)
                 SELECT jobFields.job_id, jobFields.field_value
                 FROM alert.distribution_jobs job
                 LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
                 WHERE jobFields.source_key = 'blackduck.vulnerability.notification.filter'
+                ON CONFLICT DO NOTHING
         </sql>
+    </changeSet>
+
+    <changeSet author="gavink" id="join-blackduck-job-project-filters">
+        <preConditions onFail="MARK_RAN">
+            <rowCount schemaName="alert" tableName="blackduck_job_projects" expectedRows="0"/>
+        </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_projects (job_id, project_name)
                 SELECT jobFields.job_id, jobFields.field_value
                 FROM alert.distribution_jobs job
                 LEFT JOIN GET_JOB_ID_SOURCE_KEY_AND_FIELD_VALUE() jobFields ON job.job_id = jobFields.job_id
                 WHERE jobFields.source_key = 'channel.common.configured.project'
+                ON CONFLICT DO NOTHING
         </sql>
     </changeSet>
 
