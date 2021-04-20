@@ -44,6 +44,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                 testFields={testField}
                 testFormData={testFieldData}
                 setTestFormData={(values) => setTestFieldData(values)}
+                buttonIdPrefix={EMAIL_INFO.key}
             >
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.host}

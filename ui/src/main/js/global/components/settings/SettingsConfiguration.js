@@ -32,6 +32,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                 csrfToken={csrfToken}
                 displayTest={false}
                 displayDelete={false}
+                buttonIdPrefix={SETTINGS_INFO.key}
             >
                 <h2 key="settings-header">Encryption Configuration</h2>
                 <PasswordInput

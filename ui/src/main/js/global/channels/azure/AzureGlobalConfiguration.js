@@ -24,6 +24,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                 formData={formData}
                 setFormData={(data) => setFormData(data)}
                 csrfToken={csrfToken}
+                buttonIdPrefix={AZURE_INFO.key}
             >
                 <TextInput
                     id={AZURE_GLOBAL_FIELD_KEYS.organization}

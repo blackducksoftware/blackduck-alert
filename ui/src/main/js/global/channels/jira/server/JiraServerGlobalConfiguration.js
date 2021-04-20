@@ -25,6 +25,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                 formData={formData}
                 setFormData={(data) => setFormData(data)}
                 csrfToken={csrfToken}
+                buttonIdPrefix={JIRA_SERVER_INFO.key}
             >
                 <TextInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}

@@ -81,8 +81,10 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 testFields={testFields}
                 testFormData={testFieldData}
                 setTestFormData={(values) => setTestFieldData(values)}
+                buttonIdPrefix={AUTHENTICATION_INFO.key}
             >
                 <CollapsiblePane
+                    id="ldap-configuration"
                     title="LDAP Configuration"
                     expanded={hasLdapConfig}
                 >
@@ -237,6 +239,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                     />
                 </CollapsiblePane>
                 <CollapsiblePane
+                    id="saml-configuration"
                     title="SAML Configuration"
                     expanded={hasSamlConfig}
                 >
