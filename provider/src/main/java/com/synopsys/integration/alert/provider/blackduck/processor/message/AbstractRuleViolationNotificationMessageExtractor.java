@@ -15,8 +15,9 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
-import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageBomComponentDetailsUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageComponentConcernUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractRuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
@@ -30,6 +31,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent> extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
     private final ItemOperation itemOperation;
+    private final BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory;
     private final BomComponent404Handler bomComponent404Handler;
 
     public AbstractRuleViolationNotificationMessageExtractor(
@@ -38,10 +40,12 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
         ItemOperation itemOperation,
         BlackDuckProviderKey blackDuckProviderKey,
         NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache,
+        BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory,
         BomComponent404Handler bomComponent404Handler
     ) {
         super(notificationType, notificationContentClass, blackDuckProviderKey, servicesFactoryCache);
         this.itemOperation = itemOperation;
+        this.detailsCreatorFactory = detailsCreatorFactory;
         this.bomComponent404Handler = bomComponent404Handler;
     }
 
@@ -58,21 +62,23 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
     }
 
     private BomComponentDetails createBomComponentDetails(BlackDuckApiClient blackDuckApiClient, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
+        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
+
         ComponentConcern policyConcern = BlackDuckMessageComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
         try {
             ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentView.class);
-            return BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(bomComponent, policyConcern, List.of());
+            return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, List.of());
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName());
+            return bomComponentDetailsCreator.createMissingBomComponentDetails(
+                componentVersionStatus.getComponentName(),
+                componentVersionStatus.getComponent(),
+                componentVersionStatus.getComponentVersionName(),
+                componentVersionStatus.getComponentVersion(),
+                List.of(policyConcern),
+                List.of()
+            );
         }
-        return BlackDuckMessageBomComponentDetailsUtils.createBomComponentDetails(
-            componentVersionStatus.getComponentName(),
-            componentVersionStatus.getComponent(),
-            componentVersionStatus.getComponentVersionName(),
-            componentVersionStatus.getComponentVersion(),
-            List.of(policyConcern),
-            List.of()
-        );
     }
 
 }
