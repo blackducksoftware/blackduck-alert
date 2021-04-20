@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -24,12 +25,16 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.util.
 import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckMessageBomComponentDetailsCreator {
     private static final LinkMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> VULNERABILITIES_LINK =
         new LinkMultipleResponses<>("vulnerabilities", BlackDuckProjectVersionComponentVulnerabilitiesView.class);
+    private static final String VULNERABILITIES_MEDIA_TYPE = "application/vnd.blackducksoftware.internal-1+json";
 
     private final BlackDuckApiClient blackDuckApiClient;
     private final BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator;
@@ -122,7 +127,13 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             return ComponentVulnerabilities.none();
         }
 
-        List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(bomComponent, VULNERABILITIES_LINK);
+        BlackDuckRequestFactory blackDuckRequestFactory = new BlackDuckRequestFactory();
+
+        HttpUrl vulnerabilitiesUrl = bomComponent.getHref().appendRelativeUrl(VULNERABILITIES_LINK.getLink());
+        BlackDuckRequestBuilder vulnerabilitiesRequestBuilder = blackDuckRequestFactory.createCommonGetRequestBuilder(vulnerabilitiesUrl)
+                                                                    .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE);
+
+        List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(vulnerabilitiesRequestBuilder, VULNERABILITIES_LINK.getResponseClass());
         return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilities);
     }
 
