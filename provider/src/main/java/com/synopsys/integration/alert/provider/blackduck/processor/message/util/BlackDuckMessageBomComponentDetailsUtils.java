@@ -21,10 +21,6 @@ import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionCompo
 
 @Deprecated
 public final class BlackDuckMessageBomComponentDetailsUtils {
-    public static BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) {
-        return createBomComponentDetails(bomComponent, List.of(componentConcern), additionalAttributes);
-    }
-
     public static BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) {
         LinkableItem component;
         LinkableItem componentVersion = null;
