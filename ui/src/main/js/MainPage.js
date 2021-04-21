@@ -32,6 +32,8 @@ import AuthenticationConfiguration from 'global/components/auth/AuthenticationCo
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
 import BlackDuckProviderConfiguration from 'global/providers/blackduck/BlackDuckProviderConfiguration';
 import BlackDuckConfiguration from 'global/providers/blackduck/BlackDuckConfiguration';
+import { DISTRIBUTION_INFO } from 'distribution/DistributionModel';
+import DistributionConfigurationV2 from 'distribution/DistributionConfigurationV2';
 
 class MainPage extends Component {
     constructor(props) {
@@ -164,6 +166,7 @@ class MainPage extends Component {
                 />
                 {this.createRoute('/alert/providers/', BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} />)}
                 {channels}
+                {this.createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} />)}
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
                 <Route exact path="/alert/general/about" component={AboutInfo} />

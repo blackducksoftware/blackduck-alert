@@ -15,6 +15,7 @@ import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
 import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
 import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
+import { DISTRIBUTION_INFO } from './distribution/DistributionModel';
 
 class Navigation extends Component {
     constructor(props) {
@@ -98,6 +99,11 @@ class Navigation extends Component {
                 {channelGlobals}
                 <li className="navHeader">
                     Jobs
+                </li>
+                <li>
+                    <NavLink to="/alert/jobs/distributionv2" activeClassName="activeNav">
+                        {DISTRIBUTION_INFO.label}
+                    </NavLink>
                 </li>
                 <li>
                     <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
