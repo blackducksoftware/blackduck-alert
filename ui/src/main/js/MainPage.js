@@ -11,7 +11,6 @@ import GlobalConfiguration from 'dynamic/GlobalConfiguration';
 import { getDescriptors } from 'store/actions/descriptors';
 import DescriptorContentLoader from 'dynamic/loaded/DescriptorContentLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ProviderTable from 'providers/ProviderTable';
 import SlackGlobalConfiguration from 'global/channels/slack/SlackGlobalConfiguration';
 import EmailGlobalConfiguration from 'global/channels/email/EmailGlobalConfiguration';
 import JiraCloudGlobalConfiguration from 'global/channels/jira/cloud/JiraCloudGlobalConfiguration';
@@ -30,13 +29,16 @@ import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
 import SettingsConfiguration from 'global/components/settings/SettingsConfiguration';
 import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
 import AuthenticationConfiguration from 'global/components/auth/AuthenticationConfiguration';
+import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
+import BlackDuckProviderConfiguration from 'global/providers/blackduck/BlackDuckProviderConfiguration';
+import BlackDuckConfiguration from 'global/providers/blackduck/BlackDuckConfiguration';
 
 class MainPage extends Component {
     constructor(props) {
         super(props);
 
         this.createRoutesForDescriptors = this.createRoutesForDescriptors.bind(this);
-        this.createRoutesForProviders = this.createRoutesForProviders.bind(this);
+        this.createRoute = this.createRoute.bind(this);
         this.createConfigurationPage = this.createConfigurationPage.bind(this);
     }
 
@@ -56,30 +58,6 @@ class MainPage extends Component {
         }
         const routeList = descriptorList.map((component) => this.createConfigurationPage(component, uriPrefix));
         return routeList;
-    }
-
-    createRoutesForProviders() {
-        const { descriptors } = this.props;
-        if (!descriptors) {
-            return null;
-        }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-
-        if (!descriptorList || descriptorList.length === 0) {
-            return null;
-        }
-
-        const routesList = descriptorList.map((descriptor) => {
-            const { urlName, name } = descriptor;
-            return (
-                <Route
-                    exact
-                    path={`/alert/providers/${urlName}`}
-                    render={() => <ProviderTable descriptorName={name} />}
-                />
-            );
-        });
-        return routesList;
     }
 
     createConfigurationPage(component, uriPrefix) {
@@ -143,9 +121,19 @@ class MainPage extends Component {
         );
     }
 
+    createRoute(uriPrefix, urlName, component) {
+        return (
+            <Route
+                exact
+                key={urlName}
+                path={`${uriPrefix}${urlName}`}
+                render={() => component}
+            />
+        );
+    }
+
     render() {
         const channels = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
-        const providers = this.createRoutesForProviders();
         const components = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
 
         const spinner = (
@@ -158,8 +146,15 @@ class MainPage extends Component {
             </div>
         );
 
+        const { csrfToken } = this.props;
         const page = (
             <div className="contentArea">
+                <Route
+                    exact
+                    key="blackduck-route"
+                    path={`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`}
+                    render={() => <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />}
+                />
                 <Route
                     exact
                     path="/alert/"
@@ -167,7 +162,7 @@ class MainPage extends Component {
                         <Redirect to="/alert/general/about" />
                     )}
                 />
-                {providers}
+                {this.createRoute('/alert/providers/', BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} />)}
                 {channels}
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
