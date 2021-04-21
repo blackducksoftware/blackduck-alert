@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.channel.api.issue.convert.IssueTrackerMessageFormatter;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
@@ -25,7 +26,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 public class IssueTrackerChannelTest {
     @Test
     public void distributeMessagesTest() throws AlertException {
-        IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(null, null);
+        IssueTrackerModelExtractor<String> modelExtractor = new IssueTrackerModelExtractor<>(createFormatter(), null);
         IssueTrackerMessageSender<String> messageSender = createMessageSender();
         IssueTrackerProcessor<String> processor = new IssueTrackerProcessor<>(modelExtractor, messageSender);
 
@@ -80,6 +81,25 @@ public class IssueTrackerChannelTest {
             }
         };
         return new IssueTrackerMessageSender<>(creator, transitioner, commenter);
+    }
+
+    private IssueTrackerMessageFormatter createFormatter() {
+        return new IssueTrackerMessageFormatter(10000, 10000, 10000, "\n") {
+            @Override
+            public String encode(String txt) {
+                return txt;
+            }
+
+            @Override
+            public String emphasize(String txt) {
+                return txt;
+            }
+
+            @Override
+            public String createLink(String txt, String url) {
+                return url;
+            }
+        };
     }
 
 }
