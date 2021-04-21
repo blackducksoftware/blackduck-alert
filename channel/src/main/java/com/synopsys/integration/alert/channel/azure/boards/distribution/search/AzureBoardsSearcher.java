@@ -199,14 +199,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
             componentVersion = AzureBoardsWorkItemExtractionUtils.extractLinkableItem(componentVersionField.get());
         }
 
-        IssueBomComponentDetails bomComponent = new IssueBomComponentDetails(
-            component,
-            componentVersion,
-            new LinkableItem("License", "Unknown License"),
-            "Unknown Usage",
-            List.of(),
-            ""
-        );
+        IssueBomComponentDetails bomComponent = IssueBomComponentDetails.fromSearchResults(component, componentVersion);
         return ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponent);
     }
 
