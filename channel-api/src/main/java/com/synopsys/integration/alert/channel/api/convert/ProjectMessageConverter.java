@@ -24,7 +24,7 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
         super(formatter);
         this.messageFormatter = formatter;
         this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
-        componentConcernConverter = new ComponentConcernConverter(formatter);
+        this.componentConcernConverter = new ComponentConcernConverter(formatter);
     }
 
     @Override

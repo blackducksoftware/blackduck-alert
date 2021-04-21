@@ -62,10 +62,10 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                 csrfToken={csrfToken}
                 displayTest={false}
                 displayDelete={false}
+                buttonIdPrefix={SCHEDULING_INFO.key}
             >
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
-                    key={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
                     name={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
                     label="Daily Digest Hour Of Day"
                     description="Select the hour of the day to run the daily digest distribution jobs."
@@ -78,7 +78,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay]}
                 />
                 <ReadOnlyField
-                    key={SCHEDULING_FIELD_KEYS.dailyProcessorNextRun}
+                    id={SCHEDULING_FIELD_KEYS.dailyProcessorNextRun}
                     name={SCHEDULING_FIELD_KEYS.dailyProcessorNextRun}
                     label="Daily Digest Cron Next Run"
                     description="This is the next time daily digest distribution jobs will run."
@@ -89,7 +89,6 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                 />
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
-                    key={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
                     name={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
                     label="Purge Data Frequency In Days"
                     description="Choose a frequency for cleaning up provider data; the default value is three days. When the purge runs, it deletes all data that is older than the selected value. EX: data older than 3 days will be deleted."
@@ -102,7 +101,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays]}
                 />
                 <ReadOnlyField
-                    key={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
+                    id={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
                     name={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
                     label="Purge Cron Next Run"
                     description="This is the next time Alert will purge provider data."

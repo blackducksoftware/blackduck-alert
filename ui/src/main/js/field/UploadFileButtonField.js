@@ -103,7 +103,7 @@ const UploadFileButtonField = ({
                         <input
                             ref={fileInputField}
                             type="file"
-                            id={fieldKey}
+                            id={`${fieldKey}-file`}
                             name={name}
                             disabled={readOnly}
                             accept={acceptedContentTypes}
@@ -112,7 +112,7 @@ const UploadFileButtonField = ({
                         <div>
                             <div className="d-inline-flex">
                                 <GeneralButton
-                                    id={fieldKey}
+                                    id={`${fieldKey}-upload`}
                                     className="uploadButton"
                                     onClick={onUploadClick}
                                     disabled={readOnly}

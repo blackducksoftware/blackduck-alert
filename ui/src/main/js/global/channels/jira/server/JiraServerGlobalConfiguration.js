@@ -25,9 +25,10 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                 formData={formData}
                 setFormData={(data) => setFormData(data)}
                 csrfToken={csrfToken}
+                buttonIdPrefix={JIRA_SERVER_INFO.key}
             >
                 <TextInput
-                    key={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
                     label="URL"
                     description="The URL of the Jira Server server."
@@ -39,7 +40,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.url]}
                 />
                 <TextInput
-                    key={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
                     label="User Name"
                     description="The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin."
@@ -51,7 +52,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.username]}
                 />
                 <PasswordInput
-                    key={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
                     label="Password"
                     description="The password of the specified Jira Server user."
@@ -64,7 +65,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.password]}
                 />
                 <CheckboxInput
-                    key={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
                     label="Disable Plugin Check"
                     description="This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance. Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly."
@@ -75,7 +76,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck]}
                 />
                 <EndpointButtonField
-                    key={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
+                    id={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
                     name={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
                     buttonLabel="Install Plugin Remotely"
                     label="Configure Jira server plugin"
@@ -89,6 +90,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                     ]}
                     csrfToken={csrfToken}
                     currentConfig={formData}
+                    successBox={false}
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin)}
