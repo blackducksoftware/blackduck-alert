@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ActionableIssueSearchResult;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
@@ -84,6 +85,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     }
 
     @Override
+    // TODO abstract duplicate logic found in Jira
     protected ActionableIssueSearchResult<Integer> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
                                           .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
@@ -115,8 +117,12 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
             existingIssueDetails = createIssueDetails(workItem, workItemFields);
 
             Optional<ItemOperation> policyOperation = policyDetails.map(IssuePolicyDetails::getOperation);
+            Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
             if (policyOperation.isPresent()) {
                 searchResultOperation = policyOperation.get();
+            } else if (optionalVulnerabilityDetails.isPresent()) {
+                IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
+                searchResultOperation = issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() ? ItemOperation.DELETE : searchResultOperation;
             }
         } else if (foundIssuesCount > 1) {
             throw new AlertException("Expect to find a unique work item, but more than one work item was found");

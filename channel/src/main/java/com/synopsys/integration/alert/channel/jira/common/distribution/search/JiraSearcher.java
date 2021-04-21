@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ActionableIssueSearchResult;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
@@ -72,6 +73,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     }
 
     @Override
+    // TODO abstract duplicate logic found in Azure Boards
     protected final ActionableIssueSearchResult<String> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
@@ -110,8 +112,12 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
             existingIssueDetails = createExistingIssueDetails(issue);
 
             Optional<ItemOperation> policyOperation = policyDetails.map(IssuePolicyDetails::getOperation);
+            Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
             if (policyOperation.isPresent()) {
                 searchResultOperation = policyOperation.get();
+            } else if (optionalVulnerabilityDetails.isPresent()) {
+                IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
+                searchResultOperation = issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() ? ItemOperation.DELETE : searchResultOperation;
             }
         } else if (foundIssuesCount > 1) {
             throw new AlertException("Expect to find a unique issue, but more than one issue was found");
