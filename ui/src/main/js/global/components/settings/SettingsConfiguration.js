@@ -32,10 +32,11 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                 csrfToken={csrfToken}
                 displayTest={false}
                 displayDelete={false}
+                buttonIdPrefix={SETTINGS_INFO.key}
             >
                 <h2 key="settings-header">Encryption Configuration</h2>
                 <PasswordInput
-                    key={SETTINGS_FIELD_KEYS.encryptionPassword}
+                    id={SETTINGS_FIELD_KEYS.encryptionPassword}
                     name={SETTINGS_FIELD_KEYS.encryptionPassword}
                     label="Encryption Password"
                     description="The password used when encrypting sensitive fields. Must be at least 8 characters long."
@@ -48,7 +49,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[SETTINGS_FIELD_KEYS.encryptionPassword]}
                 />
                 <PasswordInput
-                    key={SETTINGS_FIELD_KEYS.encryptionGlobalSalt}
+                    id={SETTINGS_FIELD_KEYS.encryptionGlobalSalt}
                     name={SETTINGS_FIELD_KEYS.encryptionGlobalSalt}
                     label="Encryption Global Salt"
                     description="The salt used when encrypting sensitive fields. Must be at least 8 characters long."
@@ -62,7 +63,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                 />
                 <CollapsiblePane title="Proxy Configuration" expanded={shouldExpand}>
                     <TextInput
-                        key={SETTINGS_FIELD_KEYS.proxyHost}
+                        id={SETTINGS_FIELD_KEYS.proxyHost}
                         name={SETTINGS_FIELD_KEYS.proxyHost}
                         label="Proxy Host"
                         description="The host name of the proxy server to use."
@@ -73,7 +74,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[SETTINGS_FIELD_KEYS.proxyHost]}
                     />
                     <NumberInput
-                        key={SETTINGS_FIELD_KEYS.proxyPort}
+                        id={SETTINGS_FIELD_KEYS.proxyPort}
                         name={SETTINGS_FIELD_KEYS.proxyPort}
                         label="Proxy Port"
                         description="The port of the proxy server to use."
@@ -84,7 +85,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[SETTINGS_FIELD_KEYS.proxyPort]}
                     />
                     <TextInput
-                        key={SETTINGS_FIELD_KEYS.proxyUsername}
+                        id={SETTINGS_FIELD_KEYS.proxyUsername}
                         name={SETTINGS_FIELD_KEYS.proxyUsername}
                         label="Proxy Username"
                         description="If the proxy server requires authentication, the username to authenticate with the proxy server."
@@ -95,7 +96,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={errors[SETTINGS_FIELD_KEYS.proxyUsername]}
                     />
                     <PasswordInput
-                        key={SETTINGS_FIELD_KEYS.proxyPassword}
+                        id={SETTINGS_FIELD_KEYS.proxyPassword}
                         name={SETTINGS_FIELD_KEYS.proxyPassword}
                         label="Proxy Password"
                         description="If the proxy server requires authentication, the password to authenticate with the proxy server."

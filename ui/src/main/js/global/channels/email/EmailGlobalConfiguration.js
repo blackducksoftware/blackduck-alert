@@ -19,7 +19,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
 
     const testField = (
         <TextInput
-            key={EMAIL_TEST_FIELD.key}
+            id={EMAIL_TEST_FIELD.key}
             name={EMAIL_TEST_FIELD.key}
             label={EMAIL_TEST_FIELD.label}
             description={EMAIL_TEST_FIELD.description}
@@ -44,9 +44,10 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                 testFields={testField}
                 testFormData={testFieldData}
                 setTestFormData={(values) => setTestFieldData(values)}
+                buttonIdPrefix={EMAIL_INFO.key}
             >
                 <TextInput
-                    key={EMAIL_GLOBAL_FIELD_KEYS.host}
+                    id={EMAIL_GLOBAL_FIELD_KEYS.host}
                     name={EMAIL_GLOBAL_FIELD_KEYS.host}
                     label="SMTP Host"
                     description="The host name of the SMTP email server."
@@ -58,7 +59,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.host]}
                 />
                 <TextInput
-                    key={EMAIL_GLOBAL_FIELD_KEYS.from}
+                    id={EMAIL_GLOBAL_FIELD_KEYS.from}
                     name={EMAIL_GLOBAL_FIELD_KEYS.from}
                     label="SMTP From"
                     description="The email address to use as the return address."
@@ -70,7 +71,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.from]}
                 />
                 <CheckboxInput
-                    key={EMAIL_GLOBAL_FIELD_KEYS.auth}
+                    id={EMAIL_GLOBAL_FIELD_KEYS.auth}
                     name={EMAIL_GLOBAL_FIELD_KEYS.auth}
                     label="SMTP Auth"
                     description="Select this if your SMTP server requires authentication, then fill in the SMTP User and SMTP Password."
@@ -81,7 +82,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.auth]}
                 />
                 <TextInput
-                    key={EMAIL_GLOBAL_FIELD_KEYS.user}
+                    id={EMAIL_GLOBAL_FIELD_KEYS.user}
                     name={EMAIL_GLOBAL_FIELD_KEYS.user}
                     label="SMTP User"
                     description="The username to authenticate with the SMTP server."
@@ -92,7 +93,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.user]}
                 />
                 <TextInput
-                    key={EMAIL_GLOBAL_FIELD_KEYS.password}
+                    id={EMAIL_GLOBAL_FIELD_KEYS.password}
                     name={EMAIL_GLOBAL_FIELD_KEYS.password}
                     label="SMTP Password"
                     description="The password to authenticate with the SMTP server."
@@ -110,7 +111,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                     expanded={hasAdvancedConfig}
                 >
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port}
                         label="SMTP Port"
                         description="The SMTP server port to connect to."
@@ -121,7 +122,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.port]}
                     />
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.connectionTimeout}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.connectionTimeout}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.connectionTimeout}
                         label="SMTP Connection Timeout"
                         description="Socket connection timeout value in milliseconds."
@@ -132,7 +133,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.connectionTimeout]}
                     />
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.timeout}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.timeout}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.timeout}
                         label="SMTP Timeout"
                         description="Socket read timeout value in milliseconds."
@@ -143,7 +144,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.timeout]}
                     />
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.writeTimeout}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.writeTimeout}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.writeTimeout}
                         label="SMTP Write Timeout"
                         description="Socket write timeout value in milliseconds."
@@ -154,7 +155,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.writeTimeout]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localhost}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localhost}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localhost}
                         label="SMTP Localhost"
                         description="Local host name used in the SMTP HELO or EHLO command."
@@ -165,7 +166,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localhost]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localAddress}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localAddress}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localAddress}
                         label="SMTP Local Address"
                         description="Local address (host name) to bind to when creating the SMTP socket."
@@ -176,7 +177,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localAddress]}
                     />
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localPort}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localPort}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localPort}
                         label="SMTP Local Port"
                         description="Local port number to bind to when creating the SMTP socket."
@@ -187,7 +188,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.localPort]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.ehlo}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.ehlo}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.ehlo}
                         label="SMTP Ehlo"
                         description="If false, do not attempt to sign on with the EHLO command."
@@ -198,7 +199,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.ehlo]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authMechanisms}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authMechanisms}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authMechanisms}
                         label="SMTP Auth Mechanisms"
                         description="If set, lists the authentication mechanisms to consider, and the order in which to consider them. Only mechanisms supported by the server and supported by the current implementation will be used."
@@ -209,7 +210,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authMechanisms]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.loginDisable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.loginDisable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.loginDisable}
                         label="SMTP Auth Login Disable"
                         description="If true, prevents use of the AUTH LOGIN command."
@@ -220,7 +221,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.loginDisable]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authPlainDisable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authPlainDisable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authPlainDisable}
                         label="SMTP Auth Plain Disable"
                         description="If true, prevents use of the AUTH PLAIN command."
@@ -231,7 +232,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authPlainDisable]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authDigestMd5Disable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authDigestMd5Disable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authDigestMd5Disable}
                         label="SMTP Auth Digest MD5 Disable"
                         description="If true, prevents use of the AUTH DIGEST-MD5 command."
@@ -242,7 +243,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authDigestMd5Disable]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDisable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDisable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDisable}
                         label="SMTP Auth Ntlm Disable"
                         description="If true, prevents use of the AUTH NTLM command."
@@ -253,7 +254,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDisable]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDomain}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDomain}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDomain}
                         label="SMTP Auth Ntlm Domain"
                         description="The NTLM authentication domain."
@@ -264,7 +265,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmDomain]}
                     />
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmFlags}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmFlags}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmFlags}
                         label="SMTP Auth Ntlm Flags"
                         description="NTLM protocol-specific flags."
@@ -275,7 +276,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authNtlmFlags]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authXoauth2Disable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authXoauth2Disable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authXoauth2Disable}
                         label="SMTP Auth XOAuth2 Disable"
                         description="If true, prevents use of the AUTHENTICATE XOAUTH2 command."
@@ -286,7 +287,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.authXoauth2Disable]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.submitter}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.submitter}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.submitter}
                         label="SMTP Submitter"
                         description="The submitter to use in the AUTH tag in the MAIL FROM command. Typically used by a mail relay to pass along information about the original submitter of the message."
@@ -297,7 +298,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.submitter]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnNotify}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnNotify}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnNotify}
                         label="SMTP DSN Notify"
                         description="The NOTIFY option to the RCPT command."
@@ -308,7 +309,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnNotify]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnRet}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnRet}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnRet}
                         label="SMTP DSN Ret"
                         description="The RET option to the MAIL command."
@@ -319,7 +320,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.dsnRet]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.allow8BitMime}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.allow8BitMime}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.allow8BitMime}
                         label="SMTP Allow 8-bit Mime"
                         description='If set to true, and the server supports the 8BITMIME extension, text parts of messages that use the "quoted-printable" or "base64" encodings are converted to use "8bit" encoding.'
@@ -330,7 +331,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.allow8BitMime]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sendPartial}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sendPartial}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sendPartial}
                         label="SMTP Send Partial"
                         description="If set to true, and a message has some valid and some invalid addresses, send the message anyway, reporting the partial failure with a SendFailedException."
@@ -341,7 +342,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sendPartial]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslEnable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslEnable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslEnable}
                         label="SMTP SASL Enable"
                         description="If set to true, attempt to use the javax.security.sasl package to choose an authentication mechanism for login."
@@ -352,7 +353,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslEnable]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslMechanism}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslMechanism}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslMechanism}
                         label="SMTP SASL Mechanisms"
                         description="A space or comma separated list of SASL mechanism names to try to use."
@@ -363,7 +364,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslMechanism]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslAuthorizationId}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslAuthorizationId}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslAuthorizationId}
                         label="SMTP SASL Authorization ID"
                         description="The authorization ID to use in the SASL authentication. If not set, the authentication ID (user name) is used."
@@ -374,7 +375,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslAuthorizationId]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslRealm}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslRealm}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslRealm}
                         label="SMTP SASL Realm"
                         description="The realm to use with DIGEST-MD5 authentication."
@@ -385,7 +386,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslRealm]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslUseCanonicalHostname}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslUseCanonicalHostname}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslUseCanonicalHostname}
                         label="SMTP SASL Use Canonical Hostname"
                         description="If set to true, the canonical host name returned by InetAddress.getCanonicalHostName is passed to the SASL mechanism, instead of the host name used to connect."
@@ -396,7 +397,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.saslUseCanonicalHostname]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.quitWait}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.quitWait}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.quitWait}
                         label="SMTP Quit Wait"
                         description="If set to false, the QUIT command is sent and the connection is immediately closed."
@@ -407,7 +408,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.quitWait]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.reportSuccess}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.reportSuccess}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.reportSuccess}
                         label="SMTP Report Success"
                         description="If set to true, causes the transport to include an SMTPAddressSucceededException for each address that is successful."
@@ -418,7 +419,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.reportSuccess]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslEnable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslEnable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslEnable}
                         label="SMTP SSL Enable"
                         description="If set to true, use SSL to connect and use the SSL port by default."
@@ -429,7 +430,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslEnable]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCheckServerIdentity}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCheckServerIdentity}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCheckServerIdentity}
                         label="SMTP SSL Check Server Identity"
                         description="If set to true, check the server identity as specified by RFC 2595."
@@ -440,7 +441,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCheckServerIdentity]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslTrust}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslTrust}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslTrust}
                         label="SMTP SSL Trust"
                         description='If set, and a socket factory hasnt been specified, enables use of a MailSSLSocketFactory. If set to "*", all hosts are trusted.'
@@ -451,7 +452,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslTrust]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslProtocols}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslProtocols}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslProtocols}
                         label="SMTP SSL Protocols"
                         description="Specifies the SSL protocols that will be enabled for SSL connections."
@@ -462,7 +463,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslProtocols]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCipherSuites}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCipherSuites}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCipherSuites}
                         label="SMTP SSL Cipher Suites"
                         description="Specifies the SSL cipher suites that will be enabled for SSL connections."
@@ -473,7 +474,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.sslCipherSuites]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsEnable}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsEnable}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsEnable}
                         label="SMTP Start TLS Enabled"
                         description="If true, enables the use of the STARTTLS command (if supported by the server) to switch the connection to a TLS-protected connection before issuing any login commands. If the server does not support STARTTLS, the connection continues without the use of TLS."
@@ -484,7 +485,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsEnable]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsRequired}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsRequired}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsRequired}
                         label="SMTP Start TLS Required"
                         description="If true, requires the use of the STARTTLS command. If the server doesnt support the STARTTLS command, or the command fails, the connect method will fail."
@@ -495,7 +496,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.startTlsRequired]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyHost}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyHost}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyHost}
                         label="SMTP Proxy Host"
                         description="Specifies the host name of an HTTP web proxy server that will be used for connections to the mail server."
@@ -506,7 +507,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyHost]}
                     />
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyPort}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyPort}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyPort}
                         label="SMTP Proxy Port"
                         description="Specifies the port number for the HTTP web proxy server."
@@ -517,7 +518,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.proxyPort]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksHost}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksHost}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksHost}
                         label="SMTP Socks Host"
                         description="Specifies the host name of a SOCKS5 proxy server that will be used for connections to the mail server."
@@ -528,7 +529,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksHost]}
                     />
                     <NumberInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksPort}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksPort}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksPort}
                         label="SMTP Socks Port"
                         description="Specifies the port number for the SOCKS5 proxy server."
@@ -539,7 +540,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.socksPort]}
                     />
                     <TextInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.mailExtensions}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.mailExtensions}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.mailExtensions}
                         label="SMTP Mail Extension"
                         description="Extension string to append to the MAIL command. The extension string can be used to specify standard SMTP service extensions as well as vendor-specific extensions."
@@ -550,7 +551,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.mailExtensions]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.userSet}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.userSet}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.userSet}
                         label="SMTP Use RSET"
                         description="If set to true, use the RSET command instead of the NOOP command in the isConnected method."
@@ -561,7 +562,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                         errorValue={fieldErrors[EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.userSet]}
                     />
                     <CheckboxInput
-                        key={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.noopStrict}
+                        id={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.noopStrict}
                         name={EMAIL_GLOBAL_ADVANCED_FIELD_KEYS.noopStrict}
                         label="SMTP NoOp Strict"
                         description="If set to true, insist on a 250 response code from the NOOP command to indicate success."

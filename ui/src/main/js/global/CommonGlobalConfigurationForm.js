@@ -7,7 +7,7 @@ import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'field/StatusMessage';
 
 const CommonGlobalConfigurationForm = ({
-    formData, setFormData, testFormData, setTestFormData, csrfToken, setErrors, displaySave, displayTest, displayDelete, children, testFields
+    formData, setFormData, testFormData, setTestFormData, csrfToken, setErrors, displaySave, displayTest, displayDelete, children, testFields, buttonIdPrefix
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -119,6 +119,10 @@ const CommonGlobalConfigurationForm = ({
                     {children}
                 </div>
                 <ConfigButtons
+                    submitId={`${buttonIdPrefix}-submit`}
+                    cancelId={`${buttonIdPrefix}-cancel`}
+                    deleteId={`${buttonIdPrefix}-delete`}
+                    testId={`${buttonIdPrefix}-test`}
                     includeSave={displaySave}
                     includeTest={displayTest}
                     includeDelete={displayDelete}
@@ -132,6 +136,7 @@ const CommonGlobalConfigurationForm = ({
                 showTestModal={showTest}
                 handleTest={performTestRequest}
                 handleCancel={handleTestCancel}
+                buttonIdPrefix={buttonIdPrefix}
             >
                 <div>
                     {testFields}
@@ -152,7 +157,8 @@ CommonGlobalConfigurationForm.propTypes = {
     displayDelete: PropTypes.bool,
     testFields: PropTypes.node,
     testFormData: PropTypes.object,
-    setTestFormData: PropTypes.func
+    setTestFormData: PropTypes.func,
+    buttonIdPrefix: PropTypes.string
 };
 
 CommonGlobalConfigurationForm.defaultProps = {
@@ -161,7 +167,8 @@ CommonGlobalConfigurationForm.defaultProps = {
     displayDelete: true,
     testFields: null,
     testFormData: {},
-    setTestFormData: () => null
+    setTestFormData: () => null,
+    buttonIdPrefix: 'common-form'
 };
 
 export default CommonGlobalConfigurationForm;
