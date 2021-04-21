@@ -33,7 +33,7 @@ class Navigation extends Component {
 
         const createStaticNavItem = (itemObject) => (
             <li key={itemObject.key}>
-                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
+                <NavLink id={`${itemObject.key}-link`} to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
                     {itemObject.label}
                 </NavLink>
             </li>
@@ -63,7 +63,7 @@ class Navigation extends Component {
                 default:
                     return (
                         <li key={name}>
-                            <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
+                            <NavLink id={`${name}-link`} to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
                                 {label}
                             </NavLink>
                         </li>
@@ -92,7 +92,7 @@ class Navigation extends Component {
                     Jobs
                 </li>
                 <li>
-                    <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
+                    <NavLink id="distribution-jobs-link" to="/alert/jobs/distribution" activeClassName="activeNav">
                         Distribution
                     </NavLink>
                 </li>
@@ -108,7 +108,7 @@ class Navigation extends Component {
                 <div className="navigationContent">
                     <ul>
                         <li>
-                            <NavLink to="/alert/general/about" activeClassName="activeNav">
+                            <NavLink id="about-link" to="/alert/general/about" activeClassName="activeNav">
                                 <Logo />
                             </NavLink>
                         </li>
@@ -116,6 +116,7 @@ class Navigation extends Component {
                         {rows}
                         <li className="logoutLink">
                             <a
+                                id="logout-link"
                                 role="button"
                                 tabIndex={0}
                                 onClick={(evt) => {

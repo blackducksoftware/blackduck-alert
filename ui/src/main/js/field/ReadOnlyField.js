@@ -9,7 +9,7 @@ const ReadOnlyField = ({
     const content = url ? <a alt={altValue} href={url}>{value}</a> : value;
     return (
         <LabeledField
-            id={id}
+            id={`${id}-label`}
             description={description}
             errorName={errorName}
             errorValue={errorValue}
@@ -19,7 +19,7 @@ const ReadOnlyField = ({
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
             <div className="d-inline-flex p-2 col-sm-8">
-                <p className="form-control-static">
+                <p id={`${id}-field`} className="form-control-static">
                     {content}
                 </p>
             </div>

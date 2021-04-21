@@ -348,15 +348,19 @@ const TableDisplay = ({
 
     const createTableCellFormatter = (iconName, buttonText, clickFunction) => {
         const buttonId = buttonText.toLowerCase();
-        return (cell, row) => (
-            <IconTableCellFormatter
-                id={`${id}-${buttonId}-cell`}
-                handleButtonClicked={clickFunction}
-                currentRowSelected={row}
-                buttonIconName={iconName}
-                buttonText={buttonText}
-            />
-        );
+        const keyFieldName = columns.find((column) => column.isKey);
+        return (cell, row) => {
+            const suffix = (keyFieldName) ? row[keyFieldName.header] : 'row';
+            return (
+                <IconTableCellFormatter
+                    id={`${id}-${buttonId}-cell-${suffix}`}
+                    handleButtonClicked={clickFunction}
+                    currentRowSelected={row}
+                    buttonIconName={iconName}
+                    buttonText={buttonText}
+                />
+            );
+        };
     };
 
     const editColumnFormatter = () => createTableCellFormatter(editColumnIcon, editColumnText, editButtonClicked);
