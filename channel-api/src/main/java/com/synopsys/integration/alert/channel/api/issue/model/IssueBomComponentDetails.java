@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class IssueBomComponentDetails extends AbstractBomComponentDetails {
@@ -23,6 +24,8 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
         return new IssueBomComponentDetails(
             component,
             componentVersion,
+            ComponentVulnerabilities.none(),
+            List.of(),
             UNKNOWN_LICENSE,
             UNKNOWN_USAGE,
             List.of(),
@@ -34,6 +37,8 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
         return new IssueBomComponentDetails(
             bomComponentDetails.getComponent(),
             bomComponentDetails.getComponentVersion().orElse(null),
+            bomComponentDetails.getComponentVulnerabilities(),
+            bomComponentDetails.getComponentPolicies(),
             bomComponentDetails.getLicense(),
             bomComponentDetails.getUsage(),
             bomComponentDetails.getAdditionalAttributes(),
@@ -41,10 +46,18 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
         );
     }
 
-    // FIXME include component vulns and component policies
     @Deprecated
-    public IssueBomComponentDetails(LinkableItem component, @Nullable LinkableItem componentVersion, LinkableItem license, String usage, List<LinkableItem> additionalAttributes, String blackDuckIssuesUrl) {
-        super(component, componentVersion, ComponentVulnerabilities.none(), List.of(), license, usage, additionalAttributes, blackDuckIssuesUrl);
+    private IssueBomComponentDetails(
+        LinkableItem component,
+        @Nullable LinkableItem componentVersion,
+        ComponentVulnerabilities componentVulnerabilities,
+        List<ComponentPolicy> componentPolicies,
+        LinkableItem license,
+        String usage,
+        List<LinkableItem> additionalAttributes,
+        String blackDuckIssuesUrl
+    ) {
+        super(component, componentVersion, componentVulnerabilities, componentPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
     }
 
 }
