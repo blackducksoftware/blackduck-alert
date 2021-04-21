@@ -6,7 +6,7 @@ const ReadOnlyField = ({
     id, alt, description, errorName, errorValue, label, labelClass, required, showDescriptionPlaceHolder, url, value
 }) => {
     const altValue = alt || url;
-    const content = url ? <a alt={altValue} href={url}>{value}</a> : value;
+    const content = url ? <a id={`${id}-link`} alt={altValue} href={url}>{value}</a> : value;
     return (
         <LabeledField
             id={`${id}-label`}

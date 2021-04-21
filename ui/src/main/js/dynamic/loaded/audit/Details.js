@@ -91,7 +91,7 @@ class Details extends Component {
     resendButton(cell, row) {
         return (
             <RefreshTableCellFormatter
-                id="audit-detail-refresh-cell"
+                id={`audit-detail-refresh-cell-${row.id}`}
                 handleButtonClicked={this.onResendClick}
                 currentRowSelected={row}
                 buttonText="Re-send"
