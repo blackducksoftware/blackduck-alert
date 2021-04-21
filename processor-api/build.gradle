@@ -7,4 +7,6 @@ dependencies {
 
     implementation 'com.synopsys.integration:blackduck-common'
     implementation 'org.springframework:spring-context'
+
+    testImplementation project(':test-common')
 }
