@@ -28,7 +28,7 @@ Helm Charts for Synopsys Alert
 ### Add the helm repository
 
 ```bash
- https://sig-repo.synopsys.com/artifactory/sig-cloudnative
+ $ helm repo add synopsys https://sig-repo.synopsys.com/artifactory/sig-cloudnative
 ```
 
 ### Create the Namespace
@@ -54,7 +54,7 @@ $ helm install synopsys/synopsys-alert --name <name> --namespace <namespace>
 ### Add the helm repository
 
 ```bash
- https://sig-repo.synopsys.com/artifactory/sig-cloudnative
+ $ helm repo add synopsys https://sig-repo.synopsys.com/artifactory/sig-cloudnative
 ```
 
 ### Create the Namespace and TLS Secrets
