@@ -25,45 +25,64 @@ public class ComponentVulnerabilitiesConverter {
 
     private final ChannelMessageFormatter formatter;
 
+    private final String encodedLabelVulnerabilitiesSection;
+    private final String encodedValueNoCurrentVulnerabilities;
+    private final String encodedLabelCritical;
+    private final String encodedLabelHigh;
+    private final String encodedLabelMedium;
+    private final String encodedLabelLow;
+
+    private final String encodedLeftBracket;
+    private final String encodedRightBracket;
+
     public ComponentVulnerabilitiesConverter(ChannelMessageFormatter formatter) {
         this.formatter = formatter;
-        // TODO consider initializing encoded labels here
+
+        this.encodedLabelVulnerabilitiesSection = formatter.encode(LABEL_VULNERABILITIES_SECTION);
+        this.encodedValueNoCurrentVulnerabilities = formatter.encode(VALUE_NO_CURRENT_VULNERABILITIES);
+        this.encodedLabelCritical = formatter.encode(LABEL_CRITICAL);
+        this.encodedLabelHigh = formatter.encode(LABEL_HIGH);
+        this.encodedLabelMedium = formatter.encode(LABEL_MEDIUM);
+        this.encodedLabelLow = formatter.encode(LABEL_LOW);
+
+        this.encodedLeftBracket = formatter.encode("[ ");
+        this.encodedRightBracket = formatter.encode(" ] ");
     }
 
     public List<String> createComponentVulnerabilitiesSectionPieces(ComponentVulnerabilities componentVulnerabilities) {
         List<String> componentVulnerabilitiesSectionPieces = new LinkedList<>();
-        componentVulnerabilitiesSectionPieces.add(formatter.encode(LABEL_VULNERABILITIES_SECTION));
+        componentVulnerabilitiesSectionPieces.add(encodedLabelVulnerabilitiesSection);
 
         if (componentVulnerabilities.hasVulnerabilities()) {
             componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
 
-            List<String> criticalSection = createSeveritySection(LABEL_CRITICAL, componentVulnerabilities.getCritical());
+            List<String> criticalSection = createSeveritySection(encodedLabelCritical, componentVulnerabilities.getCritical());
             componentVulnerabilitiesSectionPieces.addAll(criticalSection);
 
-            List<String> highSection = createSeveritySection(LABEL_HIGH, componentVulnerabilities.getHigh());
+            List<String> highSection = createSeveritySection(encodedLabelHigh, componentVulnerabilities.getHigh());
             componentVulnerabilitiesSectionPieces.addAll(highSection);
 
-            List<String> mediumSection = createSeveritySection(LABEL_MEDIUM, componentVulnerabilities.getMedium());
+            List<String> mediumSection = createSeveritySection(encodedLabelMedium, componentVulnerabilities.getMedium());
             componentVulnerabilitiesSectionPieces.addAll(mediumSection);
 
-            List<String> lowSection = createSeveritySection(LABEL_LOW, componentVulnerabilities.getLow());
+            List<String> lowSection = createSeveritySection(encodedLabelLow, componentVulnerabilities.getLow());
             componentVulnerabilitiesSectionPieces.addAll(lowSection);
 
         } else {
-            componentVulnerabilitiesSectionPieces.add(formatter.encode(VALUE_NO_CURRENT_VULNERABILITIES));
+            componentVulnerabilitiesSectionPieces.add(encodedValueNoCurrentVulnerabilities);
         }
 
         componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
         return componentVulnerabilitiesSectionPieces;
     }
 
-    private List<String> createSeveritySection(String label, List<LinkableItem> vulnerabilities) {
+    private List<String> createSeveritySection(String encodedLabel, List<LinkableItem> vulnerabilities) {
         if (vulnerabilities.isEmpty()) {
             return List.of();
         }
 
         List<String> severitySectionPieces = new LinkedList<>();
-        severitySectionPieces.add(formatter.encode(label));
+        severitySectionPieces.add(encodedLabel);
 
         vulnerabilities
             .stream()
@@ -74,17 +93,13 @@ public class ComponentVulnerabilitiesConverter {
     }
 
     private String convertVulnerabilityToString(LinkableItem vulnerability) {
-        String encodedValue = formatter.encode(vulnerability.getValue());
         Optional<String> url = vulnerability.getUrl();
 
-        String formattedVulnerability = encodedValue;
+        String formattedVulnerability = formatter.encode(vulnerability.getValue());
         if (url.isPresent()) {
             String encodedUrl = formatter.encode(url.get());
-            formattedVulnerability = formatter.createLink(encodedValue, encodedUrl);
+            formattedVulnerability = formatter.createLink(formattedVulnerability, encodedUrl);
         }
-
-        String encodedLeftBracket = formatter.encode("[ ");
-        String encodedRightBracket = formatter.encode(" ] ");
         return String.format("%s%s%s", encodedLeftBracket, formattedVulnerability, encodedRightBracket);
     }
 
