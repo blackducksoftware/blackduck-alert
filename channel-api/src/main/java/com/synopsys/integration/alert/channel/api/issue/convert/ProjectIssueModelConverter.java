@@ -186,9 +186,11 @@ public class ProjectIssueModelConverter {
     private List<String> createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel) {
         List<String> concernSectionPieces = new LinkedList<>();
 
+        IssueBomComponentDetails bomComponentDetails = projectIssueModel.getBomComponentDetails();
+
         Optional<IssuePolicyDetails> optionalPolicyDetails = projectIssueModel.getPolicyDetails();
         if (optionalPolicyDetails.isPresent()) {
-            List<String> policyDetailsSectionPieces = issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(optionalPolicyDetails.get());
+            List<String> policyDetailsSectionPieces = issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(bomComponentDetails, optionalPolicyDetails.get());
             concernSectionPieces.addAll(policyDetailsSectionPieces);
             concernSectionPieces.add(formatter.getLineSeparator());
         }
