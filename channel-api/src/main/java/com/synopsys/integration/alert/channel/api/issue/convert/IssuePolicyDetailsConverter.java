@@ -38,7 +38,12 @@ public class IssuePolicyDetailsConverter {
         policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().name()));
 
         List<String> additionalPolicyDetailsSections = createAdditionalPolicyDetailsSections(bomComponentDetails, policyDetails);
-        policyDetailsSectionPieces.addAll(additionalPolicyDetailsSections);
+        if (!additionalPolicyDetailsSections.isEmpty()) {
+            policyDetailsSectionPieces.add(formatter.getLineSeparator());
+            policyDetailsSectionPieces.add(formatter.getSectionSeparator());
+            policyDetailsSectionPieces.add(formatter.getLineSeparator());
+            policyDetailsSectionPieces.addAll(additionalPolicyDetailsSections);
+        }
 
         return policyDetailsSectionPieces;
     }

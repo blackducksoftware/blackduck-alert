@@ -18,10 +18,10 @@ public class ComponentVulnerabilitiesConverter {
     private static final String LABEL_VULNERABILITIES_SECTION = "Current Vulnerabilities: ";
     private static final String VALUE_NO_CURRENT_VULNERABILITIES = "None";
 
-    private static final String LABEL_CRITICAL = "Critical: ";
-    private static final String LABEL_HIGH = "High: ";
-    private static final String LABEL_MEDIUM = "Medium: ";
-    private static final String LABEL_LOW = "Low: ";
+    private static final String LABEL_CRITICAL = "Critical";
+    private static final String LABEL_HIGH = "High";
+    private static final String LABEL_MEDIUM = "Medium";
+    private static final String LABEL_LOW = "Low";
 
     private final ChannelMessageFormatter formatter;
 
@@ -40,10 +40,10 @@ public class ComponentVulnerabilitiesConverter {
 
         this.encodedLabelVulnerabilitiesSection = formatter.encode(LABEL_VULNERABILITIES_SECTION);
         this.encodedValueNoCurrentVulnerabilities = formatter.encode(VALUE_NO_CURRENT_VULNERABILITIES);
-        this.encodedLabelCritical = formatter.encode(LABEL_CRITICAL);
-        this.encodedLabelHigh = formatter.encode(LABEL_HIGH);
-        this.encodedLabelMedium = formatter.encode(LABEL_MEDIUM);
-        this.encodedLabelLow = formatter.encode(LABEL_LOW);
+        this.encodedLabelCritical = createEncodedLabel(formatter, LABEL_CRITICAL);
+        this.encodedLabelHigh = createEncodedLabel(formatter, LABEL_HIGH);
+        this.encodedLabelMedium = createEncodedLabel(formatter, LABEL_MEDIUM);
+        this.encodedLabelLow = createEncodedLabel(formatter, LABEL_LOW);
 
         this.encodedLeftBracket = formatter.encode("[ ");
         this.encodedRightBracket = formatter.encode(" ] ");
@@ -58,12 +58,15 @@ public class ComponentVulnerabilitiesConverter {
 
             List<String> criticalSection = createSeveritySection(encodedLabelCritical, componentVulnerabilities.getCritical());
             componentVulnerabilitiesSectionPieces.addAll(criticalSection);
+            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
 
             List<String> highSection = createSeveritySection(encodedLabelHigh, componentVulnerabilities.getHigh());
             componentVulnerabilitiesSectionPieces.addAll(highSection);
+            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
 
             List<String> mediumSection = createSeveritySection(encodedLabelMedium, componentVulnerabilities.getMedium());
             componentVulnerabilitiesSectionPieces.addAll(mediumSection);
+            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
 
             List<String> lowSection = createSeveritySection(encodedLabelLow, componentVulnerabilities.getLow());
             componentVulnerabilitiesSectionPieces.addAll(lowSection);
@@ -71,8 +74,6 @@ public class ComponentVulnerabilitiesConverter {
         } else {
             componentVulnerabilitiesSectionPieces.add(encodedValueNoCurrentVulnerabilities);
         }
-
-        componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
         return componentVulnerabilitiesSectionPieces;
     }
 
@@ -101,6 +102,10 @@ public class ComponentVulnerabilitiesConverter {
             formattedVulnerability = formatter.createLink(formattedVulnerability, encodedUrl);
         }
         return String.format("%s%s%s", encodedLeftBracket, formattedVulnerability, encodedRightBracket);
+    }
+
+    private static String createEncodedLabel(ChannelMessageFormatter formatter, String label) {
+        return String.format("%s-%s%s:%s", formatter.getNonBreakingSpace(), formatter.getNonBreakingSpace(), label, formatter.getNonBreakingSpace());
     }
 
 }
