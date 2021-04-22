@@ -3,6 +3,7 @@ kind: ConfigMap
 data:
   ALERT_HOSTNAME: {{ .Values.alert.hostname | quote }}
   ALERT_SERVER_PORT: {{ .Values.alert.port | quote }}
+  ALERT_FORWARD_HEADERS_STRATEGY: {{ .Values.alert.forwardHeadersStrategy | quote }}
   {{- if .Values.deployAlertWithBlackDuck }}
   HUB_WEBAPP_HOST: {{ required "must --set blackDuckName" .Values.blackDuckName }}-blackduck-webapp.{{ required "must --set blackDuckNamespace" .Values.blackDuckNamespace }}.svc
   HUB_CFSSL_HOST: {{ .Values.blackDuckName }}-blackduck-cfssl.{{ .Values.blackDuckNamespace }}.svc
