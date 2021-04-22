@@ -148,7 +148,7 @@ class MainPage extends Component {
             </div>
         );
 
-        const { csrfToken } = this.props;
+        const { csrfToken, descriptors } = this.props;
         const page = (
             <div className="contentArea">
                 <Route
@@ -166,7 +166,7 @@ class MainPage extends Component {
                 />
                 {this.createRoute('/alert/providers/', BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} />)}
                 {channels}
-                {this.createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} />)}
+                {this.createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} />)}
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
                 <Route exact path="/alert/general/about" component={AboutInfo} />
