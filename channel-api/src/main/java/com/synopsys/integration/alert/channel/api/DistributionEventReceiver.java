@@ -21,18 +21,18 @@ import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAcce
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
+import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
-public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEventV2> implements AlertChannelEventListener {
+public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEvent> implements AlertChannelEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
-    private final DistributionChannelV2<D> channel;
+    private final DistributionChannel<D> channel;
     private final ChannelKey channelKey;
 
-    protected DistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannelV2<D> channel, ChannelKey channelKey) {
-        super(gson, DistributionEventV2.class);
+    protected DistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannel<D> channel, ChannelKey channelKey) {
+        super(gson, DistributionEvent.class);
         this.auditAccessor = auditAccessor;
         this.jobDetailsAccessor = jobDetailsAccessor;
         this.channel = channel;
@@ -40,7 +40,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
     }
 
     @Override
-    public final void handleEvent(DistributionEventV2 event) {
+    public final void handleEvent(DistributionEvent event) {
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
@@ -59,12 +59,12 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         return channelKey.getUniversalKey();
     }
 
-    protected void handleException(AlertException e, DistributionEventV2 event) {
+    protected void handleException(AlertException e, DistributionEvent event) {
         logger.error("An exception occurred while handling the following event: {}", event, e);
         auditAccessor.setAuditEntryFailure(Set.of(event.getAuditId()), "An exception occurred during message distribution", e);
     }
 
-    protected void handleJobDetailsMissing(DistributionEventV2 event) {
+    protected void handleJobDetailsMissing(DistributionEvent event) {
         String failureMessage = "Received a distribution event for a Job that no longer exists";
         logger.warn("{}. Destination: {}", failureMessage, event.getDestination());
         auditAccessor.setAuditEntryFailure(Set.of(event.getAuditId()), failureMessage, null);

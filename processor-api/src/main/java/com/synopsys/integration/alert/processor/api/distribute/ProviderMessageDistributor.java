@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 
 @Component
 public class ProviderMessageDistributor {
-    private static final String EVENT_CLASS_NAME = DistributionEventV2.class.getSimpleName();
+    private static final String EVENT_CLASS_NAME = DistributionEvent.class.getSimpleName();
     private static final String DESTINATION_WRAPPER_CLASS_NAME = ChannelKey.class.getSimpleName();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -43,7 +43,7 @@ public class ProviderMessageDistributor {
         String channelName = processedNotificationDetails.getChannelName();
         ChannelKey destinationKey = ChannelKeys.getChannelKey(channelName);
         if (null != destinationKey) {
-            DistributionEventV2 event = new DistributionEventV2(destinationKey, jobId, auditId, providerMessageHolder);
+            DistributionEvent event = new DistributionEvent(destinationKey, jobId, auditId, providerMessageHolder);
             logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
             eventManager.sendEvent(event);
         } else {

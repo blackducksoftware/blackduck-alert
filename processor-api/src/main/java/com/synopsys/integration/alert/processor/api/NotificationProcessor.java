@@ -28,7 +28,7 @@ import com.synopsys.integration.alert.processor.api.filter.NotificationContentWr
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 
 @Component
-public final class NotificationProcessorV2 {
+public final class NotificationProcessor {
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
     private final NotificationContentProcessor notificationContentProcessor;
@@ -37,7 +37,7 @@ public final class NotificationProcessorV2 {
     private final NotificationAccessor notificationAccessor;
 
     @Autowired
-    public NotificationProcessorV2(
+    public NotificationProcessor(
         NotificationDetailExtractionDelegator notificationDetailExtractionDelegator,
         JobNotificationMapper jobNotificationMapper,
         NotificationContentProcessor notificationContentProcessor,
