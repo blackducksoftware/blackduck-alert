@@ -18,11 +18,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
+import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
@@ -35,14 +35,14 @@ public class AboutReader {
     private final Logger logger = LoggerFactory.getLogger(AboutReader.class);
 
     private final Gson gson;
-    private final AlertProperties alertProperties;
+    private final AlertWebServerUrlManager alertWebServerUrlManager;
     private final SystemStatusAccessor systemStatusAccessor;
     private final DescriptorMetadataActions descriptorActions;
 
     @Autowired
-    public AboutReader(Gson gson, AlertProperties alertProperties, SystemStatusAccessor systemStatusAccessor, DescriptorMetadataActions descriptorActions) {
+    public AboutReader(Gson gson, AlertWebServerUrlManager alertWebServerUrlManager, SystemStatusAccessor systemStatusAccessor, DescriptorMetadataActions descriptorActions) {
         this.gson = gson;
-        this.alertProperties = alertProperties;
+        this.alertWebServerUrlManager = alertWebServerUrlManager;
         this.systemStatusAccessor = systemStatusAccessor;
         this.descriptorActions = descriptorActions;
     }
@@ -80,7 +80,7 @@ public class AboutReader {
     }
 
     private String createSwaggerUrl(String swaggerPath) {
-        UriComponentsBuilder serverUrlBuilder = alertProperties.getServerUrlBuilder();
+        UriComponentsBuilder serverUrlBuilder = alertWebServerUrlManager.getServerComponentsBuilder();
         serverUrlBuilder.pathSegment(swaggerPath);
         serverUrlBuilder.path("/");
         return serverUrlBuilder.toUriString();

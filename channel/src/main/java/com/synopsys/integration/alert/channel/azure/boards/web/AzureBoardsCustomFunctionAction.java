@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreat
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.action.api.ConfigResourceActions;
@@ -39,6 +38,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -50,7 +50,6 @@ import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
     private final Logger logger = LoggerFactory.getLogger(AzureBoardsCustomFunctionAction.class);
 
-    private final AlertProperties alertProperties;
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
@@ -58,10 +57,10 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     private final ProxyManager proxyManager;
     private final OAuthRequestValidator oAuthRequestValidator;
     private final ConfigResourceActions configActions;
+    private final AlertWebServerUrlManager alertWebServerUrlManager;
 
     @Autowired
     public AzureBoardsCustomFunctionAction(
-        AlertProperties alertProperties,
         ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
@@ -70,10 +69,9 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
         DescriptorMap descriptorMap,
-        FieldValidationUtility fieldValidationUtility
-    ) {
+        FieldValidationUtility fieldValidationUtility,
+        AlertWebServerUrlManager alertWebServerUrlManager) {
         super(AzureBoardsDescriptor.KEY_OAUTH, authorizationManager, descriptorMap, fieldValidationUtility);
-        this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
@@ -81,6 +79,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         this.proxyManager = proxyManager;
         this.oAuthRequestValidator = oAuthRequestValidator;
         this.configActions = configActions;
+        this.alertWebServerUrlManager = alertWebServerUrlManager;
     }
 
     @Override
@@ -102,7 +101,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("App ID not found."));
             }
 
-            Optional<String> alertServerUrl = alertProperties.getServerUrl();
+            Optional<String> alertServerUrl = alertWebServerUrlManager.getServerUrl();
             if (!alertServerUrl.isPresent()) {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("Could not determine the alert server url for the callback."));
             }
