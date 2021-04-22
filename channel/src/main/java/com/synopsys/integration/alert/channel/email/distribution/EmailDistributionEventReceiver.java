@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 @Component
 public class EmailDistributionEventReceiver extends DistributionEventReceiver<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannelV2 channel, EmailChannelKey channelKey) {
+    public EmailDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannel channel, EmailChannelKey channelKey) {
         super(gson, auditAccessor, emailJobDetailsAccessor, channel, channelKey);
     }
 

@@ -21,13 +21,13 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 
 public abstract class ProcessingTask extends StartupScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NotificationAccessor notificationAccessor;
-    private final NotificationProcessorV2 notificationProcessorV2;
+    private final NotificationProcessor notificationProcessor;
     private final FrequencyType frequencyType;
 
     private OffsetDateTime lastRunTime;
@@ -36,12 +36,12 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         TaskScheduler taskScheduler,
         NotificationAccessor notificationAccessor,
         TaskManager taskManager,
-        NotificationProcessorV2 notificationProcessorV2,
+        NotificationProcessor notificationProcessor,
         FrequencyType frequencyType
     ) {
         super(taskScheduler, taskManager);
         this.notificationAccessor = notificationAccessor;
-        this.notificationProcessorV2 = notificationProcessorV2;
+        this.notificationProcessor = notificationProcessor;
         this.frequencyType = frequencyType;
         lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
@@ -61,7 +61,7 @@ public abstract class ProcessingTask extends StartupScheduledTask {
         DateRange dateRange = getDateRange();
         List<AlertNotificationModel> notificationList = read(dateRange);
         logger.info("Processing {} notifications.", notificationList.size());
-        notificationProcessorV2.processNotifications(notificationList, List.of(frequencyType));
+        notificationProcessor.processNotifications(notificationList, List.of(frequencyType));
         lastRunTime = DateUtils.createCurrentDateTimestamp();
     }
 

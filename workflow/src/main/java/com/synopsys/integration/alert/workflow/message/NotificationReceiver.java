@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
-import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
 public class NotificationReceiver extends MessageReceiver<NotificationReceivedEvent> implements AlertDefaultEventListener {
@@ -33,10 +33,10 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NotificationAccessor notificationAccessor;
-    private final NotificationProcessorV2 notificationProcessor;
+    private final NotificationProcessor notificationProcessor;
 
     @Autowired
-    public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessorV2 notificationProcessor) {
+    public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor) {
         super(gson, NotificationReceivedEvent.class);
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;

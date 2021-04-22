@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
  * @param <T> The model containing all the message-fields this channel's implementation of {@link ChannelMessageSender} requires.
  *            This is meant to tightly couple the output of {@link AbstractChannelMessageConverter} to the input of {@link ChannelMessageSender}.
  */
-public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannelV2<D> {
+public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel, T> implements DistributionChannel<D> {
     private final AbstractChannelMessageConverter<D, T> channelMessageConverter;
     private final ChannelMessageSender<D, T, MessageResult> channelMessageSender;
 
