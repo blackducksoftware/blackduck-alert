@@ -67,7 +67,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.processor.api.JobNotificationProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.util.ResourceUtil;
@@ -97,7 +97,7 @@ public class AuditEntryHandlerTestIT {
     @Autowired
     private AuditAccessor auditAccessor;
     @Autowired
-    private NotificationProcessorV2 notificationProcessor;
+    private NotificationProcessor notificationProcessor;
     @Autowired
     private JobNotificationProcessor jobNotificationProcessor;
     @Autowired

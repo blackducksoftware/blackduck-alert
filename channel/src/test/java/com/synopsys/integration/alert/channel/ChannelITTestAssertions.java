@@ -8,7 +8,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 
-import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
+import com.synopsys.integration.alert.channel.api.DistributionChannel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -32,7 +32,7 @@ public final class ChannelITTestAssertions {
 
     private static final ProviderMessageHolder TEST_MESSAGE_HOLDER = new ProviderMessageHolder(List.of(), List.of(TEST_SIMPLE_MESSAGE));
 
-    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannelV2<D> channel, D distributionDetails) {
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannel<D> channel, D distributionDetails) {
         MessageResult messageResult = null;
         try {
             messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
@@ -44,11 +44,11 @@ public final class ChannelITTestAssertions {
         assertFalse(messageResult.hasWarnings(), "The message result had warnings");
     }
 
-    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannelV2<D> channel, D distributionDetails) {
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, D distributionDetails) {
         assertSendSimpleMessageException(channel, distributionDetails, null);
     }
 
-    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannelV2<D> channel, D distributionDetails, @Nullable String expectedExceptionMessage) {
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, D distributionDetails, @Nullable String expectedExceptionMessage) {
         try {
             channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
             Assertions.fail("Expected an exception to be thrown");

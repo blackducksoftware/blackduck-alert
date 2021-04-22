@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
+import com.synopsys.integration.alert.channel.api.DistributionChannel;
 import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
 import com.synopsys.integration.alert.channel.api.issue.action.IssueTrackerTestAction;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
@@ -31,7 +31,7 @@ public class Channel_ComprehensiveRequirements_TestIT {
     @Autowired
     private List<ChannelKey> channelKeys;
     @Autowired
-    private List<DistributionChannelV2<?>> distributionChannels;
+    private List<DistributionChannel<?>> distributionChannels;
     @Autowired
     private List<DistributionEventReceiver<?>> distributionEventReceivers;
     @Autowired
@@ -42,7 +42,7 @@ public class Channel_ComprehensiveRequirements_TestIT {
         assertEquals(
             channelKeys.size(),
             distributionChannels.size(),
-            String.format("The number of %ss does not match the number of %ss", ChannelKey.class.getSimpleName(), DistributionChannelV2.class.getSimpleName())
+            String.format("The number of %ss does not match the number of %ss", ChannelKey.class.getSimpleName(), DistributionChannel.class.getSimpleName())
         );
     }
 

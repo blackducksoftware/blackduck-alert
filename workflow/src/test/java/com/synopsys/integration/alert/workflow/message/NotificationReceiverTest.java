@@ -15,7 +15,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
@@ -35,7 +35,7 @@ public class NotificationReceiverTest {
         AlertNotificationModel alertNotificationModel = createAlertNotificationModel(1L, false);
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
 
-        NotificationProcessorV2 notificationProcessor = mockNotificationProcessor(alertNotificationModels);
+        NotificationProcessor notificationProcessor = mockNotificationProcessor(alertNotificationModels);
         NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessor, notificationProcessor);
 
         try {
@@ -63,13 +63,13 @@ public class NotificationReceiverTest {
             DateUtils.createCurrentDateTimestamp(), processed);
     }
 
-    private NotificationProcessorV2 mockNotificationProcessor(List<AlertNotificationModel> alertNotificationModels) {
+    private NotificationProcessor mockNotificationProcessor(List<AlertNotificationModel> alertNotificationModels) {
         NotificationDetailExtractionDelegator detailExtractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = new StatefulAlertPage(AlertPagedDetails.emptyPage(), Mockito.mock(PageRetriever.class));
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(statefulAlertPage);
         notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
-        return new NotificationProcessorV2(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
+        return new NotificationProcessor(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
     }
 
 }

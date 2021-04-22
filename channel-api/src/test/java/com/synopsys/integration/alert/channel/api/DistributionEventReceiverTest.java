@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
-import com.synopsys.integration.alert.processor.api.distribute.DistributionEventV2;
+import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
 public class DistributionEventReceiverTest {
     @Test
@@ -33,13 +33,13 @@ public class DistributionEventReceiverTest {
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
-        DistributionChannelV2<DistributionJobDetailsModel> channel = (x, y) -> null;
+        DistributionChannel<DistributionJobDetailsModel> channel = (x, y) -> null;
 
         DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, channel, null) {};
 
         Long auditId = 0L;
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEventV2 testEvent = new DistributionEventV2(channelKey, null, auditId, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, null, auditId, null);
         receiver.handleEvent(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntrySuccess(Mockito.eq(Set.of(auditId)));
@@ -54,7 +54,7 @@ public class DistributionEventReceiverTest {
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
         AlertException testException = new AlertException("Test exception");
-        DistributionChannelV2<DistributionJobDetailsModel> channel = (x, y) -> {
+        DistributionChannel<DistributionJobDetailsModel> channel = (x, y) -> {
             throw testException;
         };
 
@@ -62,7 +62,7 @@ public class DistributionEventReceiverTest {
 
         Long auditId = 0L;
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEventV2 testEvent = new DistributionEventV2(channelKey, null, auditId, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, null, auditId, null);
         receiver.handleEvent(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(Set.of(auditId)), Mockito.anyString(), Mockito.any());
@@ -78,7 +78,7 @@ public class DistributionEventReceiverTest {
 
         Long auditId = 0L;
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEventV2 testEvent = new DistributionEventV2(channelKey, null, auditId, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, null, auditId, null);
         receiver.handleEvent(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(Set.of(auditId)), Mockito.anyString(), Mockito.any());

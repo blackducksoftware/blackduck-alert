@@ -45,7 +45,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, testAlertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, configurationAccessor);
 
-        EmailChannelV2 emailChannel = new EmailChannelV2(emailChannelMessageConverter, emailChannelMessageSender);
+        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
@@ -63,7 +63,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
         EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, null, null, null, null, configurationAccessor);
 
-        EmailChannelV2 emailChannel = new EmailChannelV2(emailChannelMessageConverter, emailChannelMessageSender);
+        EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
