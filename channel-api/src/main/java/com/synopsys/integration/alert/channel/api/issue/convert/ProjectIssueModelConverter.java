@@ -121,8 +121,6 @@ public class ProjectIssueModelConverter {
         createProjectIssueModelConcernSectionPieces(projectIssueModel, true)
             .forEach(commentBuilder::append);
 
-        commentBuilder.append(formatter.getSectionSeparator());
-        commentBuilder.append(formatter.getLineSeparator());
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         List<String> attributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
         for (String attributeString : attributeStrings) {
@@ -196,6 +194,8 @@ public class ProjectIssueModelConverter {
             List<String> policyDetailsSectionPieces = issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(bomComponentDetails, optionalPolicyDetails.get());
             concernSectionPieces.addAll(policyDetailsSectionPieces);
             concernSectionPieces.add(formatter.getLineSeparator());
+            concernSectionPieces.add(formatter.getSectionSeparator());
+            concernSectionPieces.add(formatter.getLineSeparator());
         }
 
         Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
@@ -207,6 +207,8 @@ public class ProjectIssueModelConverter {
                 vulnDetailsSectionPieces = componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(projectIssueModel.getBomComponentDetails().getComponentVulnerabilities());
             }
             concernSectionPieces.addAll(vulnDetailsSectionPieces);
+            concernSectionPieces.add(formatter.getLineSeparator());
+            concernSectionPieces.add(formatter.getSectionSeparator());
             concernSectionPieces.add(formatter.getLineSeparator());
         }
 
