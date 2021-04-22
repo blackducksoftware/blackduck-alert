@@ -13,15 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.search.ActionableIssueSearchResult;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
@@ -29,7 +28,6 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoa
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsWorkItemExtractionUtils;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -85,52 +83,28 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     }
 
     @Override
-    // TODO abstract duplicate logic found in Jira
-    protected ActionableIssueSearchResult<Integer> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+    protected List<ExistingIssueDetails<Integer>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem projectVersion = projectIssueModel.getProjectVersion()
                                           .orElseThrow(() -> new AlertRuntimeException("Missing project-version"));
-        IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
-
-        Map<String, String> fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, bomComponent);
 
         String categoryKey = AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_VULNERABILITY_COMPATIBILITY_LABEL;
+        Map<String, String> fieldRefNameToValue = createBomFieldReferenceToValueMap(projectVersion, projectIssueModel.getBomComponentDetails());
 
         Optional<IssuePolicyDetails> policyDetails = projectIssueModel.getPolicyDetails();
         Optional<String> optionalPolicyName = policyDetails.map(IssuePolicyDetails::getName);
         if (optionalPolicyName.isPresent()) {
             categoryKey = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL;
+
             String additionalInfoKey = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
             fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, additionalInfoKey);
         }
 
         fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_CATEGORY_KEY_FIELD_REFERENCE_NAME, categoryKey);
 
-        List<WorkItemResponseModel> workItems = findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue);
-
-        ExistingIssueDetails<Integer> existingIssueDetails = null;
-        ItemOperation searchResultOperation = ItemOperation.UPDATE;
-
-        int foundIssuesCount = workItems.size();
-        if (foundIssuesCount == 1) {
-            WorkItemResponseModel workItem = workItems.get(0);
-            WorkItemFieldsWrapper workItemFields = workItem.createFieldsWrapper(gson);
-            existingIssueDetails = createIssueDetails(workItem, workItemFields);
-
-            Optional<ItemOperation> policyOperation = policyDetails.map(IssuePolicyDetails::getOperation);
-            Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
-            if (policyOperation.isPresent()) {
-                searchResultOperation = policyOperation.get();
-            } else if (optionalVulnerabilityDetails.isPresent()) {
-                IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
-                searchResultOperation = issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() ? ItemOperation.DELETE : searchResultOperation;
-            }
-        } else if (foundIssuesCount > 1) {
-            throw new AlertException("Expect to find a unique work item, but more than one work item was found");
-        } else {
-            searchResultOperation = ItemOperation.ADD;
-        }
-
-        return new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, searchResultOperation);
+        return findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue)
+                   .stream()
+                   .map(this::createIssueDetails)
+                   .collect(Collectors.toList());
     }
 
     private Map<String, String> createBomFieldReferenceToValueMap(LinkableItem projectVersion, AbstractBomComponentDetails bomComponent) {
@@ -181,6 +155,10 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
 
         WorkItemQuery query = queryBuilder.orderBy(systemIdFieldName).build();
         return queryManager.executeQueryAndRetrieveWorkItems(query);
+    }
+
+    private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem) {
+        return createIssueDetails(workItem, workItem.createFieldsWrapper(gson));
     }
 
     private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem, WorkItemFieldsWrapper workItemFields) {

@@ -91,7 +91,6 @@ public final class ProjectMessageToIssueModelTransformer {
 
         ComponentVulnerabilities componentVulnerabilities = issueBomComponent.getComponentVulnerabilities();
         IssueVulnerabilityDetails vulnerabilityDetails = new IssueVulnerabilityDetails(
-            // TODO cary this information from the processing level
             !componentVulnerabilities.hasVulnerabilities(),
             issueVulnerabilitiesAdded,
             issueVulnerabilitiesUpdated,

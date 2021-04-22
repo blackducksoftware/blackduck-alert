@@ -10,9 +10,12 @@ package com.synopsys.integration.alert.channel.api.issue.search;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.channel.api.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -65,7 +68,7 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
 
     protected abstract List<ProjectIssueSearchResult<T>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException;
 
-    protected abstract ActionableIssueSearchResult<T> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
+    protected abstract List<ExistingIssueDetails<T>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
 
     private List<ActionableIssueSearchResult<T>> findIssuesByAllComponents(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) throws AlertException {
         List<ProjectIssueSearchResult<T>> componentIssues = new LinkedList<>();
@@ -77,6 +80,32 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                    .stream()
                    .map(this::convertToUpdateResult)
                    .collect(Collectors.toList());
+    }
+
+    private ActionableIssueSearchResult<T> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+        ExistingIssueDetails<T> existingIssue = null;
+        ItemOperation searchResultOperation = ItemOperation.UPDATE;
+
+        List<ExistingIssueDetails<T>> existingIssues = findExistingIssuesByProjectIssueModel(projectIssueModel);
+        int foundIssuesCount = existingIssues.size();
+
+        if (foundIssuesCount == 1) {
+            existingIssue = existingIssues.get(0);
+
+            Optional<ItemOperation> policyOperation = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getOperation);
+            Optional<IssueVulnerabilityDetails> optionalVulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
+            if (policyOperation.isPresent()) {
+                searchResultOperation = policyOperation.get();
+            } else if (optionalVulnerabilityDetails.isPresent()) {
+                IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
+                searchResultOperation = issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() ? ItemOperation.DELETE : searchResultOperation;
+            }
+        } else if (foundIssuesCount > 1) {
+            throw new AlertException("Expect to find a unique issue, but more than one was found");
+        } else {
+            searchResultOperation = ItemOperation.ADD;
+        }
+        return new ActionableIssueSearchResult<>(existingIssue, projectIssueModel, searchResultOperation);
     }
 
     private List<ActionableIssueSearchResult<T>> findProjectIssues(boolean isEntireBomDeleted, ThrowingSupplier<List<ProjectIssueSearchResult<T>>, AlertException> find) throws AlertException {
