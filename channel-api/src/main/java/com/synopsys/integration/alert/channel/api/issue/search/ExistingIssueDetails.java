@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
+// TODO consider including status and type (policy or vulnerability)
 public class ExistingIssueDetails<T extends Serializable> extends AlertSerializableModel {
     private final T issueId;
     private final String issueKey;
