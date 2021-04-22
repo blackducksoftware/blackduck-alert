@@ -99,13 +99,16 @@ public class ProjectIssueModelConverter {
             issueOperation = IssueOperation.RESOLVE;
         }
 
-        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
+        IssueCommentModel<T> commentModel = toIssueCommentModel(existingIssueDetails, projectIssueModel);
+        List<String> transitionComments = new LinkedList<>(commentModel.getComments());
 
         LinkableItem provider = projectIssueModel.getProvider();
+        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
         commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
 
-        List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, chunkedComments, projectIssueModel);
+        transitionComments.addAll(commentBuilder.collectCurrentChunks());
+
+        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, transitionComments, projectIssueModel);
     }
 
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {

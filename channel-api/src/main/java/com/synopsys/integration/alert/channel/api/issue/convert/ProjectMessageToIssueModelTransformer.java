@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public final class ProjectMessageToIssueModelTransformer {
@@ -88,9 +89,9 @@ public final class ProjectMessageToIssueModelTransformer {
             }
         }
 
+        ComponentVulnerabilities componentVulnerabilities = issueBomComponent.getComponentVulnerabilities();
         IssueVulnerabilityDetails vulnerabilityDetails = new IssueVulnerabilityDetails(
-            // TODO cary this information from the processing level
-            false,
+            !componentVulnerabilities.hasVulnerabilities(),
             issueVulnerabilitiesAdded,
             issueVulnerabilitiesUpdated,
             issueVulnerabilitiesDeleted
