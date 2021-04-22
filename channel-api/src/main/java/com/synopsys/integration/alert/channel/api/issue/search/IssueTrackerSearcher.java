@@ -98,7 +98,8 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                 searchResultOperation = policyOperation.get();
             } else if (optionalVulnerabilityDetails.isPresent()) {
                 IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
-                searchResultOperation = issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() ? ItemOperation.DELETE : searchResultOperation;
+                // TODO when ExistingIssueDetails has information about issue-status, use that to make a better choice of ItemOperation here.
+                searchResultOperation = issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() ? ItemOperation.DELETE : ItemOperation.ADD;
             }
         } else if (foundIssuesCount > 1) {
             throw new AlertException("Expect to find a unique issue, but more than one was found");
