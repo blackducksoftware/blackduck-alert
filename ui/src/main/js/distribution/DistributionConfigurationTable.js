@@ -1,6 +1,6 @@
 import * as PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
 import {
     BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
@@ -8,174 +8,160 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import DescriptorLabel from 'component/common/DescriptorLabel';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import HeaderUtilities from 'util/HeaderUtilities';
-import { createPostRequest } from 'util/RequestUtilities';
 import ConfirmModal from 'component/common/ConfirmModal';
 import AutoRefresh from 'component/common/AutoRefresh';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
+import * as DistributionRequestUtility from 'distribution/DistributionRequestUtility';
 
 const DistributionConfigurationTable = ({
-    csrfToken, readonly, shouldRefresh, descriptors
+    csrfToken, readonly, showRefreshButton, descriptors
 }) => {
     const [error, setError] = useState(HTTPErrorUtils.createEmptyErrorObject());
     const [progress, setProgress] = useState(false);
     const [tableData, setTableData] = useState([]);
-    const [selectedConfigs, setSelectedConfigs] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRows, setSelectedRows] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [jobsValidationResults, setJobsValidationResults] = useState(null);
     const tableRef = useRef();
+    const history = useHistory();
 
-    const auditReadRequest = async (jobIds) => createPostRequest('/alert/api/audit/job', csrfToken, {
-        jobIds
-    });
-
-    const readAuditDataAndBuildTableData = (jobs) => {
-        const jobIds = [];
-        jobs.forEach((jobConfig) => {
-            jobIds.push(jobConfig.jobId);
-        });
-        auditReadRequest(jobIds)
-            .then((response) => {
-                const dataWithAuditInfo = [];
-                const jobIdToStatus = {};
-                response.json()
-                    .then((auditQueryResult) => {
-                        if (response.ok) {
-                            auditQueryResult.statuses.forEach((status) => {
-                                jobIdToStatus[status.jobId] = status;
-                            });
-                        }
-                    })
-                    .then(() => {
-                        jobs.forEach((jobConfig) => {
-                            let lastRan = 'Unknown';
-                            let currentStatus = 'Unknown';
-                            const jobAuditStatus = jobIdToStatus[jobConfig.jobId];
-                            if (jobAuditStatus) {
-                                lastRan = jobAuditStatus.timeLastSent;
-                                currentStatus = jobAuditStatus.status;
-                            }
-                            if (jobConfig.fieldModels) {
-                                const channelModel = jobConfig.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName));
-                                const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-                                const id = jobConfig.jobId;
-                                const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.name);
-                                const distributionType = channelModel.descriptorName;
-                                const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency);
-                                const enabled = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled);
-                                const entry = {
-                                    id,
-                                    name,
-                                    distributionType,
-                                    providerName,
-                                    frequency,
-                                    lastRan,
-                                    status: currentStatus,
-                                    enabled
-                                };
-                                dataWithAuditInfo.push(entry);
-                            }
-                        });
-                        setTableData(dataWithAuditInfo);
-                        setProgress(false);
-                    });
-            });
+    const createTableEntry = (jobConfig, lastRan, currentStatus) => {
+        if (!jobConfig.fieldModels) {
+            return null;
+        }
+        const channelModel = jobConfig.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName));
+        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
+        const id = jobConfig.jobId;
+        const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.name);
+        const distributionType = channelModel.descriptorName;
+        const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency);
+        const enabled = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled);
+        return {
+            id,
+            name,
+            distributionType,
+            providerName,
+            frequency,
+            lastRan,
+            status: currentStatus,
+            enabled
+        };
     };
 
     const retrieveTableData = () => {
-        setProgress(true);
-        const errorHandlers = [];
-        // errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(loggedOut));
-        // errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
-        // errorHandlers.push(HTTPErrorUtils.createNotFoundHandler(fetchingAllJobsNoneFound));
-        const headersUtil = new HeaderUtilities();
-        headersUtil.addApplicationJsonContentType();
-        headersUtil.addXCsrfToken(csrfToken);
-
-        const pageNumber = currentPage ? currentPage - 1 : 0;
-        const searchPageSize = pageSize || 10;
-        const encodedSearchTerm = encodeURIComponent(searchTerm);
-        const requestUrl = `${ConfigRequestBuilder.JOB_API_URL}?pageNumber=${pageNumber}&pageSize=${searchPageSize}&searchTerm=${encodedSearchTerm}`;
-        fetch(requestUrl, {
-            credentials: 'same-origin',
-            headers: headersUtil.getHeaders()
-        })
-            .then((response) => {
-                response.json()
-                    .then((responseData) => {
-                        if (response.ok) {
-                            const { jobs } = responseData;
-                            setTotalPages(responseData.totalPages);
-                            readAuditDataAndBuildTableData(jobs);
-                        } else {
-                            // TODO handle other status codes
-                            setError(HTTPErrorUtils.createErrorObject(responseData));
-                            setTableData([]);
-                        }
-                    });
-            })
-            .catch((httpError) => {
-                console.log(error);
-                setError(HTTPErrorUtils.createErrorObject({ message: httpError }));
-                setProgress(false);
-            });
+        const pagingData = {
+            currentPage,
+            pageSize,
+            searchTerm
+        };
+        const stateUpdateFunctions = {
+            setProgress,
+            setError,
+            setTableData,
+            setTotalPages
+        };
+        DistributionRequestUtility.fetchDistributions({
+            csrfToken, pagingData, stateUpdateFunctions, createTableEntry
+        });
     };
 
     const deleteTableData = () => {
-        if (selectedConfigs) {
-            selectedConfigs.forEach((config) => {
-                const configId = FieldModelUtilities.getFieldModelId(config);
-                // deleteRequest(configId);
+        if (selectedRows) {
+            const stateUpdateFunctions = {
+                setProgress,
+                setError
+            };
+            selectedRows.forEach((config) => {
+                const removeTableEntry = (distributionId) => {
+                    const newTableData = tableData.filter((job) => job.jobId !== distributionId);
+                    setTableData(newTableData);
+                };
+                DistributionRequestUtility.deleteDistribution({
+                    csrfToken, config, stateUpdateFunctions, removeTableEntry
+                });
             });
         }
         retrieveTableData();
-        setSelectedConfigs([]);
+        setSelectedRows([]);
         setShowDelete(false);
+    };
+
+    const onPageChange = (page, sizePerPage) => {
+        setCurrentPage(page);
+        setPageSize(sizePerPage);
+    };
+
+    const onSizePerPageList = (sizePerPage) => {
+        setPageSize(sizePerPage);
+    };
+
+    const onSearchChange = (inputSearchTerm, colInfos, multiColumnSearch) => {
+        setSearchTerm(inputSearchTerm);
+        setCurrentPage(1);
     };
 
     useEffect(() => {
         retrieveTableData();
     }, []);
 
-    const insertAndDeleteButton = (
-        <div>
-            <NavLink to={DISTRIBUTION_URLS.distributionConfigUrl} activeClassName="addJobButton btn-md">
+    useEffect(() => {
+        retrieveTableData();
+    }, [currentPage, pageSize, searchTerm]);
+
+    const navigateToConfigPage = () => {
+        if (selectedRows) {
+            history.push(`${DISTRIBUTION_URLS.distributionConfigUrl}/${selectedRows}`);
+        }
+        history.push(`${DISTRIBUTION_URLS.distributionConfigUrl}`);
+    };
+
+    const insertAndDeleteButton = (buttons) => {
+        const insertClick = () => {
+            buttons.insertBtn.props.onClick();
+            navigateToConfigPage();
+        };
+        const deleteClick = () => {
+            buttons.deleteBtn.props.onClick();
+            setShowDelete(true);
+        };
+        return (
+            <div>
                 <InsertButton
                     id="distribution-insert-button"
                     className="addJobButton btn-md"
-                    onClick={() => null}
+                    onClick={insertClick}
                 >
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     New
                 </InsertButton>
-            </NavLink>
-            <DeleteButton
-                id="distribution-delete-button"
-                className="deleteJobButton btn-md"
-                onClick={() => setShowDelete(true)}
-            >
-                <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                Delete
-            </DeleteButton>
-        </div>
-    );
-
-    const tableOptions = {
-        btnGroup: () => insertAndDeleteButton,
-        noDataText: 'No Data',
-        clearSearch: true,
-        // handleConfirmDeleteRow: this.collectItemsToDelete,
-        defaultSortName: 'name',
-        defaultSortOrder: 'asc'
-        // onRowDoubleClick: this.editButtonClicked
+                <DeleteButton
+                    id="distribution-delete-button"
+                    className="deleteJobButton btn-md"
+                    onClick={deleteClick}
+                >
+                    <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                    Delete
+                </DeleteButton>
+                {showRefreshButton
+                && (
+                    <button
+                        id="dsitribution-refresh-button"
+                        type="button"
+                        className="btn btn-md btn-info react-bs-table-add-btn tableButton"
+                        onClick={retrieveTableData}
+                    >
+                        <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+                        Refresh
+                    </button>
+                )}
+            </div>
+        );
     };
 
     const assignedDataFormat = (cell) => (
@@ -235,25 +221,14 @@ const DistributionConfigurationTable = ({
         );
     };
 
-    const editFormat = (cell) => {
-        const icon = (cell) ? 'check' : 'times';
-        const color = (cell) ? 'synopsysGreen' : 'synopsysRed';
-        const className = `alert-icon ${color}`;
-
-        return (
-            <div className="btn btn-link jobIconButton">
-                <FontAwesomeIcon icon={icon} className={className} size="lg" />
-            </div>
-        );
-    };
-
     const editButtonClicked = ({ id }) => {
-        setSelectedRow(id);
+        setSelectedRows(id);
         // Navigate to config page
+        navigateToConfigPage();
     };
 
     const copyButtonClicked = ({ id }) => {
-        setSelectedRow(id);
+        setSelectedRows(id);
         // Navigate to config page
     };
 
@@ -325,11 +300,32 @@ const DistributionConfigurationTable = ({
         return `${className} tableCell`;
     };
 
-    return (
+    const tableOptions = {
+        btnGroup: insertAndDeleteButton,
+        noDataText: 'No Data',
+        clearSearch: true,
+        handleConfirmDeleteRow: (next, rows) => setSelectedRows(rows),
+        defaultSortName: 'name',
+        defaultSortOrder: 'asc',
+        onRowDoubleClick: (id) => {
+            editButtonClicked(id);
+        },
+        // Paging
+        sizePerPage: pageSize,
+        page: currentPage,
+        onPageChange,
+        onSizePerPageList,
+        onSearchChange
+    };
 
+    const tableFetchInfo = {
+        dataTotalSize: totalPages * pageSize
+    };
+
+    return (
         <div>
             <div className="pull-right">
-                <AutoRefresh startAutoReload={retrieveTableData} isEnabled={shouldRefresh} />
+                <AutoRefresh startAutoReload={retrieveTableData} isEnabled={!showRefreshButton} />
             </div>
             <ConfirmModal
                 id="distribution-delete-confirm-modal"
@@ -350,11 +346,14 @@ const DistributionConfigurationTable = ({
                 headerContainerClass="scrollable"
                 bodyContainerClass="tableScrollableBody"
                 data={tableData}
+                insertRow
+                deleteRow
+                newButton={!readonly}
                 selectRow={selectRow}
                 ref={tableRef}
                 options={tableOptions}
+                fetchInfo={tableFetchInfo}
                 search
-                newButton={!readonly}
                 pagination
                 remote
             >
@@ -376,13 +375,13 @@ DistributionConfigurationTable.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool,
-    shouldRefresh: PropTypes.bool,
+    showRefreshButton: PropTypes.bool,
     descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 DistributionConfigurationTable.defaultProps = {
     readonly: false,
-    shouldRefresh: false,
+    showRefreshButton: false,
     descriptors: []
 };
 

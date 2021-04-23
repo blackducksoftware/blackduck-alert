@@ -32,8 +32,9 @@ import AuthenticationConfiguration from 'global/components/auth/AuthenticationCo
 import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
 import BlackDuckProviderConfiguration from 'global/providers/blackduck/BlackDuckProviderConfiguration';
 import BlackDuckConfiguration from 'global/providers/blackduck/BlackDuckConfiguration';
-import { DISTRIBUTION_INFO } from 'distribution/DistributionModel';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
 import DistributionConfigurationV2 from 'distribution/DistributionConfigurationV2';
+import DistributionConfigurationForm from 'distribution/DistributionConfigurationForm';
 
 class MainPage extends Component {
     constructor(props) {
@@ -148,7 +149,7 @@ class MainPage extends Component {
             </div>
         );
 
-        const { csrfToken, descriptors } = this.props;
+        const { csrfToken, descriptors, autoRefresh } = this.props;
         const page = (
             <div className="contentArea">
                 <Route
@@ -159,6 +160,12 @@ class MainPage extends Component {
                 />
                 <Route
                     exact
+                    key="distribution-route"
+                    path={`${DISTRIBUTION_URLS.distributionConfigUrl}/:id?/:copy?`}
+                    render={() => <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} />}
+                />
+                <Route
+                    exact
                     path="/alert/"
                     render={() => (
                         <Redirect to="/alert/general/about" />
@@ -166,7 +173,7 @@ class MainPage extends Component {
                 />
                 {this.createRoute('/alert/providers/', BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} />)}
                 {channels}
-                {this.createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} />)}
+                {this.createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} showRefreshButton={!autoRefresh} />)}
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
                 <Route exact path="/alert/general/about" component={AboutInfo} />
@@ -191,13 +198,15 @@ MainPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     fetching: PropTypes.bool.isRequired,
     getDescriptors: PropTypes.func.isRequired,
-    csrfToken: PropTypes.string.isRequired
+    csrfToken: PropTypes.string.isRequired,
+    autoRefresh: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
     fetching: state.descriptors.fetching,
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = (dispatch) => ({
