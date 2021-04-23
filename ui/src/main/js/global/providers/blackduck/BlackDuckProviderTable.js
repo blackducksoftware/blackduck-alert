@@ -3,21 +3,22 @@ import {
     BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { NavLink, Route } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
 import AutoRefresh from 'component/common/AutoRefresh';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfirmModal from 'component/common/ConfirmModal';
-import IconTableCellFormatter from '../../../component/common/IconTableCellFormatter';
+import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 
-const BlackDuckProviderTable = ({ csrfToken, readonly, shouldRefresh }) => {
+const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
     const [tableData, setTableData] = useState([]);
-    const [selectedConfigs, setSelectedConfigs] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
+    const [allSelectedRows, setAllSelectedRows] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
     const tableRef = useRef();
+    const history = useHistory();
 
     const readRequest = () => ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, BLACKDUCK_INFO.key);
     const deleteRequest = (id) => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id);
@@ -38,54 +39,68 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, shouldRefresh }) => {
         setTableData(convertedTableDate);
     };
 
-    const deleteTableData = () => {
-        if (selectedConfigs) {
-            selectedConfigs.forEach((config) => {
-                const configId = FieldModelUtilities.getFieldModelId(config);
+    const deleteTableData = async () => {
+        if (allSelectedRows) {
+            allSelectedRows.forEach((configId) => {
                 deleteRequest(configId);
             });
         }
-        retrieveTableData();
-        setSelectedConfigs([]);
+        await retrieveTableData();
         setShowDelete(false);
     };
 
     useEffect(() => {
-        const fetchData = retrieveTableData;
-        fetchData();
+        retrieveTableData;
     }, []);
 
-    const insertAndDeleteButton = (
-        <div>
-            <NavLink to={BLACKDUCK_URLS.blackDuckConfigUrl} activeClassName="addJobButton btn-md">
+    const navigateToConfigPage = () => {
+        if (selectedRow) {
+            history.push(`${BLACKDUCK_URLS.blackDuckConfigUrl}/${selectedRow}`);
+        }
+        history.push(`${BLACKDUCK_URLS.blackDuckConfigUrl}`);
+    };
+
+    const insertAndDeleteButton = (buttons) => {
+        const insertClick = () => {
+            buttons.insertBtn.props.onClick();
+            navigateToConfigPage();
+        };
+        const deleteClick = () => {
+            buttons.deleteBtn.props.onClick();
+            setShowDelete(true);
+        };
+        return (
+            <div>
                 <InsertButton
                     id="blackduck-insert-button"
                     className="addJobButton btn-md"
-                    onClick={() => null}
+                    onClick={insertClick}
                 >
                     <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
                     New
                 </InsertButton>
-            </NavLink>
-            <DeleteButton
-                id="blackduck-delete-button"
-                className="deleteJobButton btn-md"
-                onClick={() => setShowDelete(true)}
-            >
-                <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                Delete
-            </DeleteButton>
-        </div>
-    );
-
-    const tableOptions = {
-        btnGroup: () => insertAndDeleteButton,
-        noDataText: 'No Data',
-        clearSearch: true,
-        // handleConfirmDeleteRow: this.collectItemsToDelete,
-        defaultSortName: 'name',
-        defaultSortOrder: 'asc'
-        // onRowDoubleClick: this.editButtonClicked
+                <DeleteButton
+                    id="blackduck-delete-button"
+                    className="deleteJobButton btn-md"
+                    onClick={deleteClick}
+                >
+                    <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                    Delete
+                </DeleteButton>
+                { showRefreshButton
+                    && (
+                        <button
+                            id="blackduck-refresh-button"
+                            type="button"
+                            className="btn btn-md btn-info react-bs-table-add-btn tableButton"
+                            onClick={retrieveTableData}
+                        >
+                            <FontAwesomeIcon icon="sync" className="alert-icon" size="lg" />
+                            Refresh
+                        </button>
+                    )}
+            </div>
+        );
     };
 
     const assignedDataFormat = (cell) => (
@@ -143,17 +158,11 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, shouldRefresh }) => {
 
     const editButtonClicked = ({ id }) => {
         setSelectedRow(id);
-        // Navigate to config page
+        navigateToConfigPage(false);
     };
 
     const editColumnFormatter = () => createTableCellFormatter('pencil-alt', 'Edit', editButtonClicked);
-
-    const copyButtonClicked = ({ id }) => {
-        setSelectedRow(id);
-        // Navigate to config page
-    };
-
-    const copyColumnFormatter = () => createTableCellFormatter('copy', 'Copy', copyButtonClicked);
+    const copyColumnFormatter = () => createTableCellFormatter('copy', 'Copy', editButtonClicked);
 
     const createIconTableHeader = (dataFormat, text) => (
         <TableHeaderColumn
@@ -168,10 +177,22 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, shouldRefresh }) => {
         </TableHeaderColumn>
     );
 
+    const tableOptions = {
+        btnGroup: insertAndDeleteButton,
+        noDataText: 'No Data',
+        clearSearch: true,
+        handleConfirmDeleteRow: (next, rows) => setAllSelectedRows(rows),
+        defaultSortName: 'name',
+        defaultSortOrder: 'asc',
+        onRowDoubleClick: (id) => {
+            editButtonClicked(id);
+        }
+    };
+
     return (
         <div>
             <div className="pull-right">
-                <AutoRefresh startAutoReload={retrieveTableData} isEnabled={shouldRefresh} />
+                <AutoRefresh startAutoReload={retrieveTableData} />
             </div>
             <ConfirmModal
                 id="blackduck-delete-confirm-modal"
@@ -192,6 +213,8 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, shouldRefresh }) => {
                 headerContainerClass="scrollable"
                 bodyContainerClass="tableScrollableBody"
                 data={tableData}
+                insertRow
+                deleteRow
                 selectRow={selectRow}
                 ref={tableRef}
                 options={tableOptions}
@@ -203,6 +226,8 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, shouldRefresh }) => {
                 {column('createdAt', 'Created At')}
                 {column('lastUpdated', 'Last Updated')}
                 <TableHeaderColumn dataField="enabled" dataFormat={editFormat}>Enabled</TableHeaderColumn>
+                {createIconTableHeader(editColumnFormatter(), 'Edit')}
+                {createIconTableHeader(copyColumnFormatter(), 'Copy')}
             </BootstrapTable>
         </div>
     );
@@ -212,12 +237,12 @@ BlackDuckProviderTable.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool,
-    shouldRefresh: PropTypes.bool
+    showRefreshButton: PropTypes.bool
 };
 
 BlackDuckProviderTable.defaultProps = {
     readonly: false,
-    shouldRefresh: false
+    showRefreshButton: false
 };
 
 export default BlackDuckProviderTable;

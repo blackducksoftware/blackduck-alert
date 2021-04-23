@@ -146,13 +146,13 @@ class MainPage extends Component {
             </div>
         );
 
-        const { csrfToken } = this.props;
+        const { csrfToken, autoRefresh } = this.props;
         const page = (
             <div className="contentArea">
                 <Route
                     exact
                     key="blackduck-route"
-                    path={`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`}
+                    path={`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?/:copy?`}
                     render={() => <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />}
                 />
                 <Route
@@ -162,7 +162,7 @@ class MainPage extends Component {
                         <Redirect to="/alert/general/about" />
                     )}
                 />
-                {this.createRoute('/alert/providers/', BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} />)}
+                {this.createRoute('/alert/providers/', BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} showRefreshButton={!autoRefresh} />)}
                 {channels}
                 <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
                 {components}
@@ -188,13 +188,15 @@ MainPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     fetching: PropTypes.bool.isRequired,
     getDescriptors: PropTypes.func.isRequired,
-    csrfToken: PropTypes.string.isRequired
+    csrfToken: PropTypes.string.isRequired,
+    autoRefresh: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = (state) => ({
     descriptors: state.descriptors.items,
     fetching: state.descriptors.fetching,
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = (dispatch) => ({

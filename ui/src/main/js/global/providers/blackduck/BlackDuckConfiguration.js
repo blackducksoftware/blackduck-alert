@@ -9,8 +9,7 @@ import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm'
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import { AUTHENTICATION_LDAP_FIELD_KEYS } from '../../components/auth/AuthenticationModel';
-import CheckboxInput from '../../../field/input/CheckboxInput';
+import CheckboxInput from 'field/input/CheckboxInput';
 
 const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
     const { id } = useParams();
