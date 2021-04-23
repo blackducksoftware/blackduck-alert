@@ -64,7 +64,8 @@ const DistributionConfigurationTable = ({
             setProgress,
             setError,
             setTableData,
-            setTotalPages
+            setTotalPages,
+            setJobsValidationResults
         };
         DistributionRequestUtility.fetchDistributions({
             csrfToken, pagingData, stateUpdateFunctions, createTableEntry
