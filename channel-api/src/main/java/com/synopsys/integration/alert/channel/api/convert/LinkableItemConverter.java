@@ -36,11 +36,11 @@ public class LinkableItemConverter {
         );
     }
 
-    private String convertToString(String encodedName, String encodedValue, @Nullable String encodedUrl, boolean bold) {
-        String name = encodedName;
+    private String convertToString(String encodedLabel, String encodedValue, @Nullable String encodedUrl, boolean bold) {
+        String label = encodedLabel;
         String value = encodedValue;
         if (bold) {
-            name = formatter.emphasize(encodedName);
+            label = formatter.emphasize(encodedLabel);
             value = formatter.emphasize(encodedValue);
         }
 
@@ -49,7 +49,7 @@ public class LinkableItemConverter {
             value = formatter.createLink(encodedValue, encodedUrl);
         }
 
-        return String.format("%s:%s%s", name, formatter.getNonBreakingSpace(), value);
+        return String.format("%s:%s%s", label, formatter.getNonBreakingSpace(), value);
     }
 
 }
