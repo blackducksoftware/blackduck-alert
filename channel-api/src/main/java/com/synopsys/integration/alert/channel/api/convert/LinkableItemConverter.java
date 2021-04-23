@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.api.convert;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
@@ -19,33 +19,37 @@ public class LinkableItemConverter {
     }
 
     public String convertToString(LinkableItem linkableItem, boolean bold) {
-        String name = formatter.encode(linkableItem.getLabel());
-        String value = formatter.encode(linkableItem.getValue());
-        Optional<String> optionalUrl = linkableItem.getUrl();
+        return convertToString(
+            formatter.encode(linkableItem.getLabel()),
+            formatter.encode(linkableItem.getValue()),
+            linkableItem.getUrl().map(formatter::encode).orElse(null),
+            bold
+        );
+    }
 
+    public String convertToStringWithoutLink(LinkableItem linkableItem, boolean bold) {
+        return convertToString(
+            formatter.encode(linkableItem.getLabel()),
+            formatter.encode(linkableItem.getValue()),
+            null,
+            bold
+        );
+    }
+
+    private String convertToString(String encodedName, String encodedValue, @Nullable String encodedUrl, boolean bold) {
+        String name = encodedName;
+        String value = encodedValue;
         if (bold) {
-            name = formatter.emphasize(name);
-            value = formatter.emphasize(value);
+            name = formatter.emphasize(encodedName);
+            value = formatter.emphasize(encodedValue);
         }
 
-        if (optionalUrl.isPresent()) {
+        if (null != encodedUrl) {
             // The nuance around stylizing links adds too much complexity for too little value to worry about emphasizing them.
-            value = createLinkableItemValueString(linkableItem);
+            value = formatter.createLink(encodedValue, encodedUrl);
         }
 
         return String.format("%s:%s%s", name, formatter.getNonBreakingSpace(), value);
-    }
-
-    private String createLinkableItemValueString(LinkableItem linkableItem) {
-        String value = formatter.encode(linkableItem.getValue());
-        Optional<String> optionalUrl = linkableItem.getUrl();
-
-        String formattedString = value;
-        if (optionalUrl.isPresent()) {
-            String urlString = formatter.encode(optionalUrl.get());
-            formattedString = formatter.createLink(value, urlString);
-        }
-        return formattedString;
     }
 
 }

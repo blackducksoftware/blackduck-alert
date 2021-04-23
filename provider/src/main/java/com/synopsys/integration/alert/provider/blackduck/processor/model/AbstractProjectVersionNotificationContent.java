@@ -12,12 +12,12 @@ import com.synopsys.integration.blackduck.api.manual.component.NotificationConte
 public abstract class AbstractProjectVersionNotificationContent extends NotificationContentComponent {
     private final String projectName;
     private final String projectVersionName;
-    private final String projectVersion;
+    private final String projectVersionUrl;
 
-    public AbstractProjectVersionNotificationContent(String projectName, String projectVersionName, String projectVersion) {
+    public AbstractProjectVersionNotificationContent(String projectName, String projectVersionName, String projectVersionUrl) {
         this.projectName = projectName;
         this.projectVersionName = projectVersionName;
-        this.projectVersion = projectVersion;
+        this.projectVersionUrl = projectVersionUrl;
     }
 
     public String getProjectName() {
@@ -28,8 +28,8 @@ public abstract class AbstractProjectVersionNotificationContent extends Notifica
         return projectVersionName;
     }
 
-    public String getProjectVersion() {
-        return projectVersion;
+    public String getProjectVersionUrl() {
+        return projectVersionUrl;
     }
 
 }
