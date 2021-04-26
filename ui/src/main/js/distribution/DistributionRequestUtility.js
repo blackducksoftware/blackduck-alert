@@ -119,9 +119,8 @@ export const fetchDistributions = ({
 };
 
 export const deleteDistribution = ({
-    csrfToken, job, stateUpdateFunctions, removeTableEntry
+    csrfToken, distributionId, stateUpdateFunctions, removeTableEntry
 }) => {
-    const { jobId } = job;
     const {
         setProgress, setError
     } = stateUpdateFunctions;
@@ -129,10 +128,10 @@ export const deleteDistribution = ({
     const errorHandlers = [];
     // errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
     // errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobDeleteError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-    const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, jobId);
+    const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, distributionId);
     request.then((response) => {
         if (response.ok) {
-            removeTableEntry(jobId);
+            removeTableEntry(distributionId);
         } else {
             response.json()
                 .then((responseData) => {

@@ -28,6 +28,7 @@ const DistributionConfigurationTable = ({
     const [totalPages, setTotalPages] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [jobsValidationResults, setJobsValidationResults] = useState(null);
+    const [entriesToDelete, setEntriesToDelete] = useState(null);
     const tableRef = useRef();
     const history = useHistory();
 
@@ -73,18 +74,19 @@ const DistributionConfigurationTable = ({
     };
 
     const deleteTableData = () => {
-        if (selectedRows) {
+        if (entriesToDelete) {
             const stateUpdateFunctions = {
                 setProgress,
                 setError
             };
-            selectedRows.forEach((config) => {
+            entriesToDelete.forEach((config) => {
+                const { id } = config;
                 const removeTableEntry = (distributionId) => {
-                    const newTableData = tableData.filter((job) => job.jobId !== distributionId);
+                    const newTableData = tableData.filter((distribution) => distribution.id !== distributionId);
                     setTableData(newTableData);
                 };
                 DistributionRequestUtility.deleteDistribution({
-                    csrfToken, config, stateUpdateFunctions, removeTableEntry
+                    csrfToken, distributionId: id, stateUpdateFunctions, removeTableEntry
                 });
             });
         }
@@ -114,6 +116,18 @@ const DistributionConfigurationTable = ({
     useEffect(() => {
         retrieveTableData();
     }, [currentPage, pageSize, searchTerm]);
+
+    useEffect(() => {
+        let possibleDeleteEntries = [];
+        selectedRows.forEach((id) => {
+            possibleDeleteEntries = possibleDeleteEntries.concat(tableData.filter((distribution) => distribution.id === id));
+        });
+        if (possibleDeleteEntries && possibleDeleteEntries.length === 0) {
+            setEntriesToDelete(null);
+        } else {
+            setEntriesToDelete(possibleDeleteEntries);
+        }
+    }, [selectedRows]);
 
     const navigateToConfigPage = () => {
         if (selectedRows) {
@@ -333,11 +347,74 @@ const DistributionConfigurationTable = ({
                 title="Delete"
                 affirmativeAction={deleteTableData}
                 affirmativeButtonText="Confirm"
+                modalSize="lg"
                 negativeAction={() => setShowDelete(false)}
                 negativeButtonText="Cancel"
-                message="Are you sure you want to delete these items?"
                 showModal={showDelete}
-            />
+            >
+                <div className="form-group">
+                    <BootstrapTable
+                        version="4"
+                        hover
+                        condensed
+                        data={entriesToDelete}
+                        options={{
+                            noDataText: 'No jobs configured'
+                        }}
+                        containerClass="table"
+                        trClassName="tableRow"
+                        headerContainerClass="scrollable"
+                        bodyContainerClass="tableScrollableBody"
+                    >
+                        <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
+                        <TableHeaderColumn dataField="distributionConfigId" hidden>
+                            Distribution
+                            Id
+                        </TableHeaderColumn>
+                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">
+                            Distribution
+                            Job
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="distributionType"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={descriptorColumnFormatter}
+                        >
+                            Type
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="providerName"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={descriptorColumnFormatter}
+                        >
+                            Provider
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="frequency"
+                            dataSort
+                            columnClassName="tableCell"
+                            dataFormat={frequencyColumnFormatter}
+                        >
+                            Frequency
+                            Type
+                        </TableHeaderColumn>
+                        <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">
+                            Last
+                            Run
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                            dataField="status"
+                            dataSort
+                            columnTitle
+                            columnClassName={statusColumnClassName}
+                        >
+                            Status
+                        </TableHeaderColumn>
+                    </BootstrapTable>
+                </div>
+            </ConfirmModal>
             <BootstrapTable
                 version="4"
                 hover

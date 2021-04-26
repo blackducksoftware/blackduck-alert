@@ -3,7 +3,7 @@ import { Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 const ConfirmModal = ({
-    id, affirmativeAction, affirmativeButtonText, children, negativeAction, negativeButtonText, showModal, title
+    id, affirmativeAction, affirmativeButtonText, children, modalSize, negativeAction, negativeButtonText, showModal, title
 }) => {
     const [show, setShow] = useState(showModal);
 
@@ -34,7 +34,7 @@ const ConfirmModal = ({
     };
 
     return (
-        <Modal id={id} show={show} onHide={handleNegativeClick}>
+        <Modal id={id} size={modalSize} show={show} onHide={handleNegativeClick}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -68,6 +68,7 @@ ConfirmModal.propTypes = {
     affirmativeAction: PropTypes.func.isRequired,
     affirmativeButtonText: PropTypes.string,
     children: PropTypes.node.isRequired,
+    modalSize: PropTypes.string,
     negativeAction: PropTypes.func,
     negativeButtonText: PropTypes.string,
     showModal: PropTypes.bool.isRequired,
@@ -77,6 +78,7 @@ ConfirmModal.propTypes = {
 ConfirmModal.defaultProps = {
     id: 'confirmModal',
     affirmativeButtonText: 'Yes',
+    modalSize: 'sm',
     negativeButtonText: 'No',
     negativeAction: () => true
 };
