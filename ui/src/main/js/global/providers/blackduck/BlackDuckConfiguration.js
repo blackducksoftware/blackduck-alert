@@ -38,6 +38,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
 
     if (location.pathname.includes('/copy') && FieldModelUtilities.getFieldModelId(formData)) {
         delete formData.id;
+        delete formData[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey];
     }
 
     return (
