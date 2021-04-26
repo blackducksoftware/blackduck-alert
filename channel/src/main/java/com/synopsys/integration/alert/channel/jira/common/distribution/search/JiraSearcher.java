@@ -10,19 +10,18 @@ package com.synopsys.integration.alert.channel.jira.common.distribution.search;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.search.ActionableIssueSearchResult;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.channel.jira.common.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.channel.jira.common.util.JiraCallbackUtils;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
@@ -72,14 +71,12 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     }
 
     @Override
-    protected final ActionableIssueSearchResult<String> findIssueByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
+    protected List<ExistingIssueDetails<String>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException {
         LinkableItem provider = projectIssueModel.getProvider();
         LinkableItem project = projectIssueModel.getProject();
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
 
         ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
-        ItemOperation searchResultOperation = ItemOperation.UPDATE;
-
         String policyName = null;
 
         Optional<IssuePolicyDetails> policyDetails = projectIssueModel.getPolicyDetails();
@@ -100,26 +97,10 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
             policyName
         );
 
-        List<JiraSearcherResponseModel> issueResponseModels = queryForIssues(jqlString);
-        int foundIssuesCount = issueResponseModels.size();
-
-        ExistingIssueDetails<String> existingIssueDetails = null;
-
-        if (foundIssuesCount == 1) {
-            JiraSearcherResponseModel issue = issueResponseModels.get(0);
-            existingIssueDetails = createExistingIssueDetails(issue);
-
-            Optional<ItemOperation> policyOperation = policyDetails.map(IssuePolicyDetails::getOperation);
-            if (policyOperation.isPresent()) {
-                searchResultOperation = policyOperation.get();
-            }
-        } else if (foundIssuesCount > 1) {
-            throw new AlertException("Expect to find a unique issue, but more than one issue was found");
-        } else {
-            searchResultOperation = ItemOperation.ADD;
-        }
-
-        return new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, searchResultOperation);
+        return queryForIssues(jqlString)
+                   .stream()
+                   .map(this::createExistingIssueDetails)
+                   .collect(Collectors.toList());
     }
 
     private List<ProjectIssueSearchResult<String>> findIssues(String jqlString, ProviderDetails providerDetails, LinkableItem project) throws AlertException {

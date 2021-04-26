@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
+import com.synopsys.integration.alert.channel.api.DistributionChannel;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -25,9 +25,9 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
 public abstract class DistributionChannelMessageTestAction<D extends DistributionJobDetailsModel> extends DistributionChannelTestAction {
-    private final DistributionChannelV2<D> distributionChannel;
+    private final DistributionChannel<D> distributionChannel;
 
-    public DistributionChannelMessageTestAction(ChannelKey channelKey, DistributionChannelV2<D> distributionChannel) {
+    public DistributionChannelMessageTestAction(ChannelKey channelKey, DistributionChannel<D> distributionChannel) {
         super(channelKey);
         this.distributionChannel = distributionChannel;
     }

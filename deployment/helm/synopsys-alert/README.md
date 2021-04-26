@@ -25,34 +25,52 @@ Helm Charts for Synopsys Alert
 
 ## Installing the Chart -- Helm 2
 
+### Add the helm repository
+
+```bash
+ $ helm repo add synopsys https://sig-repo.synopsys.com/artifactory/sig-cloudnative
+```
+
 ### Create the Namespace
+
 ```bash
 $ kubectl create ns <namespace>
 ```
+
 ### Configure your Alert Instance
-Modify the values.yaml file or pass in values to `helm install` with --set.  
+
+Modify the values.yaml file or pass in values to `helm install` with --set.
 
 ### Install the Alert Chart
+
 ```bash
-$ helm install . --name <name> --namespace <namespace>
+$ helm install synopsys/synopsys-alert --name <name> --namespace <namespace>
 ```
 
 > **Tip**: List all releases using `helm list`
 
-
 ## Installing the Chart -- Helm 3
 
+### Add the helm repository
+
+```bash
+ $ helm repo add synopsys https://sig-repo.synopsys.com/artifactory/sig-cloudnative
+```
+
 ### Create the Namespace and TLS Secrets
+
 ```bash
 $ kubectl create ns <namespace>
 ```
+
 ### Configure your Alert Instance
+
 Modify the values.yaml file or pass in values to `helm install` with --set.  
 Please see the [Configuration](#configuration) section for more details.
 
 ### Install the Alert Chart
 ```bash
-$ helm install <name> . --namespace <namespace>
+$ helm install <name> synopsys/synopsys-alert --namespace <namespace>
 ```
 
 ### Quick Start with Helm 3
@@ -70,7 +88,7 @@ $ kubectl create ns myalert
 #### Step 3
 Deploy Alert
 ```bash
-$ helm install myalert . --namespace myalert
+$ helm install myalert synopsys/synopsys-alert --namespace myalert
 ```
 
 ## Finding Alert External Port
@@ -87,26 +105,33 @@ $ helm install myalert . --namespace myalert
   `<INTERNAL_PORT>:<EXTERNAL_PORT>/TCP`
   
   For example:
-  
-  `8443:31594/TCP`
-  
-  The internal port is 8443 and the external port is 31594. When accessing the Alert UI the external port will be used in the URL.
-  Once the external port is identified the URL to access the UI will be in the following format:
-  
-  `https://<EXTERNAL_NODE_IP>:<EXTERNAL_PORT>/alert`
-  
+
+`8443:31594/TCP`
+
+The internal port is 8443 and the external port is 31594. When accessing the Alert UI the external port will be used in the URL. Once the external port is identified the URL to access the UI will be in the following format:
+
+`https://<EXTERNAL_NODE_IP>:<EXTERNAL_PORT>/alert`
+
   ```bash
   $ kubectl get nodes -o wide
   ```
-  
-  For Example: 
-  
-  `https://127.0.0.0:31594/alert`
+
+For Example:
+
+`https://127.0.0.0:31594/alert`
 
 ## Upgrading the Chart
 
+### Update the repository
+
 ```bash
-$ helm upgrade <name> . --namespace <namespace>
+$ helm repo update
+```
+
+### Perform upgrade
+
+```bash
+$ helm upgrade <name> synopsys/synopsys-alert --namespace <namespace>
 ```
 
 ## Uninstalling the Chart
@@ -200,7 +225,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
 ```bash
-$ helm install . --name <name> --namespace <namespace> --set enableStandalone=true
+$ helm install synopsys/synopsys-alert --name <name> --namespace <namespace> --set enableStandalone=true
 ```
 
 ### Database Credential Secrets

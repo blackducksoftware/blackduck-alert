@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.convert.BomComponentDetailConverter;
+import com.synopsys.integration.alert.channel.api.convert.ComponentVulnerabilitiesConverter;
 import com.synopsys.integration.alert.channel.api.convert.LinkableItemConverter;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
@@ -43,6 +44,7 @@ public class ProjectIssueModelConverter {
     private final BomComponentDetailConverter bomComponentDetailConverter;
     private final IssuePolicyDetailsConverter issuePolicyDetailsConverter;
     private final IssueVulnerabilityDetailsConverter issueVulnerabilityDetailsConverter;
+    private final ComponentVulnerabilitiesConverter componentVulnerabilitiesConverter;
     private final LinkableItemConverter linkableItemConverter;
 
     public ProjectIssueModelConverter(IssueTrackerMessageFormatter formatter) {
@@ -50,6 +52,7 @@ public class ProjectIssueModelConverter {
         this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
         this.issuePolicyDetailsConverter = new IssuePolicyDetailsConverter(formatter);
         this.issueVulnerabilityDetailsConverter = new IssueVulnerabilityDetailsConverter(formatter);
+        this.componentVulnerabilitiesConverter = new ComponentVulnerabilitiesConverter(formatter);
         this.linkableItemConverter = new LinkableItemConverter(formatter);
     }
 
@@ -74,7 +77,7 @@ public class ProjectIssueModelConverter {
         bomComponentPieces.forEach(descriptionBuilder::append);
 
         descriptionBuilder.append(formatter.getLineSeparator());
-        createProjectIssueModelConcernSectionPieces(projectIssueModel)
+        createProjectIssueModelConcernSectionPieces(projectIssueModel, false)
             .forEach(descriptionBuilder::append);
 
         int newChunkSize = formatter.getMaxCommentLength() - DESCRIPTION_CONTINUED_TEXT.length() - formatter.getLineSeparator().length();
@@ -96,13 +99,16 @@ public class ProjectIssueModelConverter {
             issueOperation = IssueOperation.RESOLVE;
         }
 
-        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
+        IssueCommentModel<T> commentModel = toIssueCommentModel(existingIssueDetails, projectIssueModel);
+        List<String> transitionComments = new LinkedList<>(commentModel.getComments());
 
         LinkableItem provider = projectIssueModel.getProvider();
+        ChunkedStringBuilder commentBuilder = new ChunkedStringBuilder(formatter.getMaxCommentLength());
         commentBuilder.append(String.format("The %s operation was performed on this component in %s.", requiredOperation.name(), provider.getLabel()));
 
-        List<String> chunkedComments = commentBuilder.collectCurrentChunks();
-        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, chunkedComments, projectIssueModel);
+        transitionComments.addAll(commentBuilder.collectCurrentChunks());
+
+        return new IssueTransitionModel<>(existingIssueDetails, issueOperation, transitionComments, projectIssueModel);
     }
 
     public <T extends Serializable> IssueCommentModel<T> toIssueCommentModel(ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel projectIssueModel) {
@@ -115,11 +121,9 @@ public class ProjectIssueModelConverter {
         commentBuilder.append(formatter.getSectionSeparator());
         commentBuilder.append(formatter.getLineSeparator());
 
-        createProjectIssueModelConcernSectionPieces(projectIssueModel)
+        createProjectIssueModelConcernSectionPieces(projectIssueModel, true)
             .forEach(commentBuilder::append);
 
-        commentBuilder.append(formatter.getSectionSeparator());
-        commentBuilder.append(formatter.getLineSeparator());
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         List<String> attributeStrings = bomComponentDetailConverter.gatherAttributeStrings(bomComponent);
         for (String attributeString : attributeStrings) {
@@ -168,7 +172,7 @@ public class ProjectIssueModelConverter {
 
         String componentConcernPiece = componentConcernPieceBuilder.toString();
 
-        String preConcernTitle = String.format("Alert - %s[%s], %s[%s], %s", provider.getLabel(), provider.getValue(), project.getValue(), projectVersion.getValue(), componentPieceBuilder.toString());
+        String preConcernTitle = String.format("Alert - %s[%s], %s[%s], %s", provider.getLabel(), provider.getValue(), project.getValue(), projectVersion.getValue(), componentPieceBuilder);
         if (preConcernTitle.length() + componentConcernPieceBuilder.length() > formatter.getMaxTitleLength()) {
             if (formatter.getMaxTitleLength() > COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT) {
                 preConcernTitle = StringUtils.truncate(preConcernTitle, formatter.getMaxTitleLength() - COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT);
@@ -183,20 +187,31 @@ public class ProjectIssueModelConverter {
         return preConcernTitle + componentConcernPiece;
     }
 
-    private List<String> createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel) {
+    private List<String> createProjectIssueModelConcernSectionPieces(ProjectIssueModel projectIssueModel, boolean commentFormat) {
         List<String> concernSectionPieces = new LinkedList<>();
+
+        IssueBomComponentDetails bomComponentDetails = projectIssueModel.getBomComponentDetails();
 
         Optional<IssuePolicyDetails> optionalPolicyDetails = projectIssueModel.getPolicyDetails();
         if (optionalPolicyDetails.isPresent()) {
-            List<String> policyDetailsSectionPieces = issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(optionalPolicyDetails.get());
+            List<String> policyDetailsSectionPieces = issuePolicyDetailsConverter.createPolicyDetailsSectionPieces(bomComponentDetails, optionalPolicyDetails.get());
             concernSectionPieces.addAll(policyDetailsSectionPieces);
+            concernSectionPieces.add(formatter.getLineSeparator());
+            concernSectionPieces.add(formatter.getSectionSeparator());
             concernSectionPieces.add(formatter.getLineSeparator());
         }
 
         Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
         if (optionalVulnDetails.isPresent()) {
-            List<String> vulnDetailsSectionPieces = issueVulnerabilityDetailsConverter.createVulnerabilityDetailsSectionPieces(optionalVulnDetails.get());
+            List<String> vulnDetailsSectionPieces;
+            if (commentFormat) {
+                vulnDetailsSectionPieces = issueVulnerabilityDetailsConverter.createVulnerabilityDetailsSectionPieces(optionalVulnDetails.get());
+            } else {
+                vulnDetailsSectionPieces = componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(projectIssueModel.getBomComponentDetails().getComponentVulnerabilities());
+            }
             concernSectionPieces.addAll(vulnDetailsSectionPieces);
+            concernSectionPieces.add(formatter.getLineSeparator());
+            concernSectionPieces.add(formatter.getSectionSeparator());
             concernSectionPieces.add(formatter.getLineSeparator());
         }
 

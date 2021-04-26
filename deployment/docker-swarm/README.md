@@ -5,24 +5,23 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 ## Table Of Contents
 - [Requirements](#requirements)
 - [Installing Alert](#installing-alert)
-    - [Standalone Installation](#standalone-installation)
-    - [Installation With Black Duck](#installation-with-black-duck)
+  - [Installation](#installation)
 - [Upgrading Alert](#upgrading-alert)
-    - [Standalone Upgrade](#standalone-upgrade)
-    - [Upgrade With Black Duck](#upgrade-with-black-duck)
-- [Certificates](#certificates)	
-    - [Using Custom Certificates](#using-custom-certificates)	
-    - [Using Custom Certificate Truststore](#using-custom-certificate-truststore)
-- [Environment Variables](#environment-variables) 
-    - [Editing the Overrides File](#editing-the-overrides-file)
-    - [Alert Hostname Variable](#alert-hostname-variable)
-    - [Alert Database Variables](#alert-database-variables)
-    - [Alert Logging Level Variable](#alert-logging-level-variable)
-    - [Email Channel Environment Variables](#email-channel-environment-variables)
-    - [Environment Variable Classifications](#environment-variable-classifications)
+  - [Verify Secrets](#verify-secrets)
+  - [Upgrade](#upgrade)
+- [Certificates](#certificates)
+  - [Using Custom Certificates](#using-custom-certificates)
+  - [Using Custom Certificate Truststore](#using-custom-certificate-truststore)
+- [Environment Variables](#environment-variables)
+  - [Editing the Overrides File](#editing-the-overrides-file)
+  - [Alert Hostname Variable](#alert-hostname-variable)
+  - [Alert Database Variables](#alert-database-variables)
+  - [Alert Logging Level Variable](#alert-logging-level-variable)
+  - [Email Channel Environment Variables](#email-channel-environment-variables)
+  - [Environment Variable Classifications](#environment-variable-classifications)
 - [Advanced Configuration](#advanced-configuration)
-    - [Changing Server Port](#changing-server-port)
-    - [Changing Memory Settings](#changing-memory-settings)
+  - [Changing Server Port](#changing-server-port)
+  - [Changing Memory Settings](#changing-memory-settings)
 
 ## Requirements
 
@@ -34,14 +33,21 @@ This document describes how to install and upgrade Alert in Docker Swarm.
 
 ## Installing Alert
 Deployment files for Docker Swarm are located in the *docker-swarm* directory of the zip file.
+
 ```
 blackduck-alert-<VERSION>-deployment.zip file.
 ```
+
 - Extract the contents of the ZIP file.
+- Choose your installation type standalone or with Black Duck.
 - For installing with Black Duck the files are located in the *hub* sub-directory.
 - For installing Alert standalone the files are located in the *standalone* sub-directory.
 
-### Standalone Installation
+** Please Note **
+This document covers editing only the `docker-compose.local-overrides.yml` file that is contained in the *docker-swarm* directory.
+
+### Installation
+
 This section will walk through the instructions to install Alert in a standalone fashion.
 
 #### Overview
@@ -53,17 +59,22 @@ This section will walk through the instructions to install Alert in a standalone
 5. Manage certificates.
 6. Modify environment variables.
 7. Deploy the stack.
- 
-#### Details 
+
+**Please Note:**
+If you are installing with Black Duck and upgrading Alert from a 4.x version to 5.x, please use the docker-compose.local-overrides.yml bundled with Alert. Please remove any Alert configuration from the docker-compose.local-overrides.yml
+file bundled with Black Duck.
+
+#### Details
+
 This section will walk through each step of the installation procedure.
 
 ##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
-  
+
 - Create a docker secret containing the encryption password for Alert.
     ```bash
     docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>
     ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+  - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
     - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
     
 - Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
@@ -224,289 +235,110 @@ cannot switch to using the ALERT_DB_PASSWORD secret. The Alert database containe
             name: "<STACK_NAME>_ALERT_DB_PASSWORD"
             
     ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+  - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
 
-##### 5. Manage certificates.	
-This is an optional step. Confirm if custom certificates or certificate store need to be used.	
-- Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)	
+##### 5. Manage certificates.
+
+This is an optional step. Confirm if custom certificates or certificate store need to be used.
+
+- Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)
 - Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
 
-
 #### 6. Modify environment variables.
+
 Please see [Environment Variables](#environment-variables)
+
 - Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
 - Set the optional environment variables for database connectivity. See [Alert Database Variables](#alert-database-variables)
 - Set any other optional environment variables as needed.
 
 ##### 7. Deploy the stack.
+
+This step has some variation in how a user accesses Alert depending on the installation you are trying to perform.  
+There are the Standalone and Installing with Black Duck variations.
+
+###### Standalone
+
+When deploying this way you intend to access Alert through the configured public hostname and port for the Alert service. The public hostname and/or port configured for Alert is different from the public hostname and/or port of the Black
+Duck installation.
+
+Alert will be accessible via https://<ALERT_HOSTNAME>:<ALERT_SERVER_PORT>/alert
+
 - Execute the command:
     ```bash
     docker stack deploy -c <PATH>/docker-swarm/standalone/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
     ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    - Replace <PATH> with the directory path to the Alert installation files. 
-  
-### Installation with Black Duck
-This section will walk through the instructions to install Alert in a deployment with Black Duck.
+  - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+  - Replace <PATH> with the directory path to the Alert installation files.
 
-Overview:
-1. Create ALERT_ENCRYPTION_PASSWORD secret.
-2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-3. Create ALERT_DB_USERNAME secret.
-4. Create ALERT_DB_PASSWORD secret.
-5. Manage certificates.
-6. Modify environment variables.
-7. Install Black Duck. Follow the documented installation procedure for Black Duck.
-8. Deploy the stack.
+A user will access Alert via the public host name and port for the Alert service.
 
-#### Details 
-This section will walk through each step of the installation procedure.
+###### Installation with Black Duck
 
-**Please Note:** 
-If you are upgrading Alert from a 4.x version to 5.x, please use the docker-compose.local-overrides.yml bundled with Alert.
-Please remove any Alert configuration from the docker-compose.local-overrides.yml file bundled with Black Duck.
+When deploying this way you intend to access Alert through the same public hostname and port as Black Duck. Black Duck is used as a reverse proxy to the Alert service. This is different from a standalone installation.
 
+Alert will be accessible via https://<BLACK_DUCK_HOST_NAME>:<BLACK_DUCK_PORT>/alert
 
-##### 1. Create ALERT_ENCRYPTION_PASSWORD secret.
-  
-- Create a docker secret containing the encryption password for Alert.
-    ```bash
-    docker secret create <STACK_NAME>_ALERT_ENCRYPTION_PASSWORD <FILE_CONTAINING_PASSWORD>
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the password text.
-
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
-- Uncomment the following from the docker-compose.local-overrides.yml file alert service section.
-    ```yaml
-        alert:
-            secrets:
-                - ALERT_ENCRYPTION_PASSWORD
-    ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```yaml
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD:
-              external: true
-              name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
-            
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-
-##### 2. Create ALERT_ENCRYPTION_GLOBAL_SALT secret.
-
-- Create a docker secret containing the encryption salt for Alert.
-    ```bash
-    docker secret create <STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT <FILE_CONTAINING_SALT>
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    - Replace <FILE_CONTAINING_SALT> with the path to the file containing the salt text.
-    
-    Note: If you created the secret ALERT_ENCRYPTION_SALT in a version of Alert prior to 5.x, please use the same salt value for the ALERT_ENCRYPTION_GLOBAL_SALT secret.
-    
-- Make sure the alert service is uncommented from the docker-compose.local-overrides.yml file.
-- Uncomment the following from the docker-compose.local-overrides.yml file to the alert service section.
-    ```yaml
-        alert:
-            secrets:
-                - ALERT_ENCRYPTION_PASSWORD
-                - ALERT_ENCRYPTION_GLOBAL_SALT
-    ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```yaml
-        secrets:
-            ALERT_ENCRYPTION_PASSWORD:
-              external: true
-              name: "<STACK_NAME>_ALERT_ENCRYPTION_PASSWORD"
-            ALERT_ENCRYPTION_GLOBAL_SALT:
-              external: true
-              name: "<STACK_NAME>_ALERT_ENCRYPTION_GLOBAL_SALT"
-            
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-
-##### 3. Create ALERT_DB_USERNAME secret.
-
-Note: If you have previously started Alert with the POSTGRES_USER environment variable then you 
-cannot switch to using the ALERT_DB_USERNAME secret. The Alert database container will fail to 
-start if you try this.
-
-- Create a docker secret containing the database username for Alert.
-    ```bash
-    docker secret create <STACK_NAME>_ALERT_DB_USERNAME <FILE_CONTAINING_USER_NAME>
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    - Replace <FILE_CONTAINING_USER_NAME> with the path to the file containing the database username.
-    
-- Make sure the alertdb service is uncommented from the docker-compose.local-overrides.yml file.
-- Comment the following environment variables from the docker-compose.local-overrides.yml file.
-    From:
-    ```yaml
-        alertdb:
-          environment:
-            - POSTGRES_USER=sa
-    ```
-    To:
-    ```yaml
-        alertdb:
-          environment:
-           # - POSTGRES_USER=sa
-    ```
-- Uncomment the following environment variables from the docker-compose.local-overrides.yml file alertdb service section.
-    ```yaml
-        alertdb:
-          environment:
-            - POSTGRES_USER_FILE=/run/secrets/ALERT_DB_USERNAME
-    ```
-- Uncomment the following secrets from the docker-compose.local-overrides.yml file alertdb service section.
-    ```yaml
-        alertdb:
-            secrets:
-              - ALERT_DB_USERNAME
-    ```
-- Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
-    ```yaml
-        alert:
-            secrets:
-              - ALERT_DB_USERNAME
-    ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```yaml
-        secrets:
-          ALERT_DB_USERNAME:
-            external: true
-            name: "<STACK_NAME>_ALERT_DB_USERNAME"
-            
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-
-##### 4. Create ALERT_DB_PASSWORD secret.
-
-Note: If you have previously started Alert with the POSTGRES_PASSWORD environment variable then you 
-cannot switch to using the ALERT_DB_PASSWORD secret. The Alert database container will fail to start
- if you try this.
-
-- Create a docker secret containing the database password for Alert.
-    ```bash
-    docker secret create <STACK_NAME>_ALERT_DB_PASSWORD <FILE_CONTAINING_PASSWORD>
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    - Replace <FILE_CONTAINING_PASSWORD> with the path to the file containing the database password.
-    
-- Make sure the alertdb service is uncommented from the docker-compose.local-overrides.yml file.
-- Comment the following environment variables from the docker-compose.local-overrides.yml file.
-    From:
-    ```yaml
-        alertdb:
-          environment:
-            - POSTGRES_PASSWORD=blackduck
-    ```
-    To:
-    ```yaml
-        alertdb:
-          environment:
-            # - POSTGRES_PASSWORD=blackduck
-    ```
-- Uncomment the following environment variables from the docker-compose.local-overrides.yml file alertdb service section.
-    ```yaml
-        alertdb:
-          environment:
-            - POSTGRES_PASSWORD_FILE=/run/secrets/ALERT_DB_PASSWORD
-    ```
-- Uncomment the following secrets from the docker-compose.local-overrides.yml file alertdb service section.
-    ```yaml
-        alertdb:
-            secrets:
-              - ALERT_DB_PASSWORD
-    ```
-- Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
-    ```yaml
-        alert:
-            secrets:
-              - ALERT_DB_PASSWORD
-    ```
-- Uncomment the following from the secrets section of the docker-compose.local-overrides.yml file.
-    ```yaml
-        secrets:
-          ALERT_DB_PASSWORD:
-            external: true
-            name: "<STACK_NAME>_ALERT_DB_PASSWORD"
-            
-    ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-
-##### 5. Manage certificates.	
-This is an optional step. Confirm if custom certificates or certificate store need to be used.	
-- Using custom certificate for Alert web server. See [Using Custom Certificates](#using-custom-certificates)	
-- Using custom trust store to trust certificates of external servers. See [Using Custom Certificate TrustStore](#using-custom-certificate-truststore)
-
-
-#### 6. Modify environment variables.
-Please see [Environment Variables](#environment-variables)
-- Set the required environment variable ALERT_HOSTNAME. See [Alert Hostname Variable](#alert-hostname-variable)
-- Set the optional environment variables for database connectivity. See [Alert Database Variables](#alert-database-variables)
-- Set any other optional environment variables as needed.
-
-##### 7. Install Black Duck.
-- Follow the installation procedure for installing Black Duck. 
+- First verify that Black Duck is installed properly with the correct configuration to support Alert in this way.
+  - This is covered in the Black Duck installation documentation.
+  - Follow the installation procedure for installing Black Duck if Black Duck is not already installed to support Alert.
 
 Note: The NGinX container will not start correctly when it is waiting for the alert service to be available.  
-Deploy alert onto the stack and NGinX will eventually become healthy when the alert service is up and running. 
+Deploy alert onto the stack and NGinX will eventually become healthy when the alert service is up and running.
 
-##### 8. Deploy the stack.
-- Execute the command to add Alert to the stack: 
+- Execute the command to add Alert to the stack:
     ```bash
     docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml <STACK_NAME>
     ```
-    - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
-    - Replace <PATH> with the directory path to the Alert installation files. 
-    - Use the same stack name used to install Black Duck from step 6 i.e. blackduck.
+  - Replace <STACK_NAME> with the name of the stack to be used in the deployment.
+  - Replace <PATH> with the directory path to the Alert installation files.
+  - Use the same stack name used to install Black Duck i.e. blackduck.
     ```bash
     docker stack deploy -c <PATH>/docker-swarm/hub/docker-compose.yml -c <PATH>/docker-swarm/docker-compose.local-overrides.yml blackduck
     ```
 
 ## Upgrading Alert
-Remove the stack and then re-deploy the stack.
-The steps in the upgrade procedure are the same as the installation procedure after removing the stack.
 
-### Verify Secrets 
+Remove the stack and then re-deploy the stack. The steps in the upgrade procedure are the same as the installation procedure after removing the stack.
+
+### Verify Secrets
+
 1. Review the docker secrets.
     ```bash
     docker secret ls
     ```
 
-### Standalone Upgrade
-1. Run `docker stack rm <STACK_NAME>` replacing <STACK_NAME> with the name of the stack to be used in the deployment. 
-2. Follow the [Standalone Installation](#standalone-installation)
+### Upgrade
 
-### Upgrade with Black Duck
 1. Run `docker stack rm <STACK_NAME>` replacing <STACK_NAME> with the name of the stack to be used in the deployment.
-2. Follow [Installation with Black Duck](#installation-with-black-duck)
+2. Follow the [Installation](#installation) instructions.
 
-## Certificates 	
-This section describes how to configure the optional certificates.  Please verify beforehand if custom certificates or certificate truststore must be used.	
+## Certificates
 
-### Using Custom Certificates 	
-- Custom certificates for the Alert Web server to present to clients.	
+This section describes how to configure the optional certificates. Please verify beforehand if custom certificates or certificate truststore must be used.
 
-    - Before custom certificates can be used for Alert the signed certificate and key must be available.	
+### Using Custom Certificates
 
-        - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.	
-        ```bash	
-        docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE <PATH_TO_CERT_FILE>	
-        ```	
-        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
-        - Replace <PATH_TO_CERT_FILE> with the path to the certificate file.	
+- Custom certificates for the Alert Web server to present to clients.
 
-        - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.	
+  - Before custom certificates can be used for Alert the signed certificate and key must be available.
 
-        ```bash	
-        docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE <PATH_TO_KEY_FILE>	
-        ```	
-        - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
-        - Replace <PATH_TO_KEY_FILE> with the path to the certificate file.	
+    - WEBSERVER_CUSTOM_CERT_FILE - The file containing the customer's signed certificate.
+      ```bash	
+      docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_CERT_FILE <PATH_TO_CERT_FILE>	
+      ```	
+      - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
+      - Replace <PATH_TO_CERT_FILE> with the path to the certificate file.	
 
-    - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.	
+      - WEBSERVER_CUSTOM_KEY_FILE - The file containing the customer's key used to create the certificate.	
+
+      ```bash	
+      docker secret create <STACK_NAME>_WEBSERVER_CUSTOM_KEY_FILE <PATH_TO_KEY_FILE>	
+      ```	
+      - Replace <STACK_NAME> with the name of the stack to be used in the deployment.	
+      - Replace <PATH_TO_KEY_FILE> with the path to the certificate file.	
+
+    - Uncomment the following secrets from the docker-compose.local-overrides.yml file alert service section.
     ```yaml	
         alert:	
             secrets:	

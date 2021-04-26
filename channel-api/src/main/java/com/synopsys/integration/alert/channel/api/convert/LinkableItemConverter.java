@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.api.convert;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
@@ -19,33 +19,37 @@ public class LinkableItemConverter {
     }
 
     public String convertToString(LinkableItem linkableItem, boolean bold) {
-        String name = formatter.encode(linkableItem.getLabel());
-        String value = formatter.encode(linkableItem.getValue());
-        Optional<String> optionalUrl = linkableItem.getUrl();
-
-        if (bold) {
-            name = formatter.emphasize(name);
-            value = formatter.emphasize(value);
-        }
-
-        if (optionalUrl.isPresent()) {
-            // The nuance around stylizing links adds too much complexity for too little value to worry about emphasizing them.
-            value = createLinkableItemValueString(linkableItem);
-        }
-
-        return String.format("%s:%s%s", name, formatter.getNonBreakingSpace(), value);
+        return convertToString(
+            formatter.encode(linkableItem.getLabel()),
+            formatter.encode(linkableItem.getValue()),
+            linkableItem.getUrl().map(formatter::encode).orElse(null),
+            bold
+        );
     }
 
-    private String createLinkableItemValueString(LinkableItem linkableItem) {
-        String value = formatter.encode(linkableItem.getValue());
-        Optional<String> optionalUrl = linkableItem.getUrl();
+    public String convertToStringWithoutLink(LinkableItem linkableItem, boolean bold) {
+        return convertToString(
+            formatter.encode(linkableItem.getLabel()),
+            formatter.encode(linkableItem.getValue()),
+            null,
+            bold
+        );
+    }
 
-        String formattedString = value;
-        if (optionalUrl.isPresent()) {
-            String urlString = formatter.encode(optionalUrl.get());
-            formattedString = formatter.createLink(value, urlString);
+    private String convertToString(String encodedLabel, String encodedValue, @Nullable String encodedUrl, boolean bold) {
+        String label = encodedLabel;
+        String value = encodedValue;
+        if (bold) {
+            label = formatter.emphasize(encodedLabel);
+            value = formatter.emphasize(encodedValue);
         }
-        return formattedString;
+
+        if (null != encodedUrl) {
+            // The nuance around stylizing links adds too much complexity for too little value to worry about emphasizing them.
+            value = formatter.createLink(encodedValue, encodedUrl);
+        }
+
+        return String.format("%s:%s%s", label, formatter.getNonBreakingSpace(), value);
     }
 
 }

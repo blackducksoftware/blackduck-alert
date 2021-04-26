@@ -8,7 +8,9 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +70,9 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
         LinkableItem providerItem = new LinkableItem(blackDuckProviderKey.getDisplayName(), notificationModel.getProviderConfigName(), providerUrl);
         ProviderDetails providerDetails = new ProviderDetails(notificationModel.getProviderConfigId(), providerItem);
 
-        LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName());
-        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersion());
+        Optional<String> projectUrl = extractProjectUrl(notificationContent.getProjectVersionUrl());
+        LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName(), projectUrl.orElse(null));
+        LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersionUrl());
 
         ProjectMessage projectMessage = createProjectMessage(providerDetails, project, projectVersion, bomComponentDetails);
         return new ProviderMessageHolder(List.of(projectMessage), List.of());
@@ -80,5 +83,11 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
     }
 
     protected abstract List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException;
+
+    private Optional<String> extractProjectUrl(String projectVersionUrl) {
+        return Optional.ofNullable(projectVersionUrl)
+                   .filter(StringUtils::isNotBlank)
+                   .map(url -> StringUtils.substringBefore(url, "/versions"));
+    }
 
 }

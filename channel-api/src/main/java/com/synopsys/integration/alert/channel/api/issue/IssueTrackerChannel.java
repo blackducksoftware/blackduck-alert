@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.api.issue;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.alert.channel.api.DistributionChannelV2;
+import com.synopsys.integration.alert.channel.api.DistributionChannel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
  * @param <D> The type of job details relevant to this channel.
  * @param <T> The {@link Serializable} type of an issue-tracker issue's ID.
  */
-public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannelV2<D> {
+public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel, T extends Serializable> implements DistributionChannel<D> {
     private final IssueTrackerProcessorFactory<D, T> processorFactory;
     private final IssueTrackerResponsePostProcessor responsePostProcessor;
 

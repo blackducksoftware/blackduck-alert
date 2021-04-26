@@ -45,7 +45,7 @@ public class BlackDuckNotificationRetriever {
         BlackDuckRequestBuilder requestBuilder = createNotificationRequestBuilder(dateRange, types);
         NotificationPageRetriever notificationRetriever = new NotificationPageRetriever(requestBuilder);
         AlertPagedDetails<NotificationView> firstPage = notificationRetriever.retrievePage(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE);
-        return new StatefulAlertPage(firstPage, notificationRetriever);
+        return new StatefulAlertPage<>(firstPage, notificationRetriever);
     }
 
     private BlackDuckPageResponse<NotificationView> retrievePageOfFilteredNotifications(BlackDuckRequestBuilder requestBuilder, BlackDuckPageDefinition pageDefinition) throws IntegrationException {
@@ -76,7 +76,6 @@ public class BlackDuckNotificationRetriever {
     }
 
     private class NotificationPageRetriever implements PageRetriever<NotificationView, IntegrationException> {
-
         private final BlackDuckRequestBuilder blackDuckRequestBuilder;
 
         public NotificationPageRetriever(BlackDuckRequestBuilder blackDuckRequestBuilder) {
@@ -93,8 +92,9 @@ public class BlackDuckNotificationRetriever {
         public AlertPagedDetails<NotificationView> retrievePage(int currentOffset, int currentLimit) throws IntegrationException {
             BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(currentLimit, currentOffset);
             BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(blackDuckRequestBuilder, pageDefinition);
-            return new AlertPagedDetails(currentOffset, currentLimit, notificationPage.getTotalCount(), notificationPage.getItems());
+            return new AlertPagedDetails<>(notificationPage.getTotalCount(), currentOffset, currentLimit, notificationPage.getItems());
         }
+
     }
 
 }
