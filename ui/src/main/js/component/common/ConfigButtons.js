@@ -122,10 +122,13 @@ class ConfigButtons extends Component {
                     <ConfirmModal
                         showModal={showDeleteConfirmation}
                         title={confirmDeleteTitle}
-                        message={confirmDeleteMessage}
                         affirmativeAction={this.handleDeleteConfirmed}
                         negativeAction={this.handleDeleteCancelled}
-                    />
+                    >
+                        <div>
+                            {confirmDeleteMessage}
+                        </div>
+                    </ConfirmModal>
                 </div>
             </div>
         );
