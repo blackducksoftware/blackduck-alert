@@ -422,9 +422,12 @@ const TableDisplay = ({
             affirmativeButtonText="Confirm"
             negativeAction={closeDeleteModal}
             negativeButtonText="Cancel"
-            message="Are you sure you want to delete these items?"
             showModal={showDelete}
-        />
+        >
+            <div>
+                Are you sure you want to delete these items?
+            </div>
+        </ConfirmModal>
     );
     const progressIndicator = (
         <div className="progressIcon">

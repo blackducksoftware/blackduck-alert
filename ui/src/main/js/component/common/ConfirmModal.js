@@ -1,94 +1,73 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-class ConfirmModal extends Component {
-    constructor(props) {
-        super(props);
-        this.handleAffirmativeClick = this.handleAffirmativeClick.bind(this);
-        this.handleNegativeClick = this.handleNegativeClick.bind(this);
-        this.resetState = this.resetState.bind(this);
-        this.state = {
-            show: props.showModal,
-            confirmed: false
-        };
-    }
+const ConfirmModal = ({
+    id, affirmativeAction, affirmativeButtonText, children, negativeAction, negativeButtonText, showModal, title
+}) => {
+    const [show, setShow] = useState(showModal);
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.showModal != this.props.showModal) {
-            this.setState({
-                show: this.props.showModal
-            });
-        }
-    }
+    useEffect(() => {
+        setShow(showModal);
+    }, [showModal]);
 
-    handleAffirmativeClick(event) {
+    const resetState = () => {
+        setShow(false);
+    };
+
+    const handleAffirmativeClick = (event) => {
         if (event) {
             event.preventDefault();
             event.stopPropagation();
         }
-        this.props.affirmativeAction();
-        this.resetState();
-    }
+        affirmativeAction();
+        resetState();
+    };
 
-    handleNegativeClick(event) {
+    const handleNegativeClick = (event) => {
         if (event) {
             event.preventDefault();
             event.stopPropagation();
         }
-        this.props.negativeAction();
-        this.resetState();
-    }
+        negativeAction();
+        resetState();
+    };
 
-    resetState() {
-        this.setState({
-            show: false,
-            confirmed: false
-        });
-    }
-
-    render() {
-        const {
-            id, affirmativeButtonText, message, negativeButtonText, title
-        } = this.props;
-        return (
-            <Modal id={id} show={this.state.show} onHide={this.handleNegativeClick}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{title}</Modal.Title>
-                </Modal.Header>
-                {message && (
-                    <Modal.Body>
-                        {message}
-                    </Modal.Body>
-                )}
-                <Modal.Footer>
-                    <button
-                        id="confirmNegative"
-                        type="button"
-                        className="btn btn-link"
-                        onClick={this.handleNegativeClick}
-                    >
-                        {negativeButtonText}
-                    </button>
-                    <button
-                        id="confirmAffirmative"
-                        type="button"
-                        className="btn btn-danger"
-                        onClick={this.handleAffirmativeClick}
-                    >
-                        {affirmativeButtonText}
-                    </button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-}
+    return (
+        <Modal id={id} show={show} onHide={handleNegativeClick}>
+            <Modal.Header closeButton>
+                <Modal.Title>{title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {children}
+            </Modal.Body>
+            <Modal.Footer>
+                <button
+                    id="confirmNegative"
+                    type="button"
+                    className="btn btn-link"
+                    onClick={handleNegativeClick}
+                >
+                    {negativeButtonText}
+                </button>
+                <button
+                    id="confirmAffirmative"
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={handleAffirmativeClick}
+                >
+                    {affirmativeButtonText}
+                </button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
 
 ConfirmModal.propTypes = {
     id: PropTypes.string,
     affirmativeAction: PropTypes.func.isRequired,
     affirmativeButtonText: PropTypes.string,
-    message: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
     negativeAction: PropTypes.func,
     negativeButtonText: PropTypes.string,
     showModal: PropTypes.bool.isRequired,
