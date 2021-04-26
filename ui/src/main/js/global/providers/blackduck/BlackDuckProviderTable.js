@@ -16,7 +16,6 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
     const [tableData, setTableData] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
     const [allSelectedRows, setAllSelectedRows] = useState([]);
-    const [selectedRow, setSelectedRow] = useState(null);
     const tableRef = useRef();
     const history = useHistory();
 
@@ -50,12 +49,13 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
     };
 
     useEffect(() => {
-        retrieveTableData;
+        retrieveTableData();
     }, []);
 
-    const navigateToConfigPage = () => {
-        if (selectedRow) {
-            history.push(`${BLACKDUCK_URLS.blackDuckConfigUrl}/${selectedRow}`);
+    const navigateToConfigPage = (id) => {
+        if (id) {
+            history.push(`${BLACKDUCK_URLS.blackDuckConfigUrl}/${id}`);
+            return;
         }
         history.push(`${BLACKDUCK_URLS.blackDuckConfigUrl}`);
     };
@@ -157,8 +157,7 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
     };
 
     const editButtonClicked = ({ id }) => {
-        setSelectedRow(id);
-        navigateToConfigPage(false);
+        navigateToConfigPage(id);
     };
 
     const editColumnFormatter = () => createTableCellFormatter('pencil-alt', 'Edit', editButtonClicked);

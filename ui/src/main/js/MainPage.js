@@ -153,8 +153,9 @@ class MainPage extends Component {
                     exact
                     key="blackduck-route"
                     path={`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?/:copy?`}
-                    render={() => <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />}
-                />
+                >
+                    <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />
+                </Route>
                 <Route
                     exact
                     path="/alert/"

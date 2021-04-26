@@ -11,6 +11,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import NumberInput from 'field/input/NumberInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [fieldModel, setFieldModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, EMAIL_INFO.key));
@@ -30,6 +31,13 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
 
     const hasAdvancedConfig = Object.keys(EMAIL_GLOBAL_ADVANCED_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(fieldModel, EMAIL_GLOBAL_ADVANCED_FIELD_KEYS[key]));
 
+    const retrieveData = async () => {
+        const data = await GlobalRequestHelper.getDataFindFirst(EMAIL_INFO.key, csrfToken);
+        if (data) {
+            setFieldModel(data);
+        }
+    };
+
     return (
         <CommonGlobalConfiguration
             label={EMAIL_INFO.label}
@@ -45,6 +53,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                 testFormData={testFieldData}
                 setTestFormData={(values) => setTestFieldData(values)}
                 buttonIdPrefix={EMAIL_INFO.key}
+                retrieveData={retrieveData}
             >
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.host}

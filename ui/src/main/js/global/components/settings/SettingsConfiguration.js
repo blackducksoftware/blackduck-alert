@@ -9,6 +9,7 @@ import PasswordInput from 'field/input/PasswordInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import TextInput from 'field/input/TextInput';
 import NumberInput from 'field/input/NumberInput';
+import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const SettingsConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SETTINGS_INFO.key));
@@ -18,6 +19,13 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyPort)
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyPassword)
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyUsername);
+
+    const retrieveData = async () => {
+        const data = await GlobalRequestHelper.getDataFindFirst(SETTINGS_INFO.key, csrfToken);
+        if (data) {
+            setFormData(data);
+        }
+    };
 
     return (
         <CommonGlobalConfiguration
@@ -33,6 +41,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                 displayTest={false}
                 displayDelete={false}
                 buttonIdPrefix={SETTINGS_INFO.key}
+                retrieveData={retrieveData}
             >
                 <h2 key="settings-header">Encryption Configuration</h2>
                 <PasswordInput
