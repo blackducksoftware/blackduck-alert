@@ -424,11 +424,14 @@ const TableSelectInput = (props) => {
                     <ConfirmModal
                         id={confirmModalId}
                         title="Clear Input"
-                        message="Are you sure you want to clear all selected items?"
                         showModal={showClearConfirm}
                         affirmativeAction={handleClearClick}
                         negativeAction={handleHideClearConfirm}
-                    />
+                    >
+                        <div>
+                            Are you sure you want to clear all selected items?
+                        </div>
+                    </ConfirmModal>
                 </div>
             </div>
         );

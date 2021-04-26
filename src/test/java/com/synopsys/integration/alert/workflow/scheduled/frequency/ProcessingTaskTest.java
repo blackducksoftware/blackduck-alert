@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
@@ -79,7 +79,7 @@ public class ProcessingTaskTest {
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(statefulAlertPage);
         NotificationAccessor notificationAccessor = Mockito.mock(NotificationAccessor.class);
         Mockito.doNothing().when(notificationAccessor).setNotificationsProcessed(Mockito.anyList());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
+        NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         ProcessingTask processingTask = Mockito.spy(task);
@@ -96,7 +96,7 @@ public class ProcessingTaskTest {
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
+        NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         DateRange dateRange = task.getDateRange();
@@ -114,7 +114,7 @@ public class ProcessingTaskTest {
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
+        NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         DateRange dateRange = task.getDateRange();
@@ -132,7 +132,7 @@ public class ProcessingTaskTest {
         DefaultNotificationAccessor notificationManager = Mockito.mock(DefaultNotificationAccessor.class);
 
         NotificationDetailExtractionDelegator extractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
-        NotificationProcessorV2 notificationProcessor = new NotificationProcessorV2(extractionDelegator, null, null, null, null, null);
+        NotificationProcessor notificationProcessor = new NotificationProcessor(extractionDelegator, null, null, null, null, null);
 
         ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, taskManager);
         DateRange dateRange = task.getDateRange();
@@ -149,7 +149,7 @@ public class ProcessingTaskTest {
         assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());
     }
 
-    private ProcessingTask createTask(TaskScheduler taskScheduler, DefaultNotificationAccessor notificationManager, NotificationProcessorV2 notificationProcessor, TaskManager taskManager) {
+    private ProcessingTask createTask(TaskScheduler taskScheduler, DefaultNotificationAccessor notificationManager, NotificationProcessor notificationProcessor, TaskManager taskManager) {
         return new ProcessingTask(taskScheduler, notificationManager, taskManager, notificationProcessor, FrequencyType.DAILY) {
             @Override
             public String scheduleCronExpression() {

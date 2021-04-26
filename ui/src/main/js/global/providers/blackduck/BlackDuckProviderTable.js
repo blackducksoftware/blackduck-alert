@@ -209,9 +209,10 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
                 affirmativeButtonText="Confirm"
                 negativeAction={() => setShowDelete(false)}
                 negativeButtonText="Cancel"
-                message="Are you sure you want to delete these items?"
                 showModal={showDelete}
-            />
+            >
+                Are you sure you want to delete these items?
+            </ConfirmModal>
             <BootstrapTable
                 version="4"
                 hover

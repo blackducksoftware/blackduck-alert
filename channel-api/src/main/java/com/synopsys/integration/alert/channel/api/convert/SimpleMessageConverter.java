@@ -13,12 +13,13 @@ import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilde
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
-public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessage> {
+public class SimpleMessageConverter implements ProviderMessageConverter<SimpleMessage> {
     private final ChannelMessageFormatter messageFormatter;
+    private final LinkableItemConverter linkableItemConverter;
 
     public SimpleMessageConverter(ChannelMessageFormatter messageFormatter) {
-        super(messageFormatter);
         this.messageFormatter = messageFormatter;
+        this.linkableItemConverter = new LinkableItemConverter(messageFormatter);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class SimpleMessageConverter extends ProviderMessageConverter<SimpleMessa
     }
 
     private void appendLinkableItem(ChunkedStringBuilder chunkedStringBuilder, LinkableItem linkableItem, boolean bold) {
-        String detailString = createLinkableItemString(linkableItem, bold);
+        String detailString = linkableItemConverter.convertToString(linkableItem, bold);
         chunkedStringBuilder.append(detailString);
         chunkedStringBuilder.append(messageFormatter.getLineSeparator());
     }

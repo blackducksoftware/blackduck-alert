@@ -13,13 +13,13 @@ import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
-public class DistributionEventV2 extends AlertEvent {
+public class DistributionEvent extends AlertEvent {
     private final UUID jobId;
     private final Long auditId;
 
     private final ProviderMessageHolder providerMessages;
 
-    public DistributionEventV2(ChannelKey destination, UUID jobId, Long auditId, ProviderMessageHolder providerMessages) {
+    public DistributionEvent(ChannelKey destination, UUID jobId, Long auditId, ProviderMessageHolder providerMessages) {
         super(destination.getUniversalKey());
         this.jobId = jobId;
         this.auditId = auditId;

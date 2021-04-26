@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptorKey;
-import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.ProcessingTask;
 
 @Component
@@ -34,7 +34,7 @@ public class DailyTask extends ProcessingTask {
         SchedulingDescriptorKey schedulingDescriptorKey,
         TaskScheduler taskScheduler,
         NotificationAccessor notificationAccessor,
-        NotificationProcessorV2 notificationProcessor,
+        NotificationProcessor notificationProcessor,
         TaskManager taskManager,
         ConfigurationAccessor configurationAccessor
     ) {

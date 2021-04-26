@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.processor.api.JobNotificationProcessor;
-import com.synopsys.integration.alert.processor.api.NotificationProcessorV2;
+import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 
 @Component
 @Transactional
@@ -49,7 +49,7 @@ public class AuditEntryActions {
     private final NotificationAccessor notificationAccessor;
     private final AuditAccessor auditAccessor;
     private final JobAccessor jobAccessor;
-    private final NotificationProcessorV2 notificationProcessorV2;
+    private final NotificationProcessor notificationProcessor;
     private final JobNotificationProcessor jobNotificationProcessor;
 
     @Autowired
@@ -59,7 +59,7 @@ public class AuditEntryActions {
         AuditAccessor auditAccessor,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
-        NotificationProcessorV2 notificationProcessorV2,
+        NotificationProcessor notificationProcessor,
         JobNotificationProcessor jobNotificationProcessor
     ) {
         this.authorizationManager = authorizationManager;
@@ -67,7 +67,7 @@ public class AuditEntryActions {
         this.auditAccessor = auditAccessor;
         this.notificationAccessor = notificationAccessor;
         this.jobAccessor = jobAccessor;
-        this.notificationProcessorV2 = notificationProcessorV2;
+        this.notificationProcessor = notificationProcessor;
         this.jobNotificationProcessor = jobNotificationProcessor;
     }
 
@@ -158,7 +158,7 @@ public class AuditEntryActions {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, message);
             }
         } else {
-            notificationProcessorV2.processNotifications(List.of(notificationContent), List.of(FrequencyType.DAILY, FrequencyType.REAL_TIME));
+            notificationProcessor.processNotifications(List.of(notificationContent), List.of(FrequencyType.DAILY, FrequencyType.REAL_TIME));
         }
         return get();
     }

@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
-import com.synopsys.integration.alert.channel.email.distribution.EmailChannelV2;
+import com.synopsys.integration.alert.channel.email.distribution.EmailChannel;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -27,7 +27,7 @@ public class EmailDistributionTestAction extends DistributionChannelMessageTestA
     private final EmailTestActionHelper emailTestActionHelper;
 
     @Autowired
-    public EmailDistributionTestAction(EmailChannelKey channelKey, EmailChannelV2 distributionChannel, EmailTestActionHelper emailTestActionHelper) {
+    public EmailDistributionTestAction(EmailChannelKey channelKey, EmailChannel distributionChannel, EmailTestActionHelper emailTestActionHelper) {
         super(channelKey, distributionChannel);
         this.emailTestActionHelper = emailTestActionHelper;
     }

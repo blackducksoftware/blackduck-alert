@@ -96,7 +96,6 @@ public class EmailAddressGatherer {
         for (String href : projectHrefs) {
             Set<String> emailsForProject = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, href);
             projectUserEmailAddresses.addAll(emailsForProject);
-
         }
         return projectUserEmailAddresses;
     }

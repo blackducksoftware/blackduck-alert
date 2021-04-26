@@ -36,7 +36,7 @@ public abstract class ChannelMessageFormatter {
     }
 
     public final String getSectionSeparator() {
-        return sectionSeparator;
+        return sectionSeparator + nonBreakingSpace;
     }
 
     public final String getNonBreakingSpace() {
