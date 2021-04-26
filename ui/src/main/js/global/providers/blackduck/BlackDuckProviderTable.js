@@ -52,12 +52,13 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
         retrieveTableData();
     }, []);
 
-    const navigateToConfigPage = (id) => {
+    const navigateToConfigPage = (id, copy) => {
+        const url = (copy) ? BLACKDUCK_URLS.blackDuckConfigCopyUrl : BLACKDUCK_URLS.blackDuckConfigCopyUrl;
         if (id) {
-            history.push(`${BLACKDUCK_URLS.blackDuckConfigUrl}/${id}`);
+            history.push(`${url}/${id}`);
             return;
         }
-        history.push(`${BLACKDUCK_URLS.blackDuckConfigUrl}`);
+        history.push(url);
     };
 
     const insertAndDeleteButton = (buttons) => {
@@ -160,8 +161,12 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
         navigateToConfigPage(id);
     };
 
+    const copyButtonClicked = ({ id }) => {
+        navigateToConfigPage(id, true);
+    };
+
     const editColumnFormatter = () => createTableCellFormatter('pencil-alt', 'Edit', editButtonClicked);
-    const copyColumnFormatter = () => createTableCellFormatter('copy', 'Copy', editButtonClicked);
+    const copyColumnFormatter = () => createTableCellFormatter('copy', 'Copy', copyButtonClicked);
 
     const createIconTableHeader = (dataFormat, text) => (
         <TableHeaderColumn

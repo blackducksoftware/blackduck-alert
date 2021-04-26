@@ -152,7 +152,7 @@ class MainPage extends Component {
                 <Route
                     exact
                     key="blackduck-route"
-                    path={`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?/:copy?`}
+                    path={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
                 >
                     <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />
                 </Route>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useLocation, useHistory, useParams } from 'react-router-dom';
 import TextInput from 'field/input/TextInput';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -15,6 +15,7 @@ import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
     const { id } = useParams();
     const history = useHistory();
+    const location = useLocation();
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, BLACKDUCK_INFO.key));
     const [errors, setErrors] = useState({});
 
@@ -34,6 +35,10 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
             setFormData(data);
         }
     };
+
+    if (location.pathname.includes('/copy') && FieldModelUtilities.getFieldModelId(formData)) {
+        delete formData.id;
+    }
 
     return (
         <CommonGlobalConfiguration
