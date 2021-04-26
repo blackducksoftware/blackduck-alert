@@ -28,14 +28,14 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
 
         const { fieldModels } = data;
         const filteredFieldModels = fieldModels.filter((model) => FieldModelUtilities.hasAnyValuesExcludingId(model));
-        const convertedTableDate = filteredFieldModels.map((fieldModel) => ({
+        const convertedTableData = filteredFieldModels.map((fieldModel) => ({
             id: FieldModelUtilities.getFieldModelId(fieldModel),
             name: FieldModelUtilities.getFieldModelSingleValue(fieldModel, BLACKDUCK_GLOBAL_FIELD_KEYS.name),
             enabled: FieldModelUtilities.getFieldModelBooleanValue(fieldModel, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled),
             lastUpdated: fieldModel.lastUpdated,
             createdAt: fieldModel.createdAt
         }));
-        setTableData(convertedTableDate);
+        setTableData(convertedTableData);
     };
 
     const deleteTableData = async () => {
@@ -51,6 +51,10 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
     useEffect(() => {
         retrieveTableData();
     }, []);
+
+    useEffect(() => {
+        retrieveTableData();
+    }, [showDelete]);
 
     const navigateToConfigPage = (id, copy) => {
         const url = (copy) ? BLACKDUCK_URLS.blackDuckConfigCopyUrl : BLACKDUCK_URLS.blackDuckConfigCopyUrl;

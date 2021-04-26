@@ -97,7 +97,7 @@ const CommonGlobalConfigurationForm = ({
                     : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, formData);
 
                 await request();
-                // await fetchData();
+                await fetchData();
 
                 setActionMessage('Save Successful');
                 afterSuccessfulSave();

@@ -37,14 +37,16 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
     };
 
     if (location.pathname.includes('/copy') && FieldModelUtilities.getFieldModelId(formData)) {
-        delete formData.id;
-        delete formData[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey];
+        const copy = FieldModelUtilities.updateFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey, '');
+        delete copy.id;
+        setFormData(copy);
     }
 
     return (
         <CommonGlobalConfiguration
             label={BLACKDUCK_INFO.label}
             description={BLACKDUCK_INFO.description}
+            lastUpdated={formData.lastUpdated}
         >
             <CommonGlobalConfigurationForm
                 setErrors={(error) => setErrors(error)}
@@ -111,7 +113,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
+                    value={FieldModelUtilities.getFieldModelNumberValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
                     errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.timeout]}
                 />
