@@ -371,47 +371,12 @@ const DistributionConfigurationTable = ({
                             Distribution
                             Id
                         </TableHeaderColumn>
-                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">
-                            Distribution
-                            Job
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                            dataField="distributionType"
-                            dataSort
-                            columnClassName="tableCell"
-                            dataFormat={descriptorColumnFormatter}
-                        >
-                            Type
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                            dataField="providerName"
-                            dataSort
-                            columnClassName="tableCell"
-                            dataFormat={descriptorColumnFormatter}
-                        >
-                            Provider
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                            dataField="frequency"
-                            dataSort
-                            columnClassName="tableCell"
-                            dataFormat={frequencyColumnFormatter}
-                        >
-                            Frequency
-                            Type
-                        </TableHeaderColumn>
-                        <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">
-                            Last
-                            Run
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                            dataField="status"
-                            dataSort
-                            columnTitle
-                            columnClassName={statusColumnClassName}
-                        >
-                            Status
-                        </TableHeaderColumn>
+                        {column('name', 'Distribution Job', nameColumnFormatter)}
+                        {column('distributionType', 'Type', descriptorColumnFormatter)}
+                        {column('providerName', 'Provider', descriptorColumnFormatter)}
+                        {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
+                        {column('lastRan', 'Last Run')}
+                        {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
                     </BootstrapTable>
                 </div>
             </ConfirmModal>
