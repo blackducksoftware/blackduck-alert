@@ -14,11 +14,23 @@ import { AZURE_INFO } from 'global/channels/azure/AzureModel';
 import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
 import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
+import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
 
 class Navigation extends Component {
     constructor(props) {
         super(props);
         this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
+        this.createStaticNavItem = this.createStaticNavItem.bind(this);
+    }
+
+    createStaticNavItem(uriPrefix, itemObject) {
+        return (
+            <li key={itemObject.key}>
+                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
+                    {itemObject.label}
+                </NavLink>
+            </li>
+        );
     }
 
     createNavItemForDescriptors(descriptorType, context, uriPrefix, header) {
@@ -31,13 +43,7 @@ class Navigation extends Component {
             return null;
         }
 
-        const createStaticNavItem = (itemObject) => (
-            <li key={itemObject.key}>
-                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
-                    {itemObject.label}
-                </NavLink>
-            </li>
-        );
+        const createStaticNavItem = (itemObject) => this.createStaticNavItem(uriPrefix, itemObject);
 
         const contentList = descriptorList.map(({ name, urlName, label }) => {
             // Removes these channels from the dynamic setup and manually inserts the static information
@@ -60,6 +66,8 @@ class Navigation extends Component {
                     return createStaticNavItem(SETTINGS_INFO);
                 case AUTHENTICATION_INFO.key:
                     return createStaticNavItem(AUTHENTICATION_INFO);
+                case BLACKDUCK_INFO.key:
+                    return createStaticNavItem(BLACKDUCK_INFO);
                 default:
                     return (
                         <li key={name}>

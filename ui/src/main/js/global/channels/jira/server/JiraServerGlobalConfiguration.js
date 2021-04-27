@@ -9,10 +9,18 @@ import PasswordInput from 'field/input/PasswordInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import EndpointButtonField from 'field/EndpointButtonField';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_SERVER_INFO.key));
     const [errors, setErrors] = useState({});
+
+    const retrieveData = async () => {
+        const data = await GlobalRequestHelper.getDataFindFirst(JIRA_SERVER_INFO.key, csrfToken);
+        if (data) {
+            setFormData(data);
+        }
+    };
 
     return (
         <CommonGlobalConfiguration
@@ -26,6 +34,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, readonly }) => {
                 setFormData={(data) => setFormData(data)}
                 csrfToken={csrfToken}
                 buttonIdPrefix={JIRA_SERVER_INFO.key}
+                retrieveData={retrieveData}
             >
                 <TextInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.url}
