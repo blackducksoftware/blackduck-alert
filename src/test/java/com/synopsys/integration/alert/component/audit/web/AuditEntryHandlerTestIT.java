@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -41,6 +40,7 @@ import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -95,7 +95,7 @@ public class AuditEntryHandlerTestIT {
     @Autowired
     private BlackDuckProviderKey blackDuckProviderKey;
     @Autowired
-    private AuditAccessor auditAccessor;
+    private RestApiAuditAccessor auditAccessor;
     @Autowired
     private NotificationProcessor notificationProcessor;
     @Autowired

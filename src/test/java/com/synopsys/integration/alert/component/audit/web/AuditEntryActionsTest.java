@@ -38,8 +38,8 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.component.audit.mock.MockAuditEntryEntity;
-import com.synopsys.integration.alert.database.api.DefaultAuditAccessor;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
+import com.synopsys.integration.alert.database.api.DefaultRestApiAuditAccessor;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
@@ -72,7 +72,7 @@ public class AuditEntryActionsTest {
         DefaultNotificationAccessor notificationAccessor = Mockito.mock(DefaultNotificationAccessor.class);
         Mockito.when(notificationAccessor.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, notificationAccessor, null);
+        DefaultRestApiAuditAccessor auditEntryUtility = new DefaultRestApiAuditAccessor(auditEntryRepository, null, null, null, notificationAccessor, null);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationAccessor, null, null, null);
 
         ActionResponse<AuditEntryModel> auditEntryModel = auditEntryActions.get(1L);
@@ -88,7 +88,7 @@ public class AuditEntryActionsTest {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.any())).thenReturn(Optional.empty());
 
-        DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, null, null, null, null, null);
+        DefaultRestApiAuditAccessor auditEntryUtility = new DefaultRestApiAuditAccessor(auditEntryRepository, null, null, null, null, null);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, null, null, null, null);
 
         ActionResponse<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(UUID.randomUUID());
@@ -112,7 +112,7 @@ public class AuditEntryActionsTest {
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
         DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationRepository, auditEntryRepository, auditNotificationRepository, null);
-        DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, null, notificationManager, null);
+        DefaultRestApiAuditAccessor auditEntryUtility = new DefaultRestApiAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, null, notificationManager, null);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobAccessor, null, null);
 
         ActionResponse<AuditEntryPageModel> response = auditEntryActions.resendNotification(1L, null);
@@ -165,7 +165,7 @@ public class AuditEntryActionsTest {
         Mockito.doReturn(Optional.of(distributionJob)).when(jobAccessor).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
 
-        DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, configurationAccessor, notificationManager, contentConverter);
+        DefaultRestApiAuditAccessor auditEntryUtility = new DefaultRestApiAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, configurationAccessor, notificationManager, contentConverter);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobAccessor, null, null);
 
         ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
@@ -220,7 +220,7 @@ public class AuditEntryActionsTest {
         Mockito.doReturn(Optional.of(distributionJob)).when(jobAccessor).getJobById(Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
 
-        DefaultAuditAccessor auditEntryUtility = new DefaultAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, configurationAccessor, notificationManager, contentConverter);
+        DefaultRestApiAuditAccessor auditEntryUtility = new DefaultRestApiAuditAccessor(auditEntryRepository, auditNotificationRepository, jobAccessor, configurationAccessor, notificationManager, contentConverter);
         AuditEntryActions auditEntryActions = new AuditEntryActions(authorizationManager, auditDescriptorKey, auditEntryUtility, notificationManager, jobAccessor, null, null);
 
         ActionResponse<AuditEntryPageModel> response = auditEntryActions.get(currentPage, pageSize, null, null, null, true);

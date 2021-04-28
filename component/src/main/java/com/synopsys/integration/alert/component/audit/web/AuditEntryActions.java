@@ -21,11 +21,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -47,7 +47,7 @@ public class AuditEntryActions {
     private final AuthorizationManager authorizationManager;
     private final AuditDescriptorKey descriptorKey;
     private final NotificationAccessor notificationAccessor;
-    private final AuditAccessor auditAccessor;
+    private final RestApiAuditAccessor auditAccessor;
     private final JobAccessor jobAccessor;
     private final NotificationProcessor notificationProcessor;
     private final JobNotificationProcessor jobNotificationProcessor;
@@ -56,7 +56,7 @@ public class AuditEntryActions {
     public AuditEntryActions(
         AuthorizationManager authorizationManager,
         AuditDescriptorKey descriptorKey,
-        AuditAccessor auditAccessor,
+        RestApiAuditAccessor auditAccessor,
         NotificationAccessor notificationAccessor,
         JobAccessor jobAccessor,
         NotificationProcessor notificationProcessor,

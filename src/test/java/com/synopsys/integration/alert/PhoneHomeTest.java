@@ -13,8 +13,8 @@ import org.springframework.scheduling.TaskScheduler;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.ProviderPhoneHomeHandler;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
@@ -32,7 +32,7 @@ public class PhoneHomeTest {
 
     @Test
     public void runTest() {
-        AuditAccessor auditAccessor = Mockito.mock(AuditAccessor.class);
+        RestApiAuditAccessor auditAccessor = Mockito.mock(RestApiAuditAccessor.class);
         Mockito.when(auditAccessor.findFirstByJobId(Mockito.any())).thenReturn(Optional.empty());
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);

@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.AlertChannelEventListener;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
@@ -26,12 +26,12 @@ import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEvent> implements AlertChannelEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final AuditAccessor auditAccessor;
+    private final ProcessingAuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final DistributionChannel<D> channel;
     private final ChannelKey channelKey;
 
-    protected DistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannel<D> channel, ChannelKey channelKey) {
+    protected DistributionEventReceiver(Gson gson, ProcessingAuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannel<D> channel, ChannelKey channelKey) {
         super(gson, DistributionEvent.class);
         this.auditAccessor = auditAccessor;
         this.jobDetailsAccessor = jobDetailsAccessor;
