@@ -18,6 +18,7 @@ import { AUDIT_INFO } from 'global/components/audit/AuditModel';
 import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
 import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
 import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
+import { doesDescriptorExist } from 'util/descriptorUtilities';
 
 const Navigation = ({ confirmLogoutPressed, descriptorMap }) => {
     const createStaticNavItem = (uriPrefix, itemObject) => (
@@ -32,8 +33,6 @@ const Navigation = ({ confirmLogoutPressed, descriptorMap }) => {
     const providerUri = '/alert/providers/';
     const componentUri = '/alert/components/';
 
-    const doesDescriptorExist = (key) => Object.prototype.hasOwnProperty.call(descriptorMap, key);
-
     return (
         <div className="navigation">
             <div className="navigationContent">
@@ -47,16 +46,16 @@ const Navigation = ({ confirmLogoutPressed, descriptorMap }) => {
                     <li className="navHeader" key="providers">
                         Provider
                     </li>
-                    {doesDescriptorExist(BLACKDUCK_INFO.key) && createStaticNavItem(providerUri, BLACKDUCK_INFO)}
+                    {doesDescriptorExist(descriptorMap, BLACKDUCK_INFO.key) && createStaticNavItem(providerUri, BLACKDUCK_INFO)}
                     <li className="navHeader" key="channels">
                         Channels
                     </li>
-                    {doesDescriptorExist(AZURE_INFO.key) && createStaticNavItem(channelUri, AZURE_INFO)}
-                    {doesDescriptorExist(EMAIL_INFO.key) && createStaticNavItem(channelUri, EMAIL_INFO)}
-                    {doesDescriptorExist(JIRA_CLOUD_INFO.key) && createStaticNavItem(channelUri, JIRA_CLOUD_INFO)}
-                    {doesDescriptorExist(JIRA_SERVER_INFO.key) && createStaticNavItem(channelUri, JIRA_SERVER_INFO)}
-                    {doesDescriptorExist(MSTEAMS_INFO.key) && createStaticNavItem(channelUri, MSTEAMS_INFO)}
-                    {doesDescriptorExist(SLACK_INFO.key) && createStaticNavItem(channelUri, SLACK_INFO)}
+                    {doesDescriptorExist(descriptorMap, AZURE_INFO.key) && createStaticNavItem(channelUri, AZURE_INFO)}
+                    {doesDescriptorExist(descriptorMap, EMAIL_INFO.key) && createStaticNavItem(channelUri, EMAIL_INFO)}
+                    {doesDescriptorExist(descriptorMap, JIRA_CLOUD_INFO.key) && createStaticNavItem(channelUri, JIRA_CLOUD_INFO)}
+                    {doesDescriptorExist(descriptorMap, JIRA_SERVER_INFO.key) && createStaticNavItem(channelUri, JIRA_SERVER_INFO)}
+                    {doesDescriptorExist(descriptorMap, MSTEAMS_INFO.key) && createStaticNavItem(channelUri, MSTEAMS_INFO)}
+                    {doesDescriptorExist(descriptorMap, SLACK_INFO.key) && createStaticNavItem(channelUri, SLACK_INFO)}
                     <li className="navHeader">
                         Jobs
                     </li>
@@ -66,13 +65,13 @@ const Navigation = ({ confirmLogoutPressed, descriptorMap }) => {
                         </NavLink>
                     </li>
                     <li className="divider" />
-                    {doesDescriptorExist(AUDIT_INFO.key) && createStaticNavItem(componentUri, AUDIT_INFO)}
-                    {doesDescriptorExist(AUTHENTICATION_INFO.key) && createStaticNavItem(componentUri, AUTHENTICATION_INFO)}
-                    {doesDescriptorExist(CERTIFICATE_INFO.key) && createStaticNavItem(componentUri, CERTIFICATE_INFO)}
-                    {doesDescriptorExist(SCHEDULING_INFO.key) && createStaticNavItem(componentUri, SCHEDULING_INFO)}
-                    {doesDescriptorExist(SETTINGS_INFO.key) && createStaticNavItem(componentUri, SETTINGS_INFO)}
-                    {doesDescriptorExist(TASK_MANAGEMENT_INFO.key) && createStaticNavItem(componentUri, TASK_MANAGEMENT_INFO)}
-                    {doesDescriptorExist(USER_MANAGEMENT_INFO.key) && createStaticNavItem(componentUri, USER_MANAGEMENT_INFO)}
+                    {doesDescriptorExist(descriptorMap, AUDIT_INFO.key) && createStaticNavItem(componentUri, AUDIT_INFO)}
+                    {doesDescriptorExist(descriptorMap, AUTHENTICATION_INFO.key) && createStaticNavItem(componentUri, AUTHENTICATION_INFO)}
+                    {doesDescriptorExist(descriptorMap, CERTIFICATE_INFO.key) && createStaticNavItem(componentUri, CERTIFICATE_INFO)}
+                    {doesDescriptorExist(descriptorMap, SCHEDULING_INFO.key) && createStaticNavItem(componentUri, SCHEDULING_INFO)}
+                    {doesDescriptorExist(descriptorMap, SETTINGS_INFO.key) && createStaticNavItem(componentUri, SETTINGS_INFO)}
+                    {doesDescriptorExist(descriptorMap, TASK_MANAGEMENT_INFO.key) && createStaticNavItem(componentUri, TASK_MANAGEMENT_INFO)}
+                    {doesDescriptorExist(descriptorMap, USER_MANAGEMENT_INFO.key) && createStaticNavItem(componentUri, USER_MANAGEMENT_INFO)}
                     <li className="logoutLink">
                         <a
                             role="button"
