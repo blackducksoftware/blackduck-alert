@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
 import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
@@ -15,145 +14,89 @@ import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
 import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
 import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
+import { AUDIT_INFO } from 'global/components/audit/AuditModel';
+import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
+import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
+import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
+import { doesDescriptorExist } from 'util/descriptorUtilities';
 
-class Navigation extends Component {
-    constructor(props) {
-        super(props);
-        this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
-        this.createStaticNavItem = this.createStaticNavItem.bind(this);
-    }
+const Navigation = ({ confirmLogoutPressed, descriptorMap }) => {
+    const createStaticNavItem = (uriPrefix, itemObject) => (
+        <li key={itemObject.key}>
+            <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
+                {itemObject.label}
+            </NavLink>
+        </li>
+    );
 
-    createStaticNavItem(uriPrefix, itemObject) {
-        return (
-            <li key={itemObject.key}>
-                <NavLink to={`${uriPrefix}${itemObject.url}`} activeClassName="activeNav">
-                    {itemObject.label}
-                </NavLink>
-            </li>
-        );
-    }
+    const channelUri = '/alert/channels/';
+    const providerUri = '/alert/providers/';
+    const componentUri = '/alert/components/';
 
-    createNavItemForDescriptors(descriptorType, context, uriPrefix, header) {
-        const { descriptors } = this.props;
-        if (!descriptors) {
-            return null;
-        }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, descriptorType, context);
-        if (!descriptorList) {
-            return null;
-        }
-
-        const createStaticNavItem = (itemObject) => this.createStaticNavItem(uriPrefix, itemObject);
-
-        const contentList = descriptorList.map(({ name, urlName, label }) => {
-            // Removes these channels from the dynamic setup and manually inserts the static information
-            switch (name) {
-                case SLACK_INFO.key:
-                    return createStaticNavItem(SLACK_INFO);
-                case MSTEAMS_INFO.key:
-                    return createStaticNavItem(MSTEAMS_INFO);
-                case EMAIL_INFO.key:
-                    return createStaticNavItem(EMAIL_INFO);
-                case JIRA_CLOUD_INFO.key:
-                    return createStaticNavItem(JIRA_CLOUD_INFO);
-                case JIRA_SERVER_INFO.key:
-                    return createStaticNavItem(JIRA_SERVER_INFO);
-                case AZURE_INFO.key:
-                    return createStaticNavItem(AZURE_INFO);
-                case SCHEDULING_INFO.key:
-                    return createStaticNavItem(SCHEDULING_INFO);
-                case SETTINGS_INFO.key:
-                    return createStaticNavItem(SETTINGS_INFO);
-                case AUTHENTICATION_INFO.key:
-                    return createStaticNavItem(AUTHENTICATION_INFO);
-                case BLACKDUCK_INFO.key:
-                    return createStaticNavItem(BLACKDUCK_INFO);
-                default:
-                    return (
-                        <li key={name}>
-                            <NavLink to={`${uriPrefix}${urlName}`} activeClassName="activeNav">
-                                {label}
-                            </NavLink>
-                        </li>
-                    );
-            }
-        });
-
-        if (header && contentList && contentList.length > 0) {
-            contentList.unshift(<li className="navHeader" key={header}>
-                {header}
-            </li>);
-        }
-        return contentList;
-    }
-
-    render() {
-        const channelGlobals = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/', 'Channels');
-        const providers = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/', 'Providers');
-        const components = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.COMPONENT, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/components/');
-
-        const nav = (
-            <>
-                {providers}
-                {channelGlobals}
-                <li className="navHeader">
-                    Jobs
-                </li>
-                <li>
-                    <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                        Distribution
-                    </NavLink>
-                </li>
-                <li className="divider" />
-                {components}
-            </>
-        );
-
-        const rows = (this.props.fetching) ? null : nav;
-
-        return (
-            <div className="navigation">
-                <div className="navigationContent">
-                    <ul>
-                        <li>
-                            <NavLink to="/alert/general/about" activeClassName="activeNav">
-                                <Logo />
-                            </NavLink>
-                        </li>
-                        <li className="divider" />
-                        {rows}
-                        <li className="logoutLink">
-                            <a
-                                role="button"
-                                tabIndex={0}
-                                onClick={(evt) => {
-                                    evt.preventDefault();
-                                    this.props.confirmLogout();
-                                }}
-                            >
-                                Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+    return (
+        <div className="navigation">
+            <div className="navigationContent">
+                <ul>
+                    <li>
+                        <NavLink to="/alert/general/about" activeClassName="activeNav">
+                            <Logo />
+                        </NavLink>
+                    </li>
+                    <li className="divider" />
+                    <li className="navHeader" key="providers">
+                        Provider
+                    </li>
+                    {doesDescriptorExist(descriptorMap, BLACKDUCK_INFO.key) && createStaticNavItem(providerUri, BLACKDUCK_INFO)}
+                    <li className="navHeader" key="channels">
+                        Channels
+                    </li>
+                    {doesDescriptorExist(descriptorMap, AZURE_INFO.key) && createStaticNavItem(channelUri, AZURE_INFO)}
+                    {doesDescriptorExist(descriptorMap, EMAIL_INFO.key) && createStaticNavItem(channelUri, EMAIL_INFO)}
+                    {doesDescriptorExist(descriptorMap, JIRA_CLOUD_INFO.key) && createStaticNavItem(channelUri, JIRA_CLOUD_INFO)}
+                    {doesDescriptorExist(descriptorMap, JIRA_SERVER_INFO.key) && createStaticNavItem(channelUri, JIRA_SERVER_INFO)}
+                    {doesDescriptorExist(descriptorMap, MSTEAMS_INFO.key) && createStaticNavItem(channelUri, MSTEAMS_INFO)}
+                    {doesDescriptorExist(descriptorMap, SLACK_INFO.key) && createStaticNavItem(channelUri, SLACK_INFO)}
+                    <li className="navHeader">
+                        Jobs
+                    </li>
+                    <li>
+                        <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
+                            Distribution
+                        </NavLink>
+                    </li>
+                    <li className="divider" />
+                    {doesDescriptorExist(descriptorMap, AUDIT_INFO.key) && createStaticNavItem(componentUri, AUDIT_INFO)}
+                    {doesDescriptorExist(descriptorMap, AUTHENTICATION_INFO.key) && createStaticNavItem(componentUri, AUTHENTICATION_INFO)}
+                    {doesDescriptorExist(descriptorMap, CERTIFICATE_INFO.key) && createStaticNavItem(componentUri, CERTIFICATE_INFO)}
+                    {doesDescriptorExist(descriptorMap, SCHEDULING_INFO.key) && createStaticNavItem(componentUri, SCHEDULING_INFO)}
+                    {doesDescriptorExist(descriptorMap, SETTINGS_INFO.key) && createStaticNavItem(componentUri, SETTINGS_INFO)}
+                    {doesDescriptorExist(descriptorMap, TASK_MANAGEMENT_INFO.key) && createStaticNavItem(componentUri, TASK_MANAGEMENT_INFO)}
+                    {doesDescriptorExist(descriptorMap, USER_MANAGEMENT_INFO.key) && createStaticNavItem(componentUri, USER_MANAGEMENT_INFO)}
+                    <li className="logoutLink">
+                        <a
+                            role="button"
+                            tabIndex={0}
+                            onClick={(evt) => {
+                                evt.preventDefault();
+                                confirmLogoutPressed();
+                            }}
+                        >
+                            Logout
+                        </a>
+                    </li>
+                </ul>
             </div>
-        );
-    }
-}
-
-Navigation.propTypes = {
-    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    confirmLogout: PropTypes.func.isRequired,
-    fetching: PropTypes.bool.isRequired
+        </div>
+    );
 };
 
-const mapStateToProps = (state) => ({
-    descriptors: state.descriptors.items,
-    fetching: state.descriptors.fetching
-});
+Navigation.propTypes = {
+    confirmLogoutPressed: PropTypes.func.isRequired,
+    descriptorMap: PropTypes.object.isRequired
+};
 
 const mapDispatchToProps = (dispatch) => ({
-    confirmLogout: () => dispatch(confirmLogout())
+    confirmLogoutPressed: () => dispatch(confirmLogout())
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Navigation));
+export default withRouter(connect(null, mapDispatchToProps)(Navigation));

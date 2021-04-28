@@ -103,3 +103,7 @@ export function isOneOperationAssigned(descriptor, operationArray) {
     }
     return operationArray.find((operation) => isOperationAssigned(descriptor, operation)) !== undefined;
 }
+
+export function doesDescriptorExist(descriptorMap, key) {
+    return Object.prototype.hasOwnProperty.call(descriptorMap, key);
+}
