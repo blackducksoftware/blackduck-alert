@@ -19,7 +19,7 @@ import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateMode
 import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
 import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
 import { doesDescriptorExist } from 'util/descriptorUtilities';
-import { DISTRIBUTION_INFO } from './distribution/DistributionModel';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from './distribution/DistributionModel';
 
 const Navigation = ({ confirmLogoutPressed, descriptorMap }) => {
     const createStaticNavItem = (uriPrefix, itemObject) => (
@@ -61,7 +61,7 @@ const Navigation = ({ confirmLogoutPressed, descriptorMap }) => {
                         Jobs
                     </li>
                     <li>
-                        <NavLink to="/alert/jobs/distributionv2" activeClassName="activeNav">
+                        <NavLink to={DISTRIBUTION_URLS.distributionTableUrl} activeClassName="activeNav">
                             {DISTRIBUTION_INFO.label}
                         </NavLink>
                     </li>
