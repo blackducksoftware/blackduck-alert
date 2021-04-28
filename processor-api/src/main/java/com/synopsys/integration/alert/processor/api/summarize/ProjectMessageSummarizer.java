@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
@@ -36,10 +37,12 @@ public class ProjectMessageSummarizer {
     public static final String OP_PARTICIPLE_UPDATED = "updated";
     public static final String OP_PARTICIPLE_VIOLATED = "violated";
 
-    public SimpleMessage summarize(ProjectMessage digestedProjectMessage) {
-        Pair<String, String> summaryAndDescription = constructSummaryAndDescription(digestedProjectMessage);
-        List<LinkableItem> details = constructMessageDetails(digestedProjectMessage);
-        return SimpleMessage.derived(summaryAndDescription.getLeft(), summaryAndDescription.getRight(), details, digestedProjectMessage);
+    public ProcessedProviderMessage<SimpleMessage> summarize(ProcessedProviderMessage<ProjectMessage> digestedProjectMessage) {
+        ProjectMessage projectMessage = digestedProjectMessage.getProviderMessage();
+        Pair<String, String> summaryAndDescription = constructSummaryAndDescription(projectMessage);
+        List<LinkableItem> details = constructMessageDetails(projectMessage);
+        SimpleMessage derivedSimpleMessage = SimpleMessage.derived(summaryAndDescription.getLeft(), summaryAndDescription.getRight(), details, projectMessage);
+        return new ProcessedProviderMessage<>(digestedProjectMessage.getNotificationIds(), derivedSimpleMessage);
     }
 
     private Pair<String, String> constructSummaryAndDescription(ProjectMessage projectMessage) {

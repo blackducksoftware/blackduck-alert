@@ -7,11 +7,14 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
-public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel {
+public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<ProcessedProviderMessage<T>> {
     private final Set<Long> notificationIds;
     private final T providerMessage;
 
@@ -30,6 +33,26 @@ public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends Aler
 
     public T getProviderMessage() {
         return providerMessage;
+    }
+
+    @Override
+    public List<ProcessedProviderMessage<T>> combine(ProcessedProviderMessage<T> otherModel) {
+        List<T> combinedMessages = this.getProviderMessage().combine(otherModel.getProviderMessage());
+
+        int combinedMessagesSize = combinedMessages.size();
+        if (0 == combinedMessagesSize) {
+            return List.of();
+        } else if (1 == combinedMessagesSize) {
+            Set<Long> combinedNotificationIds = Stream.concat(this.getNotificationIds().stream(), otherModel.getNotificationIds().stream()).collect(Collectors.toSet());
+            ProcessedProviderMessage<T> combinedProcessedMessages = new ProcessedProviderMessage<>(combinedNotificationIds, combinedMessages.get(0));
+            return List.of(combinedProcessedMessages);
+        } else if (2 == combinedMessagesSize) {
+            return List.of(
+                new ProcessedProviderMessage<>(this.getNotificationIds(), combinedMessages.get(0)),
+                new ProcessedProviderMessage<>(otherModel.getNotificationIds(), combinedMessages.get(1))
+            );
+        }
+        throw new IllegalStateException("Combining models had more than two results");
     }
 
 }

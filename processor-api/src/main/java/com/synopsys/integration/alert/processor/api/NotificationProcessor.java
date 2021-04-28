@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.FilteredJobNotificationWrapper;
 import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
@@ -85,7 +85,7 @@ public final class NotificationProcessor {
                                         .collect(Collectors.toSet());
 
         ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
-        ProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
+        ProcessedProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
         providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
     }
