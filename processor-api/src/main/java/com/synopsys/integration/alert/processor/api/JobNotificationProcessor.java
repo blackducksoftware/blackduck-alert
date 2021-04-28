@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.processor.api;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -59,15 +58,11 @@ public class JobNotificationProcessor {
                                                                            .flatMap(List::stream)
                                                                            .map(DetailedNotificationContent::getNotificationContentWrapper)
                                                                            .collect(Collectors.toList());
-        Set<Long> notificationIds = notificationContentWrappers
-                                        .stream()
-                                        .map(NotificationContentWrapper::getNotificationId)
-                                        .collect(Collectors.toSet());
 
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobId, destinationChannelName, notificationIds);
-        ProcessedProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(processingType, notificationContentWrappers);
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobId, destinationChannelName);
+        ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(processingType, notificationContentWrappers);
 
-        providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
+        providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
     }
 
     private void clearCaches() {
