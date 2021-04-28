@@ -34,10 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageModel;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
@@ -55,8 +55,8 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 
 @Component
-public class DefaultAuditAccessor implements AuditAccessor {
-    private final Logger logger = LoggerFactory.getLogger(DefaultAuditAccessor.class);
+public class DefaultRestApiAuditAccessor implements RestApiAuditAccessor {
+    private final Logger logger = LoggerFactory.getLogger(DefaultRestApiAuditAccessor.class);
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final JobAccessor jobAccessor;
@@ -65,7 +65,7 @@ public class DefaultAuditAccessor implements AuditAccessor {
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DefaultAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, JobAccessor jobAccessor,
+    public DefaultRestApiAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository, JobAccessor jobAccessor,
         ConfigurationAccessor configurationAccessor,
         DefaultNotificationAccessor notificationAccessor, ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;

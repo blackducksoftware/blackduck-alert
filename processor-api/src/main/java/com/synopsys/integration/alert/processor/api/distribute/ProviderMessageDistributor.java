@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
@@ -28,11 +28,11 @@ public class ProviderMessageDistributor {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final AuditAccessor auditAccessor;
+    private final ProcessingAuditAccessor auditAccessor;
     private final EventManager eventManager;
 
     @Autowired
-    public ProviderMessageDistributor(AuditAccessor auditAccessor, EventManager eventManager) {
+    public ProviderMessageDistributor(ProcessingAuditAccessor auditAccessor, EventManager eventManager) {
         this.auditAccessor = auditAccessor;
         this.eventManager = eventManager;
     }

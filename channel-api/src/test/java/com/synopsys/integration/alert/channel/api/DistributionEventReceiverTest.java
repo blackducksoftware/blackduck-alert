@@ -8,9 +8,9 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
@@ -27,7 +27,7 @@ public class DistributionEventReceiverTest {
 
     @Test
     public void handleEventSuccessTest() {
-        AuditAccessor auditAccessor = Mockito.mock(AuditAccessor.class);
+        ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.anyCollection());
 
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
@@ -47,7 +47,7 @@ public class DistributionEventReceiverTest {
 
     @Test
     public void handleEventExceptionTest() {
-        AuditAccessor auditAccessor = Mockito.mock(AuditAccessor.class);
+        ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.anyCollection(), Mockito.anyString(), Mockito.any());
 
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
@@ -70,7 +70,7 @@ public class DistributionEventReceiverTest {
 
     @Test
     public void handleEventJobDetailsMissingTest() {
-        AuditAccessor auditAccessor = Mockito.mock(AuditAccessor.class);
+        ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.anyCollection(), Mockito.anyString(), Mockito.any());
 
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.empty();
