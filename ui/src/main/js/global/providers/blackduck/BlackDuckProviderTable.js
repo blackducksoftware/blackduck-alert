@@ -50,14 +50,10 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
 
     useEffect(() => {
         retrieveTableData();
-    }, []);
-
-    useEffect(() => {
-        retrieveTableData();
     }, [showDelete]);
 
     const navigateToConfigPage = (id, copy) => {
-        const url = (copy) ? BLACKDUCK_URLS.blackDuckConfigCopyUrl : BLACKDUCK_URLS.blackDuckConfigCopyUrl;
+        const url = (copy) ? BLACKDUCK_URLS.blackDuckConfigCopyUrl : BLACKDUCK_URLS.blackDuckConfigUrl;
         if (id) {
             history.push(`${url}/${id}`);
             return;
