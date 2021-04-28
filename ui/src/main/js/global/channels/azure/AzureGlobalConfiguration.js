@@ -4,14 +4,22 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
-import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'global/channels/azure/AzureModel';
 import OAuthEndpointButtonField from 'field/OAuthEndpointButtonField';
+import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
+import TextInput from 'field/input/TextInput';
 
 const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_INFO.key));
     const [errors, setErrors] = useState({});
+
+    const retrieveData = async () => {
+        const data = await GlobalRequestHelper.getDataFindFirst(AZURE_INFO.key, csrfToken);
+        if (data) {
+            setFormData(data);
+        }
+    };
 
     return (
         <CommonGlobalConfiguration
@@ -25,6 +33,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                 setFormData={(data) => setFormData(data)}
                 csrfToken={csrfToken}
                 buttonIdPrefix={AZURE_INFO.key}
+                retrieveData={retrieveData}
             >
                 <TextInput
                     id={AZURE_GLOBAL_FIELD_KEYS.organization}

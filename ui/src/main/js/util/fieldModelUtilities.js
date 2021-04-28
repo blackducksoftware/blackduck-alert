@@ -26,6 +26,11 @@ export function getFieldModelValues(fieldModel, key) {
     return [];
 }
 
+export function getFieldModelNumberValue(fieldModel, key) {
+    const fieldValue = getFieldModelSingleValue(fieldModel, key);
+    return parseInt(fieldValue, 10);
+}
+
 export function getFieldModelBooleanValue(fieldModel, key) {
     const fieldValue = getFieldModelSingleValue(fieldModel, key);
     if (fieldValue && fieldValue.toString()

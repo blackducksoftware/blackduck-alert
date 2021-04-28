@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -32,18 +32,18 @@ public final class ProviderMessageExtractionDelegator {
         this.notificationTypeToExtractor = initializeExtractorMap(providerMessageExtractors);
     }
 
-    public ProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper) {
+    public ProcessedProviderMessageHolder extract(NotificationContentWrapper notificationContentWrapper) {
         String notificationTypeString = notificationContentWrapper.extractNotificationType();
         NotificationType filteredNotificationType = EnumUtils.getEnum(NotificationType.class, notificationTypeString);
         if (null == filteredNotificationType) {
             logger.warn("Notification did not match any existing notification type: {}", notificationTypeString);
-            return ProviderMessageHolder.empty();
+            return ProcessedProviderMessageHolder.empty();
         }
 
         ProviderMessageExtractor providerMessageExtractor = notificationTypeToExtractor.get(filteredNotificationType);
         if (null == providerMessageExtractor) {
             logger.warn("No matching extractor for notification type: {}", notificationTypeString);
-            return ProviderMessageHolder.empty();
+            return ProcessedProviderMessageHolder.empty();
         }
 
         return providerMessageExtractor.extract(notificationContentWrapper);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useHistory, useParams } from 'react-router-dom';
 import TextInput from 'field/input/TextInput';
-import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
+import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import PasswordInput from 'field/input/PasswordInput';
 import NumberInput from 'field/input/NumberInput';
@@ -9,11 +9,13 @@ import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm'
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import { AUTHENTICATION_LDAP_FIELD_KEYS } from '../../components/auth/AuthenticationModel';
-import CheckboxInput from '../../../field/input/CheckboxInput';
+import CheckboxInput from 'field/input/CheckboxInput';
+import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
     const { id } = useParams();
+    const history = useHistory();
+    const location = useLocation();
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, BLACKDUCK_INFO.key));
     const [errors, setErrors] = useState({});
 
@@ -22,15 +24,29 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
         setFormData(defaultValue);
     }
 
-    if (!FieldModelUtilities.hasValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)) {
+    if (!FieldModelUtilities.hasKey(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)) {
         const defaultValue = FieldModelUtilities.updateFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled, true);
         setFormData(defaultValue);
+    }
+
+    const retrieveData = async () => {
+        const data = await GlobalRequestHelper.getDataById(id, csrfToken);
+        if (data) {
+            setFormData(data);
+        }
+    };
+
+    if (location.pathname.includes('/copy') && FieldModelUtilities.getFieldModelId(formData)) {
+        const copy = FieldModelUtilities.updateFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey, '');
+        delete copy.id;
+        setFormData(copy);
     }
 
     return (
         <CommonGlobalConfiguration
             label={BLACKDUCK_INFO.label}
             description={BLACKDUCK_INFO.description}
+            lastUpdated={formData.lastUpdated}
         >
             <CommonGlobalConfigurationForm
                 setErrors={(error) => setErrors(error)}
@@ -38,9 +54,11 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                 setFormData={(data) => setFormData(data)}
                 csrfToken={csrfToken}
                 displayDelete={false}
+                afterSuccessfulSave={() => history.push(BLACKDUCK_URLS.blackDuckTableUrl)}
+                retrieveData={retrieveData}
             >
                 <CheckboxInput
-                    key={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
+                    id={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
                     name={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
                     label="Enabled"
                     description="If selected, this provider configuration will be able to pull data into Alert and available to configure with distribution jobs, otherwise, it will not be available for those usages."
@@ -51,7 +69,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.enabled]}
                 />
                 <TextInput
-                    key={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
+                    id={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
                     name={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
                     label="Provider Configuration"
                     description="The name of this provider configuration. Must be unique."
@@ -63,7 +81,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.name]}
                 />
                 <TextInput
-                    key={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
+                    id={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
                     name={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
                     label="URL"
                     description="The URL of the Black Duck server."
@@ -75,7 +93,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.url]}
                 />
                 <PasswordInput
-                    key={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
+                    id={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
                     name={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
                     label="API Token"
                     description="The API token used to retrieve data from the Black Duck server. The API token should be for a super user."
@@ -88,14 +106,14 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                     errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey]}
                 />
                 <NumberInput
-                    key={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
+                    id={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
                     name={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
                     label="Timeout"
                     description="The timeout in seconds for all connections to the Black Duck server."
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
+                    value={FieldModelUtilities.getFieldModelNumberValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
                     errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.timeout]}
                 />

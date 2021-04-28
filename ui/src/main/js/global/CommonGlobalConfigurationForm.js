@@ -7,28 +7,38 @@ import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'field/StatusMessage';
 
 const CommonGlobalConfigurationForm = ({
-    formData, setFormData, testFormData, setTestFormData, csrfToken, setErrors, displaySave, displayTest, displayDelete, children, testFields, buttonIdPrefix
+    formData,
+    setFormData,
+    testFormData,
+    setTestFormData,
+    csrfToken,
+    setErrors,
+    displaySave,
+    displayTest,
+    displayDelete,
+    children,
+    testFields,
+    buttonIdPrefix,
+    afterSuccessfulSave,
+    retrieveData
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
     const [actionMessage, setActionMessage] = useState(null);
     const [errorIsDetailed, setErrorIsDetailed] = useState(false);
 
-    const readRequest = () => ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, formData.descriptorName);
     const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, fieldModel);
     const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, FieldModelUtilities.getFieldModelId(formData));
     const validateRequest = () => ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, formData);
 
+    const fetchData = async () => {
+        const content = await retrieveData();
+        if (content) {
+            setFormData(content);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            const response = await readRequest();
-            const data = await response.json();
-
-            const { fieldModels } = data;
-            const retrievedModel = (fieldModels && fieldModels.length > 0) ? fieldModels[0] : {};
-            setFormData(retrievedModel);
-        };
-
         fetchData();
     }, []);
 
@@ -87,15 +97,10 @@ const CommonGlobalConfigurationForm = ({
                     : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, formData);
 
                 await request();
+                await fetchData();
 
-                const reloadedResponse = await readRequest();
-                const reloadedData = await reloadedResponse.json();
-
-                const { fieldModels } = reloadedData;
-                const retrievedModel = (fieldModels && fieldModels.length > 0) ? fieldModels[0] : {};
-
-                setFormData(retrievedModel);
                 setActionMessage('Save Successful');
+                afterSuccessfulSave();
             }
         }
     };
@@ -152,13 +157,15 @@ CommonGlobalConfigurationForm.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     setFormData: PropTypes.func.isRequired,
     setErrors: PropTypes.func.isRequired,
+    retrieveData: PropTypes.func.isRequired,
     displaySave: PropTypes.bool,
     displayTest: PropTypes.bool,
     displayDelete: PropTypes.bool,
     testFields: PropTypes.node,
     testFormData: PropTypes.object,
     setTestFormData: PropTypes.func,
-    buttonIdPrefix: PropTypes.string
+    buttonIdPrefix: PropTypes.string,
+    afterSuccessfulSave: PropTypes.func
 };
 
 CommonGlobalConfigurationForm.defaultProps = {
@@ -168,7 +175,8 @@ CommonGlobalConfigurationForm.defaultProps = {
     testFields: null,
     testFormData: {},
     setTestFormData: () => null,
-    buttonIdPrefix: 'common-form'
+    buttonIdPrefix: 'common-form',
+    afterSuccessfulSave: () => null
 };
 
 export default CommonGlobalConfigurationForm;

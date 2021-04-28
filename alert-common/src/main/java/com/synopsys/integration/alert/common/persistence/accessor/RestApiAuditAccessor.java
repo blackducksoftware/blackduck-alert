@@ -5,12 +5,11 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.descriptor.accessor;
+package com.synopsys.integration.alert.common.persistence.accessor;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -19,7 +18,7 @@ import com.synopsys.integration.alert.common.persistence.model.AuditEntryPageMod
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 
-public interface AuditAccessor {
+public interface RestApiAuditAccessor {
     Optional<Long> findMatchingAuditId(Long notificationId, UUID commonDistributionId);
 
     Optional<AuditJobStatusModel> findFirstByJobId(UUID jobId);
@@ -28,12 +27,6 @@ public interface AuditAccessor {
 
     AuditEntryPageModel getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
-
-    Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
-
-    void setAuditEntrySuccess(Collection<Long> auditEntryIds);
-
-    void setAuditEntryFailure(Collection<Long> auditEntryIds, String errorMessage, Throwable t);
 
     AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationModel notificationContentEntry);
 

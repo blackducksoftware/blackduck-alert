@@ -19,5 +19,7 @@ export const BLACKDUCK_DISTRIBUTION_FIELD_KEYS = {
 };
 
 export const BLACKDUCK_URLS = {
-    blackDuckConfigUrl: '/alert/providers/blackduck/edit'
+    blackDuckConfigUrl: '/alert/providers/blackduck/edit',
+    blackDuckConfigCopyUrl: '/alert/providers/blackduck/copy',
+    blackDuckTableUrl: '/alert/providers/blackduck'
 };

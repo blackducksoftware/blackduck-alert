@@ -25,6 +25,7 @@ export const DISTRIBUTION_COMMON_FIELD_KEYS = {
 
 export const DISTRIBUTION_URLS = {
     distributionConfigUrl: '/alert/jobs/distributionv2/edit',
+    distributionConfigCopyUrl: '/alert/jobs/distributionv2/copy',
     endpointSelectPath: '/api/function'
 };
 

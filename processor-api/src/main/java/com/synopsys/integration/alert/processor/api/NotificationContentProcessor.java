@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.processor.api.digest.ProjectMessageDigester;
 import com.synopsys.integration.alert.processor.api.extract.ProviderMessageExtractionDelegator;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
@@ -40,31 +41,30 @@ public class NotificationContentProcessor {
         this.projectMessageSummarizer = projectMessageSummarizer;
     }
 
-    public ProviderMessageHolder processNotificationContent(ProcessingType processingType, List<NotificationContentWrapper> jobNotifications) {
-        ProviderMessageHolder extractedProviderMessages = jobNotifications
-                                                              .stream()
-                                                              .map(providerMessageExtractionDelegator::extract)
-                                                              .reduce(ProviderMessageHolder::reduce)
-                                                              .orElse(ProviderMessageHolder.empty());
-
+    public ProcessedProviderMessageHolder processNotificationContent(ProcessingType processingType, List<NotificationContentWrapper> jobNotifications) {
+        ProcessedProviderMessageHolder extractedProviderMessages = jobNotifications
+                                                                       .stream()
+                                                                       .map(providerMessageExtractionDelegator::extract)
+                                                                       .reduce(ProcessedProviderMessageHolder::reduce)
+                                                                       .orElse(ProcessedProviderMessageHolder.empty());
         return processExtractedNotifications(processingType, extractedProviderMessages);
     }
 
-    private ProviderMessageHolder processExtractedNotifications(ProcessingType processingType, ProviderMessageHolder providerMessages) {
+    private ProcessedProviderMessageHolder processExtractedNotifications(ProcessingType processingType, ProcessedProviderMessageHolder providerMessages) {
         if (ProcessingType.DEFAULT.equals(processingType)) {
             return providerMessages;
         }
 
-        List<ProjectMessage> digestedMessages = projectMessageDigester.digest(providerMessages.getProjectMessages());
+        List<ProcessedProviderMessage<ProjectMessage>> digestedMessages = projectMessageDigester.digest(providerMessages.getProcessedProjectMessages());
         if (ProcessingType.SUMMARY.equals(processingType)) {
-            List<SimpleMessage> summarizedMessages = digestedMessages
-                                                         .stream()
-                                                         .map(projectMessageSummarizer::summarize)
-                                                         .collect(Collectors.toList());
-            List<SimpleMessage> allSimpleMessages = ListUtils.union(providerMessages.getSimpleMessages(), summarizedMessages);
-            return new ProviderMessageHolder(List.of(), allSimpleMessages);
+            List<ProcessedProviderMessage<SimpleMessage>> summarizedMessages = digestedMessages
+                                                                                   .stream()
+                                                                                   .map(projectMessageSummarizer::summarize)
+                                                                                   .collect(Collectors.toList());
+            List<ProcessedProviderMessage<SimpleMessage>> allSimpleMessages = ListUtils.union(providerMessages.getProcessedSimpleMessages(), summarizedMessages);
+            return new ProcessedProviderMessageHolder(List.of(), allSimpleMessages);
         }
-        return new ProviderMessageHolder(digestedMessages, providerMessages.getSimpleMessages());
+        return new ProcessedProviderMessageHolder(digestedMessages, providerMessages.getProcessedSimpleMessages());
     }
 
 }
