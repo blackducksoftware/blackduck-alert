@@ -18,9 +18,56 @@ export const DISTRIBUTION_COMMON_FIELD_KEYS = {
     // these were originally included in the channel distribution configuration in old versions of alert but they actually pertain to the provider now.
     filterByProject: 'channel.common.filter.by.project',
     projectNamePattern: 'channel.common.project.name.pattern',
-    selectedProjects: 'channel.common.configured.project'
+    selectedProjects: 'channel.common.configured.project',
+    policyFilter: 'blackduck.policy.notification.filter',
+    vulnerabilitySeverityFilter: 'blackduck.vulnerability.notification.filter'
 };
 
 export const DISTRIBUTION_URLS = {
-    distributionConfigUrl: '/alert/jobs/distributionv2/edit'
+    distributionConfigUrl: '/alert/jobs/distributionv2/edit',
+    endpointSelectPath: '/api/function'
 };
+
+export const DISTRIBUTION_FREQUENCY_OPTIONS = [
+    { label: 'Daily', value: 'DAILY' },
+    { label: 'Real Time', value: 'REAL_TIME' }
+];
+
+export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
+    { label: 'LICENSE_LIMIT', value: 'LICENSE_LIMIT' },
+    { label: 'POLICY_OVERRIDE', value: 'POLICY_OVERRIDE' },
+    { label: 'RULE_VIOLATION', value: 'RULE_VIOLATION' },
+    { label: 'RULE_VIOLATION_CLEARED', value: 'RULE_VIOLATION_CLEARED' },
+    { label: 'VULNERABILITY', value: 'VULNERABILITY' },
+    { label: 'BOM_EDIT', value: 'BOM_EDIT' },
+    { label: 'PROJECT', value: 'PROJECT' },
+    { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' }
+];
+
+const createTableSelectColumn = (header, headerLabel, isKey, sortBy, hidden) => ({
+    header,
+    headerLabel,
+    isKey,
+    sortBy,
+    hidden
+});
+
+export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [
+    createTableSelectColumn('name', 'Project Name', true, true, false),
+    createTableSelectColumn('href', 'Project URL', false, false, true),
+    createTableSelectColumn('description', 'Project Description', false, false, false)
+];
+export const DISTRIBUTION_PROJECT_SELECT_RELATED_FIELDS = [
+    DISTRIBUTION_COMMON_FIELD_KEYS.providerName,
+    DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId
+];
+
+export const DISTRIBUTION_POLICY_SELECT_COLUMNS = [
+    createTableSelectColumn('name', 'Name', true, true, false)
+];
+
+export const DISTRIBUTION_POLICY_SELECT_RELATED_FIELDS = [
+    DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes,
+    DISTRIBUTION_COMMON_FIELD_KEYS.providerName,
+    DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId
+];
