@@ -26,11 +26,11 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -67,7 +67,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final Gson gson;
-    private final AuditAccessor auditAccessor;
+    private final RestApiAuditAccessor auditAccessor;
     private final List<ProviderPhoneHomeHandler> providerHandlers;
     private final ProviderKey providerKey;
 
@@ -83,7 +83,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
         TaskManager taskManager,
         ProxyManager proxyManager,
         Gson gson,
-        AuditAccessor auditAccessor,
+        RestApiAuditAccessor auditAccessor,
         List<ProviderPhoneHomeHandler> providerHandlers,
         ProviderKey providerKey) {
         super(taskScheduler, taskManager);
