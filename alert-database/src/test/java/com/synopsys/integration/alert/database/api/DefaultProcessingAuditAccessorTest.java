@@ -17,14 +17,14 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 public class DefaultProcessingAuditAccessorTest {
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
-        DefaultRestApiAuditAccessor auditUtility = new DefaultRestApiAuditAccessor(null, null, null, null, null, null);
+        DefaultProcessingAuditAccessor auditUtility = new DefaultProcessingAuditAccessor(null, null);
         auditUtility.setAuditEntrySuccess(List.of(1L));
     }
 
     @Test
     public void setAuditEntrySuccessTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        DefaultRestApiAuditAccessor auditUtility = new DefaultRestApiAuditAccessor(auditEntryRepository, null, null, null, null, null);
+        DefaultProcessingAuditAccessor auditUtility = new DefaultProcessingAuditAccessor(auditEntryRepository, null);
 
         AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp().minusSeconds(1), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.SUCCESS.toString(), null, null);
         entity.setId(1L);
@@ -38,14 +38,14 @@ public class DefaultProcessingAuditAccessorTest {
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
-        DefaultRestApiAuditAccessor auditUtility = new DefaultRestApiAuditAccessor(null, null, null, null, null, null);
+        DefaultProcessingAuditAccessor auditUtility = new DefaultProcessingAuditAccessor(null, null);
         auditUtility.setAuditEntryFailure(List.of(1L), null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        DefaultRestApiAuditAccessor auditUtility = new DefaultRestApiAuditAccessor(auditEntryRepository, null, null, null, null, null);
+        DefaultProcessingAuditAccessor auditUtility = new DefaultProcessingAuditAccessor(auditEntryRepository, null);
         AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp().minusSeconds(1), DateUtils.createCurrentDateTimestamp(), AuditEntryStatus.FAILURE.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));

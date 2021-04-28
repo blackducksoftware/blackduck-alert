@@ -10,7 +10,6 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -28,12 +27,6 @@ public interface RestApiAuditAccessor {
 
     AuditEntryPageModel getPageOfAuditEntries(Integer pageNumber, Integer pageSize, String searchTerm, String sortField, String sortOrder, boolean onlyShowSentNotifications,
         Function<AlertNotificationModel, AuditEntryModel> notificationToAuditEntryConverter);
-
-    Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
-
-    void setAuditEntrySuccess(Collection<Long> auditEntryIds);
-
-    void setAuditEntryFailure(Collection<Long> auditEntryIds, String errorMessage, Throwable t);
 
     AuditEntryModel convertToAuditEntryModelFromNotification(AlertNotificationModel notificationContentEntry);
 
