@@ -7,9 +7,8 @@
  */
 package com.synopsys.integration.alert.processor.api.distribute;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +19,7 @@ import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
-import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
-import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 @Component
 public class ProviderMessageDistributor {
@@ -44,31 +38,24 @@ public class ProviderMessageDistributor {
     }
 
     public void distribute(ProcessedNotificationDetails processedNotificationDetails, ProcessedProviderMessageHolder providerMessageHolder) {
-        UUID jobId = processedNotificationDetails.getJobId();
-        Long auditId = auditAccessor.findOrCreatePendingAuditEntryForJob(jobId, processedNotificationDetails.getNotificationIds());
-
-        // FIXME update event handling to accept the new models
-        List<ProjectMessage> projectMessages = extractProviderMessages(providerMessageHolder.getProcessedProjectMessages());
-        List<SimpleMessage> simpleMessages = extractProviderMessages(providerMessageHolder.getProcessedSimpleMessages());
-
-        ProviderMessageHolder tempProviderMessageHolder = new ProviderMessageHolder(projectMessages, simpleMessages);
-
         String channelName = processedNotificationDetails.getChannelName();
         ChannelKey destinationKey = ChannelKeys.getChannelKey(channelName);
-        if (null != destinationKey) {
-            DistributionEvent event = new DistributionEvent(destinationKey, jobId, auditId, tempProviderMessageHolder);
-            logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
-            eventManager.sendEvent(event);
-        } else {
+        if (null == destinationKey) {
             logger.warn("Unable to send {}. No {} with the name {} exists", EVENT_CLASS_NAME, DESTINATION_WRAPPER_CLASS_NAME, channelName);
+            return;
+        }
+
+        for (ProcessedProviderMessageHolder singleMessageHolder : providerMessageHolder.expand()) {
+            distributeIndividually(processedNotificationDetails.getJobId(), destinationKey, singleMessageHolder);
         }
     }
 
-    private <T extends ProviderMessage<T>> List<T> extractProviderMessages(List<ProcessedProviderMessage<T>> processedMessages) {
-        return processedMessages
-                   .stream()
-                   .map(ProcessedProviderMessage::getProviderMessage)
-                   .collect(Collectors.toList());
+    public void distributeIndividually(UUID jobId, ChannelKey destinationKey, ProcessedProviderMessageHolder providerMessageHolder) {
+        Set<Long> notificationIds = providerMessageHolder.extractAllNotificationIds();
+        Long auditId = auditAccessor.findOrCreatePendingAuditEntryForJob(jobId, notificationIds);
+        DistributionEvent event = new DistributionEvent(destinationKey, jobId, auditId, providerMessageHolder.toProviderMessageHolder());
+        logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
+        eventManager.sendEvent(event);
     }
 
 }

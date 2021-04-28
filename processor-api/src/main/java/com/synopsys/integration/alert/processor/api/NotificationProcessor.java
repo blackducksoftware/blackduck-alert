@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.processor.api;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,7 @@ import com.synopsys.integration.alert.processor.api.filter.NotificationContentWr
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 
 @Component
+// TODO rename to WorkflowNotificationProcessor
 public final class NotificationProcessor {
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
@@ -79,12 +79,7 @@ public final class NotificationProcessor {
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
         List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
-        Set<Long> notificationIds = filteredNotifications
-                                        .stream()
-                                        .map(NotificationContentWrapper::getNotificationId)
-                                        .collect(Collectors.toSet());
-
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), notificationIds);
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName());
         ProcessedProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
         providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
