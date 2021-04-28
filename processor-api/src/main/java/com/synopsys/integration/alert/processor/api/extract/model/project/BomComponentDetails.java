@@ -27,7 +27,7 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
         LinkableItem license,
         String usage,
         List<LinkableItem> additionalAttributes,
-        String blackDuckIssuesUrl
+        @Nullable String blackDuckIssuesUrl
     ) {
         super(component, componentVersion, componentVulnerabilities, componentPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
         this.componentConcerns = componentConcerns;
