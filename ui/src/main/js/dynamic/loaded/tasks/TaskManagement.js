@@ -5,6 +5,7 @@ import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import TableDisplay from 'field/TableDisplay';
 import ReadOnlyField from 'field/ReadOnlyField';
 import { fetchTasks } from 'store/actions/tasks';
+import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
 
 class TaskManagement extends Component {
     constructor(props) {
@@ -138,13 +139,13 @@ class TaskManagement extends Component {
 
     render() {
         const {
-            label, description, fetching, errorMessage, autoRefresh
+            fetching, errorMessage, autoRefresh
         } = this.props;
         return (
             <div>
                 <ConfigurationLabel
-                    configurationName={label}
-                    description={description}
+                    configurationName={TASK_MANAGEMENT_INFO.label}
+                    description="This page allows you to view the tasks running internally within Alert."
                 />
                 <TableDisplay
                     id="task-management"
@@ -176,8 +177,6 @@ class TaskManagement extends Component {
 TaskManagement.propTypes = {
     tasks: PropTypes.array.isRequired,
     errorMessage: PropTypes.string,
-    description: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
     getTasks: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool
