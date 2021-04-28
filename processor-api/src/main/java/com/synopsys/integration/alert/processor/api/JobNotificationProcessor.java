@@ -60,9 +60,9 @@ public class JobNotificationProcessor {
                                                                            .collect(Collectors.toList());
 
         ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobId, destinationChannelName);
-        ProcessedProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(processingType, notificationContentWrappers);
+        ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(processingType, notificationContentWrappers);
 
-        providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
+        providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
     }
 
     private void clearCaches() {

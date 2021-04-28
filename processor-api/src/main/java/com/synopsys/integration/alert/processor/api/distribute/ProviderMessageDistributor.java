@@ -37,7 +37,7 @@ public class ProviderMessageDistributor {
         this.eventManager = eventManager;
     }
 
-    public void distribute(ProcessedNotificationDetails processedNotificationDetails, ProcessedProviderMessageHolder providerMessageHolder) {
+    public void distribute(ProcessedNotificationDetails processedNotificationDetails, ProcessedProviderMessageHolder processedMessageHolder) {
         String channelName = processedNotificationDetails.getChannelName();
         ChannelKey destinationKey = ChannelKeys.getChannelKey(channelName);
         if (null == destinationKey) {
@@ -45,15 +45,15 @@ public class ProviderMessageDistributor {
             return;
         }
 
-        for (ProcessedProviderMessageHolder singleMessageHolder : providerMessageHolder.expand()) {
+        for (ProcessedProviderMessageHolder singleMessageHolder : processedMessageHolder.expand()) {
             distributeIndividually(processedNotificationDetails.getJobId(), destinationKey, singleMessageHolder);
         }
     }
 
-    public void distributeIndividually(UUID jobId, ChannelKey destinationKey, ProcessedProviderMessageHolder providerMessageHolder) {
-        Set<Long> notificationIds = providerMessageHolder.extractAllNotificationIds();
+    public void distributeIndividually(UUID jobId, ChannelKey destinationKey, ProcessedProviderMessageHolder processedMessageHolder) {
+        Set<Long> notificationIds = processedMessageHolder.extractAllNotificationIds();
         Long auditId = auditAccessor.findOrCreatePendingAuditEntryForJob(jobId, notificationIds);
-        DistributionEvent event = new DistributionEvent(destinationKey, jobId, auditId, providerMessageHolder.toProviderMessageHolder());
+        DistributionEvent event = new DistributionEvent(destinationKey, jobId, auditId, processedMessageHolder.toProviderMessageHolder());
         logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
         eventManager.sendEvent(event);
     }

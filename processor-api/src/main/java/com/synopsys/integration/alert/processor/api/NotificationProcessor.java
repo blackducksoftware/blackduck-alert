@@ -80,9 +80,9 @@ public final class NotificationProcessor {
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
         List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
         ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName());
-        ProcessedProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
+        ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
-        providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
+        providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
     }
 
     private void clearCaches() {
