@@ -105,13 +105,14 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
 
         List<AuditEntryNotificationView> auditEntryNotificationViews = auditEntryRepository.findByJobIdAndNotificationIds(jobId, notificationIds);
 
-        List<AuditEntryEntity> successfulAuditEntries = new ArrayList<>(auditEntryNotificationViews.size());
+        List<AuditEntryEntity> updatedAuditEntries = new ArrayList<>(auditEntryNotificationViews.size());
         for (AuditEntryNotificationView view : auditEntryNotificationViews) {
             AuditEntryEntity auditEntryToSave = fromView(view);
+            auditEntryToSave.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
             auditFieldSetter.accept(auditEntryToSave);
-            successfulAuditEntries.add(auditEntryToSave);
+            updatedAuditEntries.add(auditEntryToSave);
         }
-        auditEntryRepository.saveAll(successfulAuditEntries);
+        auditEntryRepository.saveAll(updatedAuditEntries);
     }
 
     // OLD:
