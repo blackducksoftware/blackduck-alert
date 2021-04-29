@@ -7,7 +7,9 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
-public class ComponentPolicy {
+import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+
+public class ComponentPolicy extends AlertSerializableModel {
     private final String policyName;
     private final ComponentConcernSeverity severity;
     private final boolean overridden;
