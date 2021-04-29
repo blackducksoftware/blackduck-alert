@@ -229,7 +229,6 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
                 ref={tableRef}
                 options={tableOptions}
                 search
-                // newButton={!readonly}
             >
                 <TableHeaderColumn dataField="id" hidden isKey>Id</TableHeaderColumn>
                 {column('name', 'Name')}
