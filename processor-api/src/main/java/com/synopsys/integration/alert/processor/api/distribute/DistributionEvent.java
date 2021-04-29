@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.processor.api.distribute;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.event.AlertEvent;
@@ -15,14 +16,14 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 
 public class DistributionEvent extends AlertEvent {
     private final UUID jobId;
-    private final Long auditId;
+    private final Set<Long> notificationIds;
 
     private final ProviderMessageHolder providerMessages;
 
-    public DistributionEvent(ChannelKey destination, UUID jobId, Long auditId, ProviderMessageHolder providerMessages) {
+    public DistributionEvent(ChannelKey destination, UUID jobId, Set<Long> notificationIds, ProviderMessageHolder providerMessages) {
         super(destination.getUniversalKey());
         this.jobId = jobId;
-        this.auditId = auditId;
+        this.notificationIds = notificationIds;
         this.providerMessages = providerMessages;
     }
 
@@ -30,8 +31,8 @@ public class DistributionEvent extends AlertEvent {
         return jobId;
     }
 
-    public Long getAuditId() {
-        return auditId;
+    public Set<Long> getNotificationIds() {
+        return notificationIds;
     }
 
     public ProviderMessageHolder getProviderMessages() {

@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.channel.api;
 
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         if (details.isPresent()) {
             try {
                 channel.distributeMessages(details.get(), event.getProviderMessages());
-                auditAccessor.setAuditEntrySuccess(Set.of(event.getAuditId()));
+                auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
             } catch (AlertException e) {
                 handleException(e, event);
             }
@@ -61,13 +60,13 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
 
     protected void handleException(AlertException e, DistributionEvent event) {
         logger.error("An exception occurred while handling the following event: {}", event, e);
-        auditAccessor.setAuditEntryFailure(Set.of(event.getAuditId()), "An exception occurred during message distribution", e);
+        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An exception occurred during message distribution", e);
     }
 
     protected void handleJobDetailsMissing(DistributionEvent event) {
         String failureMessage = "Received a distribution event for a Job that no longer exists";
         logger.warn("{}. Destination: {}", failureMessage, event.getDestination());
-        auditAccessor.setAuditEntryFailure(Set.of(event.getAuditId()), failureMessage, null);
+        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), failureMessage, null);
     }
 
 }

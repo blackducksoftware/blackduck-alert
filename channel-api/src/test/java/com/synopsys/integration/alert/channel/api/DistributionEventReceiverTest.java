@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,7 +29,7 @@ public class DistributionEventReceiverTest {
     @Test
     public void handleEventSuccessTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.anyCollection());
+        Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.any(), Mockito.anySet());
 
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
@@ -37,18 +38,20 @@ public class DistributionEventReceiverTest {
 
         DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, channel, null) {};
 
-        Long auditId = 0L;
+        UUID testJobId = UUID.randomUUID();
+        Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
+
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEvent testEvent = new DistributionEvent(channelKey, null, auditId, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, testNotificationIds, null);
         receiver.handleEvent(testEvent);
 
-        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntrySuccess(Mockito.eq(Set.of(auditId)));
+        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntrySuccess(Mockito.eq(testJobId), Mockito.eq(testNotificationIds));
     }
 
     @Test
     public void handleEventExceptionTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.anyCollection(), Mockito.anyString(), Mockito.any());
+        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
@@ -60,28 +63,32 @@ public class DistributionEventReceiverTest {
 
         DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, channel, null) {};
 
-        Long auditId = 0L;
+        UUID testJobId = UUID.randomUUID();
+        Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
+
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEvent testEvent = new DistributionEvent(channelKey, null, auditId, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, testNotificationIds, null);
         receiver.handleEvent(testEvent);
 
-        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(Set.of(auditId)), Mockito.anyString(), Mockito.any());
+        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any());
     }
 
     @Test
     public void handleEventJobDetailsMissingTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.anyCollection(), Mockito.anyString(), Mockito.any());
+        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.empty();
         DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, null, null) {};
 
-        Long auditId = 0L;
+        UUID testJobId = UUID.randomUUID();
+        Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
+
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEvent testEvent = new DistributionEvent(channelKey, null, auditId, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, testNotificationIds, null);
         receiver.handleEvent(testEvent);
 
-        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(Set.of(auditId)), Mockito.anyString(), Mockito.any());
+        Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any());
     }
 
 }

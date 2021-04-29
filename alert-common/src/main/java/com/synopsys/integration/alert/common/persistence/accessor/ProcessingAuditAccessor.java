@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.common.persistence.accessor;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,11 +18,5 @@ public interface ProcessingAuditAccessor {
     void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds);
 
     void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception);
-
-    Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
-
-    void setAuditEntrySuccess(Collection<Long> auditEntryIds);
-
-    void setAuditEntryFailure(Collection<Long> auditEntryIds, String errorMessage, Throwable t);
 
 }
