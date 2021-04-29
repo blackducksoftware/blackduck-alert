@@ -35,6 +35,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                 csrfToken={csrfToken}
                 buttonIdPrefix={JIRA_CLOUD_INFO.key}
                 retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <TextInput
                     id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}

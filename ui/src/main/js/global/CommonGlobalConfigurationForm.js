@@ -20,7 +20,8 @@ const CommonGlobalConfigurationForm = ({
     testFields,
     buttonIdPrefix,
     afterSuccessfulSave,
-    retrieveData
+    retrieveData,
+    readonly
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -128,9 +129,9 @@ const CommonGlobalConfigurationForm = ({
                     cancelId={`${buttonIdPrefix}-cancel`}
                     deleteId={`${buttonIdPrefix}-delete`}
                     testId={`${buttonIdPrefix}-test`}
-                    includeSave={displaySave}
-                    includeTest={displayTest}
-                    includeDelete={displayDelete}
+                    includeSave={!readonly && displaySave}
+                    includeTest={!readonly && displayTest}
+                    includeDelete={!readonly && displayDelete}
                     type="submit"
                     onTestClick={handleTestClick}
                     onDeleteClick={performDeleteRequest}
@@ -165,7 +166,8 @@ CommonGlobalConfigurationForm.propTypes = {
     testFormData: PropTypes.object,
     setTestFormData: PropTypes.func,
     buttonIdPrefix: PropTypes.string,
-    afterSuccessfulSave: PropTypes.func
+    afterSuccessfulSave: PropTypes.func,
+    readonly: PropTypes.bool
 };
 
 CommonGlobalConfigurationForm.defaultProps = {
@@ -176,7 +178,8 @@ CommonGlobalConfigurationForm.defaultProps = {
     testFormData: {},
     setTestFormData: () => null,
     buttonIdPrefix: 'common-form',
-    afterSuccessfulSave: () => null
+    afterSuccessfulSave: () => null,
+    readonly: false
 };
 
 export default CommonGlobalConfigurationForm;

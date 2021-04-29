@@ -34,6 +34,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                 csrfToken={csrfToken}
                 buttonIdPrefix={AZURE_INFO.key}
                 retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <TextInput
                     id={AZURE_GLOBAL_FIELD_KEYS.organization}
