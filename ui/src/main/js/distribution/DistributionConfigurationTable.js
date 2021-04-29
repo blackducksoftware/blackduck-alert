@@ -13,7 +13,7 @@ import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import ConfirmModal from 'component/common/ConfirmModal';
 import AutoRefresh from 'component/common/AutoRefresh';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
-import * as DistributionRequestUtility from 'distribution/DistributionRequestUtility';
+import * as DistributionRequestUtility from 'distribution/DistributionTableRequestUtility';
 
 const DistributionConfigurationTable = ({
     csrfToken, readonly, showRefreshButton, descriptors

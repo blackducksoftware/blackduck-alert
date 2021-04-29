@@ -59,17 +59,7 @@ export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [
     createTableSelectColumn('href', 'Project URL', false, false, true),
     createTableSelectColumn('description', 'Project Description', false, false, false)
 ];
-export const DISTRIBUTION_PROJECT_SELECT_RELATED_FIELDS = [
-    DISTRIBUTION_COMMON_FIELD_KEYS.providerName,
-    DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId
-];
 
 export const DISTRIBUTION_POLICY_SELECT_COLUMNS = [
     createTableSelectColumn('name', 'Name', true, true, false)
-];
-
-export const DISTRIBUTION_POLICY_SELECT_RELATED_FIELDS = [
-    DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes,
-    DISTRIBUTION_COMMON_FIELD_KEYS.providerName,
-    DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId
 ];
