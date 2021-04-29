@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface ProcessingAuditAccessor {
+    void createOrUpdatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
+
     Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
 
     void setAuditEntrySuccess(Collection<Long> auditEntryIds);

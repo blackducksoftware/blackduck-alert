@@ -9,10 +9,13 @@ package com.synopsys.integration.alert.database.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.SetUtils;
@@ -27,6 +30,7 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
+import com.synopsys.integration.alert.database.audit.AuditEntryNotificationView;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -42,6 +46,36 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
     public DefaultProcessingAuditAccessor(AuditEntryRepository auditEntryRepository, AuditNotificationRepository auditNotificationRepository) {
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
+    }
+
+    @Override
+    @Transactional
+    public void createOrUpdatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds) {
+        if (notificationIds.isEmpty()) {
+            return;
+        }
+
+        Map<Long, AuditEntryNotificationView> notificationIdToView = auditEntryRepository.findByJobIdAndNotificationIds(jobId, notificationIds)
+                                                                         .stream()
+                                                                         .collect(Collectors.toMap(AuditEntryNotificationView::getNotificationId, Function.identity()));
+
+        Set<AuditNotificationRelation> relationsToUpdate = new HashSet<>();
+        for (Long notificationId : notificationIds) {
+            AuditEntryEntity auditEntryToSave;
+            AuditEntryNotificationView view = notificationIdToView.get(notificationId);
+            if (null != view) {
+                auditEntryToSave = new AuditEntryEntity(view.getJobId(), view.getTimeCreated(), view.getTimeLastSent(), view.getStatus(), view.getErrorMessage(), view.getErrorStackTrace());
+                auditEntryToSave.setId(view.getId());
+            } else {
+                auditEntryToSave = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, AuditEntryStatus.PENDING.name(), null, null);
+            }
+
+            AuditEntryEntity savedAuditEntry = auditEntryRepository.save(auditEntryToSave);
+
+            AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntry.getId(), notificationId);
+            relationsToUpdate.add(auditNotificationRelation);
+        }
+        auditNotificationRepository.saveAll(relationsToUpdate);
     }
 
     @Override
