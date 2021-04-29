@@ -20,8 +20,6 @@ public interface ProcessingAuditAccessor {
 
     void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception);
 
-    Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
-
     void setAuditEntrySuccess(Collection<Long> auditEntryIds);
 
     void setAuditEntryFailure(Collection<Long> auditEntryIds, String errorMessage, Throwable t);

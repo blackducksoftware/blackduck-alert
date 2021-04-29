@@ -45,12 +45,6 @@ public class DefaultProcessingAuditAccessorTest {
     // OLD:
 
     @Test
-    public void setAuditEntrySuccessCatchExceptionTest() {
-        DefaultProcessingAuditAccessor auditUtility = new DefaultProcessingAuditAccessor(null, null);
-        auditUtility.setAuditEntrySuccess(List.of(1L));
-    }
-
-    @Test
     public void setAuditEntrySuccessTest() {
         AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         DefaultProcessingAuditAccessor auditUtility = new DefaultProcessingAuditAccessor(auditEntryRepository, null);
@@ -63,12 +57,6 @@ public class DefaultProcessingAuditAccessorTest {
         auditUtility.setAuditEntrySuccess(List.of());
         auditUtility.setAuditEntrySuccess(List.of(entity.getId()));
         assertEquals(AuditEntryStatus.SUCCESS.toString(), entity.getStatus());
-    }
-
-    @Test
-    public void setAuditEntryFailureCatchExceptionTest() {
-        DefaultProcessingAuditAccessor auditUtility = new DefaultProcessingAuditAccessor(null, null);
-        auditUtility.setAuditEntryFailure(List.of(1L), null, null);
     }
 
     @Test

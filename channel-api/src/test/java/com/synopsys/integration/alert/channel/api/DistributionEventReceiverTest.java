@@ -29,7 +29,7 @@ public class DistributionEventReceiverTest {
     @Test
     public void handleEventSuccessTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.anyCollection());
+        Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.any(), Mockito.anySet());
 
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
