@@ -57,6 +57,7 @@ const CommonGlobalConfigurationForm = ({
         if (response.ok) {
             const json = await response.json();
             if (json.hasErrors) {
+                setErrorIsDetailed(json.detailed);
                 setErrorMessage(json.message);
                 setErrors(json.errors);
             } else {
