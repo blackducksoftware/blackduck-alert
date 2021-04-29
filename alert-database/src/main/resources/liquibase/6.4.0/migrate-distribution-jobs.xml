@@ -118,7 +118,13 @@
 
     <changeSet author="gavink" id="join-blackduck-job-notification-types">
         <preConditions onFail="MARK_RAN">
-            <rowCount schemaName="alert" tableName="blackduck_job_notification_types" expectedRows="0"/>
+            <and>
+                <rowCount schemaName="alert" tableName="blackduck_job_notification_types" expectedRows="0"/>
+                <not>
+                    <changeSetExecuted author="gavink" id="remove-config-groups-table" changeLogFile="remove-config-groups-table.xml"/>
+                </not>
+                <tableExists schemaName="alert" tableName="config_groups"/>
+            </and>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_notification_types (job_id, notification_type)
@@ -132,7 +138,13 @@
 
     <changeSet author="gavink" id="join-blackduck-job-policy-filters">
         <preConditions onFail="MARK_RAN">
+            <and>
                 <rowCount schemaName="alert" tableName="blackduck_job_policy_filters" expectedRows="0"/>
+                <not>
+                    <changeSetExecuted author="gavink" id="remove-config-groups-table" changeLogFile="remove-config-groups-table.xml"/>
+                </not>
+                <tableExists schemaName="alert" tableName="config_groups"/>
+            </and>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_policy_filters (job_id, policy_name)
@@ -146,7 +158,13 @@
 
     <changeSet author="gavink" id="join-blackduck-job-vulnerability-severity-filters">
         <preConditions onFail="MARK_RAN">
+            <and>
                 <rowCount schemaName="alert" tableName="blackduck_job_vulnerability_severity_filters" expectedRows="0"/>
+                <not>
+                    <changeSetExecuted author="gavink" id="remove-config-groups-table" changeLogFile="remove-config-groups-table.xml"/>
+                </not>
+                <tableExists schemaName="alert" tableName="config_groups"/>
+            </and>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_vulnerability_severity_filters (job_id, severity_name)
@@ -160,7 +178,13 @@
 
     <changeSet author="gavink" id="join-blackduck-job-project-filters">
         <preConditions onFail="MARK_RAN">
-            <rowCount schemaName="alert" tableName="blackduck_job_projects" expectedRows="0"/>
+            <and>
+                <rowCount schemaName="alert" tableName="blackduck_job_projects" expectedRows="0"/>
+                <not>
+                    <changeSetExecuted author="gavink" id="remove-config-groups-table" changeLogFile="remove-config-groups-table.xml"/>
+                </not>
+                <tableExists schemaName="alert" tableName="config_groups"/>
+            </and>
         </preConditions>
         <sql dbms="postgresql" stripComments="true">
             INSERT INTO alert.blackduck_job_projects (job_id, project_name)
