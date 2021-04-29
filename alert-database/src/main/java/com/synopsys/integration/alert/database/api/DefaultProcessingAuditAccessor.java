@@ -15,11 +15,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +66,7 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
             AuditEntryEntity auditEntryToSave;
             AuditEntryNotificationView view = notificationIdToView.get(notificationId);
             if (null != view) {
-                auditEntryToSave = new AuditEntryEntity(view.getJobId(), view.getTimeCreated(), view.getTimeLastSent(), view.getStatus(), view.getErrorMessage(), view.getErrorStackTrace());
-                auditEntryToSave.setId(view.getId());
+                auditEntryToSave = fromView(view);
             } else {
                 auditEntryToSave = new AuditEntryEntity(jobId, DateUtils.createCurrentDateTimestamp(), null, AuditEntryStatus.PENDING.name(), null, null);
             }
@@ -77,6 +78,43 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
         }
         auditNotificationRepository.saveAll(relationsToUpdate);
     }
+
+    @Override
+    @Transactional
+    public void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds) {
+        updateAuditEntries(jobId, notificationIds, auditEntry -> auditEntry.setStatus(AuditEntryStatus.SUCCESS.name()));
+    }
+
+    @Override
+    @Transactional
+    public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception) {
+        updateAuditEntries(jobId, notificationIds, auditEntry -> {
+            auditEntry.setStatus(AuditEntryStatus.FAILURE.name());
+            auditEntry.setErrorMessage(errorMessage);
+            if (null != exception) {
+                String stackTraceString = createStackTraceString(exception);
+                auditEntry.setErrorStackTrace(stackTraceString);
+            }
+        });
+    }
+
+    private void updateAuditEntries(UUID jobId, Set<Long> notificationIds, Consumer<AuditEntryEntity> auditFieldSetter) {
+        if (notificationIds.isEmpty()) {
+            return;
+        }
+
+        List<AuditEntryNotificationView> auditEntryNotificationViews = auditEntryRepository.findByJobIdAndNotificationIds(jobId, notificationIds);
+
+        List<AuditEntryEntity> successfulAuditEntries = new ArrayList<>(auditEntryNotificationViews.size());
+        for (AuditEntryNotificationView view : auditEntryNotificationViews) {
+            AuditEntryEntity auditEntryToSave = fromView(view);
+            auditFieldSetter.accept(auditEntryToSave);
+            successfulAuditEntries.add(auditEntryToSave);
+        }
+        auditEntryRepository.saveAll(successfulAuditEntries);
+    }
+
+    // OLD:
 
     @Override
     @Transactional
@@ -146,15 +184,7 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
                 auditEntryEntity.setId(auditEntryId);
                 auditEntryEntity.setStatus(AuditEntryStatus.FAILURE.toString());
                 auditEntryEntity.setErrorMessage(errorMessage);
-                String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
-                String exceptionStackTrace = "";
-                for (String line : rootCause) {
-                    if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
-                        exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
-                    } else {
-                        break;
-                    }
-                }
+                String exceptionStackTrace = createStackTraceString(t);
                 auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
                 auditEntryEntity.setTimeLastSent(DateUtils.createCurrentDateTimestamp());
                 auditEntryRepository.save(auditEntryEntity);
@@ -162,6 +192,25 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
                 logger.error(e.getMessage(), e);
             }
         }
+    }
+
+    private AuditEntryEntity fromView(AuditEntryNotificationView view) {
+        AuditEntryEntity auditEntry = new AuditEntryEntity(view.getJobId(), view.getTimeCreated(), view.getTimeLastSent(), view.getStatus(), view.getErrorMessage(), view.getErrorStackTrace());
+        auditEntry.setId(view.getId());
+        return auditEntry;
+    }
+
+    private String createStackTraceString(Throwable exception) {
+        String[] rootCause = ExceptionUtils.getRootCauseStackTrace(exception);
+        String exceptionStackTrace = "";
+        for (String line : rootCause) {
+            if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
+                exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
+            } else {
+                break;
+            }
+        }
+        return exceptionStackTrace;
     }
 
 }

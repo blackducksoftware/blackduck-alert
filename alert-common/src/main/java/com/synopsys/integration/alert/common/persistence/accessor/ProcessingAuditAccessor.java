@@ -11,8 +11,14 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
 public interface ProcessingAuditAccessor {
     void createOrUpdatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
+
+    void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds);
+
+    void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception);
 
     Long findOrCreatePendingAuditEntryForJob(UUID jobId, Set<Long> notificationIds);
 
