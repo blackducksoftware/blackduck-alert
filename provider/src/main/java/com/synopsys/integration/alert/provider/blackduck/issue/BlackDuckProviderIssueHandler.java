@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.gson.Gson;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionIssuesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
@@ -36,14 +38,11 @@ public class BlackDuckProviderIssueHandler {
         this.issueService = issueService;
     }
 
-    public void createOrUpdateBlackDuckIssue(BlackDuckProviderIssueModel issueModel, String bomComponentVersionIssuesUrl, String projectVersionUrl) throws IntegrationException {
+    public void createOrUpdateBlackDuckIssue(BlackDuckProviderIssueModel issueModel, @Nullable String bomComponentVersionIssuesUrl, String projectVersionUrl) throws IntegrationException {
         Optional<ProjectVersionIssuesView> optionalExistingIssue = retrieveExistingIssue(projectVersionUrl, issueModel.getKey());
 
         Date currentDate = Date.from(Instant.now());
         IssueRequest issueRequestModel = createIssueRequestModel(issueModel);
-
-        HttpMethod httpMethod = HttpMethod.POST;
-        HttpUrl requestUri = new HttpUrl(bomComponentVersionIssuesUrl);
 
         if (optionalExistingIssue.isPresent()) {
             ProjectVersionIssuesView existingIssue = optionalExistingIssue.get();
@@ -52,13 +51,15 @@ public class BlackDuckProviderIssueHandler {
             issueRequestModel.setIssueUpdatedAt(currentDate);
 
             // The request uri should point at the specific issue for PUT requests
-            httpMethod = HttpMethod.PUT;
-            requestUri = existingIssue.getHref();
-        } else {
+            HttpUrl requestUri = existingIssue.getHref();
+            performRequest(requestUri, HttpMethod.PUT, issueRequestModel);
+        } else if (null != bomComponentVersionIssuesUrl) {
             issueRequestModel.setIssueCreatedAt(currentDate);
             issueRequestModel.setIssueUpdatedAt(null);
+
+            HttpUrl requestUri = new HttpUrl(bomComponentVersionIssuesUrl);
+            performRequest(requestUri, HttpMethod.POST, issueRequestModel);
         }
-        performRequest(requestUri, httpMethod, issueRequestModel);
     }
 
     private Optional<ProjectVersionIssuesView> retrieveExistingIssue(String projectVersionUrl, String blackDuckIssueId) throws IntegrationException {

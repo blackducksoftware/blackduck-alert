@@ -72,7 +72,7 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
             return DONE_STATUS_CATEGORY_KEY.equals(statusCategoryKey);
         } else if (IssueOperation.RESOLVE.equals(transitionType)) {
             // Should resolve?
-            return TODO_STATUS_CATEGORY_KEY.equals(statusCategoryKey);
+            return !DONE_STATUS_CATEGORY_KEY.equals(statusCategoryKey);
         }
         return false;
     }
