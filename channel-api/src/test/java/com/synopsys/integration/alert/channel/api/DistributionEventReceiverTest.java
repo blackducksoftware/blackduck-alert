@@ -51,7 +51,7 @@ public class DistributionEventReceiverTest {
     @Test
     public void handleEventExceptionTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.anyCollection(), Mockito.anyString(), Mockito.any());
+        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
         DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
@@ -76,7 +76,7 @@ public class DistributionEventReceiverTest {
     @Test
     public void handleEventJobDetailsMissingTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
-        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.anyCollection(), Mockito.anyString(), Mockito.any());
+        Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.empty();
         DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, null, null) {};
