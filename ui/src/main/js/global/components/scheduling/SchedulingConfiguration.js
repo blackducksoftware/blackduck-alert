@@ -72,6 +72,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                 displayDelete={false}
                 buttonIdPrefix={SCHEDULING_INFO.key}
                 retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
