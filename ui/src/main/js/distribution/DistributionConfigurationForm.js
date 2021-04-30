@@ -6,7 +6,6 @@ import SelectInput from 'field/input/DynamicSelectInput';
 import {
     DISTRIBUTION_COMMON_FIELD_KEYS,
     DISTRIBUTION_FREQUENCY_OPTIONS,
-    DISTRIBUTION_INFO,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
     DISTRIBUTION_POLICY_SELECT_COLUMNS,
     DISTRIBUTION_PROJECT_SELECT_COLUMNS,
@@ -21,6 +20,8 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'distribution/DistributionRequestUtility';
+import { AZURE_INFO } from '../global/channels/azure/AzureModel';
+import { BLACKDUCK_INFO } from '../global/providers/blackduck/BlackDuckModel';
 
 const DistributionConfigurationForm = ({
     csrfToken, readonly, descriptors, lastUpdated
@@ -28,32 +29,93 @@ const DistributionConfigurationForm = ({
     const { id } = useParams();
     const history = useHistory();
     const location = useLocation();
-    // TODO create the correct empty model
-    const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, DISTRIBUTION_INFO));
+    const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
-    const [title, setTitle] = useState('New Distribution Configuration');
-    const [channelModel, setChannelModel] = useState({});
-    const [providerModel, setProviderModel] = useState({});
-
+    const channelFieldKeys = {};
+    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.enabled] = {};
+    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.name] = {};
+    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.channelName] = {};
+    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.processingType] = {};
+    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.frequency] = {};
+    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.providerName] = {};
+    const providerFieldKeys = {};
+    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId] = {};
+    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.providerName] = {};
+    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.processingType] = {};
+    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes] = {};
+    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject] = {};
+    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects] = {};
+    const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
+    const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel(providerFieldKeys, CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
+    const [providerHasChannelName, setProviderHasChannelName] = useState(false);
+    const [hasProvider, setHasProvider] = useState(false);
+    const [hasNotificationTypes, setHasNotificationTypes] = useState(false);
+    const [filterByProject, setFilterByProject] = useState(false);
     const retrieveData = async () => {
         const data = await DistributionRequestUtility.getDataById(id, csrfToken);
-        if (data) {
-            setFormData(data);
+        return data;
+    };
+
+    const updateJobData = () => {
+        const providerConfigToSave = JSON.parse(JSON.stringify(providerModel));
+        let configuredProviderProjects = [];
+
+        const fieldConfiguredProjects = providerModel.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
+        if (fieldConfiguredProjects && fieldConfiguredProjects.values && fieldConfiguredProjects.values.length > 0) {
+            configuredProviderProjects = fieldConfiguredProjects.values.map((selectedValue) => {
+                let valueObject = selectedValue;
+                if (typeof selectedValue === 'string') {
+                    valueObject = JSON.parse(selectedValue);
+                }
+
+                return {
+                    name: valueObject.name,
+                    href: valueObject.href
+                };
+            });
+
+            // Related fields need this to have a value in order to validate successfully
+            providerConfigToSave.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects].values = configuredProviderProjects;
         }
+
+        return {
+            jobId: formData.jobId,
+            fieldModels: [
+                channelModel,
+                providerConfigToSave
+            ],
+            configuredProviderProjects
+        };
     };
 
     useEffect(() => {
         const channelFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) : {};
+        const channelNameDefined = FieldModelUtilities.hasValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        const providerFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => providerName === model.descriptorName) : {};
+        let providerFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => providerName === model.descriptorName) : {};
+        // add the required related fields to the provider field model for the endpoint select fields.
+        providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName));
+        providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName));
+        providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType, FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType));
         setChannelModel(channelFieldModel);
         setProviderModel(providerFieldModel);
+        setProviderHasChannelName(channelNameDefined);
     }, [formData]);
+
+    useEffect(() => {
+        setHasProvider(FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName));
+        setFilterByProject(FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject));
+        setHasNotificationTypes(FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes));
+    }, [providerModel]);
 
     if (location.pathname.includes('/copy') && FieldModelUtilities.getFieldModelId(formData)) {
         delete formData.id;
         setFormData(formData);
     }
+
+    const onFilterByProjecChange = (event) => {
+        FieldModelUtilities.handleChange(providerModel, setProviderModel)(event);
+    };
 
     const channelFields = (
         <div>
@@ -63,26 +125,26 @@ const DistributionConfigurationForm = ({
 
     return (
         <CommonGlobalConfiguration
-            label={title}
+            label="Distribution Configuration"
             description="Configure the Distribution Job for Alert to send updates."
             lastUpdated={lastUpdated}
         >
             <CommonDistributionConfigurationForm
                 setErrors={(error) => setErrors(error)}
                 formData={formData}
-                setFormData={(data) => setFormData(data)}
+                setFormData={setFormData}
                 csrfToken={csrfToken}
                 displayDelete={false}
                 afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
                 retrieveData={retrieveData}
+                createDataToSend={updateJobData}
             >
                 <CheckboxInput
-                    key={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
                     label="Enabled"
                     description="If selected, this job will be used for processing provider notifications, otherwise, this job will not be used."
                     readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(channelModel, setProviderModel)}
+                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
@@ -93,16 +155,16 @@ const DistributionConfigurationForm = ({
                     fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
                     label="Channel Type"
                     description="Select the channel. Notifications generated through Alert will be sent through this channel."
+                    clearable={false}
                     readOnly={readonly}
                     required
-                    requiredRelatedFields={[]}
+                    currentConfig={channelModel}
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
                 />
                 <TextInput
-                    key={DISTRIBUTION_COMMON_FIELD_KEYS.name}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.name}
                     label="Name"
                     description="The name of the distribution job. Must be unique"
@@ -114,14 +176,14 @@ const DistributionConfigurationForm = ({
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.name]}
                 />
                 <SelectInput
-                    key={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
                     label="Frequency"
                     description="Select how frequently this job should check for notifications to send."
                     options={DISTRIBUTION_FREQUENCY_OPTIONS}
                     readOnly={readonly}
                     required
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
+                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.frequency]}
                 />
@@ -131,10 +193,12 @@ const DistributionConfigurationForm = ({
                     fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
                     label="Provider Type"
                     description="Select the provider. Only notifications for that provider will be processed in this distribution job."
+                    clearable={false}
                     readOnly={readonly}
                     required
+                    currentConfig={channelModel}
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
+                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.providerName]}
                 />
@@ -147,49 +211,56 @@ const DistributionConfigurationForm = ({
                     clearable={false}
                     readOnly={readonly}
                     required
+                    currentConfig={providerModel}
                     onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
+                    value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                 />
-                <SelectInput
-                    key={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
-                    label="Notification Types"
-                    description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
-                    options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
-                    readOnly={readonly}
-                    required
-                    onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
-                />
-                <EndpointSelectField
-                    csrfToken={csrfToken}
-                    endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                    fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
-                    label="Processing"
-                    description="Select the way messages will be processed: <TODO create the dynamic description>"
-                    readOnly={readonly}
-                    required
-                    requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
-                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
-                />
-                <CheckboxInput
-                    name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
-                    label="Filter By Project"
-                    description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
-                    readOnly={readonly}
-                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
-                    errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
-                />
-
-                {FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject) && (
+                {hasProvider && providerHasChannelName && (
+                    <div>
+                        <SelectInput
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
+                            label="Notification Types"
+                            description="Select one or more of the notification types. Only these notification types will be included for this distribution job."
+                            options={DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS}
+                            multiSelect
+                            readOnly={readonly}
+                            removeSelected
+                            required
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
+                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
+                        />
+                        <EndpointSelectField
+                            csrfToken={csrfToken}
+                            endpoint={DISTRIBUTION_URLS.endpointSelectPath}
+                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
+                            label="Processing"
+                            description="Select the way messages will be processed: <TODO create the dynamic description>"
+                            readOnly={readonly}
+                            required
+                            requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
+                            currentConfig={providerModel}
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
+                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
+                        />
+                        <CheckboxInput
+                            name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
+                            label="Filter By Project"
+                            description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
+                            readOnly={readonly}
+                            onChange={onFilterByProjecChange}
+                            isChecked={filterByProject}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
+                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
+                        />
+                    </div>
+                )}
+                {filterByProject && (
                     <div>
                         <TextInput
                             key={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
@@ -206,9 +277,8 @@ const DistributionConfigurationForm = ({
                         <TableSelectInput
                             csrfToken={csrfToken}
                             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.selectedProjects}
+                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
                             columns={DISTRIBUTION_PROJECT_SELECT_COLUMNS}
-                            currentConfig={null}
                             label="Projects"
                             description="Select a project or projects that will be used to retrieve notifications from your provider."
                             requiredRelatedFields={[
@@ -219,49 +289,55 @@ const DistributionConfigurationForm = ({
                             paged
                             searchable
                             useRowAsValue
-                            onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                            value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.selectedProjects)}
-                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.selectedProjects)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.selectedProjects]}
+                            currentConfig={providerModel}
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
+                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
                         />
                     </div>
                 )}
                 {channelFields}
-                <CollapsiblePane
-                    id="distribution-notification-filtering"
-                    title="Black Duck Notification Filtering"
-                    expanded={false}
-                >
-                    <TableSelectInput
-                        csrfToken={csrfToken}
-                        endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                        fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
-                        columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
-                        currentConfig={null}
-                        label="Policy Notification Type Filter"
-                        description="List of Policies you can choose from to further filter which notifications you want sent via this job (You must have a policy notification selected for this filter to apply)."
-                        requiredRelatedFields={[]}
-                        readOnly={readonly}
-                        paged
-                        onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                        value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
-                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
-                        errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
-                    />
-                    <EndpointSelectField
-                        csrfToken={csrfToken}
-                        endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                        fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
-                        label="Vulnerability Notification Type Filter"
-                        description="List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply)."
-                        readOnly={readonly}
-                        requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
-                        onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                        value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
-                        errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
-                        errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
-                    />
-                </CollapsiblePane>
+                {hasNotificationTypes && (
+                    <CollapsiblePane
+                        id="distribution-notification-filtering"
+                        title="Black Duck Notification Filtering"
+                        expanded={false}
+                    >
+                        <TableSelectInput
+                            csrfToken={csrfToken}
+                            endpoint={DISTRIBUTION_URLS.endpointSelectPath}
+                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
+                            columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
+                            label="Policy Notification Type Filter"
+                            description="List of Policies you can choose from to further filter which notifications you want sent via this job (You must have a policy notification selected for this filter to apply)."
+                            requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
+                            readOnly={readonly}
+                            paged
+                            searchable
+                            currentConfig={providerModel}
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
+                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
+                        />
+                        <EndpointSelectField
+                            csrfToken={csrfToken}
+                            endpoint={DISTRIBUTION_URLS.endpointSelectPath}
+                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
+                            label="Vulnerability Notification Type Filter"
+                            description="List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply)."
+                            multiSelect
+                            readOnly={readonly}
+                            requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
+                            currentConfig={providerModel}
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                            value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
+                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
+                        />
+                    </CollapsiblePane>
+                )}
             </CommonDistributionConfigurationForm>
         </CommonGlobalConfiguration>
     );

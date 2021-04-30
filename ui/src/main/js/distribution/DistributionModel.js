@@ -18,7 +18,7 @@ export const DISTRIBUTION_COMMON_FIELD_KEYS = {
     // these were originally included in the channel distribution configuration in old versions of alert but they actually pertain to the provider now.
     filterByProject: 'channel.common.filter.by.project',
     projectNamePattern: 'channel.common.project.name.pattern',
-    selectedProjects: 'channel.common.configured.project',
+    configuredProjects: 'channel.common.configured.project',
     policyFilter: 'blackduck.policy.notification.filter',
     vulnerabilitySeverityFilter: 'blackduck.vulnerability.notification.filter'
 };

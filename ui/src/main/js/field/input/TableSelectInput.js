@@ -81,11 +81,11 @@ const TableSelectInput = (props) => {
                 valueToUse = value.map((option) => JSON.parse(option));
             }
         }
-
-        selectedData.push(...valueToUse);
+        const loadedSelectedData = [];
+        loadedSelectedData.push(...valueToUse);
 
         const keyColumnHeader = columns.find((column) => column.isKey).header;
-        const convertedValues = selectedData.map((selected) => {
+        const convertedValues = loadedSelectedData.map((selected) => {
             const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
             const isMissing = selected.missing !== undefined ? selected.missing : false;
             return {
@@ -95,6 +95,7 @@ const TableSelectInput = (props) => {
             };
         });
         setDisplayedData(convertedValues);
+        setSelectedData(loadedSelectedData);
     };
 
     useEffect(() => {

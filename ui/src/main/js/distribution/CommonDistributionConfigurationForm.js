@@ -20,7 +20,8 @@ const CommonDistributionConfigurationForm = ({
     testFields,
     buttonIdPrefix,
     afterSuccessfulSave,
-    retrieveData
+    retrieveData,
+    createDataToSend
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -92,9 +93,10 @@ const CommonDistributionConfigurationForm = ({
                 setErrors(validateJson.errors);
             } else {
                 const id = formData.jobId;
+                const dataToSend = createDataToSend ? createDataToSend() : formData;
                 const request = (id)
-                    ? () => ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id, formData)
-                    : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, formData);
+                    ? () => ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id, dataToSend)
+                    : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, dataToSend);
 
                 await request();
                 await fetchData();
@@ -128,12 +130,14 @@ const CommonDistributionConfigurationForm = ({
                     cancelId={`${buttonIdPrefix}-cancel`}
                     deleteId={`${buttonIdPrefix}-delete`}
                     testId={`${buttonIdPrefix}-test`}
+                    includeCancel
                     includeSave={displaySave}
                     includeTest={displayTest}
                     includeDelete={displayDelete}
                     type="submit"
                     onTestClick={handleTestClick}
                     onDeleteClick={performDeleteRequest}
+                    onCancelClick={() => afterSuccessfulSave()}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
                 />
             </form>
@@ -165,18 +169,20 @@ CommonDistributionConfigurationForm.propTypes = {
     testFormData: PropTypes.object,
     setTestFormData: PropTypes.func,
     buttonIdPrefix: PropTypes.string,
-    afterSuccessfulSave: PropTypes.func
+    afterSuccessfulSave: PropTypes.func,
+    createDataToSend: PropTypes.func
 };
 
 CommonDistributionConfigurationForm.defaultProps = {
     displaySave: true,
     displayTest: true,
-    displayDelete: true,
+    displayDelete: false,
     testFields: null,
     testFormData: {},
     setTestFormData: () => null,
     buttonIdPrefix: 'common-form',
-    afterSuccessfulSave: () => null
+    afterSuccessfulSave: () => null,
+    createDataToSend: null
 };
 
 export default CommonDistributionConfigurationForm;

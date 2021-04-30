@@ -129,11 +129,13 @@ const DistributionConfigurationTable = ({
         }
     }, [selectedRows]);
 
-    const navigateToConfigPage = () => {
-        if (selectedRows) {
-            history.push(`${DISTRIBUTION_URLS.distributionConfigUrl}/${selectedRows}`);
+    const navigateToConfigPage = (id, copy) => {
+        const url = (copy) ? DISTRIBUTION_URLS.distributionConfigCopyUrl : DISTRIBUTION_URLS.distributionConfigUrl;
+        if (id) {
+            history.push(`${url}/${id}`);
+            return;
         }
-        history.push(`${DISTRIBUTION_URLS.distributionConfigUrl}`);
+        history.push(url);
     };
 
     const insertAndDeleteButton = (buttons) => {
@@ -147,22 +149,27 @@ const DistributionConfigurationTable = ({
         };
         return (
             <div>
-                <InsertButton
-                    id="distribution-insert-button"
-                    className="addJobButton btn-md"
-                    onClick={insertClick}
-                >
-                    <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                    New
-                </InsertButton>
-                <DeleteButton
-                    id="distribution-delete-button"
-                    className="deleteJobButton btn-md"
-                    onClick={deleteClick}
-                >
-                    <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                    Delete
-                </DeleteButton>
+                {!readonly
+                && (
+                    <div>
+                        <InsertButton
+                            id="distribution-insert-button"
+                            className="addJobButton btn-md"
+                            onClick={insertClick}
+                        >
+                            <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                            New
+                        </InsertButton>
+                        <DeleteButton
+                            id="distribution-delete-button"
+                            className="deleteJobButton btn-md"
+                            onClick={deleteClick}
+                        >
+                            <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                            Delete
+                        </DeleteButton>
+                    </div>
+                )}
                 {showRefreshButton
                 && (
                     <button
@@ -239,12 +246,13 @@ const DistributionConfigurationTable = ({
     const editButtonClicked = ({ id }) => {
         setSelectedRows(id);
         // Navigate to config page
-        navigateToConfigPage();
+        navigateToConfigPage(id);
     };
 
     const copyButtonClicked = ({ id }) => {
         setSelectedRows(id);
         // Navigate to config page
+        navigateToConfigPage(id, true);
     };
 
     const enabledColumnFormatter = (cell) => {
