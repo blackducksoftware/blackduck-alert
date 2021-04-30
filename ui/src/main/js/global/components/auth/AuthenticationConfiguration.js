@@ -91,6 +91,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 setTestFormData={(values) => setTestFieldData(values)}
                 buttonIdPrefix={AUTHENTICATION_INFO.key}
                 retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <CollapsiblePane
                     id="ldap-configuration"

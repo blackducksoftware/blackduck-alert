@@ -27,7 +27,7 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
         const data = await response.json();
 
         const { fieldModels } = data;
-        const filteredFieldModels = fieldModels.filter((model) => FieldModelUtilities.hasAnyValuesExcludingId(model));
+        const filteredFieldModels = (fieldModels) ? fieldModels.filter((model) => FieldModelUtilities.hasAnyValuesExcludingId(model)) : [];
         const convertedTableData = filteredFieldModels.map((fieldModel) => ({
             id: FieldModelUtilities.getFieldModelId(fieldModel),
             name: FieldModelUtilities.getFieldModelSingleValue(fieldModel, BLACKDUCK_GLOBAL_FIELD_KEYS.name),
@@ -72,22 +72,27 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
         };
         return (
             <div>
-                <InsertButton
-                    id="blackduck-insert-button"
-                    className="addJobButton btn-md"
-                    onClick={insertClick}
-                >
-                    <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                    New
-                </InsertButton>
-                <DeleteButton
-                    id="blackduck-delete-button"
-                    className="deleteJobButton btn-md"
-                    onClick={deleteClick}
-                >
-                    <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                    Delete
-                </DeleteButton>
+                { !readonly
+                    && (
+                        <>
+                            <InsertButton
+                                id="blackduck-insert-button"
+                                className="addJobButton btn-md"
+                                onClick={insertClick}
+                            >
+                                <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                                New
+                            </InsertButton>
+                            <DeleteButton
+                                id="blackduck-delete-button"
+                                className="deleteJobButton btn-md"
+                                onClick={deleteClick}
+                            >
+                                <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                                Delete
+                            </DeleteButton>
+                        </>
+                    )}
                 { showRefreshButton
                     && (
                         <button
@@ -224,7 +229,6 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
                 ref={tableRef}
                 options={tableOptions}
                 search
-                newButton={!readonly}
             >
                 <TableHeaderColumn dataField="id" hidden isKey>Id</TableHeaderColumn>
                 {column('name', 'Name')}
