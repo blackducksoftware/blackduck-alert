@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
-public class DefaultAuditAccessorTest {
+public class DefaultRestApiAuditAccessorTest {
     private final Gson gson = new Gson();
 
     @Test
