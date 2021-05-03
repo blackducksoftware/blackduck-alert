@@ -76,6 +76,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
 
+        int totalEmailsSent = 0;
         for (EmailChannelMessageModel message : emailMessages) {
             Set<String> projectHrefs = message.getSource()
                                            .map(ProjectMessage::getProject)
@@ -90,11 +91,10 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                 throw new AlertException(String.format("Could not determine what email addresses to send this content to. Job ID: %s", emailJobDetails.getJobId()));
             }
             sendMessage(emailMessagingService, attachmentFormat, message, emailAddresses);
+            totalEmailsSent += emailAddresses.size();
             // TODO The email addresses that are not for Black Duck users should be reported in an error MessageResult
         }
-        // TODO this is incorrect and misleading, the number should reflect the number of emails sent out not the number of emailMessages.
-        // Ex: 2 emailMessage sent, 1 emailMessage sent to 10 email addresses and 1 emailMessage sent to 5 email addresses = 15 emails sent out
-        return new MessageResult(String.format("Successfully sent %d email(s)", emailMessages.size()));
+        return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
     }
 
     private ConfigurationModel retrieveGlobalEmailConfig() throws AlertException {
