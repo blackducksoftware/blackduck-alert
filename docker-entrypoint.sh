@@ -25,12 +25,12 @@ truststoreFile=$securityDir/$APPLICATION_NAME.truststore
 truststorePassword="${ALERT_TRUST_STORE_PASSWORD:-changeit}"
 truststoreType="${ALERT_TRUST_STORE_TYPE:-JKS}"
 
-publicWebserverHost="${ALERT_HOSTNAME:-localhost}"
+alertHostName="${ALERT_HOSTNAME:-localhost}"
 targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
 targetCAPort="${HUB_CFSSL_PORT:-8888}"
 targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
-[ -z "$ALERT_HOSTNAME" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
+[ -z "$ALERT_HOSTNAME" ] && echo "Alert Host: [$alertHostName]. Wrong host name? Restart the container with the right host name configured in blackduck-alert.env"
 
 if [ -e $dockerSecretDir/ALERT_TRUST_STORE_PASSWORD ];
 then
@@ -116,7 +116,7 @@ manageSelfSignedServerCertificate() {
         --outputDirectory $securityDir \
         --commonName $serverCertName \
         --san $targetWebAppHost \
-        --san $publicWebserverHost \
+        --san $alertHostName \
         --san localhost \
         --hostName $targetWebAppHost
     exitCode=$?
