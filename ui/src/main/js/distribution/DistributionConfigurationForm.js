@@ -80,7 +80,7 @@ const DistributionConfigurationForm = ({
             });
 
             // Related fields need this to have a value in order to validate successfully
-            providerConfigToSave.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects].values = configuredProviderProjects;
+            providerConfigToSave.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects].values = ['undefined'];
         }
 
         return {
