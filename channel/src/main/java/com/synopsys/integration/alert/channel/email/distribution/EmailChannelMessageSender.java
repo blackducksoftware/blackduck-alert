@@ -87,7 +87,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
 
-        ValidatedEmailAddresses validatedEmailAddresses = emailAddressValidator.validate(emailJobDetails.getAdditionalEmailAddresses());
+        ValidatedEmailAddresses validatedEmailAddresses = emailAddressValidator.validate(emailJobDetails.getJobId(), emailJobDetails.getAdditionalEmailAddresses());
         Set<String> invalidEmailAddresses = validatedEmailAddresses.getInvalidEmailAddresses();
         if (!invalidEmailAddresses.isEmpty()) {
             emailJobDetails = new EmailJobDetailsModel(

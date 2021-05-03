@@ -9,17 +9,54 @@ package com.synopsys.integration.alert.channel.email.distribution.address;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 @Component
 public class EmailAddressValidator {
+    private final JobAccessor jobAccessor;
+    private final ProviderDataAccessor providerDataAccessor;
+
+    @Autowired
+    public EmailAddressValidator(JobAccessor jobAccessor, ProviderDataAccessor providerDataAccessor) {
+        this.jobAccessor = jobAccessor;
+        this.providerDataAccessor = providerDataAccessor;
+    }
 
     // TODO rename model?
-    public ValidatedEmailAddresses validate(Collection<String> emailAddresses) {
-        // FIXME implement
-        return new ValidatedEmailAddresses(new HashSet<>(emailAddresses), Set.of());
+    public ValidatedEmailAddresses validate(UUID jobId, Collection<String> emailAddresses) {
+        Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(jobId)
+                                                             .map(DistributionJobModel::getBlackDuckGlobalConfigId);
+        if (optionalBlackDuckGlobalConfigId.isPresent()) {
+            return validate(optionalBlackDuckGlobalConfigId.get(), emailAddresses);
+        } else {
+            return new ValidatedEmailAddresses(Set.of(), new HashSet<>(emailAddresses));
+        }
+    }
+
+    private ValidatedEmailAddresses validate(Long providerConfigId, Collection<String> emailAddresses) {
+        Set<String> validEmailAddresses = new HashSet<>();
+        Set<String> invalidEmailAddresses = new HashSet<>();
+
+        for (String emailAddress : emailAddresses) {
+            Optional<ProviderUserModel> optionalUser = providerDataAccessor.findFirstUserByEmailAddress(providerConfigId, emailAddress);
+            if (optionalUser.isPresent()) {
+                validEmailAddresses.add(emailAddress);
+            } else {
+                invalidEmailAddresses.add(emailAddress);
+            }
+        }
+
+        return new ValidatedEmailAddresses(validEmailAddresses, invalidEmailAddresses);
     }
 
 }
