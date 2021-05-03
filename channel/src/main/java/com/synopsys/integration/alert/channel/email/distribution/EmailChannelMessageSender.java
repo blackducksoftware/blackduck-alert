@@ -8,20 +8,28 @@
 package com.synopsys.integration.alert.channel.email.distribution;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.api.ChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressValidator;
+import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
@@ -43,6 +51,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
     private final EmailChannelKey emailChannelKey;
     private final AlertProperties alertProperties;
+    private final EmailAddressValidator emailAddressValidator;
     private final EmailAddressGatherer emailAddressGatherer;
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
@@ -52,6 +61,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     public EmailChannelMessageSender(
         EmailChannelKey emailChannelKey,
         AlertProperties alertProperties,
+        EmailAddressValidator emailAddressValidator,
         EmailAddressGatherer emailAddressGatherer,
         EmailAttachmentFileCreator emailAttachmentFileCreator,
         FreemarkerTemplatingService freemarkerTemplatingService,
@@ -59,6 +69,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     ) {
         this.emailChannelKey = emailChannelKey;
         this.alertProperties = alertProperties;
+        this.emailAddressValidator = emailAddressValidator;
         this.emailAddressGatherer = emailAddressGatherer;
         this.emailAttachmentFileCreator = emailAttachmentFileCreator;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
@@ -76,6 +87,19 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
 
+        ValidatedEmailAddresses validatedEmailAddresses = emailAddressValidator.validate(emailJobDetails.getAdditionalEmailAddresses());
+        Set<String> invalidEmailAddresses = validatedEmailAddresses.getInvalidEmailAddresses();
+        if (!invalidEmailAddresses.isEmpty()) {
+            emailJobDetails = new EmailJobDetailsModel(
+                emailJobDetails.getJobId(),
+                emailJobDetails.getSubjectLine(),
+                emailJobDetails.isProjectOwnerOnly(),
+                emailJobDetails.isAdditionalEmailAddressesOnly(),
+                emailJobDetails.getAttachmentFileType(),
+                new ArrayList<>(validatedEmailAddresses.getValidEmailAddresses())
+            );
+        }
+
         int totalEmailsSent = 0;
         for (EmailChannelMessageModel message : emailMessages) {
             Set<String> projectHrefs = message.getSource()
@@ -85,14 +109,18 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                                            .orElse(Set.of());
 
             Set<String> emailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
-
-            // TODO validate the email addresses are valid Black Duck user email addresses. Only send emails to the email addresses that are Black Duck user email addresses
             if (emailAddresses.isEmpty()) {
                 throw new AlertException(String.format("Could not determine what email addresses to send this content to. Job ID: %s", emailJobDetails.getJobId()));
             }
             sendMessage(emailMessagingService, attachmentFormat, message, emailAddresses);
             totalEmailsSent += emailAddresses.size();
-            // TODO The email addresses that are not for Black Duck users should be reported in an error MessageResult
+        }
+
+        if (!invalidEmailAddresses.isEmpty()) {
+            String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
+            String errorMessage = String.format("No emails were sent to the following recipients because they were invalid: %s", invalidEmailAddressesString);
+            AlertFieldStatus errorStatus = new AlertFieldStatus(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, FieldStatusSeverity.ERROR, errorMessage);
+            return new MessageResult(errorMessage, List.of(errorStatus));
         }
         return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
     }

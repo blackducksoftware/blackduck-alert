@@ -15,6 +15,8 @@ import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressValidator;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -42,8 +44,12 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(emailChannelKey), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailGlobalConfig));
 
+        EmailAddressValidator emailAddressValidator = Mockito.mock(EmailAddressValidator.class);
+        Mockito.when(emailAddressValidator.validate(Mockito.anyCollection())).then(invocation -> invocation.getArguments()[0]);
+
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, testAlertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, configurationAccessor);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, testAlertProperties, emailAddressValidator, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService,
+            configurationAccessor);
 
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
@@ -60,8 +66,11 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(emailChannelKey), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
+        EmailAddressValidator emailAddressValidator = Mockito.mock(EmailAddressValidator.class);
+        Mockito.when(emailAddressValidator.validate(Mockito.anyCollection())).then(invocation -> invocation.getArguments()[0]);
+
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, null, null, null, null, configurationAccessor);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, null, emailAddressValidator, null, null, null, configurationAccessor);
 
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
