@@ -84,12 +84,16 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                                            .orElse(Set.of());
 
             Set<String> emailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
+
+            // TODO validate the email addresses are valid Black Duck user email addresses. Only send emails to the email addresses that are Black Duck user email addresses
             if (emailAddresses.isEmpty()) {
                 throw new AlertException(String.format("Could not determine what email addresses to send this content to. Job ID: %s", emailJobDetails.getJobId()));
             }
-
             sendMessage(emailMessagingService, attachmentFormat, message, emailAddresses);
+            // TODO The email addresses that are not for Black Duck users should be reported in an error MessageResult
         }
+        // TODO this is incorrect and misleading, the number should reflect the number of emails sent out not the number of emailMessages.
+        // Ex: 2 emailMessage sent, 1 emailMessage sent to 10 email addresses and 1 emailMessage sent to 5 email addresses = 15 emails sent out
         return new MessageResult(String.format("Successfully sent %d email(s)", emailMessages.size()));
     }
 
