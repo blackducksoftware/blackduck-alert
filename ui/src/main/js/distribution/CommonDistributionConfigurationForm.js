@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'field/StatusMessage';
 
@@ -21,7 +20,8 @@ const CommonDistributionConfigurationForm = ({
     buttonIdPrefix,
     afterSuccessfulSave,
     retrieveData,
-    createDataToSend
+    createDataToSend,
+    createDataToTest
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -49,12 +49,8 @@ const CommonDistributionConfigurationForm = ({
     };
 
     const performTestRequest = async () => {
-        let copy = JSON.parse(JSON.stringify(formData));
-        Object.keys(testFormData).forEach((key) => {
-            copy = FieldModelUtilities.updateFieldModelSingleValue(copy, key, testFormData[key]);
-        });
-
-        const response = await testRequest(copy);
+        const dataToSend = createDataToTest ? createDataToTest() : formData;
+        const response = await testRequest(dataToSend);
         if (response.ok) {
             const json = await response.json();
             if (json.hasErrors) {
@@ -170,7 +166,8 @@ CommonDistributionConfigurationForm.propTypes = {
     setTestFormData: PropTypes.func,
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
-    createDataToSend: PropTypes.func
+    createDataToSend: PropTypes.func,
+    createDataToTest: PropTypes.func
 };
 
 CommonDistributionConfigurationForm.defaultProps = {
@@ -182,7 +179,8 @@ CommonDistributionConfigurationForm.defaultProps = {
     setTestFormData: () => null,
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,
-    createDataToSend: null
+    createDataToSend: null,
+    createDataToTest: null
 };
 
 export default CommonDistributionConfigurationForm;

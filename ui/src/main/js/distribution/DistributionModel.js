@@ -32,6 +32,11 @@ export const DISTRIBUTION_URLS = {
     endpointSelectPath: '/api/function'
 };
 
+export const DISTRIBUTION_TEST_FIELD_KEYS = {
+    topic: 'channel.common.custom.message.topic',
+    message: 'channel.common.custom.message.content'
+};
+
 export const DISTRIBUTION_FREQUENCY_OPTIONS = [
     { label: 'Daily', value: 'DAILY' },
     { label: 'Real Time', value: 'REAL_TIME' }

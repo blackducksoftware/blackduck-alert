@@ -9,6 +9,7 @@ import {
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
     DISTRIBUTION_POLICY_SELECT_COLUMNS,
     DISTRIBUTION_PROJECT_SELECT_COLUMNS,
+    DISTRIBUTION_TEST_FIELD_KEYS,
     DISTRIBUTION_URLS
 } from 'distribution/DistributionModel';
 import EndpointSelectField from 'field/EndpointSelectField';
@@ -51,6 +52,7 @@ const DistributionConfigurationForm = ({
     providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects] = {};
     const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel(providerFieldKeys, CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
+    const [testFieldModel, setTestFieldModel] = useState({});
     const [channelFields, setChannelFields] = useState(null);
     const [providerHasChannelName, setProviderHasChannelName] = useState(false);
     const [hasProvider, setHasProvider] = useState(false);
@@ -61,11 +63,11 @@ const DistributionConfigurationForm = ({
         return data;
     };
 
-    const updateJobData = () => {
-        const providerConfigToSave = JSON.parse(JSON.stringify(providerModel));
+    const createDistributionData = (channelModelData, providerModelData) => {
+        const providerConfigToSave = JSON.parse(JSON.stringify(providerModelData));
         let configuredProviderProjects = [];
 
-        const fieldConfiguredProjects = providerModel.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
+        const fieldConfiguredProjects = providerModelData.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
         if (fieldConfiguredProjects && fieldConfiguredProjects.values && fieldConfiguredProjects.values.length > 0) {
             configuredProviderProjects = fieldConfiguredProjects.values.map((selectedValue) => {
                 let valueObject = selectedValue;
@@ -91,6 +93,13 @@ const DistributionConfigurationForm = ({
             ],
             configuredProviderProjects
         };
+    };
+
+    const updateJobData = () => createDistributionData(channelModel, providerModel);
+
+    const createTestData = () => {
+        const channelFieldModel = FieldModelUtilities.combineFieldModels(channelModel, testFieldModel);
+        return createDistributionData(channelFieldModel, providerModel);
     };
 
     const createAdditionalEmailRequestBody = () => {
@@ -151,6 +160,31 @@ const DistributionConfigurationForm = ({
         setFormData(formData);
     }
 
+    const testFields = (
+        <div>
+            <TextInput
+                id={DISTRIBUTION_TEST_FIELD_KEYS.topic}
+                label="Topic"
+                name={DISTRIBUTION_TEST_FIELD_KEYS.topic}
+                required
+                onChange={FieldModelUtilities.handleChange(testFieldModel, setTestFieldModel)}
+                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic, 'Alert Test Message')}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_TEST_FIELD_KEYS.topic)}
+                errorValue={errors[DISTRIBUTION_TEST_FIELD_KEYS.topic]}
+            />
+            <TextInput
+                id={DISTRIBUTION_TEST_FIELD_KEYS.message}
+                label="Message"
+                name={DISTRIBUTION_TEST_FIELD_KEYS.message}
+                required
+                onChange={FieldModelUtilities.handleChange(testFieldModel, setTestFieldModel)}
+                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message, 'Test Message Content')}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_TEST_FIELD_KEYS.message)}
+                errorValue={errors[DISTRIBUTION_TEST_FIELD_KEYS.message]}
+            />
+        </div>
+    );
+
     return (
         <CommonGlobalConfiguration
             label="Distribution Configuration"
@@ -161,11 +195,14 @@ const DistributionConfigurationForm = ({
                 setErrors={(error) => setErrors(error)}
                 formData={formData}
                 setFormData={setFormData}
+                testFields={testFields}
+                testFormData={testFieldModel}
                 csrfToken={csrfToken}
                 displayDelete={false}
                 afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
                 retrieveData={retrieveData}
                 createDataToSend={updateJobData}
+                createDataToTest={createTestData}
             >
                 <CheckboxInput
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
