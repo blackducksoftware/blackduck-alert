@@ -6,10 +6,10 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import CheckboxInput from 'field/input/CheckboxInput';
 import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import TableSelectInput from 'field/input/TableSelectInput';
-import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
+import { DISTRIBUTION_URLS } from 'distribution/DistributionModel';
 
 const EmailDistributionConfiguration = ({
-    csrfToken, data, setData, errors, readonly
+    csrfToken, data, setData, errors, readonly, createAdditionalEmailRequestBody
 }) => (
     <div>
         <TextInput
@@ -30,11 +30,10 @@ const EmailDistributionConfiguration = ({
             columns={EMAIL_DISTRIBUTION_ADDITIONAL_EMAIL_COLUMNS}
             label="Additional Email Addresses"
             description="Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to."
-            requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.providerName, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
             readOnly={readonly}
             paged
             searchable
-            currentConfig={data}
+            createRequestBody={createAdditionalEmailRequestBody}
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
@@ -77,6 +76,7 @@ const EmailDistributionConfiguration = ({
 );
 EmailDistributionConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    createAdditionalEmailRequestBody: PropTypes.func.isRequired,
     data: PropTypes.object.isRequired,
     setData: PropTypes.func.isRequired,
     errors: PropTypes.object.isRequired,

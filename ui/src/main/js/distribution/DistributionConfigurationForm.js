@@ -93,6 +93,28 @@ const DistributionConfigurationForm = ({
         };
     };
 
+    const createAdditionalEmailRequestBody = () => {
+        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
+        const providerConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
+        const updatedModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
+        return FieldModelUtilities.updateFieldModelSingleValue(updatedModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
+    };
+
+    const createProjectRequestBody = () => {
+        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
+        const providerConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
+        const updatedModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
+        return FieldModelUtilities.updateFieldModelSingleValue(updatedModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
+    };
+    const createPolicyFilterRequestBody = () => {
+        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
+        const providerConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
+        const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes);
+        const providerNameModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
+        const providerInfoModel = FieldModelUtilities.updateFieldModelSingleValue(providerNameModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
+        return FieldModelUtilities.updateFieldModelValues(providerInfoModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes, notificationTypes);
+    };
+
     useEffect(() => {
         const channelFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) : {};
         const channelNameDefined = FieldModelUtilities.hasValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
@@ -110,7 +132,7 @@ const DistributionConfigurationForm = ({
     useEffect(() => {
         const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
         if (channelKey === EMAIL_INFO.key) {
-            setChannelFields(<EmailDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+            setChannelFields(<EmailDistributionConfiguration csrfToken={csrfToken} createAdditionalEmailRequestBody={createAdditionalEmailRequestBody} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
         } else if (channelKey === SLACK_INFO.key) {
             setChannelFields(<SlackDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
         } else {
@@ -288,15 +310,11 @@ const DistributionConfigurationForm = ({
                             columns={DISTRIBUTION_PROJECT_SELECT_COLUMNS}
                             label="Projects"
                             description="Select a project or projects that will be used to retrieve notifications from your provider."
-                            requiredRelatedFields={[
-                                DISTRIBUTION_COMMON_FIELD_KEYS.providerName,
-                                DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId
-                            ]}
                             readOnly={readonly}
                             paged
                             searchable
                             useRowAsValue
-                            currentConfig={providerModel}
+                            createRequestBody={createProjectRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
@@ -317,11 +335,10 @@ const DistributionConfigurationForm = ({
                             columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
                             label="Policy Notification Type Filter"
                             description="List of Policies you can choose from to further filter which notifications you want sent via this job (You must have a policy notification selected for this filter to apply)."
-                            requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                             readOnly={readonly}
                             paged
                             searchable
-                            currentConfig={providerModel}
+                            createRequestBody={createPolicyFilterRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
