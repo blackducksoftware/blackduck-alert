@@ -51,6 +51,14 @@ const container = ({ children, getValue, ...props }) => {
     );
 };
 
+export const createTableSelectColumn = (header, headerLabel, isKey, sortBy, visible) => ({
+    header,
+    headerLabel,
+    isKey,
+    sortBy,
+    visible
+});
+
 const TableSelectInput = (props) => {
     const {
         id, value, columns, useRowAsValue, onChange, fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields, paged, searchable, readOnly,
@@ -318,7 +326,7 @@ const TableSelectInput = (props) => {
                 columnClassName="tableCell"
                 tdStyle={{ whiteSpace: 'normal' }}
                 dataFormat={assignDataFormat}
-                hidden={column.hidden}
+                hidden={!column.visible}
             >
                 {column.headerLabel}
             </TableHeaderColumn>

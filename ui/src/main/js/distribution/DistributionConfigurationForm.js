@@ -20,8 +20,12 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'distribution/DistributionRequestUtility';
-import { AZURE_INFO } from '../global/channels/azure/AzureModel';
-import { BLACKDUCK_INFO } from '../global/providers/blackduck/BlackDuckModel';
+import { AZURE_INFO } from 'global/channels/azure/AzureModel';
+import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
+import { EMAIL_INFO } from 'global/channels/email/EmailModels';
+import { SLACK_INFO } from 'global/channels/slack/SlackModels';
+import EmailDistributionConfiguration from 'distribution/channels/email/EmailDistributionConfiguration';
+import SlackDistributionConfiguration from 'distribution/channels/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
     csrfToken, readonly, descriptors, lastUpdated
@@ -47,6 +51,7 @@ const DistributionConfigurationForm = ({
     providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects] = {};
     const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel(providerFieldKeys, CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
+    const [channelFields, setChannelFields] = useState(null);
     const [providerHasChannelName, setProviderHasChannelName] = useState(false);
     const [hasProvider, setHasProvider] = useState(false);
     const [hasNotificationTypes, setHasNotificationTypes] = useState(false);
@@ -103,6 +108,17 @@ const DistributionConfigurationForm = ({
     }, [formData]);
 
     useEffect(() => {
+        const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
+        if (channelKey === EMAIL_INFO.key) {
+            setChannelFields(<EmailDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+        } else if (channelKey === SLACK_INFO.key) {
+            setChannelFields(<SlackDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+        } else {
+            setChannelFields(null);
+        }
+    }, [channelModel]);
+
+    useEffect(() => {
         setHasProvider(FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName));
         setFilterByProject(FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject));
         setHasNotificationTypes(FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes));
@@ -112,16 +128,6 @@ const DistributionConfigurationForm = ({
         delete formData.id;
         setFormData(formData);
     }
-
-    const onFilterByProjecChange = (event) => {
-        FieldModelUtilities.handleChange(providerModel, setProviderModel)(event);
-    };
-
-    const channelFields = (
-        <div>
-            Channel specific fields go here...
-        </div>
-    );
 
     return (
         <CommonGlobalConfiguration
@@ -217,6 +223,7 @@ const DistributionConfigurationForm = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                 />
+                {channelFields}
                 {hasProvider && providerHasChannelName && (
                     <div>
                         <SelectInput
@@ -253,7 +260,7 @@ const DistributionConfigurationForm = ({
                             label="Filter By Project"
                             description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
                             readOnly={readonly}
-                            onChange={onFilterByProjecChange}
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             isChecked={filterByProject}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
                             errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
@@ -297,7 +304,6 @@ const DistributionConfigurationForm = ({
                         />
                     </div>
                 )}
-                {channelFields}
                 {hasNotificationTypes && (
                     <CollapsiblePane
                         id="distribution-notification-filtering"

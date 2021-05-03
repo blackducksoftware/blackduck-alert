@@ -1,3 +1,5 @@
+import { createTableSelectColumn } from 'field/input/TableSelectInput';
+
 export const DISTRIBUTION_INFO = {
     url: 'distributionv2',
     label: 'Distribution V2',
@@ -46,20 +48,12 @@ export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
     { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' }
 ];
 
-const createTableSelectColumn = (header, headerLabel, isKey, sortBy, hidden) => ({
-    header,
-    headerLabel,
-    isKey,
-    sortBy,
-    hidden
-});
-
 export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [
-    createTableSelectColumn('name', 'Project Name', true, true, false),
-    createTableSelectColumn('href', 'Project URL', false, false, true),
-    createTableSelectColumn('description', 'Project Description', false, false, false)
+    createTableSelectColumn('name', 'Project Name', true, true, true),
+    createTableSelectColumn('href', 'Project URL', false, false, false),
+    createTableSelectColumn('description', 'Project Description', false, false, true)
 ];
 
 export const DISTRIBUTION_POLICY_SELECT_COLUMNS = [
-    createTableSelectColumn('name', 'Name', true, true, false)
+    createTableSelectColumn('name', 'Name', true, true, true)
 ];
