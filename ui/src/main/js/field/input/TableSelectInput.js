@@ -56,7 +56,7 @@ export const createTableSelectColumn = (header, headerLabel, isKey, sortBy, visi
     headerLabel,
     isKey,
     sortBy,
-    visible
+    hidden: !visible
 });
 
 const TableSelectInput = (props) => {
@@ -326,7 +326,7 @@ const TableSelectInput = (props) => {
                 columnClassName="tableCell"
                 tdStyle={{ whiteSpace: 'normal' }}
                 dataFormat={assignDataFormat}
-                hidden={!column.visible}
+                hidden={column.hidden}
             >
                 {column.headerLabel}
             </TableHeaderColumn>
