@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.synopsys.integration.alert.channel.api.convert.ChannelMessageFormatter;
-import com.synopsys.integration.alert.channel.api.convert.ComponentVulnerabilitiesConverter;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
