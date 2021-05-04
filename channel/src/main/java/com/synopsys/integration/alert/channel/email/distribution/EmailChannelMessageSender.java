@@ -111,12 +111,10 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                                            .map(Set::of)
                                            .orElse(Set.of());
 
-            Set<String> emailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
-            if (emailAddresses.isEmpty()) {
-                throw new AlertException(String.format("Could not determine what email addresses to send this content to. Job ID: %s", emailJobDetails.getJobId()));
-            }
-            sendMessage(emailMessagingService, attachmentFormat, message, emailAddresses);
-            totalEmailsSent += emailAddresses.size();
+            Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
+            validateGatheredEmailAddresses(gatheredEmailAddresses, invalidEmailAddresses);
+            sendMessage(emailMessagingService, attachmentFormat, message, gatheredEmailAddresses);
+            totalEmailsSent += gatheredEmailAddresses.size();
         }
 
         // Reporting
@@ -129,6 +127,13 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
     }
 
+    private ConfigurationModel retrieveGlobalEmailConfig() throws AlertException {
+        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
+                   .stream()
+                   .findAny()
+                   .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
+    }
+
     private ValidatedEmailAddresses validateAdditionalEmailAddresses(EmailJobDetailsModel emailJobDetails) {
         UUID jobId = emailJobDetails.getJobId();
         if (null != jobId) {
@@ -137,11 +142,15 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         return new ValidatedEmailAddresses(new HashSet<>(emailJobDetails.getAdditionalEmailAddresses()), Set.of());
     }
 
-    private ConfigurationModel retrieveGlobalEmailConfig() throws AlertException {
-        return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
-                   .stream()
-                   .findAny()
-                   .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
+    private void validateGatheredEmailAddresses(Set<String> gatheredEmailAddresses, Set<String> invalidEmailAddresses) throws AlertException {
+        if (gatheredEmailAddresses.isEmpty()) {
+            if (invalidEmailAddresses.isEmpty()) {
+                throw new AlertException("Could not determine what email addresses to send this content to");
+            } else {
+                String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
+                throw new AlertException(String.format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
+            }
+        }
     }
 
     private void sendMessage(EmailMessagingService emailService, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {
