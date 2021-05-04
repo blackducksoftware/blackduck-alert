@@ -111,10 +111,6 @@ const DistributionConfigurationTable = ({
 
     useEffect(() => {
         retrieveTableData();
-    }, []);
-
-    useEffect(() => {
-        retrieveTableData();
     }, [currentPage, pageSize, searchTerm]);
 
     useEffect(() => {
@@ -173,7 +169,7 @@ const DistributionConfigurationTable = ({
                 {showRefreshButton
                 && (
                     <button
-                        id="dsitribution-refresh-button"
+                        id="distribution-refresh-button"
                         type="button"
                         className="btn btn-md btn-info react-bs-table-add-btn tableButton"
                         onClick={retrieveTableData}

@@ -7,7 +7,7 @@ import TextInput from 'field/input/TextInput';
 const SlackDistributionConfiguration = ({
     data, setData, errors, readonly
 }) => (
-    <div>
+    <>
         <TextInput
             key={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
@@ -41,7 +41,7 @@ const SlackDistributionConfiguration = ({
             errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.channelUser)}
             errorValue={errors[SLACK_DISTRIBUTION_FIELD_KEYS.channelUser]}
         />
-    </div>
+    </>
 );
 
 SlackDistributionConfiguration.propTypes = {

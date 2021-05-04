@@ -11,7 +11,7 @@ import { DISTRIBUTION_URLS } from 'distribution/DistributionModel';
 const EmailDistributionConfiguration = ({
     csrfToken, data, setData, errors, readonly, createAdditionalEmailRequestBody
 }) => (
-    <div>
+    <>
         <TextInput
             key={EMAIL_DISTRIBUTION_FIELD_KEYS.subject}
             name={EMAIL_DISTRIBUTION_FIELD_KEYS.subject}
@@ -72,7 +72,7 @@ const EmailDistributionConfiguration = ({
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat)}
             errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat]}
         />
-    </div>
+    </>
 );
 EmailDistributionConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,

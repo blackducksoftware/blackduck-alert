@@ -1,9 +1,10 @@
 import { createTableSelectColumn } from 'field/input/TableSelectInput';
 
+// TODO remove the V2 and update the description once this table replaces the old component.
 export const DISTRIBUTION_INFO = {
     url: 'distributionv2',
     label: 'Distribution V2',
-    description: 'Create jobs from the channels Alert provides. Double click the row to edit that job.'
+    description: 'BETA Feature. Please mention any issues that you find. Create jobs from the channels Alert provides. Double click the row to edit that job.'
 };
 
 export const DISTRIBUTION_COMMON_FIELD_KEYS = {

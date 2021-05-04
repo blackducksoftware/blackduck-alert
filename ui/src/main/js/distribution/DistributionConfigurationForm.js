@@ -125,6 +125,12 @@ const DistributionConfigurationForm = ({
     };
 
     useEffect(() => {
+        const topicFieldModel = FieldModelUtilities.updateFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic, 'Alert Test Message');
+        const messageFieldModel = FieldModelUtilities.updateFieldModelSingleValue(topicFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message, 'Test Message Content');
+        setTestFieldModel(messageFieldModel);
+    }, []);
+
+    useEffect(() => {
         const channelFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) : {};
         const channelNameDefined = FieldModelUtilities.hasValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
@@ -168,7 +174,7 @@ const DistributionConfigurationForm = ({
                 name={DISTRIBUTION_TEST_FIELD_KEYS.topic}
                 required
                 onChange={FieldModelUtilities.handleChange(testFieldModel, setTestFieldModel)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic, 'Alert Test Message')}
+                value={FieldModelUtilities.getFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_TEST_FIELD_KEYS.topic)}
                 errorValue={errors[DISTRIBUTION_TEST_FIELD_KEYS.topic]}
             />
@@ -178,7 +184,7 @@ const DistributionConfigurationForm = ({
                 name={DISTRIBUTION_TEST_FIELD_KEYS.message}
                 required
                 onChange={FieldModelUtilities.handleChange(testFieldModel, setTestFieldModel)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message, 'Test Message Content')}
+                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_TEST_FIELD_KEYS.message)}
                 errorValue={errors[DISTRIBUTION_TEST_FIELD_KEYS.message]}
             />
