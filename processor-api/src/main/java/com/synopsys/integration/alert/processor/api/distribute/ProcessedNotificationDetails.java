@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.processor.api.distribute;
 
-import java.util.Set;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
@@ -15,12 +14,10 @@ import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 public final class ProcessedNotificationDetails extends AlertSerializableModel {
     private final UUID jobId;
     private final String channelName;
-    private final Set<Long> notificationIds;
 
-    public ProcessedNotificationDetails(UUID jobId, String channelName, Set<Long> notificationIds) {
+    public ProcessedNotificationDetails(UUID jobId, String channelName) {
         this.jobId = jobId;
         this.channelName = channelName;
-        this.notificationIds = notificationIds;
     }
 
     public UUID getJobId() {
@@ -29,10 +26,6 @@ public final class ProcessedNotificationDetails extends AlertSerializableModel {
 
     public String getChannelName() {
         return channelName;
-    }
-
-    public Set<Long> getNotificationIds() {
-        return notificationIds;
     }
 
 }

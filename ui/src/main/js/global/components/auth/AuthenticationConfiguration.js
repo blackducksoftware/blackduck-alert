@@ -14,11 +14,19 @@ import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import UploadFileButtonField from 'field/UploadFileButtonField';
 import ReadOnlyField from 'field/ReadOnlyField';
+import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AUTHENTICATION_INFO.key));
     const [errors, setErrors] = useState({});
     const [testFieldData, setTestFieldData] = useState({});
+
+    const retrieveData = async () => {
+        const data = await GlobalRequestHelper.getDataFindFirst(AUTHENTICATION_INFO.key, csrfToken);
+        if (data) {
+            setFormData(data);
+        }
+    };
 
     const testFields = (
         <div>
@@ -82,6 +90,8 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 testFormData={testFieldData}
                 setTestFormData={(values) => setTestFieldData(values)}
                 buttonIdPrefix={AUTHENTICATION_INFO.key}
+                retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <CollapsiblePane
                     id="ldap-configuration"

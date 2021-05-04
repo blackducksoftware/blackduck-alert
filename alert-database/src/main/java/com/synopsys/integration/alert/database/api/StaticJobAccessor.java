@@ -156,10 +156,14 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional
     public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException {
         DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
-                                              .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId.toString())));
+                                              .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId)));
         OffsetDateTime createdAt = jobEntity.getCreatedAt();
 
-        deleteJob(jobId);
+        if (!jobEntity.getChannelDescriptorName().equals(requestModel.getChannelDescriptorName())) {
+            // Deleting a Job will affect all tables with foreign keys referencing it.
+            // Only delete a job if the channel for which it is configured changes.
+            deleteJob(jobId);
+        }
         return createJobWithId(jobId, requestModel, createdAt, DateUtils.createCurrentDateTimestamp());
     }
 

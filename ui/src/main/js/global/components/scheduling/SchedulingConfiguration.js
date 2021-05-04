@@ -7,6 +7,7 @@ import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import ReadOnlyField from 'field/ReadOnlyField';
+import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const SchedulingConfiguration = ({ csrfToken, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SCHEDULING_INFO.key));
@@ -49,6 +50,13 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
         { label: 'Every 7 days', value: '7' }
     ];
 
+    const retrieveData = async () => {
+        const data = await GlobalRequestHelper.getDataFindFirst(SCHEDULING_INFO.key, csrfToken);
+        if (data) {
+            setFormData(data);
+        }
+    };
+
     return (
         <CommonGlobalConfiguration
             label={SCHEDULING_INFO.label}
@@ -63,6 +71,8 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                 displayTest={false}
                 displayDelete={false}
                 buttonIdPrefix={SCHEDULING_INFO.key}
+                retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
@@ -73,6 +83,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     options={digestHours}
+                    clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
                     errorValue={errors[SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay]}
@@ -96,6 +107,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     options={purgeFrequencies}
+                    clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
                     errorValue={errors[SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays]}

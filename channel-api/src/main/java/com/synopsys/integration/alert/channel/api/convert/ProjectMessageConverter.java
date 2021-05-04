@@ -9,20 +9,23 @@ package com.synopsys.integration.alert.channel.api.convert;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilder;
+import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.MessageReason;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMessage> {
+public class ProjectMessageConverter implements ProviderMessageConverter<ProjectMessage> {
     private final ChannelMessageFormatter messageFormatter;
+    private final LinkableItemConverter linkableItemConverter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
     private final ComponentConcernConverter componentConcernConverter;
 
     public ProjectMessageConverter(ChannelMessageFormatter formatter) {
-        super(formatter);
         this.messageFormatter = formatter;
+        this.linkableItemConverter = new LinkableItemConverter(messageFormatter);
         this.bomComponentDetailConverter = new BomComponentDetailConverter(formatter);
         this.componentConcernConverter = new ComponentConcernConverter(formatter);
     }
@@ -31,12 +34,21 @@ public class ProjectMessageConverter extends ProviderMessageConverter<ProjectMes
     public List<String> convertToFormattedMessageChunks(ProjectMessage projectMessage) {
         ChunkedStringBuilder chunkedStringBuilder = new ChunkedStringBuilder(messageFormatter.getMaxMessageLength());
 
-        String projectString = createLinkableItemString(projectMessage.getProject(), true);
+        String projectString;
+        Optional<String> optionalProjectVersionString;
+        Optional<LinkableItem> optionalProjectVersion = projectMessage.getProjectVersion();
+        if (optionalProjectVersion.isPresent()) {
+            projectString = linkableItemConverter.convertToStringWithoutLink(projectMessage.getProject(), true);
+            optionalProjectVersionString = optionalProjectVersion.map(projectVersion -> linkableItemConverter.convertToString(projectVersion, true));
+        } else {
+            projectString = linkableItemConverter.convertToString(projectMessage.getProject(), true);
+            optionalProjectVersionString = Optional.empty();
+        }
+
         chunkedStringBuilder.append(projectString);
         chunkedStringBuilder.append(messageFormatter.getLineSeparator());
 
-        projectMessage.getProjectVersion()
-            .map(projectVersion -> createLinkableItemString(projectVersion, true))
+        optionalProjectVersionString
             .ifPresent(projectVersionString -> {
                 chunkedStringBuilder.append(projectVersionString);
                 chunkedStringBuilder.append(messageFormatter.getLineSeparator());

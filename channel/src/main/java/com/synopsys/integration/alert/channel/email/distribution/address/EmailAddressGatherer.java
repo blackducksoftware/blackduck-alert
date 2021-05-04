@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.email.distribution;
+package com.synopsys.integration.alert.channel.email.distribution.address;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,15 +47,13 @@ public class EmailAddressGatherer {
         }
 
         boolean additionalEmailAddressesOnly = emailJobDetails.isAdditionalEmailAddressesOnly();
-        if (additionalEmailAddressesOnly) {
-            return emailAddresses;
-        }
-
-        Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(emailJobDetails.getJobId())
-                                                             .map(DistributionJobModel::getBlackDuckGlobalConfigId);
-        if (optionalBlackDuckGlobalConfigId.isPresent()) {
-            Set<String> providerEmailAddresses = gatherProviderEmailAddresses(projectOwnerOnly, projectHrefs, optionalBlackDuckGlobalConfigId.get());
-            emailAddresses.addAll(providerEmailAddresses);
+        if (!additionalEmailAddressesOnly) {
+            Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(emailJobDetails.getJobId())
+                                                                 .map(DistributionJobModel::getBlackDuckGlobalConfigId);
+            if (optionalBlackDuckGlobalConfigId.isPresent()) {
+                Set<String> providerEmailAddresses = gatherProviderEmailAddresses(projectOwnerOnly, projectHrefs, optionalBlackDuckGlobalConfigId.get());
+                emailAddresses.addAll(providerEmailAddresses);
+            }
         }
         return emailAddresses;
     }
@@ -96,7 +94,6 @@ public class EmailAddressGatherer {
         for (String href : projectHrefs) {
             Set<String> emailsForProject = providerDataAccessor.getEmailAddressesForProjectHref(providerConfigId, href);
             projectUserEmailAddresses.addAll(emailsForProject);
-
         }
         return projectUserEmailAddresses;
     }

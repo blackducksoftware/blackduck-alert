@@ -21,6 +21,7 @@ import ConfigurationLabel from 'component/common/ConfigurationLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StatusMessage from 'field/StatusMessage';
 import '../../../../css/audit.scss';
+import { AUDIT_INFO } from 'global/components/audit/AuditModel';
 
 class AuditPage extends Component {
     constructor(props) {
@@ -322,13 +323,12 @@ class AuditPage extends Component {
         const auditFetchInfo = {
             dataTotalSize: totalPageCount * currentPageSize
         };
-        const { label, description } = this.props;
 
         const shouldRefresh = !showDetailModal;
 
         return (
             <div>
-                <ConfigurationLabel configurationName={label} description={description} />
+                <ConfigurationLabel configurationName={AUDIT_INFO.label} description="Audit tracks all distribution events that have been produced by Alert and displays whether the event was successful or not. If an event fails, this page offers the ability to resend that event and see why it failed." />
                 <div className="pull-right">
                     <AutoRefresh startAutoReload={this.reloadAuditEntries} autoRefresh={autoRefresh} isEnabled={shouldRefresh} />
                 </div>
@@ -463,9 +463,7 @@ AuditPage.propTypes = {
     totalPageCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,
     resendNotification: PropTypes.func.isRequired,
-    descriptors: PropTypes.arrayOf(PropTypes.object),
-    description: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired
+    descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 const mapStateToProps = (state) => ({

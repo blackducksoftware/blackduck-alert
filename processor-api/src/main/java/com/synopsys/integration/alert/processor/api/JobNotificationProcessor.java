@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.processor.api;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,7 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;
 import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
 import com.synopsys.integration.alert.processor.api.distribute.ProviderMessageDistributor;
-import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
+import com.synopsys.integration.alert.processor.api.extract.model.ProcessedProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.filter.NotificationContentWrapper;
 
 @Component
@@ -59,15 +58,11 @@ public class JobNotificationProcessor {
                                                                            .flatMap(List::stream)
                                                                            .map(DetailedNotificationContent::getNotificationContentWrapper)
                                                                            .collect(Collectors.toList());
-        Set<Long> notificationIds = notificationContentWrappers
-                                        .stream()
-                                        .map(NotificationContentWrapper::getNotificationId)
-                                        .collect(Collectors.toSet());
 
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobId, destinationChannelName, notificationIds);
-        ProviderMessageHolder providerMessageHolder = notificationContentProcessor.processNotificationContent(processingType, notificationContentWrappers);
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobId, destinationChannelName);
+        ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(processingType, notificationContentWrappers);
 
-        providerMessageDistributor.distribute(processedNotificationDetails, providerMessageHolder);
+        providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
     }
 
     private void clearCaches() {

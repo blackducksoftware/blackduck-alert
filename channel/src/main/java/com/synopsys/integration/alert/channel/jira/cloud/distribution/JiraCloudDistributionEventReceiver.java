@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
-import com.synopsys.integration.alert.common.descriptor.accessor.AuditAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraCloudJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 
 @Component
 public class JiraCloudDistributionEventReceiver extends DistributionEventReceiver<JiraCloudJobDetailsModel> {
     @Autowired
-    public JiraCloudDistributionEventReceiver(Gson gson, AuditAccessor auditAccessor, JiraCloudJobDetailsAccessor jobDetailsAccessor, JiraCloudChannel channel, JiraCloudChannelKey channelKey) {
+    public JiraCloudDistributionEventReceiver(Gson gson, ProcessingAuditAccessor auditAccessor, JiraCloudJobDetailsAccessor jobDetailsAccessor, JiraCloudChannel channel, JiraCloudChannelKey channelKey) {
         super(gson, auditAccessor, jobDetailsAccessor, channel, channelKey);
     }
 

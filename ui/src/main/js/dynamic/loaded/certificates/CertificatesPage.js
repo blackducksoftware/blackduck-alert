@@ -10,6 +10,7 @@ import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
 
 class CertificatesPage extends Component {
     constructor(props) {
@@ -185,7 +186,7 @@ class CertificatesPage extends Component {
 
     render() {
         const {
-            fetching, inProgress, certificates, errorMessage, label, description, fieldErrors, descriptors, autoRefresh
+            fetching, inProgress, certificates, errorMessage, fieldErrors, descriptors, autoRefresh
         } = this.props;
 
         const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_CERTIFICATES, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
@@ -196,7 +197,7 @@ class CertificatesPage extends Component {
         return (
             <div>
                 <div>
-                    <ConfigurationLabel configurationName={label} description={description} />
+                    <ConfigurationLabel configurationName={CERTIFICATE_INFO.label} description="This page allows you to configure certificates for Alert to establish secure communication." />
                 </div>
                 <div>
                     <TableDisplay
@@ -241,8 +242,6 @@ CertificatesPage.propTypes = {
     deleteSuccess: PropTypes.bool,
     fetching: PropTypes.bool,
     fieldErrors: PropTypes.object,
-    description: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
     saveStatus: PropTypes.string.isRequired,
     autoRefresh: PropTypes.bool
 };
