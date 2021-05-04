@@ -52,6 +52,7 @@ const DistributionConfigurationForm = ({
     providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects] = {};
     const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel(providerFieldKeys, CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
+    const [channelSelectionModel, setChannelSelectionModel] = useState(FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
     const [testFieldModel, setTestFieldModel] = useState({});
     const [channelFields, setChannelFields] = useState(null);
     const [providerHasChannelName, setProviderHasChannelName] = useState(false);
@@ -124,6 +125,16 @@ const DistributionConfigurationForm = ({
         return FieldModelUtilities.updateFieldModelValues(providerInfoModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes, notificationTypes);
     };
 
+    const createProcessingTypeRequestBody = () => {
+        const channelName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
+        return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelName);
+    };
+
+    const createVulnerabilityFilterRequestBody = () => {
+        const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes);
+        return FieldModelUtilities.updateFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes, notificationTypes);
+    };
+
     useEffect(() => {
         const topicFieldModel = FieldModelUtilities.updateFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic, 'Alert Test Message');
         const messageFieldModel = FieldModelUtilities.updateFieldModelSingleValue(topicFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message, 'Test Message Content');
@@ -132,31 +143,38 @@ const DistributionConfigurationForm = ({
 
     useEffect(() => {
         const channelFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) : {};
-        const channelNameDefined = FieldModelUtilities.hasValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        let providerFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => providerName === model.descriptorName) : {};
-        // add the required related fields to the provider field model for the endpoint select fields.
-        providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName));
-        providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName));
-        providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType, FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType));
+        const providerFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => providerName === model.descriptorName) : {};
+        const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
+        const channelSelectionFieldModel = FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, channelKey);
         setChannelModel(channelFieldModel);
         setProviderModel(providerFieldModel);
-        setProviderHasChannelName(channelNameDefined);
+        setChannelSelectionModel(FieldModelUtilities.updateFieldModelSingleValue(channelSelectionFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelKey));
     }, [formData]);
 
     useEffect(() => {
+        const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelSelectionModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
+        const newFieldModel = FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, channelKey);
+        const newChannelModel = FieldModelUtilities.combineFieldModels(newFieldModel, channelModel);
+        setChannelModel(FieldModelUtilities.updateFieldModelSingleValue(newChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelKey));
+    }, [channelSelectionModel]);
+
+    useEffect(() => {
         const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
+        const providerFound = FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
+        setProviderHasChannelName(true);
         if (channelKey === EMAIL_INFO.key) {
             setChannelFields(<EmailDistributionConfiguration csrfToken={csrfToken} createAdditionalEmailRequestBody={createAdditionalEmailRequestBody} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
         } else if (channelKey === SLACK_INFO.key) {
             setChannelFields(<SlackDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
         } else {
+            setProviderHasChannelName(false);
             setChannelFields(null);
         }
+        setHasProvider(providerFound);
     }, [channelModel]);
 
     useEffect(() => {
-        setHasProvider(FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName));
         setFilterByProject(FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject));
         setHasNotificationTypes(FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes));
     }, [providerModel]);
@@ -229,9 +247,9 @@ const DistributionConfigurationForm = ({
                     clearable={false}
                     readOnly={readonly}
                     required
-                    currentConfig={channelModel}
-                    onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                    createRequestBody={() => channelSelectionModel}
+                    onChange={FieldModelUtilities.handleChange(channelSelectionModel, setChannelSelectionModel)}
+                    value={FieldModelUtilities.getFieldModelValues(channelSelectionModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
                 />
@@ -267,7 +285,7 @@ const DistributionConfigurationForm = ({
                     clearable={false}
                     readOnly={readonly}
                     required
-                    currentConfig={channelModel}
+                    createRequestBody={() => channelModel}
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                     value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
@@ -282,7 +300,7 @@ const DistributionConfigurationForm = ({
                     clearable={false}
                     readOnly={readonly}
                     required
-                    currentConfig={providerModel}
+                    createRequestBody={() => providerModel}
                     onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                     value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
@@ -313,8 +331,7 @@ const DistributionConfigurationForm = ({
                             description="Select the way messages will be processed: <TODO create the dynamic description>"
                             readOnly={readonly}
                             required
-                            requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
-                            currentConfig={providerModel}
+                            createRequestBody={createProcessingTypeRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
@@ -395,8 +412,7 @@ const DistributionConfigurationForm = ({
                             description="List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply)."
                             multiSelect
                             readOnly={readonly}
-                            requiredRelatedFields={[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
-                            currentConfig={providerModel}
+                            createRequestBody={createVulnerabilityFilterRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}

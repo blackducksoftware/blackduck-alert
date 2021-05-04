@@ -29,9 +29,9 @@ const CommonDistributionConfigurationForm = ({
     const [errorIsDetailed, setErrorIsDetailed] = useState(false);
     const [inProgress, setInProgress] = useState(false);
 
-    const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, fieldModel);
-    const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, formData.jobId);
-    const validateRequest = () => ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, formData);
+    const testRequest = (model) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, model);
+    const deleteRequest = (id) => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id);
+    const validateRequest = (model) => ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, model);
 
     const fetchData = async () => {
         const content = await retrieveData();
@@ -85,7 +85,8 @@ const CommonDistributionConfigurationForm = ({
         setInProgress(true);
         setErrorMessage(null);
         setErrors({});
-        const validateResponse = await validateRequest();
+        const dataToSend = createDataToSend ? createDataToSend() : formData;
+        const validateResponse = await validateRequest(dataToSend);
         if (validateResponse.ok) {
             const validateJson = await validateResponse.json();
             if (validateJson.hasErrors) {
@@ -93,7 +94,6 @@ const CommonDistributionConfigurationForm = ({
                 setErrors(validateJson.errors);
             } else {
                 const id = formData.jobId;
-                const dataToSend = createDataToSend ? createDataToSend() : formData;
                 const request = (id)
                     ? () => ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id, dataToSend)
                     : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, dataToSend);
@@ -110,7 +110,7 @@ const CommonDistributionConfigurationForm = ({
 
     const performDeleteRequest = async () => {
         setInProgress(true);
-        await deleteRequest();
+        await deleteRequest(formData.jobId);
         setFormData({});
         setActionMessage('Delete Successful');
         setInProgress(false);
