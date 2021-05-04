@@ -27,6 +27,7 @@ const CommonDistributionConfigurationForm = ({
     const [errorMessage, setErrorMessage] = useState(null);
     const [actionMessage, setActionMessage] = useState(null);
     const [errorIsDetailed, setErrorIsDetailed] = useState(false);
+    const [inProgress, setInProgress] = useState(false);
 
     const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, fieldModel);
     const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, formData.jobId);
@@ -49,6 +50,7 @@ const CommonDistributionConfigurationForm = ({
     };
 
     const performTestRequest = async () => {
+        setInProgress(true);
         const dataToSend = createDataToTest ? createDataToTest() : formData;
         const response = await testRequest(dataToSend);
         if (response.ok) {
@@ -62,6 +64,7 @@ const CommonDistributionConfigurationForm = ({
         }
 
         handleTestCancel();
+        setInProgress(false);
     };
 
     const handleTestClick = () => {
@@ -79,6 +82,7 @@ const CommonDistributionConfigurationForm = ({
         event.preventDefault();
         event.stopPropagation();
 
+        setInProgress(true);
         setErrorMessage(null);
         setErrors({});
         const validateResponse = await validateRequest();
@@ -101,12 +105,15 @@ const CommonDistributionConfigurationForm = ({
                 afterSuccessfulSave();
             }
         }
+        setInProgress(false);
     };
 
     const performDeleteRequest = async () => {
+        setInProgress(true);
         await deleteRequest();
         setFormData({});
         setActionMessage('Delete Successful');
+        setInProgress(false);
     };
 
     return (
@@ -135,6 +142,7 @@ const CommonDistributionConfigurationForm = ({
                     onDeleteClick={performDeleteRequest}
                     onCancelClick={() => afterSuccessfulSave()}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
+                    performingAction={inProgress}
                 />
             </form>
             <GlobalTestModal
@@ -142,6 +150,7 @@ const CommonDistributionConfigurationForm = ({
                 handleTest={performTestRequest}
                 handleCancel={handleTestCancel}
                 buttonIdPrefix={buttonIdPrefix}
+                performingAction={inProgress}
             >
                 <div>
                     {testFields}
