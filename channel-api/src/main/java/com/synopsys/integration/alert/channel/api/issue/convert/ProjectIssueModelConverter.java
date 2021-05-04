@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.convert.BomComponentDetailConverter;
-import com.synopsys.integration.alert.channel.api.convert.ComponentVulnerabilitiesConverter;
 import com.synopsys.integration.alert.channel.api.convert.LinkableItemConverter;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
