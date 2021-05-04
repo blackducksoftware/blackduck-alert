@@ -108,6 +108,11 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
     }
 
     @Override
+    public Optional<ProviderUserModel> findFirstUserByEmailAddress(Long providerConfigId, String emailAddress) {
+        return Optional.empty();
+    }
+
+    @Override
     public Set<String> getEmailAddressesForProjectHref(Long providerConfigId, String href) {
         // This will just be gotten/set by tests
         return expectedEmailAddresses;

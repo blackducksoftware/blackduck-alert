@@ -8,20 +8,30 @@
 package com.synopsys.integration.alert.channel.email.distribution;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.api.ChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
+import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
+import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.email.EmailMessagingService;
 import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.email.EmailTarget;
@@ -43,6 +53,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
     private final EmailChannelKey emailChannelKey;
     private final AlertProperties alertProperties;
+    private final JobEmailAddressValidator emailAddressValidator;
     private final EmailAddressGatherer emailAddressGatherer;
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
@@ -52,6 +63,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     public EmailChannelMessageSender(
         EmailChannelKey emailChannelKey,
         AlertProperties alertProperties,
+        JobEmailAddressValidator emailAddressValidator,
         EmailAddressGatherer emailAddressGatherer,
         EmailAttachmentFileCreator emailAttachmentFileCreator,
         FreemarkerTemplatingService freemarkerTemplatingService,
@@ -59,6 +71,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     ) {
         this.emailChannelKey = emailChannelKey;
         this.alertProperties = alertProperties;
+        this.emailAddressValidator = emailAddressValidator;
         this.emailAddressGatherer = emailAddressGatherer;
         this.emailAttachmentFileCreator = emailAttachmentFileCreator;
         this.freemarkerTemplatingService = freemarkerTemplatingService;
@@ -73,9 +86,24 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
     public MessageResult sendMessages(EmailProperties emailProperties, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {
         EmailMessagingService emailMessagingService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
-
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
 
+        // Validation
+        ValidatedEmailAddresses validatedAdditionalEmailAddresses = validateAdditionalEmailAddresses(emailJobDetails);
+        Set<String> invalidEmailAddresses = validatedAdditionalEmailAddresses.getInvalidEmailAddresses();
+        if (!invalidEmailAddresses.isEmpty()) {
+            emailJobDetails = new EmailJobDetailsModel(
+                emailJobDetails.getJobId(),
+                emailJobDetails.getSubjectLine(),
+                emailJobDetails.isProjectOwnerOnly(),
+                emailJobDetails.isAdditionalEmailAddressesOnly(),
+                emailJobDetails.getAttachmentFileType(),
+                new ArrayList<>(validatedAdditionalEmailAddresses.getValidEmailAddresses())
+            );
+        }
+
+        // Distribution
+        int totalEmailsSent = 0;
         for (EmailChannelMessageModel message : emailMessages) {
             Set<String> projectHrefs = message.getSource()
                                            .map(ProjectMessage::getProject)
@@ -83,18 +111,20 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                                            .map(Set::of)
                                            .orElse(Set.of());
 
-            Set<String> emailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
-
-            // TODO validate the email addresses are valid Black Duck user email addresses. Only send emails to the email addresses that are Black Duck user email addresses
-            if (emailAddresses.isEmpty()) {
-                throw new AlertException(String.format("Could not determine what email addresses to send this content to. Job ID: %s", emailJobDetails.getJobId()));
-            }
-            sendMessage(emailMessagingService, attachmentFormat, message, emailAddresses);
-            // TODO The email addresses that are not for Black Duck users should be reported in an error MessageResult
+            Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
+            validateGatheredEmailAddresses(gatheredEmailAddresses, invalidEmailAddresses);
+            sendMessage(emailMessagingService, attachmentFormat, message, gatheredEmailAddresses);
+            totalEmailsSent += gatheredEmailAddresses.size();
         }
-        // TODO this is incorrect and misleading, the number should reflect the number of emails sent out not the number of emailMessages.
-        // Ex: 2 emailMessage sent, 1 emailMessage sent to 10 email addresses and 1 emailMessage sent to 5 email addresses = 15 emails sent out
-        return new MessageResult(String.format("Successfully sent %d email(s)", emailMessages.size()));
+
+        // Reporting
+        if (!invalidEmailAddresses.isEmpty()) {
+            String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
+            String errorMessage = String.format("No emails were sent to the following recipients because they were invalid: %s", invalidEmailAddressesString);
+            AlertFieldStatus errorStatus = new AlertFieldStatus(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, FieldStatusSeverity.ERROR, errorMessage);
+            return new MessageResult(errorMessage, List.of(errorStatus));
+        }
+        return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
     }
 
     private ConfigurationModel retrieveGlobalEmailConfig() throws AlertException {
@@ -102,6 +132,25 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
                    .stream()
                    .findAny()
                    .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
+    }
+
+    private ValidatedEmailAddresses validateAdditionalEmailAddresses(EmailJobDetailsModel emailJobDetails) {
+        UUID jobId = emailJobDetails.getJobId();
+        if (null != jobId) {
+            return emailAddressValidator.validate(jobId, emailJobDetails.getAdditionalEmailAddresses());
+        }
+        return new ValidatedEmailAddresses(new HashSet<>(emailJobDetails.getAdditionalEmailAddresses()), Set.of());
+    }
+
+    private void validateGatheredEmailAddresses(Set<String> gatheredEmailAddresses, Set<String> invalidEmailAddresses) throws AlertException {
+        if (gatheredEmailAddresses.isEmpty()) {
+            if (invalidEmailAddresses.isEmpty()) {
+                throw new AlertException("Could not determine what email addresses to send this content to");
+            } else {
+                String invalidEmailAddressesString = StringUtils.join(invalidEmailAddresses, ", ");
+                throw new AlertException(String.format("No valid email addresses to send this content to. The following email addresses were invalid: %s", invalidEmailAddressesString));
+            }
+        }
     }
 
     private void sendMessage(EmailMessagingService emailService, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {

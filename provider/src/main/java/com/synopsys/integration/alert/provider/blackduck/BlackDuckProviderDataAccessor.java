@@ -44,11 +44,11 @@ import com.synopsys.integration.blackduck.http.PagedRequest;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckJsonTransformer;
 import com.synopsys.integration.blackduck.http.transform.BlackDuckResponsesTransformer;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
+import com.synopsys.integration.blackduck.service.dataservice.UserService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingSupplier;
 import com.synopsys.integration.log.IntLogger;
@@ -192,6 +192,25 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
             logger.errorAndDebug(createProjectNotFoundString(providerConfigName, e.getMessage()), e);
         }
         return List.of();
+    }
+
+    @Override
+    public Optional<ProviderUserModel> findFirstUserByEmailAddress(Long providerConfigId, String emailAddress) {
+        Optional<ConfigurationModel> providerConfigOptional = configurationAccessor.getConfigurationById(providerConfigId);
+        if (providerConfigOptional.isPresent()) {
+            try {
+                BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(providerConfigOptional.get());
+                UserService userService = blackDuckServicesFactory.createUserService();
+                return userService.findUsersByEmail(emailAddress, new BlackDuckPageDefinition(1, 0))
+                           .getItems()
+                           .stream()
+                           .map(userView -> new ProviderUserModel(userView.getEmail(), false))
+                           .findFirst();
+            } catch (IntegrationException e) {
+                logger.errorAndDebug(createProjectNotFoundString(providerConfigId, e.getMessage()), e);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
