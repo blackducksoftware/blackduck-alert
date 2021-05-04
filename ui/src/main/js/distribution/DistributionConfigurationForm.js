@@ -24,8 +24,15 @@ import * as DistributionRequestUtility from 'distribution/DistributionRequestUti
 import { AZURE_INFO } from 'global/channels/azure/AzureModel';
 import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
+import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
 import { SLACK_INFO } from 'global/channels/slack/SlackModels';
+import AzureDistributionConfiguration from 'distribution/channels/azure/AzureDistributionConfiguration';
 import EmailDistributionConfiguration from 'distribution/channels/email/EmailDistributionConfiguration';
+import JiraCloudDistributionConfiguration from 'distribution/channels/jira/cloud/JiraCloudDistributionConfiguration';
+import JiraServerDistributionConfiguration from 'distribution/channels/jira/server/JiraServerDistributionConfiguration';
+import MsTeamsDistributionConfiguration from 'distribution/channels/msteams/MsTeamsDistributionConfiguration';
 import SlackDistributionConfiguration from 'distribution/channels/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
@@ -163,8 +170,16 @@ const DistributionConfigurationForm = ({
         const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
         const providerFound = FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
         setProviderHasChannelName(true);
-        if (channelKey === EMAIL_INFO.key) {
+        if (channelKey === AZURE_INFO.key) {
+            setChannelFields(<AzureDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+        } else if (channelKey === EMAIL_INFO.key) {
             setChannelFields(<EmailDistributionConfiguration csrfToken={csrfToken} createAdditionalEmailRequestBody={createAdditionalEmailRequestBody} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+        } else if (channelKey === JIRA_CLOUD_INFO.key) {
+            setChannelFields(<JiraCloudDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+        } else if (channelKey === JIRA_SERVER_INFO.key) {
+            setChannelFields(<JiraServerDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+        } else if (channelKey === MSTEAMS_INFO.key) {
+            setChannelFields(<MsTeamsDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
         } else if (channelKey === SLACK_INFO.key) {
             setChannelFields(<SlackDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
         } else {
