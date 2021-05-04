@@ -22,25 +22,21 @@ import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 @Component
-public class EmailAddressValidator {
+public class JobEmailAddressValidator {
     private final JobAccessor jobAccessor;
     private final ProviderDataAccessor providerDataAccessor;
 
     @Autowired
-    public EmailAddressValidator(JobAccessor jobAccessor, ProviderDataAccessor providerDataAccessor) {
+    public JobEmailAddressValidator(JobAccessor jobAccessor, ProviderDataAccessor providerDataAccessor) {
         this.jobAccessor = jobAccessor;
         this.providerDataAccessor = providerDataAccessor;
     }
 
-    // TODO rename model?
     public ValidatedEmailAddresses validate(UUID jobId, Collection<String> emailAddresses) {
-        Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(jobId)
-                                                             .map(DistributionJobModel::getBlackDuckGlobalConfigId);
-        if (optionalBlackDuckGlobalConfigId.isPresent()) {
-            return validate(optionalBlackDuckGlobalConfigId.get(), emailAddresses);
-        } else {
-            return new ValidatedEmailAddresses(Set.of(), new HashSet<>(emailAddresses));
-        }
+        return jobAccessor.getJobById(jobId)
+                   .map(DistributionJobModel::getBlackDuckGlobalConfigId)
+                   .map(aLong -> validate(aLong, emailAddresses))
+                   .orElseGet(() -> new ValidatedEmailAddresses(Set.of(), new HashSet<>(emailAddresses)));
     }
 
     private ValidatedEmailAddresses validate(Long providerConfigId, Collection<String> emailAddresses) {
@@ -55,7 +51,6 @@ public class EmailAddressValidator {
                 invalidEmailAddresses.add(emailAddress);
             }
         }
-
         return new ValidatedEmailAddresses(validEmailAddresses, invalidEmailAddresses);
     }
 

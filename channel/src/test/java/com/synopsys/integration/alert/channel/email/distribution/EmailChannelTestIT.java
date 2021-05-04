@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFi
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
-import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressValidator;
+import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -44,7 +44,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(emailChannelKey), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailGlobalConfig));
 
-        EmailAddressValidator emailAddressValidator = Mockito.mock(EmailAddressValidator.class);
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.anyCollection())).then(invocation -> invocation.getArguments()[0]);
 
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
@@ -66,7 +66,7 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(emailChannelKey), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
-        EmailAddressValidator emailAddressValidator = Mockito.mock(EmailAddressValidator.class);
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.anyCollection())).then(invocation -> invocation.getArguments()[0]);
 
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());

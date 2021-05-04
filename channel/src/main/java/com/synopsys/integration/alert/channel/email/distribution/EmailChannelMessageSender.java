@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFi
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
-import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressValidator;
+import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
@@ -51,7 +51,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
     private final EmailChannelKey emailChannelKey;
     private final AlertProperties alertProperties;
-    private final EmailAddressValidator emailAddressValidator;
+    private final JobEmailAddressValidator emailAddressValidator;
     private final EmailAddressGatherer emailAddressGatherer;
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
@@ -61,7 +61,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     public EmailChannelMessageSender(
         EmailChannelKey emailChannelKey,
         AlertProperties alertProperties,
-        EmailAddressValidator emailAddressValidator,
+        JobEmailAddressValidator emailAddressValidator,
         EmailAddressGatherer emailAddressGatherer,
         EmailAttachmentFileCreator emailAttachmentFileCreator,
         FreemarkerTemplatingService freemarkerTemplatingService,

@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFi
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
-import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressValidator;
+import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -65,7 +65,7 @@ public class EmailGlobalTestActionTest {
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
         Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of());
 
-        EmailAddressValidator emailAddressValidator = Mockito.mock(EmailAddressValidator.class);
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.anyCollection())).then(invocation -> invocation.getArguments()[0]);
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
@@ -139,7 +139,7 @@ public class EmailGlobalTestActionTest {
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
         Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of(emailAddress));
 
-        EmailAddressValidator emailAddressValidator = Mockito.mock(EmailAddressValidator.class);
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
         Mockito.when(emailAddressValidator.validate(Mockito.anyCollection())).then(invocation -> invocation.getArguments()[0]);
 
         Gson gson = new Gson();
