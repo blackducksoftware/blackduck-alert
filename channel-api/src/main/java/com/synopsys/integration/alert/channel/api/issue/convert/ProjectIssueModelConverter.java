@@ -161,13 +161,13 @@ public class ProjectIssueModelConverter {
         Optional<String> optionalPolicyName = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getName);
         if (optionalPolicyName.isPresent()) {
             componentConcernPieceBuilder.append(COMMA_SPACE);
-            componentConcernPieceBuilder.append(ComponentConcernType.POLICY.name());
+            componentConcernPieceBuilder.append(ComponentConcernType.POLICY.getDisplayName());
             componentConcernPieceBuilder.append('[');
             componentConcernPieceBuilder.append(optionalPolicyName.get());
             componentConcernPieceBuilder.append(']');
         } else {
             componentConcernPieceBuilder.append(COMMA_SPACE);
-            componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.name());
+            componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.getDisplayName());
         }
 
         String componentConcernPiece = componentConcernPieceBuilder.toString();
