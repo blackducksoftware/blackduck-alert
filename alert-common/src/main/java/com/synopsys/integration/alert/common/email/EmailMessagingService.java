@@ -65,6 +65,7 @@ public class EmailMessagingService {
                                              .collect(Collectors.toSet());
             if (emailAddresses.isEmpty() || StringUtils.isBlank(templateName)) {
                 // Nothing to send
+                logger.debug("No non-blank email addresses were provided");
                 return;
             }
 
@@ -117,18 +118,25 @@ public class EmailMessagingService {
     private List<Message> createMessages(Collection<String> emailAddresses, String subjectLine, Session session, MimeMultipart mimeMultipart, EmailProperties emailProperties)
         throws AlertException, MessagingException {
         List<InternetAddress> addresses = new ArrayList<>();
+        Set<String> invalidAddresses = new HashSet<>();
         for (String emailAddress : emailAddresses) {
             try {
                 InternetAddress toAddress = new InternetAddress(emailAddress);
                 toAddress.validate();
                 addresses.add(toAddress);
             } catch (AddressException e) {
+                invalidAddresses.add(emailAddress);
                 logger.warn("Could not create the address from {}: {}", emailAddress, e.getMessage());
             }
         }
 
         if (addresses.isEmpty()) {
-            throw new AlertException("There were no valid email addresses supplied.");
+            String noValidAddressesErrorMessage = "There were no valid email addresses supplied.";
+            if (!invalidAddresses.isEmpty()) {
+                String invalidAddressesString = StringUtils.join(invalidAddresses, ", ");
+                noValidAddressesErrorMessage = String.format("%s Invalid addresses: %s", noValidAddressesErrorMessage, invalidAddressesString);
+            }
+            throw new AlertException(noValidAddressesErrorMessage);
         }
 
         String fromString = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY);

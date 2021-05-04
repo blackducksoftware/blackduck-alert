@@ -40,6 +40,8 @@ public interface ProviderDataAccessor {
 
     List<ProviderUserModel> getUsersByProviderConfigName(String providerConfigName);
 
+    Optional<ProviderUserModel> findFirstUserByEmailAddress(Long providerConfigId, String emailAddress);
+
     @Deprecated
     void updateProjectAndUserData(Long providerConfigId, Map<ProviderProject, Set<String>> projectToUserData, Set<String> additionalRelevantUsers);
 

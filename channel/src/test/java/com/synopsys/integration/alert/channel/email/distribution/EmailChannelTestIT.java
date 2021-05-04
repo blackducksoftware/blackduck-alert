@@ -5,6 +5,7 @@ import static com.synopsys.integration.alert.test.common.FieldModelUtils.addConf
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,9 @@ import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
+import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
+import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -33,6 +37,8 @@ public class EmailChannelTestIT extends AbstractChannelTest {
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendEmailTest() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
+        String testEmailRecipient = properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
+
         EmailChannelKey emailChannelKey = ChannelKeys.EMAIL;
         EmailAddressGatherer emailAddressGatherer = new EmailAddressGatherer(null, null);
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, new MessageContentGroupCsvCreator(), gson);
@@ -42,12 +48,16 @@ public class EmailChannelTestIT extends AbstractChannelTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(emailChannelKey), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailGlobalConfig));
 
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
+        Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
+
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, testAlertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, configurationAccessor);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, testAlertProperties, emailAddressValidator, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService,
+            configurationAccessor);
 
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
-        List<String> emailAddresses = List.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
+        List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
         ChannelITTestAssertions.assertSendSimpleMessageSuccess(emailChannel, emailJobDetails);
@@ -56,16 +66,20 @@ public class EmailChannelTestIT extends AbstractChannelTest {
     @Test
     public void sendEmailNullGlobalTest() {
         EmailChannelKey emailChannelKey = ChannelKeys.EMAIL;
+        String testEmailRecipient = properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT);
 
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.eq(emailChannelKey), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of());
 
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
+        Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(testEmailRecipient), Set.of()));
+
         EmailChannelMessageConverter emailChannelMessageConverter = new EmailChannelMessageConverter(new EmailChannelMessageFormatter());
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, null, null, null, null, configurationAccessor);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(emailChannelKey, null, emailAddressValidator, null, null, null, configurationAccessor);
 
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
-        List<String> emailAddresses = List.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
+        List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
         ChannelITTestAssertions.assertSendSimpleMessageException(emailChannel, emailJobDetails, "ERROR: Missing Email global config.");

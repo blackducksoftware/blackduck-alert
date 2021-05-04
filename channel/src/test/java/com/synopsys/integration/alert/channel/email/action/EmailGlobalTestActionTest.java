@@ -16,8 +16,10 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.MessageContentGroupCsvCreator;
-import com.synopsys.integration.alert.channel.email.distribution.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
+import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
+import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
+import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -64,8 +66,11 @@ public class EmailGlobalTestActionTest {
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
         Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of());
 
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
+        Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(), Set.of()));
+
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, null, emailAddressGatherer, null, freemarkerTemplatingService, configurationAccessor);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, null, emailAddressValidator, emailAddressGatherer, null, freemarkerTemplatingService, configurationAccessor);
 
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessageSender);
 
@@ -135,12 +140,15 @@ public class EmailGlobalTestActionTest {
         EmailAddressGatherer emailAddressGatherer = Mockito.mock(EmailAddressGatherer.class);
         Mockito.when(emailAddressGatherer.gatherEmailAddresses(Mockito.any(), Mockito.any())).thenReturn(Set.of(emailAddress));
 
+        JobEmailAddressValidator emailAddressValidator = Mockito.mock(JobEmailAddressValidator.class);
+        Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(emailAddress), Set.of()));
+
         Gson gson = new Gson();
         MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, messageContentGroupCsvCreator, gson);
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
 
-        return new EmailChannelMessageSender(ChannelKeys.EMAIL, testAlertProperties, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, null);
+        return new EmailChannelMessageSender(ChannelKeys.EMAIL, testAlertProperties, emailAddressValidator, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, null);
     }
 
     private FieldUtility createValidEmailGlobalFieldUtility(TestProperties testProperties) {
