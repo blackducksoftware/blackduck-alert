@@ -89,7 +89,7 @@ const MainPage = ({
                 key="blackduck-route"
                 path={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
             >
-                <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />
+                {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && <BlackDuckConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />}
             </Route>
             {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} showRefreshButton={!autoRefresh} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />)}
             {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AZURE_INFO.key].readOnly} />)}
