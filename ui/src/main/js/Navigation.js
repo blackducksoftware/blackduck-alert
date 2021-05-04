@@ -19,6 +19,7 @@ import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateMode
 import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
 import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
 import { doesDescriptorExist } from 'util/descriptorUtilities';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from './distribution/DistributionModel';
 
 const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
     const createStaticNavItem = (uriPrefix, itemObject) => (
@@ -58,6 +59,11 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
                     {doesDescriptorExist(globalDescriptorMap, SLACK_INFO.key) && createStaticNavItem(channelUri, SLACK_INFO)}
                     <li className="navHeader">
                         Jobs
+                    </li>
+                    <li>
+                        <NavLink to={DISTRIBUTION_URLS.distributionTableUrl} activeClassName="activeNav">
+                            {DISTRIBUTION_INFO.label}
+                        </NavLink>
                     </li>
                     <li>
                         <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">

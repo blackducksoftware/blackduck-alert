@@ -63,6 +63,7 @@ const EndpointSelectField = ({
                         emptyFieldValue();
                     }
                     setOptions(selectOptions);
+                    setRequestErrorValue(null);
                 });
             } else {
                 response.json()
@@ -85,7 +86,7 @@ const EndpointSelectField = ({
                 onChange={onChange}
                 onFocus={onSendClick}
                 options={options}
-                id={id}
+                id={fieldKey}
                 inputClass={inputClass}
                 searchable={searchable}
                 placeholder={placeholder}

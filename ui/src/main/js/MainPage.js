@@ -38,6 +38,9 @@ import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
 import UserManagement from 'dynamic/loaded/users/UserManagement';
 import JiraServerGlobalConfiguration from 'global/channels/jira/server/JiraServerGlobalConfiguration';
 import { doesDescriptorExist } from 'util/descriptorUtilities';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
+import DistributionConfigurationV2 from 'distribution/DistributionConfigurationV2';
+import DistributionConfigurationForm from 'distribution/DistributionConfigurationForm';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh
@@ -95,6 +98,14 @@ const MainPage = ({
             {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[JIRA_SERVER_INFO.key].readOnly} />)}
             {doesDescriptorExist(globalDescriptorMap, MSTEAMS_INFO.key) && createRoute(channelUri, MSTEAMS_INFO.url, <MSTeamsGlobalConfiguration />)}
             {doesDescriptorExist(globalDescriptorMap, SLACK_INFO.key) && createRoute(channelUri, SLACK_INFO.url, <SlackGlobalConfiguration />)}
+            <Route
+                exact
+                key="distribution-route"
+                path={[`${DISTRIBUTION_URLS.distributionConfigUrl}/:id?`, `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/:id?`]}
+            >
+                <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} />
+            </Route>
+            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} showRefreshButton={!autoRefresh} />)}
             <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
             {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
             {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
