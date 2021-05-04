@@ -21,12 +21,12 @@ const StatusMessage = ({
         setShowMessage(false);
     };
     useEffect(() => {
-        if (!showError) {
+        if (errorMessage) {
             setShowError(true);
         }
     }, [errorMessage]);
     useEffect(() => {
-        if (!showMessage) {
+        if (actionMessage) {
             setShowMessage(true);
         }
     }, [actionMessage]);

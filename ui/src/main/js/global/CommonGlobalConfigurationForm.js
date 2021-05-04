@@ -27,6 +27,7 @@ const CommonGlobalConfigurationForm = ({
     const [errorMessage, setErrorMessage] = useState(null);
     const [actionMessage, setActionMessage] = useState(null);
     const [errorIsDetailed, setErrorIsDetailed] = useState(false);
+    const [inProgress, setInProgress] = useState(false);
 
     const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, fieldModel);
     const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, FieldModelUtilities.getFieldModelId(formData));
@@ -49,6 +50,7 @@ const CommonGlobalConfigurationForm = ({
     };
 
     const performTestRequest = async () => {
+        setInProgress(true);
         let copy = JSON.parse(JSON.stringify(formData));
         Object.keys(testFormData).forEach((key) => {
             copy = FieldModelUtilities.updateFieldModelSingleValue(copy, key, testFormData[key]);
@@ -67,6 +69,7 @@ const CommonGlobalConfigurationForm = ({
         }
 
         handleTestCancel();
+        setInProgress(false);
     };
 
     const handleTestClick = () => {
@@ -84,6 +87,7 @@ const CommonGlobalConfigurationForm = ({
         event.preventDefault();
         event.stopPropagation();
 
+        setInProgress(true);
         setErrorMessage(null);
         setErrors({});
         const validateResponse = await validateRequest();
@@ -105,12 +109,15 @@ const CommonGlobalConfigurationForm = ({
                 afterSuccessfulSave();
             }
         }
+        setInProgress(false);
     };
 
     const performDeleteRequest = async () => {
+        setInProgress(true);
         await deleteRequest();
         setFormData({});
         setActionMessage('Delete Successful');
+        setInProgress(false);
     };
 
     return (
@@ -137,6 +144,7 @@ const CommonGlobalConfigurationForm = ({
                     onTestClick={handleTestClick}
                     onDeleteClick={performDeleteRequest}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
+                    performingAction={inProgress}
                 />
             </form>
             <GlobalTestModal
