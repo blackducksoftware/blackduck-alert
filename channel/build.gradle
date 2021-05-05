@@ -22,4 +22,5 @@ dependencies {
     implementation 'org.freemarker:freemarker'
 
     testImplementation project(':test-common')
+    testImplementation 'com.squareup.okhttp3:mockwebserver'
 }
