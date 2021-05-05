@@ -75,6 +75,7 @@ const CommonGlobalConfigurationForm = ({
     const handleTestClick = () => {
         setErrorMessage(null);
         setErrors({});
+        setActionMessage(null);
 
         if (testFields) {
             setShowTest(true);
@@ -89,6 +90,7 @@ const CommonGlobalConfigurationForm = ({
 
         setInProgress(true);
         setErrorMessage(null);
+        setActionMessage(null);
         setErrors({});
         const validateResponse = await validateRequest();
         if (validateResponse.ok) {
@@ -114,6 +116,7 @@ const CommonGlobalConfigurationForm = ({
 
     const performDeleteRequest = async () => {
         setInProgress(true);
+        setActionMessage(null);
         await deleteRequest();
         setFormData({});
         setActionMessage('Delete Successful');
