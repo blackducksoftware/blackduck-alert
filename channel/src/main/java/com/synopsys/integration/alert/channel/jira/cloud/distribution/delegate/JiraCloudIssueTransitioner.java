@@ -17,8 +17,6 @@ import com.synopsys.integration.jira.common.model.request.IssueRequestModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class JiraCloudIssueTransitioner extends JiraIssueTransitioner {
-
-    private final JiraCloudJobDetailsModel distributionDetails;
     private final IssueService issueService;
 
     public JiraCloudIssueTransitioner(
@@ -27,19 +25,8 @@ public class JiraCloudIssueTransitioner extends JiraIssueTransitioner {
         JiraCloudJobDetailsModel distributionDetails,
         IssueService issueService
     ) {
-        super(jiraCloudIssueCommenter, issueResponseCreator);
-        this.distributionDetails = distributionDetails;
+        super(jiraCloudIssueCommenter, issueResponseCreator, distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
         this.issueService = issueService;
-    }
-
-    @Override
-    protected String extractReopenTransitionName() {
-        return distributionDetails.getReopenTransition();
-    }
-
-    @Override
-    protected String extractResolveTransitionName() {
-        return distributionDetails.getResolveTransition();
     }
 
     @Override
