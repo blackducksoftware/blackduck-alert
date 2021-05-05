@@ -19,6 +19,8 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
 public class ComponentConcernConverter {
+    private static final String TRIPLE_STRING_REPLACEMENT = "%s%s%s";
+
     private static final String VERB_ADDED = " Added";
     private static final String VERB_UPDATED = " Updated";
     private static final String VERB_REMOVED = " Removed";
@@ -81,7 +83,7 @@ public class ComponentConcernConverter {
 
     private String createPolicySectionPiece(ComponentConcern policyConcern) {
         String verb = createItemOperationVerb(policyConcern.getOperation());
-        String severity = String.format("%s%s%s", formattedOpenParen, formatter.encode(policyConcern.getSeverity().name()), formattedCloseParen);
+        String severity = String.format(TRIPLE_STRING_REPLACEMENT, formattedOpenParen, formatter.encode(policyConcern.getSeverity().name()), formattedCloseParen);
         return String.format("%s%s%s%s%s",
             policyConcern.getType().getDisplayName(),
             verb,
@@ -135,7 +137,7 @@ public class ComponentConcernConverter {
 
         List<String> vulnerabilitiesForOperationSectionPieces = new LinkedList<>();
 
-        vulnerabilitiesForOperationSectionPieces.add(String.format("%s%s%s", formattedVulnerabilitiesString, verb, formattedColonSpace));
+        vulnerabilitiesForOperationSectionPieces.add(String.format(TRIPLE_STRING_REPLACEMENT, formattedVulnerabilitiesString, verb, formattedColonSpace));
 
         ComponentConcernSeverity severity = ComponentConcernSeverity.BLOCKER;
         for (ComponentConcern vulnerabilityConcern : vulnerabilityConcerns) {
@@ -164,7 +166,7 @@ public class ComponentConcernConverter {
             String encodedUrl = formatter.encode(optionalUrl.get());
             vulnerabilityConcernString = formatter.createLink(encodedName, encodedUrl);
         }
-        return String.format("%s%s%s", formattedBracketLeft, vulnerabilityConcernString, formattedBracketRight);
+        return String.format(TRIPLE_STRING_REPLACEMENT, formattedBracketLeft, vulnerabilityConcernString, formattedBracketRight);
     }
 
     private String createItemOperationVerb(ItemOperation itemOperation) {
