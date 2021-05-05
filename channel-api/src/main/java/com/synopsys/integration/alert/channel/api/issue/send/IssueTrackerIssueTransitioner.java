@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.api.issue.send;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -77,8 +78,9 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
 
     private void addTransitionFailureComment(IssueOperation issueOperation, ExistingIssueDetails<T> existingIssueDetails, IssueMissingTransitionException issueMissingTransitionException) {
         String failureComment = String.format("The %s operation was performed on this component in BlackDuck, but Alert failed to transition the issue: %s", issueOperation.name(), issueMissingTransitionException.getMessage());
+        IssueCommentModel<T> failureCommentRequestModel = new IssueCommentModel<>(existingIssueDetails, List.of(failureComment), null);
         try {
-            commenter.addComment(failureComment, existingIssueDetails, null);
+            commenter.commentOnIssue(failureCommentRequestModel);
         } catch (AlertException e) {
             logger.warn("Failed to add comment for {}", IssueMissingTransitionException.class.getSimpleName(), e);
         }
