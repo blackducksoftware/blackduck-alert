@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueR
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
+import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
@@ -43,7 +44,7 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
 
             boolean shouldAttemptTransition = isTransitionRequired(existingIssueDetails, issueOperation);
             if (shouldAttemptTransition) {
-                findAndPerformTransition(existingIssueDetails, transitionName);
+                attemptTransition(issueOperation, existingIssueDetails, transitionName);
                 IssueTrackerIssueResponseModel<T> transitionResponseModel = issueResponseCreator.createIssueResponse(issueTransitionModel.getSource(), existingIssueDetails, issueOperation);
                 transitionResponse = Optional.of(transitionResponseModel);
             } else {
@@ -63,6 +64,24 @@ public abstract class IssueTrackerIssueTransitioner<T extends Serializable> {
 
     protected abstract boolean isTransitionRequired(ExistingIssueDetails<T> existingIssueDetails, IssueOperation issueOperation) throws AlertException;
 
-    protected abstract void findAndPerformTransition(ExistingIssueDetails<T> existingIssueDetails, String transitionName) throws AlertException;
+    protected abstract void findAndPerformTransition(ExistingIssueDetails<T> existingIssueDetails, String transitionName) throws AlertException, IssueMissingTransitionException;
+
+    private void attemptTransition(IssueOperation issueOperation, ExistingIssueDetails<T> existingIssueDetails, String transitionName) throws AlertException {
+        try {
+            findAndPerformTransition(existingIssueDetails, transitionName);
+        } catch (IssueMissingTransitionException e) {
+            addTransitionFailureComment(issueOperation, existingIssueDetails, e);
+            throw e;
+        }
+    }
+
+    private void addTransitionFailureComment(IssueOperation issueOperation, ExistingIssueDetails<T> existingIssueDetails, IssueMissingTransitionException issueMissingTransitionException) {
+        String failureComment = String.format("The %s operation was performed on this component in BlackDuck, but Alert failed to transition the issue: %s", issueOperation.name(), issueMissingTransitionException.getMessage());
+        try {
+            commenter.addComment(failureComment, existingIssueDetails, null);
+        } catch (AlertException e) {
+            logger.warn("Failed to add comment for {}", IssueMissingTransitionException.class.getSimpleName(), e);
+        }
+    }
 
 }
