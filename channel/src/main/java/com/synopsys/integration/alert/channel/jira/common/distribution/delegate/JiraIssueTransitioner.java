@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +39,19 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected JiraIssueTransitioner(IssueTrackerIssueCommenter<String> commenter, IssueTrackerIssueResponseCreator issueResponseCreator) {
+    private final @Nullable String resolveTransitionName;
+    private final @Nullable String reopenTransitionName;
+
+    protected JiraIssueTransitioner(
+        IssueTrackerIssueCommenter<String> commenter,
+        IssueTrackerIssueResponseCreator issueResponseCreator,
+        @Nullable String resolveTransitionName,
+        @Nullable String reopenTransitionName
+    ) {
         super(commenter, issueResponseCreator);
+        this.resolveTransitionName = resolveTransitionName;
+        this.reopenTransitionName = reopenTransitionName;
     }
-
-    protected abstract String extractReopenTransitionName();
-
-    protected abstract String extractResolveTransitionName();
 
     protected abstract StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException;
 
@@ -56,9 +63,9 @@ public abstract class JiraIssueTransitioner extends IssueTrackerIssueTransitione
     protected final Optional<String> retrieveJobTransitionName(IssueOperation transitionType) {
         String transitionName = null;
         if (IssueOperation.OPEN.equals(transitionType)) {
-            transitionName = extractReopenTransitionName();
+            transitionName = reopenTransitionName;
         } else if (IssueOperation.RESOLVE.equals(transitionType)) {
-            transitionName = extractResolveTransitionName();
+            transitionName = resolveTransitionName;
         }
         return Optional.ofNullable(transitionName).filter(StringUtils::isNotBlank);
     }
