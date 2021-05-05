@@ -1,17 +1,17 @@
 package com.synopsys.integration.alert.channel.slack.distribution.mock;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 
 public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
-
     //A Set<Long> is used because an event success or failure will mark all notifications in the event as a success or failure.
     //Multiple notifications can be sent as part of a job.
     private Map<UUID, Set<Long>> successes = new HashMap<>();
@@ -30,7 +30,6 @@ public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
     @Override
     public void setAuditEntryFailure(UUID jobId, Set<Long> notificationIds, String errorMessage, @Nullable Throwable exception) {
         failures.put(jobId, notificationIds);
-        System.out.println("Error Message: " + errorMessage);
     }
 
     public Map<UUID, Set<Long>> getSuccesses() {
@@ -49,11 +48,10 @@ public class MockProcessingAuditAccessor implements ProcessingAuditAccessor {
         return getIds(failures);
     }
 
-    private Set<Long> getIds(Map<UUID, Set<Long>> jobResults) {
-        Set<Long> successfulIds = new HashSet<>();
-        for (Set<Long> values : jobResults.values()) {
-            successfulIds.addAll(values);
-        }
-        return successfulIds;
+    private Set<Long> getIds(Map<UUID, Set<Long>> results) {
+        return results.values()
+                   .stream()
+                   .flatMap(Collection::stream)
+                   .collect(Collectors.toSet());
     }
 }
