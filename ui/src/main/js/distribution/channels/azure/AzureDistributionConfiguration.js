@@ -9,7 +9,9 @@ const AzureDistributionConfiguration = ({
     data, setData, errors, readonly
 }) => {
     useEffect(() => {
-        setData(FieldModelUtilities.updateFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType, 'Task'));
+        if (!FieldModelUtilities.hasValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)) {
+            setData(FieldModelUtilities.updateFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType, 'Task'));
+        }
     }, []);
     return (
         <>
@@ -30,7 +32,7 @@ const AzureDistributionConfiguration = ({
                 name={AZURE_DISTRIBUTION_FIELD_KEYS.project}
                 required
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, AZURE_DISTRIBUTION_FIELD_KEYS.project)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.project)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.project)}
                 errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.project]}
             />
@@ -41,7 +43,7 @@ const AzureDistributionConfiguration = ({
                 name={AZURE_DISTRIBUTION_FIELD_KEYS.workItemType}
                 required
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)}
                 errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemType]}
             />
@@ -51,7 +53,7 @@ const AzureDistributionConfiguration = ({
                 description="The state a work item should result in if Alert receives a DELETE operation for it."
                 name={AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
                 errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted]}
             />
@@ -61,7 +63,7 @@ const AzureDistributionConfiguration = ({
                 description="The state a work item should result in if Alert receives an ADD operation and the work item is in a completed state."
                 name={AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
                 errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen]}
             />

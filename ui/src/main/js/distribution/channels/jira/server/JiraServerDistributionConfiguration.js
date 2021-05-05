@@ -11,7 +11,9 @@ const JiraServerDistributionConfiguration = ({
     data, setData, errors, readonly
 }) => {
     useEffect(() => {
-        setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
+        if (!FieldModelUtilities.hasValue(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)) {
+            setData(FieldModelUtilities.updateFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType, 'Task'));
+        }
     }, []);
     return (
         <>
@@ -32,7 +34,7 @@ const JiraServerDistributionConfiguration = ({
                 name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator)}
                 errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator]}
             />
@@ -44,7 +46,7 @@ const JiraServerDistributionConfiguration = ({
                 readOnly={readonly}
                 required
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project)}
                 errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project]}
             />
@@ -56,7 +58,7 @@ const JiraServerDistributionConfiguration = ({
                 readOnly={readonly}
                 required
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)}
                 errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType]}
             />
@@ -67,7 +69,7 @@ const JiraServerDistributionConfiguration = ({
                 name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow)}
                 errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow]}
             />
@@ -78,7 +80,7 @@ const JiraServerDistributionConfiguration = ({
                 name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
                 errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow]}
             />

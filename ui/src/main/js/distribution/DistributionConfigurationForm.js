@@ -170,21 +170,42 @@ const DistributionConfigurationForm = ({
         const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
         const providerFound = FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
         setProviderHasChannelName(true);
-        if (channelKey === AZURE_INFO.key) {
-            setChannelFields(<AzureDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-        } else if (channelKey === EMAIL_INFO.key) {
-            setChannelFields(<EmailDistributionConfiguration csrfToken={csrfToken} createAdditionalEmailRequestBody={createAdditionalEmailRequestBody} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-        } else if (channelKey === JIRA_CLOUD_INFO.key) {
-            setChannelFields(<JiraCloudDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-        } else if (channelKey === JIRA_SERVER_INFO.key) {
-            setChannelFields(<JiraServerDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-        } else if (channelKey === MSTEAMS_INFO.key) {
-            setChannelFields(<MsTeamsDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-        } else if (channelKey === SLACK_INFO.key) {
-            setChannelFields(<SlackDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-        } else {
-            setProviderHasChannelName(false);
-            setChannelFields(null);
+        switch (channelKey) {
+            case AZURE_INFO.key: {
+                setChannelFields(<AzureDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+                break;
+            }
+            case EMAIL_INFO.key: {
+                setChannelFields(<EmailDistributionConfiguration
+                    csrfToken={csrfToken}
+                    createAdditionalEmailRequestBody={createAdditionalEmailRequestBody}
+                    data={channelModel}
+                    setData={setChannelModel}
+                    errors={errors}
+                    readonly={readonly}
+                />);
+                break;
+            }
+            case JIRA_CLOUD_INFO.key: {
+                setChannelFields(<JiraCloudDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+                break;
+            }
+            case JIRA_SERVER_INFO.key: {
+                setChannelFields(<JiraServerDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+                break;
+            }
+            case MSTEAMS_INFO.key: {
+                setChannelFields(<MsTeamsDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+                break;
+            }
+            case SLACK_INFO.key: {
+                setChannelFields(<SlackDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
+                break;
+            }
+            default: {
+                setProviderHasChannelName(false);
+                setChannelFields(null);
+            }
         }
         setHasProvider(providerFound);
     }, [channelModel]);
@@ -217,7 +238,7 @@ const DistributionConfigurationForm = ({
                 name={DISTRIBUTION_TEST_FIELD_KEYS.message}
                 required
                 onChange={FieldModelUtilities.handleChange(testFieldModel, setTestFieldModel)}
-                value={FieldModelUtilities.getFieldModelSingleValueOrDefault(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)}
+                value={FieldModelUtilities.getFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_TEST_FIELD_KEYS.message)}
                 errorValue={errors[DISTRIBUTION_TEST_FIELD_KEYS.message]}
             />
