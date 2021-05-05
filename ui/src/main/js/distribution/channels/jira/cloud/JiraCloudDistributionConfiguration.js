@@ -4,8 +4,8 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import { JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/jira/cloud/JiraCloudModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TextInput from 'field/input/TextInput';
-import CollapsiblePane from '../../../../component/common/CollapsiblePane';
-import FieldMappingField from '../../../../field/FieldMappingField';
+import CollapsiblePane from 'component/common/CollapsiblePane';
+import FieldMappingField from 'field/FieldMappingField';
 
 const JiraCloudDistributionConfiguration = ({
     data, setData, errors, readonly

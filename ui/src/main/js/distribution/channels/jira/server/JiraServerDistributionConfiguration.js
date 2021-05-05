@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import * as FieldModelUtilities from '../../../../util/fieldModelUtilities';
-import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from './JiraServerModel';
-import CheckboxInput from '../../../../field/input/CheckboxInput';
-import TextInput from '../../../../field/input/TextInput';
-import CollapsiblePane from '../../../../component/common/CollapsiblePane';
-import FieldMappingField from '../../../../field/FieldMappingField';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/jira/server/JiraServerModel';
+import CheckboxInput from 'field/input/CheckboxInput';
+import TextInput from 'field/input/TextInput';
+import CollapsiblePane from 'component/common/CollapsiblePane';
+import FieldMappingField from 'field/FieldMappingField';
 
 const JiraServerDistributionConfiguration = ({
     data, setData, errors, readonly
