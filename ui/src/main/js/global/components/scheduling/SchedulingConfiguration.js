@@ -72,6 +72,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                 displayDelete={false}
                 buttonIdPrefix={SCHEDULING_INFO.key}
                 retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
@@ -82,6 +83,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     options={digestHours}
+                    clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
                     errorValue={errors[SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay]}
@@ -105,6 +107,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     options={purgeFrequencies}
+                    clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
                     errorValue={errors[SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays]}

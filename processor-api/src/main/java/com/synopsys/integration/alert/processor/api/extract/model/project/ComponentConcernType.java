@@ -8,7 +8,17 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 public enum ComponentConcernType {
-    POLICY,
-    VULNERABILITY
+    POLICY("Policy"),
+    VULNERABILITY("Vulnerability");
+
+    private final String displayName;
+
+    ComponentConcernType(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 
 }

@@ -196,7 +196,8 @@ class StaticJobAccessorTest {
 
         DistributionJobModel updatedJob = jobAccessor.updateJob(jobId, distributionJobRequestModel);
 
-        Mockito.verify(distributionJobRepository).deleteById(jobId);
+        Mockito.verify(distributionJobRepository).findById(jobId);
+        Mockito.verify(distributionJobRepository).save(Mockito.any());
 
         assertEquals(jobId, updatedJob.getJobId());
         assertEquals(jobName, updatedJob.getName());

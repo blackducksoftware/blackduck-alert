@@ -51,6 +51,15 @@ const container = ({ children, getValue, ...props }) => {
     );
 };
 
+export const createTableSelectColumn = (header, headerLabel, isKey, sortBy, visible) => ({
+    header,
+    headerLabel,
+    isKey,
+    sortBy,
+    hidden: !visible
+});
+
+// TODO remove currentConfig and requiredRelatedFields in favor of createRequestBody function.
 const TableSelectInput = (props) => {
     const {
         id, value, columns, useRowAsValue, onChange, fieldKey, csrfToken, currentConfig, endpoint, requiredRelatedFields, paged, searchable, readOnly,
@@ -59,7 +68,8 @@ const TableSelectInput = (props) => {
         errorValue,
         label,
         required,
-        showDescriptionPlaceHolder
+        showDescriptionPlaceHolder,
+        createRequestBody
     } = props;
     const [progress, setProgress] = useState(false);
     const [showTable, setShowTable] = useState(false);
@@ -81,11 +91,11 @@ const TableSelectInput = (props) => {
                 valueToUse = value.map((option) => JSON.parse(option));
             }
         }
-
-        selectedData.push(...valueToUse);
+        const loadedSelectedData = [];
+        loadedSelectedData.push(...valueToUse);
 
         const keyColumnHeader = columns.find((column) => column.isKey).header;
-        const convertedValues = selectedData.map((selected) => {
+        const convertedValues = loadedSelectedData.map((selected) => {
             const labelToUse = useRowAsValue ? selected[keyColumnHeader] : selected;
             const isMissing = selected.missing !== undefined ? selected.missing : false;
             return {
@@ -95,6 +105,7 @@ const TableSelectInput = (props) => {
             };
         });
         setDisplayedData(convertedValues);
+        setSelectedData(loadedSelectedData);
     };
 
     useEffect(() => {
@@ -185,7 +196,7 @@ const TableSelectInput = (props) => {
     const retrieveTableData = async (uiPageNumber, pageSize, searchTerm) => {
         setProgress(true);
 
-        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
+        const newFieldModel = createRequestBody ? createRequestBody() : FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const pageNumber = uiPageNumber ? uiPageNumber - 1 : 0;
         const encodedSearchTerm = encodeURIComponent(searchTerm);
         const apiUrl = `/alert${endpoint}/${fieldKey}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchTerm=${encodedSearchTerm}`;
@@ -483,7 +494,7 @@ TableSelectInput.propTypes = {
     fieldKey: PropTypes.string.isRequired,
     endpoint: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
-    currentConfig: PropTypes.object.isRequired,
+    currentConfig: PropTypes.object,
     columns: PropTypes.array.isRequired,
     requiredRelatedFields: PropTypes.array,
     searchable: PropTypes.bool,
@@ -497,11 +508,13 @@ TableSelectInput.propTypes = {
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    createRequestBody: PropTypes.func
 };
 
 TableSelectInput.defaultProps = {
     id: 'tableSelectInputId',
+    currentConfig: {},
     requiredRelatedFields: [],
     searchable: true,
     onChange: () => {
@@ -510,6 +523,7 @@ TableSelectInput.defaultProps = {
     readOnly: false,
     useRowAsValue: false,
     value: [],
+    createRequestBody: null,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,

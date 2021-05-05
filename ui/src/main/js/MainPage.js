@@ -38,11 +38,14 @@ import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
 import UserManagement from 'dynamic/loaded/users/UserManagement';
 import JiraServerGlobalConfiguration from 'global/channels/jira/server/JiraServerGlobalConfiguration';
 import { doesDescriptorExist } from 'util/descriptorUtilities';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
+import DistributionConfigurationV2 from 'distribution/DistributionConfigurationV2';
+import DistributionConfigurationForm from 'distribution/DistributionConfigurationForm';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh
 }) => {
-    const [descriptorMap, setDescriptorMap] = useState({});
+    const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
 
     useEffect(() => {
         getDescriptorsRedux();
@@ -51,9 +54,11 @@ const MainPage = ({
     useEffect(() => {
         const newDescriptorMap = {};
         descriptors.forEach((descriptor) => {
-            newDescriptorMap[descriptor.name] = descriptor;
+            if (descriptor.context === 'GLOBAL') {
+                newDescriptorMap[descriptor.name] = descriptor;
+            }
         });
-        setDescriptorMap(newDescriptorMap);
+        setGlobalDescriptorMap(newDescriptorMap);
     }, [descriptors]);
 
     const createRoute = (uriPrefix, urlName, component) => (
@@ -84,23 +89,31 @@ const MainPage = ({
                 key="blackduck-route"
                 path={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
             >
-                <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />
+                {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && <BlackDuckConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />}
             </Route>
-            {doesDescriptorExist(descriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} showRefreshButton={!autoRefresh} />)}
-            {doesDescriptorExist(descriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration csrfToken={csrfToken} readonly={descriptorMap[AZURE_INFO.key].readonly} />)}
-            {doesDescriptorExist(descriptorMap, EMAIL_INFO.key) && createRoute(channelUri, EMAIL_INFO.url, <EmailGlobalConfiguration csrfToken={csrfToken} readonly={descriptorMap[EMAIL_INFO.key].readonly} />)}
-            {doesDescriptorExist(descriptorMap, JIRA_CLOUD_INFO.key) && createRoute(channelUri, JIRA_CLOUD_INFO.url, <JiraCloudGlobalConfiguration csrfToken={csrfToken} readonly={descriptorMap[JIRA_CLOUD_INFO.key].readonly} />)}
-            {doesDescriptorExist(descriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration csrfToken={csrfToken} readonly={descriptorMap[JIRA_SERVER_INFO.key].readonly} />)}
-            {doesDescriptorExist(descriptorMap, MSTEAMS_INFO.key) && createRoute(channelUri, MSTEAMS_INFO.url, <MSTeamsGlobalConfiguration />)}
-            {doesDescriptorExist(descriptorMap, SLACK_INFO.key) && createRoute(channelUri, SLACK_INFO.url, <SlackGlobalConfiguration />)}
+            {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} showRefreshButton={!autoRefresh} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AZURE_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createRoute(channelUri, EMAIL_INFO.url, <EmailGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[EMAIL_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createRoute(channelUri, JIRA_CLOUD_INFO.url, <JiraCloudGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[JIRA_CLOUD_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[JIRA_SERVER_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, MSTEAMS_INFO.key) && createRoute(channelUri, MSTEAMS_INFO.url, <MSTeamsGlobalConfiguration />)}
+            {doesDescriptorExist(globalDescriptorMap, SLACK_INFO.key) && createRoute(channelUri, SLACK_INFO.url, <SlackGlobalConfiguration />)}
+            <Route
+                exact
+                key="distribution-route"
+                path={[`${DISTRIBUTION_URLS.distributionConfigUrl}/:id?`, `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/:id?`]}
+            >
+                <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} />
+            </Route>
+            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} showRefreshButton={!autoRefresh} />)}
             <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
-            {doesDescriptorExist(descriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
-            {doesDescriptorExist(descriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} readonly={descriptorMap[AUTHENTICATION_INFO.key].readonly} />)}
-            {doesDescriptorExist(descriptorMap, CERTIFICATE_INFO.key) && createRoute(componentUri, CERTIFICATE_INFO.url, <CertificatesPage />)}
-            {doesDescriptorExist(descriptorMap, SCHEDULING_INFO.key) && createRoute(componentUri, SCHEDULING_INFO.url, <SchedulingConfiguration csrfToken={csrfToken} readonly={descriptorMap[SCHEDULING_INFO.key].readonly} />)}
-            {doesDescriptorExist(descriptorMap, SETTINGS_INFO.key) && createRoute(componentUri, SETTINGS_INFO.url, <SettingsConfiguration csrfToken={csrfToken} readonly={descriptorMap[SETTINGS_INFO.key].readonly} />)}
-            {doesDescriptorExist(descriptorMap, TASK_MANAGEMENT_INFO.key) && createRoute(componentUri, TASK_MANAGEMENT_INFO.url, <TaskManagement />)}
-            {doesDescriptorExist(descriptorMap, USER_MANAGEMENT_INFO.key) && createRoute(componentUri, USER_MANAGEMENT_INFO.url, <UserManagement />)}
+            {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
+            {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, CERTIFICATE_INFO.key) && createRoute(componentUri, CERTIFICATE_INFO.url, <CertificatesPage />)}
+            {doesDescriptorExist(globalDescriptorMap, SCHEDULING_INFO.key) && createRoute(componentUri, SCHEDULING_INFO.url, <SchedulingConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[SCHEDULING_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key) && createRoute(componentUri, SETTINGS_INFO.url, <SettingsConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[SETTINGS_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, TASK_MANAGEMENT_INFO.key) && createRoute(componentUri, TASK_MANAGEMENT_INFO.url, <TaskManagement />)}
+            {doesDescriptorExist(globalDescriptorMap, USER_MANAGEMENT_INFO.key) && createRoute(componentUri, USER_MANAGEMENT_INFO.url, <UserManagement />)}
             <Route exact path="/alert/general/about" component={AboutInfo} />
         </div>
     );
@@ -119,7 +132,7 @@ const MainPage = ({
 
     return (
         <div>
-            <Navigation descriptorMap={descriptorMap} />
+            <Navigation globalDescriptorMap={globalDescriptorMap} />
             {content}
             <div className="modalsArea">
                 <LogoutConfirmation />

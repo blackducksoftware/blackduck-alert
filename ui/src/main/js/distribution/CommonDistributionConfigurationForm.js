@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'field/StatusMessage';
 
-const CommonGlobalConfigurationForm = ({
+const CommonDistributionConfigurationForm = ({
     formData,
     setFormData,
     testFormData,
@@ -21,7 +20,8 @@ const CommonGlobalConfigurationForm = ({
     buttonIdPrefix,
     afterSuccessfulSave,
     retrieveData,
-    readonly
+    createDataToSend,
+    createDataToTest
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -29,9 +29,9 @@ const CommonGlobalConfigurationForm = ({
     const [errorIsDetailed, setErrorIsDetailed] = useState(false);
     const [inProgress, setInProgress] = useState(false);
 
-    const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, fieldModel);
-    const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, FieldModelUtilities.getFieldModelId(formData));
-    const validateRequest = () => ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, formData);
+    const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, fieldModel);
+    const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, formData.jobId);
+    const validateRequest = () => ConfigRequestBuilder.createValidateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, formData);
 
     const fetchData = async () => {
         const content = await retrieveData();
@@ -51,16 +51,11 @@ const CommonGlobalConfigurationForm = ({
 
     const performTestRequest = async () => {
         setInProgress(true);
-        let copy = JSON.parse(JSON.stringify(formData));
-        Object.keys(testFormData).forEach((key) => {
-            copy = FieldModelUtilities.updateFieldModelSingleValue(copy, key, testFormData[key]);
-        });
-
-        const response = await testRequest(copy);
+        const dataToSend = createDataToTest ? createDataToTest() : formData;
+        const response = await testRequest(dataToSend);
         if (response.ok) {
             const json = await response.json();
             if (json.hasErrors) {
-                setErrorIsDetailed(json.detailed);
                 setErrorMessage(json.message);
                 setErrors(json.errors);
             } else {
@@ -97,10 +92,11 @@ const CommonGlobalConfigurationForm = ({
                 setErrorMessage(validateJson.message);
                 setErrors(validateJson.errors);
             } else {
-                const id = FieldModelUtilities.getFieldModelId(formData);
+                const id = formData.jobId;
+                const dataToSend = createDataToSend ? createDataToSend() : formData;
                 const request = (id)
-                    ? () => ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, formData)
-                    : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, formData);
+                    ? () => ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id, dataToSend)
+                    : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, dataToSend);
 
                 await request();
                 await fetchData();
@@ -137,12 +133,14 @@ const CommonGlobalConfigurationForm = ({
                     cancelId={`${buttonIdPrefix}-cancel`}
                     deleteId={`${buttonIdPrefix}-delete`}
                     testId={`${buttonIdPrefix}-test`}
-                    includeSave={!readonly && displaySave}
-                    includeTest={!readonly && displayTest}
-                    includeDelete={!readonly && displayDelete}
+                    includeCancel
+                    includeSave={displaySave}
+                    includeTest={displayTest}
+                    includeDelete={displayDelete}
                     type="submit"
                     onTestClick={handleTestClick}
                     onDeleteClick={performDeleteRequest}
+                    onCancelClick={() => afterSuccessfulSave()}
                     confirmDeleteMessage="Are you sure you want to delete the configuration?"
                     performingAction={inProgress}
                 />
@@ -152,6 +150,7 @@ const CommonGlobalConfigurationForm = ({
                 handleTest={performTestRequest}
                 handleCancel={handleTestCancel}
                 buttonIdPrefix={buttonIdPrefix}
+                performingAction={inProgress}
             >
                 <div>
                     {testFields}
@@ -161,7 +160,7 @@ const CommonGlobalConfigurationForm = ({
     );
 };
 
-CommonGlobalConfigurationForm.propTypes = {
+CommonDistributionConfigurationForm.propTypes = {
     children: PropTypes.node.isRequired,
     formData: PropTypes.object.isRequired,
     csrfToken: PropTypes.string.isRequired,
@@ -176,19 +175,21 @@ CommonGlobalConfigurationForm.propTypes = {
     setTestFormData: PropTypes.func,
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
-    readonly: PropTypes.bool
+    createDataToSend: PropTypes.func,
+    createDataToTest: PropTypes.func
 };
 
-CommonGlobalConfigurationForm.defaultProps = {
+CommonDistributionConfigurationForm.defaultProps = {
     displaySave: true,
     displayTest: true,
-    displayDelete: true,
+    displayDelete: false,
     testFields: null,
     testFormData: {},
     setTestFormData: () => null,
     buttonIdPrefix: 'common-form',
     afterSuccessfulSave: () => null,
-    readonly: false
+    createDataToSend: null,
+    createDataToTest: null
 };
 
-export default CommonGlobalConfigurationForm;
+export default CommonDistributionConfigurationForm;

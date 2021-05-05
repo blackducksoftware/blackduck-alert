@@ -56,6 +56,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                 displayDelete={false}
                 afterSuccessfulSave={() => history.push(BLACKDUCK_URLS.blackDuckTableUrl)}
                 retrieveData={retrieveData}
+                readonly={readonly}
             >
                 <CheckboxInput
                     id={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}

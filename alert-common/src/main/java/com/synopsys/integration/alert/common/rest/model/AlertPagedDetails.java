@@ -21,7 +21,7 @@ public class AlertPagedDetails<M> {
     }
 
     // For serialization
-    private AlertPagedDetails() {
+    /* package private */ AlertPagedDetails() {
         this.totalPages = 0;
         this.currentPage = 0;
         this.pageSize = 0;
