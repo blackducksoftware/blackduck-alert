@@ -21,7 +21,8 @@ const CommonDistributionConfigurationForm = ({
     afterSuccessfulSave,
     retrieveData,
     createDataToSend,
-    createDataToTest
+    createDataToTest,
+    errorHandler
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -53,13 +54,18 @@ const CommonDistributionConfigurationForm = ({
         setInProgress(true);
         const dataToSend = createDataToTest ? createDataToTest() : formData;
         const response = await testRequest(dataToSend);
+        const json = await response.json();
         if (response.ok) {
-            const json = await response.json();
             if (json.hasErrors) {
                 setErrorMessage(json.message);
                 setErrors(json.errors);
             } else {
                 setActionMessage('Test Successful');
+            }
+        } else {
+            const errorObject = errorHandler.handle(response, json, false);
+            if (errorObject && errorObject.message) {
+                setErrorMessage(errorObject.message);
             }
         }
 
@@ -87,8 +93,8 @@ const CommonDistributionConfigurationForm = ({
         setErrors({});
         const dataToSend = createDataToSend ? createDataToSend() : formData;
         const validateResponse = await validateRequest(dataToSend);
+        const validateJson = await validateResponse.json();
         if (validateResponse.ok) {
-            const validateJson = await validateResponse.json();
             if (validateJson.hasErrors) {
                 setErrorMessage(validateJson.message);
                 setErrors(validateJson.errors);
@@ -98,11 +104,23 @@ const CommonDistributionConfigurationForm = ({
                     ? () => ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id, dataToSend)
                     : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, dataToSend);
 
-                await request();
-                await fetchData();
-
-                setActionMessage('Save Successful');
-                afterSuccessfulSave();
+                const saveResponse = await request();
+                if (saveResponse.ok) {
+                    await fetchData();
+                    setActionMessage('Save Successful');
+                    afterSuccessfulSave();
+                } else {
+                    setActionMessage('Save Failed');
+                    const errorObject = errorHandler.handle(saveResponse, await saveResponse.json(), false);
+                    if (errorObject && errorObject.message) {
+                        setErrorMessage(errorObject.message);
+                    }
+                }
+            }
+        } else {
+            const errorObject = errorHandler.handle(validateResponse, validateJson, false);
+            if (errorObject && errorObject.message) {
+                setErrorMessage(errorObject.message);
             }
         }
         setInProgress(false);
@@ -110,9 +128,17 @@ const CommonDistributionConfigurationForm = ({
 
     const performDeleteRequest = async () => {
         setInProgress(true);
-        await deleteRequest(formData.jobId);
-        setFormData({});
-        setActionMessage('Delete Successful');
+        const response = await deleteRequest(formData.jobId);
+        if (response.ok) {
+            setFormData({});
+            setActionMessage('Delete Successful');
+        } else {
+            const errorObject = errorHandler.handle(response, await response.json(), false);
+            if (errorObject && errorObject.message) {
+                setErrorMessage(errorObject.message);
+            }
+            setActionMessage('Delete Failed');
+        }
         setInProgress(false);
     };
 
@@ -176,7 +202,8 @@ CommonDistributionConfigurationForm.propTypes = {
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     createDataToSend: PropTypes.func,
-    createDataToTest: PropTypes.func
+    createDataToTest: PropTypes.func,
+    errorHandler: PropTypes.object.isRequired
 };
 
 CommonDistributionConfigurationForm.defaultProps = {

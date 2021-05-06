@@ -18,6 +18,14 @@ export function createEmptyErrorObject() {
     };
 }
 
+export function createErrorWithMessageOnly(message) {
+    return {
+        message,
+        isDetailed: false,
+        fieldErrors: {}
+    };
+}
+
 export function createErrorObject(errorResponse) {
     if (!errorResponse) {
         return createEmptyErrorObject();
@@ -144,3 +152,33 @@ export function isServerError(statusCode) {
 export function isError(statusCode) {
     return isClientError(statusCode) || isServerError(statusCode);
 }
+
+export const createErrorHandler = (unauthorized) => ({
+    handle: (response, responseData, readOperation = true) => {
+        let errorObject;
+        const { status } = response;
+        if (isOk(status)) {
+            errorObject = createEmptyErrorObject();
+        }
+
+        switch (status) {
+            case 401: {
+                unauthorized();
+                break;
+            }
+            case 403: {
+                if (readOperation) {
+                    errorObject = createErrorWithMessageOnly(MESSAGES.FORBIDDEN_READ);
+                } else {
+                    errorObject = createErrorWithMessageOnly(MESSAGES.FORBIDDEN_ACTION);
+                }
+                break;
+            }
+            default: {
+                errorObject = createErrorObject(responseData);
+            }
+        }
+
+        return errorObject;
+    }
+});

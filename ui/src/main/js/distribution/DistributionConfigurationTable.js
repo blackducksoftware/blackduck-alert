@@ -16,7 +16,7 @@ import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'distribution/DistributionTableRequestUtility';
 
 const DistributionConfigurationTable = ({
-    csrfToken, readonly, showRefreshButton, descriptors
+    csrfToken, errorHandler, readonly, showRefreshButton, descriptors
 }) => {
     const [error, setError] = useState(HTTPErrorUtils.createEmptyErrorObject());
     const [progress, setProgress] = useState(false);
@@ -69,7 +69,7 @@ const DistributionConfigurationTable = ({
             setJobsValidationResults
         };
         DistributionRequestUtility.fetchDistributions({
-            csrfToken, pagingData, stateUpdateFunctions, createTableEntry
+            csrfToken, errorHandler, pagingData, stateUpdateFunctions, createTableEntry
         });
     };
 
@@ -86,7 +86,7 @@ const DistributionConfigurationTable = ({
                     setTableData(newTableData);
                 };
                 DistributionRequestUtility.deleteDistribution({
-                    csrfToken, distributionId: id, stateUpdateFunctions, removeTableEntry
+                    csrfToken, errorHandler, distributionId: id, stateUpdateFunctions, removeTableEntry
                 });
             });
         }
@@ -147,7 +147,7 @@ const DistributionConfigurationTable = ({
             <div>
                 {!readonly
                 && (
-                    <div>
+                    <>
                         <InsertButton
                             id="distribution-insert-button"
                             className="addJobButton btn-md"
@@ -164,7 +164,7 @@ const DistributionConfigurationTable = ({
                             <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
                             Delete
                         </DeleteButton>
-                    </div>
+                    </>
                 )}
                 {showRefreshButton
                 && (
@@ -420,6 +420,7 @@ const DistributionConfigurationTable = ({
 };
 DistributionConfigurationTable.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool,
     showRefreshButton: PropTypes.bool,

@@ -41,9 +41,11 @@ import { doesDescriptorExist } from 'util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
 import DistributionConfigurationV2 from 'distribution/DistributionConfigurationV2';
 import DistributionConfigurationForm from 'distribution/DistributionConfigurationForm';
+import { unauthorized } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const MainPage = ({
-    descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh
+    descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
 }) => {
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
 
@@ -70,7 +72,7 @@ const MainPage = ({
             {component}
         </Route>
     );
-
+    const errorHandler = HTTPErrorUtils.createErrorHandler(unauthorizedFunction);
     const providerUri = '/alert/providers/';
     const channelUri = '/alert/channels/';
     const componentUri = '/alert/components/';
@@ -103,9 +105,9 @@ const MainPage = ({
                 key="distribution-route"
                 path={[`${DISTRIBUTION_URLS.distributionConfigUrl}/:id?`, `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/:id?`]}
             >
-                <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} />
+                <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} errorHandler={errorHandler} />
             </Route>
-            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} showRefreshButton={!autoRefresh} />)}
+            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
             <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
             {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
             {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
@@ -146,7 +148,8 @@ MainPage.propTypes = {
     fetching: PropTypes.bool.isRequired,
     getDescriptorsRedux: PropTypes.func.isRequired,
     csrfToken: PropTypes.string.isRequired,
-    autoRefresh: PropTypes.bool.isRequired
+    autoRefresh: PropTypes.bool.isRequired,
+    unauthorizedFunction: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -157,7 +160,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    getDescriptorsRedux: () => dispatch(getDescriptors())
+    getDescriptorsRedux: () => dispatch(getDescriptors()),
+    unauthorizedFunction: () => dispatch(unauthorized())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));
