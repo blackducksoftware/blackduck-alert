@@ -50,8 +50,15 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    AND jobEntity.distributionFrequency IN (:frequencies)"
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
                        + "    AND ("
-                       + "        (vulnerabilitySeverityFilters.severityName IS NULL OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities))"
-                       + "        OR (policyFilters.policyName IS NULL OR policyFilters.policyName IN (:policyNames))"
+                       + "          ("
+                       + "            coalesce(:vulnerabilitySeverities, NULL) IS NULL"
+                       + "            OR vulnerabilitySeverityFilters.severityName IS NULL"
+                       + "            OR vulnerabilitySeverityFilters.severityName IN (:vulnerabilitySeverities)"
+                       + "          ) OR ("
+                       + "            coalesce(:policyNames, NULL) IS NULL"
+                       + "            OR policyFilters.policyName IS NULL"
+                       + "            OR policyFilters.policyName IN (:policyNames)"
+                       + "          )"
                        + "    )"
     )
     Page<DistributionJobEntity> findMatchingEnabledJobsByFilteredNotifications(
@@ -62,4 +69,5 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
         @Param("vulnerabilitySeverities") Set<String> vulnerabilitySeverities,
         Pageable pageable
     );
+
 }
