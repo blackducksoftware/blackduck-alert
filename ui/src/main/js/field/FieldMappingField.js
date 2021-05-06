@@ -16,6 +16,7 @@ const FieldMappingField = ({
     leftSideMapping,
     newMappingTitle,
     onChange,
+    readonly,
     required,
     rightSideMapping,
     showDescriptionPlaceHolder,
@@ -65,12 +66,14 @@ const FieldMappingField = ({
                     onChange={handleChange}
                     label={leftSideMapping}
                     value={fieldName}
+                    readOnly={readonly}
                 />
                 <TextInput
                     name="fieldValue"
                     onChange={handleChange}
                     label={rightSideMapping}
                     value={fieldValue}
+                    readOnly={readonly}
                     optionList={valueOptions}
                 />
             </div>
@@ -93,7 +96,6 @@ const FieldMappingField = ({
         {
             header: 'fieldValue',
             headerLabel: rightSideMapping,
-            isKey: false,
             hidden: false
         }
     ];
@@ -179,11 +181,15 @@ const FieldMappingField = ({
                 modalTitle={modalTitle}
                 columns={createColumns()}
                 newConfigFields={createNewRow}
+                newButton={!readonly}
+                deleteButton={!readonly}
+                saveButton={!readonly}
                 refreshData={() => tableData}
                 onEditState={onEdit}
                 onConfigSave={saveModalData}
                 onConfigDelete={onDelete}
                 data={tableData}
+                enableEdit={!readonly}
                 enableCopy={false}
                 tableSearchable={false}
                 autoRefresh={false}
@@ -209,6 +215,7 @@ FieldMappingField.propTypes = {
     errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
+    readonly: PropTypes.bool,
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool
 };
@@ -218,6 +225,7 @@ FieldMappingField.defaultProps = {
     storedMappings: [],
     newMappingTitle: 'Create new mapping',
     editMappingTitle: 'Edit mapping',
+    readonly: false,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
