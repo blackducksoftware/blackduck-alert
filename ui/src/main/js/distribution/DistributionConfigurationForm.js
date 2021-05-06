@@ -36,7 +36,7 @@ import MsTeamsDistributionConfiguration from 'distribution/channels/msteams/MsTe
 import SlackDistributionConfiguration from 'distribution/channels/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
-    csrfToken, readonly, descriptors, lastUpdated
+    csrfToken, errorHandler, readonly, descriptors, lastUpdated
 }) => {
     const { id } = useParams();
     const history = useHistory();
@@ -67,7 +67,7 @@ const DistributionConfigurationForm = ({
     const [hasNotificationTypes, setHasNotificationTypes] = useState(false);
     const [filterByProject, setFilterByProject] = useState(false);
     const retrieveData = async () => {
-        const data = await DistributionRequestUtility.getDataById(id, csrfToken);
+        const data = await DistributionRequestUtility.getDataById(id, csrfToken, errorHandler, setErrors);
         return data;
     };
 
@@ -245,6 +245,7 @@ const DistributionConfigurationForm = ({
         </div>
     );
 
+    // TODO need to provide finer grain control with permissions.
     return (
         <CommonGlobalConfiguration
             label="Distribution Configuration"
@@ -258,11 +259,14 @@ const DistributionConfigurationForm = ({
                 testFields={testFields}
                 testFormData={testFieldModel}
                 csrfToken={csrfToken}
+                displaySave={!readonly}
+                displayTest={!readonly}
                 displayDelete={false}
                 afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
                 retrieveData={retrieveData}
                 createDataToSend={updateJobData}
                 createDataToTest={createTestData}
+                errorHandler={errorHandler}
             >
                 <CheckboxInput
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
@@ -463,6 +467,7 @@ const DistributionConfigurationForm = ({
 
 DistributionConfigurationForm.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired,
     descriptors: PropTypes.array.isRequired,
     lastUpdated: PropTypes.string,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component

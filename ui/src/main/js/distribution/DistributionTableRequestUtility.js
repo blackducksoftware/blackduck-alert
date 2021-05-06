@@ -7,13 +7,11 @@ const auditReadRequest = async (csrfToken, jobIds) => createPostRequest('/alert/
     jobIds
 });
 
-export const validateCurrentJobs = ({ csrfToken, stateUpdateFunctions, jobIds }) => {
+const validateCurrentJobs = ({
+    csrfToken, errorHandler, stateUpdateFunctions, jobIds
+}) => {
     const { setProgress, setError, setJobsValidationResults } = stateUpdateFunctions;
     setProgress(true);
-    const errorHandlers = [];
-    // errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-    // errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobsValidationError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
-
     RequestUtilities.createPostRequest(`${ConfigRequestBuilder.JOB_API_URL}/validateJobsById`, csrfToken, {
         jobIds
     })
@@ -23,7 +21,7 @@ export const validateCurrentJobs = ({ csrfToken, stateUpdateFunctions, jobIds })
                     if (response.ok) {
                         setJobsValidationResults(responseData);
                     } else {
-                        setError(HTTPErrorUtils.createErrorObject(responseData));
+                        setError(errorHandler.handle(response, responseData, false));
                         setProgress(false);
                     }
                 });
@@ -35,7 +33,7 @@ export const validateCurrentJobs = ({ csrfToken, stateUpdateFunctions, jobIds })
         });
 };
 
-const readAuditDataAndBuildTableData = (csrfToken, stateUpdateFunctions, createTableEntry, jobs) => {
+const readAuditDataAndBuildTableData = (csrfToken, errorHandler, stateUpdateFunctions, createTableEntry, jobs) => {
     const {
         setProgress, setTableData
     } = stateUpdateFunctions;
@@ -75,23 +73,20 @@ const readAuditDataAndBuildTableData = (csrfToken, stateUpdateFunctions, createT
                 });
         })
         .then(() => {
-            validateCurrentJobs({ csrfToken, stateUpdateFunctions, jobIds });
+            validateCurrentJobs({
+                csrfToken, errorHandler, stateUpdateFunctions, jobIds
+            });
         });
 };
 
 export const fetchDistributions = ({
-    csrfToken, pagingData, stateUpdateFunctions, createTableEntry
+    csrfToken, errorHandler, pagingData, stateUpdateFunctions, createTableEntry
 }) => {
     const { currentPage, pageSize, searchTerm } = pagingData;
     const {
         setProgress, setError, setTotalPages, setTableData
     } = stateUpdateFunctions;
     setProgress(false);
-    const errorHandlers = [];
-    // errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(loggedOut));
-    // errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => fetchingAllJobsError(HTTPErrorUtils.MESSAGES.FORBIDDEN_READ)));
-    // errorHandlers.push(HTTPErrorUtils.createNotFoundHandler(fetchingAllJobsNoneFound));
-
     const pageNumber = currentPage ? currentPage - 1 : 0;
     const searchPageSize = pageSize || 10;
     const encodedSearchTerm = encodeURIComponent(searchTerm);
@@ -103,10 +98,9 @@ export const fetchDistributions = ({
                     if (response.ok) {
                         const { jobs } = responseData;
                         setTotalPages(responseData.totalPages);
-                        readAuditDataAndBuildTableData(csrfToken, stateUpdateFunctions, createTableEntry, jobs);
+                        readAuditDataAndBuildTableData(csrfToken, errorHandler, stateUpdateFunctions, createTableEntry, jobs);
                     } else {
-                        // TODO handle other status codes
-                        setError(HTTPErrorUtils.createErrorObject(responseData));
+                        setError(errorHandler.handle(response, responseData, true));
                         setTableData([]);
                     }
                 });
@@ -119,15 +113,12 @@ export const fetchDistributions = ({
 };
 
 export const deleteDistribution = ({
-    csrfToken, distributionId, stateUpdateFunctions, removeTableEntry
+    csrfToken, errorHandler, distributionId, stateUpdateFunctions, removeTableEntry
 }) => {
     const {
         setProgress, setError
     } = stateUpdateFunctions;
     setProgress(true);
-    const errorHandlers = [];
-    // errorHandlers.push(HTTPErrorUtils.createUnauthorizedHandler(unauthorized));
-    // errorHandlers.push(HTTPErrorUtils.createForbiddenHandler(() => jobDeleteError(HTTPErrorUtils.MESSAGES.FORBIDDEN_ACTION)));
     const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, distributionId);
     request.then((response) => {
         if (response.ok) {
@@ -135,8 +126,7 @@ export const deleteDistribution = ({
         } else {
             response.json()
                 .then((responseData) => {
-                    // TODO handle other status codes
-                    setError(HTTPErrorUtils.createErrorObject(responseData));
+                    setError(errorHandler.handle(response, responseData, false));
                     setProgress(false);
                 });
         }
