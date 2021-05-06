@@ -11,7 +11,7 @@ import EndpointButtonField from 'field/EndpointButtonField';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
-const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
+const JiraCloudGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_CLOUD_INFO.key));
     const [errors, setErrors] = useState({});
 
@@ -36,6 +36,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
                 buttonIdPrefix={JIRA_CLOUD_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                errorHandler={errorHandler}
             >
                 <TextInput
                     id={JIRA_CLOUD_GLOBAL_FIELD_KEYS.url}
@@ -113,6 +114,7 @@ const JiraCloudGlobalConfiguration = ({ csrfToken, readonly }) => {
 
 JiraCloudGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.func.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
 };

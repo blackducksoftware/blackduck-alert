@@ -154,7 +154,7 @@ export function isError(statusCode) {
 }
 
 export const createErrorHandler = (unauthorized) => ({
-    handle: (response, responseData, readOperation = true) => {
+    handle: (response, deserializedResponseBody, readOperation = true) => {
         let errorObject;
         const { status } = response;
         if (isOk(status)) {
@@ -170,12 +170,13 @@ export const createErrorHandler = (unauthorized) => ({
                 if (readOperation) {
                     errorObject = createErrorWithMessageOnly(MESSAGES.FORBIDDEN_READ);
                 } else {
+                    // TODO Determine if this error message sufficient for all cases going forward...
                     errorObject = createErrorWithMessageOnly(MESSAGES.FORBIDDEN_ACTION);
                 }
                 break;
             }
             default: {
-                errorObject = createErrorObject(responseData);
+                errorObject = createErrorObject(deserializedResponseBody);
             }
         }
 

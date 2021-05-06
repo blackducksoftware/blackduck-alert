@@ -48,9 +48,10 @@ const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
 }) => {
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
-
+    const [errorHandler, setErrorHandler] = useState({});
     useEffect(() => {
         getDescriptorsRedux();
+        setErrorHandler(HTTPErrorUtils.createErrorHandler(unauthorizedFunction));
     }, []);
 
     useEffect(() => {
@@ -72,7 +73,6 @@ const MainPage = ({
             {component}
         </Route>
     );
-    const errorHandler = HTTPErrorUtils.createErrorHandler(unauthorizedFunction);
     const providerUri = '/alert/providers/';
     const channelUri = '/alert/channels/';
     const componentUri = '/alert/components/';
@@ -91,13 +91,33 @@ const MainPage = ({
                 key="blackduck-route"
                 path={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
             >
-                {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && <BlackDuckConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />}
+                {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && <BlackDuckConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />}
             </Route>
-            {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} showRefreshButton={!autoRefresh} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AZURE_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createRoute(channelUri, EMAIL_INFO.url, <EmailGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[EMAIL_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createRoute(channelUri, JIRA_CLOUD_INFO.url, <JiraCloudGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[JIRA_CLOUD_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[JIRA_SERVER_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration
+                csrfToken={csrfToken}
+                showRefreshButton={!autoRefresh}
+                readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[AZURE_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createRoute(channelUri, EMAIL_INFO.url, <EmailGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[EMAIL_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createRoute(channelUri, JIRA_CLOUD_INFO.url, <JiraCloudGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[JIRA_CLOUD_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[JIRA_SERVER_INFO.key].readOnly}
+            />)}
             {doesDescriptorExist(globalDescriptorMap, MSTEAMS_INFO.key) && createRoute(channelUri, MSTEAMS_INFO.url, <MSTeamsGlobalConfiguration />)}
             {doesDescriptorExist(globalDescriptorMap, SLACK_INFO.key) && createRoute(channelUri, SLACK_INFO.url, <SlackGlobalConfiguration />)}
             <Route
