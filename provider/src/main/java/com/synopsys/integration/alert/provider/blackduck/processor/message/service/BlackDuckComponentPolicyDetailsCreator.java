@@ -24,7 +24,7 @@ public class BlackDuckComponentPolicyDetailsCreator {
     private static final String VULNERABILITY_POLICY_EXPRESSION_NAME = "vuln";
 
     public ComponentPolicy toComponentPolicy(ComponentPolicyRulesView componentPolicyRulesView) {
-        ComponentConcernSeverity severity = EnumUtils.getEnum(ComponentConcernSeverity.class, componentPolicyRulesView.getSeverity().name(), ComponentConcernSeverity.UNSPECIFIED);
+        ComponentConcernSeverity severity = EnumUtils.getEnum(ComponentConcernSeverity.class, componentPolicyRulesView.getSeverity().name(), ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         boolean overridden = ProjectVersionComponentPolicyStatusType.IN_VIOLATION_OVERRIDDEN.equals(componentPolicyRulesView.getPolicyApprovalStatus());
         boolean vulnerabilityPolicy = isVulnerabilityPolicy(componentPolicyRulesView);
         return new ComponentPolicy(componentPolicyRulesView.getName(), severity, overridden, vulnerabilityPolicy);
