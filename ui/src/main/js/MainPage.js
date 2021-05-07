@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 import Navigation from 'Navigation';
 import AboutInfo from 'component/AboutInfo';
-import DistributionConfiguration from 'distribution/Index';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -39,7 +38,7 @@ import UserManagement from 'dynamic/loaded/users/UserManagement';
 import JiraServerGlobalConfiguration from 'global/channels/jira/server/JiraServerGlobalConfiguration';
 import { doesDescriptorExist } from 'util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
-import DistributionConfigurationV2 from 'distribution/DistributionConfigurationV2';
+import DistributionConfiguration from 'distribution/DistributionConfiguration';
 import DistributionConfigurationForm from 'distribution/DistributionConfigurationForm';
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
@@ -127,8 +126,7 @@ const MainPage = ({
             >
                 <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} errorHandler={errorHandler} />
             </Route>
-            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
-            <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
+            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
             {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
             {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
             {doesDescriptorExist(globalDescriptorMap, CERTIFICATE_INFO.key) && createRoute(componentUri, CERTIFICATE_INFO.url, <CertificatesPage />)}

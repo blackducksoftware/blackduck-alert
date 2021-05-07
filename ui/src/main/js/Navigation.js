@@ -65,11 +65,6 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
                             {DISTRIBUTION_INFO.label}
                         </NavLink>
                     </li>
-                    <li>
-                        <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                            Distribution
-                        </NavLink>
-                    </li>
                     <li className="divider" />
                     {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createStaticNavItem(componentUri, AUDIT_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createStaticNavItem(componentUri, AUTHENTICATION_INFO)}
