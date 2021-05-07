@@ -96,7 +96,7 @@ const DistributionConfigurationForm = ({
         return {
             jobId: formData.jobId,
             fieldModels: [
-                channelModel,
+                channelModelData,
                 providerConfigToSave
             ],
             configuredProviderProjects
