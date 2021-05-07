@@ -17,7 +17,7 @@ const SlackDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.webhook)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.webhook)}
-            errorValue={errors[SLACK_DISTRIBUTION_FIELD_KEYS.webhook]}
+            errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.webhook]}
         />
         <TextInput
             key={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
@@ -28,7 +28,7 @@ const SlackDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.channelName)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.channelName)}
-            errorValue={errors[SLACK_DISTRIBUTION_FIELD_KEYS.channelName]}
+            errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.channelName]}
         />
         <TextInput
             key={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
@@ -39,7 +39,7 @@ const SlackDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.channelUser)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.channelUser)}
-            errorValue={errors[SLACK_DISTRIBUTION_FIELD_KEYS.channelUser]}
+            errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.channelUser]}
         />
     </>
 );

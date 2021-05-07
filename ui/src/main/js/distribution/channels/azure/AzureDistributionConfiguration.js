@@ -23,7 +23,7 @@ const AzureDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.comment)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.comment]}
+                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.comment]}
             />
             <TextInput
                 id={AZURE_DISTRIBUTION_FIELD_KEYS.project}
@@ -34,7 +34,7 @@ const AzureDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.project)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.project)}
-                errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.project]}
+                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.project]}
             />
             <TextInput
                 id={AZURE_DISTRIBUTION_FIELD_KEYS.workItemType}
@@ -45,7 +45,7 @@ const AzureDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemType)}
-                errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemType]}
+                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemType]}
             />
             <TextInput
                 id={AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted}
@@ -55,7 +55,7 @@ const AzureDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted)}
-                errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted]}
+                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemCompleted]}
             />
             <TextInput
                 id={AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen}
@@ -65,7 +65,7 @@ const AzureDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen)}
-                errorValue={errors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen]}
+                errorValue={errors.fieldErrors[AZURE_DISTRIBUTION_FIELD_KEYS.workItemReopen]}
             />
         </>
     );

@@ -21,6 +21,7 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'distribution/DistributionRequestUtility';
+import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import { AZURE_INFO } from 'global/channels/azure/AzureModel';
 import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
 import { EMAIL_INFO } from 'global/channels/email/EmailModels';
@@ -42,7 +43,7 @@ const DistributionConfigurationForm = ({
     const history = useHistory();
     const location = useLocation();
     const [formData, setFormData] = useState({});
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const channelFieldKeys = {};
     channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.enabled] = {};
     channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.name] = {};
@@ -143,12 +144,6 @@ const DistributionConfigurationForm = ({
     };
 
     useEffect(() => {
-        const topicFieldModel = FieldModelUtilities.updateFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic, 'Alert Test Message');
-        const messageFieldModel = FieldModelUtilities.updateFieldModelSingleValue(topicFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message, 'Test Message Content');
-        setTestFieldModel(messageFieldModel);
-    }, []);
-
-    useEffect(() => {
         const channelFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) : {};
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
         const providerFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => providerName === model.descriptorName) : {};
@@ -158,6 +153,15 @@ const DistributionConfigurationForm = ({
         setProviderModel(providerFieldModel);
         setChannelSelectionModel(FieldModelUtilities.updateFieldModelSingleValue(channelSelectionFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelKey));
     }, [formData]);
+
+    const onChannelSelectChange = (event) => {
+        const { target } = event;
+        const { name, value } = target;
+        DistributionRequestUtility.checkDescriptorForGlobalConfig({
+            csrfToken, descriptorName: value, errorHandler, fieldName: name, errors, setErrors
+        });
+        FieldModelUtilities.handleChange(channelSelectionModel, setChannelSelectionModel)(event);
+    };
 
     useEffect(() => {
         const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelSelectionModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
@@ -220,6 +224,17 @@ const DistributionConfigurationForm = ({
         setFormData(formData);
     }
 
+    if (!FieldModelUtilities.hasKey(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)) {
+        const defaultValueModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled, true);
+        setChannelModel(defaultValueModel);
+    }
+
+    if (!FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic) && !FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)) {
+        const topicFieldModel = FieldModelUtilities.updateFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic, 'Alert Test Message');
+        const messageFieldModel = FieldModelUtilities.updateFieldModelSingleValue(topicFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message, 'Test Message Content');
+        setTestFieldModel(messageFieldModel);
+    }
+
     const testFields = (
         <div>
             <TextInput
@@ -240,7 +255,7 @@ const DistributionConfigurationForm = ({
                 onChange={FieldModelUtilities.handleChange(testFieldModel, setTestFieldModel)}
                 value={FieldModelUtilities.getFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_TEST_FIELD_KEYS.message)}
-                errorValue={errors[DISTRIBUTION_TEST_FIELD_KEYS.message]}
+                errorValue={errors.fieldErrors[DISTRIBUTION_TEST_FIELD_KEYS.message]}
             />
         </div>
     );
@@ -276,7 +291,7 @@ const DistributionConfigurationForm = ({
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
                 />
                 <EndpointSelectField
                     csrfToken={csrfToken}
@@ -288,10 +303,10 @@ const DistributionConfigurationForm = ({
                     readOnly={readonly}
                     required
                     createRequestBody={() => channelSelectionModel}
-                    onChange={FieldModelUtilities.handleChange(channelSelectionModel, setChannelSelectionModel)}
+                    onChange={onChannelSelectChange}
                     value={FieldModelUtilities.getFieldModelValues(channelSelectionModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
                 />
                 <TextInput
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.name}
@@ -302,7 +317,7 @@ const DistributionConfigurationForm = ({
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                     value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.name)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.name)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.name]}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.name]}
                 />
                 <SelectInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.frequency}
@@ -314,7 +329,7 @@ const DistributionConfigurationForm = ({
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                     value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.frequency]}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.frequency]}
                 />
                 <EndpointSelectField
                     csrfToken={csrfToken}
@@ -329,7 +344,7 @@ const DistributionConfigurationForm = ({
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                     value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.providerName]}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerName]}
                 />
                 <EndpointSelectField
                     csrfToken={csrfToken}
@@ -344,7 +359,7 @@ const DistributionConfigurationForm = ({
                     onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                     value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
-                    errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
+                    errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                 />
                 {channelFields}
                 {hasProvider && providerHasChannelName && (
@@ -361,7 +376,7 @@ const DistributionConfigurationForm = ({
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
                         />
                         <EndpointSelectField
                             csrfToken={csrfToken}
@@ -375,7 +390,7 @@ const DistributionConfigurationForm = ({
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
                         />
                         <CheckboxInput
                             name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
@@ -385,7 +400,7 @@ const DistributionConfigurationForm = ({
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             isChecked={filterByProject}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
                         />
                     </div>
                 )}
@@ -401,7 +416,7 @@ const DistributionConfigurationForm = ({
                             onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                             value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern]}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern]}
                         />
                         <TableSelectInput
                             csrfToken={csrfToken}
@@ -418,7 +433,7 @@ const DistributionConfigurationForm = ({
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects]}
                         />
                     </div>
                 )}
@@ -442,7 +457,7 @@ const DistributionConfigurationForm = ({
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
                         />
                         <EndpointSelectField
                             csrfToken={csrfToken}
@@ -456,7 +471,7 @@ const DistributionConfigurationForm = ({
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
-                            errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
+                            errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter]}
                         />
                     </CollapsiblePane>
                 )}

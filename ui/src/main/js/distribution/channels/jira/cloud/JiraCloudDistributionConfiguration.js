@@ -48,7 +48,7 @@ const JiraCloudDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.project)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.project)}
-                errorValue={errors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.project]}
+                errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.project]}
             />
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType}
@@ -60,7 +60,7 @@ const JiraCloudDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType)}
-                errorValue={errors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType]}
+                errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueType]}
             />
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.resolveWorkflow}
@@ -71,7 +71,7 @@ const JiraCloudDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.resolveWorkflow)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.resolveWorkflow)}
-                errorValue={errors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.resolveWorkflow]}
+                errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.resolveWorkflow]}
             />
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.reopenWorkflow}
@@ -82,7 +82,7 @@ const JiraCloudDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
-                errorValue={errors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.reopenWorkflow]}
+                errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.reopenWorkflow]}
             />
             <CollapsiblePane
                 id="distribution-jira-cloud-advanced-configuration"
@@ -100,7 +100,7 @@ const JiraCloudDistributionConfiguration = ({
                     onChange={FieldModelUtilities.handleChange(data, setData)}
                     storedMappings={FieldModelUtilities.getFieldModelValues(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
-                    errorValue={errors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping]}
+                    errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.fieldMapping]}
                 />
                 <div />
             </CollapsiblePane>

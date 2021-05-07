@@ -21,7 +21,7 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.subject)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.subject)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.subject]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.subject]}
         />
         <TableSelectInput
             csrfToken={csrfToken}
@@ -37,7 +37,7 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]}
         />
         <CheckboxInput
             name={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}
@@ -47,7 +47,7 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly]}
         />
         <CheckboxInput
             name={EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly}
@@ -57,7 +57,7 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly]}
         />
         <DynamicSelectInput
             id={EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat}
@@ -70,7 +70,7 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat]}
         />
     </>
 );
