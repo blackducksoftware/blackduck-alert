@@ -18,6 +18,7 @@ const JiraServerDistributionConfiguration = ({
     return (
         <>
             <CheckboxInput
+                id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
                 name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
                 label="Add Comments"
                 description="If true, this will add comments to the Jira ticket with data describing the latest change."
@@ -90,6 +91,7 @@ const JiraServerDistributionConfiguration = ({
                 expanded={false}
             >
                 <FieldMappingField
+                    id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping}
                     label="Field Mapping"
                     description="Use this field to provide static values to Jira fields or map them to information from the notifications."
                     fieldMappingKey={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping}
