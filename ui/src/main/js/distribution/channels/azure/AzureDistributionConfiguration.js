@@ -16,6 +16,7 @@ const AzureDistributionConfiguration = ({
     return (
         <>
             <CheckboxInput
+                id={AZURE_DISTRIBUTION_FIELD_KEYS.comment}
                 name={AZURE_DISTRIBUTION_FIELD_KEYS.comment}
                 label="Comment on Work Items"
                 description="If selected, Alert will comment on Work Items it created when updates occur."

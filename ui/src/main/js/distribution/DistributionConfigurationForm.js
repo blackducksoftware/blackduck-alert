@@ -269,6 +269,7 @@ const DistributionConfigurationForm = ({
                 errorHandler={errorHandler}
             >
                 <CheckboxInput
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.enabled}
                     label="Enabled"
                     description="If selected, this job will be used for processing provider notifications, otherwise, this job will not be used."
@@ -279,6 +280,7 @@ const DistributionConfigurationForm = ({
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
                 />
                 <EndpointSelectField
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
                     csrfToken={csrfToken}
                     endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                     fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
@@ -294,6 +296,7 @@ const DistributionConfigurationForm = ({
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
                 />
                 <TextInput
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.name}
                     name={DISTRIBUTION_COMMON_FIELD_KEYS.name}
                     label="Name"
                     description="The name of the distribution job. Must be unique"
@@ -317,6 +320,7 @@ const DistributionConfigurationForm = ({
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.frequency]}
                 />
                 <EndpointSelectField
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
                     csrfToken={csrfToken}
                     endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                     fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
@@ -332,6 +336,7 @@ const DistributionConfigurationForm = ({
                     errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.providerName]}
                 />
                 <EndpointSelectField
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigI}
                     csrfToken={csrfToken}
                     endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                     fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
@@ -364,6 +369,7 @@ const DistributionConfigurationForm = ({
                             errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
                         />
                         <EndpointSelectField
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                             csrfToken={csrfToken}
                             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                             fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
@@ -378,6 +384,7 @@ const DistributionConfigurationForm = ({
                             errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.processingType]}
                         />
                         <CheckboxInput
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
                             name={DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject}
                             label="Filter By Project"
                             description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
@@ -392,6 +399,7 @@ const DistributionConfigurationForm = ({
                 {filterByProject && (
                     <div>
                         <TextInput
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
                             key={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
                             name={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
                             label="Project Name Pattern"
@@ -404,6 +412,7 @@ const DistributionConfigurationForm = ({
                             errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern]}
                         />
                         <TableSelectInput
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
                             csrfToken={csrfToken}
                             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                             fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects}
@@ -429,6 +438,7 @@ const DistributionConfigurationForm = ({
                         expanded={false}
                     >
                         <TableSelectInput
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
                             csrfToken={csrfToken}
                             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                             fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
@@ -445,6 +455,7 @@ const DistributionConfigurationForm = ({
                             errorValue={errors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
                         />
                         <EndpointSelectField
+                            id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
                             csrfToken={csrfToken}
                             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                             fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
