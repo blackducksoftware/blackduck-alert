@@ -33,7 +33,7 @@ public class BlackDuckComponentPolicyDetailsCreatorTest {
         ComponentPolicy componentPolicy = policyDetailsCreator.toComponentPolicy(componentPolicyRulesView);
 
         assertEquals(policyName, componentPolicy.getPolicyName());
-        assertEquals(severity.name(), componentPolicy.getSeverity().name());
+        assertEquals(severity.name(), componentPolicy.getSeverity().getPolicyLabel());
         assertFalse(componentPolicy.isVulnerabilityPolicy(), "Did not expect a vulnerability policy");
         assertFalse(componentPolicy.isOverridden(), "Did not expect the policy to be overridden");
     }

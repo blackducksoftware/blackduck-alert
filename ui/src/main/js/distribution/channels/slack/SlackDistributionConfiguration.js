@@ -9,6 +9,7 @@ const SlackDistributionConfiguration = ({
 }) => (
     <>
         <TextInput
+            id={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             key={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             label="Webhook"
@@ -20,6 +21,7 @@ const SlackDistributionConfiguration = ({
             errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.webhook]}
         />
         <TextInput
+            id={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
             key={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
             label="Channel Name"
@@ -31,6 +33,7 @@ const SlackDistributionConfiguration = ({
             errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.channelName]}
         />
         <TextInput
+            id={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             key={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             label="Channel Username"

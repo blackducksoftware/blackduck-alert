@@ -9,6 +9,7 @@ const MsTeamsDistributionConfiguration = ({
 }) => (
     <>
         <TextInput
+            id={MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook}
             key={MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook}
             name={MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook}
             label="Webhook"

@@ -4,7 +4,7 @@ import DistributionConfigurationTable from 'distribution/DistributionConfigurati
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import * as PropTypes from 'prop-types';
 
-const DistributionConfigurationV2 = ({
+const DistributionConfiguration = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors
 }) => (
     <CommonGlobalConfiguration
@@ -15,7 +15,7 @@ const DistributionConfigurationV2 = ({
     </CommonGlobalConfiguration>
 );
 
-DistributionConfigurationV2.propTypes = {
+DistributionConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
@@ -24,10 +24,10 @@ DistributionConfigurationV2.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
-DistributionConfigurationV2.defaultProps = {
+DistributionConfiguration.defaultProps = {
     readonly: false,
     showRefreshButton: true,
     descriptors: []
 };
 
-export default DistributionConfigurationV2;
+export default DistributionConfiguration;

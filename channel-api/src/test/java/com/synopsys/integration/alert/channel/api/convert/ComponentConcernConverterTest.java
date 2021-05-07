@@ -30,15 +30,15 @@ public class ComponentConcernConverterTest {
             ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln01", ComponentConcernSeverity.CRITICAL, "https://synopsys.com"),
             ComponentConcern.policy(ItemOperation.ADD, "Added Another Policy"),
             ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln02", ComponentConcernSeverity.CRITICAL, "https://synopsys.com"),
-            ComponentConcern.severePolicy(ItemOperation.ADD, "Added Severe Policy", ComponentConcernSeverity.TRIVIAL),
+            ComponentConcern.severePolicy(ItemOperation.ADD, "Added Severe Policy", ComponentConcernSeverity.TRIVIAL_LOW),
             ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln03", ComponentConcernSeverity.CRITICAL, "https://synopsys.com"),
-            ComponentConcern.vulnerability(ItemOperation.UPDATE, "Updated-Vuln01", ComponentConcernSeverity.MAJOR, "https://synopsys.com"),
-            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Policy", ComponentConcernSeverity.MAJOR),
-            ComponentConcern.vulnerability(ItemOperation.UPDATE, "Updated-Vuln02", ComponentConcernSeverity.MAJOR, "https://synopsys.com"),
-            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Another Policy", ComponentConcernSeverity.MAJOR),
+            ComponentConcern.vulnerability(ItemOperation.UPDATE, "Updated-Vuln01", ComponentConcernSeverity.MAJOR_HIGH, "https://synopsys.com"),
+            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Policy", ComponentConcernSeverity.MAJOR_HIGH),
+            ComponentConcern.vulnerability(ItemOperation.UPDATE, "Updated-Vuln02", ComponentConcernSeverity.MAJOR_HIGH, "https://synopsys.com"),
+            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Another Policy", ComponentConcernSeverity.MAJOR_HIGH),
             ComponentConcern.policy(ItemOperation.DELETE, "Removed Severe Policy"),
-            ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln01", ComponentConcernSeverity.MINOR, "https://synopsys.com"),
-            ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln02", ComponentConcernSeverity.MINOR, "https://synopsys.com")
+            ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln01", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com"),
+            ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln02", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com")
         );
     }
 

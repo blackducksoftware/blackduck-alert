@@ -24,7 +24,7 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
     private final String url;
 
     public static ComponentConcern policy(ItemOperation operation, String policyName) {
-        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, ComponentConcernSeverity.UNSPECIFIED, null);
+        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, null);
     }
 
     public static ComponentConcern severePolicy(ItemOperation operation, String policyName, ComponentConcernSeverity severity) {
