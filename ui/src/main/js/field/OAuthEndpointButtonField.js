@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import GeneralButton from 'field/input/GeneralButton';
-import FieldsPopUp from 'field/FieldsPopUp';
 import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import StatusMessage from 'field/StatusMessage';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import FieldsPanel from './FieldsPanel';
 
 const OAuthEndpointButtonField = ({
     id,
@@ -32,7 +30,6 @@ const OAuthEndpointButtonField = ({
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
-    const [modalConfig, setModalConfig] = useState({});
 
     useEffect(() => {
         setFieldError(errorValue);
@@ -104,22 +101,6 @@ const OAuthEndpointButtonField = ({
 
                 </div>
             </LabeledField>
-            <FieldsPopUp
-                onCancel={flipShowModal}
-                handleSubmit={onSendClick}
-                title={buttonLabel}
-                show={showModal}
-                okLabel="Send"
-            >
-                <FieldsPanel
-                    descriptorFields={fields}
-                    currentConfig={currentConfig}
-                    getCurrentState={() => modalConfig}
-                    setStateFunction={setModalConfig}
-                    csrfToken={csrfToken}
-                    fieldErrors={{}}
-                />
-            </FieldsPopUp>
         </div>
     );
 };
