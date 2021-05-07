@@ -1,10 +1,9 @@
 import { createTableSelectColumn } from 'field/input/TableSelectInput';
 
-// TODO remove the V2 and update the description once this table replaces the old component.
 export const DISTRIBUTION_INFO = {
-    url: 'distributionv2',
-    label: 'Distribution V2',
-    description: 'BETA Feature. Please mention any issues that you find. Create jobs from the channels Alert provides. Double click the row to edit that job.'
+    url: 'distribution',
+    label: 'Distribution',
+    description: 'Create jobs from the channels Alert provides. Double click the row to edit that job.'
 };
 
 export const DISTRIBUTION_COMMON_FIELD_KEYS = {
@@ -27,9 +26,9 @@ export const DISTRIBUTION_COMMON_FIELD_KEYS = {
 };
 
 export const DISTRIBUTION_URLS = {
-    distributionTableUrl: '/alert/jobs/distributionv2',
-    distributionConfigUrl: '/alert/jobs/distributionv2/edit',
-    distributionConfigCopyUrl: '/alert/jobs/distributionv2/copy',
+    distributionTableUrl: '/alert/jobs/distribution',
+    distributionConfigUrl: '/alert/jobs/distribution/edit',
+    distributionConfigCopyUrl: '/alert/jobs/distribution/copy',
     endpointSelectPath: '/api/function'
 };
 
