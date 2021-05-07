@@ -41,14 +41,17 @@ import { doesDescriptorExist } from 'util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
 import DistributionConfigurationV2 from 'distribution/DistributionConfigurationV2';
 import DistributionConfigurationForm from 'distribution/DistributionConfigurationForm';
+import { unauthorized } from 'store/actions/session';
+import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const MainPage = ({
-    descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh
+    descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
 }) => {
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
-
+    const [errorHandler, setErrorHandler] = useState({});
     useEffect(() => {
         getDescriptorsRedux();
+        setErrorHandler(HTTPErrorUtils.createErrorHandler(unauthorizedFunction));
     }, []);
 
     useEffect(() => {
@@ -70,7 +73,6 @@ const MainPage = ({
             {component}
         </Route>
     );
-
     const providerUri = '/alert/providers/';
     const channelUri = '/alert/channels/';
     const componentUri = '/alert/components/';
@@ -89,13 +91,33 @@ const MainPage = ({
                 key="blackduck-route"
                 path={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
             >
-                <BlackDuckConfiguration csrfToken={csrfToken} readonly={false} />
+                {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && <BlackDuckConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />}
             </Route>
-            {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration csrfToken={csrfToken} showRefreshButton={!autoRefresh} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AZURE_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createRoute(channelUri, EMAIL_INFO.url, <EmailGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[EMAIL_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createRoute(channelUri, JIRA_CLOUD_INFO.url, <JiraCloudGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[JIRA_CLOUD_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[JIRA_SERVER_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration
+                csrfToken={csrfToken}
+                showRefreshButton={!autoRefresh}
+                readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[AZURE_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createRoute(channelUri, EMAIL_INFO.url, <EmailGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[EMAIL_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createRoute(channelUri, JIRA_CLOUD_INFO.url, <JiraCloudGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[JIRA_CLOUD_INFO.key].readOnly}
+            />)}
+            {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration
+                csrfToken={csrfToken}
+                errorHandler={errorHandler}
+                readonly={globalDescriptorMap[JIRA_SERVER_INFO.key].readOnly}
+            />)}
             {doesDescriptorExist(globalDescriptorMap, MSTEAMS_INFO.key) && createRoute(channelUri, MSTEAMS_INFO.url, <MSTeamsGlobalConfiguration />)}
             {doesDescriptorExist(globalDescriptorMap, SLACK_INFO.key) && createRoute(channelUri, SLACK_INFO.url, <SlackGlobalConfiguration />)}
             <Route
@@ -103,9 +125,9 @@ const MainPage = ({
                 key="distribution-route"
                 path={[`${DISTRIBUTION_URLS.distributionConfigUrl}/:id?`, `${DISTRIBUTION_URLS.distributionConfigCopyUrl}/:id?`]}
             >
-                <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} />
+                <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} errorHandler={errorHandler} />
             </Route>
-            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} showRefreshButton={!autoRefresh} />)}
+            {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfigurationV2 csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
             <Route exact path="/alert/jobs/distribution" component={DistributionConfiguration} />
             {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
             {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
@@ -146,7 +168,8 @@ MainPage.propTypes = {
     fetching: PropTypes.bool.isRequired,
     getDescriptorsRedux: PropTypes.func.isRequired,
     csrfToken: PropTypes.string.isRequired,
-    autoRefresh: PropTypes.bool.isRequired
+    autoRefresh: PropTypes.bool.isRequired,
+    unauthorizedFunction: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -157,7 +180,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    getDescriptorsRedux: () => dispatch(getDescriptors())
+    getDescriptorsRedux: () => dispatch(getDescriptors()),
+    unauthorizedFunction: () => dispatch(unauthorized())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));

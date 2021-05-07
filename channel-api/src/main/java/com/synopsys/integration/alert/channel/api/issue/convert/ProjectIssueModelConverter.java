@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.api.convert.BomComponentDetailConverter;
-import com.synopsys.integration.alert.channel.api.convert.ComponentVulnerabilitiesConverter;
 import com.synopsys.integration.alert.channel.api.convert.LinkableItemConverter;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCommentModel;
@@ -161,13 +160,13 @@ public class ProjectIssueModelConverter {
         Optional<String> optionalPolicyName = projectIssueModel.getPolicyDetails().map(IssuePolicyDetails::getName);
         if (optionalPolicyName.isPresent()) {
             componentConcernPieceBuilder.append(COMMA_SPACE);
-            componentConcernPieceBuilder.append(ComponentConcernType.POLICY.name());
+            componentConcernPieceBuilder.append(ComponentConcernType.POLICY.getDisplayName());
             componentConcernPieceBuilder.append('[');
             componentConcernPieceBuilder.append(optionalPolicyName.get());
             componentConcernPieceBuilder.append(']');
         } else {
             componentConcernPieceBuilder.append(COMMA_SPACE);
-            componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.name());
+            componentConcernPieceBuilder.append(ComponentConcernType.VULNERABILITY.getDisplayName());
         }
 
         String componentConcernPiece = componentConcernPieceBuilder.toString();

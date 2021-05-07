@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import TextInput from 'field/input/TextInput';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -12,7 +12,7 @@ import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
-const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
+const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const { id } = useParams();
     const history = useHistory();
     const location = useLocation();
@@ -57,6 +57,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
                 afterSuccessfulSave={() => history.push(BLACKDUCK_URLS.blackDuckTableUrl)}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                errorHandler={errorHandler}
             >
                 <CheckboxInput
                     id={BLACKDUCK_GLOBAL_FIELD_KEYS.enabled}
@@ -125,6 +126,7 @@ const BlackDuckConfiguration = ({ csrfToken, readonly }) => {
 
 BlackDuckConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.func.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
 };

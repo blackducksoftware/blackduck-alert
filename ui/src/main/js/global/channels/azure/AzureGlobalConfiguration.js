@@ -10,7 +10,7 @@ import OAuthEndpointButtonField from 'field/OAuthEndpointButtonField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 import TextInput from 'field/input/TextInput';
 
-const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
+const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_INFO.key));
     const [errors, setErrors] = useState({});
 
@@ -35,6 +35,7 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
                 buttonIdPrefix={AZURE_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                errorHandler={errorHandler}
             >
                 <TextInput
                     id={AZURE_GLOBAL_FIELD_KEYS.organization}
@@ -101,8 +102,10 @@ const AzureGlobalConfiguration = ({ csrfToken, readonly }) => {
 
 AzureGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.func.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
+
 };
 
 AzureGlobalConfiguration.defaultProps = {

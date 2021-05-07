@@ -21,7 +21,8 @@ const CommonGlobalConfigurationForm = ({
     buttonIdPrefix,
     afterSuccessfulSave,
     retrieveData,
-    readonly
+    readonly,
+    errorHandler
 }) => {
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -57,8 +58,8 @@ const CommonGlobalConfigurationForm = ({
         });
 
         const response = await testRequest(copy);
+        const json = await response.json();
         if (response.ok) {
-            const json = await response.json();
             if (json.hasErrors) {
                 setErrorIsDetailed(json.detailed);
                 setErrorMessage(json.message);
@@ -66,8 +67,12 @@ const CommonGlobalConfigurationForm = ({
             } else {
                 setActionMessage('Test Successful');
             }
+        } else {
+            const errorObject = errorHandler.handle(response, json, false);
+            if (errorObject && errorObject.message) {
+                setErrorMessage(errorObject.message);
+            }
         }
-
         handleTestCancel();
         setInProgress(false);
     };
@@ -75,6 +80,7 @@ const CommonGlobalConfigurationForm = ({
     const handleTestClick = () => {
         setErrorMessage(null);
         setErrors({});
+        setActionMessage(null);
 
         if (testFields) {
             setShowTest(true);
@@ -89,10 +95,11 @@ const CommonGlobalConfigurationForm = ({
 
         setInProgress(true);
         setErrorMessage(null);
+        setActionMessage(null);
         setErrors({});
         const validateResponse = await validateRequest();
+        const validateJson = await validateResponse.json();
         if (validateResponse.ok) {
-            const validateJson = await validateResponse.json();
             if (validateJson.hasErrors) {
                 setErrorMessage(validateJson.message);
                 setErrors(validateJson.errors);
@@ -102,11 +109,23 @@ const CommonGlobalConfigurationForm = ({
                     ? () => ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, id, formData)
                     : () => ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, formData);
 
-                await request();
-                await fetchData();
-
-                setActionMessage('Save Successful');
-                afterSuccessfulSave();
+                const saveResponse = await request();
+                if (saveResponse.ok) {
+                    await fetchData();
+                    setActionMessage('Save Successful');
+                    afterSuccessfulSave();
+                } else {
+                    setActionMessage('Save Failed');
+                    const errorObject = errorHandler.handle(saveResponse, await saveResponse.json(), false);
+                    if (errorObject && errorObject.message) {
+                        setErrorMessage(errorObject.message);
+                    }
+                }
+            }
+        } else {
+            const errorObject = errorHandler.handle(validateResponse, validateJson, false);
+            if (errorObject && errorObject.message) {
+                setErrorMessage(errorObject.message);
             }
         }
         setInProgress(false);
@@ -114,9 +133,18 @@ const CommonGlobalConfigurationForm = ({
 
     const performDeleteRequest = async () => {
         setInProgress(true);
-        await deleteRequest();
-        setFormData({});
-        setActionMessage('Delete Successful');
+        setActionMessage(null);
+        const response = await deleteRequest(formData.jobId);
+        if (response.ok) {
+            setFormData({});
+            setActionMessage('Delete Successful');
+        } else {
+            const errorObject = errorHandler.handle(response, await response.json(), false);
+            if (errorObject && errorObject.message) {
+                setErrorMessage(errorObject.message);
+            }
+            setActionMessage('Delete Failed');
+        }
         setInProgress(false);
     };
 
@@ -176,7 +204,8 @@ CommonGlobalConfigurationForm.propTypes = {
     setTestFormData: PropTypes.func,
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    errorHandler: PropTypes.func.isRequired
 };
 
 CommonGlobalConfigurationForm.defaultProps = {

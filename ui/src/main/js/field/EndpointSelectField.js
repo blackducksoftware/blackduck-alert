@@ -6,9 +6,11 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import { LabelFieldPropertyDefaults } from './LabeledField';
 
+// TODO Remove currentConfig and requiredRelatedFields
 const EndpointSelectField = ({
     id,
     clearable,
+    createRequestBody,
     csrfToken,
     currentConfig,
     description,
@@ -45,7 +47,7 @@ const EndpointSelectField = ({
     };
 
     const onSendClick = async () => {
-        const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
+        const newFieldModel = createRequestBody ? createRequestBody() : FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
         request.then((response) => {
             if (response.ok) {
@@ -131,7 +133,8 @@ EndpointSelectField.propTypes = {
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    createRequestBody: PropTypes.func
 
 };
 
@@ -149,6 +152,7 @@ EndpointSelectField.defaultProps = {
     searchable: false,
     selectSpacingClass: 'col-sm-8',
     value: [],
+    createRequestBody: null,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,

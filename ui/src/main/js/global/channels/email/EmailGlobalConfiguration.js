@@ -13,7 +13,7 @@ import NumberInput from 'field/input/NumberInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
-const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
+const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [fieldModel, setFieldModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, EMAIL_INFO.key));
     const [fieldErrors, setFieldErrors] = useState({});
     const [testFieldData, setTestFieldData] = useState({});
@@ -55,6 +55,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
                 buttonIdPrefix={EMAIL_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                errorHandler={errorHandler}
             >
                 <TextInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.host}
@@ -590,6 +591,7 @@ const EmailGlobalConfiguration = ({ csrfToken, readonly }) => {
 
 EmailGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.func.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
 };

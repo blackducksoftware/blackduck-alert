@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Slack
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
+import com.synopsys.integration.alert.common.rest.model.JobIdsRequestModel;
 import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -68,6 +69,40 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    public void testGetValidationResultsForJobs() throws Exception {
+        final String urlPath = REQUEST_URL + "/validateJobsById";
+        DistributionJobModel distributionJobModel = createAndSaveMockDistributionJob(-1L);
+        JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of(distributionJobModel.getJobId()));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                                    .content(gson.toJson(jobIdsRequestModel))
+                                                    .contentType(MEDIA_TYPE);
+
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
+    public void testDescriptorCheck() throws Exception {
+        final String urlPath = REQUEST_URL + "/descriptorCheck";
+        addGlobalConfiguration(blackDuckProviderKey, Map.of(
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
+            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
+                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                                    .content(blackDuckProviderKey.getUniversalKey())
+                                                    .contentType(MEDIA_TYPE);
+
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
