@@ -136,7 +136,8 @@ const CommonGlobalConfigurationForm = ({
         setActionMessage(null);
         const response = await deleteRequest(formData.jobId);
         if (response.ok) {
-            setFormData({});
+            const deletedForm = FieldModelUtilities.createEmptyFieldModel([], formData.context, formData.descriptorName);
+            setFormData(deletedForm);
             setActionMessage('Delete Successful');
         } else {
             const errorObject = errorHandler.handle(response, await response.json(), false);
