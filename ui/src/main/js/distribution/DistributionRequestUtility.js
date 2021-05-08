@@ -1,4 +1,6 @@
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import HeaderUtilities from 'util/HeaderUtilities';
+import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 
 export const getDataById = async (id, csrfToken, errorHandler, setError) => {
     if (id) {
@@ -9,4 +11,35 @@ export const getDataById = async (id, csrfToken, errorHandler, setError) => {
     }
 
     return null;
+};
+
+export const checkDescriptorForGlobalConfig = ({
+    csrfToken, descriptorName, errorHandler, fieldName, errors, setErrors
+}) => {
+    const url = `${ConfigRequestBuilder.JOB_API_URL}/descriptorCheck`;
+    const headersUtil = new HeaderUtilities();
+    headersUtil.addApplicationJsonContentType();
+    headersUtil.addXCsrfToken(csrfToken);
+    const request = fetch(url, {
+        credentials: 'same-origin',
+        method: 'POST',
+        body: descriptorName,
+        headers: headersUtil.getHeaders()
+    });
+    request.then((response) => {
+        if (response.ok) {
+            const errorObject = HttpErrorUtilities.createEmptyErrorObject();
+            errorObject.fieldErrors[fieldName] = {};
+            const newErrorObject = HttpErrorUtilities.combineErrorObjects(errors, errorObject);
+            setErrors(newErrorObject);
+        } else {
+            response.json().then((data) => {
+                const errorObject = errorHandler.handle(response, data, false);
+                const warning = HttpErrorUtilities.createFieldWarning(errorObject.message);
+                errorObject.fieldErrors[fieldName] = warning;
+                const newErrorObject = HttpErrorUtilities.combineErrorObjects(errors, errorObject);
+                setErrors(newErrorObject);
+            });
+        }
+    }).catch(console.error);
 };

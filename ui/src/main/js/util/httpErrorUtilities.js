@@ -10,6 +10,13 @@ export function createFieldError(message) {
     };
 }
 
+export function createFieldWarning(message) {
+    return {
+        severity: 'WARNING',
+        fieldMessage: message
+    };
+}
+
 export function createEmptyErrorObject() {
     return {
         message: '',

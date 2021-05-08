@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'field/StatusMessage';
 
@@ -58,7 +59,7 @@ const CommonDistributionConfigurationForm = ({
         if (response.ok) {
             if (json.hasErrors) {
                 setErrorMessage(json.message);
-                setErrors(json.errors);
+                setErrors(HttpErrorUtilities.createErrorObject(json));
             } else {
                 setActionMessage('Test Successful');
             }
@@ -75,7 +76,7 @@ const CommonDistributionConfigurationForm = ({
 
     const handleTestClick = () => {
         setErrorMessage(null);
-        setErrors({});
+        setErrors(HttpErrorUtilities.createEmptyErrorObject());
 
         if (testFields) {
             setShowTest(true);
@@ -90,14 +91,14 @@ const CommonDistributionConfigurationForm = ({
 
         setInProgress(true);
         setErrorMessage(null);
-        setErrors({});
+        setErrors(HttpErrorUtilities.createEmptyErrorObject());
         const dataToSend = createDataToSend ? createDataToSend() : formData;
         const validateResponse = await validateRequest(dataToSend);
         const validateJson = await validateResponse.json();
         if (validateResponse.ok) {
             if (validateJson.hasErrors) {
                 setErrorMessage(validateJson.message);
-                setErrors(validateJson.errors);
+                setErrors(HttpErrorUtilities.createErrorObject(validateJson));
             } else {
                 const id = formData.jobId;
                 const request = (id)

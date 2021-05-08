@@ -3,6 +3,7 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import TextInput from 'field/input/TextInput';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import PasswordInput from 'field/input/PasswordInput';
 import NumberInput from 'field/input/NumberInput';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
@@ -17,7 +18,7 @@ const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const history = useHistory();
     const location = useLocation();
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, BLACKDUCK_INFO.key));
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     if (!FieldModelUtilities.hasValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)) {
         const defaultValue = FieldModelUtilities.updateFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout, 300);
@@ -68,7 +69,7 @@ const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.enabled)}
-                    errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.enabled]}
+                    errorValue={errors.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.enabled]}
                 />
                 <TextInput
                     id={BLACKDUCK_GLOBAL_FIELD_KEYS.name}
@@ -80,7 +81,7 @@ const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.name)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.name)}
-                    errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.name]}
+                    errorValue={errors.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.name]}
                 />
                 <TextInput
                     id={BLACKDUCK_GLOBAL_FIELD_KEYS.url}
@@ -92,7 +93,7 @@ const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.url)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.url)}
-                    errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.url]}
+                    errorValue={errors.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.url]}
                 />
                 <PasswordInput
                     id={BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey}
@@ -105,7 +106,7 @@ const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey)}
-                    errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey]}
+                    errorValue={errors.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.apiKey]}
                 />
                 <NumberInput
                     id={BLACKDUCK_GLOBAL_FIELD_KEYS.timeout}
@@ -117,7 +118,7 @@ const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelNumberValue(formData, BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(BLACKDUCK_GLOBAL_FIELD_KEYS.timeout)}
-                    errorValue={errors[BLACKDUCK_GLOBAL_FIELD_KEYS.timeout]}
+                    errorValue={errors.fieldErrors[BLACKDUCK_GLOBAL_FIELD_KEYS.timeout]}
                 />
             </CommonGlobalConfigurationForm>
         </CommonGlobalConfiguration>
