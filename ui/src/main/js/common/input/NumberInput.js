@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 
 const NumberInput = ({
     readOnly, inputClass, id, name, value, onChange, labelClass, description, showDescriptionPlaceHolder, label, errorName, errorValue, required

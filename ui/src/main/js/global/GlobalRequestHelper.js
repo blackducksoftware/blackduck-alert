@@ -1,4 +1,4 @@
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 
 export const getDataById = async (id, csrfToken) => {
     if (id) {

@@ -1,7 +1,7 @@
 import { ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING } from 'store/actions/types';
 
 import { unauthorized } from 'store/actions/session';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const ABOUT_INFO_URL = '/alert/api/about';
 

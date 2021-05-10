@@ -5,10 +5,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
-import AutoRefresh from 'common/field/table/AutoRefresh';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import AutoRefresh from 'common/table/AutoRefresh';
+import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'provider/blackduck/BlackDuckModel';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import ConfirmModal from 'common/ConfirmModal';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 

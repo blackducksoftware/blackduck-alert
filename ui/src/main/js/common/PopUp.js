@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import ConfigButtons from 'common/ConfigButtons';
+import ConfigButtons from 'common/button/ConfigButtons';
 import MessageFormatter from 'common/MessageFormatter';
 
 const PopUp = ({

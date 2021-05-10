@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import TextInput from 'common/input/TextInput';
-import { MSTEAMS_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/msteams/MsTeamsModel';
+import { MSTEAMS_DISTRIBUTION_FIELD_KEYS } from 'channel/msteams/MsTeamsModel';
 
 const MsTeamsDistributionConfiguration = ({
     data, setData, errors, readonly

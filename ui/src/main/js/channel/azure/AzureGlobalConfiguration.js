@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import * as HttpErrorUtilities from 'util/httpErrorUtilities';
-import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import PasswordInput from 'common/input/PasswordInput';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'channel/azure/AzureModel';
-import OAuthEndpointButtonField from 'common/button/OAuthEndpointButtonField';
+import OAuthEndpointButtonField from 'common/input/field/OAuthEndpointButtonField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 import TextInput from 'common/input/TextInput';
 

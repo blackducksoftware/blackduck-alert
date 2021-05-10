@@ -14,7 +14,7 @@ import DescriptorLabel from 'common/DescriptorLabel';
 import TextInput from 'common/input/TextInput';
 import TextArea from 'common/input/TextArea';
 import RefreshTableCellFormatter from 'common/table/RefreshTableCellFormatter';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
+import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import StatusMessage from 'common/StatusMessage';
 
 class Details extends Component {

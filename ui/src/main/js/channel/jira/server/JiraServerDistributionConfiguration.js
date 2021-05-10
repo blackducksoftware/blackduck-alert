@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/jira/server/JiraServerModel';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'channel/jira/server/JiraServerModel';
 import CheckboxInput from 'common/input/CheckboxInput';
 import TextInput from 'common/input/TextInput';
 import CollapsiblePane from 'common/CollapsiblePane';

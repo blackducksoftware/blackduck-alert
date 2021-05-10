@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import LabeledField, { LabelFieldPropertyDefaults } from 'common/button/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 
 const ReadOnlyField = ({
     id, alt, description, errorName, errorValue, label, labelClass, required, showDescriptionPlaceHolder, url, value

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import TextInput from 'common/input/TextInput';
@@ -12,8 +12,8 @@ import CheckboxInput from 'common/input/CheckboxInput';
 import PasswordInput from 'common/input/PasswordInput';
 import DynamicSelectInput from 'common/input/DynamicSelectInput';
 import CollapsiblePane from 'common/CollapsiblePane';
-import UploadFileButtonField from 'common/button/UploadFileButtonField';
-import ReadOnlyField from 'common/button/ReadOnlyField';
+import UploadFileButtonField from 'common/input/field/UploadFileButtonField';
+import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const AuthenticationConfiguration = ({ csrfToken, readonly }) => {

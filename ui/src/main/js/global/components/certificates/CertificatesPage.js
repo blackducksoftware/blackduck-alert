@@ -8,8 +8,8 @@ import ConfigurationLabel from 'common/ConfigurationLabel';
 import TableDisplay from 'common/table/TableDisplay';
 import TextInput from 'common/input/TextInput';
 import TextArea from 'common/input/TextArea';
-import ReadOnlyField from 'common/button/ReadOnlyField';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
+import ReadOnlyField from 'common/input/field/ReadOnlyField';
+import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
 
 class CertificatesPage extends Component {

@@ -2,12 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import ReadOnlyField from 'field/ReadOnlyField';
+import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
-import ConfigurationLabel from 'common/common/ConfigurationLabel';
+import * as DescriptorUtilities from 'common/util/descriptorUtilities';
+import ConfigurationLabel from 'common/ConfigurationLabel';
 import { NavLink } from 'react-router-dom';
-import LabeledField from 'field/LabeledField';
+import LabeledField from 'common/input/field/LabeledField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class AboutInfo extends React.Component {

@@ -6,9 +6,9 @@ import {
     AUDIT_RESEND_ERROR,
     AUDIT_RESEND_START
 } from 'store/actions/types';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
-import HeaderUtilities from 'util/HeaderUtilities';
+import HeaderUtilities from 'common/util/HeaderUtilities';
 
 const FETCH_URL = '/alert/api/audit';
 

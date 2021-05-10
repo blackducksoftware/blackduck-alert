@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
-import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
+import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
+import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'common/util/configurationRequestBuilder';
 import StatusMessage from 'common/StatusMessage';
-import GeneralButton from 'common/field/GeneralButton';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import GeneralButton from 'common/button/GeneralButton';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const UploadFileButtonField = ({
     id, accept, capture, buttonLabel, csrfToken, description, endpoint, errorValue, fieldKey, label, labelClass, name, readOnly, required, showDescriptionPlaceHolder, statusMessage

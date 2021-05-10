@@ -1,6 +1,6 @@
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import HeaderUtilities from 'util/HeaderUtilities';
-import * as HttpErrorUtilities from 'util/httpErrorUtilities';
+import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
+import HeaderUtilities from 'common/util/HeaderUtilities';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
 export const getDataById = async (id, csrfToken, errorHandler, setError) => {
     if (id) {

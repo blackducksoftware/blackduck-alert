@@ -1,7 +1,7 @@
-import * as RequestUtilities from 'util/RequestUtilities';
-import { createPostRequest, createReadRequest } from 'util/RequestUtilities';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as RequestUtilities from 'common/util/RequestUtilities';
+import { createPostRequest, createReadRequest } from 'common/util/RequestUtilities';
+import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const auditReadRequest = async (csrfToken, jobIds) => createPostRequest('/alert/api/audit/job', csrfToken, {
     jobIds

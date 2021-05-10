@@ -1,6 +1,6 @@
 import { SYSTEM_LATEST_MESSAGES_FETCHED, SYSTEM_LATEST_MESSAGES_FETCHING } from 'store/actions/types';
 import { unauthorized } from 'store/actions/session';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 

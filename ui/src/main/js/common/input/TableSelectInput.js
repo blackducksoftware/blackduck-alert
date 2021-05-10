@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { BootstrapTable, SearchField, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 import Select, { components } from 'react-select';
 import DescriptorOption from 'common/DescriptorOption';
-import GeneralButton from 'common/field/GeneralButton';
-import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
+import GeneralButton from 'common/button/GeneralButton';
+import { createNewConfigurationRequest } from 'common/util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import ConfirmModal from 'common/ConfirmModal';
 
 const { MultiValue, ValueContainer } = components;

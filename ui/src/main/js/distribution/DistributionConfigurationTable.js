@@ -6,12 +6,12 @@ import {
     BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
+import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import DescriptorLabel from 'common/DescriptorLabel';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import ConfirmModal from 'common/ConfirmModal';
-import AutoRefresh from 'common/field/table/AutoRefresh';
+import AutoRefresh from 'common/table/AutoRefresh';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'distribution/DistributionTableRequestUtility';
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import { SETTINGS_FIELD_KEYS, SETTINGS_INFO } from 'global/components/settings/SettingsModel';

@@ -5,7 +5,7 @@ import { Tab, Tabs } from 'react-bootstrap';
 import ConfigurationLabel from 'common/ConfigurationLabel';
 import RoleTable from 'global/components/user/RoleTable';
 import UserTable from 'global/components/user/UserTable';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
+import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
 
 function UserManagement(props) {

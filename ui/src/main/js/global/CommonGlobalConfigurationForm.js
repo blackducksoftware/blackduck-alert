@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import ConfigButtons from 'common/button/ConfigButtons';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import * as HttpErrorUtilities from 'util/httpErrorUtilities';
+import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'common/StatusMessage';
 

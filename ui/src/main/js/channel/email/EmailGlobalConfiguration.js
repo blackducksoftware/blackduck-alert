@@ -6,12 +6,12 @@ import {
 } from 'channel/email/EmailModels';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import TextInput from 'common/input/TextInput';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import * as HttpErrorUtilities from 'util/httpErrorUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import CheckboxInput from 'common/input/CheckboxInput';
 import CollapsiblePane from 'common/CollapsiblePane';
 import NumberInput from 'common/input/NumberInput';
-import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {

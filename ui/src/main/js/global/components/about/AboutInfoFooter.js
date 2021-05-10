@@ -9,7 +9,7 @@ import {
     PopoverTitle
 } from 'react-bootstrap';
 
-import SystemMessage from 'common/common/SystemMessage';
+import SystemMessage from 'common/SystemMessage';
 import { getAboutInfo } from 'store/actions/about';
 import { getLatestMessages } from 'store/actions/system';
 import '../../../../css/footer.scss';

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Select, { components } from 'react-select';
-import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 import DescriptorOption from 'common/DescriptorOption';
 
 const { Option, SingleValue, MultiValue } = components;

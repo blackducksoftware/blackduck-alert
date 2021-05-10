@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
-import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import { CONTEXT_TYPE } from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import { SCHEDULING_FIELD_KEYS, SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import DynamicSelectInput from 'common/input/DynamicSelectInput';
-import ReadOnlyField from 'common/button/ReadOnlyField';
+import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const SchedulingConfiguration = ({ csrfToken, readonly }) => {

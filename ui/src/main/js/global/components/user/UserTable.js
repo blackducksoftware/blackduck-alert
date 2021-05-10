@@ -10,7 +10,7 @@ import {
 import DynamicSelectInput from 'common/input/DynamicSelectInput';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const KEY_CONFIRM_PASSWORD_ERROR = 'confirmPasswordError';
 

@@ -9,7 +9,7 @@ import {
     SESSION_LOGIN_ERROR,
     SESSION_LOGOUT
 } from 'store/actions/types';
-import HeaderUtilities from 'util/HeaderUtilities';
+import HeaderUtilities from 'common/util/HeaderUtilities';
 import { push } from 'connected-react-router';
 
 /**

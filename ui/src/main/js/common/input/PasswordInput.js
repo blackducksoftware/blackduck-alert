@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
+import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 
 const PasswordInput = ({
     id, description, errorName, errorValue, inputClass, isSet, label, labelClass, name, onChange, readOnly, required, showDescriptionPlaceHolder, value
