@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import PasswordInput from 'common/field/input/PasswordInput';
-import TextInput from 'common/field/input/TextInput';
-import SubmitButton from 'common/field/SubmitButton';
+import PasswordInput from 'common/input/PasswordInput';
+import TextInput from 'common/input/TextInput';
+import SubmitButton from 'common/button/SubmitButton';
 import Header from 'common/Header';
 import { login } from 'store/actions/session';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

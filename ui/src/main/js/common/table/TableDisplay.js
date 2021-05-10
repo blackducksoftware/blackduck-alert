@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import {
     BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
 } from 'react-bootstrap-table';
-import AutoRefresh from 'common/AutoRefresh';
-import IconTableCellFormatter from 'common/IconTableCellFormatter';
+import AutoRefresh from 'common/field/table/AutoRefresh';
+import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PopUp from 'common/field/PopUp';
+import PopUp from 'common/PopUp';
 import ConfirmModal from 'common/ConfirmModal';
-import StatusMessage from 'common/field/StatusMessage';
+import StatusMessage from 'common/StatusMessage';
 
 const VALIDATION_STATE = {
     NONE: 'NONE',

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'common/ConfigButtons';
-import MessageFormatter from 'common/field/MessageFormatter';
+import MessageFormatter from 'common/MessageFormatter';
 
 const PopUp = ({
     id, actionMessage, cancelLabel, children, handleSubmit, handleTest, includeSave, includeTest, okLabel, onCancel, performingAction, show, testLabel, title

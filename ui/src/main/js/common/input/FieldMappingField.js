@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'common/field/table/TableDisplay';
-import TextInput from 'common/field/input/TextInput';
+import TableDisplay from 'common/table/TableDisplay';
+import TextInput from 'common/input/TextInput';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
 
 const FieldMappingField = ({

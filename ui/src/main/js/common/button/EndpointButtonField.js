@@ -4,10 +4,10 @@ import GeneralButton from 'common/field/GeneralButton';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
-import StatusMessage from 'common/field/StatusMessage';
+import StatusMessage from 'common/StatusMessage';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
-const OAuthEndpointButtonField = ({
+const EndpointButtonField = ({
     id,
     buttonLabel,
     csrfToken,
@@ -15,55 +15,63 @@ const OAuthEndpointButtonField = ({
     description,
     endpoint,
     errorValue,
-    fields,
     fieldKey,
+    fields,
     label,
     labelClass,
+    name,
     onChange,
     readOnly,
     required,
     requiredRelatedFields,
     showDescriptionPlaceHolder,
-    statusMessage
+    statusMessage,
+    successBox,
+    value
 }) => {
     const [showModal, setShowModal] = useState(false);
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
     const [progress, setProgress] = useState(false);
+    const [modalConfig, setModalConfig] = useState({});
 
     useEffect(() => {
-        setFieldError(errorValue);
-        setSuccess(false);
+        if (fieldError !== errorValue) {
+            setFieldError(errorValue);
+            setSuccess(false);
+        }
     }, [errorValue]);
 
     const onSendClick = (event, popupData) => {
         setFieldError(errorValue);
         setProgress(true);
         setSuccess(false);
+
         const newFieldModel = FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const mergedData = popupData ? FieldModelUtilities.combineFieldModels(newFieldModel, popupData) : newFieldModel;
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, mergedData);
         request.then((response) => {
-            response.json()
-                .then((data) => {
-                    const {
-                        authorizationUrl, message
-                    } = data;
-                    const target = {
-                        name: [fieldKey],
-                        checked: true,
-                        type: 'checkbox'
-                    };
-                    onChange({ target });
-                    const okRequest = HTTPErrorUtils.isOk(response.status);
-                    if (okRequest) {
-                    // REDIRECT: This is where we redirect the current tab to the Azure OAuth URL.
-                        window.location.replace(authorizationUrl);
-                    } else {
-                        setFieldError(HTTPErrorUtils.createFieldError(message));
-                        setProgress(false);
-                    }
-                });
+            setProgress(false);
+            if (response.ok) {
+                const target = {
+                    name: [fieldKey],
+                    checked: true,
+                    type: 'checkbox'
+                };
+                onChange({ target });
+                setSuccess(true);
+            } else {
+                response.json()
+                    .then((data) => {
+                        const target = {
+                            name: [fieldKey],
+                            checked: false,
+                            type: 'checkbox'
+                        };
+                        onChange({ target });
+                        setFieldError(HTTPErrorUtils.createFieldError(data.message));
+                    });
+            }
         });
     };
 
@@ -74,18 +82,17 @@ const OAuthEndpointButtonField = ({
             onSendClick({});
         }
     };
-
     return (
         <div>
             <LabeledField
                 id={id}
+                labelClass={labelClass}
                 description={description}
+                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
+                label={label}
+                required={required}
                 errorName={fieldKey}
                 errorValue={fieldError}
-                label={label}
-                labelClass={labelClass}
-                required={required}
-                showDescriptionPlaceHolder={showDescriptionPlaceHolder}
             >
                 <div className="d-inline-flex p-2 col-sm-8">
                     <GeneralButton
@@ -96,47 +103,65 @@ const OAuthEndpointButtonField = ({
                     >
                         {buttonLabel}
                     </GeneralButton>
+                    {successBox
+                    && (
+                        <div className="d-inline-flex p-2 checkbox">
+                            <input
+                                className="form-control"
+                                id={`${fieldKey}-confirmation`}
+                                type="checkbox"
+                                name={name}
+                                checked={value}
+                                readOnly
+                            />
+                        </div>
+                    )}
                     {success
                     && <StatusMessage id={`${fieldKey}-status-message`} actionMessage={statusMessage} />}
 
                 </div>
             </LabeledField>
         </div>
+
     );
 };
 
-OAuthEndpointButtonField.propTypes = {
+EndpointButtonField.propTypes = {
     id: PropTypes.string,
-    endpoint: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
-    currentConfig: PropTypes.object.isRequired,
-    fieldKey: PropTypes.string.isRequired,
     csrfToken: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
+    currentConfig: PropTypes.object.isRequired,
+    endpoint: PropTypes.string.isRequired,
     fields: PropTypes.array,
-    requiredRelatedFields: PropTypes.array,
-    errorValue: PropTypes.string,
+    fieldKey: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
+    requiredRelatedFields: PropTypes.array,
     statusMessage: PropTypes.string,
+    successBox: PropTypes.bool.isRequired,
+    value: PropTypes.bool,
     description: PropTypes.string,
+    errorValue: PropTypes.object,
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
     showDescriptionPlaceHolder: PropTypes.bool
 };
 
-OAuthEndpointButtonField.defaultProps = {
-    id: 'oauthEndpointButtonFieldId',
+EndpointButtonField.defaultProps = {
+    id: 'endpointButtonFieldId',
     fields: [],
+    name: '',
     readOnly: false,
     requiredRelatedFields: [],
     statusMessage: 'Success',
+    value: false,
     description: LabelFieldPropertyDefaults.DESCRIPTION_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
     showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
-
 };
 
-export default OAuthEndpointButtonField;
+export default EndpointButtonField;

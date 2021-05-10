@@ -11,11 +11,11 @@ import {
     Tabs
 } from 'react-bootstrap';
 import DescriptorLabel from 'common/DescriptorLabel';
-import TextInput from 'common/field/input/TextInput';
-import TextArea from 'common/field/input/TextArea';
-import RefreshTableCellFormatter from 'common/RefreshTableCellFormatter';
+import TextInput from 'common/input/TextInput';
+import TextArea from 'common/input/TextArea';
+import RefreshTableCellFormatter from 'common/table/RefreshTableCellFormatter';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import StatusMessage from 'common/field/StatusMessage';
+import StatusMessage from 'common/StatusMessage';
 
 class Details extends Component {
     constructor(props) {

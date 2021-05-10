@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'react-bootstrap/Alert';
-import FadeField from 'common/field/FadeField';
-import MessageFormatter from 'common/field/MessageFormatter';
+import FadeField from 'common/FadeField';
+import MessageFormatter from 'common/MessageFormatter';
 
 const StatusMessage = ({
     id, errorMessage, actionMessage, errorIsDetailed

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import CheckboxInput from 'common/field/input/CheckboxInput';
+import CheckboxInput from 'common/input/CheckboxInput';
 import { JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/jira/cloud/JiraCloudModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import TextInput from 'common/field/input/TextInput';
+import TextInput from 'common/input/TextInput';
 import CollapsiblePane from 'common/CollapsiblePane';
-import FieldMappingField from 'common/field/input/FieldMappingField';
+import FieldMappingField from 'common/input/FieldMappingField';
 
 const JiraCloudDistributionConfiguration = ({
     data, setData, errors, readonly

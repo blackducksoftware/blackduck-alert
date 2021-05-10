@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import CheckboxInput from 'common/field/input/CheckboxInput';
-import SelectInput from 'common/field/input/DynamicSelectInput';
+import CheckboxInput from 'common/input/CheckboxInput';
+import SelectInput from 'common/input/DynamicSelectInput';
 import {
     DISTRIBUTION_COMMON_FIELD_KEYS,
     DISTRIBUTION_FREQUENCY_OPTIONS,
@@ -12,10 +12,10 @@ import {
     DISTRIBUTION_TEST_FIELD_KEYS,
     DISTRIBUTION_URLS
 } from 'distribution/DistributionModel';
-import EndpointSelectField from 'common/field/input/EndpointSelectField';
-import TextInput from 'common/field/input/TextInput';
+import EndpointSelectField from 'common/input/EndpointSelectField';
+import TextInput from 'common/input/TextInput';
 import CollapsiblePane from 'common/CollapsiblePane';
-import TableSelectInput from 'common/field/input/TableSelectInput';
+import TableSelectInput from 'common/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';

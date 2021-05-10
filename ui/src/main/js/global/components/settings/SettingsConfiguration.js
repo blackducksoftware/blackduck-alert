@@ -5,10 +5,10 @@ import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import { SETTINGS_FIELD_KEYS, SETTINGS_INFO } from 'global/components/settings/SettingsModel';
-import PasswordInput from 'common/field/input/PasswordInput';
+import PasswordInput from 'common/input/PasswordInput';
 import CollapsiblePane from 'common/CollapsiblePane';
-import TextInput from 'common/field/input/TextInput';
-import NumberInput from 'common/field/input/NumberInput';
+import TextInput from 'common/input/TextInput';
+import NumberInput from 'common/input/NumberInput';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const SettingsConfiguration = ({ csrfToken, readonly }) => {

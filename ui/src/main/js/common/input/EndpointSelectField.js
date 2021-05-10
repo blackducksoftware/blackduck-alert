@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
-import DynamicSelectInput from 'common/field/input/DynamicSelectInput';
+import DynamicSelectInput from 'common/input/DynamicSelectInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import { LabelFieldPropertyDefaults } from '../LabeledField';
+import { LabelFieldPropertyDefaults } from '../button/LabeledField';
 
 // TODO Remove currentConfig and requiredRelatedFields
 const EndpointSelectField = ({

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
-import TextInput from 'common/field/input/TextInput';
-import CheckboxInput from 'common/field/input/CheckboxInput';
+import TextInput from 'common/input/TextInput';
+import CheckboxInput from 'common/input/CheckboxInput';
 import { AZURE_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/azure/AzureModel';
 
 const AzureDistributionConfiguration = ({

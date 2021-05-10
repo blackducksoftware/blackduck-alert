@@ -5,11 +5,11 @@ import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
-import PasswordInput from 'common/field/input/PasswordInput';
+import PasswordInput from 'common/input/PasswordInput';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'channel/azure/AzureModel';
-import OAuthEndpointButtonField from 'common/field/input/OAuthEndpointButtonField';
+import OAuthEndpointButtonField from 'common/button/OAuthEndpointButtonField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
-import TextInput from 'common/field/input/TextInput';
+import TextInput from 'common/input/TextInput';
 
 const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_INFO.key));

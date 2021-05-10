@@ -11,8 +11,8 @@ import DescriptorLabel from 'common/DescriptorLabel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 import ConfirmModal from 'common/ConfirmModal';
-import AutoRefresh from 'common/AutoRefresh';
-import IconTableCellFormatter from 'common/IconTableCellFormatter';
+import AutoRefresh from 'common/field/table/AutoRefresh';
+import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'distribution/DistributionTableRequestUtility';
 
 const DistributionConfigurationTable = ({

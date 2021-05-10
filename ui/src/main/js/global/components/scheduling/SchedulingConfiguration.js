@@ -5,8 +5,8 @@ import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import { SCHEDULING_FIELD_KEYS, SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import DynamicSelectInput from 'common/field/input/DynamicSelectInput';
-import ReadOnlyField from 'common/field/ReadOnlyField';
+import DynamicSelectInput from 'common/input/DynamicSelectInput';
+import ReadOnlyField from 'common/button/ReadOnlyField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const SchedulingConfiguration = ({ csrfToken, readonly }) => {

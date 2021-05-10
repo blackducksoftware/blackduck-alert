@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import TextInput from 'common/field/input/TextInput';
+import TextInput from 'common/input/TextInput';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'util/httpErrorUtilities';
-import PasswordInput from 'common/field/input/PasswordInput';
-import NumberInput from 'common/field/input/NumberInput';
+import PasswordInput from 'common/input/PasswordInput';
+import NumberInput from 'common/input/NumberInput';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import CheckboxInput from 'common/field/input/CheckboxInput';
+import CheckboxInput from 'common/input/CheckboxInput';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {

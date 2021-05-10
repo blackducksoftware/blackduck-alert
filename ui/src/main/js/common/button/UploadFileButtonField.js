@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
-import StatusMessage from 'common/field/StatusMessage';
+import StatusMessage from 'common/StatusMessage';
 import GeneralButton from 'common/field/GeneralButton';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 

@@ -5,12 +5,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useHistory } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
-import AutoRefresh from 'common/AutoRefresh';
+import AutoRefresh from 'common/field/table/AutoRefresh';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'provider/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfirmModal from 'common/ConfirmModal';
-import IconTableCellFormatter from 'common/IconTableCellFormatter';
+import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 
 const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
     const [tableData, setTableData] = useState([]);

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import CancelButton from 'field/CancelButton';
-import SubmitButton from 'field/SubmitButton';
-import GeneralButton from 'field/GeneralButton';
+import CancelButton from 'common/button/CancelButton';
+import SubmitButton from 'common/button/SubmitButton';
+import GeneralButton from 'common/button/GeneralButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ConfirmModal from 'common/ConfirmModal';
 

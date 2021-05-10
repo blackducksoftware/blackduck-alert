@@ -5,12 +5,12 @@ import {
     EMAIL_GLOBAL_ADVANCED_FIELD_KEYS, EMAIL_GLOBAL_FIELD_KEYS, EMAIL_INFO, EMAIL_TEST_FIELD
 } from 'channel/email/EmailModels';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
-import TextInput from 'common/field/input/TextInput';
+import TextInput from 'common/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'util/httpErrorUtilities';
-import CheckboxInput from 'common/field/input/CheckboxInput';
+import CheckboxInput from 'common/input/CheckboxInput';
 import CollapsiblePane from 'common/CollapsiblePane';
-import NumberInput from 'common/field/input/NumberInput';
+import NumberInput from 'common/input/NumberInput';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 

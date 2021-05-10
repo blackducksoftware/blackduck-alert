@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'common/field/table/TableDisplay';
-import DynamicSelectInput from 'common/field/input/DynamicSelectInput';
-import CheckboxInput from 'common/field/input/CheckboxInput';
-import StatusMessage from 'common/field/StatusMessage';
+import TableDisplay from 'common/table/TableDisplay';
+import DynamicSelectInput from 'common/input/DynamicSelectInput';
+import CheckboxInput from 'common/input/CheckboxInput';
+import StatusMessage from 'common/StatusMessage';
 
 export const PERMISSIONS_TABLE = {
     DESCRIPTOR_NAME: 'descriptorName',

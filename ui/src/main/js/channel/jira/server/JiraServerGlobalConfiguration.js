@@ -3,12 +3,12 @@ import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import { JIRA_SERVER_GLOBAL_FIELD_KEYS, JIRA_SERVER_INFO } from 'channel/jira/server/JiraServerModel';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
-import TextInput from 'common/field/input/TextInput';
+import TextInput from 'common/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'util/httpErrorUtilities';
-import PasswordInput from 'common/field/input/PasswordInput';
-import CheckboxInput from 'common/field/input/CheckboxInput';
-import EndpointButtonField from 'common/field/input/EndpointButtonField';
+import PasswordInput from 'common/input/PasswordInput';
+import CheckboxInput from 'common/input/CheckboxInput';
+import EndpointButtonField from 'common/button/EndpointButtonField';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 

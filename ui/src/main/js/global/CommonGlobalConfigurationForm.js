@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import ConfigButtons from 'common/ConfigButtons';
+import ConfigButtons from 'common/button/ConfigButtons';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import GlobalTestModal from 'global/GlobalTestModal';
-import StatusMessage from 'common/field/StatusMessage';
+import StatusMessage from 'common/StatusMessage';
 
 const CommonGlobalConfigurationForm = ({
     formData,

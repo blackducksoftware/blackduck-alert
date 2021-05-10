@@ -5,10 +5,10 @@ import {
     clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate
 } from 'store/actions/certificates';
 import ConfigurationLabel from 'common/ConfigurationLabel';
-import TableDisplay from 'common/field/table/TableDisplay';
-import TextInput from 'common/field/input/TextInput';
-import TextArea from 'common/field/input/TextArea';
-import ReadOnlyField from 'common/field/ReadOnlyField';
+import TableDisplay from 'common/table/TableDisplay';
+import TextInput from 'common/input/TextInput';
+import TextArea from 'common/input/TextArea';
+import ReadOnlyField from 'common/button/ReadOnlyField';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
 
