@@ -1,8 +1,8 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
-import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
+import { BLACKDUCK_INFO } from 'providers/blackduck/BlackDuckModel';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import BlackDuckProviderTable from 'global/providers/blackduck/BlackDuckProviderTable';
+import BlackDuckProviderTable from 'providers/blackduck/BlackDuckProviderTable';
 
 const BlackDuckProviderConfiguration = ({ csrfToken, showRefreshButton, readonly }) => (
     <CommonGlobalConfiguration

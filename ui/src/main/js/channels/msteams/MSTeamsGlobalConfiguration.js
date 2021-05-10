@@ -1,6 +1,6 @@
 import React from 'react';
 import EmptyGlobalConfiguration from 'global/EmptyGlobalConfiguration';
-import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
+import { MSTEAMS_INFO } from 'channels/msteams/MSTeamsModel';
 
 const MSTeamsGlobalConfiguration = () => (
     <EmptyGlobalConfiguration label={MSTEAMS_INFO.label} description="Configure MS Teams for Alert." />

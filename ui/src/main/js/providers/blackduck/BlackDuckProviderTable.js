@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
 import AutoRefresh from 'component/common/AutoRefresh';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
+import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'providers/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import ConfirmModal from 'component/common/ConfirmModal';
 import IconTableCellFormatter from 'component/common/IconTableCellFormatter';

@@ -21,19 +21,19 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'distribution/DistributionRequestUtility';
-import { AZURE_INFO } from 'global/channels/azure/AzureModel';
-import { BLACKDUCK_INFO } from 'global/providers/blackduck/BlackDuckModel';
-import { EMAIL_INFO } from 'global/channels/email/EmailModels';
-import { JIRA_CLOUD_INFO } from 'global/channels/jira/cloud/JiraCloudModel';
-import { JIRA_SERVER_INFO } from 'global/channels/jira/server/JiraServerModel';
-import { MSTEAMS_INFO } from 'global/channels/msteams/MSTeamsModel';
-import { SLACK_INFO } from 'global/channels/slack/SlackModels';
-import AzureDistributionConfiguration from 'distribution/channels/azure/AzureDistributionConfiguration';
-import EmailDistributionConfiguration from 'distribution/channels/email/EmailDistributionConfiguration';
-import JiraCloudDistributionConfiguration from 'distribution/channels/jira/cloud/JiraCloudDistributionConfiguration';
-import JiraServerDistributionConfiguration from 'distribution/channels/jira/server/JiraServerDistributionConfiguration';
-import MsTeamsDistributionConfiguration from 'distribution/channels/msteams/MsTeamsDistributionConfiguration';
-import SlackDistributionConfiguration from 'distribution/channels/slack/SlackDistributionConfiguration';
+import { AZURE_INFO } from 'channels/azure/AzureModel';
+import { BLACKDUCK_INFO } from 'providers/blackduck/BlackDuckModel';
+import { EMAIL_INFO } from 'channels/email/EmailModels';
+import { JIRA_CLOUD_INFO } from 'channels/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'channels/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from 'channels/msteams/MSTeamsModel';
+import { SLACK_INFO } from 'channels/slack/SlackModels';
+import AzureDistributionConfiguration from 'channels/azure/AzureDistributionConfiguration';
+import EmailDistributionConfiguration from 'channels/email/EmailDistributionConfiguration';
+import JiraCloudDistributionConfiguration from 'channels/jira/cloud/JiraCloudDistributionConfiguration';
+import JiraServerDistributionConfiguration from 'channels/jira/server/JiraServerDistributionConfiguration';
+import MsTeamsDistributionConfiguration from 'channels/msteams/MsTeamsDistributionConfiguration';
+import SlackDistributionConfiguration from 'channels/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, readonly, descriptors, lastUpdated

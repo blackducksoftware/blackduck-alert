@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import TextInput from 'field/input/TextInput';
-import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'global/providers/blackduck/BlackDuckModel';
+import { BLACKDUCK_GLOBAL_FIELD_KEYS, BLACKDUCK_INFO, BLACKDUCK_URLS } from 'providers/blackduck/BlackDuckModel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import PasswordInput from 'field/input/PasswordInput';
 import NumberInput from 'field/input/NumberInput';

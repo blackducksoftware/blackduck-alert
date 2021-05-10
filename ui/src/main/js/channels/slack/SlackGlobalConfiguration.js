@@ -1,6 +1,6 @@
 import React from 'react';
 import EmptyGlobalConfiguration from 'global/EmptyGlobalConfiguration';
-import { SLACK_INFO } from 'global/channels/slack/SlackModels';
+import { SLACK_INFO } from 'channels/slack/SlackModels';
 
 const SlackGlobalConfiguration = () => (
     <EmptyGlobalConfiguration label={SLACK_INFO.label} description="Configure Slack for Alert." />
