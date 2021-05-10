@@ -101,13 +101,12 @@ public class BlackDuckProviderService {
     }
 
     public String findBlackDuckProvider() throws IntegrationException {
-        String blackDuckProviderSearch = String.format("api/configuration?context=%s&descriptorName=%s", ConfigContextEnum.GLOBAL, blackDuckProviderKey);
+        String blackDuckProviderSearch = String.format("/api/configuration?context=%s&descriptorName=%s", ConfigContextEnum.GLOBAL, blackDuckProviderKey);
         String response = alertRequestUtility.executeGetRequest(blackDuckProviderSearch, "Could not find the Black Duck provider.");
 
         MultiFieldModel blackDuckConfigurations = gson.fromJson(response, MultiFieldModel.class);
         FieldModel blackDuckProviderConfiguration = blackDuckConfigurations.getFieldModels().stream()
-                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").isPresent())
-                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").get().equals(blackDuckProviderUrl))
+                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").filter(blackDuckProviderUrl::equals).isPresent())
                                                         .findFirst()
                                                         .orElseThrow(() -> new IntegrationException("Could not find the BlackDuck provider configuration."));
 
