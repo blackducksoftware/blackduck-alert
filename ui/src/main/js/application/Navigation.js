@@ -19,7 +19,7 @@ import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateMode
 import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
 import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
 import { doesDescriptorExist } from 'common/util/descriptorUtilities';
-import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from './distribution/DistributionModel';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from '../distribution/DistributionModel';
 
 const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
     const createStaticNavItem = (uriPrefix, itemObject) => (

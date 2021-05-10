@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
-import Navigation from 'Navigation';
+import Navigation from 'application/Navigation';
 import AboutInfo from 'global/components/about/AboutInfo';
 import LogoutConfirmation from 'common/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
