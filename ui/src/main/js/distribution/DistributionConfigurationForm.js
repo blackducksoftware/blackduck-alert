@@ -37,7 +37,7 @@ import MsTeamsDistributionConfiguration from 'distribution/channels/msteams/MsTe
 import SlackDistributionConfiguration from 'distribution/channels/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
-    csrfToken, errorHandler, readonly, descriptors, lastUpdated
+    csrfToken, errorHandler, descriptors, lastUpdated
 }) => {
     const { id } = useParams();
     const history = useHistory();
@@ -67,6 +67,7 @@ const DistributionConfigurationForm = ({
     const [hasProvider, setHasProvider] = useState(false);
     const [hasNotificationTypes, setHasNotificationTypes] = useState(false);
     const [filterByProject, setFilterByProject] = useState(false);
+    const [readonly, setReadonly] = useState(false);
     const retrieveData = async () => {
         const data = await DistributionRequestUtility.getDataById(id, csrfToken, errorHandler, setErrors);
         return data;
@@ -152,6 +153,9 @@ const DistributionConfigurationForm = ({
         setChannelModel(channelFieldModel);
         setProviderModel(providerFieldModel);
         setChannelSelectionModel(FieldModelUtilities.updateFieldModelSingleValue(channelSelectionFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelKey));
+        if (descriptors[channelKey]) {
+            setReadonly(descriptors[channelKey].readOnly);
+        }
     }, [formData]);
 
     const onChannelSelectChange = (event) => {
@@ -161,6 +165,9 @@ const DistributionConfigurationForm = ({
             csrfToken, descriptorName: value, errorHandler, fieldName: name, errors, setErrors
         });
         FieldModelUtilities.handleChange(channelSelectionModel, setChannelSelectionModel)(event);
+        if (descriptors[value]) {
+            setReadonly(descriptors[value].readOnly);
+        }
     };
 
     useEffect(() => {
@@ -495,14 +502,11 @@ DistributionConfigurationForm.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     descriptors: PropTypes.array.isRequired,
-    lastUpdated: PropTypes.string,
-    // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    lastUpdated: PropTypes.string
 };
 
 DistributionConfigurationForm.defaultProps = {
-    lastUpdated: null,
-    readonly: false
+    lastUpdated: null
 };
 
 export default DistributionConfigurationForm;
