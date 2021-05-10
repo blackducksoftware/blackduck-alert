@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import CheckboxInput from 'field/input/CheckboxInput';
-import SelectInput from 'field/input/DynamicSelectInput';
+import CheckboxInput from 'common/field/input/CheckboxInput';
+import SelectInput from 'common/field/input/DynamicSelectInput';
 import {
     DISTRIBUTION_COMMON_FIELD_KEYS,
     DISTRIBUTION_FREQUENCY_OPTIONS,
@@ -12,29 +12,29 @@ import {
     DISTRIBUTION_TEST_FIELD_KEYS,
     DISTRIBUTION_URLS
 } from 'distribution/DistributionModel';
-import EndpointSelectField from 'field/input/EndpointSelectField';
-import TextInput from 'field/input/TextInput';
-import CollapsiblePane from 'component/common/CollapsiblePane';
-import TableSelectInput from 'field/input/TableSelectInput';
+import EndpointSelectField from 'common/field/input/EndpointSelectField';
+import TextInput from 'common/field/input/TextInput';
+import CollapsiblePane from 'common/CollapsiblePane';
+import TableSelectInput from 'common/field/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'util/httpErrorUtilities';
-import { AZURE_INFO } from 'channels/azure/AzureModel';
-import { BLACKDUCK_INFO } from 'providers/blackduck/BlackDuckModel';
-import { EMAIL_INFO } from 'channels/email/EmailModels';
-import { JIRA_CLOUD_INFO } from 'channels/jira/cloud/JiraCloudModel';
-import { JIRA_SERVER_INFO } from 'channels/jira/server/JiraServerModel';
-import { MSTEAMS_INFO } from 'channels/msteams/MSTeamsModel';
-import { SLACK_INFO } from 'channels/slack/SlackModels';
-import AzureDistributionConfiguration from 'channels/azure/AzureDistributionConfiguration';
-import EmailDistributionConfiguration from 'channels/email/EmailDistributionConfiguration';
-import JiraCloudDistributionConfiguration from 'channels/jira/cloud/JiraCloudDistributionConfiguration';
-import JiraServerDistributionConfiguration from 'channels/jira/server/JiraServerDistributionConfiguration';
-import MsTeamsDistributionConfiguration from 'channels/msteams/MsTeamsDistributionConfiguration';
-import SlackDistributionConfiguration from 'channels/slack/SlackDistributionConfiguration';
+import { AZURE_INFO } from 'channel/azure/AzureModel';
+import { BLACKDUCK_INFO } from 'provider/blackduck/BlackDuckModel';
+import { EMAIL_INFO } from 'channel/email/EmailModels';
+import { JIRA_CLOUD_INFO } from 'channel/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'channel/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from 'channel/msteams/MSTeamsModel';
+import { SLACK_INFO } from 'channel/slack/SlackModels';
+import AzureDistributionConfiguration from 'channel/azure/AzureDistributionConfiguration';
+import EmailDistributionConfiguration from 'channel/email/EmailDistributionConfiguration';
+import JiraCloudDistributionConfiguration from 'channel/jira/cloud/JiraCloudDistributionConfiguration';
+import JiraServerDistributionConfiguration from 'channel/jira/server/JiraServerDistributionConfiguration';
+import MsTeamsDistributionConfiguration from 'channel/msteams/MsTeamsDistributionConfiguration';
+import SlackDistributionConfiguration from 'channel/slack/SlackDistributionConfiguration';
 
 const DistributionConfigurationForm = ({
     csrfToken, errorHandler, readonly, descriptors, lastUpdated

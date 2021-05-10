@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'react-bootstrap';
-import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import ConfigurationLabel from 'common/ConfigurationLabel';
 import RoleTable from 'global/components/user/RoleTable';
 import UserTable from 'global/components/user/UserTable';
 import * as DescriptorUtilities from 'util/descriptorUtilities';

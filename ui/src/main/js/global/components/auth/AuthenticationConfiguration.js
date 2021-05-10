@@ -4,16 +4,16 @@ import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
-import TextInput from 'field/input/TextInput';
+import TextInput from 'common/field/input/TextInput';
 import {
     AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS
 } from 'global/components/auth/AuthenticationModel';
-import CheckboxInput from 'field/input/CheckboxInput';
-import PasswordInput from 'field/input/PasswordInput';
-import DynamicSelectInput from 'field/input/DynamicSelectInput';
-import CollapsiblePane from 'component/common/CollapsiblePane';
-import UploadFileButtonField from 'field/input/UploadFileButtonField';
-import ReadOnlyField from 'field/ReadOnlyField';
+import CheckboxInput from 'common/field/input/CheckboxInput';
+import PasswordInput from 'common/field/input/PasswordInput';
+import DynamicSelectInput from 'common/field/input/DynamicSelectInput';
+import CollapsiblePane from 'common/CollapsiblePane';
+import UploadFileButtonField from 'common/field/input/UploadFileButtonField';
+import ReadOnlyField from 'common/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const AuthenticationConfiguration = ({ csrfToken, readonly }) => {

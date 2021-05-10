@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'field/table/TableDisplay';
-import TextInput from 'field/input/TextInput';
-import PasswordInput from 'field/input/PasswordInput';
+import TableDisplay from 'common/field/table/TableDisplay';
+import TextInput from 'common/field/input/TextInput';
+import PasswordInput from 'common/field/input/PasswordInput';
 import { connect } from 'react-redux';
 import {
     clearUserFieldErrors, deleteUser, fetchUsers, saveUser, validateUser
 } from 'store/actions/users';
-import DynamicSelectInput from 'field/input/DynamicSelectInput';
+import DynamicSelectInput from 'common/field/input/DynamicSelectInput';
 import { fetchRoles } from 'store/actions/roles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';

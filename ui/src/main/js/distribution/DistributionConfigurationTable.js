@@ -7,12 +7,12 @@ import {
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import DescriptorLabel from 'component/common/DescriptorLabel';
+import DescriptorLabel from 'common/DescriptorLabel';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import ConfirmModal from 'component/common/ConfirmModal';
-import AutoRefresh from 'component/common/AutoRefresh';
-import IconTableCellFormatter from 'component/common/IconTableCellFormatter';
+import ConfirmModal from 'common/ConfirmModal';
+import AutoRefresh from 'common/AutoRefresh';
+import IconTableCellFormatter from 'common/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'distribution/DistributionTableRequestUtility';
 
 const DistributionConfigurationTable = ({

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import ConfigurationLabel from 'common/ConfigurationLabel';
 
 const CommonGlobalConfiguration = ({
     label, description, children, lastUpdated

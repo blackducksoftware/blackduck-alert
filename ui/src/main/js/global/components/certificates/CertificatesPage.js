@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import {
     clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate
 } from 'store/actions/certificates';
-import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import TableDisplay from 'field/table/TableDisplay';
-import TextInput from 'field/input/TextInput';
-import TextArea from 'field/input/TextArea';
-import ReadOnlyField from 'field/ReadOnlyField';
+import ConfigurationLabel from 'common/ConfigurationLabel';
+import TableDisplay from 'common/field/table/TableDisplay';
+import TextInput from 'common/field/input/TextInput';
+import TextArea from 'common/field/input/TextArea';
+import ReadOnlyField from 'common/field/ReadOnlyField';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
 

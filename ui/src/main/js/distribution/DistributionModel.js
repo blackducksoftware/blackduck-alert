@@ -1,4 +1,4 @@
-import { createTableSelectColumn } from 'field/input/TableSelectInput';
+import { createTableSelectColumn } from 'common/field/input/TableSelectInput';
 
 export const DISTRIBUTION_INFO = {
     url: 'distribution',

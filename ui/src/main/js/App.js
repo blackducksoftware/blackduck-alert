@@ -5,9 +5,9 @@ import { withRouter } from 'react-router-dom';
 
 import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
-import AboutInfoFooter from 'component/AboutInfoFooter';
+import AboutInfoFooter from 'global/components/about/AboutInfoFooter';
 import { verifyLogin, verifySaml } from 'store/actions/session';
-import * as IconUtility from 'util/iconUtility';
+import * as IconUtility from 'common/util/iconUtility';
 import LogoutPage from 'LogoutPage';
 // These are needed for the react-bootstrap tables to show the ascending/descending icons
 import '@fortawesome/fontawesome-free/scss/fontawesome.scss';

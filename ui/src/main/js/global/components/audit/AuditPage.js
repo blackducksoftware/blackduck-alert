@@ -10,16 +10,16 @@ import {
     getAuditData,
     resendNotification
 } from 'store/actions/audit';
-import AutoRefresh from 'component/common/AutoRefresh';
-import DescriptorLabel from 'component/common/DescriptorLabel';
-import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
+import AutoRefresh from 'common/AutoRefresh';
+import DescriptorLabel from 'common/DescriptorLabel';
+import RefreshTableCellFormatter from 'common/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'global/components/audit/NotificationTypeLegend';
 import AuditDetails from 'global/components/audit/Details';
-import CheckboxInput from 'field/input/CheckboxInput';
+import CheckboxInput from 'common/field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
-import ConfigurationLabel from 'component/common/ConfigurationLabel';
+import ConfigurationLabel from 'common/ConfigurationLabel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import StatusMessage from 'field/StatusMessage';
+import StatusMessage from 'common/field/StatusMessage';
 import '../../../../css/audit.scss';
 import { AUDIT_INFO } from 'global/components/audit/AuditModel';
 
