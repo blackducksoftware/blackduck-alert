@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as PropTypes from 'prop-types';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
@@ -12,7 +13,7 @@ import TextInput from 'field/input/TextInput';
 
 const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_INFO.key));
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(AZURE_INFO.key, csrfToken);
@@ -47,7 +48,7 @@ const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, AZURE_GLOBAL_FIELD_KEYS.organization)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.organization)}
-                    errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.organization]}
+                    errorValue={errors.fieldErrors[AZURE_GLOBAL_FIELD_KEYS.organization]}
                 />
                 <PasswordInput
                     id={AZURE_GLOBAL_FIELD_KEYS.clientId}
@@ -60,7 +61,7 @@ const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, AZURE_GLOBAL_FIELD_KEYS.clientId)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, AZURE_GLOBAL_FIELD_KEYS.clientId)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.clientId)}
-                    errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.clientId]}
+                    errorValue={errors.fieldErrors[AZURE_GLOBAL_FIELD_KEYS.clientId]}
                 />
                 <PasswordInput
                     id={AZURE_GLOBAL_FIELD_KEYS.clientSecret}
@@ -73,7 +74,7 @@ const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, AZURE_GLOBAL_FIELD_KEYS.clientSecret)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, AZURE_GLOBAL_FIELD_KEYS.clientSecret)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.clientSecret)}
-                    errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.clientSecret]}
+                    errorValue={errors.fieldErrors[AZURE_GLOBAL_FIELD_KEYS.clientSecret]}
                 />
                 <OAuthEndpointButtonField
                     id={AZURE_GLOBAL_FIELD_KEYS.configureOAuth}
@@ -93,7 +94,7 @@ const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.configureOAuth)}
-                    errorValue={errors[AZURE_GLOBAL_FIELD_KEYS.configureOAuth]}
+                    errorValue={errors.fieldErrors[AZURE_GLOBAL_FIELD_KEYS.configureOAuth]}
                 />
             </CommonGlobalConfigurationForm>
         </CommonGlobalConfiguration>

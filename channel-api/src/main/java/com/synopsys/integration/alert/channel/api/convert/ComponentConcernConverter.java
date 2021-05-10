@@ -83,11 +83,15 @@ public class ComponentConcernConverter {
 
     private String createPolicySectionPiece(ComponentConcern policyConcern) {
         String verb = createItemOperationVerb(policyConcern.getOperation());
-        String severity = String.format(TRIPLE_STRING_REPLACEMENT, formattedOpenParen, formatter.encode(policyConcern.getSeverity().name()), formattedCloseParen);
+        ComponentConcernSeverity policySeverity = policyConcern.getSeverity();
+        String severityString = "";
+        if (!ComponentConcernSeverity.UNSPECIFIED_UNKNOWN.equals(policySeverity)) {
+            severityString = String.format(TRIPLE_STRING_REPLACEMENT, formattedOpenParen, formatter.encode(policySeverity.getPolicyLabel()), formattedCloseParen);
+        }
         return String.format("%s%s%s%s%s",
             policyConcern.getType().getDisplayName(),
             verb,
-            severity,
+            severityString,
             formattedColonSpace,
             formatter.encode(policyConcern.getName())
         );
@@ -146,7 +150,7 @@ public class ComponentConcernConverter {
                 severity = concernSeverity;
                 vulnerabilitiesForOperationSectionPieces.add(formatter.getLineSeparator());
                 vulnerabilitiesForOperationSectionPieces
-                    .add(String.format("%s%s%s%s%s", formatter.getNonBreakingSpace(), formattedDash, formatter.getNonBreakingSpace(), formatter.encode(concernSeverity.name()), formattedColonSpace));
+                    .add(String.format("%s%s%s%s%s", formatter.getNonBreakingSpace(), formattedDash, formatter.getNonBreakingSpace(), formatter.encode(concernSeverity.getVulnerabilityLabel()), formattedColonSpace));
             }
             String vulnerabilityConcernString = createVulnerabilityConcernString(vulnerabilityConcern);
             vulnerabilitiesForOperationSectionPieces.add(vulnerabilityConcernString);

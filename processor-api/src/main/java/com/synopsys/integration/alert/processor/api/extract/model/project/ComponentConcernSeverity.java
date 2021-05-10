@@ -8,11 +8,27 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 public enum ComponentConcernSeverity {
-    BLOCKER,
-    CRITICAL,
-    MAJOR,
-    MINOR,
-    TRIVIAL,
-    UNSPECIFIED
+    BLOCKER("BLOCKER", "CRITICAL"),
+    CRITICAL("CRITICAL", "CRITICAL"),
+    MAJOR_HIGH("MAJOR", "HIGH"),
+    MINOR_MEDIUM("MINOR", "MEDIUM"),
+    TRIVIAL_LOW("TRIVIAL", "LOW"),
+    UNSPECIFIED_UNKNOWN("UNSPECIFIED", "UNKNOWN");
+
+    private final String policyLabel;
+    private final String vulnerabilityLabel;
+
+    ComponentConcernSeverity(String policyLabel, String vulnerabilityLabel) {
+        this.vulnerabilityLabel = vulnerabilityLabel;
+        this.policyLabel = policyLabel;
+    }
+
+    public String getPolicyLabel() {
+        return policyLabel;
+    }
+
+    public String getVulnerabilityLabel() {
+        return vulnerabilityLabel;
+    }
 
 }

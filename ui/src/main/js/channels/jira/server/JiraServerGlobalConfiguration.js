@@ -5,6 +5,7 @@ import { JIRA_SERVER_GLOBAL_FIELD_KEYS, JIRA_SERVER_INFO } from 'channels/jira/s
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import TextInput from 'field/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import PasswordInput from 'field/input/PasswordInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import EndpointButtonField from 'field/input/EndpointButtonField';
@@ -13,7 +14,7 @@ import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 
 const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_SERVER_INFO.key));
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(JIRA_SERVER_INFO.key, csrfToken);
@@ -48,7 +49,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) =>
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.url)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.url)}
-                    errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.url]}
+                    errorValue={errors.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.url]}
                 />
                 <TextInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.username}
@@ -60,7 +61,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) =>
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.username)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.username)}
-                    errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.username]}
+                    errorValue={errors.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.username]}
                 />
                 <PasswordInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.password}
@@ -73,7 +74,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) =>
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.password)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.password)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.password)}
-                    errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.password]}
+                    errorValue={errors.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.password]}
                 />
                 <CheckboxInput
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck}
@@ -84,7 +85,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) =>
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck)}
-                    errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck]}
+                    errorValue={errors.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.disablePluginCheck]}
                 />
                 <EndpointButtonField
                     id={JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin}
@@ -105,7 +106,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) =>
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin)}
-                    errorValue={errors[JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin]}
+                    errorValue={errors.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin]}
                 />
             </CommonGlobalConfigurationForm>
         </CommonGlobalConfiguration>
