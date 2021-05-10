@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'field/TableDisplay';
+import TableDisplay from 'field/table/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 

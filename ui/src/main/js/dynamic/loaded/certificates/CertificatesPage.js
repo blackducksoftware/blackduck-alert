@@ -5,7 +5,7 @@ import {
     clearCertificateFieldErrors, deleteCertificate, fetchCertificates, saveCertificate, validateCertificate
 } from 'store/actions/certificates';
 import ConfigurationLabel from 'component/common/ConfigurationLabel';
-import TableDisplay from 'field/TableDisplay';
+import TableDisplay from 'field/table/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import ReadOnlyField from 'field/ReadOnlyField';

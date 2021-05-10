@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'field/TableDisplay';
+import TableDisplay from 'field/table/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
 import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';

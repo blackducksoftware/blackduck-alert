@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TableDisplay from 'field/TableDisplay';
+import TableDisplay from 'field/table/TableDisplay';
 import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import StatusMessage from 'field/StatusMessage';
