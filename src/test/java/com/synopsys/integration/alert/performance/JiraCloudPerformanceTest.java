@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class JiraCloudPerformanceTest {
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
 
     @Test
-    //@Disabled
+    @Disabled
     public void jiraCloudJobTest() throws Exception {
         TestProperties testProperties = new TestProperties();
         FieldModel globalConfig = createGlobalConfig(testProperties);
