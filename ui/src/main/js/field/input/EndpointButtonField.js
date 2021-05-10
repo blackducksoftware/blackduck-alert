@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import GeneralButton from 'field/input/GeneralButton';
+import GeneralButton from 'field/GeneralButton';
 import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';

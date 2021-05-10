@@ -5,7 +5,7 @@ import { JIRA_SERVER_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/jira/
 import CheckboxInput from 'field/input/CheckboxInput';
 import TextInput from 'field/input/TextInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
-import FieldMappingField from 'field/FieldMappingField';
+import FieldMappingField from 'field/input/FieldMappingField';
 
 const JiraServerDistributionConfiguration = ({
     data, setData, errors, readonly

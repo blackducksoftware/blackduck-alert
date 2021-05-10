@@ -6,7 +6,7 @@ import CommonGlobalConfiguration from 'global/CommonGlobalConfiguration';
 import CommonGlobalConfigurationForm from 'global/CommonGlobalConfigurationForm';
 import PasswordInput from 'field/input/PasswordInput';
 import { AZURE_GLOBAL_FIELD_KEYS, AZURE_INFO } from 'global/channels/azure/AzureModel';
-import OAuthEndpointButtonField from 'field/OAuthEndpointButtonField';
+import OAuthEndpointButtonField from 'field/input/OAuthEndpointButtonField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 import TextInput from 'field/input/TextInput';
 

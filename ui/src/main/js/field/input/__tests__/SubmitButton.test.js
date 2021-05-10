@@ -2,7 +2,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 import renderer from 'react-test-renderer';
-import SubmitButton from 'field/input/SubmitButton';
+import SubmitButton from 'field/SubmitButton';
 
 beforeAll(() => {
     Enzyme.configure({ adapter: new Adapter() });

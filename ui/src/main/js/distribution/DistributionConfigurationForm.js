@@ -12,7 +12,7 @@ import {
     DISTRIBUTION_TEST_FIELD_KEYS,
     DISTRIBUTION_URLS
 } from 'distribution/DistributionModel';
-import EndpointSelectField from 'field/EndpointSelectField';
+import EndpointSelectField from 'field/input/EndpointSelectField';
 import TextInput from 'field/input/TextInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import TableSelectInput from 'field/input/TableSelectInput';

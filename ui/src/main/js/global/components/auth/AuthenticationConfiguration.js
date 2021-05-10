@@ -12,7 +12,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import PasswordInput from 'field/input/PasswordInput';
 import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
-import UploadFileButtonField from 'field/UploadFileButtonField';
+import UploadFileButtonField from 'field/input/UploadFileButtonField';
 import ReadOnlyField from 'field/ReadOnlyField';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 

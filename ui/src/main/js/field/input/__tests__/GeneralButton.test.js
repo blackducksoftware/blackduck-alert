@@ -2,7 +2,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import renderer from 'react-test-renderer';
 import Adapter from 'enzyme-adapter-react-15';
-import GeneralButton from 'field/input/GeneralButton';
+import GeneralButton from 'field/GeneralButton';
 
 beforeAll(() => {
     Enzyme.configure({ adapter: new Adapter() });

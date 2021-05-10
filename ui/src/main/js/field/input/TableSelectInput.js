@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import Select, { components } from 'react-select';
 import DescriptorOption from 'component/common/DescriptorOption';
-import GeneralButton from 'field/input/GeneralButton';
+import GeneralButton from 'field/GeneralButton';
 import { createNewConfigurationRequest } from 'util/configurationRequestBuilder';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';

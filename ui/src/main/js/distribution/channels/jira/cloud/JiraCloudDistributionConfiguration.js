@@ -5,7 +5,7 @@ import { JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS } from 'distribution/channels/jira/c
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import TextInput from 'field/input/TextInput';
 import CollapsiblePane from 'component/common/CollapsiblePane';
-import FieldMappingField from 'field/FieldMappingField';
+import FieldMappingField from 'field/input/FieldMappingField';
 
 const JiraCloudDistributionConfiguration = ({
     data, setData, errors, readonly

@@ -7,7 +7,7 @@ import TextInput from 'field/input/TextInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import PasswordInput from 'field/input/PasswordInput';
 import CheckboxInput from 'field/input/CheckboxInput';
-import EndpointButtonField from 'field/EndpointButtonField';
+import EndpointButtonField from 'field/input/EndpointButtonField';
 import { CONTEXT_TYPE } from 'util/descriptorUtilities';
 import * as GlobalRequestHelper from 'global/GlobalRequestHelper';
 

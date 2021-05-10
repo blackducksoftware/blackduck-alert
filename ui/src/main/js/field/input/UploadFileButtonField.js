@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import LabeledField, { LabelFieldPropertyDefaults } from 'field/LabeledField';
 import { createDeleteRequest, createFileUploadRequest, createReadRequest } from 'util/configurationRequestBuilder';
 import StatusMessage from 'field/StatusMessage';
-import GeneralButton from 'field/input/GeneralButton';
+import GeneralButton from 'field/GeneralButton';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
 
 const UploadFileButtonField = ({

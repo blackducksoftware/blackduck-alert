@@ -4,7 +4,7 @@ import { createNewConfigurationRequest } from 'util/configurationRequestBuilder'
 import DynamicSelectInput from 'field/input/DynamicSelectInput';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import { LabelFieldPropertyDefaults } from './LabeledField';
+import { LabelFieldPropertyDefaults } from '../LabeledField';
 
 // TODO Remove currentConfig and requiredRelatedFields
 const EndpointSelectField = ({
@@ -88,7 +88,7 @@ const EndpointSelectField = ({
                 onChange={onChange}
                 onFocus={onSendClick}
                 options={options}
-                id={fieldKey}
+                id={id || fieldKey}
                 inputClass={inputClass}
                 searchable={searchable}
                 placeholder={placeholder}

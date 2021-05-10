@@ -2,7 +2,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import renderer from 'react-test-renderer';
 import Adapter from 'enzyme-adapter-react-15';
-import CancelButton from 'field/input/CancelButton';
+import CancelButton from 'field/CancelButton';
 
 beforeAll(() => {
     Enzyme.configure({ adapter: new Adapter() });
