@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableDisplay from 'field/table/TableDisplay';
 import TextInput from 'field/input/TextInput';
 import { connect } from 'react-redux';
-import PermissionTable, { PERMISSIONS_TABLE } from 'dynamic/loaded/users/PermissionTable';
+import PermissionTable, { PERMISSIONS_TABLE } from 'global/components/user/PermissionTable';
 import {
     clearRoleFieldErrors, deleteRole, fetchRoles, saveRole, validateRole
 } from 'store/actions/roles';

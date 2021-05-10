@@ -28,13 +28,13 @@ import { BLACKDUCK_INFO, BLACKDUCK_URLS } from 'providers/blackduck/BlackDuckMod
 import BlackDuckProviderConfiguration from 'providers/blackduck/BlackDuckProviderConfiguration';
 import BlackDuckConfiguration from 'providers/blackduck/BlackDuckConfiguration';
 import { AUDIT_INFO } from 'global/components/audit/AuditModel';
-import AuditPage from 'dynamic/loaded/audit/AuditPage';
+import AuditPage from 'global/components/audit/AuditPage';
 import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
-import CertificatesPage from 'dynamic/loaded/certificates/CertificatesPage';
+import CertificatesPage from 'global/components/certificates/CertificatesPage';
 import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
-import TaskManagement from 'dynamic/loaded/tasks/TaskManagement';
+import TaskManagement from 'global/components/task/TaskManagement';
 import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
-import UserManagement from 'dynamic/loaded/users/UserManagement';
+import UserManagement from 'global/components/user/UserManagement';
 import JiraServerGlobalConfiguration from 'channels/jira/server/JiraServerGlobalConfiguration';
 import { doesDescriptorExist } from 'util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'distribution/DistributionModel';
