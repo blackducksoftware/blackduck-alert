@@ -1,8 +1,8 @@
 import { DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING } from 'store/actions/types';
 
 import { unauthorized } from 'store/actions/session';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import HeaderUtilities from 'util/HeaderUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import HeaderUtilities from 'common/util/HeaderUtilities';
 
 const FETCH_DESCRIPTOR_URL = '/alert/api/metadata/descriptors';
 
