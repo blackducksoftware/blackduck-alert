@@ -16,8 +16,8 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.util.RestChannelUtility;
+import com.synopsys.integration.alert.channel.api.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.api.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;

@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.api.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.channel.api.rest.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.distribution.mock.MockProcessingAuditAccessor;
-import com.synopsys.integration.alert.channel.util.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.util.RestChannelUtility;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
@@ -42,8 +42,8 @@ public class SlackDistributionEventReceiverTest {
     private final SlackChannelKey slackChannelKey = new SlackChannelKey();
 
     private SlackDistributionEventReceiver slackDistributionEventReceiver;
-    private MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
-    private MockWebServer mockSlackServer = new MockWebServer();
+    private final MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
+    private final MockWebServer mockSlackServer = new MockWebServer();
 
     @BeforeEach
     public void init() throws IOException {
@@ -124,4 +124,5 @@ public class SlackDistributionEventReceiverTest {
     private DistributionEvent createSlackDistributionEvent(Set<Long> notificationIds, ProviderMessageHolder providerMessages) {
         return new DistributionEvent(slackChannelKey, UUID.randomUUID(), notificationIds, providerMessages);
     }
+
 }
