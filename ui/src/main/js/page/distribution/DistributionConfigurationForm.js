@@ -252,7 +252,7 @@ const DistributionConfigurationForm = ({
                 onChange={FieldModelUtilities.handleChange(testFieldModel, setTestFieldModel)}
                 value={FieldModelUtilities.getFieldModelSingleValue(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_TEST_FIELD_KEYS.topic)}
-                errorValue={errors[DISTRIBUTION_TEST_FIELD_KEYS.topic]}
+                errorValue={errors.fieldErrors[DISTRIBUTION_TEST_FIELD_KEYS.topic]}
             />
             <TextInput
                 id={DISTRIBUTION_TEST_FIELD_KEYS.message}

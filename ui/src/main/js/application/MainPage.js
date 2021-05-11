@@ -134,10 +134,10 @@ const MainPage = ({
             </Route>
             {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
             {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
-            {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
             {doesDescriptorExist(globalDescriptorMap, CERTIFICATE_INFO.key) && createRoute(componentUri, CERTIFICATE_INFO.url, <CertificatesPage />)}
-            {doesDescriptorExist(globalDescriptorMap, SCHEDULING_INFO.key) && createRoute(componentUri, SCHEDULING_INFO.url, <SchedulingConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[SCHEDULING_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key) && createRoute(componentUri, SETTINGS_INFO.url, <SettingsConfiguration csrfToken={csrfToken} readonly={globalDescriptorMap[SETTINGS_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, SCHEDULING_INFO.key) && createRoute(componentUri, SCHEDULING_INFO.url, <SchedulingConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[SCHEDULING_INFO.key].readOnly} />)}
+            {doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key) && createRoute(componentUri, SETTINGS_INFO.url, <SettingsConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[SETTINGS_INFO.key].readOnly} />)}
             {doesDescriptorExist(globalDescriptorMap, TASK_MANAGEMENT_INFO.key) && createRoute(componentUri, TASK_MANAGEMENT_INFO.url, <TaskManagement />)}
             {doesDescriptorExist(globalDescriptorMap, USER_MANAGEMENT_INFO.key) && createRoute(componentUri, USER_MANAGEMENT_INFO.url, <UserManagement />)}
             <Route exact path="/alert/general/about" component={AboutInfo} />

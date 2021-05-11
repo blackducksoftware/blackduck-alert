@@ -26,7 +26,7 @@ const JiraCloudDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorValue={errors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment]}
+                errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.comment]}
             />
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator}
@@ -37,7 +37,7 @@ const JiraCloudDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator)}
-                errorValue={errors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator]}
+                errorValue={errors.fieldErrors[JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueCreator]}
             />
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.project}

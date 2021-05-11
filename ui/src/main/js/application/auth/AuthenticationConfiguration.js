@@ -15,10 +15,11 @@ import CollapsiblePane from 'common/CollapsiblePane';
 import UploadFileButtonField from 'common/input/field/UploadFileButtonField';
 import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
+const AuthenticationConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AUTHENTICATION_INFO.key));
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [testFieldData, setTestFieldData] = useState({});
 
     const retrieveData = async () => {
@@ -92,6 +93,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                 buttonIdPrefix={AUTHENTICATION_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                errorHandler={errorHandler}
             >
                 <CollapsiblePane
                     id="ldap-configuration"
@@ -108,7 +110,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.enabled)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.enabled)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.enabled]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.enabled]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.server}
@@ -119,7 +121,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.server)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.server)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.server]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.server]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.managerDn}
@@ -130,7 +132,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.managerDn)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.managerDn)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.managerDn]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.managerDn]}
                     />
                     <PasswordInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword}
@@ -142,7 +144,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(formData, AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.managerPassword]}
                     />
                     <DynamicSelectInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
@@ -155,7 +157,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         options={authTypes}
                         value={FieldModelUtilities.getFieldModelValues(formData, AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType]}
                     />
                     <DynamicSelectInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
@@ -168,7 +170,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         options={referralTypes}
                         value={FieldModelUtilities.getFieldModelValues(formData, AUTHENTICATION_LDAP_FIELD_KEYS.referral)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.referral)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.referral]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.referral]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase}
@@ -179,7 +181,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchBase]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter}
@@ -190,7 +192,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.userSearchFilter]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns}
@@ -201,7 +203,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.userDnPatterns]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes}
@@ -212,7 +214,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.userAttributes]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase}
@@ -223,7 +225,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchBase]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter}
@@ -234,7 +236,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValueOrDefault(formData, AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter, 'uniqueMember={0}')}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.groupSearchFilter]}
                     />
                     <TextInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute}
@@ -245,7 +247,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValueOrDefault(formData, AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute)}
-                        errorValue={errors[AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.groupRoleAttribute]}
                     />
                 </CollapsiblePane>
                 <CollapsiblePane
@@ -263,7 +265,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
-                        errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.enabled]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.enabled]}
                     />
                     <CheckboxInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.forceAuth}
@@ -274,7 +276,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.forceAuth)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.forceAuth)}
-                        errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.forceAuth]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.forceAuth]}
                     />
                     <TextInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl}
@@ -285,7 +287,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl)}
-                        errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl]}
                     />
                     <UploadFileButtonField
                         id={AUTHENTICATION_SAML_FIELD_KEYS.metadataFile}
@@ -308,7 +310,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         currentConfig={formData}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.metadataFile)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.metadataFile)}
-                        errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.metadataFile]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.metadataFile]}
                     />
                     <TextInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.entityId}
@@ -319,7 +321,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.entityId)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.entityId)}
-                        errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.entityId]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.entityId]}
                     />
                     <TextInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl}
@@ -330,7 +332,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl)}
-                        errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl]}
                     />
                     <TextInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping}
@@ -341,7 +343,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping)}
-                        errorValue={errors[AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping]}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping]}
                     />
                 </CollapsiblePane>
             </CommonGlobalConfigurationForm>
@@ -351,6 +353,7 @@ const AuthenticationConfiguration = ({ csrfToken, readonly }) => {
 
 AuthenticationConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
 };

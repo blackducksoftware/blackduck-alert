@@ -8,10 +8,11 @@ import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import DynamicSelectInput from 'common/input/DynamicSelectInput';
 import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-const SchedulingConfiguration = ({ csrfToken, readonly }) => {
+const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SCHEDULING_INFO.key));
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const digestHours = [
         { label: '12 am', value: '0' },
@@ -73,6 +74,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                 buttonIdPrefix={SCHEDULING_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                errorHandler={errorHandler}
             >
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay}
@@ -86,7 +88,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
-                    errorValue={errors[SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay]}
+                    errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay]}
                 />
                 <ReadOnlyField
                     id={SCHEDULING_FIELD_KEYS.dailyProcessorNextRun}
@@ -96,7 +98,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.dailyProcessorNextRun)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorNextRun)}
-                    errorValue={errors[SCHEDULING_FIELD_KEYS.dailyProcessorNextRun]}
+                    errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.dailyProcessorNextRun]}
                 />
                 <DynamicSelectInput
                     id={SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays}
@@ -110,7 +112,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
-                    errorValue={errors[SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays]}
+                    errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays]}
                 />
                 <ReadOnlyField
                     id={SCHEDULING_FIELD_KEYS.purgeDataNextRun}
@@ -120,7 +122,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataNextRun)}
-                    errorValue={errors[SCHEDULING_FIELD_KEYS.purgeDataNextRun]}
+                    errorValue={errors.fieldErrors[SCHEDULING_FIELD_KEYS.purgeDataNextRun]}
                 />
             </CommonGlobalConfigurationForm>
         </CommonGlobalConfiguration>
@@ -129,6 +131,7 @@ const SchedulingConfiguration = ({ csrfToken, readonly }) => {
 
 SchedulingConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
 };
