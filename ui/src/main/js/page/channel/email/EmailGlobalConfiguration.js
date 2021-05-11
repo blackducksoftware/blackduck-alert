@@ -13,6 +13,7 @@ import CollapsiblePane from 'common/CollapsiblePane';
 import NumberInput from 'common/input/NumberInput';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import PasswordInput from 'common/input/PasswordInput';
 
 const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [fieldModel, setFieldModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, EMAIL_INFO.key));
@@ -104,7 +105,7 @@ const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_GLOBAL_FIELD_KEYS.user)}
                     errorValue={errors.fieldErrors[EMAIL_GLOBAL_FIELD_KEYS.user]}
                 />
-                <TextInput
+                <PasswordInput
                     id={EMAIL_GLOBAL_FIELD_KEYS.password}
                     name={EMAIL_GLOBAL_FIELD_KEYS.password}
                     label="SMTP Password"
