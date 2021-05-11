@@ -10,10 +10,11 @@ import CollapsiblePane from 'common/CollapsiblePane';
 import TextInput from 'common/input/TextInput';
 import NumberInput from 'common/input/NumberInput';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
+import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-const SettingsConfiguration = ({ csrfToken, readonly }) => {
+const SettingsConfiguration = ({ csrfToken, errorHandler, readonly }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SETTINGS_INFO.key));
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
     const shouldExpand = FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyHost)
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyPort)
@@ -43,6 +44,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                 buttonIdPrefix={SETTINGS_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                errorHandler={errorHandler}
             >
                 <h2 key="settings-header">Encryption Configuration</h2>
                 <PasswordInput
@@ -56,7 +58,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.encryptionPassword)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, SETTINGS_FIELD_KEYS.encryptionPassword)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.encryptionPassword)}
-                    errorValue={errors[SETTINGS_FIELD_KEYS.encryptionPassword]}
+                    errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.encryptionPassword]}
                 />
                 <PasswordInput
                     id={SETTINGS_FIELD_KEYS.encryptionGlobalSalt}
@@ -69,7 +71,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                     value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.encryptionGlobalSalt)}
                     isSet={FieldModelUtilities.isFieldModelValueSet(formData, SETTINGS_FIELD_KEYS.encryptionGlobalSalt)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.encryptionGlobalSalt)}
-                    errorValue={errors[SETTINGS_FIELD_KEYS.encryptionGlobalSalt]}
+                    errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.encryptionGlobalSalt]}
                 />
                 <CollapsiblePane title="Proxy Configuration" expanded={shouldExpand}>
                     <TextInput
@@ -81,7 +83,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyHost)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyHost)}
-                        errorValue={errors[SETTINGS_FIELD_KEYS.proxyHost]}
+                        errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.proxyHost]}
                     />
                     <NumberInput
                         id={SETTINGS_FIELD_KEYS.proxyPort}
@@ -92,7 +94,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyPort)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyPort)}
-                        errorValue={errors[SETTINGS_FIELD_KEYS.proxyPort]}
+                        errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.proxyPort]}
                     />
                     <TextInput
                         id={SETTINGS_FIELD_KEYS.proxyUsername}
@@ -103,7 +105,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyUsername)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyUsername)}
-                        errorValue={errors[SETTINGS_FIELD_KEYS.proxyUsername]}
+                        errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.proxyUsername]}
                     />
                     <PasswordInput
                         id={SETTINGS_FIELD_KEYS.proxyPassword}
@@ -115,7 +117,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, SETTINGS_FIELD_KEYS.proxyPassword)}
                         isSet={FieldModelUtilities.isFieldModelValueSet(formData, SETTINGS_FIELD_KEYS.proxyPassword)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyPassword)}
-                        errorValue={errors[SETTINGS_FIELD_KEYS.proxyPassword]}
+                        errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.proxyPassword]}
                     />
                 </CollapsiblePane>
             </CommonGlobalConfigurationForm>
@@ -125,6 +127,7 @@ const SettingsConfiguration = ({ csrfToken, readonly }) => {
 
 SettingsConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
+    errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
 };
