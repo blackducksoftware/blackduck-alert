@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import MainPage from 'application/MainPage';
-import LoginPage from 'application/LoginPage';
-import AboutInfoFooter from 'global/components/about/AboutInfoFooter';
+import LoginPage from 'application/auth/LoginPage';
+import AboutInfoFooter from 'page/about/AboutInfoFooter';
 import { verifyLogin, verifySaml } from 'store/actions/session';
 import * as IconUtility from 'common/util/iconUtility';
-import LogoutPage from 'application/LogoutPage';
+import LogoutPage from 'application/auth/LogoutPage';
 // These are needed for the react-bootstrap tables to show the ascending/descending icons
 import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
 import '@fortawesome/fontawesome-free/js/all.js';

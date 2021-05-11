@@ -4,22 +4,22 @@ import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
 import Logo from 'common/Logo';
 import { confirmLogout } from 'store/actions/session';
-import { SLACK_INFO } from 'channel/slack/SlackModels';
-import { EMAIL_INFO } from 'channel/email/EmailModels';
-import { JIRA_CLOUD_INFO } from 'channel/jira/cloud/JiraCloudModel';
-import { JIRA_SERVER_INFO } from 'channel/jira/server/JiraServerModel';
-import { MSTEAMS_INFO } from 'channel/msteams/MSTeamsModel';
-import { AZURE_INFO } from 'channel/azure/AzureModel';
-import { SCHEDULING_INFO } from 'global/components/scheduling/SchedulingModel';
-import { SETTINGS_INFO } from 'global/components/settings/SettingsModel';
-import { AUTHENTICATION_INFO } from 'global/components/auth/AuthenticationModel';
-import { BLACKDUCK_INFO } from 'provider/blackduck/BlackDuckModel';
-import { AUDIT_INFO } from 'global/components/audit/AuditModel';
-import { CERTIFICATE_INFO } from 'global/components/certificates/CertificateModel';
-import { TASK_MANAGEMENT_INFO } from 'global/components/task/TaskManagementModel';
-import { USER_MANAGEMENT_INFO } from 'global/components/user/UserModel';
+import { SLACK_INFO } from 'page/channel/slack/SlackModels';
+import { EMAIL_INFO } from 'page/channel/email/EmailModels';
+import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
+import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
+import { SETTINGS_INFO } from 'page/settings/SettingsModel';
+import { AUTHENTICATION_INFO } from 'application/auth/AuthenticationModel';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
+import { AUDIT_INFO } from 'page/audit/AuditModel';
+import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
+import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
+import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 import { doesDescriptorExist } from 'common/util/descriptorUtilities';
-import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from '../distribution/DistributionModel';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from '../page/distribution/DistributionModel';
 
 const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
     const createStaticNavItem = (uriPrefix, itemObject) => (
