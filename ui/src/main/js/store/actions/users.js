@@ -13,10 +13,10 @@ import {
     USER_MANAGEMENT_USER_VALIDATED,
     USER_MANAGEMENT_USER_VALIDATING
 } from 'store/actions/types';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import { unauthorized } from 'store/actions/session';
-import HeaderUtilities from 'util/HeaderUtilities';
+import HeaderUtilities from 'common/util/HeaderUtilities';
 
 function fetchingAllUsers() {
     return {

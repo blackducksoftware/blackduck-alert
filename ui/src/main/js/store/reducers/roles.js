@@ -14,7 +14,7 @@ import {
     USER_MANAGEMENT_ROLE_VALIDATING,
     USER_MANAGEMENT_ROLE_VALIDATION_ERROR
 } from 'store/actions/types';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
     inProgress: false,

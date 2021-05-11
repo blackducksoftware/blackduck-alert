@@ -14,7 +14,7 @@ import {
     USER_MANAGEMENT_USER_VALIDATED,
     USER_MANAGEMENT_USER_VALIDATING
 } from 'store/actions/types';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
     inProgress: false,

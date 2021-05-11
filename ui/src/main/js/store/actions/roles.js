@@ -13,11 +13,11 @@ import {
     USER_MANAGEMENT_ROLE_VALIDATING,
     USER_MANAGEMENT_ROLE_VALIDATION_ERROR
 } from 'store/actions/types';
-import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as ConfigRequestBuilder from 'common/util/configurationRequestBuilder';
 import { unauthorized } from 'store/actions/session';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
-import * as RequestUtils from 'util/RequestUtilities';
-import HeaderUtilities from 'util/HeaderUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import * as RequestUtils from 'common/util/RequestUtilities';
+import HeaderUtilities from 'common/util/HeaderUtilities';
 
 function fetchingAllRoles() {
     return {

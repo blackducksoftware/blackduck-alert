@@ -7,7 +7,7 @@ import {
     AUDIT_RESEND_START,
     SERIALIZE
 } from 'store/actions/types';
-import * as HTTPErrorUtils from 'util/httpErrorUtilities';
+import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const initialState = {
     fetching: false,
