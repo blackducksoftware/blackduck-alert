@@ -28,7 +28,7 @@ NumberInput.propTypes = {
     readOnly: PropTypes.bool,
     inputClass: PropTypes.string,
     name: PropTypes.string,
-    value: PropTypes.number,
+    value: PropTypes.string,
     onChange: PropTypes.func,
     description: PropTypes.string,
     errorName: PropTypes.string,
@@ -40,7 +40,7 @@ NumberInput.propTypes = {
 };
 NumberInput.defaultProps = {
     id: 'numberInputId',
-    value: undefined,
+    value: '',
     readOnly: false,
     inputClass: 'form-control',
     name: 'name',

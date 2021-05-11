@@ -48,10 +48,9 @@ const MainPage = ({
 }) => {
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
     const [distributionDescriptorMap, setDistributionDescriptorMap] = useState({});
-    const [errorHandler, setErrorHandler] = useState({});
+
     useEffect(() => {
         getDescriptorsRedux();
-        setErrorHandler(HTTPErrorUtils.createErrorHandler(unauthorizedFunction));
     }, []);
 
     useEffect(() => {
@@ -67,6 +66,8 @@ const MainPage = ({
         setGlobalDescriptorMap(newGlobalDescriptorMap);
         setDistributionDescriptorMap(newDistributionDescriptorMap);
     }, [descriptors]);
+
+    const errorHandler = HTTPErrorUtils.createErrorHandler(unauthorizedFunction);
 
     const createRoute = (uriPrefix, urlName, component) => (
         <Route

@@ -41,8 +41,7 @@ export function getFieldModelBooleanValue(fieldModel, key) {
 }
 
 export function getFieldModelId(fieldModel) {
-    const idValue = getFieldModelSingleValue(fieldModel, 'id');
-    return fieldModel.id || idValue;
+    return fieldModel.id || getFieldModelSingleValue(fieldModel, 'id');
 }
 
 export function isFieldModelValueSet(fieldModel, key) {
@@ -53,17 +52,6 @@ export function isFieldModelValueSet(fieldModel, key) {
         }
     }
     return false;
-}
-
-export function areKeyToValuesEmpty(fieldModel) {
-    if (fieldModel && fieldModel.keyToValues) {
-        const { keyToValues } = fieldModel;
-        return Object.keys(keyToValues).some((key) => {
-            const value = keyToValues[key];
-            return !hasValuesOrIsSet(value);
-        });
-    }
-    return true;
 }
 
 export function hasValuesOrIsSet(fieldObject) {
@@ -215,30 +203,6 @@ export function createFieldModelErrorKey(fieldKey) {
     return fieldKey.concat('Error');
 }
 
-export function checkContextAndDescriptor(fieldModel, context, descriptorName) {
-    const copy = JSON.parse(JSON.stringify(fieldModel));
-    if (!copy.context) {
-        copy.context = context;
-    }
-    if (!copy.descriptorName) {
-        copy.descriptorName = descriptorName;
-    }
-    return copy;
-}
-
-export function checkModelOrCreateEmpty(fieldModel, fieldKeys) {
-    const emptyFieldModel = createEmptyFieldModel(fieldKeys, fieldModel.context, fieldModel.descriptorName);
-    const newModel = { ...emptyFieldModel, ...fieldModel };
-    const newKeyToValues = emptyFieldModel.keyToValues;
-    if (fieldModel.keyToValues) {
-        Object.keys(fieldModel.keyToValues).forEach((key) => {
-            newKeyToValues[key] = fieldModel.keyToValues[key];
-        });
-    }
-    newModel.keyToValues = newKeyToValues;
-    return newModel;
-}
-
 export function createFieldModelWithDefaults(fields, context, descriptorName) {
     const emptySettings = {};
     emptySettings.context = context;
@@ -256,24 +220,12 @@ export function createFieldModelWithDefaults(fields, context, descriptorName) {
     return emptySettings;
 }
 
-export function checkModelOrCreateModelWithDefaults(fieldModel, fields) {
-    const fieldModelWithDefaults = createFieldModelWithDefaults(fields, fieldModel.context, fieldModel.descriptorName);
-    const newModel = { ...fieldModelWithDefaults, ...fieldModel };
-    const newKeyToValues = fieldModelWithDefaults.keyToValues;
-    if (fieldModel.keyToValues) {
-        Object.keys(fieldModel.keyToValues).forEach((key) => {
-            newKeyToValues[key] = fieldModel.keyToValues[key];
-        });
-    }
-    newModel.keyToValues = newKeyToValues;
-    return newModel;
-}
-
 export function hasKey(fieldModel, key) {
     const { keyToValues } = fieldModel;
     if (keyToValues) {
         return Object.keys(keyToValues).includes(key);
     }
+    return false;
 }
 
 export function createFieldModelFromRequestedFields(fieldModel, requestedFields) {

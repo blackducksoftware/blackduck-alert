@@ -135,17 +135,20 @@ const CommonGlobalConfigurationForm = ({
     const performDeleteRequest = async () => {
         setInProgress(true);
         setActionMessage(null);
-        const response = await deleteRequest(formData.jobId);
-        if (response.ok) {
-            const deletedForm = FieldModelUtilities.createEmptyFieldModel([], formData.context, formData.descriptorName);
-            setFormData(deletedForm);
-            setActionMessage('Delete Successful');
-        } else {
-            const errorObject = errorHandler.handle(response, await response.json(), false);
-            if (errorObject && errorObject.message) {
-                setErrorMessage(errorObject.message);
+        const id = FieldModelUtilities.getFieldModelId(formData);
+        if (id) {
+            const response = await deleteRequest(id);
+            if (response.ok) {
+                const deletedForm = FieldModelUtilities.createEmptyFieldModel([], formData.context, formData.descriptorName);
+                setFormData(deletedForm);
+                setActionMessage('Delete Successful');
+            } else {
+                const errorObject = errorHandler.handle(response, await response.json(), false);
+                if (errorObject && errorObject.message) {
+                    setErrorMessage(errorObject.message);
+                }
+                setActionMessage('Delete Failed');
             }
-            setActionMessage('Delete Failed');
         }
         setInProgress(false);
     };
@@ -207,7 +210,7 @@ CommonGlobalConfigurationForm.propTypes = {
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
-    errorHandler: PropTypes.func.isRequired
+    errorHandler: PropTypes.object.isRequired
 };
 
 CommonGlobalConfigurationForm.defaultProps = {
