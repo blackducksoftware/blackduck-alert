@@ -52,7 +52,18 @@ public enum TestPropertyKey {
     TEST_JIRA_CLOUD_PROJECT_NAME("alert.jira.cloud.project.name"),
     TEST_JIRA_CLOUD_ISSUE_TYPE("alert.jira.cloud.issue.type"),
     TEST_JIRA_CLOUD_RESOLVE_TRANSITION("alert.jira.cloud.resolve.transition"),
-    TEST_JIRA_CLOUD_REOPEN_TRANSITION("alert.jira.cloud.reopen.transition");
+    TEST_JIRA_CLOUD_REOPEN_TRANSITION("alert.jira.cloud.reopen.transition"),
+
+    TEST_JIRA_SERVER_URL("alert.jira.server.url"),
+    TEST_JIRA_SERVER_USERNAME("alert.jira.server.username"),
+    TEST_JIRA_SERVER_PASSWORD("alert.jira.server.password"),
+    TEST_JIRA_SERVER_DISABLE_PLUGIN_CHECK("alert.jira.server.disable.plugin.check"),
+    TEST_JIRA_SERVER_ADD_COMMENTS("alert.jira.server.add.comments"),
+    TEST_JIRA_SERVER_ISSUE_CREATOR("alert.jira.server.issue.creator"),
+    TEST_JIRA_SERVER_PROJECT_NAME("alert.jira.server.project.name"),
+    TEST_JIRA_SERVER_ISSUE_TYPE("alert.jira.server.issue.type"),
+    TEST_JIRA_SERVER_RESOLVE_TRANSITION("alert.jira.server.resolve.transition"),
+    TEST_JIRA_SERVER_REOPEN_TRANSITION("alert.jira.server.reopen.transition");
 
     private final String propertyKey;
 
