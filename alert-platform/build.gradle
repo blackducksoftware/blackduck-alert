@@ -9,7 +9,6 @@ dependencies {
         api 'org.apache.activemq:activemq-broker:5.15.10'
 
         api 'org.jsoup:jsoup:1.9.2'
-        api 'com.jayway.jsonpath:json-path:2.3.0'
         api 'com.sun.mail:javax.mail:1.6.2'
         api 'javax.mail:javax.mail-api:1.6.2'
 
