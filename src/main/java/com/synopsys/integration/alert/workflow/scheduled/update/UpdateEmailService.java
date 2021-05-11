@@ -76,7 +76,7 @@ public class UpdateEmailService {
                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
                 EmailProperties emailProperties = new EmailProperties(emailConfig);
 
-                String alertServerUrl = alertProperties.getRootURL();
+                String alertServerUrl = alertProperties.getServerURL();
                 Map<String, Object> templateFields = new HashMap<>();
                 templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
                 templateFields.put("newVersionName", updateVersion);

@@ -16,10 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
+import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
@@ -30,15 +30,15 @@ import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponse
 import com.synopsys.integration.rest.RestConstants;
 
 public class AboutReaderTest {
-    private AlertProperties alertProperties;
+    private AlertWebServerUrlManager alertWebServerUrlManager;
     private DefaultSystemStatusAccessor defaultSystemStatusUtility;
     private DefaultSystemMessageAccessor defaultSystemMessageUtility;
     private DescriptorMetadataActions descriptorMetadataActions;
 
     @BeforeEach
     public void initialize() {
-        alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getServerUrlBuilder()).thenReturn(UriComponentsBuilder.newInstance());
+        alertWebServerUrlManager = Mockito.mock(AlertWebServerUrlManager.class);
+        Mockito.when(alertWebServerUrlManager.getServerComponentsBuilder()).thenReturn(UriComponentsBuilder.newInstance());
 
         defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusAccessor.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
@@ -55,28 +55,28 @@ public class AboutReaderTest {
 
     @Test
     public void testAboutReadNull() {
-        AboutReader reader = new AboutReader(null, alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(null, alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
         Optional<AboutModel> aboutModel = reader.getAboutModel();
         assertTrue(aboutModel.isEmpty());
     }
 
     @Test
     public void testAboutRead() {
-        AboutReader reader = new AboutReader(new Gson(), alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(new Gson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
         Optional<AboutModel> aboutModel = reader.getAboutModel();
         assertTrue(aboutModel.isPresent());
     }
 
     @Test
     public void testAboutReadVersionUnknown() {
-        AboutReader reader = new AboutReader(null, alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(null, alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
         String version = reader.getProductVersion();
         assertEquals(AboutReader.PRODUCT_VERSION_UNKNOWN, version);
     }
 
     @Test
     public void testAboutReadVersion() {
-        AboutReader reader = new AboutReader(new Gson(), alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(new Gson(), alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
         String version = reader.getProductVersion();
         assertTrue(StringUtils.isNotBlank(version));
     }

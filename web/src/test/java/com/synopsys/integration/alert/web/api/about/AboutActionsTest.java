@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
+import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;
 
 public class AboutActionsTest {
@@ -45,11 +45,11 @@ public class AboutActionsTest {
     @Test
     public void testGetAboutDataNotPresent() {
         Gson gson = new Gson();
-        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        AlertWebServerUrlManager alertWebServerUrlManager = Mockito.mock(AlertWebServerUrlManager.class);
         SystemStatusAccessor systemStatusAccessor = Mockito.mock(SystemStatusAccessor.class);
         DescriptorMetadataActions descriptorActions = Mockito.mock(DescriptorMetadataActions.class);
 
-        AboutReader aboutReader = new AboutReader(gson, alertProperties, systemStatusAccessor, descriptorActions);
+        AboutReader aboutReader = new AboutReader(gson, alertWebServerUrlManager, systemStatusAccessor, descriptorActions);
         AboutActions aboutActions = new AboutActions(aboutReader);
         ActionResponse<AboutModel> resultModel = aboutActions.getAboutModel();
         assertTrue(resultModel.isError());

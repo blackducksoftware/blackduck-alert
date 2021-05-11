@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.common;
 
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -185,7 +184,7 @@ public class AlertProperties {
         return Optional.empty();
     }
 
-    public UriComponentsBuilder getServerUrlBuilder() {
+    public String getServerURL() {
         String scheme = getSslEnabled() ? "https" : "http";
         String hostName = getAlertHostName().orElse("localhost");
         String port = getPublicServerPort().orElse(getServerPort().orElse("8443"));
@@ -196,25 +195,6 @@ public class AlertProperties {
         uriComponentsBuilder.host(hostName);
         uriComponentsBuilder.port(port);
         uriComponentsBuilder.path(path);
-        return uriComponentsBuilder;
-    }
-
-    // TODO investigate using ServletUriComponentsBuilder.fromCurrentContextPath() to construct the URL
-    //  for code paths that are triggered from a HttpServletRequest
-
-    public Optional<String> getServerUrl(String... pathSegments) {
-        UriComponentsBuilder uriComponentsBuilder = getServerUrlBuilder();
-        uriComponentsBuilder.pathSegment(pathSegments);
-        try {
-            String serverUrl = uriComponentsBuilder.build().toUri().toURL().toString();
-            return Optional.of(serverUrl);
-        } catch (MalformedURLException e) {
-            return Optional.empty();
-        }
-    }
-
-    public String getRootURL() {
-        UriComponentsBuilder uriComponentsBuilder = getServerUrlBuilder();
         uriComponentsBuilder.path("/");
         return uriComponentsBuilder.toUriString();
 

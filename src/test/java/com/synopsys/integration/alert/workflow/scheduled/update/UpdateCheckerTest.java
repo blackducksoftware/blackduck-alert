@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
+import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
@@ -250,11 +251,13 @@ public class UpdateCheckerTest {
         DescriptorMetadataActions descriptorMetadataActions = Mockito.mock(DescriptorMetadataActions.class);
         Mockito.when(descriptorMetadataActions.getDescriptorsByType(Mockito.anyString())).thenReturn(new ActionResponse<>(HttpStatus.OK, new DescriptorsResponseModel()));
 
+        AlertWebServerUrlManager alertWebServerUrlManager = Mockito.mock(AlertWebServerUrlManager.class);
+        Mockito.when(alertWebServerUrlManager.getServerComponentsBuilder()).thenReturn(UriComponentsBuilder.newInstance());
+
         AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getServerUrlBuilder()).thenReturn(UriComponentsBuilder.newInstance());
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
 
-        AboutReader reader = new AboutReader(gson, alertProperties, defaultSystemStatusUtility, descriptorMetadataActions);
+        AboutReader reader = new AboutReader(gson, alertWebServerUrlManager, defaultSystemStatusUtility, descriptorMetadataActions);
         UpdateChecker updateChecker = new UpdateChecker(gson, reader, proxyManager, alertProperties);
 
         UpdateModel updateModel = updateChecker.getUpdateModel();

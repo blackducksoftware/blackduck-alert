@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.web.AzureOAuthCallbackController;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
+import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 
 @Component
 public class AzureRedirectUrlCreator {
-    private final AlertProperties alertProperties;
+    private final AlertWebServerUrlManager alertWebServerUrlManager;
 
     @Autowired
-    public AzureRedirectUrlCreator(AlertProperties alertProperties) {
-        this.alertProperties = alertProperties;
+    public AzureRedirectUrlCreator(AlertWebServerUrlManager alertWebServerUrlManager) {
+        this.alertWebServerUrlManager = alertWebServerUrlManager;
     }
 
     /**
@@ -33,7 +33,7 @@ public class AzureRedirectUrlCreator {
      * @see #createOAuthRedirectUri()
      */
     public String createUIRedirectLocation() {
-        return alertProperties.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL)
+        return alertWebServerUrlManager.getServerUrl("channels", AzureBoardsDescriptor.AZURE_BOARDS_URL)
                    .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure UI Redirect URL."));
     }
 
@@ -43,7 +43,7 @@ public class AzureRedirectUrlCreator {
      * @return The URI string to redirect to from azure when obtaining the authorization code
      */
     public String createOAuthRedirectUri() {
-        return alertProperties.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS,
+        return alertWebServerUrlManager.getServerUrl(AlertRestConstants.API, AlertRestConstants.CALLBACKS,
             AlertRestConstants.OAUTH, AzureOAuthCallbackController.AZURE)
                    .orElseThrow(() -> new AlertRuntimeException("Could not create the Azure OAuth Redirect URL."));
     }
