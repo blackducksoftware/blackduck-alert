@@ -593,7 +593,7 @@ const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
 
 EmailGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
-    errorHandler: PropTypes.func.isRequired,
+    errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool
 };

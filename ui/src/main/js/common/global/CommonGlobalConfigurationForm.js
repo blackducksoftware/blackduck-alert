@@ -211,7 +211,7 @@ CommonGlobalConfigurationForm.propTypes = {
     buttonIdPrefix: PropTypes.string,
     afterSuccessfulSave: PropTypes.func,
     readonly: PropTypes.bool,
-    errorHandler: PropTypes.func.isRequired
+    errorHandler: PropTypes.object.isRequired
 };
 
 CommonGlobalConfigurationForm.defaultProps = {
