@@ -140,7 +140,6 @@ const CommonGlobalConfigurationForm = ({
             const response = await deleteRequest(id);
             if (response.ok) {
                 const deletedForm = FieldModelUtilities.createEmptyFieldModel([], formData.context, formData.descriptorName);
-                console.log(JSON.stringify(deletedForm));
                 setFormData(deletedForm);
                 setActionMessage('Delete Successful');
             } else {
