@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.util;
+package com.synopsys.integration.alert.channel.api.rest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

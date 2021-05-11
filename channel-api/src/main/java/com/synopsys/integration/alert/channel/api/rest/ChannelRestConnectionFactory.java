@@ -1,11 +1,11 @@
 /*
- * channel
+ * channel-api
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.channel.util;
+package com.synopsys.integration.alert.channel.api.rest;
 
 import java.util.Optional;
 
@@ -43,4 +43,5 @@ public class ChannelRestConnectionFactory {
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         return new IntHttpClient(intLogger, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
     }
+
 }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.channel.AbstractChannelTest;
 import com.synopsys.integration.alert.channel.ChannelITTestAssertions;
-import com.synopsys.integration.alert.channel.util.RestChannelUtility;
+import com.synopsys.integration.alert.channel.api.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
