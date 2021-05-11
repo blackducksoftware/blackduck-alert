@@ -37,7 +37,6 @@ version = '6.5.0-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.synopsys.integration.solution'
 
 apply from: 'buildSrc/buildTasks.gradle'
@@ -56,7 +55,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'io.spring.dependency-management'
     if (project.name != 'alert-platform') {
         version = rootProject.version
         apply plugin: 'com.synopsys.integration.simple'
@@ -65,10 +63,8 @@ subprojects {
             header rootProject.file('LICENSE')
         }
 
-        dependencyManagement {
-            imports {
-                mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
-            }
+        dependencies {
+            implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         }
     }
 }
@@ -86,6 +82,8 @@ repositories {
 }
 
 dependencies {
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+
     implementation platform(project(':alert-platform'))
 
     implementation project(':processor-api')
