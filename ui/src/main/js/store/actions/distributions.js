@@ -152,10 +152,6 @@ function queryForJobAuditInfo(jobConfigs) {
     };
 }
 
-export function openJobDeleteModal() {
-    return (dispatch, getState) => dispatch(openJobDelete());
-}
-
 export function deleteDistributionJob(job) {
     return (dispatch, getState) => {
         const { jobId } = job;

@@ -16,7 +16,6 @@ dependencies {
 
     // Templates
     implementation 'org.jsoup:jsoup'
-    implementation 'com.jayway.jsonpath:json-path'
     implementation 'org.freemarker:freemarker'
 
     // Email

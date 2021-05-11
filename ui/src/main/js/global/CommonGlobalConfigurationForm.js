@@ -3,6 +3,7 @@ import * as PropTypes from 'prop-types';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as HttpErrorUtilities from 'util/httpErrorUtilities';
 import GlobalTestModal from 'global/GlobalTestModal';
 import StatusMessage from 'field/StatusMessage';
 
@@ -63,7 +64,7 @@ const CommonGlobalConfigurationForm = ({
             if (json.hasErrors) {
                 setErrorIsDetailed(json.detailed);
                 setErrorMessage(json.message);
-                setErrors(json.errors);
+                setErrors(HttpErrorUtilities.createErrorObject(json));
             } else {
                 setActionMessage('Test Successful');
             }
@@ -79,7 +80,7 @@ const CommonGlobalConfigurationForm = ({
 
     const handleTestClick = () => {
         setErrorMessage(null);
-        setErrors({});
+        setErrors(HttpErrorUtilities.createEmptyErrorObject());
         setActionMessage(null);
 
         if (testFields) {
@@ -96,13 +97,13 @@ const CommonGlobalConfigurationForm = ({
         setInProgress(true);
         setErrorMessage(null);
         setActionMessage(null);
-        setErrors({});
+        setErrors(HttpErrorUtilities.createEmptyErrorObject());
         const validateResponse = await validateRequest();
         const validateJson = await validateResponse.json();
         if (validateResponse.ok) {
             if (validateJson.hasErrors) {
                 setErrorMessage(validateJson.message);
-                setErrors(validateJson.errors);
+                setErrors(HttpErrorUtilities.createErrorObject(validateJson));
             } else {
                 const id = FieldModelUtilities.getFieldModelId(formData);
                 const request = (id)
@@ -136,7 +137,8 @@ const CommonGlobalConfigurationForm = ({
         setActionMessage(null);
         const response = await deleteRequest(formData.jobId);
         if (response.ok) {
-            setFormData({});
+            const deletedForm = FieldModelUtilities.createEmptyFieldModel([], formData.context, formData.descriptorName);
+            setFormData(deletedForm);
             setActionMessage('Delete Successful');
         } else {
             const errorObject = errorHandler.handle(response, await response.json(), false);

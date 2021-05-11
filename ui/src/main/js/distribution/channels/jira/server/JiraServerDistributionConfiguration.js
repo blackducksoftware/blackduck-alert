@@ -18,6 +18,7 @@ const JiraServerDistributionConfiguration = ({
     return (
         <>
             <CheckboxInput
+                id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
                 name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment}
                 label="Add Comments"
                 description="If true, this will add comments to the Jira ticket with data describing the latest change."
@@ -25,7 +26,7 @@ const JiraServerDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment)}
-                errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment]}
+                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.comment]}
             />
             <TextInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator}
@@ -36,7 +37,7 @@ const JiraServerDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator)}
-                errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator]}
+                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueCreator]}
             />
             <TextInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project}
@@ -48,7 +49,7 @@ const JiraServerDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project)}
-                errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project]}
+                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.project]}
             />
             <TextInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType}
@@ -60,7 +61,7 @@ const JiraServerDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType)}
-                errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType]}
+                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueType]}
             />
             <TextInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow}
@@ -71,7 +72,7 @@ const JiraServerDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow)}
-                errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow]}
+                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.resolveWorkflow]}
             />
             <TextInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow}
@@ -82,7 +83,7 @@ const JiraServerDistributionConfiguration = ({
                 onChange={FieldModelUtilities.handleChange(data, setData)}
                 value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
-                errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow]}
+                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow]}
             />
             <CollapsiblePane
                 id="distribution-jira-server-advanced-configuration"
@@ -90,6 +91,7 @@ const JiraServerDistributionConfiguration = ({
                 expanded={false}
             >
                 <FieldMappingField
+                    id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping}
                     label="Field Mapping"
                     description="Use this field to provide static values to Jira fields or map them to information from the notifications."
                     fieldMappingKey={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping}
@@ -100,7 +102,7 @@ const JiraServerDistributionConfiguration = ({
                     onChange={FieldModelUtilities.handleChange(data, setData)}
                     storedMappings={FieldModelUtilities.getFieldModelValues(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping)}
-                    errorValue={errors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping]}
+                    errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.fieldMapping]}
                 />
             </CollapsiblePane>
         </>

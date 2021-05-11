@@ -9,6 +9,7 @@ const SlackDistributionConfiguration = ({
 }) => (
     <>
         <TextInput
+            id={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             key={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             label="Webhook"
@@ -17,9 +18,10 @@ const SlackDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.webhook)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.webhook)}
-            errorValue={errors[SLACK_DISTRIBUTION_FIELD_KEYS.webhook]}
+            errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.webhook]}
         />
         <TextInput
+            id={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
             key={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
             label="Channel Name"
@@ -28,9 +30,10 @@ const SlackDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.channelName)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.channelName)}
-            errorValue={errors[SLACK_DISTRIBUTION_FIELD_KEYS.channelName]}
+            errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.channelName]}
         />
         <TextInput
+            id={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             key={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             name={SLACK_DISTRIBUTION_FIELD_KEYS.channelUser}
             label="Channel Username"
@@ -39,7 +42,7 @@ const SlackDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.channelUser)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(SLACK_DISTRIBUTION_FIELD_KEYS.channelUser)}
-            errorValue={errors[SLACK_DISTRIBUTION_FIELD_KEYS.channelUser]}
+            errorValue={errors.fieldErrors[SLACK_DISTRIBUTION_FIELD_KEYS.channelUser]}
         />
     </>
 );

@@ -13,6 +13,7 @@ const EmailDistributionConfiguration = ({
 }) => (
     <>
         <TextInput
+            id={EMAIL_DISTRIBUTION_FIELD_KEYS.subject}
             key={EMAIL_DISTRIBUTION_FIELD_KEYS.subject}
             name={EMAIL_DISTRIBUTION_FIELD_KEYS.subject}
             label="Subject Line"
@@ -21,9 +22,10 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.subject)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.subject)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.subject]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.subject]}
         />
         <TableSelectInput
+            id={DISTRIBUTION_URLS.endpointSelectPath}
             csrfToken={csrfToken}
             endpoint={DISTRIBUTION_URLS.endpointSelectPath}
             fieldKey={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses}
@@ -37,9 +39,10 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddresses]}
         />
         <CheckboxInput
+            id={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}
             name={EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly}
             label="Additional Email Addresses Only"
             description="Rather than sending emails to users assigned to the configured projects, send emails to only the users selected in 'Additional Email Addresses'."
@@ -47,9 +50,10 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.additionalAddressesOnly]}
         />
         <CheckboxInput
+            id={EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly}
             name={EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly}
             label="Project Owner Only"
             description="If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email."
@@ -57,7 +61,7 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             isChecked={FieldModelUtilities.getFieldModelBooleanValue(data, EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.projectOwnerOnly]}
         />
         <DynamicSelectInput
             id={EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat}
@@ -70,7 +74,7 @@ const EmailDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelValues(data, EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat)}
-            errorValue={errors[EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat]}
+            errorValue={errors.fieldErrors[EMAIL_DISTRIBUTION_FIELD_KEYS.attachmentFormat]}
         />
     </>
 );

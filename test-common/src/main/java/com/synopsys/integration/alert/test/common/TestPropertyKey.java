@@ -41,7 +41,29 @@ public enum TestPropertyKey {
     TEST_EMAIL_SMTP_PORT("mail.smtp.port"),
     TEST_EMAIL_LOGO("logo.image"),
     TEST_ENCRYPTION_PASSWORD("alert.encryption.password"),
-    TEST_ENCRYPTION_SALT("alert.encryption.global.salt");
+    TEST_ENCRYPTION_SALT("alert.encryption.global.salt"),
+
+    TEST_JIRA_CLOUD_URL("alert.jira.cloud.url"),
+    TEST_JIRA_CLOUD_USER_EMAIL("alert.jira.cloud.user.email"),
+    TEST_JIRA_CLOUD_API_TOKEN("alert.jira.cloud.api.token"),
+    TEST_JIRA_CLOUD_DISABLE_PLUGIN_CHECK("alert.jira.cloud.disable.plugin.check"),
+    TEST_JIRA_CLOUD_ADD_COMMENTS("alert.jira.cloud.add.comments"),
+    TEST_JIRA_CLOUD_ISSUE_CREATOR("alert.jira.cloud.issue.creator"),
+    TEST_JIRA_CLOUD_PROJECT_NAME("alert.jira.cloud.project.name"),
+    TEST_JIRA_CLOUD_ISSUE_TYPE("alert.jira.cloud.issue.type"),
+    TEST_JIRA_CLOUD_RESOLVE_TRANSITION("alert.jira.cloud.resolve.transition"),
+    TEST_JIRA_CLOUD_REOPEN_TRANSITION("alert.jira.cloud.reopen.transition"),
+
+    TEST_JIRA_SERVER_URL("alert.jira.server.url"),
+    TEST_JIRA_SERVER_USERNAME("alert.jira.server.username"),
+    TEST_JIRA_SERVER_PASSWORD("alert.jira.server.password"),
+    TEST_JIRA_SERVER_DISABLE_PLUGIN_CHECK("alert.jira.server.disable.plugin.check"),
+    TEST_JIRA_SERVER_ADD_COMMENTS("alert.jira.server.add.comments"),
+    TEST_JIRA_SERVER_ISSUE_CREATOR("alert.jira.server.issue.creator"),
+    TEST_JIRA_SERVER_PROJECT_NAME("alert.jira.server.project.name"),
+    TEST_JIRA_SERVER_ISSUE_TYPE("alert.jira.server.issue.type"),
+    TEST_JIRA_SERVER_RESOLVE_TRANSITION("alert.jira.server.resolve.transition"),
+    TEST_JIRA_SERVER_REOPEN_TRANSITION("alert.jira.server.reopen.transition");
 
     private final String propertyKey;
 

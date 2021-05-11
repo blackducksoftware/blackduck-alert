@@ -56,7 +56,7 @@ public class BlackDuckProviderService {
         TestProperties testProperties = new TestProperties();
         this.blackDuckProviderUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
         this.blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
-        this.blackDuckTimeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
+        this.blackDuckTimeout = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT).orElse("300");
         this.blackDuckProviderUniqueName = blackDuckProviderUrl + UUID.randomUUID();
         this.blackDuckProjectName = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_NAME);
         this.blackDuckProjectVersion = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_VERSION);
@@ -101,13 +101,12 @@ public class BlackDuckProviderService {
     }
 
     public String findBlackDuckProvider() throws IntegrationException {
-        String blackDuckProviderSearch = String.format("api/configuration?context=%s&descriptorName=%s", ConfigContextEnum.GLOBAL, blackDuckProviderKey);
+        String blackDuckProviderSearch = String.format("/api/configuration?context=%s&descriptorName=%s", ConfigContextEnum.GLOBAL, blackDuckProviderKey);
         String response = alertRequestUtility.executeGetRequest(blackDuckProviderSearch, "Could not find the Black Duck provider.");
 
         MultiFieldModel blackDuckConfigurations = gson.fromJson(response, MultiFieldModel.class);
         FieldModel blackDuckProviderConfiguration = blackDuckConfigurations.getFieldModels().stream()
-                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").isPresent())
-                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").get().equals(blackDuckProviderUrl))
+                                                        .filter(blackDuckConfiguration -> blackDuckConfiguration.getFieldValue("blackduck.url").filter(blackDuckProviderUrl::equals).isPresent())
                                                         .findFirst()
                                                         .orElseThrow(() -> new IntegrationException("Could not find the BlackDuck provider configuration."));
 

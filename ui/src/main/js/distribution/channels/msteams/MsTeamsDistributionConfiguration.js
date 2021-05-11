@@ -9,6 +9,7 @@ const MsTeamsDistributionConfiguration = ({
 }) => (
     <>
         <TextInput
+            id={MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook}
             key={MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook}
             name={MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook}
             label="Webhook"
@@ -17,7 +18,7 @@ const MsTeamsDistributionConfiguration = ({
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook)}
             errorName={FieldModelUtilities.createFieldModelErrorKey(MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook)}
-            errorValue={errors[MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook]}
+            errorValue={errors.fieldErrors[MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook]}
         />
     </>
 );
