@@ -7,7 +7,23 @@ import GeneralButton from 'common/button/GeneralButton';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 
 const UploadFileButtonField = ({
-    id, accept, capture, buttonLabel, csrfToken, description, endpoint, errorValue, fieldKey, label, labelClass, name, readOnly, required, showDescriptionPlaceHolder, statusMessage
+    id,
+    accept,
+    capture,
+    buttonLabel,
+    csrfToken,
+    description,
+    endpoint,
+    errorValue,
+    fieldKey,
+    label,
+    labelClass,
+    name,
+    readOnly,
+    required,
+    showDescriptionPlaceHolder,
+    statusMessage,
+    permissions
 }) => {
     const [fieldError, setFieldError] = useState(errorValue);
     const [success, setSuccess] = useState(false);
@@ -85,6 +101,7 @@ const UploadFileButtonField = ({
     };
 
     const acceptedContentTypes = accept ? accept.join(',') : null;
+    console.log(`Read: ${permissions.read} Write: ${permissions.write} Delete: ${permissions.delete}`);
 
     return (
         <div>
@@ -105,7 +122,7 @@ const UploadFileButtonField = ({
                             type="file"
                             id={`${fieldKey}-file`}
                             name={name}
-                            disabled={readOnly}
+                            disabled={readOnly || !permissions.read || !permissions.write}
                             accept={acceptedContentTypes}
                             capture={capture}
                         />
@@ -115,13 +132,13 @@ const UploadFileButtonField = ({
                                     id={`${fieldKey}-upload`}
                                     className="uploadButton"
                                     onClick={onUploadClick}
-                                    disabled={readOnly}
+                                    disabled={readOnly || !permissions.read || !permissions.write}
                                     performingAction={progress}
                                 >
                                     {buttonLabel}
                                 </GeneralButton>
                                 {fileUploaded
-                                && <button id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={onDeleteClick}>Remove Uploaded File</button>}
+                                && <button disabled={readOnly || !permissions.read || !permissions.delete} id={`${fieldKey}-delete`} className="btn btn-md btn-link" type="reset" onClick={onDeleteClick}>Remove Uploaded File</button>}
                             </div>
                         </div>
                     </div>
@@ -149,7 +166,12 @@ UploadFileButtonField.propTypes = {
     label: PropTypes.string.isRequired,
     labelClass: PropTypes.string,
     required: PropTypes.bool,
-    showDescriptionPlaceHolder: PropTypes.bool
+    showDescriptionPlaceHolder: PropTypes.bool,
+    permissions: PropTypes.shape({
+        read: PropTypes.bool,
+        write: PropTypes.bool,
+        delete: PropTypes.bool
+    })
 };
 
 UploadFileButtonField.defaultProps = {
@@ -163,7 +185,12 @@ UploadFileButtonField.defaultProps = {
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     labelClass: LabelFieldPropertyDefaults.LABEL_CLASS_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    permissions: {
+        read: true,
+        write: true,
+        delete: true
+    }
 };
 
 export default UploadFileButtonField;

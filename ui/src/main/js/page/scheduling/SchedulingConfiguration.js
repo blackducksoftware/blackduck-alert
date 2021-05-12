@@ -10,7 +10,7 @@ import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySave }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SCHEDULING_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
@@ -74,6 +74,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                 buttonIdPrefix={SCHEDULING_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displaySave={displaySave}
                 errorHandler={errorHandler}
             >
                 <DynamicSelectInput
@@ -133,11 +134,13 @@ SchedulingConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    displaySave: PropTypes.bool
 };
 
 SchedulingConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displaySave: true
 };
 
 export default SchedulingConfiguration;

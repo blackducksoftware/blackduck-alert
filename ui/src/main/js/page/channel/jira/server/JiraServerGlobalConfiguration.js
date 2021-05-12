@@ -12,7 +12,9 @@ import EndpointButtonField from 'common/input/field/EndpointButtonField';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 
-const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const JiraServerGlobalConfiguration = ({
+    csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
+}) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, JIRA_SERVER_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
@@ -37,6 +39,9 @@ const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) =>
                 buttonIdPrefix={JIRA_SERVER_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displayTest={displayTest}
+                displaySave={displaySave}
+                displayDelete={displayDelete}
                 errorHandler={errorHandler}
             >
                 <TextInput
@@ -103,7 +108,7 @@ const JiraServerGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) =>
                     csrfToken={csrfToken}
                     currentConfig={formData}
                     successBox={false}
-                    readOnly={readonly}
+                    readOnly={readonly || !displayTest}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin)}
                     errorValue={errors.fieldErrors[JIRA_SERVER_GLOBAL_FIELD_KEYS.configurePlugin]}
@@ -117,11 +122,17 @@ JiraServerGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    displayTest: PropTypes.bool,
+    displaySave: PropTypes.bool,
+    displayDelete: PropTypes.bool
 };
 
 JiraServerGlobalConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displayTest: true,
+    displaySave: true,
+    displayDelete: true
 };
 
 export default JiraServerGlobalConfiguration;

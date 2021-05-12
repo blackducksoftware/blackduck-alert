@@ -501,7 +501,7 @@ const DistributionConfigurationForm = ({
 DistributionConfigurationForm.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
-    descriptors: PropTypes.array.isRequired,
+    descriptors: PropTypes.object.isRequired,
     lastUpdated: PropTypes.string
 };
 

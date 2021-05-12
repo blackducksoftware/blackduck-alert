@@ -15,7 +15,7 @@ import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import PasswordInput from 'common/input/PasswordInput';
 
-const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete }) => {
     const [fieldModel, setFieldModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, EMAIL_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [testFieldData, setTestFieldData] = useState({});
@@ -57,6 +57,9 @@ const EmailGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                 buttonIdPrefix={EMAIL_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displayTest={displayTest}
+                displaySave={displaySave}
+                displayDelete={displayDelete}
                 errorHandler={errorHandler}
             >
                 <TextInput
@@ -595,11 +598,17 @@ EmailGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    displayTest: PropTypes.bool,
+    displaySave: PropTypes.bool,
+    displayDelete: PropTypes.bool
 };
 
 EmailGlobalConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displayTest: true,
+    displaySave: true,
+    displayDelete: true
 };
 
 export default EmailGlobalConfiguration;
