@@ -13,7 +13,9 @@ import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import CheckboxInput from 'common/input/CheckboxInput';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 
-const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const BlackDuckConfiguration = ({
+    csrfToken, errorHandler, readonly, displayTest, displaySave
+}) => {
     const { id } = useParams();
     const history = useHistory();
     const location = useLocation();
@@ -58,6 +60,8 @@ const BlackDuckConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                 afterSuccessfulSave={() => history.push(BLACKDUCK_URLS.blackDuckTableUrl)}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displayTest={displayTest}
+                displaySave={displaySave}
                 errorHandler={errorHandler}
             >
                 <CheckboxInput
@@ -129,11 +133,15 @@ BlackDuckConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    displayTest: PropTypes.bool,
+    displaySave: PropTypes.bool
 };
 
 BlackDuckConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displayTest: true,
+    displaySave: true
 };
 
 export default BlackDuckConfiguration;

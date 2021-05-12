@@ -101,7 +101,6 @@ const UploadFileButtonField = ({
     };
 
     const acceptedContentTypes = accept ? accept.join(',') : null;
-    console.log(`Read: ${permissions.read} Write: ${permissions.write} Delete: ${permissions.delete}`);
 
     return (
         <div>

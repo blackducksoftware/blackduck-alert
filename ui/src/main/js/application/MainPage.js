@@ -37,7 +37,9 @@ import TaskManagement from 'page/task/TaskManagement';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 import UserManagement from 'page/user/UserManagement';
 import JiraServerGlobalConfiguration from 'page/channel/jira/server/JiraServerGlobalConfiguration';
-import { CONTEXT_TYPE, doesDescriptorExist, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
+import {
+    CONTEXT_TYPE, doesDescriptorExist, isOperationAssigned, OPERATIONS
+} from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
 import DistributionConfigurationForm from 'page/distribution/DistributionConfigurationForm';
@@ -93,21 +95,28 @@ const MainPage = ({
                     <Redirect to="/alert/general/about" />
                 )}
             />
-            <Route
-                exact
-                key="blackduck-route"
-                path={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
-            >
-                {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && <BlackDuckConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />}
-            </Route>
+            <DescriptorRoute
+                descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
+                paths={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
+                render={(readonly, showTest, showSave) => (
+                    <BlackDuckConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readonly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                    />
+                )}
+            />
             <DescriptorRoute
                 uriPrefix={providerUri}
                 descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
-                render={(readonly) => (
+                render={(readonly, showTest, showSave, showDelete) => (
                     <BlackDuckProviderConfiguration
                         csrfToken={csrfToken}
                         showRefreshButton={!autoRefresh}
                         readonly={readonly}
+                        displayDelete={showDelete}
                     />
                 )}
             />
