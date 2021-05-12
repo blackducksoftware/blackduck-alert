@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.database.configuration.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
@@ -18,7 +20,19 @@ import com.synopsys.integration.alert.database.configuration.DescriptorConfigEnt
 public interface DescriptorConfigRepository extends JpaRepository<DescriptorConfigEntity, Long> {
     List<DescriptorConfigEntity> findByDescriptorId(Long descriptorId);
 
-    List<DescriptorConfigEntity> findByContextId(Long contextId);
-
     List<DescriptorConfigEntity> findByDescriptorIdAndContextId(Long descriptorId, Long contextId);
+
+    @Query("SELECT config FROM DescriptorConfigEntity config"
+               + " LEFT JOIN config.registeredDescriptorEntity descriptor"
+               + " WHERE descriptor.name = :descriptorName"
+    )
+    List<DescriptorConfigEntity> findByDescriptorName(@Param("descriptorName") String descriptorName);
+
+    @Query("SELECT config FROM DescriptorConfigEntity config"
+               + " LEFT JOIN config.registeredDescriptorEntity descriptor"
+               + " LEFT JOIN DescriptorTypeEntity type ON type.id = descriptor.typeId"
+               + " WHERE type.type = :descriptorType"
+    )
+    List<DescriptorConfigEntity> findByDescriptorType(@Param("descriptorType") String descriptorType);
+
 }

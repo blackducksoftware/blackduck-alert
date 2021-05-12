@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
@@ -41,7 +40,6 @@ import com.synopsys.integration.alert.database.configuration.RegisteredDescripto
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -50,7 +48,6 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 @Transactional
 public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
-    private final DescriptorTypeRepository descriptorTypeRepository;
     private final DefinedFieldRepository definedFieldRepository;
     private final DescriptorConfigRepository descriptorConfigsRepository;
     private final ConfigContextRepository configContextRepository;
@@ -60,7 +57,6 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
     @Autowired
     public DefaultConfigurationAccessor(
         RegisteredDescriptorRepository registeredDescriptorRepository,
-        DescriptorTypeRepository descriptorTypeRepository,
         DefinedFieldRepository definedFieldRepository,
         DescriptorConfigRepository descriptorConfigsRepository,
         ConfigContextRepository configContextRepository,
@@ -68,7 +64,6 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
         EncryptionUtility encryptionUtility
     ) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
-        this.descriptorTypeRepository = descriptorTypeRepository;
         this.definedFieldRepository = definedFieldRepository;
         this.descriptorConfigsRepository = descriptorConfigsRepository;
         this.configContextRepository = configContextRepository;
@@ -103,40 +98,24 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
 
     @Override
     public Optional<ConfigurationModel> getConfigurationById(Long id) {
-        if (id == null) {
-            return Optional.empty();
-        }
-
-        Optional<DescriptorConfigEntity> optionalDescriptorConfigEntity = descriptorConfigsRepository.findById(id);
-        if (optionalDescriptorConfigEntity.isPresent()) {
-            DescriptorConfigEntity descriptorConfigEntity = optionalDescriptorConfigEntity.get();
-            ConfigurationModelMutable configModel = createConfigModel(
-                descriptorConfigEntity.getDescriptorId(),
-                descriptorConfigEntity.getId(),
-                descriptorConfigEntity.getCreatedAt(),
-                descriptorConfigEntity.getLastUpdated(),
-                descriptorConfigEntity.getContextId()
-            );
-            return Optional.of(configModel);
-        }
-        return Optional.empty();
+        return descriptorConfigsRepository.findById(id).map(this::createConfigModel);
     }
 
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorKey(DescriptorKey descriptorKey) {
-        return registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey())
-                   .map(descriptorEntity -> createConfigModels(Set.of(descriptorEntity)))
-                   .orElseGet(() -> createConfigModels(Set.of()));
+        return descriptorConfigsRepository.findByDescriptorName(descriptorKey.getUniversalKey())
+                   .stream()
+                   .map(this::createConfigModel)
+                   .collect(Collectors.toList());
     }
 
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType) {
         String descriptorTypeName = descriptorType.name();
-        Long typeId = descriptorTypeRepository.findFirstByType(descriptorTypeName)
-                          .map(DatabaseEntity::getId)
-                          .orElseThrow(() -> new AlertRuntimeException(String.format("FATAL: Descriptor type '%s' does not exist", descriptorTypeName)));
-        List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeId(typeId);
-        return createConfigModels(registeredDescriptorEntities);
+        return descriptorConfigsRepository.findByDescriptorType(descriptorTypeName)
+                   .stream()
+                   .map(this::createConfigModel)
+                   .collect(Collectors.toList());
     }
 
     @Override
@@ -263,6 +242,16 @@ public class DefaultConfigurationAccessor implements ConfigurationAccessor {
             }
         }
         return configs;
+    }
+
+    private ConfigurationModelMutable createConfigModel(DescriptorConfigEntity descriptorConfigEntity) {
+        return createConfigModel(
+            descriptorConfigEntity.getDescriptorId(),
+            descriptorConfigEntity.getId(),
+            descriptorConfigEntity.getCreatedAt(),
+            descriptorConfigEntity.getLastUpdated(),
+            descriptorConfigEntity.getContextId()
+        );
     }
 
     private ConfigurationModelMutable createConfigModel(Long descriptorId, Long configId, OffsetDateTime createdAt, OffsetDateTime lastUpdated, Long contextId) {

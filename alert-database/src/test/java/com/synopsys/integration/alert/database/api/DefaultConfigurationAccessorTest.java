@@ -86,7 +86,7 @@ public class DefaultConfigurationAccessorTest {
         Mockito.when(fieldValueRepository.findAllByFieldIdAndValue(fieldId, emptyProviderConfigName)).thenReturn(List.of());
         setupGetJobMocks(descriptorConfigEntity, configContextEntity, fieldValueEntity, definedFieldEntity);
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtility);
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtility);
         Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getProviderConfigurationByName(providerConfigName);
         Optional<ConfigurationModel> configurationModelProviderConfigsEmpty = configurationAccessor.getProviderConfigurationByName(emptyProviderConfigName);
 
@@ -101,7 +101,7 @@ public class DefaultConfigurationAccessorTest {
     public void getConfigurationByIdEmptyTest() {
         Mockito.when(descriptorConfigRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, descriptorConfigRepository, null, null, null);
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, descriptorConfigRepository, null, null, null);
         Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getConfigurationById(1L);
 
         assertFalse(configurationModelOptional.isPresent());
@@ -123,12 +123,18 @@ public class DefaultConfigurationAccessorTest {
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(8L);
 
-        Mockito.when(registeredDescriptorRepository.findFirstByName(descriptorKey.getUniversalKey())).thenReturn(Optional.of(registeredDescriptorEntity));
+        Mockito.when(descriptorConfigRepository.findByDescriptorName(descriptorKey.getUniversalKey())).thenReturn(List.of(descriptorConfigEntity));
         Mockito.when(registeredDescriptorRepository.findFirstByName(badDescriptorKey.getUniversalKey())).thenReturn(Optional.empty());
         setupCreatConfigMocks(descriptorConfigEntity, configContextEntity, fieldValueEntity, definedFieldEntity);
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository,
-            encryptionUtility);
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(
+            registeredDescriptorRepository,
+            definedFieldRepository,
+            descriptorConfigRepository,
+            configContextRepository,
+            fieldValueRepository,
+            encryptionUtility
+        );
         List<ConfigurationModel> configurationModelList = configurationAccessor.getConfigurationsByDescriptorKey(descriptorKey);
         List<ConfigurationModel> configurationModelListEmpty = configurationAccessor.getConfigurationsByDescriptorKey(badDescriptorKey);
 
@@ -155,13 +161,17 @@ public class DefaultConfigurationAccessorTest {
         DefinedFieldEntity definedFieldEntity = new DefinedFieldEntity(fieldKey, false);
         definedFieldEntity.setId(8L);
 
-        Mockito.when(descriptorTypeRepository.findFirstByType(Mockito.any())).thenReturn(Optional.of(descriptorTypeEntity));
-        Mockito.when(registeredDescriptorRepository.findByTypeId(Mockito.any())).thenReturn(List.of(registeredDescriptorEntity));
+        Mockito.when(descriptorConfigRepository.findByDescriptorType(Mockito.eq(descriptorType.name()))).thenReturn(List.of(descriptorConfigEntity));
         setupCreatConfigMocks(descriptorConfigEntity, configContextEntity, fieldValueEntity, definedFieldEntity);
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigRepository, configContextRepository,
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(
+            registeredDescriptorRepository,
+            definedFieldRepository,
+            descriptorConfigRepository,
+            configContextRepository,
             fieldValueRepository,
-            encryptionUtility);
+            encryptionUtility
+        );
         List<ConfigurationModel> configurationModelList = configurationAccessor.getConfigurationsByDescriptorType(descriptorType);
 
         assertEquals(1, configurationModelList.size());
@@ -194,7 +204,7 @@ public class DefaultConfigurationAccessorTest {
         EncryptionUtility encryptionUtility = createEncryptionUtility();
 
         DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(
-            registeredDescriptorRepository, null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtility);
+            registeredDescriptorRepository, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtility);
         List<ConfigurationModel> configurationModelList = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey, configContextEnum);
 
         assertEquals(1, configurationModelList.size());
@@ -226,7 +236,7 @@ public class DefaultConfigurationAccessorTest {
         Mockito.when(descriptorConfigRepository.save(Mockito.any())).thenReturn(descriptorConfigEntity);
         Mockito.when(definedFieldRepository.findFirstByKey(Mockito.any())).thenReturn(Optional.of(definedFieldEntity));
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, null, definedFieldRepository, descriptorConfigRepository, configContextRepository,
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(registeredDescriptorRepository, definedFieldRepository, descriptorConfigRepository, configContextRepository,
             fieldValueRepository, null);
         ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorKey, configContextEnum, configuredFields);
 
@@ -253,7 +263,7 @@ public class DefaultConfigurationAccessorTest {
         Mockito.when(configContextRepository.findById(Mockito.any())).thenReturn(Optional.of(configContextEntity));
         Mockito.when(definedFieldRepository.findFirstByKey(Mockito.any())).thenReturn(Optional.of(definedFieldEntity));
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, definedFieldRepository, descriptorConfigRepository, configContextRepository,
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, definedFieldRepository, descriptorConfigRepository, configContextRepository,
             fieldValueRepository, null);
         ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(1L, configuredFields);
 
@@ -267,7 +277,7 @@ public class DefaultConfigurationAccessorTest {
     public void deleteConfigurationTest() {
         ConfigurationModel configurationModel = new ConfigurationModel(1L, 2L, "dateCreated", "lastUpdated", configContextEnum);
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, null, descriptorConfigRepository, null, null, null);
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, descriptorConfigRepository, null, null, null);
         configurationAccessor.deleteConfiguration(configurationModel);
 
         Mockito.verify(descriptorConfigRepository).deleteById(Mockito.any());
@@ -297,7 +307,7 @@ public class DefaultConfigurationAccessorTest {
         setupGetJobMocks(descriptorConfigEntity, configContextEntity, fieldValueEntity, definedFieldEntity);
         Mockito.when(encryptionUtilityDecrypt.decrypt(Mockito.any())).thenReturn(decryptedString);
 
-        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtilityDecrypt);
+        DefaultConfigurationAccessor configurationAccessor = new DefaultConfigurationAccessor(null, definedFieldRepository, descriptorConfigRepository, configContextRepository, fieldValueRepository, encryptionUtilityDecrypt);
         Optional<ConfigurationModel> configurationModelOptional = configurationAccessor.getProviderConfigurationByName(providerConfigName);
 
         assertTrue(configurationModelOptional.isPresent());
