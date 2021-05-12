@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.database.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -56,8 +55,6 @@ public class ConfigurationAccessorTestIT {
     @Autowired
     private EncryptionUtility encryptionUtility;
     @Autowired
-    private DescriptorTypeRepository descriptorTypeRepository;
-    @Autowired
     private DescriptorMocker descriptorMocker;
 
     private DefaultConfigurationAccessor configurationAccessor;
@@ -67,7 +64,7 @@ public class ConfigurationAccessorTestIT {
         descriptorConfigsRepository.flush();
         descriptorConfigsRepository.deleteAllInBatch();
         configurationAccessor = new DefaultConfigurationAccessor(
-            registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigsRepository, configContextRepository, fieldValueRepository, encryptionUtility);
+            registeredDescriptorRepository, definedFieldRepository, descriptorConfigsRepository, configContextRepository, fieldValueRepository, encryptionUtility);
         descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.PROVIDER);
         descriptorMocker.addFieldToDescriptor(DESCRIPTOR_NAME, FIELD_KEY_INSENSITIVE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION), Boolean.FALSE);
         descriptorMocker.addFieldToDescriptor(DESCRIPTOR_NAME, FIELD_KEY_SENSITIVE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION), Boolean.TRUE);
