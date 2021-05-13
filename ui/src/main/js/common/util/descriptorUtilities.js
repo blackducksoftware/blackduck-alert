@@ -26,7 +26,10 @@ export const OPERATIONS = {
     DELETE: 'DELETE',
     READ: 'READ',
     WRITE: 'WRITE',
-    EXECUTE: 'EXECUTE'
+    EXECUTE: 'EXECUTE',
+    UPLOAD_FILE_READ: 'UPLOAD_FILE_READ',
+    UPLOAD_FILE_WRITE: 'UPLOAD_FILE_WRITE',
+    UPLOAD_FILE_DELETE: 'UPLOAD_FILE_DELETE'
 };
 
 export function findDescriptorByNameAndContext(descriptorList, descriptorName, context) {
@@ -106,4 +109,18 @@ export function isOneOperationAssigned(descriptor, operationArray) {
 
 export function doesDescriptorExist(descriptorMap, key) {
     return Object.prototype.hasOwnProperty.call(descriptorMap, key);
+}
+
+// TODO hasTestFields probably isn't necessary now that everything is static
+export function getButtonPermissions(descriptor, hasTestFields) {
+    if (!descriptor) {
+        return [false, false, false];
+    }
+    const { type } = descriptor;
+    const includeTestButton = (type !== DESCRIPTOR_TYPE.COMPONENT) || hasTestFields;
+    const displayTest = isOperationAssigned(descriptor, OPERATIONS.EXECUTE) && includeTestButton;
+    const displaySave = isOneOperationAssigned(descriptor, [OPERATIONS.CREATE, OPERATIONS.WRITE]);
+    const displayDelete = isOperationAssigned(descriptor, OPERATIONS.DELETE) && (type !== DESCRIPTOR_TYPE.COMPONENT);
+
+    return [displayTest, displaySave, displayDelete];
 }

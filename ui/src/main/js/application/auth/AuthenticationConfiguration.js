@@ -17,7 +17,9 @@ import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-const AuthenticationConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const AuthenticationConfiguration = ({
+    csrfToken, errorHandler, readonly, displayTest, displaySave, fileRead, fileDelete, fileWrite
+}) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AUTHENTICATION_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [testFieldData, setTestFieldData] = useState({});
@@ -93,6 +95,8 @@ const AuthenticationConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                 buttonIdPrefix={AUTHENTICATION_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displayTest={displayTest}
+                displaySave={displaySave}
                 errorHandler={errorHandler}
             >
                 <CollapsiblePane
@@ -295,7 +299,8 @@ const AuthenticationConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                         fieldKey={AUTHENTICATION_SAML_FIELD_KEYS.metadataFile}
                         label="Identity Provider Metadata File"
                         description="The file to upload to the server containing the Metadata from the external Identity Provider."
-                        readOnly={readonly}
+                        readOnly={readonly && !displayTest}
+                        permissions={{ read: fileRead, write: fileWrite, delete: fileDelete }}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         buttonLabel="Upload"
                         endpoint="/api/function/upload"
@@ -355,11 +360,21 @@ AuthenticationConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    displayTest: PropTypes.bool,
+    displaySave: PropTypes.bool,
+    fileRead: PropTypes.bool,
+    fileWrite: PropTypes.bool,
+    fileDelete: PropTypes.bool
 };
 
 AuthenticationConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displayTest: true,
+    displaySave: true,
+    fileRead: true,
+    fileWrite: true,
+    fileDelete: true
 };
 
 export default AuthenticationConfiguration;
