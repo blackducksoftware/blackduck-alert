@@ -7,7 +7,6 @@ import AboutInfo from 'page/about/AboutInfo';
 import LogoutConfirmation from 'common/LogoutConfirmation';
 import { getDescriptors } from 'store/actions/descriptors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import SlackGlobalConfiguration from 'page/channel/slack/SlackGlobalConfiguration';
 import EmailGlobalConfiguration from 'page/channel/email/EmailGlobalConfiguration';
 import JiraCloudGlobalConfiguration from 'page/channel/jira/cloud/JiraCloudGlobalConfiguration';
@@ -38,7 +37,7 @@ import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 import UserManagement from 'page/user/UserManagement';
 import JiraServerGlobalConfiguration from 'page/channel/jira/server/JiraServerGlobalConfiguration';
 import {
-    CONTEXT_TYPE, doesDescriptorExist, isOperationAssigned, OPERATIONS
+    CONTEXT_TYPE, isOperationAssigned, OPERATIONS
 } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
@@ -204,9 +203,9 @@ const MainPage = ({
                         readonly={readOnly}
                         displayTest={showTest}
                         displaySave={showSave}
-                        fileRead={DescriptorUtilities.isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
-                        fileWrite={DescriptorUtilities.isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
-                        fileDelete={DescriptorUtilities.isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}
+                        fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
+                        fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
+                        fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}
                     />
                 )}
             />
