@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="fix-jira-configure-plugin-field">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM alert.descriptor_fields
+                    WHERE descriptor_id = GET_DESCRIPTOR_ID('channel_jira_server')
+                    AND field_id = GET_FIELD_ID('jira.server.configure.plugin')
+                </sqlCheck>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM alert.descriptor_fields
+                    WHERE descriptor_id = GET_DESCRIPTOR_ID('channel_jira_cloud')
+                    AND field_id = GET_FIELD_ID('jira.server.configure.plugin')
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <insert schemaName="alert" tableName="descriptor_fields">
+            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('channel_jira_server')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('jira.server.configure.plugin')"/>
+        </insert>
+        <delete schemaName="alert" tableName="descriptor_fields">
+            <where>
+                descriptor_id = GET_DESCRIPTOR_ID('channel_jira_cloud')
+                AND field_id = GET_FIELD_ID('jira.server.configure.plugin')
+            </where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>
