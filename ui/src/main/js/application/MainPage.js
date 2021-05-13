@@ -44,7 +44,7 @@ import DistributionConfiguration from 'page/distribution/DistributionConfigurati
 import DistributionConfigurationForm from 'page/distribution/DistributionConfigurationForm';
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
-import DescriptorRoute from '../common/DescriptorRoute';
+import DescriptorRoute from 'common/DescriptorRoute';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
