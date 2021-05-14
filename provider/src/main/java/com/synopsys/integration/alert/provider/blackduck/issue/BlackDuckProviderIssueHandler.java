@@ -73,7 +73,7 @@ public class BlackDuckProviderIssueHandler {
     }
 
     private void performRequest(HttpUrl httpUrl, HttpMethod httpMethod, IssueRequest issueRequest) throws IntegrationException {
-        Request request = new BlackDuckRequestBuilder(new Request.Builder())
+        Request request = new BlackDuckRequestBuilder(gson, new Request.Builder())
                               .url(httpUrl)
                               .method(httpMethod)
                               .bodyContent(new StringBodyContent(gson.toJson(issueRequest)))

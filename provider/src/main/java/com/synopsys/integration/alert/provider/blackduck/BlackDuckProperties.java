@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilderFactory;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
@@ -83,8 +84,7 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(BlackDuckHttpClient blackDuckHttpClient, IntLogger logger) {
-        return new BlackDuckServicesFactory(
-            IntEnvironmentVariables.empty(), gson, objectMapper, new NoThreadExecutorService(), blackDuckHttpClient, logger, BlackDuckServicesFactory.createDefaultRequestFactory());
+        return new BlackDuckServicesFactory(IntEnvironmentVariables.empty(), new NoThreadExecutorService(), logger, blackDuckHttpClient, gson, objectMapper, BlackDuckRequestBuilderFactory::new);
     }
 
     public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(Logger logger) {

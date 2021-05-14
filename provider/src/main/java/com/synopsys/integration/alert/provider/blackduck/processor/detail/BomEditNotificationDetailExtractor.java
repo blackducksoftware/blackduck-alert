@@ -64,8 +64,8 @@ public class BomEditNotificationDetailExtractor extends NotificationDetailExtrac
             BlackDuckServicesFactory blackDuckServicesFactory = servicesFactoryCache.retrieveBlackDuckServicesFactory(blackDuckConfigId);
             BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
             ProjectVersionView projectVersion = blackDuckApiClient.getResponse(new HttpUrl(projectVersionUrl), ProjectVersionView.class);
-            return blackDuckApiClient.getResponse(projectVersion, ProjectVersionView.PROJECT_LINK_RESPONSE)
-                       .map(project -> new ProjectVersionWrapper(project, projectVersion));
+            ProjectView projectView = blackDuckApiClient.getResponse(projectVersion.metaProjectLink());
+            return Optional.of(new ProjectVersionWrapper(projectView, projectVersion));
         } catch (IntegrationException e) {
             logger.error("Failed to connect to BlackDuck. Config ID: {}", blackDuckConfigId, e);
         }

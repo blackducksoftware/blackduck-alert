@@ -7,38 +7,37 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
+import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestFilter;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilderFactory;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.request.NotificationEditor;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.RestConstants;
 
 public class BlackDuckNotificationRetriever {
     public static final int DEFAULT_PAGE_SIZE = 100;
     public static final int INITIAL_PAGE_OFFSET = 0;
 
-    private final BlackDuckRequestFactory blackDuckRequestFactory;
+    private final BlackDuckRequestBuilderFactory blackDuckRequestBuilderFactory;
     private final BlackDuckApiClient blackDuckApiClient;
+    private final ApiDiscovery apiDiscovery;
 
-    public BlackDuckNotificationRetriever(BlackDuckRequestFactory blackDuckRequestFactory, BlackDuckApiClient blackDuckApiClient) {
-        this.blackDuckRequestFactory = blackDuckRequestFactory;
+    public BlackDuckNotificationRetriever(BlackDuckRequestBuilderFactory blackDuckRequestBuilderFactory, BlackDuckApiClient blackDuckApiClient, ApiDiscovery apiDiscovery) {
+        this.blackDuckRequestBuilderFactory = blackDuckRequestBuilderFactory;
         this.blackDuckApiClient = blackDuckApiClient;
+        this.apiDiscovery = apiDiscovery;
     }
 
     public StatefulAlertPage<NotificationView, IntegrationException> retrievePageOfFilteredNotifications(DateRange dateRange, List<String> types) throws IntegrationException {
@@ -53,26 +52,19 @@ public class BlackDuckNotificationRetriever {
     }
 
     private BlackDuckRequestBuilder createNotificationRequestBuilder(DateRange dateRange, List<String> notificationTypesToInclude) throws IntegrationException {
-        HttpUrl requestUrl = blackDuckApiClient.getUrl(ApiDiscovery.NOTIFICATIONS_LINK);
+        UrlMultipleResponses<NotificationView> notificationsResponses = apiDiscovery.metaNotificationsLink();
+        BlackDuckRequestBuilder blackDuckRequestBuilder = blackDuckRequestBuilderFactory
+                                                              .createCommonGet()
+                                                              .url(notificationsResponses.getUrl());
 
-        SimpleDateFormat sdf = new SimpleDateFormat(RestConstants.JSON_DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        NotificationEditor notificationEditor = new NotificationEditor(toDate(dateRange.getStart()), toDate(dateRange.getEnd()), notificationTypesToInclude);
+        notificationEditor.edit(blackDuckRequestBuilder);
 
-        String startDateString = toDateString(sdf, dateRange.getStart());
-        String endDateString = toDateString(sdf, dateRange.getEnd());
-
-        BlackDuckRequestFilter notificationTypeFilter = BlackDuckRequestFilter.createFilterWithMultipleValues("notificationType", notificationTypesToInclude);
-        return blackDuckRequestFactory
-                   .createCommonGetRequestBuilder()
-                   .url(requestUrl)
-                   .addQueryParameter("startDate", startDateString)
-                   .addQueryParameter("endDate", endDateString)
-                   .addBlackDuckFilter(notificationTypeFilter);
+        return blackDuckRequestBuilder;
     }
 
-    private String toDateString(SimpleDateFormat sdf, OffsetDateTime offsetDateTime) {
-        Date date = Date.from(offsetDateTime.toInstant());
-        return sdf.format(date);
+    private Date toDate(OffsetDateTime offsetDateTime) {
+        return Date.from(offsetDateTime.toInstant());
     }
 
     private class NotificationPageRetriever implements PageRetriever<NotificationView, IntegrationException> {

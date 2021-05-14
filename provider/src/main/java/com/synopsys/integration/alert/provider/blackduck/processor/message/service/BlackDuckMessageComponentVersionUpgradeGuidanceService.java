@@ -31,26 +31,6 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
     }
 
     public List<LinkableItem> requestRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
-        Optional<ComponentVersionRemediatingView> optionalRemediationInformation = componentService.getRemediationInformation(componentVersionView);
-        if (optionalRemediationInformation.isPresent()) {
-            ComponentVersionRemediatingView remediatingView = optionalRemediationInformation.get();
-
-            List<LinkableItem> remediationItems = new ArrayList<>(3);
-
-            Optional.ofNullable(remediatingView.getFixesPreviousVulnerabilities())
-                .map(remediationView -> createRemediationItem(BlackDuckMessageLabels.LABEL_REMEDIATION_FIX_PREVIOUS, remediationView))
-                .ifPresent(remediationItems::add);
-
-            Optional.ofNullable(remediatingView.getLatestAfterCurrent())
-                .map(remediationView -> createRemediationItem(BlackDuckMessageLabels.LABEL_REMEDIATION_LATEST, remediationView))
-                .ifPresent(remediationItems::add);
-
-            Optional.ofNullable(remediatingView.getNoVulnerabilities())
-                .map(remediationView -> createRemediationItem(BlackDuckMessageLabels.LABEL_REMEDIATION_CLEAN, remediationView))
-                .ifPresent(remediationItems::add);
-
-            return remediationItems;
-        }
         return List.of();
     }
 

@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilderFactory;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 
 @Component
@@ -26,8 +27,8 @@ public class BlackDuckMessageBomComponentDetailsCreatorFactory {
         this.policyDetailsCreator = policyDetailsCreator;
     }
 
-    public BlackDuckMessageBomComponentDetailsCreator createBomComponentDetailsCreator(BlackDuckApiClient blackDuckApiClient) {
-        return new BlackDuckMessageBomComponentDetailsCreator(blackDuckApiClient, vulnerabilityDetailsCreator, policyDetailsCreator);
+    public BlackDuckMessageBomComponentDetailsCreator createBomComponentDetailsCreator(BlackDuckApiClient blackDuckApiClient, BlackDuckRequestBuilderFactory blackDuckRequestBuilderFactory) {
+        return new BlackDuckMessageBomComponentDetailsCreator(blackDuckApiClient, blackDuckRequestBuilderFactory, vulnerabilityDetailsCreator, policyDetailsCreator);
     }
 
 }

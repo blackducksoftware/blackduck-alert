@@ -27,7 +27,7 @@ public class BlackDuckNotificationRetrieverFactory {
         if (optionalBlackDuckHttpClient.isPresent()) {
             BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
-            BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(blackDuckServicesFactory.getRequestFactory(), blackDuckServicesFactory.getBlackDuckApiClient());
+            BlackDuckNotificationRetriever notificationRetriever = new BlackDuckNotificationRetriever(blackDuckServicesFactory.getBlackDuckRequestBuilderFactory(), blackDuckServicesFactory.getBlackDuckApiClient(), blackDuckServicesFactory.getApiDiscovery());
             return Optional.of(notificationRetriever);
         } else {
             logger.warn("The BlackDuck configuration '{}' could not be used to retrieve notifications", blackDuckProperties.getConfigName());
