@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertChannelEventListener;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -45,7 +44,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
             try {
                 channel.distributeMessages(details.get(), event.getProviderMessages());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
-            } catch (AlertException e) {
+            } catch (Exception e) {
                 handleException(e, event);
             }
         } else {
@@ -58,7 +57,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         return channelKey.getUniversalKey();
     }
 
-    protected void handleException(AlertException e, DistributionEvent event) {
+    protected void handleException(Exception e, DistributionEvent event) {
         logger.error("An exception occurred while handling the following event: {}", event, e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An exception occurred during message distribution", e);
     }
