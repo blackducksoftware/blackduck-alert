@@ -81,16 +81,14 @@ const DistributionConfigurationTable = ({
             };
             entriesToDelete.forEach((config) => {
                 const { id } = config;
-                const removeTableEntry = (distributionId) => {
-                    const newTableData = tableData.filter((distribution) => distribution.id !== distributionId);
-                    setTableData(newTableData);
-                };
                 DistributionRequestUtility.deleteDistribution({
-                    csrfToken, errorHandler, distributionId: id, stateUpdateFunctions, removeTableEntry
+                    csrfToken, errorHandler, distributionId: id, stateUpdateFunctions
                 });
             });
+            const ids = entriesToDelete.map((entry) => entry.id);
+            const newTableData = tableData.filter((distribution) => !ids.includes(distribution.id));
+            setTableData(newTableData);
         }
-        retrieveTableData();
         setSelectedRows([]);
         setShowDelete(false);
     };
