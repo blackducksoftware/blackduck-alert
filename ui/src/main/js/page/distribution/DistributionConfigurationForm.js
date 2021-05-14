@@ -54,22 +54,19 @@ const DistributionConfigurationForm = ({
     const retrieveData = async () => DistributionRequestUtility.getDataById(id, csrfToken, errorHandler, setErrors);
 
     const createDistributionData = (channelModelData, providerModelData) => {
-        let providerConfigToSave = JSON.parse(JSON.stringify(providerModelData));
+        const providerConfig = JSON.parse(JSON.stringify(providerModelData));
         let configuredProviderProjects = [];
 
-        const fieldConfiguredProjects = FieldModelUtilities.getFieldModelValues(providerConfigToSave, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
+        const fieldConfiguredProjects = FieldModelUtilities.getFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
         if (fieldConfiguredProjects && fieldConfiguredProjects.length > 0) {
             configuredProviderProjects = fieldConfiguredProjects.map((selectedValue) => ({
                 name: selectedValue.name,
                 href: selectedValue.href,
                 missing: false
             }));
-
-            // FIXME we definitely want to fix this
-            // Related fields need this to have a value in order to validate successfully
-            providerConfigToSave = FieldModelUtilities.updateFieldModelSingleValue(providerConfigToSave, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects, 'undefined');
         }
 
+        const providerConfigToSave = FieldModelUtilities.updateFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects, ['undefined']);
         const allChannelData = FieldModelUtilities.combineFieldModels(channelModelData, specificChannelModel);
         return {
             jobId: formData.jobId,
@@ -95,6 +92,7 @@ const DistributionConfigurationForm = ({
 
     const createProjectRequestBody = () => {
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
+        delete providerModel.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
         return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
     };
     const createPolicyFilterRequestBody = () => {
@@ -123,9 +121,14 @@ const DistributionConfigurationForm = ({
         setChannelModel(channelFieldModel);
 
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        const providerFieldModel = (formData && formData.fieldModels)
+        let providerFieldModel = (formData && formData.fieldModels)
             ? formData.fieldModels.find((model) => providerName === model.descriptorName)
             : FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key);
+
+        const { configuredProviderProjects } = formData;
+        if (configuredProviderProjects) {
+            providerFieldModel = FieldModelUtilities.updateFieldModelValues(providerFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects, configuredProviderProjects);
+        }
         setProviderModel(providerFieldModel);
 
         if (descriptors[channelKey]) {
@@ -417,7 +420,6 @@ const DistributionConfigurationForm = ({
                             label="Project Name Pattern"
                             description="The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table."
                             readOnly={readonly}
-                            required
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
