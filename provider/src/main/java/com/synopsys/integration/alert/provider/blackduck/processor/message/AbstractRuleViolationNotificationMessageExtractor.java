@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.NotificationE
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
-import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckPolicyComponentConcernUtils;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractRuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
@@ -31,6 +31,7 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public abstract class AbstractRuleViolationNotificationMessageExtractor<T extends AbstractRuleViolationNotificationContent> extends AbstractBlackDuckComponentConcernMessageExtractor<T> {
     private final ItemOperation itemOperation;
+    private final BlackDuckPolicyComponentConcernCreator policyComponentConcernCreator;
     private final BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory;
     private final BomComponent404Handler bomComponent404Handler;
 
@@ -40,11 +41,13 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
         ItemOperation itemOperation,
         BlackDuckProviderKey blackDuckProviderKey,
         NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache,
+        BlackDuckPolicyComponentConcernCreator policyComponentConcernCreator,
         BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory,
         BomComponent404Handler bomComponent404Handler
     ) {
         super(notificationType, notificationContentClass, blackDuckProviderKey, servicesFactoryCache);
         this.itemOperation = itemOperation;
+        this.policyComponentConcernCreator = policyComponentConcernCreator;
         this.detailsCreatorFactory = detailsCreatorFactory;
         this.bomComponent404Handler = bomComponent404Handler;
     }
@@ -64,7 +67,7 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
     private BomComponentDetails createBomComponentDetails(BlackDuckApiClient blackDuckApiClient, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
         BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
 
-        ComponentConcern policyConcern = BlackDuckPolicyComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
+        ComponentConcern policyConcern = policyComponentConcernCreator.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
         try {
             ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentView.class);
             return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, List.of());
