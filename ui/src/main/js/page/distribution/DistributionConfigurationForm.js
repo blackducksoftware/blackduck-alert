@@ -19,7 +19,9 @@ import CollapsiblePane from 'common/CollapsiblePane';
 import TableSelectInput from 'common/input/TableSelectInput';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
+import {
+    CONTEXT_TYPE, isOneOperationAssigned, isOperationAssigned, OPERATIONS
+} from 'common/util/descriptorUtilities';
 import CommonDistributionConfigurationForm from 'page/distribution/CommonDistributionConfigurationForm';
 import * as DistributionRequestUtility from 'page/distribution/DistributionRequestUtility';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
@@ -278,8 +280,8 @@ const DistributionConfigurationForm = ({
                 testFormData={testFieldModel}
                 setTestFormData={setTestFieldModel}
                 csrfToken={csrfToken}
-                displaySave={!readonly}
-                displayTest={!readonly}
+                displaySave={!readonly && isOneOperationAssigned(descriptors[selectedChannel], [OPERATIONS.WRITE, OPERATIONS.CREATE])}
+                displayTest={!readonly && isOperationAssigned(descriptors[selectedChannel], OPERATIONS.EXECUTE)}
                 displayDelete={false}
                 afterSuccessfulSave={() => history.push(DISTRIBUTION_URLS.distributionTableUrl)}
                 retrieveData={retrieveData}
