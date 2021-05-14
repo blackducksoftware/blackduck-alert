@@ -229,9 +229,7 @@ const DistributionConfigurationForm = ({
     }
 
     if (!FieldModelUtilities.hasKey(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) {
-        const defaultValueModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, AZURE_INFO.key);
-        setSelectedChannel(AZURE_INFO.key);
-        setChannelModel(defaultValueModel);
+        onChannelSelectChange({ target: { name: DISTRIBUTION_COMMON_FIELD_KEYS.channelName, value: [AZURE_INFO.key] } });
     }
 
     if (!FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.topic) && !FieldModelUtilities.hasKey(testFieldModel, DISTRIBUTION_TEST_FIELD_KEYS.message)) {
@@ -273,7 +271,7 @@ const DistributionConfigurationForm = ({
             lastUpdated={lastUpdated}
         >
             <CommonDistributionConfigurationForm
-                setErrors={(error) => setErrors(error)}
+                setErrors={setErrors}
                 formData={formData}
                 setFormData={setFormData}
                 testFields={testFields}
