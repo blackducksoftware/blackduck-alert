@@ -113,7 +113,7 @@ export const fetchDistributions = ({
 };
 
 export const deleteDistribution = ({
-    csrfToken, errorHandler, distributionId, stateUpdateFunctions, removeTableEntry
+    csrfToken, errorHandler, distributionId, stateUpdateFunctions
 }) => {
     const {
         setProgress, setError
@@ -121,9 +121,7 @@ export const deleteDistribution = ({
     setProgress(true);
     const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, distributionId);
     request.then((response) => {
-        if (response.ok) {
-            removeTableEntry(distributionId);
-        } else {
+        if (!response.ok) {
             response.json()
                 .then((responseData) => {
                     setError(errorHandler.handle(response, responseData, false));
