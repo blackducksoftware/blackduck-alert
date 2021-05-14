@@ -140,11 +140,8 @@ const TableSelectInput = (props) => {
         if (isSelected) {
             const itemFound = selectedArray.find((selectedItem) => (useRowAsValue ? selectedItem[keyColumnHeader] === rowKeyValue : selectedItem === rowKeyValue));
             if (!itemFound) {
-                if (useRowAsValue) {
-                    selectedArray.push(row);
-                } else {
-                    selectedArray.push(rowKeyValue);
-                }
+                const rowData = (useRowAsValue) ? row : rowKeyValue;
+                selectedArray.push(rowData);
             }
         } else {
             const index = useRowAsValue ? selectedArray.findIndex((selection) => selection[keyColumnHeader] === rowKeyValue) : selectedArray.indexOf(rowKeyValue);
@@ -280,7 +277,7 @@ const TableSelectInput = (props) => {
         const assignDataFormat = (cell, row) => {
             const missingData = row.missing && cell && cell !== '';
             return (
-                <div title={cell && cell.toString()}>
+                <div title={(cell) ? cell.toString() : undefined}>
                     {' '}
                     {!missingData && cell}
                     {missingData && (

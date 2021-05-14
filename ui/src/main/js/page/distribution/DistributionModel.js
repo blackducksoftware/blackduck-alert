@@ -1,4 +1,10 @@
 import { createTableSelectColumn } from 'common/input/TableSelectInput';
+import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { EMAIL_INFO } from 'page/channel/email/EmailModels';
+import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
+import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
+import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 
 export const DISTRIBUTION_INFO = {
     url: 'distribution',
@@ -51,6 +57,28 @@ export const DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS = [
     { label: 'BOM_EDIT', value: 'BOM_EDIT' },
     { label: 'PROJECT', value: 'PROJECT' },
     { label: 'PROJECT_VERSION', value: 'PROJECT_VERSION' }
+];
+
+export const DISTRIBUTION_CHANNEL_OPTIONS = [
+    { label: AZURE_INFO.label, value: AZURE_INFO.key },
+    { label: EMAIL_INFO.label, value: EMAIL_INFO.key },
+    { label: JIRA_CLOUD_INFO.label, value: JIRA_CLOUD_INFO.key },
+    { label: JIRA_SERVER_INFO.label, value: JIRA_SERVER_INFO.key },
+    { label: MSTEAMS_INFO.label, value: MSTEAMS_INFO.key },
+    { label: SLACK_INFO.label, value: SLACK_INFO.key }
+];
+
+export const DISTRIBUTION_PROCESSING_TYPES = [
+    { label: 'Default', value: 'DEFAULT' },
+    { label: 'Digest', value: 'DIGEST' },
+    { label: 'Summary', value: 'SUMMARY' }
+];
+
+export const DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS = [
+    { label: 'CRITICAL', value: 'CRITICAL' },
+    { label: 'HIGH', value: 'HIGH' },
+    { label: 'LOW', value: 'LOW' },
+    { label: 'MEDIUM', value: 'MEDIUM' }
 ];
 
 export const DISTRIBUTION_PROJECT_SELECT_COLUMNS = [

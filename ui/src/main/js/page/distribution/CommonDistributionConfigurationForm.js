@@ -85,6 +85,7 @@ const CommonDistributionConfigurationForm = ({
         }
     };
 
+    // FIXME this seems to throw a memory leak error, investigate
     const performSaveRequest = async (event) => {
         event.preventDefault();
         event.stopPropagation();

@@ -104,7 +104,7 @@ const DistributionConfigurationTable = ({
         setPageSize(sizePerPage);
     };
 
-    const onSearchChange = (inputSearchTerm, colInfos, multiColumnSearch) => {
+    const onSearchChange = (inputSearchTerm) => {
         setSearchTerm(inputSearchTerm);
         setCurrentPage(1);
     };

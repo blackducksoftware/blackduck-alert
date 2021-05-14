@@ -36,16 +36,6 @@ const EndpointSelectField = ({
     const [options, setOptions] = useState([]);
     const [requestErrorValue, setRequestErrorValue] = useState(null);
 
-    const emptyFieldValue = async () => {
-        const eventObject = {
-            target: {
-                name: fieldKey,
-                value: []
-            }
-        };
-        onChange(eventObject);
-    };
-
     const onSendClick = async () => {
         const newFieldModel = createRequestBody ? createRequestBody() : FieldModelUtilities.createFieldModelFromRequestedFields(currentConfig, requiredRelatedFields);
         const request = createNewConfigurationRequest(`/alert${endpoint}/${fieldKey}`, csrfToken, newFieldModel);
@@ -60,10 +50,6 @@ const EndpointSelectField = ({
                             value: dataValue
                         };
                     });
-                    const selectedValues = selectOptions.filter((option) => value.includes(option.value));
-                    if (selectOptions.length === 0 || selectedValues.length === 0) {
-                        emptyFieldValue();
-                    }
                     setOptions(selectOptions);
                     setRequestErrorValue(null);
                 });
@@ -72,7 +58,6 @@ const EndpointSelectField = ({
                     .then((data) => {
                         setOptions([]);
                         setRequestErrorValue(HTTPErrorUtils.createFieldError(data.message));
-                        emptyFieldValue();
                     });
             }
         });
