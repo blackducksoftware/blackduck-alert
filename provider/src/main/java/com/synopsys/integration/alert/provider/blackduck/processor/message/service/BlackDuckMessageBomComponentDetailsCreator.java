@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;

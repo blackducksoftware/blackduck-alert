@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.RuleViolationClearedUniquePolicyNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
@@ -24,10 +25,12 @@ public class RuleViolationClearedNotificationMessageExtractor extends AbstractRu
     public RuleViolationClearedNotificationMessageExtractor(
         BlackDuckProviderKey blackDuckProviderKey,
         NotificationExtractorBlackDuckServicesFactoryCache servicesFactoryCache,
+        BlackDuckPolicyComponentConcernCreator policyComponentConcernCreator,
         BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory,
         BomComponent404Handler bomComponent404Handler
     ) {
-        super(NotificationType.RULE_VIOLATION_CLEARED, RuleViolationClearedUniquePolicyNotificationContent.class, ItemOperation.DELETE, blackDuckProviderKey, servicesFactoryCache, detailsCreatorFactory, bomComponent404Handler);
+        super(NotificationType.RULE_VIOLATION_CLEARED, RuleViolationClearedUniquePolicyNotificationContent.class, ItemOperation.DELETE, blackDuckProviderKey, servicesFactoryCache, policyComponentConcernCreator, detailsCreatorFactory,
+            bomComponent404Handler);
     }
 
 }

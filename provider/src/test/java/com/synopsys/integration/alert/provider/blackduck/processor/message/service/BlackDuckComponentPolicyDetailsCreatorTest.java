@@ -9,6 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicySeverityConverter;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
@@ -17,13 +19,14 @@ import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRule
 
 public class BlackDuckComponentPolicyDetailsCreatorTest {
     private static final String EXAMPLE_VULNERABILITY_EXPRESSION = "a-vuln-expression";
+    public static final BlackDuckPolicySeverityConverter POLICY_SEVERITY_CONVERTER = new BlackDuckPolicySeverityConverter();
 
     @Test
     public void toComponentPolicyTest() {
         String policyName = "alert-test-policy-01";
         PolicyRuleSeverityType severity = PolicyRuleSeverityType.MAJOR;
 
-        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = new BlackDuckComponentPolicyDetailsCreator();
+        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = new BlackDuckComponentPolicyDetailsCreator(POLICY_SEVERITY_CONVERTER);
 
         ComponentPolicyRulesView componentPolicyRulesView = new ComponentPolicyRulesView();
         componentPolicyRulesView.setName(policyName);
@@ -46,7 +49,7 @@ public class BlackDuckComponentPolicyDetailsCreatorTest {
         PolicyRuleExpressionView policyRuleExpression = new PolicyRuleExpressionView();
         policyRuleExpression.setExpressions(List.of(expression));
 
-        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = new BlackDuckComponentPolicyDetailsCreator();
+        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = new BlackDuckComponentPolicyDetailsCreator(POLICY_SEVERITY_CONVERTER);
 
         ComponentPolicyRulesView componentPolicyRulesView = new ComponentPolicyRulesView();
         componentPolicyRulesView.setName("vuln-test-policy");
@@ -66,7 +69,7 @@ public class BlackDuckComponentPolicyDetailsCreatorTest {
         PolicyRuleExpressionView policyRuleExpression = new PolicyRuleExpressionView();
         policyRuleExpression.setExpressions(List.of(expression));
 
-        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = new BlackDuckComponentPolicyDetailsCreator();
+        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = new BlackDuckComponentPolicyDetailsCreator(POLICY_SEVERITY_CONVERTER);
 
         ComponentPolicyRulesView componentPolicyRulesView = new ComponentPolicyRulesView();
         componentPolicyRulesView.setName("override-test-policy");

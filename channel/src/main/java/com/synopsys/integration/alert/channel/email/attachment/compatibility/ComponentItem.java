@@ -216,7 +216,7 @@ public class ComponentItem extends AlertSerializableModel implements Buildable {
         private final Set<Long> notificationIds = new LinkedHashSet<>();
 
         public ComponentItem build() throws AlertException {
-            if (null == category || null == operation || null == componentLabel || null == componentValue || null == categoryItemLabel || null == categoryItemValue || notificationIds.isEmpty()) {
+            if (null == category || null == operation || null == componentLabel || null == componentValue || null == categoryItemLabel || null == categoryItemValue) {
                 throw new AlertException("Missing required field(s)");
             }
 
