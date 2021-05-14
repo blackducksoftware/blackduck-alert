@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertChannelEventListener;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -44,8 +45,10 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
             try {
                 channel.distributeMessages(details.get(), event.getProviderMessages());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
-            } catch (Exception e) {
-                handleException(e, event);
+            } catch (AlertException alertException) {
+                handleAlertException(alertException, event);
+            } catch (Exception unknownException) {
+                handleUnknownException(unknownException, event);
             }
         } else {
             handleJobDetailsMissing(event);
@@ -57,9 +60,14 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         return channelKey.getUniversalKey();
     }
 
-    protected void handleException(Exception e, DistributionEvent event) {
+    protected void handleAlertException(AlertException e, DistributionEvent event) {
         logger.error("An exception occurred while handling the following event: {}", event, e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An exception occurred during message distribution", e);
+    }
+
+    protected void handleUnknownException(Exception e, DistributionEvent event) {
+        logger.error("An unexpected error occurred while handling the following event: {}", event, e);
+        auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An unexpected error occurred during message distribution. Please refer to the logs for more details.", null);
     }
 
     protected void handleJobDetailsMissing(DistributionEvent event) {
