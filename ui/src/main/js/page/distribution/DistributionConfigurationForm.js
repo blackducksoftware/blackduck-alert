@@ -218,7 +218,6 @@ const DistributionConfigurationForm = ({
     };
 
     if (location.pathname.includes('/copy') && formData.jobId) {
-        console.log('Deleting');
         delete formData.jobId;
     }
 
