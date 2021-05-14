@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.NotificationE
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
-import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageComponentConcernUtils;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckPolicyComponentConcernUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractRuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
@@ -64,7 +64,7 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
     private BomComponentDetails createBomComponentDetails(BlackDuckApiClient blackDuckApiClient, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
         BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
 
-        ComponentConcern policyConcern = BlackDuckMessageComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
+        ComponentConcern policyConcern = BlackDuckPolicyComponentConcernUtils.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
         try {
             ProjectVersionComponentView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentView.class);
             return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, List.of());
