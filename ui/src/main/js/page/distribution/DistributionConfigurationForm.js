@@ -4,13 +4,14 @@ import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import CheckboxInput from 'common/input/CheckboxInput';
 import SelectInput from 'common/input/DynamicSelectInput';
 import {
+    DISTRIBUTION_CHANNEL_OPTIONS,
     DISTRIBUTION_COMMON_FIELD_KEYS,
     DISTRIBUTION_FREQUENCY_OPTIONS,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
-    DISTRIBUTION_POLICY_SELECT_COLUMNS,
+    DISTRIBUTION_POLICY_SELECT_COLUMNS, DISTRIBUTION_PROCESSING_TYPES,
     DISTRIBUTION_PROJECT_SELECT_COLUMNS,
     DISTRIBUTION_TEST_FIELD_KEYS,
-    DISTRIBUTION_URLS
+    DISTRIBUTION_URLS, DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS
 } from 'page/distribution/DistributionModel';
 import EndpointSelectField from 'common/input/EndpointSelectField';
 import TextInput from 'common/input/TextInput';
@@ -44,61 +45,36 @@ const DistributionConfigurationForm = ({
     const location = useLocation();
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-    const channelFieldKeys = {};
-    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.enabled] = {};
-    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.name] = {};
-    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.channelName] = {};
-    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.processingType] = {};
-    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.frequency] = {};
-    channelFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.providerName] = {};
-    const providerFieldKeys = {};
-    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId] = {};
-    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.providerName] = {};
-    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.processingType] = {};
-    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes] = {};
-    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject] = {};
-    providerFieldKeys[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects] = {};
-    const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
-    const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel(providerFieldKeys, CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
-    const [channelSelectionModel, setChannelSelectionModel] = useState(FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
+    const [channelModel, setChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
+    const [specificChannelModel, setSpecificChannelModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key));
+    const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
+    const [selectedChannel, setSelectedChannel] = useState(AZURE_INFO.key);
     const [testFieldModel, setTestFieldModel] = useState({});
-    const [channelFields, setChannelFields] = useState(null);
-    const [providerHasChannelName, setProviderHasChannelName] = useState(false);
-    const [hasProvider, setHasProvider] = useState(false);
-    const [hasNotificationTypes, setHasNotificationTypes] = useState(false);
-    const [filterByProject, setFilterByProject] = useState(false);
     const [readonly, setReadonly] = useState(false);
-    const retrieveData = async () => {
-        const data = await DistributionRequestUtility.getDataById(id, csrfToken, errorHandler, setErrors);
-        return data;
-    };
+    const retrieveData = async () => DistributionRequestUtility.getDataById(id, csrfToken, errorHandler, setErrors);
 
     const createDistributionData = (channelModelData, providerModelData) => {
-        const providerConfigToSave = JSON.parse(JSON.stringify(providerModelData));
+        let providerConfigToSave = JSON.parse(JSON.stringify(providerModelData));
         let configuredProviderProjects = [];
 
-        const fieldConfiguredProjects = providerModelData.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
-        if (fieldConfiguredProjects && fieldConfiguredProjects.values && fieldConfiguredProjects.values.length > 0) {
-            configuredProviderProjects = fieldConfiguredProjects.values.map((selectedValue) => {
-                let valueObject = selectedValue;
-                if (typeof selectedValue === 'string') {
-                    valueObject = JSON.parse(selectedValue);
-                }
+        const fieldConfiguredProjects = FieldModelUtilities.getFieldModelValues(providerConfigToSave, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects);
+        if (fieldConfiguredProjects && fieldConfiguredProjects.length > 0) {
+            configuredProviderProjects = fieldConfiguredProjects.map((selectedValue) => ({
+                name: selectedValue.name,
+                href: selectedValue.href,
+                missing: false
+            }));
 
-                return {
-                    name: valueObject.name,
-                    href: valueObject.href
-                };
-            });
-
+            // FIXME we definitely want to fix this
             // Related fields need this to have a value in order to validate successfully
-            providerConfigToSave.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects].values = ['undefined'];
+            providerConfigToSave = FieldModelUtilities.updateFieldModelSingleValue(providerConfigToSave, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects, 'undefined');
         }
 
+        const allChannelData = FieldModelUtilities.combineFieldModels(channelModelData, specificChannelModel);
         return {
             jobId: formData.jobId,
             fieldModels: [
-                channelModelData,
+                allChannelData,
                 providerConfigToSave
             ],
             configuredProviderProjects
@@ -113,46 +89,45 @@ const DistributionConfigurationForm = ({
     };
 
     const createAdditionalEmailRequestBody = () => {
-        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
         const providerConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
-        const updatedModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
-        return FieldModelUtilities.updateFieldModelSingleValue(updatedModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
+        return FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
     };
 
     const createProjectRequestBody = () => {
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        const providerConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
-        const updatedModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
-        return FieldModelUtilities.updateFieldModelSingleValue(updatedModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
+        return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
     };
     const createPolicyFilterRequestBody = () => {
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        const providerConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
-        const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes);
-        const providerNameModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
-        const providerInfoModel = FieldModelUtilities.updateFieldModelSingleValue(providerNameModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
-        return FieldModelUtilities.updateFieldModelValues(providerInfoModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes, notificationTypes);
-    };
-
-    const createProcessingTypeRequestBody = () => {
-        const channelName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
-        return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelName);
-    };
-
-    const createVulnerabilityFilterRequestBody = () => {
-        const notificationTypes = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes);
-        return FieldModelUtilities.updateFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes, notificationTypes);
+        return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
     };
 
     useEffect(() => {
-        const channelFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) : {};
-        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        const providerFieldModel = (formData && formData.fieldModels) ? formData.fieldModels.find((model) => providerName === model.descriptorName) : {};
+        const channelFieldModel = (formData && formData.fieldModels)
+            ? formData.fieldModels.find((model) => FieldModelUtilities.hasKey(model, DISTRIBUTION_COMMON_FIELD_KEYS.channelName))
+            : FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, AZURE_INFO.key);
         const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
-        const channelSelectionFieldModel = FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, channelKey);
+        if (channelKey) {
+            setSelectedChannel(channelKey);
+        }
+
+        let newSpecificFieldModel = FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, channelKey);
+        Object.keys(channelFieldModel.keyToValues).forEach((key) => {
+            if (!Object.values(DISTRIBUTION_COMMON_FIELD_KEYS).includes(key)) {
+                const channelFieldValues = FieldModelUtilities.getFieldModelValues(channelFieldModel, key);
+                newSpecificFieldModel = FieldModelUtilities.updateFieldModelValues(newSpecificFieldModel, key, channelFieldValues);
+                delete channelFieldModel.keyToValues[key];
+            }
+        });
+        setSpecificChannelModel(newSpecificFieldModel);
         setChannelModel(channelFieldModel);
+
+        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
+        const providerFieldModel = (formData && formData.fieldModels)
+            ? formData.fieldModels.find((model) => providerName === model.descriptorName)
+            : FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key);
         setProviderModel(providerFieldModel);
-        setChannelSelectionModel(FieldModelUtilities.updateFieldModelSingleValue(channelSelectionFieldModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelKey));
+
         if (descriptors[channelKey]) {
             setReadonly(descriptors[channelKey].readOnly);
         }
@@ -164,75 +139,94 @@ const DistributionConfigurationForm = ({
         DistributionRequestUtility.checkDescriptorForGlobalConfig({
             csrfToken, descriptorName: value, errorHandler, fieldName: name, errors, setErrors
         });
-        FieldModelUtilities.handleChange(channelSelectionModel, setChannelSelectionModel)(event);
-        if (descriptors[value]) {
-            setReadonly(descriptors[value].readOnly);
+        const firstValue = value[0];
+        channelModel.descriptorName = firstValue;
+        FieldModelUtilities.handleChange(channelModel, setChannelModel)(event);
+        setSelectedChannel(firstValue);
+        setSpecificChannelModel(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, firstValue));
+        if (descriptors[firstValue]) {
+            setReadonly(descriptors[firstValue].readOnly);
         }
     };
 
-    useEffect(() => {
-        const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelSelectionModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
-        const newFieldModel = FieldModelUtilities.createEmptyFieldModel(channelFieldKeys, CONTEXT_TYPE.DISTRIBUTION, channelKey);
-        const newChannelModel = FieldModelUtilities.combineFieldModels(newFieldModel, channelModel);
-        setChannelModel(FieldModelUtilities.updateFieldModelSingleValue(newChannelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, channelKey));
-    }, [channelSelectionModel]);
-
-    useEffect(() => {
-        const channelKey = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName);
-        const providerFound = FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        setProviderHasChannelName(true);
-        switch (channelKey) {
-            case AZURE_INFO.key: {
-                setChannelFields(<AzureDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-                break;
-            }
-            case EMAIL_INFO.key: {
-                setChannelFields(<EmailDistributionConfiguration
-                    csrfToken={csrfToken}
-                    createAdditionalEmailRequestBody={createAdditionalEmailRequestBody}
-                    data={channelModel}
-                    setData={setChannelModel}
-                    errors={errors}
-                    readonly={readonly}
-                />);
-                break;
-            }
-            case JIRA_CLOUD_INFO.key: {
-                setChannelFields(<JiraCloudDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-                break;
-            }
-            case JIRA_SERVER_INFO.key: {
-                setChannelFields(<JiraServerDistributionConfiguration csrfToken={csrfToken} data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-                break;
-            }
-            case MSTEAMS_INFO.key: {
-                setChannelFields(<MsTeamsDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-                break;
-            }
-            case SLACK_INFO.key: {
-                setChannelFields(<SlackDistributionConfiguration data={channelModel} setData={setChannelModel} errors={errors} readonly={readonly} />);
-                break;
-            }
-            default: {
-                setProviderHasChannelName(false);
-                setChannelFields(null);
-            }
+    const renderChannelFields = () => {
+        switch (selectedChannel.toString()) {
+            case AZURE_INFO.key:
+                return (
+                    <AzureDistributionConfiguration
+                        data={specificChannelModel}
+                        setData={setSpecificChannelModel}
+                        errors={errors}
+                        readonly={readonly}
+                    />
+                );
+            case EMAIL_INFO.key:
+                return (
+                    <EmailDistributionConfiguration
+                        csrfToken={csrfToken}
+                        createAdditionalEmailRequestBody={createAdditionalEmailRequestBody}
+                        data={specificChannelModel}
+                        setData={setSpecificChannelModel}
+                        errors={errors}
+                        readonly={readonly}
+                    />
+                );
+            case JIRA_CLOUD_INFO.key:
+                return (
+                    <JiraCloudDistributionConfiguration
+                        csrfToken={csrfToken}
+                        data={specificChannelModel}
+                        setData={setSpecificChannelModel}
+                        errors={errors}
+                        readonly={readonly}
+                    />
+                );
+            case JIRA_SERVER_INFO.key:
+                return (
+                    <JiraServerDistributionConfiguration
+                        csrfToken={csrfToken}
+                        data={specificChannelModel}
+                        setData={setSpecificChannelModel}
+                        errors={errors}
+                        readonly={readonly}
+                    />
+                );
+            case MSTEAMS_INFO.key:
+                return (
+                    <MsTeamsDistributionConfiguration
+                        data={specificChannelModel}
+                        setData={setSpecificChannelModel}
+                        errors={errors}
+                        readonly={readonly}
+                    />
+                );
+            case SLACK_INFO.key:
+                return (
+                    <SlackDistributionConfiguration
+                        data={specificChannelModel}
+                        setData={setSpecificChannelModel}
+                        errors={errors}
+                        readonly={readonly}
+                    />
+                );
+            default:
+                return null;
         }
-        setHasProvider(providerFound);
-    }, [channelModel]);
+    };
 
-    useEffect(() => {
-        setFilterByProject(FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject));
-        setHasNotificationTypes(FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes));
-    }, [providerModel]);
-
-    if (location.pathname.includes('/copy') && FieldModelUtilities.getFieldModelId(formData)) {
-        delete formData.id;
-        setFormData(formData);
+    if (location.pathname.includes('/copy') && formData.jobId) {
+        console.log('Deleting');
+        delete formData.jobId;
     }
 
     if (!FieldModelUtilities.hasKey(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled)) {
         const defaultValueModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.enabled, true);
+        setChannelModel(defaultValueModel);
+    }
+
+    if (!FieldModelUtilities.hasKey(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)) {
+        const defaultValueModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName, AZURE_INFO.key);
+        setSelectedChannel(AZURE_INFO.key);
         setChannelModel(defaultValueModel);
     }
 
@@ -280,6 +274,7 @@ const DistributionConfigurationForm = ({
                 setFormData={setFormData}
                 testFields={testFields}
                 testFormData={testFieldModel}
+                setTestFormData={setTestFieldModel}
                 csrfToken={csrfToken}
                 displaySave={!readonly}
                 displayTest={!readonly}
@@ -301,19 +296,17 @@ const DistributionConfigurationForm = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.enabled)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.enabled]}
                 />
-                <EndpointSelectField
+                <SelectInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
-                    csrfToken={csrfToken}
-                    endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                    fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
+                    name={DISTRIBUTION_COMMON_FIELD_KEYS.channelName}
                     label="Channel Type"
                     description="Select the channel. Notifications generated through Alert will be sent through this channel."
+                    options={DISTRIBUTION_CHANNEL_OPTIONS}
                     clearable={false}
                     readOnly={readonly}
                     required
-                    createRequestBody={() => channelSelectionModel}
                     onChange={onChannelSelectChange}
-                    value={FieldModelUtilities.getFieldModelValues(channelSelectionModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
+                    value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.channelName)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.channelName]}
                 />
@@ -341,24 +334,22 @@ const DistributionConfigurationForm = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.frequency)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.frequency]}
                 />
-                <EndpointSelectField
+                <SelectInput
                     id={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
-                    csrfToken={csrfToken}
-                    endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                    fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
+                    name={DISTRIBUTION_COMMON_FIELD_KEYS.providerName}
                     label="Provider Type"
                     description="Select the provider. Only notifications for that provider will be processed in this distribution job."
+                    options={[{ label: BLACKDUCK_INFO.label, value: BLACKDUCK_INFO.key }]}
                     clearable={false}
                     readOnly={readonly}
                     required
-                    createRequestBody={() => channelModel}
                     onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
                     value={FieldModelUtilities.getFieldModelValues(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerName)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerName]}
                 />
                 <EndpointSelectField
-                    id={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigI}
+                    id={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
                     csrfToken={csrfToken}
                     endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                     fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
@@ -373,8 +364,10 @@ const DistributionConfigurationForm = ({
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId]}
                 />
-                {channelFields}
-                {hasProvider && providerHasChannelName && (
+                {renderChannelFields()}
+                {FieldModelUtilities.hasValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName)
+                && FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)
+                && (
                     <div>
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes}
@@ -390,16 +383,13 @@ const DistributionConfigurationForm = ({
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes]}
                         />
-                        <EndpointSelectField
+                        <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
-                            csrfToken={csrfToken}
-                            endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                             label="Processing"
                             description="Select the way messages will be processed: <TODO create the dynamic description>"
+                            options={DISTRIBUTION_PROCESSING_TYPES}
                             readOnly={readonly}
                             required
-                            createRequestBody={createProcessingTypeRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.processingType)}
@@ -412,13 +402,13 @@ const DistributionConfigurationForm = ({
                             description="If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed."
                             readOnly={readonly}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
-                            isChecked={filterByProject}
+                            isChecked={FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject]}
                         />
                     </div>
                 )}
-                {filterByProject && (
+                {FieldModelUtilities.getFieldModelBooleanValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.filterByProject) && (
                     <div>
                         <TextInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern}
@@ -428,8 +418,8 @@ const DistributionConfigurationForm = ({
                             description="The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table."
                             readOnly={readonly}
                             required
-                            onChange={FieldModelUtilities.handleChange(channelModel, setChannelModel)}
-                            value={FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
+                            onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.projectNamePattern]}
                         />
@@ -453,7 +443,8 @@ const DistributionConfigurationForm = ({
                         />
                     </div>
                 )}
-                {hasNotificationTypes && (
+                {FieldModelUtilities.hasValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.notificationTypes)
+                && (
                     <CollapsiblePane
                         id="distribution-notification-filtering"
                         title="Black Duck Notification Filtering"
@@ -476,16 +467,13 @@ const DistributionConfigurationForm = ({
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
                             errorValue={errors.fieldErrors[DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter]}
                         />
-                        <EndpointSelectField
+                        <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
-                            csrfToken={csrfToken}
-                            endpoint={DISTRIBUTION_URLS.endpointSelectPath}
-                            fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
                             label="Vulnerability Notification Type Filter"
                             description="List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply)."
+                            options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}
                             multiSelect
                             readOnly={readonly}
-                            createRequestBody={createVulnerabilityFilterRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter)}
