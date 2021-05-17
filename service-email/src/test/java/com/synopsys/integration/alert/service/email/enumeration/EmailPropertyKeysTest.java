@@ -19,16 +19,15 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.email.EmailProperties;
-import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.service.email.EmailProperties;
 
 public class EmailPropertyKeysTest {
     @Test
     public void updateFromConfigTest() {
         Map<String, ConfigurationFieldModel> fieldMap = new LinkedHashMap<>();
-        for (com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys emailKey : EmailPropertyKeys.values()) {
+        for (EmailPropertyKeys emailKey : EmailPropertyKeys.values()) {
             if (!emailKey.name().startsWith("EMAIL") && !emailKey.name().startsWith("TEMPLATE")) {
                 String key = emailKey.getPropertyKey();
                 ConfigurationFieldModel model = ConfigurationFieldModel.create(key);

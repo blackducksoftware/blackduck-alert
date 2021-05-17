@@ -1,5 +1,5 @@
 /*
- * alert-common
+ * service-email
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -12,9 +12,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 // TODO create a factory for this class
 public class EmailProperties {

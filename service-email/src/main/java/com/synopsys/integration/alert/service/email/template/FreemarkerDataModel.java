@@ -1,5 +1,5 @@
 /*
- * alert-common
+ * service-email
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *

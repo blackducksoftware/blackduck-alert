@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.channel.email.attachment;
+package com.synopsys.integration.alert.service.email;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,6 @@ import javax.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.AlertConstants;
-import com.synopsys.integration.alert.common.email.MimeMultipartBuilder;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 
 public class MimeMultipartBuilderTest {

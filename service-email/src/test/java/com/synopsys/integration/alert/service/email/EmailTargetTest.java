@@ -18,8 +18,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.email.EmailTarget;
-
 public class EmailTargetTest {
     @Test
     public void targetTest() {
@@ -31,7 +29,7 @@ public class EmailTargetTest {
         model.put("example", new Object());
         contentIdsToFilePaths.put("test", "value");
 
-        com.synopsys.integration.alert.common.email.EmailTarget target = new EmailTarget(emailAddress, templateName, model, contentIdsToFilePaths);
+        EmailTarget target = new EmailTarget(emailAddress, templateName, model, contentIdsToFilePaths);
         assertEquals(emailAddress, target.getEmailAddresses().stream().findFirst().orElseThrow());
         assertEquals(templateName, target.getTemplateName());
         assertEquals(model, target.getModel());

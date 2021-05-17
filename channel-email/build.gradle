@@ -7,6 +7,7 @@ dependencies {
     implementation project(':channel-api')
     implementation project(':processor-api')
     implementation project(':descriptor-api')
+    implementation project(':service-email')
 
     // TODO get logging and apache utils dependencies directly
     implementation 'com.synopsys.integration:integration-common'

@@ -6,8 +6,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.channel.template.FreemarkerTemplatingService;
-
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
