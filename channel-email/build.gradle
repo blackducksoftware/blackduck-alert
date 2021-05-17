@@ -1,23 +1,22 @@
-ext.moduleName = 'com.synopsys.integration.alert.channel'
+ext.moduleName = 'com.synopsys.integration.alert.channel.email'
 
 dependencies {
     implementation platform(project(':alert-platform'))
 
     implementation project(':alert-common')
-    implementation project(':azure-boards-common')
     implementation project(':channel-api')
     implementation project(':processor-api')
     implementation project(':descriptor-api')
 
+    // TODO get logging and apache utils dependencies directly
+    implementation 'com.synopsys.integration:integration-common'
+
     implementation 'org.springframework:spring-web'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
-    implementation 'com.synopsys.integration:int-jira-common'
-    implementation 'com.google.http-client:google-http-client-apache-v2'
-    implementation 'com.google.http-client:google-http-client-jackson2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+    implementation 'javax.mail:javax.mail-api'
     implementation 'org.freemarker:freemarker'
 
     testImplementation project(':test-common')
-    testImplementation 'com.squareup.okhttp3:mockwebserver'
 }
