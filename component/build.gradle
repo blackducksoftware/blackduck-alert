@@ -12,7 +12,6 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':alert-database')
-    implementation project(':channel')
     implementation project(':descriptor-api')
     implementation project(":workflow")
     implementation project(":processor-api")
