@@ -5,6 +5,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation 'org.jsoup:jsoup'
+    implementation 'org.springframework:spring-context'
 
     // TODO get logging and apache utils dependencies directly
     implementation 'com.synopsys.integration:integration-common'
