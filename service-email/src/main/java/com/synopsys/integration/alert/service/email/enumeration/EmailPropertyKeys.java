@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * service-email
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.service.email.enumeration;
 
 public enum EmailPropertyKeys {
     EMAIL_CATEGORY("emailCategory"),
@@ -76,7 +76,7 @@ public enum EmailPropertyKeys {
 
     private final String propertyKey;
 
-    EmailPropertyKeys(final String propertyKey) {
+    EmailPropertyKeys(String propertyKey) {
         this.propertyKey = propertyKey;
     }
 

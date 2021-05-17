@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 @Component
 public class EmailGlobalUIConfig extends UIConfig {
@@ -209,4 +209,5 @@ public class EmailGlobalUIConfig extends UIConfig {
         ConfigField emailAddress = new TextInputConfigField(TestAction.KEY_DESTINATION_NAME, TEST_LABEL_ADDRESS, TEST_EMAIL_DESCRIPTION);
         return List.of(emailAddress);
     }
+
 }

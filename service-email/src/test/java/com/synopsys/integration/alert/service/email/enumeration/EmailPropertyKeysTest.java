@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.service.email.enumeration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,11 +19,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.email.EmailProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.service.email.EmailProperties;
 
-public class EmailPropertiesTest {
+public class EmailPropertyKeysTest {
     @Test
     public void updateFromConfigTest() {
         Map<String, ConfigurationFieldModel> fieldMap = new LinkedHashMap<>();

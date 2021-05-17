@@ -99,6 +99,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':workflow')
     implementation project(':web')
+    implementation project(':service-email')
 
     testImplementation project(':test-common')
     testImplementation project(':channel-api')
