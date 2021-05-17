@@ -14,14 +14,6 @@ dependencies {
     implementation 'org.springframework.security:spring-security-config'
     implementation 'jakarta.activation:jakarta.activation-api'
 
-    // Templates
-    implementation 'org.jsoup:jsoup'
-    implementation 'org.freemarker:freemarker'
-
-    // Email
-    runtimeOnly 'com.sun.mail:javax.mail'
-    implementation 'javax.mail:javax.mail-api'
-
     // XML
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'

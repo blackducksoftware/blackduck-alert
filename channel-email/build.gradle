@@ -17,7 +17,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'javax.mail:javax.mail-api'
-    implementation 'org.freemarker:freemarker'
 
     testImplementation project(':test-common')
 }
