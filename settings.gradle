@@ -13,4 +13,5 @@ include 'descriptor-api'
 include 'test-common'
 include 'processor-api'
 include 'channel-api'
+include 'channel-email'
 
