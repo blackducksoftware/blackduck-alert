@@ -192,16 +192,17 @@ tasks.helmPushChart.mustRunAfter(helmValidation)
 tasks.build.mustRunAfter(copyToTemplates)
 tasks.runServer.dependsOn copyToTemplates
 tasks.buildDockerImage.dependsOn copyToTemplates
-tasks.testIntegration.dependsOn copyToTemplates
-tasks.testAll.dependsOn copyToTemplates
+tasks.test.dependsOn copyToTemplates
 
 
-task all(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
+task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, buildDockerImage]) {
     helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
 
-    dockerLogin.mustRunAfter createDeploymentZip
-    buildDockerImage.mustRunAfter dockerLogin
+    buildDockerImage.mustRunAfter createDeploymentZip
+}
 
+task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
+    pushImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
 }
