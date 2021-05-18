@@ -95,7 +95,7 @@ dependencies {
     implementation project(':channel-email')
     implementation project(':component')
     implementation project(':descriptor-api')
-    implementation project(':provider')
+    implementation project(':provider-blackduck')
     implementation project(':ui')
     implementation project(':workflow')
     implementation project(':web')
