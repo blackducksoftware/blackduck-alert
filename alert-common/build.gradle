@@ -4,7 +4,9 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':descriptor-api')
 
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'com.synopsys.integration:integration-common'
+    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.synopsys.integration:phone-home-client'
 
     implementation 'org.springframework:spring-web'
     implementation 'jakarta.jms:jakarta.jms-api'
