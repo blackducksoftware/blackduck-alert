@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
@@ -28,6 +30,7 @@ public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_OPTION_VALUE = "option";
     private static final String CUSTOM_FIELD_TYPE_PRIORITY_VALUE = "priority";
     private static final String CUSTOM_FIELD_TYPE_USER_VALUE = "user";
+    private static final String CUSTOM_FIELD_TYPE_COMPONENT_VALUE = "component";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -63,9 +66,19 @@ public class JiraCustomFieldResolver {
         String fieldName = customFieldConfig.getFieldName();
         CustomFieldCreationResponseModel fieldResponse = retrieveFieldDefinition(fieldName)
                                                              .orElseThrow(() -> new AlertRuntimeException(String.format("No custom field named '%s' existed", fieldName)));
-        return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType());
+
+        String arrayItems = fieldResponse.getSchema().getJson();
+        //For testing, extract the  values of "items" here
+        //TODO: Just for testing, use gson to extract "items" from the json. DO NOT MERGE WITH THIS CODE!!!
+        // Long term solution: In int-jira-common update SchemaComponent to also include a nullable field called "items"
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(arrayItems, JsonObject.class);
+        String items = jsonObject.get("items").getAsString();
+
+        return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType(), items);
     }
 
+    //TODO: can we make this a JsonElement instead of Object?
     protected Object convertValueToRequestObject(CustomFieldDefinitionModel fieldDefinition, JiraCustomFieldConfig jiraCustomFieldConfig) {
         String fieldType = fieldDefinition.getFieldType();
         String innerFieldValue = extractUsableInnerValue(jiraCustomFieldConfig);
@@ -73,9 +86,7 @@ public class JiraCustomFieldResolver {
             case CUSTOM_FIELD_TYPE_STRING_VALUE:
                 return innerFieldValue;
             case CUSTOM_FIELD_TYPE_ARRAY_VALUE:
-                JsonArray jsonArray = new JsonArray();
-                jsonArray.add(innerFieldValue);
-                return jsonArray;
+                return createJsonArray(innerFieldValue, fieldDefinition.getFieldArrayItems());
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
                 return createJsonObject("value", innerFieldValue);
             case CUSTOM_FIELD_TYPE_PRIORITY_VALUE:
@@ -90,6 +101,28 @@ public class JiraCustomFieldResolver {
             default:
                 throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
         }
+    }
+
+    private JsonArray createJsonArray(String innerFieldValue, String fieldArrayItems) {
+        JsonArray jsonArray = new JsonArray();
+        switch (fieldArrayItems) {
+            case CUSTOM_FIELD_TYPE_STRING_VALUE:
+                jsonArray.add(innerFieldValue);
+                break;
+            case CUSTOM_FIELD_TYPE_COMPONENT_VALUE:
+                for (String componentName : StringUtils.split(innerFieldValue)) {
+                    jsonArray.add(createJsonObject("name", componentName));
+                }
+                break;
+            case CUSTOM_FIELD_TYPE_OPTION_VALUE:
+                for (String optionValue : StringUtils.split(innerFieldValue)) {
+                    jsonArray.add(createJsonObject("value", optionValue));
+                }
+                break;
+            default:
+                throw new AlertRuntimeException(String.format("Unsupported item: '%s' for array field type", fieldArrayItems));
+        }
+        return jsonArray;
     }
 
     private String extractUsableInnerValue(JiraCustomFieldConfig jiraCustomFieldConfig) {
