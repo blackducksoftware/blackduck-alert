@@ -21,7 +21,7 @@ apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
     implementation platform(project(':alert-platform'))
-    implementation project(':descriptor-api')
+    implementation project(':api-descriptor')
 
     implementation 'com.synopsys.integration:integration-common'
     implementation 'org.springframework.data:spring-data-jpa'
