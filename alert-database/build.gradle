@@ -23,7 +23,7 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':descriptor-api')
 
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'com.synopsys.integration:integration-common'
     implementation 'org.springframework.data:spring-data-jpa'
     implementation 'jakarta.persistence:jakarta.persistence-api'
     implementation 'com.zaxxer:HikariCP'
@@ -45,6 +45,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 }
 
 task dockerLogin(type: Exec) {
