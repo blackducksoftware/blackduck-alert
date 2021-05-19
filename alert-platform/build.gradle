@@ -21,6 +21,7 @@ dependencies {
         api 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
 
         api 'com.google.cloud:libraries-bom:2.2.0'
+        api 'com.google.oauth-client:google-oauth-client:1.31.0'
         api 'com.google.api-client:google-api-client:1.30.9'
         api 'com.google.http-client:google-http-client-apache-v2:1.36.0'
         api 'com.google.http-client:google-http-client-jackson2:1.36.0'
