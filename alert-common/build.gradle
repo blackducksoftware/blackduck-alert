@@ -2,7 +2,7 @@ ext.moduleName = 'com.synopsys.integration.alert.common'
 
 dependencies {
     implementation platform(project(':alert-platform'))
-    implementation project(':descriptor-api')
+    implementation project(':api-descriptor')
 
     implementation 'com.synopsys.integration:integration-common'
     implementation 'com.synopsys.integration:integration-rest'

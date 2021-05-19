@@ -1,0 +1,24 @@
+/*
+ * api-processor
+ *
+ * Copyright (c) 2021 Synopsys, Inc.
+ *
+ * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
+ */
+package com.synopsys.integration.alert.processor.api.extract.model.project;
+
+public enum ComponentConcernType {
+    POLICY("Policy"),
+    VULNERABILITY("Vulnerability");
+
+    private final String displayName;
+
+    ComponentConcernType(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+}

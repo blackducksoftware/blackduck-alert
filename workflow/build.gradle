@@ -5,7 +5,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':alert-database')
-    implementation project(':processor-api')
+    implementation project(':api-processor')
     testImplementation project(':test-common')
 
     implementation 'org.springframework:spring-context'
