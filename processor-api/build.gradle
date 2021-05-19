@@ -5,7 +5,7 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':descriptor-api')
 
-    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.springframework:spring-context'
 
     testImplementation project(':test-common')

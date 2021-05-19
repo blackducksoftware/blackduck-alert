@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.api.convert;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 

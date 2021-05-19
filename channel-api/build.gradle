@@ -9,7 +9,8 @@ dependencies {
     implementation project(':processor-api')
     implementation project(':descriptor-api')
 
-    implementation 'com.synopsys.integration:blackduck-common'
+    implementation 'com.synopsys.integration:integration-common'
+    implementation 'com.synopsys.integration:integration-rest'
 
     implementation 'org.springframework:spring-jms'
 
