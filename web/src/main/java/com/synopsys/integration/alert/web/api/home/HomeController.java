@@ -29,7 +29,7 @@ public class HomeController {
         this.actions = actions;
     }
 
-    @GetMapping(value = { "/", "/error", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = { "/error" }, produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
         return "index.html";
     }
