@@ -21,9 +21,9 @@ apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
     implementation platform(project(':alert-platform'))
-    implementation project(':descriptor-api')
+    implementation project(':api-descriptor')
 
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'com.synopsys.integration:integration-common'
     implementation 'org.springframework.data:spring-data-jpa'
     implementation 'jakarta.persistence:jakarta.persistence-api'
     implementation 'com.zaxxer:HikariCP'
@@ -45,6 +45,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     testImplementation project(':test-common')
+    testImplementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
 }
 
 task dockerLogin(type: Exec) {
@@ -69,8 +70,11 @@ task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${alertDatabaseDockerImageVersion}"
 }
 
-task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
-    dockerLogin.mustRunAfter build
-    buildDockerImage.mustRunAfter dockerLogin
+task buildAll(dependsOn: [build, buildDockerImage]) {
+    buildDockerImage.mustRunAfter build
+}
+
+task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
+    pushImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
 }

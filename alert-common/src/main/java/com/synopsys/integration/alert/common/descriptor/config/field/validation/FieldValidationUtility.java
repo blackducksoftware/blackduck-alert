@@ -46,7 +46,15 @@ public class FieldValidationUtility {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
         String key = fieldToValidate.getKey();
         logger.trace("Validating descriptor field: {}", key);
+
         Optional<FieldValueModel> optionalFieldValue = getFieldValue(key, fieldModels);
+        if (fieldToValidate.isRequired() && optionalFieldValue.isEmpty()) {
+            logger.debug("Descriptor field {} is required and missing.", key);
+            fieldStatuses.add(AlertFieldStatus.error(key, ConfigField.REQUIRED_FIELD_MISSING));
+            return fieldStatuses;
+        }
+
+        ValidationResult validationResult = ValidationResult.success();
         if (optionalFieldValue.isPresent()) {
             // field is present now validate the field
             logger.trace("FieldModel contains '{}'", key);
@@ -57,24 +65,24 @@ public class FieldValidationUtility {
             }
 
             Optional<FieldModel> sourceFieldModel = getSourceFieldModel(key, fieldModels);
-            ValidationResult validationResult;
-            if (sourceFieldModel.isPresent()) {
-                validationResult = fieldToValidate.validate(fieldValueModel, sourceFieldModel.get());
-            } else {
-                validationResult = ValidationResult.success();
-            }
+             validationResult = (sourceFieldModel.isPresent()) ? fieldToValidate.validate(fieldValueModel, sourceFieldModel.get()) : ValidationResult.success();
 
-            if (validationResult.hasErrors()) {
-                logger.debug("Validating '{}' errors: {}", key, validationResult);
-                fieldStatuses.add(AlertFieldStatus.error(key, validationResult.combineErrorMessages()));
+
+        } else {
+            Optional<FieldModel> optionalFieldModel = fieldModels.stream().findFirst();
+            if (optionalFieldModel.isPresent()) {
+                validationResult = fieldToValidate.validate(new FieldValueModel(List.of(), false), optionalFieldModel.get());
             }
-            if (validationResult.hasWarnings()) {
-                fieldStatuses.add(AlertFieldStatus.warning(key, validationResult.combineWarningMessages()));
-            }
-        } else if (fieldToValidate.isRequired()) {
-            logger.debug("Descriptor field {} is required and missing.", key);
-            fieldStatuses.add(AlertFieldStatus.error(key, ConfigField.REQUIRED_FIELD_MISSING));
         }
+
+        if (validationResult.hasErrors()) {
+            logger.debug("Validating '{}' errors: {}", key, validationResult);
+            fieldStatuses.add(AlertFieldStatus.error(key, validationResult.combineErrorMessages()));
+        }
+        if (validationResult.hasWarnings()) {
+            fieldStatuses.add(AlertFieldStatus.warning(key, validationResult.combineWarningMessages()));
+        }
+
         return fieldStatuses;
     }
 

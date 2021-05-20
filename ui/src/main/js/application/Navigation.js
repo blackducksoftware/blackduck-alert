@@ -18,8 +18,8 @@ import { AUDIT_INFO } from 'page/audit/AuditModel';
 import { CERTIFICATE_INFO } from 'page/certificates/CertificateModel';
 import { TASK_MANAGEMENT_INFO } from 'page/task/TaskManagementModel';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
-import { doesDescriptorExist } from 'common/util/descriptorUtilities';
-import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from '../page/distribution/DistributionModel';
+import { DESCRIPTOR_TYPE, doesDescriptorExist } from 'common/util/descriptorUtilities';
+import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 
 const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
     const createStaticNavItem = (uriPrefix, itemObject) => (
@@ -34,6 +34,8 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
     const providerUri = '/alert/providers/';
     const componentUri = '/alert/components/';
 
+    const hasType = (descriptorType) => Object.values(globalDescriptorMap).some((descriptor) => descriptorType === descriptor.type);
+
     return (
         <div className="navigation">
             <div className="navigationContent">
@@ -44,13 +46,19 @@ const Navigation = ({ confirmLogoutPressed, globalDescriptorMap }) => {
                         </NavLink>
                     </li>
                     <li className="divider" />
-                    <li className="navHeader" key="providers">
-                        Provider
-                    </li>
+                    {hasType(DESCRIPTOR_TYPE.PROVIDER)
+                    && (
+                        <li className="navHeader" key="providers">
+                            Provider
+                        </li>
+                    )}
                     {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createStaticNavItem(providerUri, BLACKDUCK_INFO)}
-                    <li className="navHeader" key="channels">
-                        Channels
-                    </li>
+                    {hasType(DESCRIPTOR_TYPE.CHANNEL)
+                    && (
+                        <li className="navHeader" key="channels">
+                            Channels
+                        </li>
+                    )}
                     {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createStaticNavItem(channelUri, AZURE_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createStaticNavItem(channelUri, EMAIL_INFO)}
                     {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createStaticNavItem(channelUri, JIRA_CLOUD_INFO)}

@@ -1,0 +1,18 @@
+ext.moduleName = 'com.synopsys.integration.alert.provider.blackduck'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':alert-database')
+    implementation project(':api-descriptor')
+    implementation project(':api-processor')
+
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-web'
+    implementation 'jakarta.jms:jakarta.jms-api'
+
+    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+
+    testImplementation project(':test-common')
+}

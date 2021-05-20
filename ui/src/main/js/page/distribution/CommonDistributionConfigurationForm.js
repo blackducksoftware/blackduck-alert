@@ -9,7 +9,6 @@ import StatusMessage from 'common/StatusMessage';
 const CommonDistributionConfigurationForm = ({
     formData,
     setFormData,
-    testFormData,
     setTestFormData,
     csrfToken,
     setErrors,
@@ -28,7 +27,6 @@ const CommonDistributionConfigurationForm = ({
     const [showTest, setShowTest] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
     const [actionMessage, setActionMessage] = useState(null);
-    const [errorIsDetailed, setErrorIsDetailed] = useState(false);
     const [inProgress, setInProgress] = useState(false);
 
     const testRequest = (model) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, model);
@@ -53,6 +51,7 @@ const CommonDistributionConfigurationForm = ({
 
     const performTestRequest = async () => {
         setInProgress(true);
+        setActionMessage(null);
         const dataToSend = createDataToTest ? createDataToTest() : formData;
         const response = await testRequest(dataToSend);
         const json = await response.json();
@@ -85,11 +84,13 @@ const CommonDistributionConfigurationForm = ({
         }
     };
 
+    // FIXME this seems to throw a memory leak error, investigate
     const performSaveRequest = async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
         setInProgress(true);
+        setActionMessage(null);
         setErrorMessage(null);
         setErrors(HttpErrorUtilities.createEmptyErrorObject());
         const dataToSend = createDataToSend ? createDataToSend() : formData;
@@ -129,6 +130,7 @@ const CommonDistributionConfigurationForm = ({
 
     const performDeleteRequest = async () => {
         setInProgress(true);
+        setActionMessage(null);
         const response = await deleteRequest(formData.jobId);
         if (response.ok) {
             setFormData({});
@@ -149,7 +151,6 @@ const CommonDistributionConfigurationForm = ({
                 id="global-config-status-message"
                 errorMessage={errorMessage}
                 actionMessage={actionMessage}
-                errorIsDetailed={errorIsDetailed}
             />
             <form className="form-horizontal" onSubmit={performSaveRequest} noValidate>
                 <div>

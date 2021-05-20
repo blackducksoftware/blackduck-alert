@@ -30,6 +30,7 @@ const CommonGlobalConfigurationForm = ({
     const [actionMessage, setActionMessage] = useState(null);
     const [errorIsDetailed, setErrorIsDetailed] = useState(false);
     const [inProgress, setInProgress] = useState(false);
+    const [testing, setTesting] = useState(false);
 
     const testRequest = (fieldModel) => ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, fieldModel);
     const deleteRequest = () => ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, FieldModelUtilities.getFieldModelId(formData));
@@ -48,11 +49,14 @@ const CommonGlobalConfigurationForm = ({
 
     const handleTestCancel = () => {
         setShowTest(false);
+        setTesting(false);
+        setInProgress(false);
         setTestFormData({});
     };
 
     const performTestRequest = async () => {
         setInProgress(true);
+        setTesting(true);
         let copy = JSON.parse(JSON.stringify(formData));
         Object.keys(testFormData).forEach((key) => {
             copy = FieldModelUtilities.updateFieldModelSingleValue(copy, key, testFormData[key]);
@@ -75,7 +79,6 @@ const CommonGlobalConfigurationForm = ({
             }
         }
         handleTestCancel();
-        setInProgress(false);
     };
 
     const handleTestClick = () => {
@@ -185,6 +188,7 @@ const CommonGlobalConfigurationForm = ({
                 handleTest={performTestRequest}
                 handleCancel={handleTestCancel}
                 buttonIdPrefix={buttonIdPrefix}
+                performingAction={testing}
             >
                 <div>
                     {testFields}

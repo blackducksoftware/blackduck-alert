@@ -33,7 +33,7 @@ ext {
 }
 
 mainClassName = 'com.synopsys.integration.alert.Application'
-version = '6.5.0-SNAPSHOT'
+version = '6.6.0-SNAPSHOT'
 
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -88,19 +88,22 @@ repositories {
 dependencies {
     implementation platform(project(':alert-platform'))
 
-    implementation project(':processor-api')
+    implementation project(':api-processor')
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':channel')
+    implementation project(':channel-azure-boards')
+    implementation project(':channel-email')
     implementation project(':component')
-    implementation project(':descriptor-api')
-    implementation project(':provider')
+    implementation project(':api-descriptor')
+    implementation project(':provider-blackduck')
     implementation project(':ui')
     implementation project(':workflow')
     implementation project(':web')
+    implementation project(':service-email')
 
     testImplementation project(':test-common')
-    testImplementation project(':channel-api')
+    testImplementation project(':api-channel')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
@@ -192,16 +195,17 @@ tasks.helmPushChart.mustRunAfter(helmValidation)
 tasks.build.mustRunAfter(copyToTemplates)
 tasks.runServer.dependsOn copyToTemplates
 tasks.buildDockerImage.dependsOn copyToTemplates
-tasks.testIntegration.dependsOn copyToTemplates
-tasks.testAll.dependsOn copyToTemplates
+tasks.test.dependsOn copyToTemplates
 
 
-task all(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
+task buildAll(dependsOn: [copyToTemplates, build, helmValidation, createDeploymentZip, buildDockerImage]) {
     helmValidation.mustRunAfter build
     createDeploymentZip.mustRunAfter helmValidation
 
-    dockerLogin.mustRunAfter createDeploymentZip
-    buildDockerImage.mustRunAfter dockerLogin
+    buildDockerImage.mustRunAfter createDeploymentZip
+}
 
+task publishDockerImage(dependsOn: [dockerLogin, pushImage]) {
+    pushImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
 }

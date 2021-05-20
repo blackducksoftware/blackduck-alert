@@ -2,9 +2,11 @@ ext.moduleName = 'com.synopsys.integration.alert.common'
 
 dependencies {
     implementation platform(project(':alert-platform'))
-    implementation project(':descriptor-api')
+    implementation project(':api-descriptor')
 
-    implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
+    implementation 'com.synopsys.integration:integration-common'
+    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'com.synopsys.integration:phone-home-client'
 
     implementation 'org.springframework:spring-web'
     implementation 'jakarta.jms:jakarta.jms-api'
@@ -13,14 +15,6 @@ dependencies {
     implementation 'org.springframework.data:spring-data-commons'
     implementation 'org.springframework.security:spring-security-config'
     implementation 'jakarta.activation:jakarta.activation-api'
-
-    // Templates
-    implementation 'org.jsoup:jsoup'
-    implementation 'org.freemarker:freemarker'
-
-    // Email
-    runtimeOnly 'com.sun.mail:javax.mail'
-    implementation 'javax.mail:javax.mail-api'
 
     // XML
     implementation 'com.fasterxml.jackson.core:jackson-databind'
