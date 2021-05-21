@@ -45,8 +45,8 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/DescriptorRoute';
 
 const MainPage = ({
-                      descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
-                  }) => {
+    descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
+}) => {
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
     const [distributionDescriptorMap, setDistributionDescriptorMap] = useState({});
 
@@ -265,7 +265,9 @@ const MainPage = ({
                     <UserManagement />
                 )}
             />
-            <Route exact path="/alert/general/about" component={AboutInfo} />
+            <Route exact path="/alert/general/about">
+                <AboutInfo globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />
+            </Route>
         </div>
     );
 
