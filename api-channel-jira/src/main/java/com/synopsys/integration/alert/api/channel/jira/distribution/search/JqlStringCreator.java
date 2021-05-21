@@ -147,10 +147,8 @@ public final class JqlStringCreator {
             // we still need to escape single quotes in the string
             if (CHARACTERS_TO_ESCAPE.contains(character)) {
                 stringBuilder.append('\\');
-                stringBuilder.append(character);
-            } else {
-                stringBuilder.append(character);
             }
+            stringBuilder.append(character);
         }
         String escapedString = stringBuilder.toString();
         // if the string ends with a single backslash, we need to escape the single backslash
