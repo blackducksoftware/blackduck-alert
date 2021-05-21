@@ -1,17 +1,21 @@
 package com.synopsys.integration.alert.channel.jira.server;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.channel.jira.common.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.channel.jira.common.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
@@ -35,13 +39,14 @@ import com.synopsys.integration.alert.test.common.TestPropertyKey;
 public class JiraServerExternalConnectionTest {
     private final TestProperties testProperties = new TestProperties();
 
+    //This test is @Disabled since it requires a running Jira Server instance. In order to run this test, you must deploy a Jira Server and
+    // add the Jira Server environment values into test.properties
     @Test
+    @Disabled
     public void sendJiraServerMessageTest() throws AlertException {
-        //Setup for JiraServerProcessorFactory:
         Gson gson = new Gson();
         JiraMessageFormatter jiraMessageFormatter = new JiraMessageFormatter();
 
-        //Setup for JiraServerPropertiesFactory:
         JiraServerChannelKey jiraServerChannelKey = new JiraServerChannelKey();
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(createConfigurationModelForJiraServer()));
@@ -49,7 +54,6 @@ public class JiraServerExternalConnectionTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(null);
         JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationAccessor);
 
-        //Setup for JiraServerMessageSenderFactory
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator, jiraErrorMessageUtility);
@@ -57,7 +61,9 @@ public class JiraServerExternalConnectionTest {
         JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory);
         IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails());
 
-        processor.processMessages(createMessage());
+        IssueTrackerResponse<String> response = processor.processMessages(createMessage());
+
+        assertEquals("Success", response.getStatusMessage());
     }
 
     private ProviderMessageHolder createMessage() {
@@ -80,6 +86,7 @@ public class JiraServerExternalConnectionTest {
     private JiraServerJobDetailsModel createDistributionDetails() {
         UUID uuid = UUID.randomUUID();
         List<JiraJobCustomFieldModel> customFields = new ArrayList<>();
+        //This test requires that the JIRA server has 2 components associated with the project: "component1" and "component2"
         customFields.add(new JiraJobCustomFieldModel("Component/s", "component1 component2"));
 
         return new JiraServerJobDetailsModel(uuid,

@@ -68,7 +68,6 @@ public class JiraCustomFieldResolver {
         return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType(), fieldResponse.getSchema().getItems());
     }
 
-    //TODO: can we make this a JsonElement instead of Object?
     protected Object convertValueToRequestObject(CustomFieldDefinitionModel fieldDefinition, JiraCustomFieldConfig jiraCustomFieldConfig) {
         String fieldType = fieldDefinition.getFieldType();
         String innerFieldValue = extractUsableInnerValue(jiraCustomFieldConfig);

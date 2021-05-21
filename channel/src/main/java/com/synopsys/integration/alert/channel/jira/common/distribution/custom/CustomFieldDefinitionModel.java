@@ -33,8 +33,4 @@ public class CustomFieldDefinitionModel extends AlertSerializableModel {
     public String getFieldArrayItems() {
         return fieldArrayItems;
     }
-
-    //TODO
-    //IDEA would have an abstract method "createResponseObject"
-
 }
