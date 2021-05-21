@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.distribution.JiraMessageFormatter;
-import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;

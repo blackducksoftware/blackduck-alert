@@ -9,14 +9,14 @@ package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldReplacementValues;
+import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCreator;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
-import com.synopsys.integration.alert.channel.jira.common.distribution.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.channel.jira.common.distribution.JiraIssueCreationRequestCreator;
-import com.synopsys.integration.alert.channel.jira.common.distribution.custom.JiraCustomFieldReplacementValues;
-import com.synopsys.integration.alert.channel.jira.common.distribution.delegate.JiraIssueCreator;
-import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;

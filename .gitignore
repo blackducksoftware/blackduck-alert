@@ -24,6 +24,7 @@ classes/
 /src/main/resources/about.txt
 /src/test/resources/application.properties
 /src/test/resources/test.properties
+/test-common/src/main/resources/test.properties
 /activemq-data/
 *-lastrun.txt
 *-last-search.txt

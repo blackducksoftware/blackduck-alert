@@ -14,8 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.util.JiraPluginCheckUtils;
+import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
+import com.synopsys.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;

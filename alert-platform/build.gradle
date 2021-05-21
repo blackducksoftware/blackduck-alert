@@ -15,7 +15,7 @@ dependencies {
         api 'com.synopsys.integration:integration-rest:8.0.2'
         api 'com.synopsys.integration:integration-common:24.3.0'
         api 'com.synopsys.integration:blackduck-common:54.2.3'
-        api 'com.synopsys.integration:int-jira-common:2.2.4'
+        api 'com.synopsys.integration:int-jira-common:2.3.0'
         api 'com.synopsys.integration:phone-home-client:4.0.4'
 
         api 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'

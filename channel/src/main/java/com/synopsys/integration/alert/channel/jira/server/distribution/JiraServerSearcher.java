@@ -10,9 +10,9 @@ package com.synopsys.integration.alert.channel.jira.server.distribution;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraIssueAlertPropertiesManager;
-import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraSearcher;
-import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraSearcherResponseModel;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;

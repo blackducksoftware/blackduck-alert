@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
+import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.FieldMappingEndpointField;
