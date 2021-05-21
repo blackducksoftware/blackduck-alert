@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.test.common;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -18,7 +20,11 @@ public class TestProperties {
     private String propertiesLocation;
 
     public TestProperties() {
-        propertiesLocation = TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION;
+        try {
+            propertiesLocation = new File(TestResourceUtils.BASE_TEST_RESOURCE_DIR.getCanonicalFile(), TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION).getCanonicalPath();
+        } catch (IOException e) {
+            propertiesLocation = TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION;
+        }
         loadProperties();
     }
 
