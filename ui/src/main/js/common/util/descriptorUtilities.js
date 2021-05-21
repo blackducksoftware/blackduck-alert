@@ -75,24 +75,6 @@ export function findDescriptorByType(descriptorList, descriptorType) {
     return resultList;
 }
 
-export function findDescriptorField(descriptor, fieldKey) {
-    if (descriptor) {
-        const fieldArray = descriptor.fields;
-        if (fieldArray) {
-            return fieldArray.find((field) => field.key === fieldKey);
-        }
-    }
-    return null;
-}
-
-export function findDescriptorFieldOptions(descriptor, fieldKey) {
-    const field = findDescriptorField(descriptor, fieldKey);
-    if (field) {
-        return field.options;
-    }
-    return [];
-}
-
 export function isOperationAssigned(descriptor, operationName) {
     if (descriptor) {
         return descriptor.operations.find((operation) => operation === operationName) !== undefined;

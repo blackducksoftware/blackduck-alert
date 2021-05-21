@@ -36,9 +36,7 @@ import TaskManagement from 'page/task/TaskManagement';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 import UserManagement from 'page/user/UserManagement';
 import JiraServerGlobalConfiguration from 'page/channel/jira/server/JiraServerGlobalConfiguration';
-import {
-    CONTEXT_TYPE, isOperationAssigned, OPERATIONS
-} from 'common/util/descriptorUtilities';
+import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
 import DistributionConfigurationForm from 'page/distribution/DistributionConfigurationForm';
@@ -47,8 +45,8 @@ import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
 import DescriptorRoute from 'common/DescriptorRoute';
 
 const MainPage = ({
-    descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
-}) => {
+                      descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
+                  }) => {
     const [globalDescriptorMap, setGlobalDescriptorMap] = useState({});
     const [distributionDescriptorMap, setDistributionDescriptorMap] = useState({});
 
@@ -96,6 +94,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
+                urlName={BLACKDUCK_INFO.url}
                 paths={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
                 render={(readonly, showTest, showSave) => (
                     <BlackDuckConfiguration
@@ -109,6 +108,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={providerUri}
+                urlName={BLACKDUCK_INFO.url}
                 descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
                 render={(readonly, showTest, showSave, showDelete) => (
                     <BlackDuckProviderConfiguration
@@ -121,6 +121,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={channelUri}
+                urlName={AZURE_INFO.url}
                 descriptor={globalDescriptorMap[AZURE_INFO.key]}
                 render={(readonly, showTest, showSave, showDelete) => (
                     <AzureGlobalConfiguration
@@ -135,6 +136,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={channelUri}
+                urlName={EMAIL_INFO.url}
                 descriptor={globalDescriptorMap[EMAIL_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
                     <EmailGlobalConfiguration
@@ -149,6 +151,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={channelUri}
+                urlName={JIRA_CLOUD_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_CLOUD_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
                     <JiraCloudGlobalConfiguration
@@ -163,6 +166,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={channelUri}
+                urlName={JIRA_SERVER_INFO.url}
                 descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
                 render={(readOnly, showTest, showSave, showDelete) => (
                     <JiraServerGlobalConfiguration
@@ -175,8 +179,8 @@ const MainPage = ({
                     />
                 )}
             />
-            <DescriptorRoute uriPrefix={channelUri} descriptor={globalDescriptorMap[MSTEAMS_INFO.key]} render={() => <MSTeamsGlobalConfiguration />} />
-            <DescriptorRoute uriPrefix={channelUri} descriptor={globalDescriptorMap[SLACK_INFO.key]} render={() => <SlackGlobalConfiguration />} />
+            <DescriptorRoute uriPrefix={channelUri} urlName={MSTEAMS_INFO.url} descriptor={globalDescriptorMap[MSTEAMS_INFO.key]} render={() => <MSTeamsGlobalConfiguration />} />
+            <DescriptorRoute uriPrefix={channelUri} urlName={SLACK_INFO.url} descriptor={globalDescriptorMap[SLACK_INFO.key]} render={() => <SlackGlobalConfiguration />} />
             <Route
                 exact
                 key="distribution-route"
@@ -187,6 +191,7 @@ const MainPage = ({
             {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
             <DescriptorRoute
                 uriPrefix={componentUri}
+                urlName={AUDIT_INFO.url}
                 descriptor={globalDescriptorMap[AUDIT_INFO.key]}
                 render={() => (
                     <AuditPage />
@@ -194,6 +199,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={componentUri}
+                urlName={AUTHENTICATION_INFO.url}
                 descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]}
                 hasTestFields
                 render={(readOnly, showTest, showSave) => (
@@ -211,6 +217,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={componentUri}
+                urlName={CERTIFICATE_INFO.url}
                 descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
                 render={() => (
                     <CertificatesPage />
@@ -218,6 +225,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={componentUri}
+                urlName={SCHEDULING_INFO.url}
                 descriptor={globalDescriptorMap[SCHEDULING_INFO.key]}
                 render={(readOnly, showTest, showSave) => (
                     <SchedulingConfiguration
@@ -230,6 +238,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={componentUri}
+                urlName={SETTINGS_INFO.url}
                 descriptor={globalDescriptorMap[SETTINGS_INFO.key]}
                 render={(readOnly, showTest, showSave) => (
                     <SettingsConfiguration
@@ -242,6 +251,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={componentUri}
+                urlName={TASK_MANAGEMENT_INFO.url}
                 descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
                 render={() => (
                     <TaskManagement />
@@ -249,6 +259,7 @@ const MainPage = ({
             />
             <DescriptorRoute
                 uriPrefix={componentUri}
+                urlName={USER_MANAGEMENT_INFO.url}
                 descriptor={globalDescriptorMap[USER_MANAGEMENT_INFO.key]}
                 render={() => (
                     <UserManagement />

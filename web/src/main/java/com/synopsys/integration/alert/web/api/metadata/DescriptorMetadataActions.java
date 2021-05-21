@@ -126,10 +126,6 @@ public class DescriptorMetadataActions {
         boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorKey);
         descriptorMetadata.setOperations(operationSet);
         descriptorMetadata.setReadOnly(isReadOnly);
-
-        if (isReadOnly) {
-            descriptorMetadata.getFields().forEach(field -> field.applyReadOnly(true));
-        }
         return Optional.of(descriptorMetadata);
     }
 

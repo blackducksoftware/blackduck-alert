@@ -4,17 +4,17 @@ import { Route } from 'react-router-dom';
 import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 
 const DescriptorRoute = ({
-    descriptor, uriPrefix, hasTestFields, render, paths
-}) => {
+                             descriptor, urlName, uriPrefix, hasTestFields, render, paths
+                         }) => {
     const [hasTest, hasSave, hasDelete] = DescriptorUtilities.getButtonPermissions(descriptor, hasTestFields);
     const readonly = (descriptor) ? descriptor.readOnly : true;
-    const path = (paths.length > 0) ? paths : [`${uriPrefix}${descriptor && descriptor.urlName}`];
+    const path = (paths.length > 0) ? paths : [`${uriPrefix}${descriptor && urlName}`];
 
     return descriptor
         ? (
             <Route
                 exact
-                key={descriptor.urlName}
+                key={urlName}
                 path={path}
             >
                 {render(readonly, hasTest, hasSave, hasDelete)}
@@ -24,6 +24,7 @@ const DescriptorRoute = ({
 };
 
 DescriptorRoute.propTypes = {
+    urlName: PropTypes.string.isRequired,
     uriPrefix: PropTypes.string,
     render: PropTypes.func.isRequired,
     descriptor: PropTypes.object,
