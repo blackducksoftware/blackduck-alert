@@ -7,17 +7,21 @@
  */
 package com.synopsys.integration.alert.channel.jira.common.distribution.custom;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingSupplier;
@@ -94,25 +98,28 @@ public class JiraCustomFieldResolver {
 
     private JsonArray createJsonArray(String innerFieldValue, String fieldArrayItems) {
         JsonArray jsonArray = new JsonArray();
+        List<JsonElement> elements = createJsonArrayElements(innerFieldValue, fieldArrayItems);
+        for (JsonElement element : elements) {
+            jsonArray.add(element);
+        }
+        return jsonArray;
+    }
+
+    private List<JsonElement> createJsonArrayElements(String innerFieldValue, String fieldArrayItems) {
         switch (fieldArrayItems) {
             case CUSTOM_FIELD_TYPE_STRING_VALUE:
-                jsonArray.add(innerFieldValue);
-                return jsonArray;
+                return List.of(new JsonPrimitive(innerFieldValue));
             case CUSTOM_FIELD_TYPE_COMPONENT_VALUE:
-                return createJsonArrayElements(innerFieldValue, "name");
+                return Arrays.stream(StringUtils.split(innerFieldValue))
+                           .map(fieldValue -> createJsonObject("name", fieldValue))
+                           .collect(Collectors.toList());
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
-                return createJsonArrayElements(innerFieldValue, "value");
+                return Arrays.stream(StringUtils.split(innerFieldValue))
+                           .map(fieldValue -> createJsonObject("value", fieldValue))
+                           .collect(Collectors.toList());
             default:
                 throw new AlertRuntimeException(String.format("Unsupported item: '%s' for array field type", fieldArrayItems));
         }
-    }
-
-    private JsonArray createJsonArrayElements(String innerFieldValue, String jsonObjectKey) {
-        JsonArray jsonArray = new JsonArray();
-        for (String fieldValue : StringUtils.split(innerFieldValue)) {
-            jsonArray.add(createJsonObject(jsonObjectKey, fieldValue));
-        }
-        return jsonArray;
     }
 
     private String extractUsableInnerValue(JiraCustomFieldConfig jiraCustomFieldConfig) {
