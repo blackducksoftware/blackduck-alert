@@ -97,19 +97,20 @@ public class JiraCustomFieldResolver {
         switch (fieldArrayItems) {
             case CUSTOM_FIELD_TYPE_STRING_VALUE:
                 jsonArray.add(innerFieldValue);
-                break;
+                return jsonArray;
             case CUSTOM_FIELD_TYPE_COMPONENT_VALUE:
-                for (String componentName : StringUtils.split(innerFieldValue)) {
-                    jsonArray.add(createJsonObject("name", componentName));
-                }
-                break;
+                return createJsonArrayElements(innerFieldValue, "name");
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
-                for (String optionValue : StringUtils.split(innerFieldValue)) {
-                    jsonArray.add(createJsonObject("value", optionValue));
-                }
-                break;
+                return createJsonArrayElements(innerFieldValue, "value");
             default:
                 throw new AlertRuntimeException(String.format("Unsupported item: '%s' for array field type", fieldArrayItems));
+        }
+    }
+
+    private JsonArray createJsonArrayElements(String innerFieldValue, String jsonObjectKey) {
+        JsonArray jsonArray = new JsonArray();
+        for (String fieldValue : StringUtils.split(innerFieldValue)) {
+            jsonArray.add(createJsonObject(jsonObjectKey, fieldValue));
         }
         return jsonArray;
     }

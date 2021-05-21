@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -35,7 +36,9 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
+import com.synopsys.integration.alert.test.common.TestTags;
 
+@Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
 public class JiraServerExternalConnectionTest {
     private final TestProperties testProperties = new TestProperties();
 
