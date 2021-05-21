@@ -13,14 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSenderFactory;
-import com.synopsys.integration.alert.channel.jira.common.distribution.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.channel.jira.common.distribution.JiraIssueCreationRequestCreator;
-import com.synopsys.integration.alert.channel.jira.common.distribution.custom.JiraCustomFieldResolver;
-import com.synopsys.integration.alert.channel.jira.common.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.delegate.JiraServerIssueCommenter;
@@ -116,4 +116,5 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             jiraErrorMessageUtility
         );
     }
+
 }

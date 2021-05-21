@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.jira.common.JiraConstants;
-import com.synopsys.integration.alert.channel.jira.common.action.JiraGlobalTestAction;
+import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
+import com.synopsys.integration.alert.api.channel.jira.action.JiraGlobalTestAction;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;

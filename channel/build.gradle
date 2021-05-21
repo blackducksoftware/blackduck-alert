@@ -8,10 +8,11 @@ dependencies {
     implementation project(':api-processor')
     implementation project(':api-descriptor')
 
+    implementation project(':api-channel-jira')
+
     implementation 'org.springframework:spring-web'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
-    implementation 'com.synopsys.integration:int-jira-common'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'org.freemarker:freemarker'
 
