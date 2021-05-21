@@ -14,11 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
-import com.synopsys.integration.alert.channel.jira.common.distribution.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.channel.jira.common.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
@@ -107,4 +107,5 @@ public class JiraServerExternalConnectionTest {
         configurationFieldModel.setFieldValue(value);
         configuredFields.put(key, configurationFieldModel);
     }
+
 }
