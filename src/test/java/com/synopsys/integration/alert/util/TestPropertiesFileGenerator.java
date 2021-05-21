@@ -15,7 +15,7 @@ public class TestPropertiesFileGenerator {
     @Test
     @Disabled("This test is to generate the test.properties for new developers.")
     public void generatePropertiesFile() throws IOException {
-        String propertiesFileName = TestResourceUtils.BASE_TEST_RESOURCE_DIR + "/" + TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION;
+        String propertiesFileName = TestResourceUtils.createTestPropertiesCanonicalFilePath();
         System.out.println("Generating file: " + propertiesFileName + "..");
 
         File testPropertiesFile = new File(propertiesFileName);
