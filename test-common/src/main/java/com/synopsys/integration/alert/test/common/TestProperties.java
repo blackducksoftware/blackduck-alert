@@ -20,9 +20,9 @@ public class TestProperties {
 
     public TestProperties() {
         try {
-            propertiesLocation = TestResourceUtils.createTestPropertiesCanonicalFilePath();
+            propertiesLocation = TestResourceUtils.createTestPropertiesCanonicalFilePath().toString();
         } catch (IOException e) {
-            propertiesLocation = TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION;
+            propertiesLocation = TestResourceUtils.DEFAULT_PROPERTIES_FILE_NAME;
         }
         loadProperties();
     }

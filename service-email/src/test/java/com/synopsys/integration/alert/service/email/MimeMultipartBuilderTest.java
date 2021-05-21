@@ -29,7 +29,7 @@ public class MimeMultipartBuilderTest {
         final String html = "<html></html>";
         final String text = "content";
         List<String> attachmentFilePaths = new ArrayList<>();
-        attachmentFilePaths.add(TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION);
+        attachmentFilePaths.add(TestResourceUtils.DEFAULT_PROPERTIES_FILE_NAME);
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
         contentIdsToFilePaths.put("entry", "synopsys.png");
 
