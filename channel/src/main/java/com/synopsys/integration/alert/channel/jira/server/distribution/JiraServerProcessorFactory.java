@@ -56,6 +56,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
     @Override
     public IssueTrackerProcessor<String> createProcessor(JiraServerJobDetailsModel distributionDetails) throws AlertException {
+        //TODO: Review with team, should we call the JiraServerPropertiesFactory.createJiraProperties using a FieldModel?
         JiraServerProperties jiraProperties = jiraServerPropertiesFactory.createJiraProperties();
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, gson);
 

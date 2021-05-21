@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
@@ -66,16 +65,7 @@ public class JiraCustomFieldResolver {
         String fieldName = customFieldConfig.getFieldName();
         CustomFieldCreationResponseModel fieldResponse = retrieveFieldDefinition(fieldName)
                                                              .orElseThrow(() -> new AlertRuntimeException(String.format("No custom field named '%s' existed", fieldName)));
-
-        String arrayItems = fieldResponse.getSchema().getJson();
-        //For testing, extract the  values of "items" here
-        //TODO: Just for testing, use gson to extract "items" from the json. DO NOT MERGE WITH THIS CODE!!!
-        // Long term solution: In int-jira-common update SchemaComponent to also include a nullable field called "items"
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(arrayItems, JsonObject.class);
-        String items = jsonObject.get("items").getAsString();
-
-        return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType(), items);
+        return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType(), fieldResponse.getSchema().getItems());
     }
 
     //TODO: can we make this a JsonElement instead of Object?
