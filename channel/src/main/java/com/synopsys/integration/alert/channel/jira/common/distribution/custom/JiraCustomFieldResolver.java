@@ -7,16 +7,21 @@
  */
 package com.synopsys.integration.alert.channel.jira.common.distribution.custom;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingSupplier;
@@ -28,6 +33,7 @@ public class JiraCustomFieldResolver {
     private static final String CUSTOM_FIELD_TYPE_OPTION_VALUE = "option";
     private static final String CUSTOM_FIELD_TYPE_PRIORITY_VALUE = "priority";
     private static final String CUSTOM_FIELD_TYPE_USER_VALUE = "user";
+    private static final String CUSTOM_FIELD_TYPE_COMPONENT_VALUE = "component";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -63,7 +69,7 @@ public class JiraCustomFieldResolver {
         String fieldName = customFieldConfig.getFieldName();
         CustomFieldCreationResponseModel fieldResponse = retrieveFieldDefinition(fieldName)
                                                              .orElseThrow(() -> new AlertRuntimeException(String.format("No custom field named '%s' existed", fieldName)));
-        return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType());
+        return new CustomFieldDefinitionModel(fieldResponse.getId(), fieldResponse.getSchema().getType(), fieldResponse.getSchema().getItems());
     }
 
     protected Object convertValueToRequestObject(CustomFieldDefinitionModel fieldDefinition, JiraCustomFieldConfig jiraCustomFieldConfig) {
@@ -73,9 +79,7 @@ public class JiraCustomFieldResolver {
             case CUSTOM_FIELD_TYPE_STRING_VALUE:
                 return innerFieldValue;
             case CUSTOM_FIELD_TYPE_ARRAY_VALUE:
-                JsonArray jsonArray = new JsonArray();
-                jsonArray.add(innerFieldValue);
-                return jsonArray;
+                return createJsonArray(innerFieldValue, fieldDefinition.getFieldArrayItems());
             case CUSTOM_FIELD_TYPE_OPTION_VALUE:
                 return createJsonObject("value", innerFieldValue);
             case CUSTOM_FIELD_TYPE_PRIORITY_VALUE:
@@ -89,6 +93,32 @@ public class JiraCustomFieldResolver {
                 return createUserObject;
             default:
                 throw new AlertRuntimeException(String.format("Unsupported field type '%s' for field: %s", fieldType, jiraCustomFieldConfig.getFieldName()));
+        }
+    }
+
+    private JsonArray createJsonArray(String innerFieldValue, String fieldArrayItems) {
+        JsonArray jsonArray = new JsonArray();
+        List<JsonElement> elements = createJsonArrayElements(innerFieldValue, fieldArrayItems);
+        for (JsonElement element : elements) {
+            jsonArray.add(element);
+        }
+        return jsonArray;
+    }
+
+    private List<JsonElement> createJsonArrayElements(String innerFieldValue, String fieldArrayItems) {
+        switch (fieldArrayItems) {
+            case CUSTOM_FIELD_TYPE_STRING_VALUE:
+                return List.of(new JsonPrimitive(innerFieldValue));
+            case CUSTOM_FIELD_TYPE_COMPONENT_VALUE:
+                return Arrays.stream(StringUtils.split(innerFieldValue))
+                           .map(fieldValue -> createJsonObject("name", fieldValue))
+                           .collect(Collectors.toList());
+            case CUSTOM_FIELD_TYPE_OPTION_VALUE:
+                return Arrays.stream(StringUtils.split(innerFieldValue))
+                           .map(fieldValue -> createJsonObject("value", fieldValue))
+                           .collect(Collectors.toList());
+            default:
+                throw new AlertRuntimeException(String.format("Unsupported item: '%s' for array field type", fieldArrayItems));
         }
     }
 
