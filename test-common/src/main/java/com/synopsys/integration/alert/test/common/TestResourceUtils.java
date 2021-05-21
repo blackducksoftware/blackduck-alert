@@ -21,6 +21,10 @@ public final class TestResourceUtils {
     public static final String DEFAULT_PROPERTIES_FILE_LOCATION = "test.properties";
     public static final File BASE_TEST_RESOURCE_DIR = new File(TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "../../../../src/main/resources/");
 
+    public static String createTestPropertiesCanonicalFilePath() throws IOException {
+        return new File(TestResourceUtils.BASE_TEST_RESOURCE_DIR.getCanonicalFile(), TestResourceUtils.DEFAULT_PROPERTIES_FILE_LOCATION).getCanonicalPath();
+    }
+
     /**
      * @param resourcePath The path to the file resource. For example: If the file is in src/test/resources/dir1/dir2/file.ext, then use "dir1/dir2/file.ext"
      * @return The file contents, never null
