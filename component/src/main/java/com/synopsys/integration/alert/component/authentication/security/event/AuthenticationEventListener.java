@@ -12,12 +12,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.event.AlertDefaultEventListener;
+import com.synopsys.integration.alert.api.event.AlertDefaultEventListener;
+import com.synopsys.integration.alert.api.event.MessageReceiver;
 import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
-import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 
 @Component
 public class AuthenticationEventListener extends MessageReceiver<AlertAuthenticationEvent> implements AlertDefaultEventListener {

@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

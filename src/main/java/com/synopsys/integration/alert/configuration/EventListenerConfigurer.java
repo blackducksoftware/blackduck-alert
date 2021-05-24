@@ -1,11 +1,11 @@
 /*
- * api-event
+ * blackduck-alert
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.api.event;
+package com.synopsys.integration.alert.configuration;
 
 import java.util.List;
 
@@ -17,6 +17,10 @@ import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
+
+import com.synopsys.integration.alert.api.event.AlertChannelEventListener;
+import com.synopsys.integration.alert.api.event.AlertDefaultEventListener;
+import com.synopsys.integration.alert.api.event.AlertEventListener;
 
 @Configuration
 public class EventListenerConfigurer implements JmsListenerConfigurer {
