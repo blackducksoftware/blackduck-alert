@@ -14,6 +14,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(70)
@@ -31,4 +32,5 @@ public class SAMLStartupComponent extends StartupComponent {
         logger.info("SAML startup initialization running.");
         samlManager.initializeConfiguration();
     }
+
 }

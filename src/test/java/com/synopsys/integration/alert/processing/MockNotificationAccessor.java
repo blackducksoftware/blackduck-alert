@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.message.mocks;
+package com.synopsys.integration.alert.processing;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -104,4 +104,5 @@ public class MockNotificationAccessor implements NotificationAccessor {
             alertNotificationModel.getProviderCreationTime(),
             true);
     }
+
 }

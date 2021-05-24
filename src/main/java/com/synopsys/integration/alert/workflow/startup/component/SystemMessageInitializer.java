@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.common.persistence.model.SystemMessageMode
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.component.settings.SettingsValidator;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(30)

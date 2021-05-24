@@ -30,6 +30,8 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.actions.AuthenticationApiAction;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
+import com.synopsys.integration.alert.workflow.EnvironmentVariableUtility;
 
 @Component
 @Order(11)
@@ -41,9 +43,9 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
 
     private final Logger logger = LoggerFactory.getLogger(ConfigurationOverridesStartupComponent.class);
 
-    private EnvironmentVariableUtility environmentVariableUtility;
+    private final EnvironmentVariableUtility environmentVariableUtility;
     private final DefaultDescriptorGlobalConfigUtility configUtility;
-    private UserAccessor userAccessor;
+    private final UserAccessor userAccessor;
 
     @Autowired
     public ConfigurationOverridesStartupComponent(EnvironmentVariableUtility environmentVariableUtility, UserAccessor userAccessor, AuthenticationDescriptorKey descriptorKey, ConfigurationAccessor configurationAccessor,
@@ -111,4 +113,5 @@ public class ConfigurationOverridesStartupComponent extends StartupComponent {
         logger.info("{} = {}", environmentVariable, activated);
         return activated;
     }
+
 }

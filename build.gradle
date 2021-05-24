@@ -98,7 +98,6 @@ dependencies {
     implementation project(':api-descriptor')
     implementation project(':provider-blackduck')
     implementation project(':ui')
-    implementation project(':workflow')
     implementation project(':web')
     implementation project(':service-email')
 

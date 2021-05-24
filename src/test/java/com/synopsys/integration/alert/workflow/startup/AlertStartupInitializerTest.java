@@ -27,8 +27,8 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.workflow.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.workflow.startup.component.AlertStartupInitializer;
-import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
 
 public class AlertStartupInitializerTest {
     private static final SettingsDescriptorKey SETTINGS_DESCRIPTOR_KEY = new SettingsDescriptorKey();

@@ -1,11 +1,11 @@
 /*
- * workflow
+ * blackduck-alert
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.message;
+package com.synopsys.integration.alert.processing;
 
 import java.util.List;
 

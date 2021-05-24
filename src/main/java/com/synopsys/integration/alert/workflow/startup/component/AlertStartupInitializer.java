@@ -38,6 +38,8 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
+import com.synopsys.integration.alert.workflow.EnvironmentVariableUtility;
 
 @Component
 @Order(10)

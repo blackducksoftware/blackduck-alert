@@ -13,7 +13,6 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':api-descriptor')
-    implementation project(":workflow")
     implementation project(':api-processor')
     implementation project(':service-email')
 

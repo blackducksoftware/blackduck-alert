@@ -15,6 +15,5 @@ include 'service-email'
 include 'component'
 include 'ui'
 include 'web'
-include 'workflow'
 include 'test-common'
 

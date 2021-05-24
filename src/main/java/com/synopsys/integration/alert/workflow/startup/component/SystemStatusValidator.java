@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAc
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(20)

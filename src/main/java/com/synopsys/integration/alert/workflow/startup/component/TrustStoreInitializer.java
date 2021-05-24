@@ -18,14 +18,15 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(41)
 public class TrustStoreInitializer extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(TrustStoreInitializer.class);
 
-    private CertificateUtility certificateUtility;
-    private CustomCertificateAccessor customCertificateAccessor;
+    private final CertificateUtility certificateUtility;
+    private final CustomCertificateAccessor customCertificateAccessor;
 
     public TrustStoreInitializer(CertificateUtility certificateUtility, CustomCertificateAccessor customCertificateAccessor) {
         this.certificateUtility = certificateUtility;

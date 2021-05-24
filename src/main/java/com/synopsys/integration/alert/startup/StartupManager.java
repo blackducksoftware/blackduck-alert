@@ -1,11 +1,11 @@
 /*
- * workflow
+ * blackduck-alert
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.startup;
+package com.synopsys.integration.alert.startup;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.SystemStatusAccessor;
-import com.synopsys.integration.alert.workflow.startup.component.StartupComponent;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Configuration
 public class StartupManager {

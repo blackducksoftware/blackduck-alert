@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.workflow.EnvironmentVariableUtility;
 
 @Transactional
 @AlertIntegrationTest

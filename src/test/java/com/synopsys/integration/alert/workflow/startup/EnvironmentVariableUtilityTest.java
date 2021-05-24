@@ -12,7 +12,7 @@ import org.springframework.core.env.Environment;
 
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.workflow.startup.component.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.workflow.EnvironmentVariableUtility;
 
 public class EnvironmentVariableUtilityTest {
     private static final String WORKING_PROPERTY_KEY = "ALERT_COMPONENT_SETTINGS_SETTINGS_ENCRYPTION_GLOBAL_SALT";

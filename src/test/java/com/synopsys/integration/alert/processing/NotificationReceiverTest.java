@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.message;
+package com.synopsys.integration.alert.processing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.processor.api.filter.JobNotificationMapper
 import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
-import com.synopsys.integration.alert.workflow.message.mocks.MockNotificationAccessor;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 public class NotificationReceiverTest {

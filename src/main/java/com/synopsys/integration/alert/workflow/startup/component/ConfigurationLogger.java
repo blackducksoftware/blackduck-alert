@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(40)
@@ -53,4 +54,5 @@ public class ConfigurationLogger extends StartupComponent {
         logger.info("");
         logger.info("----------------------------------------");
     }
+
 }

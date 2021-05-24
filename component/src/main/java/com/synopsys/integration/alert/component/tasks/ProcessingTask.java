@@ -1,11 +1,11 @@
 /*
- * workflow
+ * component
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.scheduled.frequency;
+package com.synopsys.integration.alert.component.tasks;
 
 import java.time.OffsetDateTime;
 import java.util.List;

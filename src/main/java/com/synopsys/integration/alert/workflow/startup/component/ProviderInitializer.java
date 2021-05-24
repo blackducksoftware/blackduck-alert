@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderSchedulingManager;
+import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(60)
@@ -27,4 +28,5 @@ public class ProviderInitializer extends StartupComponent {
     protected void initialize() {
         providerLifecycleManager.initializeConfiguredProviders();
     }
+
 }
