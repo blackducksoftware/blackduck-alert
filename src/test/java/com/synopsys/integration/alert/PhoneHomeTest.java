@@ -22,8 +22,8 @@ import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
+import com.synopsys.integration.alert.task.PhoneHomeTask;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
-import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class PhoneHomeTest {
