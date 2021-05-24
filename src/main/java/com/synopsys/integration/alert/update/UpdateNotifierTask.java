@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.scheduled.update;
+package com.synopsys.integration.alert.update;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
+import com.synopsys.integration.alert.update.model.UpdateModel;
 
 @Component
 public class UpdateNotifierTask extends StartupScheduledTask {

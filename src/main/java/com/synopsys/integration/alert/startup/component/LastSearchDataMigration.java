@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.startup.component;
+package com.synopsys.integration.alert.startup.component;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulatorSearchDateManager;
-import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(55)

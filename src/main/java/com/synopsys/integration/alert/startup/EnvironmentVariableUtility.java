@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow;
+package com.synopsys.integration.alert.startup;
 
 import java.util.Optional;
 

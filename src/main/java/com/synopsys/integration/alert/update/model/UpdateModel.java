@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.scheduled.update.model;
+package com.synopsys.integration.alert.update.model;
 
 public class UpdateModel {
     private final String currentVersion;
@@ -47,4 +47,5 @@ public class UpdateModel {
     public boolean getUpdatable() {
         return isUpdatable;
     }
+
 }

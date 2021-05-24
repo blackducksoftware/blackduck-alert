@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.scheduled.update;
+package com.synopsys.integration.alert.update;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.service.email.EmailProperties;
 import com.synopsys.integration.alert.service.email.EmailTarget;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
-import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
+import com.synopsys.integration.alert.update.model.UpdateModel;
 
 @Component
 public class UpdateEmailService {

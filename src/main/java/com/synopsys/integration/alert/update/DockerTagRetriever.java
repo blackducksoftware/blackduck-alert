@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.scheduled.update;
+package com.synopsys.integration.alert.update;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
+import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.client.IntHttpClient;

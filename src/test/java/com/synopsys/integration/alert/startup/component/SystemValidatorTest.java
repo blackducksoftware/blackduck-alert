@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.startup;
+package com.synopsys.integration.alert.startup.component;
 
 import static org.junit.Assert.assertTrue;
 
@@ -24,7 +24,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
 import com.synopsys.integration.alert.test.common.OutputLogger;
-import com.synopsys.integration.alert.workflow.startup.component.SystemMessageInitializer;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.credentials.Credentials;

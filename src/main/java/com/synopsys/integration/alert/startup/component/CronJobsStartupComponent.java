@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.startup.component;
+package com.synopsys.integration.alert.startup.component;
 
 import java.util.List;
 
@@ -14,7 +14,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
-import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(50)

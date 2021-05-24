@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.startup.component;
+package com.synopsys.integration.alert.startup.component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -28,8 +28,8 @@ import com.synopsys.integration.alert.component.authentication.actions.Authentic
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 import com.synopsys.integration.alert.component.authentication.web.AuthenticationActions;
 import com.synopsys.integration.alert.component.authentication.web.LoginConfig;
+import com.synopsys.integration.alert.startup.EnvironmentVariableUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.workflow.EnvironmentVariableUtility;
 
 @Transactional
 @AlertIntegrationTest

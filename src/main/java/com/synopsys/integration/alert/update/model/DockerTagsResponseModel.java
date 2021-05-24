@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.scheduled.update.model;
+package com.synopsys.integration.alert.update.model;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class DockerTagsResponseModel extends AlertSerializableModel {
     public DockerTagsResponseModel() {
     }
 
-    public DockerTagsResponseModel(final int count, final String next, final String previous, final List<DockerTagModel> results) {
+    public DockerTagsResponseModel(int count, String next, String previous, List<DockerTagModel> results) {
         this.count = count;
         this.next = next;
         this.previous = previous;

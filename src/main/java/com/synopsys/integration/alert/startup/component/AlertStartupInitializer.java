@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.startup.component;
+package com.synopsys.integration.alert.startup.component;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -38,8 +38,7 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
-import com.synopsys.integration.alert.startup.component.StartupComponent;
-import com.synopsys.integration.alert.workflow.EnvironmentVariableUtility;
+import com.synopsys.integration.alert.startup.EnvironmentVariableUtility;
 
 @Component
 @Order(10)

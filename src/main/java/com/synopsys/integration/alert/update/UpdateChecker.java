@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.scheduled.update;
+package com.synopsys.integration.alert.update;
 
 import static com.synopsys.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
 import static com.synopsys.integration.alert.common.util.DateUtils.parseDate;
@@ -27,11 +27,11 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.update.model.DockerTagModel;
+import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
+import com.synopsys.integration.alert.update.model.UpdateModel;
 import com.synopsys.integration.alert.web.api.about.AboutModel;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
-import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagModel;
-import com.synopsys.integration.alert.workflow.scheduled.update.model.DockerTagsResponseModel;
-import com.synopsys.integration.alert.workflow.scheduled.update.model.UpdateModel;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;

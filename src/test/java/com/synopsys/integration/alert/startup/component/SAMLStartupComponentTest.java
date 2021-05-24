@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.startup;
+package com.synopsys.integration.alert.startup.component;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,7 +13,6 @@ import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUti
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLContext;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
-import com.synopsys.integration.alert.workflow.startup.component.SAMLStartupComponent;
 
 public class SAMLStartupComponentTest {
 

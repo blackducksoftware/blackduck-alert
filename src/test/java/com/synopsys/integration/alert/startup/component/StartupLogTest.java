@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.startup;
+package com.synopsys.integration.alert.startup.component;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.OutputLogger;
-import com.synopsys.integration.alert.workflow.startup.component.ConfigurationLogger;
 
 public class StartupLogTest {
     private OutputLogger outputLogger;

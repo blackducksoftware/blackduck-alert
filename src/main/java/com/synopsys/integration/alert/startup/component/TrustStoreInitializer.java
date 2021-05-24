@@ -5,7 +5,7 @@
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.workflow.startup.component;
+package com.synopsys.integration.alert.startup.component;
 
 import java.util.List;
 
@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.security.CertificateUtility;
-import com.synopsys.integration.alert.startup.component.StartupComponent;
 
 @Component
 @Order(41)
