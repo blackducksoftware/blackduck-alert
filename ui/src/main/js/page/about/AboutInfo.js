@@ -1,208 +1,171 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
-import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import ConfigurationLabel from 'common/ConfigurationLabel';
 import { NavLink } from 'react-router-dom';
 import LabeledField from 'common/input/field/LabeledField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
+import { AZURE_INFO } from 'page/channel/azure/AzureModel';
+import { EMAIL_INFO } from 'page/channel/email/EmailModels';
+import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
+import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
+import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
+import { SLACK_INFO } from 'page/channel/slack/SlackModels';
 
-class AboutInfo extends React.Component {
-    componentDidMount() {
-        this.props.getAboutInfo();
-    }
+const AboutInfo = ({
+    getAbout, version, projectUrl, documentationUrl, globalDescriptorMap, distributionDescriptorMap
+}) => {
+    useEffect(() => {
+        getAbout();
+    }, []);
 
-    createNameColumnRenderer(uriPrefix) {
-        return (cell, row) => {
-            const id = `aboutNameKey-${cell}`;
+    const createDescriptorTable = (id, tableData, uriPrefix, tableName) => {
+        const nameRenderer = (cell, row) => {
+            const nameId = `aboutNameKey-${cell}`;
             const url = `${uriPrefix}${row.urlName}`;
-            if (row.navigate) {
-                return (<NavLink to={url} id={id}>{cell}</NavLink>);
-            }
-            return (<div id={id}>{cell}</div>);
+            return <NavLink to={url} id={nameId}>{cell}</NavLink>;
         };
-    }
-
-    createDescriptorTable(id, tableData, uriPrefix) {
-        const nameRenderer = this.createNameColumnRenderer(uriPrefix);
         const tableOptions = {
             defaultSortName: 'name',
             defaultSortOrder: 'asc',
             noDataText: 'No data found'
         };
-        return (
-            <div id={id} className="form-group">
-                <BootstrapTable
-                    version="4"
-                    data={tableData}
-                    options={tableOptions}
-                    headerContainerClass="scrollable"
-                    bodyContainerClass="scrollable"
-                >
-                    <TableHeaderColumn dataField="name" isKey dataFormat={nameRenderer}>
-                        Name
-                    </TableHeaderColumn>
-                    <TableHeaderColumn dataField="urlName" hidden>
-                        Url
-                    </TableHeaderColumn>
-                    <TableHeaderColumn dataField="navigate" hidden>
-                        Navigate
-                    </TableHeaderColumn>
-                </BootstrapTable>
-            </div>
-        );
-    }
 
-    createTableData(userBasedDescriptors, descriptors) {
-        const data = [];
-        for (const key in descriptors) {
-            const descriptor = descriptors[key];
-            const globalDescriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(userBasedDescriptors, descriptor.name, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
-            const globalConfigAllowed = Boolean(globalDescriptor);
-            if (!data.find((item) => item.urlName === descriptor.urlName)) {
-                data.push({
-                    name: descriptor.label,
-                    urlName: descriptor.urlName,
-                    navigate: globalConfigAllowed
-                });
-            }
-        }
-        return data;
-    }
-
-    render() {
-        const {
-            version, description, projectUrl, documentationUrl, descriptors, providers, channels
-        } = this.props;
-        const userProviderList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER);
-        const userChannelList = DescriptorUtilities.findDescriptorByType(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL);
-        const providerData = this.createTableData(userProviderList, providers);
-        const channelData = this.createTableData(userChannelList, channels);
-        const providerTable = this.createDescriptorTable('about-providers', providerData, '/alert/providers/');
-        const channelTable = this.createDescriptorTable('about-channels', channelData, '/alert/channels/');
-        const distributionLink = (
-            <div className="d-inline-flex p-2 col-sm-8">
-                <NavLink to="/alert/jobs/distribution">
-                    All
-                    Distributions
-                </NavLink>
-            </div>
-        );
-        const providersMissing = !providerData || providerData.length <= 0;
-        const channelsMissing = !channelData || channelData.length <= 0;
         return (
-            <div>
-                <ConfigurationLabel configurationName="About" />
-                <div className="form-horizontal">
-                    <ReadOnlyField
-                        id="about-description"
-                        label="Description"
-                        name="description"
-                        readOnly="true"
-                        value={description}
-                    />
-                    <ReadOnlyField id="about-version" label="Version" name="version" readOnly="true" value={version} />
-                    <ReadOnlyField
-                        id="about-url"
-                        label="Project URL"
-                        name="projectUrl"
-                        readOnly="true"
-                        value={projectUrl}
-                        url={projectUrl}
-                    />
-                    <ReadOnlyField
-                        id="about-documentation-url"
-                        label="API Documentation (Preview)"
-                        name="documentationUrl"
-                        readOnly="true"
-                        value="Swagger UI"
-                        url={documentationUrl}
-                    />
-                    <LabeledField
-                        id="about-view-distribution"
-                        label="View Distributions"
-                        name="distribution"
-                        readOnly="true"
-                        value=""
-                        field={distributionLink}
-                    />
-                    {providersMissing && channelsMissing
-                    && (
-                        <div className="form-group">
-                            <div className="form-group">
-                                <label className="col-sm-3 col-form-label text-right" />
-                                <div className="d-inline-flex p-2 col-sm-8 missingData">
-                                    <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
-                                    The current user cannot view Distribution Channel or Provider data!
-                                </div>
+            <div className="form-group">
+                <div className="form-group">
+                    <label className="col-sm-3 col-form-label text-right">{tableName}</label>
+                    <div className="d-inline-flex p-2 col-sm-8">
+                        <div className="form-control-static">
+                            <div id={id} className="form-group">
+                                <BootstrapTable
+                                    version="4"
+                                    data={tableData}
+                                    options={tableOptions}
+                                    headerContainerClass="scrollable"
+                                    bodyContainerClass="scrollable"
+                                >
+                                    <TableHeaderColumn dataField="name" isKey dataFormat={nameRenderer}>
+                                        Name
+                                    </TableHeaderColumn>
+                                </BootstrapTable>
                             </div>
                         </div>
-                    )}
-                    {!providersMissing
-                    && (
-                        <div className="form-group">
-                            <div className="form-group">
-                                <label className="col-sm-3 col-form-label text-right">Providers</label>
-                                <div className="d-inline-flex p-2 col-sm-8">
-                                    <div className="form-control-static">
-                                        {providerTable}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {!channelsMissing
-                    && (
-                        <div className="form-group">
-                            <div className="form-group">
-                                <label className="col-sm-3 col-form-label text-right">Distribution Channels</label>
-                                <div className="d-inline-flex p-2 col-sm-8">
-                                    <div className="form-control-static">
-                                        {channelTable}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    </div>
                 </div>
             </div>
         );
-    }
-}
+    };
 
-AboutInfo.propTypes = {
-    getAboutInfo: PropTypes.func.isRequired,
-    version: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    projectUrl: PropTypes.string.isRequired,
-    documentationUrl: PropTypes.string.isRequired,
-    providers: PropTypes.array,
-    channels: PropTypes.array,
-    descriptors: PropTypes.arrayOf(PropTypes.object)
+    const existingProviders = {
+        [BLACKDUCK_INFO.key]: BLACKDUCK_INFO
+    };
+    const existingChannels = {
+        [AZURE_INFO.key]: AZURE_INFO,
+        [EMAIL_INFO.key]: EMAIL_INFO,
+        [JIRA_CLOUD_INFO.key]: JIRA_CLOUD_INFO,
+        [JIRA_SERVER_INFO.key]: JIRA_SERVER_INFO,
+        [MSTEAMS_INFO.key]: MSTEAMS_INFO,
+        [SLACK_INFO.key]: SLACK_INFO
+    };
+
+    const createTableData = (descriptorMapping, existingData) => Object.values(descriptorMapping)
+        .filter((descriptor) => existingData[descriptor.name])
+        .map((descriptor) => {
+            const descriptorModel = existingData[descriptor.name];
+            return {
+                name: descriptorModel.label,
+                urlName: descriptorModel.url
+            };
+        });
+
+    const providerData = createTableData(globalDescriptorMap, existingProviders);
+    const channelData = createTableData(distributionDescriptorMap, existingChannels);
+    const providerTable = createDescriptorTable('about-providers', providerData, '/alert/providers/', 'Providers');
+    const channelTable = createDescriptorTable('about-channels', channelData, '/alert/channels/', 'Distribution Channels');
+    const providersMissing = !providerData || providerData.length <= 0;
+    const channelsMissing = !channelData || channelData.length <= 0;
+
+    return (
+        <div>
+            <ConfigurationLabel configurationName="About" />
+            <div className="form-horizontal">
+                <ReadOnlyField
+                    id="about-description"
+                    label="Description"
+                    name="description"
+                    readOnly="true"
+                    value="This application provides the ability to send notifications from a provider to various distribution channels."
+                />
+                <ReadOnlyField id="about-version" label="Version" name="version" readOnly="true" value={version} />
+                <ReadOnlyField
+                    id="about-url"
+                    label="Project URL"
+                    name="projectUrl"
+                    readOnly="true"
+                    value={projectUrl}
+                    url={projectUrl}
+                />
+                <ReadOnlyField
+                    id="about-documentation-url"
+                    label="API Documentation (Preview)"
+                    name="documentationUrl"
+                    readOnly="true"
+                    value="Swagger UI"
+                    url={documentationUrl}
+                />
+                <LabeledField
+                    id="about-view-distribution"
+                    label="View Distributions"
+                    name="distribution"
+                    readOnly="true"
+                >
+                    <div className="d-inline-flex p-2 col-sm-8">
+                        <NavLink to="/alert/jobs/distribution">
+                            All Distributions
+                        </NavLink>
+                    </div>
+                </LabeledField>
+                {providersMissing && channelsMissing
+                && (
+                    <div className="form-group">
+                        <div className="form-group">
+                            <label className="col-sm-3 col-form-label text-right" />
+                            <div className="d-inline-flex p-2 col-sm-8 missingData">
+                                <FontAwesomeIcon icon="exclamation-triangle" className="alert-icon" size="lg" />
+                                The current user cannot view Distribution Channel or Provider data!
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {!providersMissing && providerTable}
+                {!channelsMissing && channelTable}
+            </div>
+        </div>
+    );
 };
 
-AboutInfo.defaultProps = {
-    description: '',
-    providers: [],
-    channels: [],
-    descriptors: []
+AboutInfo.propTypes = {
+    getAbout: PropTypes.func.isRequired,
+    version: PropTypes.string.isRequired,
+    projectUrl: PropTypes.string.isRequired,
+    documentationUrl: PropTypes.string.isRequired,
+    globalDescriptorMap: PropTypes.object.isRequired,
+    distributionDescriptorMap: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
     version: state.about.version,
-    description: state.about.description,
     projectUrl: state.about.projectUrl,
-    documentationUrl: state.about.documentationUrl,
-    providers: state.about.providerList,
-    channels: state.about.channelList,
-    descriptors: state.descriptors.items
+    documentationUrl: state.about.documentationUrl
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    getAboutInfo: () => dispatch(getAboutInfo())
+    getAbout: () => dispatch(getAboutInfo())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AboutInfo);
