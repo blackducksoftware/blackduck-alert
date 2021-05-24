@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.message;
+package com.synopsys.integration.alert.processing;
 
 import java.util.ArrayList;
 import java.util.List;

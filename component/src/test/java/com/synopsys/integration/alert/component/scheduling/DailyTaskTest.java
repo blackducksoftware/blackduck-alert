@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.scheduled.frequency;
+package com.synopsys.integration.alert.component.scheduling;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

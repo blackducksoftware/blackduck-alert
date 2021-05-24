@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.scheduled.frequency;
+package com.synopsys.integration.alert.component.tasks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.component.tasks.ProcessingTask;
 import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 import com.synopsys.integration.alert.processor.api.detail.NotificationDetailExtractionDelegator;

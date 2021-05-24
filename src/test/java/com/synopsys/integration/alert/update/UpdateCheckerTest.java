@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.scheduled.update;
+package com.synopsys.integration.alert.update;
 
 import static com.synopsys.integration.alert.common.util.DateUtils.DOCKER_DATE_FORMAT;
 import static com.synopsys.integration.alert.common.util.DateUtils.formatDate;
@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.api.DefaultSystemStatusAccessor;
 import com.synopsys.integration.alert.test.common.TestTags;
-import com.synopsys.integration.alert.update.UpdateChecker;
 import com.synopsys.integration.alert.update.model.UpdateModel;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.alert.web.api.metadata.DescriptorMetadataActions;

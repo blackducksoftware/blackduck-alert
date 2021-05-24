@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.workflow.message;
+package com.synopsys.integration.alert.processing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.database.api.DefaultNotificationAccessor;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.alert.processing.NotificationReceiver;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 //TODO: This class depends on AlertIntegrationTest which cannot be moved into test-common yet due to it's dependencies.

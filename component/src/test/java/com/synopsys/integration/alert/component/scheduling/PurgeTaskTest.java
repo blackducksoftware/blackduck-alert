@@ -1,6 +1,6 @@
-package com.synopsys.integration.alert.workflow.scheduled;
+package com.synopsys.integration.alert.component.scheduling;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
