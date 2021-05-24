@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 
+@Deprecated
 @Component
 public class ProviderNameSelectCustomFunctionAction extends CustomFunctionAction<LabelValueSelectOptions> {
 
@@ -34,7 +35,7 @@ public class ProviderNameSelectCustomFunctionAction extends CustomFunctionAction
     @Override
     public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         // FIXME removed this as it's no longer being used. Should be deleted before release
-        return new ActionResponse(HttpStatus.OK, List.of());
+        return new ActionResponse(HttpStatus.METHOD_NOT_ALLOWED, List.of());
     }
 
 }
