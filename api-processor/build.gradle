@@ -4,6 +4,7 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
     implementation project(':api-descriptor')
+    implementation project(':api-event')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.springframework:spring-context'

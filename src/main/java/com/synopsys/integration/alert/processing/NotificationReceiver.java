@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.event.AlertDefaultEventListener;
+import com.synopsys.integration.alert.api.event.MessageReceiver;
+import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.event.AlertDefaultEventListener;
-import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.workflow.MessageReceiver;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)

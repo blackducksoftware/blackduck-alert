@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.api.event;
 
 import java.util.List;
 

@@ -1,15 +1,14 @@
 /*
- * alert-common
+ * api-event
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.api.event;
 
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.workflow.IssueTrackerCallbackHandler;
 
 public class IssueTrackerCallbackEvent extends AlertEvent {
     private final IssueTrackerCallbackInfo callbackInfo;

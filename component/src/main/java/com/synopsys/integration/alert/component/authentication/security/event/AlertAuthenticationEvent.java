@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.component.authentication.security.event;
 
-import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.api.event.AlertEvent;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 
 public class AlertAuthenticationEvent extends AlertEvent {
