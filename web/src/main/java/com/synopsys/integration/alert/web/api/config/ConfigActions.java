@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
@@ -28,8 +29,8 @@ import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceAc
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -186,7 +187,9 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
-        List<AlertFieldStatus> fieldStatuses = fieldModelProcessor.validateFieldModel(resource);
+        Optional<GlobalValidator> globalValidator = fieldModelProcessor.getGlobalValidator(resource);
+        List<AlertFieldStatus> fieldStatuses = (globalValidator.isPresent()) ? globalValidator.get().validateFieldModel(resource) : fieldModelProcessor.validateFieldModel(resource);
+        
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;
         if (fieldStatuses.isEmpty()) {

@@ -9,5 +9,6 @@ package com.synopsys.integration.alert.common.descriptor.config.field.errors;
 
 public enum FieldStatusSeverity {
     WARNING,
-    ERROR
+    ERROR,
+    NONE
 }

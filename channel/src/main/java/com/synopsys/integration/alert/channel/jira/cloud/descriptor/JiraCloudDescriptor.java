@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.jira.cloud.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -37,8 +38,9 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String JIRA_DESCRIPTION = "Configure the Jira Cloud instance that Alert will send issue updates to.";
 
     @Autowired
-    public JiraCloudDescriptor(JiraCloudGlobalUIConfig globalUIConfig, JiraCloudDistributionUIConfig distributionUIConfig) {
+    public JiraCloudDescriptor(JiraCloudGlobalUIConfig globalUIConfig, JiraCloudDistributionUIConfig distributionUIConfig, JiraCloudGlobalValidator jiraCloudGlobalValidator) {
         super(ChannelKeys.JIRA_CLOUD, distributionUIConfig, globalUIConfig);
+        addGlobalValidator(jiraCloudGlobalValidator);
     }
 
 }

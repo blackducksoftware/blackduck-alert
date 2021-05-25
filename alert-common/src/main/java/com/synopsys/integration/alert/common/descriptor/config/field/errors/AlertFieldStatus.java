@@ -14,6 +14,10 @@ public class AlertFieldStatus extends AlertSerializableModel {
     private final FieldStatusSeverity severity;
     private final String fieldMessage;
 
+    public static AlertFieldStatus success(String fieldName) {
+        return new AlertFieldStatus(fieldName, FieldStatusSeverity.NONE, "Success");
+    }
+
     public static AlertFieldStatus error(String fieldName, String fieldErrorMessage) {
         return new AlertFieldStatus(fieldName, FieldStatusSeverity.ERROR, fieldErrorMessage);
     }
