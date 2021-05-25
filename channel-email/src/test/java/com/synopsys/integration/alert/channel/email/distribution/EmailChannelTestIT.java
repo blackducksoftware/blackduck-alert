@@ -45,7 +45,7 @@ public class EmailChannelTestIT {
     public void init() {
         gson = new Gson();
         properties = new TestProperties();
-        contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        contentConverter = new ContentConverter(new DefaultConversionService());
     }
 
     @Test

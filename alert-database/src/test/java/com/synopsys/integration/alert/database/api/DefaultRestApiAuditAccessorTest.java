@@ -192,7 +192,7 @@ public class DefaultRestApiAuditAccessorTest {
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
-        ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        ContentConverter contentConverter = new ContentConverter(new DefaultConversionService());
 
         AlertNotificationModel alertNotificationModel = new AlertNotificationModel(id, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
             DateUtils.createCurrentDateTimestamp(), false);
