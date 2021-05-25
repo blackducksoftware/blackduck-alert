@@ -16,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.event.EventManager;
-import com.synopsys.integration.alert.api.event.IssueTrackerCallbackEvent;
 import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerResponse;
+import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
 
 @Component
 public class ProviderCallbackIssueTrackerResponsePostProcessor implements IssueTrackerResponsePostProcessor {

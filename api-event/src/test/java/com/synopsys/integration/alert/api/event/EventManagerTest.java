@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.ContentConverter;
 
 public class EventManagerTest {
     @Test
@@ -21,11 +20,7 @@ public class EventManagerTest {
         Gson gson = new Gson();
         String testEventJson = gson.toJson(testEvent);
 
-        ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
-        Mockito.when(contentConverter.getJsonString(Mockito.any(AlertEvent.class))).thenReturn(testEventJson);
-
-        EventManager eventManager = new EventManager(contentConverter, jmsTemplate);
-
+        EventManager eventManager = new EventManager(gson, jmsTemplate);
         eventManager.sendEvents(List.of(testEvent));
 
         Mockito.verify(jmsTemplate, Mockito.times(1)).convertAndSend(Mockito.eq(testDestination), Mockito.eq(testEventJson));

@@ -4,6 +4,7 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
+    implementation project(':api-event')
 
     implementation 'com.synopsys.integration:integration-common'
     implementation 'com.synopsys.integration:integration-rest'
