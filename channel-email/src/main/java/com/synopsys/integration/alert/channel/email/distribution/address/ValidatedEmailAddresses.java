@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.email.distribution.address;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ValidatedEmailAddresses extends AlertSerializableModel {
     private final Set<String> validEmailAddresses;

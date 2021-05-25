@@ -20,12 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
@@ -63,7 +63,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     }
 
     @Override
-    protected MultiCertificateModel createMultiResponseModel(final List<CertificateModel> certificates) {
+    protected MultiCertificateModel createMultiResponseModel(List<CertificateModel> certificates) {
         return new MultiCertificateModel(certificates);
     }
 
@@ -205,4 +205,5 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         }
         return fieldErrors;
     }
+
 }

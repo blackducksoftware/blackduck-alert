@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * api-common-model
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common;
+package com.synopsys.integration.alert.api.common.model;
 
 public class AlertConstants {
     public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";
@@ -14,4 +14,5 @@ public class AlertConstants {
     private AlertConstants() throws InstantiationException {
         throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
     }
+
 }

@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.email.attachment.compatibility;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public class ComponentItemCallbackInfo extends AlertSerializableModel {

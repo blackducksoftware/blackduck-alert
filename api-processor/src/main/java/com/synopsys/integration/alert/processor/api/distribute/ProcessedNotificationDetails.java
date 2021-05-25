@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.processor.api.distribute;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public final class ProcessedNotificationDetails extends AlertSerializableModel {
     private final UUID jobId;

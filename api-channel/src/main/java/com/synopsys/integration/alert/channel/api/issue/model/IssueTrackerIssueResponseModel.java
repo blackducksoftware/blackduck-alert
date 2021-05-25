@@ -12,9 +12,9 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueTrackerIssueResponseModel<T extends Serializable> extends AlertSerializableModel {
     private final T issueId;

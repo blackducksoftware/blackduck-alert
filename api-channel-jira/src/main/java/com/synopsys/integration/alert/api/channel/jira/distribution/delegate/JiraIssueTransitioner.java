@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueRe
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.IdComponent;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;

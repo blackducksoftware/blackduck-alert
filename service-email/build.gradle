@@ -6,6 +6,7 @@ dependencies {
     runtimeOnly 'com.sun.mail:javax.mail'
 
     implementation platform(project(':alert-platform'))
+    implementation project(':api-common-model')
     implementation project(':alert-common')
 
     implementation 'org.jsoup:jsoup'

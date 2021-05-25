@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.common.persistence.accessor;
 import java.util.List;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 
 public interface CustomCertificateAccessor {

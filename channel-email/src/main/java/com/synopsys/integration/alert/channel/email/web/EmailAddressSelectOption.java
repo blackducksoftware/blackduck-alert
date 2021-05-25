@@ -7,11 +7,11 @@
  */
 package com.synopsys.integration.alert.channel.email.web;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class EmailAddressSelectOption extends AlertSerializableModel {
-    private String emailAddress;
-    private Boolean optOut;
+    private final String emailAddress;
+    private final Boolean optOut;
 
     public EmailAddressSelectOption(String emailAddress, Boolean optOut) {
         this.emailAddress = emailAddress;
@@ -25,4 +25,5 @@ public class EmailAddressSelectOption extends AlertSerializableModel {
     public Boolean getOptOut() {
         return optOut;
     }
+
 }

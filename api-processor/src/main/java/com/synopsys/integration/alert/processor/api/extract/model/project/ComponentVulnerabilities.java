@@ -9,8 +9,8 @@ package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ComponentVulnerabilities extends AlertSerializableModel {
     private final List<LinkableItem> critical;

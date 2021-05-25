@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.slack.distribution;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class SlackChannelMessageModel extends AlertSerializableModel {
     private final String markdownContent;

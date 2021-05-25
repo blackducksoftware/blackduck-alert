@@ -12,6 +12,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':alert-database')
+    implementation project(':api-common-model')
     implementation project(':channel')
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')

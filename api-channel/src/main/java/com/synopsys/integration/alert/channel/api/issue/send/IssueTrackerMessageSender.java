@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.function.ThrowingFunction;
 
 public class IssueTrackerMessageSender<T extends Serializable> {

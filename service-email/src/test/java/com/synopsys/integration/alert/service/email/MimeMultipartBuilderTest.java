@@ -20,7 +20,7 @@ import javax.mail.MessagingException;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 
 public class MimeMultipartBuilderTest {

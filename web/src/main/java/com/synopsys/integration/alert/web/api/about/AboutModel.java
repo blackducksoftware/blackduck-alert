@@ -9,8 +9,8 @@ package com.synopsys.integration.alert.web.api.about;
 
 import java.util.Set;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class AboutModel extends AlertSerializableModel {
     private String version;

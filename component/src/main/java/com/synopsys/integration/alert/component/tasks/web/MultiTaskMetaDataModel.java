@@ -9,11 +9,11 @@ package com.synopsys.integration.alert.component.tasks.web;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 
 public class MultiTaskMetaDataModel extends AlertSerializableModel {
-    private List<TaskMetaData> tasks;
+    private final List<TaskMetaData> tasks;
 
     public MultiTaskMetaDataModel(List<TaskMetaData> tasks) {
         this.tasks = tasks;
@@ -22,4 +22,5 @@ public class MultiTaskMetaDataModel extends AlertSerializableModel {
     public List<TaskMetaData> getTasks() {
         return tasks;
     }
+
 }

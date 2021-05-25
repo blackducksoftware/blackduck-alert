@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.update.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class DockerTagsResponseModel extends AlertSerializableModel {
     public static final DockerTagsResponseModel EMPTY = new DockerTagsResponseModel();

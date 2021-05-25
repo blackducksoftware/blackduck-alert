@@ -3,6 +3,7 @@ ext.moduleName = 'com.synopsys.integration.alert.api-event'
 dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
+    implementation project(':api-common-model')
 
     implementation 'com.synopsys.integration:integration-common'
 

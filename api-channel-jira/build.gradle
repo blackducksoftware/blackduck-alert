@@ -6,6 +6,7 @@ dependencies {
     implementation platform(project(':alert-platform'))
 
     implementation project(':alert-common')
+    implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-processor')
     implementation project(':api-descriptor')

@@ -21,6 +21,9 @@ apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 dependencies {
     implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
     implementation project(':api-descriptor')
 
     implementation 'com.synopsys.integration:integration-common'
@@ -38,8 +41,6 @@ dependencies {
     // https://www.baeldung.com/hibernate-c3p0
     // https://www.codejava.net/frameworks/hibernate/solved-jdbcconnectionexception-unable-to-acquire-jdbc-connection-with-hibernate-and-mysql
     runtimeClasspath 'org.hibernate:hibernate-c3p0'
-
-    implementation project(':alert-common')
 
     // Deprecated for removal in 8.0.0. We still need the h2 jar bundled for use in the docker-entrypoint to upgrade a pre 6.0.0 database.
     runtimeOnly 'com.h2database:h2'

@@ -7,13 +7,13 @@
  */
 package com.synopsys.integration.alert.common.workflow.task;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class TaskMetaDataProperty extends AlertSerializableModel {
     private static final long serialVersionUID = -295389156262597054L;
-    private String key;
-    private String displayName;
-    private String value;
+    private final String key;
+    private final String displayName;
+    private final String value;
 
     public TaskMetaDataProperty(String key, String displayName, String value) {
         this.key = key;
@@ -32,4 +32,5 @@ public class TaskMetaDataProperty extends AlertSerializableModel {
     public String getValue() {
         return value;
     }
+
 }

@@ -7,11 +7,11 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class LabelValueSelectOption extends AlertSerializableModel implements Comparable<LabelValueSelectOption> {
-    private String label;
-    private String value;
+    private final String label;
+    private final String value;
 
     public LabelValueSelectOption(String labelAndValue) {
         this(labelAndValue, labelAndValue);

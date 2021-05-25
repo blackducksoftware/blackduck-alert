@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.channel.api.issue.model;
 import java.io.Serializable;
 import java.util.Collection;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class IssueTrackerResponse<T extends Serializable> extends AlertSerializableModel {
     private final String statusMessage;

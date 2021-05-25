@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * api-common-model
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.exception;
+package com.synopsys.integration.alert.api.common.model.exception;
 
 public class AlertConfigurationException extends AlertException {
     private static final long serialVersionUID = -1829641778306376398L;
@@ -25,4 +25,5 @@ public class AlertConfigurationException extends AlertException {
     public AlertConfigurationException(Throwable cause) {
         super(cause);
     }
+
 }

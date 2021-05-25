@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.api;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 
 public interface ChannelMessageSender<D extends DistributionJobDetailsModel, M, R> {
