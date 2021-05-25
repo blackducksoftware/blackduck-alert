@@ -7,8 +7,8 @@
  */
 package com.synopsys.integration.alert.web.api.metadata.model;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class DescriptorTypesResponseModel extends AlertSerializableModel {
     // This is not a component or singleton because it is stateless. It should always be treated as static.

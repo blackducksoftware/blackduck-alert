@@ -10,37 +10,37 @@ package com.synopsys.integration.alert.common.persistence.model;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class DefinedFieldModel extends AlertSerializableModel {
     private final String key;
     private final Collection<ConfigContextEnum> contexts;
     private final Boolean sensitive;
 
-    public static DefinedFieldModel createDistributionField(final String key) {
+    public static DefinedFieldModel createDistributionField(String key) {
         return new DefinedFieldModel(key, ConfigContextEnum.DISTRIBUTION, false);
     }
 
-    public static DefinedFieldModel createDistributionSensitiveField(final String key) {
+    public static DefinedFieldModel createDistributionSensitiveField(String key) {
         return new DefinedFieldModel(key, ConfigContextEnum.DISTRIBUTION, true);
     }
 
-    public static DefinedFieldModel createGlobalField(final String key) {
+    public static DefinedFieldModel createGlobalField(String key) {
         return new DefinedFieldModel(key, ConfigContextEnum.GLOBAL, false);
     }
 
-    public static DefinedFieldModel createGlobalSensitiveField(final String key) {
+    public static DefinedFieldModel createGlobalSensitiveField(String key) {
         return new DefinedFieldModel(key, ConfigContextEnum.GLOBAL, true);
     }
 
-    public DefinedFieldModel(final String key, final ConfigContextEnum context, final Boolean sensitive) {
+    public DefinedFieldModel(String key, ConfigContextEnum context, Boolean sensitive) {
         this.key = key;
         contexts = Collections.singleton(context);
         this.sensitive = sensitive;
     }
 
-    public DefinedFieldModel(final String key, final Collection<ConfigContextEnum> contexts, final Boolean sensitive) {
+    public DefinedFieldModel(String key, Collection<ConfigContextEnum> contexts, Boolean sensitive) {
         this.key = key;
         this.contexts = contexts;
         this.sensitive = sensitive;
@@ -57,4 +57,5 @@ public class DefinedFieldModel extends AlertSerializableModel {
     public Collection<ConfigContextEnum> getContexts() {
         return contexts;
     }
+
 }

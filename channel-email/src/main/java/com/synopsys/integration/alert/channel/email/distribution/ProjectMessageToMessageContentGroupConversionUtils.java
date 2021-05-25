@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.channel.email.attachment.compatibility.Com
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;

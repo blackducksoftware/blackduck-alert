@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class IssueTransitionModel<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;

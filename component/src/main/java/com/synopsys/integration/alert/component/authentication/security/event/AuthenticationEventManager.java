@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 

@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageContentGroup extends AlertSerializableModel {
     private final List<ProviderMessageContent> subContent;

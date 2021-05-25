@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.api.event.IssueTrackerCallbackEvent;
 import com.synopsys.integration.alert.api.event.IssueTrackerCallbackHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;

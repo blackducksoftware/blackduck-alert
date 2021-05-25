@@ -7,8 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.api.issue.model;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 
 public class IssuePolicyDetails extends AlertSerializableModel {

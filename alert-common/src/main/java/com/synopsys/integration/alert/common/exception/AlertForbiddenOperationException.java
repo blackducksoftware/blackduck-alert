@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.common.exception;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+
 public class AlertForbiddenOperationException extends AlertException {
     private static final long serialVersionUID = -3915058637337880806L;
 
@@ -28,4 +30,5 @@ public class AlertForbiddenOperationException extends AlertException {
 
     public AlertForbiddenOperationException() {
     }
+
 }

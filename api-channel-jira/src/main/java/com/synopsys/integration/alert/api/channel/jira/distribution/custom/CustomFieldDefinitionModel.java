@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.custom;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class CustomFieldDefinitionModel extends AlertSerializableModel {
     private final String fieldId;

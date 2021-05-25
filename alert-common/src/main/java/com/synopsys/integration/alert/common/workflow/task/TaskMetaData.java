@@ -9,15 +9,15 @@ package com.synopsys.integration.alert.common.workflow.task;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class TaskMetaData extends AlertSerializableModel {
     private static final long serialVersionUID = -3249768131233749231L;
-    private String taskName;
-    private String type;
-    private String fullyQualifiedType;
-    private String nextRunTime;
-    private List<TaskMetaDataProperty> properties;
+    private final String taskName;
+    private final String type;
+    private final String fullyQualifiedType;
+    private final String nextRunTime;
+    private final List<TaskMetaDataProperty> properties;
 
     public TaskMetaData(String taskName, String type, String fullyQualifiedType, String nextRunTime, List<TaskMetaDataProperty> properties) {
         this.taskName = taskName;
@@ -46,4 +46,5 @@ public class TaskMetaData extends AlertSerializableModel {
     public List<TaskMetaDataProperty> getProperties() {
         return properties;
     }
+
 }

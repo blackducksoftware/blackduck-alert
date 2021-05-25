@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractResourceActions;
@@ -29,7 +30,6 @@ import com.synopsys.integration.alert.common.action.api.ActionMessageCreator;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -81,7 +81,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
     }
 
     @Override
-    protected MultiUserConfigResponseModel createMultiResponseModel(final List<UserConfig> users) {
+    protected MultiUserConfigResponseModel createMultiResponseModel(List<UserConfig> users) {
         return new MultiUserConfigResponseModel(users);
     }
 
@@ -263,4 +263,5 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
             fieldErrors.add(AlertFieldStatus.error(FIELD_KEY_USER_MGMT_PASSWORD, "The password needs to be at least 8 characters long."));
         }
     }
+
 }

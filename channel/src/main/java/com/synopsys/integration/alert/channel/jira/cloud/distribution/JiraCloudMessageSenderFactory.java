@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFact
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCommenter;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueTransitioner;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.jira.common.cloud.service.FieldService;

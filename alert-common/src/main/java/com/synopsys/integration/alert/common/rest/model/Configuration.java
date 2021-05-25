@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.util.Map;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 

@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.msteams.distribution;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class MSTeamsChannelMessageSection extends AlertSerializableModel {
     private final String sectionTitle;

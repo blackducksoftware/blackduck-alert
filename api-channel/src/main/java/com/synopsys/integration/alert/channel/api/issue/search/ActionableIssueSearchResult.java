@@ -13,8 +13,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ActionableIssueSearchResult<T extends Serializable> extends AlertSerializableModel {
     private final ExistingIssueDetails<T> existingIssueDetails;

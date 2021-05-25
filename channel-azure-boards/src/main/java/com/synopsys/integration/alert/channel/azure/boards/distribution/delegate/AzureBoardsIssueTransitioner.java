@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExcept
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsWorkItemTypeStateRetriever;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.state.WorkItemTypeStateResponseModel;

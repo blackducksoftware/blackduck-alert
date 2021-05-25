@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ProcessedProviderMessage<T extends ProviderMessage<T>> extends AlertSerializableModel implements CombinableModel<ProcessedProviderMessage<T>> {
     private final Set<Long> notificationIds;

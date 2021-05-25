@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.api.issue.search;
 
 import java.io.Serializable;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 // TODO consider including status and category (policy or vulnerability)
 public class ExistingIssueDetails<T extends Serializable> extends AlertSerializableModel {

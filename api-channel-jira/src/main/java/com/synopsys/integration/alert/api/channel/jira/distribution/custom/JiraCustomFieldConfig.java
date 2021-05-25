@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class JiraCustomFieldConfig extends AlertSerializableModel {
     private final String fieldName;

@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class PermissionKey extends AlertSerializableModel {
     private final String context;

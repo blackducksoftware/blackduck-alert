@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.channel.api;
 import java.util.List;
 
 import com.synopsys.integration.alert.channel.api.convert.AbstractChannelMessageConverter;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;

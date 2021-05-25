@@ -7,13 +7,15 @@
  */
 package com.synopsys.integration.alert.common.rest.model;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+
 public abstract class Config extends AlertSerializableModel {
     private String id;
 
     public Config() {
     }
 
-    public Config(final String id) {
+    public Config(String id) {
         this.id = id;
     }
 
@@ -21,7 +23,7 @@ public abstract class Config extends AlertSerializableModel {
         return id;
     }
 
-    public void setId(final String id) {
+    public void setId(String id) {
         this.id = id;
     }
 

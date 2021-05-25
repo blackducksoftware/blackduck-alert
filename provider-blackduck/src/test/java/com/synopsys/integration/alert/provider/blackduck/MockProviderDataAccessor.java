@@ -11,12 +11,12 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.persistence.model.ProviderUserModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.datastructure.SetMap;
 
 public final class MockProviderDataAccessor implements ProviderDataAccessor {

@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;

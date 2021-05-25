@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.common.rest.model;
 import java.util.List;
 import java.util.Set;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+
 public class JobFieldModel extends AlertSerializableModel {
     private String jobId;
     private Set<FieldModel> fieldModels;

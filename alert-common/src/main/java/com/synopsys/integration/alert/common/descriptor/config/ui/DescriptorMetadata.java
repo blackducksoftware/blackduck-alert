@@ -9,10 +9,10 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.Set;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DescriptorMetadata extends AlertSerializableModel {

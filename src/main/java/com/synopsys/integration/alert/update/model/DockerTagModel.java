@@ -8,7 +8,7 @@
 package com.synopsys.integration.alert.update.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class DockerTagModel extends AlertSerializableModel {
     // This is not all of the data that Docker provides for tags. These are just the fields we use.

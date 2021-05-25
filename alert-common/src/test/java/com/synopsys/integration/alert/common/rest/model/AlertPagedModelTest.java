@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+
 public class AlertPagedModelTest {
     private final int testTotalPages = 1;
     private final int testCurrentPage = 2;
@@ -43,4 +45,5 @@ public class AlertPagedModelTest {
     public void getContentTest() {
         assertEquals(testContent, testAlertPagedModel.getModels());
     }
+
 }

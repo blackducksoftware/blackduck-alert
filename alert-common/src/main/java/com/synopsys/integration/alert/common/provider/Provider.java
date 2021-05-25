@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;

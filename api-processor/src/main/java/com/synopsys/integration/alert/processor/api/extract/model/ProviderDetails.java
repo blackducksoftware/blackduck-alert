@@ -7,8 +7,8 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class ProviderDetails extends AlertSerializableModel {
     private final Long providerConfigId;

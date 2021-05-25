@@ -7,9 +7,12 @@
  */
 package com.synopsys.integration.alert.common.exception;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+
 public class AlertMethodNotAllowedException extends AlertException {
 
-    public AlertMethodNotAllowedException(final String message) {
+    public AlertMethodNotAllowedException(String message) {
         super("Method not allowed. - " + message);
     }
+
 }

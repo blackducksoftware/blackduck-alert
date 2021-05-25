@@ -9,9 +9,9 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.common.exception;
+package com.synopsys.integration.alert.api.common.model.exception;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.reflect.Constructor;
 import java.util.LinkedHashSet;

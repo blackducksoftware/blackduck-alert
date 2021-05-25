@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.AlertConstants;
+import com.synopsys.integration.alert.api.common.model.AlertConstants;
 
 import javassist.Modifier;
 
@@ -16,7 +16,7 @@ public class AlertConstantsTest {
 
     @Test
     public void testInstantiationException() throws NoSuchMethodException, SecurityException {
-        final Constructor<AlertConstants> constuctor = AlertConstants.class.getDeclaredConstructor();
+        Constructor<AlertConstants> constuctor = AlertConstants.class.getDeclaredConstructor();
 
         assertTrue(Modifier.isPrivate(constuctor.getModifiers()));
 
@@ -24,12 +24,13 @@ public class AlertConstantsTest {
         try {
             constuctor.newInstance();
             fail();
-        } catch (final InstantiationException e) {
-        } catch (final IllegalAccessException e) {
+        } catch (InstantiationException e) {
+        } catch (IllegalAccessException e) {
             fail();
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             fail();
-        } catch (final InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
         }
     }
+
 }

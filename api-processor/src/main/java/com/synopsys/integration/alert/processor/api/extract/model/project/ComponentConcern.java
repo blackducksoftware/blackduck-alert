@@ -12,8 +12,8 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
 
 public class ComponentConcern extends AlertSerializableModel implements CombinableModel<ComponentConcern>, Comparable<ComponentConcern> {

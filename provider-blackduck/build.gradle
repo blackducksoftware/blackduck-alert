@@ -5,6 +5,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':alert-database')
+    implementation project(':api-common-model')
     implementation project(':api-descriptor')
     implementation project(':api-event')
     implementation project(':api-processor')
