@@ -13,16 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.ContentConverter;
+import com.google.gson.Gson;
 
 @Component
 public class EventManager {
+    private final Gson gson;
     private final JmsTemplate jmsTemplate;
-    private final ContentConverter contentConverter;
 
     @Autowired
-    public EventManager(ContentConverter contentConverter, JmsTemplate jmsTemplate) {
-        this.contentConverter = contentConverter;
+    public EventManager(Gson gson, JmsTemplate jmsTemplate) {
+        this.gson = gson;
         this.jmsTemplate = jmsTemplate;
     }
 
@@ -34,8 +34,15 @@ public class EventManager {
 
     public void sendEvent(AlertEvent event) {
         String destination = event.getDestination();
-        String jsonMessage = contentConverter.getJsonString(event);
+        String jsonMessage = toJsonOrNull(event);
         jmsTemplate.convertAndSend(destination, jsonMessage);
+    }
+
+    private String toJsonOrNull(Object content) {
+        if (content != null) {
+            return gson.toJson(content);
+        }
+        return null;
     }
 
 }

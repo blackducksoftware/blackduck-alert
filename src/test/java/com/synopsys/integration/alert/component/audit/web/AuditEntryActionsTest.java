@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -156,7 +155,7 @@ public class AuditEntryActionsTest {
 
         NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
                                                      .createEntity();
-        ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
+        ContentConverter contentConverter = new ContentConverter(new DefaultConversionService());
 
         DistributionJobModel distributionJob = DistributionJobModel.builder()
                                                    .jobId(UUID.randomUUID()).enabled(true).blackDuckGlobalConfigId(2L).channelDescriptorName("distributionType").name("name").createdAt(OffsetDateTime.now())
@@ -210,7 +209,7 @@ public class AuditEntryActionsTest {
         JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
 
-        ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
+        ContentConverter contentConverter = new ContentConverter(new DefaultConversionService());
         NotificationEntity notificationContent = new MockNotificationContent(DateUtils.createCurrentDateTimestamp(), "provider", DateUtils.createCurrentDateTimestamp(), "notificationType", "{content: \"content is here...\"}", 1L, 1L)
                                                      .createEntity();
         DistributionJobModel distributionJob = DistributionJobModel.builder()

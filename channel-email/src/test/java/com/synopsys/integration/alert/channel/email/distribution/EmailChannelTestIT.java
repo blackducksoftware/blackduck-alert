@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.EmailITTestAssertions;
@@ -21,7 +20,6 @@ import com.synopsys.integration.alert.channel.email.attachment.MessageContentGro
 import com.synopsys.integration.alert.channel.email.distribution.address.EmailAddressGatherer;
 import com.synopsys.integration.alert.channel.email.distribution.address.JobEmailAddressValidator;
 import com.synopsys.integration.alert.channel.email.distribution.address.ValidatedEmailAddresses;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -39,13 +37,11 @@ import com.synopsys.integration.alert.test.common.TestTags;
 public class EmailChannelTestIT {
     protected Gson gson;
     protected TestProperties properties;
-    protected ContentConverter contentConverter;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
         properties = new TestProperties();
-        contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
     @Test
