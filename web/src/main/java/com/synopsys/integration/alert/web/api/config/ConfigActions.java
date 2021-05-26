@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceAc
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -42,6 +43,7 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.MultiFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -57,11 +59,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final DescriptorMap descriptorMap;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final EncryptionUtility encryptionUtility;
 
     @Autowired
     public ConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationAccessor configurationAccessor,
         FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter,
-        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory) {
+        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility) {
         super(authorizationManager, descriptorAccessor);
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
@@ -69,6 +72,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         this.modelConverter = modelConverter;
         this.descriptorMap = descriptorMap;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
+        this.encryptionUtility = encryptionUtility;
     }
 
     @Override
@@ -187,9 +191,14 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
+        if (!encryptionUtility.isInitialized()) {
+            ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(EncryptionSettingsValidator.ENCRYPTION_MISSING);
+            return new ValidationActionResponse(validationResponseModel);
+        }
+
         Optional<GlobalValidator> globalValidator = fieldModelProcessor.getGlobalValidator(resource);
         List<AlertFieldStatus> fieldStatuses = (globalValidator.isPresent()) ? globalValidator.get().validateFieldModel(resource) : fieldModelProcessor.validateFieldModel(resource);
-        
+
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;
         if (fieldStatuses.isEmpty()) {
@@ -205,7 +214,6 @@ public class ConfigActions extends AbstractConfigResourceActions {
     protected ValidationActionResponse testWithoutChecks(FieldModel resource) {
         Optional<TestAction> testActionOptional = descriptorProcessor.retrieveTestAction(resource);
         ValidationResponseModel responseModel;
-        String id = resource.getId();
         if (testActionOptional.isPresent()) {
             try {
                 FieldModel upToDateFieldModel = fieldModelProcessor.createCustomMessageFieldModel(resource);

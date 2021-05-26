@@ -63,7 +63,7 @@ public class ConfigActionTestIT {
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
         ConfigActions configActions = new ConfigActions(authorizationManager, descriptorAccessor, configurationAccessor, spiedFieldModelProcessor, descriptorProcessor, configurationFieldModelConverter, descriptorMap,
-            pkixErrorResponseFactory);
+            pkixErrorResponseFactory, encryptionUtility);
         ConfigurationFieldModel proxyHost = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_HOST);
         proxyHost.setFieldValue("proxyHost");
         ConfigurationFieldModel proxyPort = ConfigurationFieldModel.create(ProxyManager.KEY_PROXY_PORT);

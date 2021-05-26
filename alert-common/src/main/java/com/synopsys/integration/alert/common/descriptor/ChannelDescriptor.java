@@ -15,9 +15,7 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public abstract class ChannelDescriptor extends Descriptor {
     public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
-        addGlobalUiConfig(globalUIConfig);
+        this(channelKey, distributionUIConfig, globalUIConfig, null);
     }
 
     public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig, GlobalValidator globalValidator) {
