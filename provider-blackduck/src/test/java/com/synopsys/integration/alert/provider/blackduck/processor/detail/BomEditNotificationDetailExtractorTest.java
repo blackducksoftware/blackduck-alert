@@ -64,7 +64,7 @@ public class BomEditNotificationDetailExtractorTest {
 
         BlackDuckApiClient blackDuckApiClient = Mockito.mock(BlackDuckApiClient.class);
         Mockito.when(blackDuckApiClient.getResponse(Mockito.any(HttpUrl.class), Mockito.eq(ProjectVersionView.class))).thenReturn(projectVersionView);
-        Mockito.when(blackDuckApiClient.getResponse(Mockito.eq(projectVersionView), Mockito.eq(ProjectVersionView.PROJECT_LINK_RESPONSE))).thenReturn(Optional.of(projectView));
+        Mockito.when(blackDuckApiClient.getResponse(Mockito.eq(projectVersionView.metaProjectLink()))).thenReturn(projectView);
 
         BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckServicesFactory.getBlackDuckApiClient()).thenReturn(blackDuckApiClient);
