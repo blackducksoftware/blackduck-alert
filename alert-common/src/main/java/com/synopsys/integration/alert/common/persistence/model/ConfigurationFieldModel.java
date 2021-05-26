@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ConfigurationFieldModel extends AlertSerializableModel {
     private final String fieldKey;
@@ -84,4 +84,5 @@ public class ConfigurationFieldModel extends AlertSerializableModel {
     public boolean equals(Object that) {
         return EqualsBuilder.reflectionEquals(this, that, "fieldValues");
     }
+
 }

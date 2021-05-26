@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.persistence.model;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 // TODO rename this to something more descriptive like UserProvidedCertificateModel
 public class CustomCertificateModel extends AlertSerializableModel {
@@ -50,4 +50,5 @@ public class CustomCertificateModel extends AlertSerializableModel {
     public String getLastUpdated() {
         return lastUpdated;
     }
+
 }

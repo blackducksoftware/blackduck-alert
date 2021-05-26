@@ -45,10 +45,10 @@ public class SlackDistributionEventReceiverTest {
     private final MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
     private final MockWebServer mockSlackServer = new MockWebServer();
 
+    private final Gson gson = new Gson();
+
     @BeforeEach
     public void init() throws IOException {
-        Gson gson = new Gson();
-
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
         SlackChannelMessageFormatter slackChannelMessageFormatter = new SlackChannelMessageFormatter(markupEncoderUtil);
         SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
@@ -110,7 +110,7 @@ public class SlackDistributionEventReceiverTest {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
+        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
         return new RestChannelUtility(channelRestConnectionFactory);
     }
 

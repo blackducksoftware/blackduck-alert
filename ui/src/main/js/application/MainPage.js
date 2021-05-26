@@ -36,12 +36,13 @@ import TaskManagement from 'page/task/TaskManagement';
 import { USER_MANAGEMENT_INFO } from 'page/user/UserModel';
 import UserManagement from 'page/user/UserManagement';
 import JiraServerGlobalConfiguration from 'page/channel/jira/server/JiraServerGlobalConfiguration';
-import { CONTEXT_TYPE, doesDescriptorExist } from 'common/util/descriptorUtilities';
+import { CONTEXT_TYPE, isOperationAssigned, OPERATIONS } from 'common/util/descriptorUtilities';
 import { DISTRIBUTION_INFO, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import DistributionConfiguration from 'page/distribution/DistributionConfiguration';
 import DistributionConfigurationForm from 'page/distribution/DistributionConfigurationForm';
 import { unauthorized } from 'store/actions/session';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
+import DescriptorRoute from 'common/DescriptorRoute';
 
 const MainPage = ({
     descriptors, fetching, getDescriptorsRedux, csrfToken, autoRefresh, unauthorizedFunction
@@ -91,40 +92,95 @@ const MainPage = ({
                     <Redirect to="/alert/general/about" />
                 )}
             />
-            <Route
-                exact
-                key="blackduck-route"
-                path={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
-            >
-                {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && <BlackDuckConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly} />}
-            </Route>
-            {doesDescriptorExist(globalDescriptorMap, BLACKDUCK_INFO.key) && createRoute(providerUri, BLACKDUCK_INFO.url, <BlackDuckProviderConfiguration
-                csrfToken={csrfToken}
-                showRefreshButton={!autoRefresh}
-                readonly={globalDescriptorMap[BLACKDUCK_INFO.key].readOnly}
-            />)}
-            {doesDescriptorExist(globalDescriptorMap, AZURE_INFO.key) && createRoute(channelUri, AZURE_INFO.url, <AzureGlobalConfiguration
-                csrfToken={csrfToken}
-                errorHandler={errorHandler}
-                readonly={globalDescriptorMap[AZURE_INFO.key].readOnly}
-            />)}
-            {doesDescriptorExist(globalDescriptorMap, EMAIL_INFO.key) && createRoute(channelUri, EMAIL_INFO.url, <EmailGlobalConfiguration
-                csrfToken={csrfToken}
-                errorHandler={errorHandler}
-                readonly={globalDescriptorMap[EMAIL_INFO.key].readOnly}
-            />)}
-            {doesDescriptorExist(globalDescriptorMap, JIRA_CLOUD_INFO.key) && createRoute(channelUri, JIRA_CLOUD_INFO.url, <JiraCloudGlobalConfiguration
-                csrfToken={csrfToken}
-                errorHandler={errorHandler}
-                readonly={globalDescriptorMap[JIRA_CLOUD_INFO.key].readOnly}
-            />)}
-            {doesDescriptorExist(globalDescriptorMap, JIRA_SERVER_INFO.key) && createRoute(channelUri, JIRA_SERVER_INFO.url, <JiraServerGlobalConfiguration
-                csrfToken={csrfToken}
-                errorHandler={errorHandler}
-                readonly={globalDescriptorMap[JIRA_SERVER_INFO.key].readOnly}
-            />)}
-            {doesDescriptorExist(globalDescriptorMap, MSTEAMS_INFO.key) && createRoute(channelUri, MSTEAMS_INFO.url, <MSTeamsGlobalConfiguration />)}
-            {doesDescriptorExist(globalDescriptorMap, SLACK_INFO.key) && createRoute(channelUri, SLACK_INFO.url, <SlackGlobalConfiguration />)}
+            <DescriptorRoute
+                descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
+                urlName={BLACKDUCK_INFO.url}
+                paths={[`${BLACKDUCK_URLS.blackDuckConfigUrl}/:id?`, `${BLACKDUCK_URLS.blackDuckConfigCopyUrl}/:id?`]}
+                render={(readonly, showTest, showSave) => (
+                    <BlackDuckConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readonly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={providerUri}
+                urlName={BLACKDUCK_INFO.url}
+                descriptor={globalDescriptorMap[BLACKDUCK_INFO.key]}
+                render={(readonly, showTest, showSave, showDelete) => (
+                    <BlackDuckProviderConfiguration
+                        csrfToken={csrfToken}
+                        showRefreshButton={!autoRefresh}
+                        readonly={readonly}
+                        displayDelete={showDelete}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={channelUri}
+                urlName={AZURE_INFO.url}
+                descriptor={globalDescriptorMap[AZURE_INFO.key]}
+                render={(readonly, showTest, showSave, showDelete) => (
+                    <AzureGlobalConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readonly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        displayDelete={showDelete}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={channelUri}
+                urlName={EMAIL_INFO.url}
+                descriptor={globalDescriptorMap[EMAIL_INFO.key]}
+                render={(readOnly, showTest, showSave, showDelete) => (
+                    <EmailGlobalConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        displayDelete={showDelete}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={channelUri}
+                urlName={JIRA_CLOUD_INFO.url}
+                descriptor={globalDescriptorMap[JIRA_CLOUD_INFO.key]}
+                render={(readOnly, showTest, showSave, showDelete) => (
+                    <JiraCloudGlobalConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        displayDelete={showDelete}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={channelUri}
+                urlName={JIRA_SERVER_INFO.url}
+                descriptor={globalDescriptorMap[JIRA_SERVER_INFO.key]}
+                render={(readOnly, showTest, showSave, showDelete) => (
+                    <JiraServerGlobalConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        displayDelete={showDelete}
+                    />
+                )}
+            />
+            <DescriptorRoute uriPrefix={channelUri} urlName={MSTEAMS_INFO.url} descriptor={globalDescriptorMap[MSTEAMS_INFO.key]} render={() => <MSTeamsGlobalConfiguration />} />
+            <DescriptorRoute uriPrefix={channelUri} urlName={SLACK_INFO.url} descriptor={globalDescriptorMap[SLACK_INFO.key]} render={() => <SlackGlobalConfiguration />} />
             <Route
                 exact
                 key="distribution-route"
@@ -133,14 +189,85 @@ const MainPage = ({
                 <DistributionConfigurationForm csrfToken={csrfToken} readonly={false} descriptors={distributionDescriptorMap} errorHandler={errorHandler} />
             </Route>
             {createRoute('/alert/jobs/', DISTRIBUTION_INFO.url, <DistributionConfiguration csrfToken={csrfToken} descriptors={descriptors} errorHandler={errorHandler} showRefreshButton={!autoRefresh} />)}
-            {doesDescriptorExist(globalDescriptorMap, AUDIT_INFO.key) && createRoute(componentUri, AUDIT_INFO.url, <AuditPage />)}
-            {doesDescriptorExist(globalDescriptorMap, AUTHENTICATION_INFO.key) && createRoute(componentUri, AUTHENTICATION_INFO.url, <AuthenticationConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[AUTHENTICATION_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, CERTIFICATE_INFO.key) && createRoute(componentUri, CERTIFICATE_INFO.url, <CertificatesPage />)}
-            {doesDescriptorExist(globalDescriptorMap, SCHEDULING_INFO.key) && createRoute(componentUri, SCHEDULING_INFO.url, <SchedulingConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[SCHEDULING_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, SETTINGS_INFO.key) && createRoute(componentUri, SETTINGS_INFO.url, <SettingsConfiguration csrfToken={csrfToken} errorHandler={errorHandler} readonly={globalDescriptorMap[SETTINGS_INFO.key].readOnly} />)}
-            {doesDescriptorExist(globalDescriptorMap, TASK_MANAGEMENT_INFO.key) && createRoute(componentUri, TASK_MANAGEMENT_INFO.url, <TaskManagement />)}
-            {doesDescriptorExist(globalDescriptorMap, USER_MANAGEMENT_INFO.key) && createRoute(componentUri, USER_MANAGEMENT_INFO.url, <UserManagement />)}
-            <Route exact path="/alert/general/about" component={AboutInfo} />
+            <DescriptorRoute
+                uriPrefix={componentUri}
+                urlName={AUDIT_INFO.url}
+                descriptor={globalDescriptorMap[AUDIT_INFO.key]}
+                render={() => (
+                    <AuditPage />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={componentUri}
+                urlName={AUTHENTICATION_INFO.url}
+                descriptor={globalDescriptorMap[AUTHENTICATION_INFO.key]}
+                hasTestFields
+                render={(readOnly, showTest, showSave) => (
+                    <AuthenticationConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displayTest={showTest}
+                        displaySave={showSave}
+                        fileRead={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_READ)}
+                        fileWrite={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_WRITE)}
+                        fileDelete={isOperationAssigned(globalDescriptorMap[AUTHENTICATION_INFO.key], OPERATIONS.UPLOAD_FILE_DELETE)}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={componentUri}
+                urlName={CERTIFICATE_INFO.url}
+                descriptor={globalDescriptorMap[CERTIFICATE_INFO.key]}
+                render={() => (
+                    <CertificatesPage />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={componentUri}
+                urlName={SCHEDULING_INFO.url}
+                descriptor={globalDescriptorMap[SCHEDULING_INFO.key]}
+                render={(readOnly, showTest, showSave) => (
+                    <SchedulingConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displaySave={showSave}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={componentUri}
+                urlName={SETTINGS_INFO.url}
+                descriptor={globalDescriptorMap[SETTINGS_INFO.key]}
+                render={(readOnly, showTest, showSave) => (
+                    <SettingsConfiguration
+                        csrfToken={csrfToken}
+                        errorHandler={errorHandler}
+                        readonly={readOnly}
+                        displaySave={showSave}
+                    />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={componentUri}
+                urlName={TASK_MANAGEMENT_INFO.url}
+                descriptor={globalDescriptorMap[TASK_MANAGEMENT_INFO.key]}
+                render={() => (
+                    <TaskManagement />
+                )}
+            />
+            <DescriptorRoute
+                uriPrefix={componentUri}
+                urlName={USER_MANAGEMENT_INFO.url}
+                descriptor={globalDescriptorMap[USER_MANAGEMENT_INFO.key]}
+                render={() => (
+                    <UserManagement />
+                )}
+            />
+            <Route exact path="/alert/general/about">
+                <AboutInfo globalDescriptorMap={globalDescriptorMap} distributionDescriptorMap={distributionDescriptorMap} />
+            </Route>
         </div>
     );
 

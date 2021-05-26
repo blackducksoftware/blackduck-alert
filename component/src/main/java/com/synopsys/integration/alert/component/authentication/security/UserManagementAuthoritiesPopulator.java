@@ -22,7 +22,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -34,9 +34,9 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 @Component
 public class UserManagementAuthoritiesPopulator {
     private final Logger logger = LoggerFactory.getLogger(UserManagementAuthoritiesPopulator.class);
-    private AuthenticationDescriptorKey authenticationDescriptorKey;
-    private ConfigurationAccessor configurationAccessor;
-    private UserAccessor userAccessor;
+    private final AuthenticationDescriptorKey authenticationDescriptorKey;
+    private final ConfigurationAccessor configurationAccessor;
+    private final UserAccessor userAccessor;
 
     @Autowired
     public UserManagementAuthoritiesPopulator(AuthenticationDescriptorKey authenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserAccessor userAccessor) {

@@ -12,7 +12,9 @@ import NumberInput from 'common/input/NumberInput';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-const SettingsConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const SettingsConfiguration = ({
+    csrfToken, errorHandler, readonly, displaySave
+}) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SETTINGS_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
@@ -44,6 +46,7 @@ const SettingsConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                 buttonIdPrefix={SETTINGS_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displaySave={displaySave}
                 errorHandler={errorHandler}
             >
                 <h2 key="settings-header">Encryption Configuration</h2>
@@ -129,11 +132,13 @@ SettingsConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    displaySave: PropTypes.bool
 };
 
 SettingsConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displaySave: true
 };
 
 export default SettingsConfiguration;

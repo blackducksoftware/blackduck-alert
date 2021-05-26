@@ -11,7 +11,9 @@ import OAuthEndpointButtonField from 'common/input/field/OAuthEndpointButtonFiel
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import TextInput from 'common/input/TextInput';
 
-const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const AzureGlobalConfiguration = ({
+    csrfToken, errorHandler, readonly, displayTest, displaySave, displayDelete
+}) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AZURE_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
 
@@ -36,6 +38,9 @@ const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                 buttonIdPrefix={AZURE_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displayTest={displayTest}
+                displaySave={displaySave}
+                displayDelete={displayDelete}
                 errorHandler={errorHandler}
             >
                 <TextInput
@@ -91,7 +96,7 @@ const AzureGlobalConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                         AZURE_GLOBAL_FIELD_KEYS.clientId,
                         AZURE_GLOBAL_FIELD_KEYS.clientSecret
                     ]}
-                    readOnly={readonly}
+                    readOnly={readonly || !displayTest}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(AZURE_GLOBAL_FIELD_KEYS.configureOAuth)}
                     errorValue={errors.fieldErrors[AZURE_GLOBAL_FIELD_KEYS.configureOAuth]}
@@ -105,12 +110,17 @@ AzureGlobalConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
-
+    readonly: PropTypes.bool,
+    displayTest: PropTypes.bool,
+    displaySave: PropTypes.bool,
+    displayDelete: PropTypes.bool
 };
 
 AzureGlobalConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displayTest: true,
+    displaySave: true,
+    displayDelete: true
 };
 
 export default AzureGlobalConfiguration;

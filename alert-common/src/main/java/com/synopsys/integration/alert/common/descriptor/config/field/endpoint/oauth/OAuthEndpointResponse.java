@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class OAuthEndpointResponse extends AlertSerializableModel {
     private final boolean authenticated;
@@ -31,4 +31,5 @@ public class OAuthEndpointResponse extends AlertSerializableModel {
     public String getMessage() {
         return message;
     }
+
 }

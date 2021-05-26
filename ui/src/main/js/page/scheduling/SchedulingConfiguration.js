@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CommonGlobalConfigurationForm from 'common/global/CommonGlobalConfigurationForm';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
-import { SCHEDULING_FIELD_KEYS, SCHEDULING_INFO } from 'page/scheduling/SchedulingModel';
+import { SCHEDULING_DIGEST_HOURS_OPTIONS, SCHEDULING_FIELD_KEYS, SCHEDULING_INFO, SCHEDULING_PURGE_FREQUENCY_OPTIONS } from 'page/scheduling/SchedulingModel';
 import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import DynamicSelectInput from 'common/input/DynamicSelectInput';
@@ -10,46 +10,9 @@ import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
-const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly }) => {
+const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly, displaySave }) => {
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, SCHEDULING_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
-
-    const digestHours = [
-        { label: '12 am', value: '0' },
-        { label: '1 am', value: '1' },
-        { label: '2 am', value: '2' },
-        { label: '3 am', value: '3' },
-        { label: '4 am', value: '4' },
-        { label: '5 am', value: '5' },
-        { label: '6 am', value: '6' },
-        { label: '7 am', value: '7' },
-        { label: '8 am', value: '8' },
-        { label: '9 am', value: '9' },
-        { label: '10 am', value: '10' },
-        { label: '11 am', value: '11' },
-        { label: '12 pm', value: '12' },
-        { label: '1 pm', value: '13' },
-        { label: '2 pm', value: '14' },
-        { label: '3 pm', value: '15' },
-        { label: '4 pm', value: '16' },
-        { label: '5 pm', value: '17' },
-        { label: '6 pm', value: '18' },
-        { label: '7 pm', value: '19' },
-        { label: '8 pm', value: '20' },
-        { label: '9 pm', value: '21' },
-        { label: '10 pm', value: '22' },
-        { label: '11 pm', value: '23' }
-    ];
-
-    const purgeFrequencies = [
-        { label: 'Every day', value: '1' },
-        { label: 'Every 2 days', value: '2' },
-        { label: 'Every 3 days', value: '3' },
-        { label: 'Every 4 days', value: '4' },
-        { label: 'Every 5 days', value: '5' },
-        { label: 'Every 6 days', value: '6' },
-        { label: 'Every 7 days', value: '7' }
-    ];
 
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(SCHEDULING_INFO.key, csrfToken);
@@ -74,6 +37,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                 buttonIdPrefix={SCHEDULING_INFO.key}
                 retrieveData={retrieveData}
                 readonly={readonly}
+                displaySave={displaySave}
                 errorHandler={errorHandler}
             >
                 <DynamicSelectInput
@@ -84,7 +48,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    options={digestHours}
+                    options={SCHEDULING_DIGEST_HOURS_OPTIONS}
                     clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.dailyProcessorHourOfDay)}
@@ -108,7 +72,7 @@ const SchedulingConfiguration = ({ csrfToken, errorHandler, readonly }) => {
                     required
                     readOnly={readonly}
                     onChange={FieldModelUtilities.handleChange(formData, setFormData)}
-                    options={purgeFrequencies}
+                    options={SCHEDULING_PURGE_FREQUENCY_OPTIONS}
                     clearable={false}
                     value={FieldModelUtilities.getFieldModelValues(formData, SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(SCHEDULING_FIELD_KEYS.purgeDataFrequencyDays)}
@@ -133,11 +97,13 @@ SchedulingConfiguration.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     errorHandler: PropTypes.object.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
-    readonly: PropTypes.bool
+    readonly: PropTypes.bool,
+    displaySave: PropTypes.bool
 };
 
 SchedulingConfiguration.defaultProps = {
-    readonly: false
+    readonly: false,
+    displaySave: true
 };
 
 export default SchedulingConfiguration;

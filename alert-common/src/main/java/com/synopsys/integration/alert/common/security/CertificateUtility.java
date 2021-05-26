@@ -29,15 +29,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 
 @Component
 public class CertificateUtility {
     private final Logger logger = LoggerFactory.getLogger(CertificateUtility.class);
-    private AlertProperties alertProperties;
+    private final AlertProperties alertProperties;
 
     @Autowired
     public CertificateUtility(AlertProperties alertProperties) {

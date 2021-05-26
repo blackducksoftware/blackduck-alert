@@ -8,17 +8,38 @@
 package com.synopsys.integration.alert.test.common;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
 public final class TestResourceUtils {
-    public static final String DEFAULT_PROPERTIES_FILE_LOCATION = "test.properties";
-    public static final File BASE_TEST_RESOURCE_DIR = new File(TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "../../../../src/test/resources/");
+    public static final String DEFAULT_PROPERTIES_FILE_NAME = "test.properties";
+
+    private static final String SUB_PROJECT_NAME = "test-common";
+    private static final File EXPECTED_BASE_TEST_RESOURCE_DIR = new File(TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "../../../../src/main/resources/");
+
+    public static Path createTestPropertiesCanonicalFilePath() throws IOException {
+        File buildOutputDir = new File(TestResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getCanonicalFile();
+        File subProjectDir = findAncestorDirectory(buildOutputDir, SUB_PROJECT_NAME).orElse(EXPECTED_BASE_TEST_RESOURCE_DIR);
+        return Path.of(subProjectDir.getAbsolutePath(), "src", "main", "resources", TestResourceUtils.DEFAULT_PROPERTIES_FILE_NAME);
+    }
+
+    public static Optional<File> findAncestorDirectory(File file, String ancestorDirectoryName) {
+        while (!ancestorDirectoryName.equals(file.getName())) {
+            file = file.getParentFile();
+            if (null == file) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(file);
+    }
 
     /**
      * @param resourcePath The path to the file resource. For example: If the file is in src/test/resources/dir1/dir2/file.ext, then use "dir1/dir2/file.ext"
@@ -33,11 +54,23 @@ public final class TestResourceUtils {
 
     public static Properties loadProperties(String resourceLocation) throws IOException {
         Properties properties = new Properties();
+
         ClassPathResource classPathResource = new ClassPathResource(resourceLocation);
-        try (InputStream iStream = classPathResource.getInputStream()) {
-            properties.load(iStream);
+        try (InputStream classPathInputStream = classPathResource.getInputStream()) {
+            properties.load(classPathInputStream);
+            return properties;
+        } catch (IOException ioException) {
+            System.out.printf("Failed to load [%s] from classpath%n", resourceLocation);
         }
-        return properties;
+
+        File fileResource = new File(resourceLocation);
+        try (FileInputStream fileInputStream = FileUtils.openInputStream(fileResource)) {
+            properties.load(fileInputStream);
+            return properties;
+        } catch (IOException ioException) {
+            System.out.printf("Failed to load [%s] as file%n", resourceLocation);
+            throw ioException;
+        }
     }
 
     private TestResourceUtils() {

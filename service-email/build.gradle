@@ -1,0 +1,21 @@
+ext.moduleName = 'com.synopsys.integration.alert.service.email'
+
+dependencies {
+    api 'org.freemarker:freemarker'
+
+    runtimeOnly 'com.sun.mail:javax.mail'
+
+    implementation platform(project(':alert-platform'))
+    implementation project(':api-common-model')
+    implementation project(':alert-common')
+
+    implementation 'org.jsoup:jsoup'
+    implementation 'org.springframework:spring-context'
+    implementation 'javax.mail:javax.mail-api'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+    // TODO get logging and apache utils dependencies directly
+    implementation 'com.synopsys.integration:integration-common'
+
+    testImplementation project(':test-common')
+}

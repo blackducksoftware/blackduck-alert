@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.component.authentication.security.AuthenticationPerformer;
 import com.synopsys.integration.alert.component.authentication.security.event.AuthenticationEventManager;
 
@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.component.authentication.security.event.Au
 public class LdapAuthenticationPerformer extends AuthenticationPerformer {
     private final Logger logger = LoggerFactory.getLogger(LdapAuthenticationPerformer.class);
 
-    private LdapManager ldapManager;
+    private final LdapManager ldapManager;
 
     @Autowired
     public LdapAuthenticationPerformer(AuthenticationEventManager authenticationEventManager, RoleAccessor roleAccessor, LdapManager ldapManager) {

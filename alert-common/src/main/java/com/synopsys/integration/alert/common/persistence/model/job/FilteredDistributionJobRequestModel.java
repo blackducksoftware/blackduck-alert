@@ -12,15 +12,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class FilteredDistributionJobRequestModel extends AlertSerializableModel {
-    private List<FrequencyType> frequencyTypes;
-    private Set<String> projectNames = new HashSet<>();
-    private Set<String> notificationTypes = new HashSet<>();
-    private Set<String> vulnerabilitySeverities = new HashSet<>();
-    private Set<String> policyNames = new HashSet<>();
+    private final List<FrequencyType> frequencyTypes;
+    private final Set<String> projectNames = new HashSet<>();
+    private final Set<String> notificationTypes = new HashSet<>();
+    private final Set<String> vulnerabilitySeverities = new HashSet<>();
+    private final Set<String> policyNames = new HashSet<>();
 
     public FilteredDistributionJobRequestModel(List<FrequencyType> frequencyTypes) {
         this.frequencyTypes = frequencyTypes;
@@ -57,7 +57,7 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
     public Set<String> getVulnerabilitySeverities() {
         return vulnerabilitySeverities;
     }
-    
+
     public Set<String> getPolicyNames() {
         return policyNames;
     }
@@ -69,5 +69,6 @@ public class FilteredDistributionJobRequestModel extends AlertSerializableModel 
     public boolean isPolicyNotification() {
         return !getPolicyNames().isEmpty();
     }
+
 }
 

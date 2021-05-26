@@ -10,10 +10,10 @@ package com.synopsys.integration.alert.common.message.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
 
 public class MessageResult extends AlertSerializableModel {
     private static final String STATUS_MESSAGE_SUCCESS = "Success";

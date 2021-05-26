@@ -1,0 +1,23 @@
+ext.moduleName = 'com.synopsys.integration.alert.channel.email'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-channel')
+    implementation project(':api-processor')
+    implementation project(':api-descriptor')
+    implementation project(':service-email')
+
+    // TODO get logging and apache utils dependencies directly
+    implementation 'com.synopsys.integration:integration-common'
+
+    implementation 'org.springframework:spring-web'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+    implementation 'javax.mail:javax.mail-api'
+
+    testImplementation project(':test-common')
+}

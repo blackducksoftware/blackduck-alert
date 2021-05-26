@@ -7,9 +7,9 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModelComponent;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-public class TableSelectColumn extends AlertSerializableModelComponent {
+public class TableSelectColumn extends AlertSerializableModel {
     private final String header;
     private final String headerLabel;
     private final boolean isKey;

@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.persistence.model;
 
 import java.util.UUID;
 
-import com.synopsys.integration.alert.common.rest.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class AuditJobStatusModel extends AlertSerializableModel {
     private UUID jobId;

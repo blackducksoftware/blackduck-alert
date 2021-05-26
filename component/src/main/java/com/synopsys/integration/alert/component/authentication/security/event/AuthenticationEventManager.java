@@ -23,16 +23,16 @@ import org.springframework.security.saml.SAMLAuthenticationToken;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.common.event.EventManager;
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
 @Component
 public class AuthenticationEventManager {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationEventManager.class);
-    private EventManager eventManager;
+    private final EventManager eventManager;
 
     @Autowired
     public AuthenticationEventManager(EventManager eventManager) {

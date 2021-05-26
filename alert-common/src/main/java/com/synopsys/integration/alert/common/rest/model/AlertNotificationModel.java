@@ -9,18 +9,20 @@ package com.synopsys.integration.alert.common.rest.model;
 
 import java.time.OffsetDateTime;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+
 public class AlertNotificationModel extends AlertSerializableModel {
     private Long id;
-    private Long providerConfigId;
+    private final Long providerConfigId;
 
-    private String provider;
-    private String providerConfigName;
-    private String notificationType;
-    private String content;
-    private boolean processed;
+    private final String provider;
+    private final String providerConfigName;
+    private final String notificationType;
+    private final String content;
+    private final boolean processed;
 
-    private OffsetDateTime createdAt;
-    private OffsetDateTime providerCreationTime;
+    private final OffsetDateTime createdAt;
+    private final OffsetDateTime providerCreationTime;
 
     public AlertNotificationModel(Long id, Long providerConfigId, String provider, String providerConfigName, String notificationType, String content, OffsetDateTime createdAt, OffsetDateTime providerCreationTime, boolean processed) {
         this.id = id;

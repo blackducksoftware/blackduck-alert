@@ -12,7 +12,9 @@ import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import ConfirmModal from 'common/ConfirmModal';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 
-const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
+const BlackDuckProviderTable = ({
+    csrfToken, readonly, showRefreshButton, displayDelete
+}) => {
     const [tableData, setTableData] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
     const [allSelectedRows, setAllSelectedRows] = useState([]);
@@ -74,24 +76,26 @@ const BlackDuckProviderTable = ({ csrfToken, readonly, showRefreshButton }) => {
             <div>
                 { !readonly
                     && (
-                        <>
-                            <InsertButton
-                                id="blackduck-insert-button"
-                                className="addJobButton btn-md"
-                                onClick={insertClick}
-                            >
-                                <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
-                                New
-                            </InsertButton>
-                            <DeleteButton
-                                id="blackduck-delete-button"
-                                className="deleteJobButton btn-md"
-                                onClick={deleteClick}
-                            >
-                                <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
-                                Delete
-                            </DeleteButton>
-                        </>
+                        <InsertButton
+                            id="blackduck-insert-button"
+                            className="addJobButton btn-md"
+                            onClick={insertClick}
+                        >
+                            <FontAwesomeIcon icon="plus" className="alert-icon" size="lg" />
+                            New
+                        </InsertButton>
+
+                    )}
+                { !readonly && displayDelete
+                    && (
+                        <DeleteButton
+                            id="blackduck-delete-button"
+                            className="deleteJobButton btn-md"
+                            onClick={deleteClick}
+                        >
+                            <FontAwesomeIcon icon="trash" className="alert-icon" size="lg" />
+                            Delete
+                        </DeleteButton>
                     )}
                 { showRefreshButton
                     && (
@@ -246,12 +250,14 @@ BlackDuckProviderTable.propTypes = {
     csrfToken: PropTypes.string.isRequired,
     // Pass this in for now while we have all descriptors in global state, otherwise retrieve this in this component
     readonly: PropTypes.bool,
-    showRefreshButton: PropTypes.bool
+    showRefreshButton: PropTypes.bool,
+    displayDelete: PropTypes.bool
 };
 
 BlackDuckProviderTable.defaultProps = {
     readonly: false,
-    showRefreshButton: false
+    showRefreshButton: false,
+    displayDelete: true
 };
 
 export default BlackDuckProviderTable;

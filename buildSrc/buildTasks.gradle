@@ -62,6 +62,7 @@ task copyToTemplates(type: Copy, dependsOn: 'copyStaticWebModuleContent') {
 
 task copyChannelTemplatesToMainTemplates(type: Copy) {
     from "${project(':channel').buildDir}/resources/main/templates/"
+    from "${project(':channel-email').buildDir}/resources/main/templates/"
     into "${project.buildDir}/resources/main/templates/"
 }
 

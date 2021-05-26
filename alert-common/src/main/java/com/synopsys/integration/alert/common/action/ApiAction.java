@@ -7,7 +7,7 @@
  */
 package com.synopsys.integration.alert.common.action;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class ApiAction {
