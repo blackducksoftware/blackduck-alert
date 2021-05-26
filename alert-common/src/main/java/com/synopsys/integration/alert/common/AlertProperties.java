@@ -185,9 +185,13 @@ public class AlertProperties {
     }
 
     public String getServerURL() {
+        return createPopulatedUriComponentsBuilderForServerURL().toUriString();
+    }
+
+    public UriComponentsBuilder createPopulatedUriComponentsBuilderForServerURL() {
         String scheme = getSslEnabled() ? "https" : "http";
         String hostName = getAlertHostName().orElse("localhost");
-        String port = getPublicServerPort().orElse(getServerPort().orElse("8443"));
+        String port = getPublicServerPort().or(this::getServerPort).orElse("8443");
         String path = getContextPath().orElse("alert");
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance();
@@ -196,8 +200,7 @@ public class AlertProperties {
         uriComponentsBuilder.port(port);
         uriComponentsBuilder.path(path);
         uriComponentsBuilder.path("/");
-        return uriComponentsBuilder.toUriString();
-
+        return uriComponentsBuilder;
     }
 
 }
