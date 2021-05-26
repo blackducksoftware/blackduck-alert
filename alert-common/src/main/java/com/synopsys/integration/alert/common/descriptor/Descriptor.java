@@ -46,12 +46,17 @@ public abstract class Descriptor extends Stringable {
     private final DescriptorKey descriptorKey;
     private final DescriptorType type;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;
-    private GlobalValidator globalValidator;
+    private final GlobalValidator globalValidator;
 
     public Descriptor(DescriptorKey descriptorKey, DescriptorType type) {
+        this(descriptorKey, type, null);
+    }
+
+    public Descriptor(DescriptorKey descriptorKey, DescriptorType type, GlobalValidator globalValidator) {
         this.descriptorKey = descriptorKey;
         this.type = type;
         uiConfigs = new EnumMap<>(ConfigContextEnum.class);
+        this.globalValidator = globalValidator;
     }
 
     public DescriptorKey getDescriptorKey() {
@@ -68,10 +73,6 @@ public abstract class Descriptor extends Stringable {
 
     public void addDistributionUiConfig(UIConfig uiConfig) {
         uiConfigs.put(ConfigContextEnum.DISTRIBUTION, uiConfig);
-    }
-
-    public void addGlobalValidator(GlobalValidator validator) {
-        this.globalValidator = validator;
     }
 
     public Optional<UIConfig> getUIConfig(ConfigContextEnum actionApiType) {

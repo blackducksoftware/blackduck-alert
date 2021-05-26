@@ -20,13 +20,8 @@ public abstract class GlobalValidator {
     protected abstract Set<AlertFieldStatus> validate(FieldModel fieldModel);
 
     public List<AlertFieldStatus> validateFieldModel(FieldModel fieldModel) {
-        Set<AlertFieldStatus> fieldValidations = validate(fieldModel);
-        boolean hasFailedValidation = fieldValidations.stream().anyMatch(validation -> FieldStatusSeverity.NONE != validation.getSeverity());
-        if (hasFailedValidation) {
-            return fieldValidations.stream()
-                       .filter(validation -> FieldStatusSeverity.NONE != validation.getSeverity())
-                       .collect(Collectors.toList());
-        }
-        return List.of();
+        return validate(fieldModel).stream()
+                   .filter(validation -> FieldStatusSeverity.NONE != validation.getSeverity())
+                   .collect(Collectors.toList());
     }
 }
