@@ -5,6 +5,7 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.body.BodyContent;
+import com.synopsys.integration.rest.body.BodyContentConverter;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
@@ -23,7 +24,7 @@ public class ExternalAlertRequestUtility implements AlertRequestUtility {
 
     public void loginToExternalAlert() throws IntegrationException {
         String loginBody = "{\"alertUsername\":\"sysadmin\",\"alertPassword\":\"blackduck\"}";
-        BodyContent requestBody = new StringBodyContent(loginBody);
+        BodyContent requestBody = new StringBodyContent(loginBody, BodyContentConverter.DEFAULT);
         Request.Builder requestBuilder = createRequestBuilder("/api/login");
         requestBuilder.method(HttpMethod.POST);
         requestBuilder.bodyContent(requestBody);
@@ -58,7 +59,7 @@ public class ExternalAlertRequestUtility implements AlertRequestUtility {
     }
 
     private String executeRequest(String path, HttpMethod httpMethod, String requestBody, String error) throws IntegrationException {
-        BodyContent requestBodyContent = new StringBodyContent(requestBody);
+        BodyContent requestBodyContent = new StringBodyContent(requestBody, BodyContentConverter.DEFAULT);
         Request.Builder requestBuilder = createRequestBuilder(path);
         requestBuilder.method(httpMethod);
         if (null != requestBody) {
