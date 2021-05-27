@@ -17,7 +17,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.event.AlertDefaultEventListener;
-import com.synopsys.integration.alert.api.event.MessageReceiver;
+import com.synopsys.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
-public class NotificationReceiver extends MessageReceiver<NotificationReceivedEvent> implements AlertDefaultEventListener {
+public class NotificationReceiver extends AlertMessageListener<NotificationReceivedEvent> implements AlertDefaultEventListener {
     public static final String COMPONENT_NAME = "notification_receiver";
     private static final int PAGE_SIZE = 100;
 
@@ -37,7 +37,7 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
 
     @Autowired
     public NotificationReceiver(Gson gson, NotificationAccessor notificationAccessor, NotificationProcessor notificationProcessor) {
-        super(gson, NotificationReceivedEvent.class);
+        super(gson, NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE, NotificationReceivedEvent.class);
         this.notificationAccessor = notificationAccessor;
         this.notificationProcessor = notificationProcessor;
     }
@@ -61,11 +61,6 @@ public class NotificationReceiver extends MessageReceiver<NotificationReceivedEv
                 pageOfAlertNotificationModels.getTotalPages());
         }
         logger.info("Finished processing event for notifications.");
-    }
-
-    @Override
-    public String getDestinationName() {
-        return NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE;
     }
 
 }
