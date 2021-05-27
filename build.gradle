@@ -92,6 +92,7 @@ dependencies {
     implementation project(':api-channel')
     implementation project(':api-event')
     implementation project(':api-processor')
+    implementation project(':api-provider')
     implementation project(':api-task')
     implementation project(':alert-common')
     implementation project(':alert-database')

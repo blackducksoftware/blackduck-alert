@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;

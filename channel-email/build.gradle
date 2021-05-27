@@ -3,12 +3,14 @@ ext.moduleName = 'com.synopsys.integration.alert.channel.email'
 dependencies {
     implementation platform(project(':alert-platform'))
 
-    implementation project(':alert-common')
     implementation project(':api-common-model')
     implementation project(':api-channel')
     implementation project(':api-processor')
     implementation project(':api-descriptor')
     implementation project(':service-email')
+
+    implementation project(':alert-common')
+    implementation project(':api-provider')
 
     implementation 'org.springframework:spring-web'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'

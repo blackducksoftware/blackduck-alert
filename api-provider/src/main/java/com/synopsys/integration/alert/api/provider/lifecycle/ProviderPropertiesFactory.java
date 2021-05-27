@@ -1,18 +1,18 @@
 /*
- * alert-common
+ * api-provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.provider.lifecycle;
+package com.synopsys.integration.alert.api.provider.lifecycle;
 
 import java.util.Optional;
 
+import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 
 public abstract class ProviderPropertiesFactory<T extends ProviderProperties> {
     private final ConfigurationAccessor configurationAccessor;

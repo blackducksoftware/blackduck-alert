@@ -27,16 +27,12 @@ public class DescriptorMap {
     private final Map<String, DescriptorKey> descriptorKeys;
     private final Map<DescriptorKey, Descriptor> descriptorMapping;
     private final Map<DescriptorKey, ChannelDescriptor> channelDescriptorMapping;
-    private final Map<DescriptorKey, ProviderDescriptor> providerDescriptorMapping;
-    private final Map<DescriptorKey, ComponentDescriptor> componentDescriptorMapping;
 
     @Autowired
-    public DescriptorMap(List<DescriptorKey> descriptorKeys, List<ChannelDescriptor> channelDescriptors, List<ProviderDescriptor> providerDescriptors, List<ComponentDescriptor> componentDescriptors) throws AlertException {
+    public DescriptorMap(List<DescriptorKey> descriptorKeys, List<ChannelDescriptor> channelDescriptors) throws AlertException {
         this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, DescriptorKey::getUniversalKey);
         descriptorMapping = new HashMap<>();
         channelDescriptorMapping = initDescriptorMap(channelDescriptors);
-        providerDescriptorMapping = initDescriptorMap(providerDescriptors);
-        componentDescriptorMapping = initDescriptorMap(componentDescriptors);
     }
 
     public Optional<DescriptorKey> getDescriptorKey(String key) {
@@ -58,28 +54,12 @@ public class DescriptorMap {
         return Optional.ofNullable(channelDescriptorMapping.get(key));
     }
 
-    public Optional<ProviderDescriptor> getProviderDescriptor(DescriptorKey key) {
-        return Optional.ofNullable(providerDescriptorMapping.get(key));
-    }
-
-    public Optional<ComponentDescriptor> getComponentDescriptor(DescriptorKey key) {
-        return Optional.ofNullable(componentDescriptorMapping.get(key));
-    }
-
     public Map<DescriptorKey, Descriptor> getDescriptorMap() {
         return descriptorMapping;
     }
 
     public Map<DescriptorKey, ChannelDescriptor> getChannelDescriptorMap() {
         return channelDescriptorMapping;
-    }
-
-    public Map<DescriptorKey, ProviderDescriptor> getProviderDescriptorMap() {
-        return providerDescriptorMapping;
-    }
-
-    public Map<DescriptorKey, ComponentDescriptor> getComponentDescriptorMap() {
-        return componentDescriptorMapping;
     }
 
     private <D extends Descriptor> Map<DescriptorKey, D> initDescriptorMap(List<D> descriptorList) throws AlertException {
