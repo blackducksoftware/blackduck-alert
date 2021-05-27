@@ -17,6 +17,7 @@ const CommonGlobalConfigurationForm = ({
     displaySave,
     displayTest,
     displayDelete,
+    displayCancel,
     children,
     testFields,
     buttonIdPrefix,
@@ -176,6 +177,8 @@ const CommonGlobalConfigurationForm = ({
                     includeSave={!readonly && displaySave}
                     includeTest={!readonly && displayTest}
                     includeDelete={!readonly && displayDelete}
+                    includeCancel={displayCancel}
+                    onCancelClick={afterSuccessfulSave}
                     type="submit"
                     onTestClick={handleTestClick}
                     onDeleteClick={performDeleteRequest}
@@ -208,6 +211,7 @@ CommonGlobalConfigurationForm.propTypes = {
     displaySave: PropTypes.bool,
     displayTest: PropTypes.bool,
     displayDelete: PropTypes.bool,
+    displayCancel: PropTypes.bool,
     testFields: PropTypes.node,
     testFormData: PropTypes.object,
     setTestFormData: PropTypes.func,
@@ -221,6 +225,7 @@ CommonGlobalConfigurationForm.defaultProps = {
     displaySave: true,
     displayTest: true,
     displayDelete: true,
+    displayCancel: false,
     testFields: null,
     testFormData: {},
     setTestFormData: () => null,

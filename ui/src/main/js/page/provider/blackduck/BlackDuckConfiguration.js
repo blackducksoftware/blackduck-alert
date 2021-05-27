@@ -62,6 +62,7 @@ const BlackDuckConfiguration = ({
                 readonly={readonly}
                 displayTest={displayTest}
                 displaySave={displaySave}
+                displayCancel
                 errorHandler={errorHandler}
             >
                 <CheckboxInput
