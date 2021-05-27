@@ -31,9 +31,9 @@ public class AzureBoardsGlobalValidator extends GlobalValidator {
 
     @Override
     protected Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        AlertFieldStatus nameStatus = FieldValidator.containsRequiredField(fieldModel, AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
-        AlertFieldStatus clientStatus = FieldValidator.containsRequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_ID);
-        AlertFieldStatus clientSecretStatus = FieldValidator.containsRequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_SECRET);
+        AlertFieldStatus nameStatus = FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
+        AlertFieldStatus clientStatus = FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_ID);
+        AlertFieldStatus clientSecretStatus = FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_SECRET);
 
         Set<AlertFieldStatus> statuses = new HashSet<>();
         statuses.add(nameStatus);

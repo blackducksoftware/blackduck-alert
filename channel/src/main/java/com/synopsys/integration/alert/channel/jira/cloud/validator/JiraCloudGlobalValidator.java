@@ -22,9 +22,9 @@ public class JiraCloudGlobalValidator extends GlobalValidator {
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        AlertFieldStatus urlValidation = FieldValidator.containsRequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_URL);
-        AlertFieldStatus userValidation = FieldValidator.containsRequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        AlertFieldStatus apiValidation = FieldValidator.containsRequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        AlertFieldStatus urlValidation = FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_URL);
+        AlertFieldStatus userValidation = FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        AlertFieldStatus apiValidation = FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
 
         return Set.of(urlValidation, userValidation, apiValidation);
     }
