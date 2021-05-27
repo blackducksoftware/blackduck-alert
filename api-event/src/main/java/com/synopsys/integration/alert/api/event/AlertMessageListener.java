@@ -16,18 +16,24 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public abstract class MessageReceiver<T extends AlertEvent> implements MessageListener {
+public abstract class AlertMessageListener<T extends AlertEvent> implements MessageListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Gson gson;
+    private final String destinationName;
     private final Class<T> eventClass;
 
-    protected MessageReceiver(Gson gson, Class<T> eventClass) {
+    protected AlertMessageListener(Gson gson, String destinationName, Class<T> eventClass) {
         this.gson = gson;
+        this.destinationName = destinationName;
         this.eventClass = eventClass;
     }
 
+    public final String getDestinationName() {
+        return destinationName;
+    }
+
     @Override
-    public void onMessage(Message message) {
+    public final void onMessage(Message message) {
         try {
             if (TextMessage.class.isAssignableFrom(message.getClass())) {
                 String receiverClassName = getClass().getName();

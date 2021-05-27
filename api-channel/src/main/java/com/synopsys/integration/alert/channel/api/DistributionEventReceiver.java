@@ -13,29 +13,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.AlertChannelEventListener;
-import com.synopsys.integration.alert.api.event.MessageReceiver;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.AlertChannelEventListener;
+import com.synopsys.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
-public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEvent> implements AlertChannelEventListener {
+public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends AlertMessageListener<DistributionEvent> implements AlertChannelEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ProcessingAuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final DistributionChannel<D> channel;
-    private final ChannelKey channelKey;
 
     protected DistributionEventReceiver(Gson gson, ProcessingAuditAccessor auditAccessor, JobDetailsAccessor<D> jobDetailsAccessor, DistributionChannel<D> channel, ChannelKey channelKey) {
-        super(gson, DistributionEvent.class);
+        super(gson, channelKey.getUniversalKey(), DistributionEvent.class);
         this.auditAccessor = auditAccessor;
         this.jobDetailsAccessor = jobDetailsAccessor;
         this.channel = channel;
-        this.channelKey = channelKey;
     }
 
     @Override
@@ -53,11 +51,6 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         } else {
             handleJobDetailsMissing(event);
         }
-    }
-
-    @Override
-    public final String getDestinationName() {
-        return channelKey.getUniversalKey();
     }
 
     protected void handleAlertException(AlertException e, DistributionEvent event) {

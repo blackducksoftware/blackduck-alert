@@ -17,13 +17,14 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
 public class DistributionEventReceiverTest {
+    private static final ChannelKey CHANNEL_KEY = new ChannelKey("test universal key", "Display Name");
+
     @Test
     public void getDestinationTest() {
-        ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, null, null, null, channelKey) {};
+        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, null, null, null, CHANNEL_KEY) {};
 
         String destinationName = receiver.getDestinationName();
-        assertEquals(channelKey.getUniversalKey(), destinationName);
+        assertEquals(CHANNEL_KEY.getUniversalKey(), destinationName);
     }
 
     @Test
@@ -36,7 +37,7 @@ public class DistributionEventReceiverTest {
 
         DistributionChannel<DistributionJobDetailsModel> channel = (x, y) -> null;
 
-        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, channel, null) {};
+        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, channel, CHANNEL_KEY) {};
 
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
@@ -61,7 +62,7 @@ public class DistributionEventReceiverTest {
             throw testException;
         };
 
-        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, channel, null) {};
+        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, channel, CHANNEL_KEY) {};
 
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
@@ -79,7 +80,7 @@ public class DistributionEventReceiverTest {
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.empty();
-        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, null, null) {};
+        DistributionEventReceiver<DistributionJobDetailsModel> receiver = new DistributionEventReceiver<>(null, auditAccessor, jobDetailsAccessor, null, CHANNEL_KEY) {};
 
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
