@@ -32,10 +32,12 @@ public class EventListenerConfigurer implements JmsListenerConfigurer {
     private final DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory;
 
     @Autowired
-    public EventListenerConfigurer(List<AlertChannelEventListener> alertChannelEventListeners,
+    public EventListenerConfigurer(
+        List<AlertChannelEventListener> alertChannelEventListeners,
         List<AlertDefaultEventListener> alertDefaultEventListeners,
         DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory,
-        DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory) {
+        DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory
+    ) {
         this.alertChannelEventListeners = alertChannelEventListeners;
         this.alertDefaultEventListeners = alertDefaultEventListeners;
         this.defaultJmsListenerContainerFactory = defaultJmsListenerContainerFactory;
