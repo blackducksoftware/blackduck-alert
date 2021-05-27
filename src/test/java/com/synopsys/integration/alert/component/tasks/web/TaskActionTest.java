@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.synopsys.integration.alert.api.task.ScheduledTask;
+import com.synopsys.integration.alert.api.task.TaskManager;
+import com.synopsys.integration.alert.api.task.TaskMetaData;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 import com.synopsys.integration.alert.component.tasks.TaskManagementDescriptorKey;
 
 public class TaskActionTest {
@@ -77,4 +77,5 @@ public class TaskActionTest {
         assertTrue(response.isError());
         assertFalse(response.hasContent());
     }
+
 }

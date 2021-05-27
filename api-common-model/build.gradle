@@ -1,7 +1,7 @@
 ext.moduleName = 'com.synopsys.integration.alert.api-common-model'
 
 dependencies {
+    api 'com.synopsys.integration:integration-common'
     implementation platform(project(':alert-platform'))
-    implementation 'com.synopsys.integration:integration-common'
     testImplementation project(':test-common')
 }

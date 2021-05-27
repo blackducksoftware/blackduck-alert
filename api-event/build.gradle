@@ -4,8 +4,6 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':api-common-model')
 
-    implementation 'com.synopsys.integration:integration-common'
-
     implementation 'org.springframework:spring-context'
     implementation 'jakarta.jms:jakarta.jms-api'
     implementation 'org.springframework:spring-jms'
