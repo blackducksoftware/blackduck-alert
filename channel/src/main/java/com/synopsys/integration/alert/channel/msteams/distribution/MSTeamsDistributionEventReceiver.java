@@ -12,16 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
-import com.synopsys.integration.alert.common.persistence.accessor.MSTeamsJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
 
 @Component
 public class MSTeamsDistributionEventReceiver extends DistributionEventReceiver<MSTeamsJobDetailsModel> {
     @Autowired
-    public MSTeamsDistributionEventReceiver(Gson gson, ProcessingAuditAccessor auditAccessor, MSTeamsJobDetailsAccessor msTeamsJobDetailsAccessor, MSTeamsChannel channel, MsTeamsKey channelKey) {
-        super(gson, auditAccessor, msTeamsJobDetailsAccessor, channel, channelKey);
+    public MSTeamsDistributionEventReceiver(Gson gson, MsTeamsKey channelKey, MSTeamsDistributionEventHandler distributionEventHandler) {
+        super(gson, channelKey, distributionEventHandler);
     }
 
 }

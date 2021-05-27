@@ -25,13 +25,13 @@ import com.synopsys.integration.alert.util.AlertIntegrationTest;
 //  Move this class into the workflow subproject once the dependencies are resolved
 @Transactional
 @AlertIntegrationTest
-public class NotificationReceiverTestIT {
+public class NotificationReceivedEventHandlerTestIT {
     @Autowired
     private NotificationContentRepository notificationContentRepository;
     @Autowired
     private DefaultNotificationAccessor defaultNotificationAccessor;
     @Autowired
-    private NotificationReceiver notificationReceiver;
+    private NotificationReceivedEventHandler notificationReceivedEventHandler;
 
     MockNotificationContent notificationMocker = new MockNotificationContent();
 
@@ -52,7 +52,7 @@ public class NotificationReceiverTestIT {
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
 
-        notificationReceiver.handleEvent(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
     }
@@ -67,7 +67,7 @@ public class NotificationReceiverTestIT {
         assertNotNull(savedModels);
         assertEquals(0, defaultNotificationAccessor.getFirstPageOfNotificationsNotProcessed(pageSize).getModels().size());
 
-        notificationReceiver.handleEvent(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
     }
@@ -81,7 +81,7 @@ public class NotificationReceiverTestIT {
         List<AlertNotificationModel> savedModels = defaultNotificationAccessor.saveAllNotifications(notificationContent);
         assertNotNull(savedModels);
 
-        notificationReceiver.handleEvent(new NotificationReceivedEvent());
+        notificationReceivedEventHandler.handle(new NotificationReceivedEvent());
 
         testAlertNotificationModels(savedModels);
     }

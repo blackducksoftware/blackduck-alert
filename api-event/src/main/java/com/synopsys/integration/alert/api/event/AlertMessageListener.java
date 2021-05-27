@@ -21,11 +21,13 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
     private final Gson gson;
     private final String destinationName;
     private final Class<T> eventClass;
+    private final AlertEventHandler<T> eventHandler;
 
-    protected AlertMessageListener(Gson gson, String destinationName, Class<T> eventClass) {
+    protected AlertMessageListener(Gson gson, String destinationName, Class<T> eventClass, AlertEventHandler<T> eventHandler) {
         this.gson = gson;
         this.destinationName = destinationName;
         this.eventClass = eventClass;
+        this.eventHandler = eventHandler;
     }
 
     public final String getDestinationName() {
@@ -43,13 +45,11 @@ public abstract class AlertMessageListener<T extends AlertEvent> implements Mess
                 T event = gson.fromJson(textMessage.getText(), eventClass);
                 logger.trace("{} event {}", receiverClassName, event);
                 logger.debug("Received Event ID: {}", event.getEventId());
-                handleEvent(event);
+                eventHandler.handle(event);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
-
-    protected abstract void handleEvent(T event);
 
 }

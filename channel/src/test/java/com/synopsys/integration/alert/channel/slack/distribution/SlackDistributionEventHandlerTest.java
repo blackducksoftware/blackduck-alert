@@ -35,13 +35,13 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-public class SlackDistributionEventReceiverTest {
+public class SlackDistributionEventHandlerTest {
     private static final Set<Long> FIRST_MESSAGE_NOTIFICATION_IDS = Set.of(1L, 2L, 3L);
     private static final Set<Long> SECOND_MESSAGE_NOTIFICATION_IDS = Set.of(4L, 5L, 6L);
 
     private final SlackChannelKey slackChannelKey = new SlackChannelKey();
 
-    private SlackDistributionEventReceiver slackDistributionEventReceiver;
+    private SlackDistributionEventHandler distributionEventHandler;
     private final MockProcessingAuditAccessor processingAuditAccessor = new MockProcessingAuditAccessor();
     private final MockWebServer mockSlackServer = new MockWebServer();
 
@@ -62,7 +62,7 @@ public class SlackDistributionEventReceiverTest {
 
         SlackJobDetailsAccessor slackJobDetailsAccessor = jobId -> Optional.of(slackJobDetailsModel);
 
-        slackDistributionEventReceiver = new SlackDistributionEventReceiver(gson, processingAuditAccessor, slackJobDetailsAccessor, slackChannel, slackChannelKey);
+        distributionEventHandler = new SlackDistributionEventHandler(slackChannel, slackJobDetailsAccessor, processingAuditAccessor);
     }
 
     @AfterEach
@@ -77,7 +77,7 @@ public class SlackDistributionEventReceiverTest {
 
         assertEquals(0, mockSlackServer.getRequestCount());
 
-        slackDistributionEventReceiver.handleEvent(createSlackDistributionEvent(FIRST_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
+        distributionEventHandler.handle(createSlackDistributionEvent(FIRST_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
 
         assertEquals(0, processingAuditAccessor.getSuccessfulIds().size());
         assertEquals(3, processingAuditAccessor.getFailureIds().size());
@@ -95,8 +95,8 @@ public class SlackDistributionEventReceiverTest {
 
         assertEquals(0, mockSlackServer.getRequestCount());
 
-        slackDistributionEventReceiver.handleEvent(createSlackDistributionEvent(FIRST_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
-        slackDistributionEventReceiver.handleEvent(createSlackDistributionEvent(SECOND_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
+        distributionEventHandler.handle(createSlackDistributionEvent(FIRST_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
+        distributionEventHandler.handle(createSlackDistributionEvent(SECOND_MESSAGE_NOTIFICATION_IDS, createTwoMessages()));
 
         assertEquals(3, processingAuditAccessor.getSuccessfulIds().size());
         assertEquals(3, processingAuditAccessor.getFailureIds().size());

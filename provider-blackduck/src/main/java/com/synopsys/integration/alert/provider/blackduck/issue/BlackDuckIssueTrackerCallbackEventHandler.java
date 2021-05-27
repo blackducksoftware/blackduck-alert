@@ -11,13 +11,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackEvent;
-import com.synopsys.integration.alert.common.channel.issuetracker.IssueTrackerCallbackHandler;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueTrackerCallbackInfo;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -32,23 +31,21 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckIssueTrackerCallbackHandler extends IssueTrackerCallbackHandler {
+public class BlackDuckIssueTrackerCallbackEventHandler implements AlertEventHandler<IssueTrackerCallbackEvent> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final ConfigurationAccessor configurationAccessor;
 
-    @Autowired
-    public BlackDuckIssueTrackerCallbackHandler(Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationAccessor configurationAccessor) {
-        super(gson);
+    public BlackDuckIssueTrackerCallbackEventHandler(Gson gson, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationAccessor configurationAccessor) {
         this.gson = gson;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.configurationAccessor = configurationAccessor;
     }
 
     @Override
-    public final void handleEvent(IssueTrackerCallbackEvent event) {
+    public void handle(IssueTrackerCallbackEvent event) {
         String eventId = event.getEventId();
         logger.debug("Handling issue-tracker callback event with id '{}'", eventId);
 

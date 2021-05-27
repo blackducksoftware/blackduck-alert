@@ -12,16 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
-import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 
 @Component
 public class EmailDistributionEventReceiver extends DistributionEventReceiver<EmailJobDetailsModel> {
     @Autowired
-    public EmailDistributionEventReceiver(Gson gson, ProcessingAuditAccessor auditAccessor, EmailJobDetailsAccessor emailJobDetailsAccessor, EmailChannel channel, EmailChannelKey channelKey) {
-        super(gson, auditAccessor, emailJobDetailsAccessor, channel, channelKey);
+    public EmailDistributionEventReceiver(Gson gson, EmailChannelKey channelKey, EmailDistributionEventHandler distributionEventHandler) {
+        super(gson, channelKey, distributionEventHandler);
     }
 
 }

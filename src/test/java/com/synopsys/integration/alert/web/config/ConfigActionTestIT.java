@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.rest.FieldModelProcessor;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
@@ -54,6 +55,8 @@ public class ConfigActionTestIT {
     private DescriptorMap descriptorMap;
     @Autowired
     private DescriptorAccessor descriptorAccessor;
+    @Autowired
+    private EncryptionUtility encryptionUtility;
 
     @Test
     public void deleteSensitiveFieldFromConfig() {
