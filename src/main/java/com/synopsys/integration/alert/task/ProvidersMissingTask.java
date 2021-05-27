@@ -1,24 +1,24 @@
 /*
- * alert-common
+ * blackduck-alert
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.provider.lifecycle;
+package com.synopsys.integration.alert.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.task.ScheduledTask;
+import com.synopsys.integration.alert.api.task.StartupScheduledTask;
+import com.synopsys.integration.alert.api.task.TaskManager;
 import com.synopsys.integration.alert.common.provider.ProviderConfigMissingValidator;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
 
 @Component
 public class ProvidersMissingTask extends StartupScheduledTask {
-    private ProviderConfigMissingValidator providerMissingValidator;
+    private final ProviderConfigMissingValidator providerMissingValidator;
 
     @Autowired
     public ProvidersMissingTask(TaskScheduler taskScheduler, TaskManager taskManager, ProviderConfigMissingValidator providerMissingValidator) {
@@ -40,4 +40,5 @@ public class ProvidersMissingTask extends StartupScheduledTask {
     protected void postTaskStartup() {
         runTask();
     }
+
 }

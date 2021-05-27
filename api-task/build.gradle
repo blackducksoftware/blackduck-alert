@@ -1,0 +1,11 @@
+ext.moduleName = 'com.synopsys.integration.alert.api-task'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+    implementation project(':api-common-model')
+
+    implementation 'com.synopsys.integration:integration-common'
+    implementation 'org.springframework:spring-context'
+
+    testImplementation project(':test-common')
+}

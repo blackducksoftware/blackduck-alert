@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * api-task
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.workflow.task;
+package com.synopsys.integration.alert.api.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

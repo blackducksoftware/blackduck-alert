@@ -5,6 +5,7 @@ dependencies {
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
     implementation project(':api-event')
+    implementation project(':api-task')
 
     implementation 'com.synopsys.integration:integration-common'
     implementation 'com.synopsys.integration:integration-rest'

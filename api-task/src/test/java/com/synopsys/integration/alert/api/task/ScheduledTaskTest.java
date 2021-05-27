@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.workflow.task;
+package com.synopsys.integration.alert.api.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -20,11 +20,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.api.task.ScheduledTask;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
