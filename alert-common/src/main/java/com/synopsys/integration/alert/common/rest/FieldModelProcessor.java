@@ -21,10 +21,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ApiAction;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -112,6 +114,11 @@ public class FieldModelProcessor {
         List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
         Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
         return fieldValidationAction.validateConfig(configFields, fieldModel);
+    }
+
+    public Optional<GlobalValidator> getGlobalValidator(FieldModel fieldModel) {
+        String descriptorName = fieldModel.getDescriptorName();
+        return descriptorProcessor.retrieveDescriptor(descriptorName).flatMap(Descriptor::getGlobalValidator);
     }
 
     public List<AlertFieldStatus> validateJobFieldModel(JobFieldModel jobFieldModel) {
