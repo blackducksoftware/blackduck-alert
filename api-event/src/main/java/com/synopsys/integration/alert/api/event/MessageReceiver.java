@@ -26,8 +26,6 @@ public abstract class MessageReceiver<T extends AlertEvent> implements MessageLi
         this.eventClass = eventClass;
     }
 
-    public abstract void handleEvent(T event);
-
     @Override
     public void onMessage(Message message) {
         try {
@@ -46,8 +44,6 @@ public abstract class MessageReceiver<T extends AlertEvent> implements MessageLi
         }
     }
 
-    public Gson getGson() {
-        return gson;
-    }
+    protected abstract void handleEvent(T event);
 
 }
