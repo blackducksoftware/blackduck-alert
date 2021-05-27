@@ -11,12 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.AlertDefaultEventListener;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 import com.synopsys.integration.alert.api.event.NotificationReceivedEvent;
 
 @Component(value = NotificationReceiver.COMPONENT_NAME)
-public class NotificationReceiver extends AlertMessageListener<NotificationReceivedEvent> implements AlertDefaultEventListener {
+public class NotificationReceiver extends AlertMessageListener<NotificationReceivedEvent> {
     public static final String COMPONENT_NAME = "notification_receiver";
 
     @Autowired

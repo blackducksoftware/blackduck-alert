@@ -8,11 +8,10 @@
 package com.synopsys.integration.alert.common.channel.issuetracker;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.event.AlertDefaultEventListener;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
 
-public abstract class IssueTrackerCallbackEventListener extends AlertMessageListener<IssueTrackerCallbackEvent> implements AlertDefaultEventListener {
+public abstract class IssueTrackerCallbackEventListener extends AlertMessageListener<IssueTrackerCallbackEvent> {
     public static final String ISSUE_TRACKER_CALLBACK_DESTINATION_NAME = IssueTrackerCallbackEventListener.class.getSimpleName();
 
     public IssueTrackerCallbackEventListener(Gson gson, AlertEventHandler<IssueTrackerCallbackEvent> eventHandler) {
