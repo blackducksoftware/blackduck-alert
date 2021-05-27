@@ -7,7 +7,6 @@ dependencies {
     implementation project(':api-event')
     implementation project(':api-task')
 
-    implementation 'com.synopsys.integration:integration-common'
     implementation 'com.synopsys.integration:integration-rest'
     implementation 'com.synopsys.integration:phone-home-client'
 

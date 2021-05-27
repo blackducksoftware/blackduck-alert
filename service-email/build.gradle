@@ -14,8 +14,5 @@ dependencies {
     implementation 'javax.mail:javax.mail-api'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
-    // TODO get logging and apache utils dependencies directly
-    implementation 'com.synopsys.integration:integration-common'
-
     testImplementation project(':test-common')
 }
