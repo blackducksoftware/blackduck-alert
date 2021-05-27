@@ -7,72 +7,55 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 @Component
 public class DescriptorMap {
-    private final Map<String, DescriptorKey> descriptorKeys;
-    private final Map<DescriptorKey, Descriptor> descriptorMapping;
-    private final Map<DescriptorKey, ChannelDescriptor> channelDescriptorMapping;
+    private final Map<String, DescriptorKey> universalKeyToFullKey;
+    private final Map<DescriptorKey, Descriptor> keyToDescriptor;
+    private final Map<DescriptorType, Set<Descriptor>> typeToDescriptor;
 
     @Autowired
-    public DescriptorMap(List<DescriptorKey> descriptorKeys, List<ChannelDescriptor> channelDescriptors) throws AlertException {
-        this.descriptorKeys = DataStructureUtils.mapToValues(descriptorKeys, DescriptorKey::getUniversalKey);
-        descriptorMapping = new HashMap<>();
-        channelDescriptorMapping = initDescriptorMap(channelDescriptors);
+    public DescriptorMap(List<DescriptorKey> descriptorKeys, List<Descriptor> descriptors) {
+        this.universalKeyToFullKey = DataStructureUtils.mapToValues(descriptorKeys, DescriptorKey::getUniversalKey);
+        this.keyToDescriptor = DataStructureUtils.mapToValues(descriptors, Descriptor::getDescriptorKey);
+        this.typeToDescriptor = initDescriptorTypeMap(descriptors);
     }
 
     public Optional<DescriptorKey> getDescriptorKey(String key) {
-        return Optional.ofNullable(descriptorKeys.get(key));
+        return Optional.ofNullable(universalKeyToFullKey.get(key));
     }
 
     public Optional<Descriptor> getDescriptor(DescriptorKey key) {
-        return Optional.ofNullable(descriptorMapping.get(key));
+        return Optional.ofNullable(keyToDescriptor.get(key));
     }
 
     public Set<Descriptor> getDescriptorByType(DescriptorType descriptorType) {
-        return descriptorMapping.entrySet().stream()
-                   .map(Map.Entry::getValue)
-                   .filter(descriptor -> descriptor.getType() == descriptorType)
-                   .collect(Collectors.toSet());
-    }
-
-    public Optional<ChannelDescriptor> getChannelDescriptor(DescriptorKey key) {
-        return Optional.ofNullable(channelDescriptorMapping.get(key));
+        return typeToDescriptor.get(descriptorType);
     }
 
     public Map<DescriptorKey, Descriptor> getDescriptorMap() {
-        return descriptorMapping;
+        return keyToDescriptor;
     }
 
-    public Map<DescriptorKey, ChannelDescriptor> getChannelDescriptorMap() {
-        return channelDescriptorMapping;
-    }
-
-    private <D extends Descriptor> Map<DescriptorKey, D> initDescriptorMap(List<D> descriptorList) throws AlertException {
-        Map<DescriptorKey, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
-        for (D descriptor : descriptorList) {
-            DescriptorKey descriptorKey = descriptor.getDescriptorKey();
-            if (descriptorMapping.containsKey(descriptorKey)) {
-                throw new AlertException("Found duplicate descriptor name of: " + descriptorKey.getUniversalKey());
-            }
-            descriptorMapping.put(descriptorKey, descriptor);
-            specificDescriptorMapping.put(descriptorKey, descriptor);
+    private static EnumMap<DescriptorType, Set<Descriptor>> initDescriptorTypeMap(List<Descriptor> descriptors) {
+        EnumMap<DescriptorType, Set<Descriptor>> typeToDescriptors = new EnumMap<>(DescriptorType.class);
+        for (Descriptor descriptor : descriptors) {
+            typeToDescriptors.computeIfAbsent(descriptor.getType(), ignored -> new HashSet<>()).add(descriptor);
         }
-        return specificDescriptorMapping;
+        return typeToDescriptors;
     }
 
 }
