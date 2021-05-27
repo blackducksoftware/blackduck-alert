@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.processing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
-public class NotificationReceiverTest {
+public class NotificationReceivedEventHandlerTest {
     private NotificationAccessor notificationAccessor;
     private final Gson gson = new Gson();
     private final BlackDuckResponseResolver blackDuckResponseResolver = new BlackDuckResponseResolver(gson);
@@ -35,20 +34,13 @@ public class NotificationReceiverTest {
         List<AlertNotificationModel> alertNotificationModels = List.of(alertNotificationModel);
 
         NotificationProcessor notificationProcessor = mockNotificationProcessor(alertNotificationModels);
-        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, notificationAccessor, notificationProcessor);
+        NotificationReceivedEventHandler eventHandler = new NotificationReceivedEventHandler(notificationAccessor, notificationProcessor);
 
         try {
-            notificationReceiver.handleEvent(new NotificationReceivedEvent());
+            eventHandler.handle(new NotificationReceivedEvent());
         } catch (RuntimeException e) {
             fail("Unable to handle event", e);
         }
-    }
-
-    @Test
-    public void getDestinationNameTest() {
-        NotificationReceiver notificationReceiver = new NotificationReceiver(gson, null, null);
-
-        assertEquals(NotificationReceivedEvent.NOTIFICATION_RECEIVED_EVENT_TYPE, notificationReceiver.getDestinationName());
     }
 
     private AlertNotificationModel createAlertNotificationModel(Long id, boolean processed) throws IOException {

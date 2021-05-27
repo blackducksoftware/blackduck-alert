@@ -12,16 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
-import com.synopsys.integration.alert.common.persistence.accessor.AzureBoardsJobDetailsAccessor;
-import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 
 @Component
 public class AzureBoardsDistributionEventReceiver extends DistributionEventReceiver<AzureBoardsJobDetailsModel> {
     @Autowired
-    public AzureBoardsDistributionEventReceiver(Gson gson, ProcessingAuditAccessor auditAccessor, AzureBoardsJobDetailsAccessor jobDetailsAccessor, AzureBoardsChannel channel, AzureBoardsChannelKey channelKey) {
-        super(gson, auditAccessor, jobDetailsAccessor, channel, channelKey);
+    public AzureBoardsDistributionEventReceiver(Gson gson, AzureBoardsChannelKey channelKey, AzureBoardsDistributionEventHandler distributionEventHandler) {
+        super(gson, channelKey, distributionEventHandler);
     }
 
 }

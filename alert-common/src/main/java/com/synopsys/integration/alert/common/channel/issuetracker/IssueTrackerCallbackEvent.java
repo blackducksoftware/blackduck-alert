@@ -26,7 +26,7 @@ public class IssueTrackerCallbackEvent extends AlertEvent {
         IssueOperation operation,
         String issueSummary
     ) {
-        super(IssueTrackerCallbackHandler.ISSUE_TRACKER_CALLBACK_DESTINATION_NAME);
+        super(IssueTrackerCallbackEventListener.ISSUE_TRACKER_CALLBACK_DESTINATION_NAME);
         this.callbackInfo = callbackInfo;
         this.issueKey = issueKey;
         this.issueUrl = issueUrl;
