@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -384,10 +383,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
             logger.error("Test Error with field Errors", e);
             responseModel = ValidationResponseModel.fromStatusCollection(e.getMessage(), e.getFieldErrors());
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
-        } catch (AlertMethodNotAllowedException e) {
-            logger.error(e.getMessage(), e);
-            return new ValidationActionResponse(HttpStatus.METHOD_NOT_ALLOWED, ValidationResponseModel.generalError(e.getMessage()));
         } catch (IntegrationException e) {
+            // TODO this is not necessarily a PKIX
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
                                 .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
