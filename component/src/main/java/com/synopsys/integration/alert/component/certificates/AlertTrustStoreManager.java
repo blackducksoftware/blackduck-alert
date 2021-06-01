@@ -1,11 +1,11 @@
 /*
- * alert-common
+ * component
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.security;
+package com.synopsys.integration.alert.component.certificates;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -35,12 +35,12 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 
 @Component
-public class CertificateUtility {
-    private final Logger logger = LoggerFactory.getLogger(CertificateUtility.class);
+public class AlertTrustStoreManager {
+    private final Logger logger = LoggerFactory.getLogger(AlertTrustStoreManager.class);
     private final AlertProperties alertProperties;
 
     @Autowired
-    public CertificateUtility(AlertProperties alertProperties) {
+    public AlertTrustStoreManager(AlertProperties alertProperties) {
         this.alertProperties = alertProperties;
     }
 

@@ -25,9 +25,9 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
-import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.certificates.AlertTrustStoreManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -58,7 +58,7 @@ public class CertificateControllerTestIT {
     private CertificatesDescriptorKey certificatesDescriptorKey;
 
     @Autowired
-    private CertificateUtility certificateUtility;
+    private AlertTrustStoreManager trustStoreService;
     @Autowired
     private CustomCertificateAccessor certificateAccessor;
 
@@ -73,7 +73,7 @@ public class CertificateControllerTestIT {
         Mockito.when(authorizationManager.hasDeletePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
-        certificateActions = new CertificateActions(certificatesDescriptorKey, authorizationManager, certificateAccessor, certificateUtility);
+        certificateActions = new CertificateActions(certificatesDescriptorKey, authorizationManager, certificateAccessor, trustStoreService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
         certTestUtil.init(alertProperties);
     }

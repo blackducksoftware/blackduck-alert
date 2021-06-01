@@ -16,15 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
-import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.common.util.DateUtils;
+import com.synopsys.integration.alert.component.certificates.AlertTrustStoreManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.alert.database.certificates.CustomCertificateRepository;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -52,7 +52,7 @@ public class CertificateActionsTestIT {
     private CertificatesDescriptorKey certificatesDescriptorKey;
 
     @Autowired
-    private CertificateUtility certificateUtility;
+    private AlertTrustStoreManager trustStoreService;
 
     private CertificateActions certificateActions;
 
@@ -65,7 +65,7 @@ public class CertificateActionsTestIT {
         Mockito.when(authorizationManager.hasWritePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
         Mockito.when(authorizationManager.hasExecutePermission(Mockito.any(ConfigContextEnum.class), Mockito.any(DescriptorKey.class))).thenReturn(Boolean.TRUE);
 
-        certificateActions = new CertificateActions(certificatesDescriptorKey, authorizationManager, certificateAccessor, certificateUtility);
+        certificateActions = new CertificateActions(certificatesDescriptorKey, authorizationManager, certificateAccessor, trustStoreService);
         certTestUtil.init(alertProperties);
     }
 
@@ -158,11 +158,11 @@ public class CertificateActionsTestIT {
     public void createExceptionTest() throws Exception {
         String certificateContent = certTestUtil.readCertificateContents();
         CertificateModel certificate = new CertificateModel(TEST_ALIAS, certificateContent, DateUtils.createCurrentDateString(DateUtils.UTC_DATE_FORMAT_TO_MINUTE));
-        CertificateUtility certificateUtility = Mockito.mock(CertificateUtility.class);
+        AlertTrustStoreManager trustStoreService = Mockito.mock(AlertTrustStoreManager.class);
         AuthorizationManager authorizationManager = Mockito.mock(AuthorizationManager.class);
         Mockito.when(authorizationManager.hasCreatePermission(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        Mockito.doThrow(new AlertException("Test exception")).when(certificateUtility).importCertificate(Mockito.any(CustomCertificateModel.class));
-        CertificateActions certificateActions = new CertificateActions(new CertificatesDescriptorKey(), authorizationManager, certificateAccessor, certificateUtility);
+        Mockito.doThrow(new AlertException("Test exception")).when(trustStoreService).importCertificate(Mockito.any(CustomCertificateModel.class));
+        CertificateActions certificateActions = new CertificateActions(new CertificatesDescriptorKey(), authorizationManager, certificateAccessor, trustStoreService);
         ActionResponse<CertificateModel> response = certificateActions.create(certificate);
         assertTrue(response.isError());
         assertTrue(certificateAccessor.getCertificates().isEmpty());

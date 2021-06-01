@@ -17,18 +17,18 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
-import com.synopsys.integration.alert.common.security.CertificateUtility;
+import com.synopsys.integration.alert.component.certificates.AlertTrustStoreManager;
 
 @Component
 @Order(41)
 public class TrustStoreInitializer extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(TrustStoreInitializer.class);
 
-    private final CertificateUtility certificateUtility;
+    private final AlertTrustStoreManager trustStoreService;
     private final CustomCertificateAccessor customCertificateAccessor;
 
-    public TrustStoreInitializer(CertificateUtility certificateUtility, CustomCertificateAccessor customCertificateAccessor) {
-        this.certificateUtility = certificateUtility;
+    public TrustStoreInitializer(AlertTrustStoreManager trustStoreService, CustomCertificateAccessor customCertificateAccessor) {
+        this.trustStoreService = trustStoreService;
         this.customCertificateAccessor = customCertificateAccessor;
     }
 
@@ -44,7 +44,7 @@ public class TrustStoreInitializer extends StartupComponent {
         for (CustomCertificateModel cert : allCustomCertificates) {
             logger.debug(String.format("Importing '%s' into Alert's trust store", cert.getAlias()));
             try {
-                certificateUtility.importCertificate(cert);
+                trustStoreService.importCertificate(cert);
             } catch (AlertException e) {
                 logger.error(String.format("Failed to import user-provided certificate: '%s'", cert.getAlias()), e);
             }
