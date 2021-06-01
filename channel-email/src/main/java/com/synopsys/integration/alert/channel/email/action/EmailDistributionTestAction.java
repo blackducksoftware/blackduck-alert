@@ -14,9 +14,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannel;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -45,7 +45,7 @@ public class EmailDistributionTestAction extends DistributionChannelMessageTestA
 
         return new EmailJobDetailsModel(
             testJobModel.getJobId(),
-            originalEmailJobDetails.getSubjectLine(),
+            originalEmailJobDetails.getSubjectLine().orElse(null),
             false,
             true,
             originalEmailJobDetails.getAttachmentFileType(),
