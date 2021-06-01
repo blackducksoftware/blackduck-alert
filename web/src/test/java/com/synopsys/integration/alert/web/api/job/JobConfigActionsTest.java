@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
-import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
@@ -358,24 +357,6 @@ public class JobConfigActionsTest {
 
         assertTrue(validationActionResponse.isSuccessful());
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
-        assertTrue(validationActionResponse.hasContent());
-        ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
-        assertTrue(validationResponseModel.hasErrors());
-    }
-
-    @Test
-    public void testAlertMethodNotAllowedTest() throws Exception {
-        Descriptor descriptor = createDescriptor(DescriptorType.CHANNEL);
-
-        Mockito.when(fieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
-        Mockito.when(descriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
-
-        Mockito.doThrow(new AlertMethodNotAllowedException("AlertMethodNotAllowedException for Alert test")).when(fieldModelProcessor).createCustomMessageFieldModel(Mockito.any());
-
-        ValidationActionResponse validationActionResponse = jobConfigActions.test(jobFieldModel);
-
-        assertTrue(validationActionResponse.isError());
-        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent());
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
         assertTrue(validationResponseModel.hasErrors());
