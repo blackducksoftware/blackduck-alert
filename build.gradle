@@ -87,7 +87,7 @@ repositories {
 
 dependencies {
     implementation platform(project(':alert-platform'))
-    
+
     implementation project(':alert-common')
     implementation project(':alert-database')
 
@@ -103,6 +103,7 @@ dependencies {
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
     implementation project(':channel-jira-cloud')
+    implementation project(':channel-jira-server')
 
     implementation project(':component')
     implementation project(':provider-blackduck')
