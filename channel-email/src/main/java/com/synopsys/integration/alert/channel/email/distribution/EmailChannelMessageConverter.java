@@ -70,7 +70,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
         Optional<String> projectVersionName = projectMessage.getProjectVersion()
                                                   .map(LinkableItem::getValue);
         if (projectVersionName.isPresent()) {
-            subjectLine += String.format(" %s", projectVersionName.get());
+            subjectLine += String.format("[%s]", projectVersionName.get());
         }
 
         return StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
