@@ -1,0 +1,17 @@
+ext.moduleName = 'com.synopsys.integration.alert.channel.jira-cloud'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-channel')
+    implementation project(':api-channel-jira')
+    implementation project(':api-processor')
+    implementation project(':api-descriptor')
+
+    implementation 'com.synopsys.integration:integration-rest'
+    implementation 'org.springframework:spring-web'
+
+    testImplementation project(':test-common')
+}
