@@ -21,9 +21,9 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 public class JiraServerGlobalValidator extends GlobalValidator {
     @Override
     protected Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        AlertFieldStatus urlStatus = FieldValidator.containsRequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_URL);
-        AlertFieldStatus usernameStatus = FieldValidator.containsRequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_USERNAME);
-        AlertFieldStatus passwordStatus = FieldValidator.containsRequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_PASSWORD);
+        AlertFieldStatus urlStatus = FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_URL);
+        AlertFieldStatus usernameStatus = FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_USERNAME);
+        AlertFieldStatus passwordStatus = FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_PASSWORD);
 
         return Set.of(urlStatus, usernameStatus, passwordStatus);
     }
