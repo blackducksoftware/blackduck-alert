@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.api.provider;
 
 import java.util.List;
 

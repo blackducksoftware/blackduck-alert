@@ -10,10 +10,9 @@ import org.springframework.core.env.Environment;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
@@ -44,12 +43,12 @@ public class AlertStartupInitializerTest {
         EncryptionSettingsValidator encryptionValidator = new EncryptionSettingsValidator(encryptionUtility);
         ChannelDescriptor channelDescriptor = new EmailDescriptor(new EmailGlobalUIConfig(encryptionValidator), null);
         SettingsDescriptorKey settingsDescriptorKey = new SettingsDescriptorKey();
+
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), settingsDescriptorKey);
-        List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
-        List<ProviderDescriptor> providerDescriptors = List.of();
-        List<ComponentDescriptor> componentDescriptors = List.of();
+        List<Descriptor> descriptors = List.of(channelDescriptor);
+
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
-        DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, channelDescriptors, providerDescriptors, componentDescriptors);
+        DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, descriptors);
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, descriptorKeys);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
 
@@ -67,7 +66,7 @@ public class AlertStartupInitializerTest {
         Environment environment = Mockito.mock(Environment.class);
         DescriptorAccessor baseDescriptorAccessor = Mockito.mock(DescriptorAccessor.class);
         ConfigurationAccessor baseConfigurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-        DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of(), List.of());
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of());
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         EnvironmentVariableUtility environmentVariableUtility = new EnvironmentVariableUtility(environment);
@@ -95,10 +94,9 @@ public class AlertStartupInitializerTest {
         ChannelDescriptor channelDescriptor = new EmailDescriptor(new EmailGlobalUIConfig(encryptionValidator), null);
 
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
-        List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
-        List<ProviderDescriptor> providerDescriptors = List.of();
-        List<ComponentDescriptor> componentDescriptors = List.of();
-        DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, channelDescriptors, providerDescriptors, componentDescriptors);
+        List<Descriptor> descriptors = List.of(channelDescriptor);
+
+        DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, descriptors);
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, descriptorKeys);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final String value = "newValue";
@@ -132,10 +130,9 @@ public class AlertStartupInitializerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorKeyAndContext(channelDescriptor.getDescriptorKey(), ConfigContextEnum.GLOBAL)).thenReturn(List.of(slackModel));
 
         List<DescriptorKey> descriptorKeys = List.of(channelDescriptor.getDescriptorKey(), SETTINGS_DESCRIPTOR_KEY);
-        List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
-        List<ProviderDescriptor> providerDescriptors = List.of();
-        List<ComponentDescriptor> componentDescriptors = List.of();
-        DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, channelDescriptors, providerDescriptors, componentDescriptors);
+        List<Descriptor> descriptors = List.of(channelDescriptor);
+
+        DescriptorMap descriptorMap = new DescriptorMap(descriptorKeys, descriptors);
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, descriptorKeys);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.any(DescriptorKey.class), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
 

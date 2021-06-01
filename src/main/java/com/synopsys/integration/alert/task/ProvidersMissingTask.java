@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.provider.ProviderConfigMissingValidator;
 import com.synopsys.integration.alert.api.task.ScheduledTask;
 import com.synopsys.integration.alert.api.task.StartupScheduledTask;
 import com.synopsys.integration.alert.api.task.TaskManager;
-import com.synopsys.integration.alert.common.provider.ProviderConfigMissingValidator;
 
 @Component
 public class ProvidersMissingTask extends StartupScheduledTask {

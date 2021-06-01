@@ -1,20 +1,20 @@
 /*
- * alert-common
+ * api-provider
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
-package com.synopsys.integration.alert.common.provider.lifecycle;
+package com.synopsys.integration.alert.api.provider.lifecycle;
 
 import java.util.List;
 
 import org.springframework.scheduling.TaskScheduler;
 
+import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.api.task.ScheduledTask;
 import com.synopsys.integration.alert.api.task.TaskMetaData;
 import com.synopsys.integration.alert.api.task.TaskMetaDataProperty;
-import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class ProviderTask extends ScheduledTask {

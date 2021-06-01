@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.provider.ProviderContent;
+import com.synopsys.integration.alert.api.provider.ProviderNotificationType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
-import com.synopsys.integration.alert.common.provider.ProviderContent;
-import com.synopsys.integration.alert.common.provider.ProviderNotificationType;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 
 @Component

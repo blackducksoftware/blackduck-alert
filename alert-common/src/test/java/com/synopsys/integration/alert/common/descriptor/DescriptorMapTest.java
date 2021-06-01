@@ -1,60 +1,118 @@
 package com.synopsys.integration.alert.common.descriptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DescriptorMapTest {
+    private static final String MISSING_EXPECTED_DESCRIPTOR = "Missing expected descriptor";
+
     @Test
-    public void testInit() throws AlertException {
-        ChannelDescriptor channelDescriptor1 = Mockito.mock(ChannelDescriptor.class);
-        ChannelDescriptor channelDescriptor2 = Mockito.mock(ChannelDescriptor.class);
-        ProviderDescriptor providerDescriptor = Mockito.mock(ProviderDescriptor.class);
+    public void getDescriptorKeyTest() {
+        String expectedKeyValue = "expected_key";
+        MockDescriptorKey key1 = new MockDescriptorKey("bad key 01");
+        MockDescriptorKey key2 = new MockDescriptorKey(expectedKeyValue);
+        MockDescriptorKey key3 = new MockDescriptorKey("bad key z");
+        MockDescriptorKey key4 = new MockDescriptorKey("bad key x");
+        DescriptorMap descriptorMap = new DescriptorMap(List.of(key1, key2, key3, key4), List.of());
 
-        final String channelDescriptor1Name = "channelDescriptor1";
-        final String channelDescriptor2Name = "channelDescriptor2";
-        final String providerDescriptorName = "providerDescriptor";
+        Optional<DescriptorKey> optionalFoundKey = descriptorMap.getDescriptorKey(expectedKeyValue);
+        assertTrue(optionalFoundKey.isPresent(), "Missing expected descriptor key");
+        DescriptorKey foundKey = optionalFoundKey.get();
+        assertEquals(expectedKeyValue, foundKey.getUniversalKey());
 
-        DescriptorKey channelDescriptor1Key = new MockDescriptorKey(channelDescriptor1Name);
-        DescriptorKey channelDescriptor2Key = new MockDescriptorKey(channelDescriptor2Name);
-        DescriptorKey providerDescriptorKey = new MockDescriptorKey(providerDescriptorName);
-
-        Mockito.when(channelDescriptor1.getDescriptorKey()).thenReturn(channelDescriptor1Key);
-        Mockito.when(channelDescriptor2.getDescriptorKey()).thenReturn(channelDescriptor2Key);
-        Mockito.when(providerDescriptor.getDescriptorKey()).thenReturn(providerDescriptorKey);
-
-        Mockito.when(channelDescriptor1.getType()).thenReturn(DescriptorType.CHANNEL);
-        Mockito.when(channelDescriptor2.getType()).thenReturn(DescriptorType.CHANNEL);
-        Mockito.when(providerDescriptor.getType()).thenReturn(DescriptorType.PROVIDER);
-
-        DescriptorMap descriptorMap = new DescriptorMap(List.of(channelDescriptor1Key, channelDescriptor2Key, providerDescriptorKey), List.of(channelDescriptor1, channelDescriptor2), List.of(providerDescriptor), List.of());
-
-        assertEquals(3, descriptorMap.getDescriptorMap().size());
-        assertEquals(2, descriptorMap.getChannelDescriptorMap().size());
-        assertEquals(1, descriptorMap.getProviderDescriptorMap().size());
-
-        assertNotNull(descriptorMap.getChannelDescriptor(channelDescriptor1Key));
-        assertNotNull(descriptorMap.getDescriptor(providerDescriptorKey));
-
-        assertTrue(descriptorMap.getChannelDescriptor(providerDescriptorKey).isEmpty());
-
-        DescriptorKey randomKey = new MockDescriptorKey("Random name");
-        assertTrue(descriptorMap.getDescriptor(randomKey).isEmpty());
-
-        assertTrue(descriptorMap.getDescriptorKey("Random name").isEmpty());
+        Optional<DescriptorKey> optionalMissingKey = descriptorMap.getDescriptorKey("a key that shouldn't be in there");
+        assertTrue(optionalMissingKey.isEmpty(), "Did not expect to find a descriptor key");
     }
 
-    private class MockDescriptorKey extends DescriptorKey {
+    @Test
+    public void getDescriptorTest() {
+        Descriptor channelDescriptor1 = createMockDescriptor("channel 1", DescriptorType.CHANNEL);
+        Descriptor channelDescriptor2 = createMockDescriptor("channel 2", DescriptorType.CHANNEL);
+        Descriptor channelDescriptor3 = createMockDescriptor("channel 3", DescriptorType.CHANNEL);
 
+        Descriptor componentDescriptor1 = createMockDescriptor("component 1", DescriptorType.COMPONENT);
+        Descriptor componentDescriptor2 = createMockDescriptor("component 2", DescriptorType.COMPONENT);
+
+        Descriptor providerDescriptor1 = createMockDescriptor("provider 1", DescriptorType.PROVIDER);
+        Descriptor providerDescriptor2 = createMockDescriptor("provider 2", DescriptorType.PROVIDER);
+
+        DescriptorMap descriptorMap = new DescriptorMap(
+            List.of(),
+            List.of(channelDescriptor3, providerDescriptor2, channelDescriptor1, componentDescriptor2, componentDescriptor1, providerDescriptor1, channelDescriptor2)
+        );
+
+        Optional<Descriptor> optionalChannelDescriptor = descriptorMap.getDescriptor(channelDescriptor1.getDescriptorKey());
+        assertTrue(optionalChannelDescriptor.isPresent(), MISSING_EXPECTED_DESCRIPTOR);
+
+        Optional<Descriptor> optionalComponentDescriptor = descriptorMap.getDescriptor(componentDescriptor1.getDescriptorKey());
+        assertTrue(optionalComponentDescriptor.isPresent(), MISSING_EXPECTED_DESCRIPTOR);
+
+        Optional<Descriptor> optionalProviderDescriptor = descriptorMap.getDescriptor(providerDescriptor1.getDescriptorKey());
+        assertTrue(optionalProviderDescriptor.isPresent(), MISSING_EXPECTED_DESCRIPTOR);
+
+        Optional<Descriptor> optionalMissingDescriptor = descriptorMap.getDescriptor(new MockDescriptorKey("this should produce Optional.empty()"));
+        assertTrue(optionalMissingDescriptor.isEmpty(), "Did not expect to find a descriptor");
+    }
+
+    @Test
+    public void getDescriptorByTypeTest() {
+        Descriptor channelDescriptor1 = createMockDescriptor("channel 1", DescriptorType.CHANNEL);
+        Descriptor channelDescriptor2 = createMockDescriptor("channel 2", DescriptorType.CHANNEL);
+        Descriptor channelDescriptor3 = createMockDescriptor("channel 3", DescriptorType.CHANNEL);
+
+        Descriptor componentDescriptor1 = createMockDescriptor("component 1", DescriptorType.COMPONENT);
+        Descriptor componentDescriptor2 = createMockDescriptor("component 2", DescriptorType.COMPONENT);
+
+        Descriptor providerDescriptor1 = createMockDescriptor("provider 1", DescriptorType.PROVIDER);
+        Descriptor providerDescriptor2 = createMockDescriptor("provider 2", DescriptorType.PROVIDER);
+
+        DescriptorMap descriptorMap = new DescriptorMap(
+            List.of(),
+            List.of(channelDescriptor3, providerDescriptor2, channelDescriptor1, componentDescriptor2, componentDescriptor1, providerDescriptor1, channelDescriptor2)
+        );
+
+        Set<Descriptor> channelDescriptors = descriptorMap.getDescriptorByType(DescriptorType.CHANNEL);
+        assertEquals(3, channelDescriptors.size());
+        assertContains(channelDescriptors, channelDescriptor1);
+        assertContains(channelDescriptors, channelDescriptor2);
+        assertContains(channelDescriptors, channelDescriptor3);
+
+        Set<Descriptor> componentDescriptors = descriptorMap.getDescriptorByType(DescriptorType.COMPONENT);
+        assertEquals(2, componentDescriptors.size());
+        assertContains(componentDescriptors, componentDescriptor1);
+        assertContains(componentDescriptors, componentDescriptor2);
+
+        Set<Descriptor> providerDescriptors = descriptorMap.getDescriptorByType(DescriptorType.PROVIDER);
+        assertEquals(2, providerDescriptors.size());
+        assertContains(providerDescriptors, providerDescriptor1);
+        assertContains(providerDescriptors, providerDescriptor2);
+    }
+
+    private Descriptor createMockDescriptor(String descriptorName, DescriptorType descriptorType) {
+        Descriptor descriptor = Mockito.mock(Descriptor.class);
+        DescriptorKey descriptorKey = new MockDescriptorKey(descriptorName);
+
+        Mockito.when(descriptor.getDescriptorKey()).thenReturn(descriptorKey);
+        Mockito.when(descriptor.getType()).thenReturn(descriptorType);
+
+        return descriptor;
+    }
+
+    private void assertContains(Set<Descriptor> descriptors, Descriptor expectedDescriptor) {
+        assertTrue(descriptors.contains(expectedDescriptor), String.format("Expected %s to contain %s", descriptors, expectedDescriptor));
+    }
+
+    private static class MockDescriptorKey extends DescriptorKey {
         public MockDescriptorKey(String key) {
             super(key, key);
         }

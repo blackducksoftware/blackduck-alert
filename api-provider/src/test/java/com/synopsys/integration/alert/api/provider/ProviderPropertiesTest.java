@@ -1,10 +1,10 @@
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.api.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.provider.state.ProviderProperties;
+import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 
 public class ProviderPropertiesTest {
     @Test
