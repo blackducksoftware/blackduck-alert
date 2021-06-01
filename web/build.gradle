@@ -17,6 +17,7 @@ dependencies {
     implementation project(':channel')
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
+    implementation project(':channel-jira-cloud')
     implementation project(':component')
 
     implementation project(':api-provider')
