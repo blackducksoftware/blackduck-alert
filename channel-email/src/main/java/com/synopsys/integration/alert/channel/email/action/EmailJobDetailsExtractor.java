@@ -34,7 +34,7 @@ public class EmailJobDetailsExtractor extends DistributionJobDetailsExtractor {
     public EmailJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new EmailJobDetailsModel(
             jobId,
-            fieldExtractor.extractFieldValueOrEmptyString(EmailDescriptor.KEY_SUBJECT_LINE, configuredFieldsMap),
+            fieldExtractor.extractFieldValue(EmailDescriptor.KEY_SUBJECT_LINE, configuredFieldsMap).orElse(null),
             fieldExtractor.extractFieldValue(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             fieldExtractor.extractFieldValue(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             fieldExtractor.extractFieldValueOrEmptyString(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, configuredFieldsMap),

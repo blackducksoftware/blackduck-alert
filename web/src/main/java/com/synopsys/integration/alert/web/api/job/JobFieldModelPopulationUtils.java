@@ -138,7 +138,7 @@ public final class JobFieldModelPopulationUtils {
 
     private static void populateEmailFields(FieldModel channelFieldModel, EmailJobDetailsModel emailJobDetails) {
         if (null != emailJobDetails) {
-            putField(channelFieldModel, EmailDescriptor.KEY_SUBJECT_LINE, emailJobDetails.getSubjectLine());
+            putField(channelFieldModel, EmailDescriptor.KEY_SUBJECT_LINE, emailJobDetails.getSubjectLine().orElse(null));
             putField(channelFieldModel, EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, emailJobDetails.getAttachmentFileType());
             putField(channelFieldModel, EmailDescriptor.KEY_PROJECT_OWNER_ONLY, Boolean.toString(emailJobDetails.isProjectOwnerOnly()));
             putField(channelFieldModel, EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, Boolean.toString(emailJobDetails.isAdditionalEmailAddressesOnly()));

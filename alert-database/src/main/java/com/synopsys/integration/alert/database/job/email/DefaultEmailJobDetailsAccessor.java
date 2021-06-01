@@ -43,7 +43,7 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
     public EmailJobDetailsEntity saveEmailJobDetails(UUID jobId, EmailJobDetailsModel emailJobDetails) {
         EmailJobDetailsEntity jobDetailsToSave = new EmailJobDetailsEntity(
             jobId,
-            emailJobDetails.getSubjectLine(),
+            emailJobDetails.getSubjectLine().orElse(null),
             emailJobDetails.isProjectOwnerOnly(),
             emailJobDetails.isAdditionalEmailAddressesOnly(),
             emailJobDetails.getAttachmentFileType()
