@@ -14,7 +14,7 @@ dependencies {
 
         api 'com.synopsys.integration:integration-rest:9.0.2'
         api 'com.synopsys.integration:integration-common:25.0.0'
-        api 'com.synopsys.integration:blackduck-common:55.0.0'
+        api 'com.synopsys.integration:blackduck-common:55.0.1'
         api 'com.synopsys.integration:int-jira-common:3.0.0-SNAPSHOT'
         api 'com.synopsys.integration:phone-home-client:4.0.5'
 
