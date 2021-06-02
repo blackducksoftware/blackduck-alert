@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
-import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionRemediatingView;
 import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
@@ -28,10 +27,6 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
 
     public BlackDuckMessageComponentVersionUpgradeGuidanceService(ComponentService componentService) {
         this.componentService = componentService;
-    }
-
-    public List<LinkableItem> requestRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
-        return List.of();
     }
 
     public List<LinkableItem> requestUpgradeGuidanceItems(ComponentVersionView componentVersionView) throws IntegrationException {
