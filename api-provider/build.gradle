@@ -1,0 +1,14 @@
+ext.moduleName = 'com.synopsys.integration.alert.api-provider'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+    implementation project(':api-common-model')
+    implementation project(':api-descriptor')
+    implementation project(':api-task')
+    implementation project(':alert-common')
+
+    implementation 'com.synopsys.integration:phone-home-client'
+    implementation 'org.springframework:spring-context'
+
+    testImplementation project(':test-common')
+}

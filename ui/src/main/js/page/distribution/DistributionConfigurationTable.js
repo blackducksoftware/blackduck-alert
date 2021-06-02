@@ -6,7 +6,6 @@ import {
     BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as DescriptorUtilities from 'common/util/descriptorUtilities';
 import DescriptorLabel from 'common/DescriptorLabel';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
 import * as HTTPErrorUtils from 'common/util/httpErrorUtilities';
@@ -14,6 +13,7 @@ import ConfirmModal from 'common/ConfirmModal';
 import AutoRefresh from 'common/table/AutoRefresh';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
+import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 
 const DistributionConfigurationTable = ({
     csrfToken, errorHandler, readonly, showRefreshButton, descriptors
@@ -280,8 +280,13 @@ const DistributionConfigurationTable = ({
 
     const descriptorColumnFormatter = (cell) => {
         const defaultValue = <div className="inline" title={cell}>{cell}</div>;
+
         if (descriptors) {
-            const descriptor = DescriptorUtilities.findFirstDescriptorByNameAndContext(descriptors, cell, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const descriptorOptions = {
+                ...EXISTING_PROVIDERS,
+                ...EXISTING_CHANNELS
+            };
+            const descriptor = descriptorOptions[cell];
             if (descriptor) {
                 return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={descriptor} />);
             }

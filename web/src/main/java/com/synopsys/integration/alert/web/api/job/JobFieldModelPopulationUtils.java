@@ -16,16 +16,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
@@ -138,7 +138,7 @@ public final class JobFieldModelPopulationUtils {
 
     private static void populateEmailFields(FieldModel channelFieldModel, EmailJobDetailsModel emailJobDetails) {
         if (null != emailJobDetails) {
-            putField(channelFieldModel, EmailDescriptor.KEY_SUBJECT_LINE, emailJobDetails.getSubjectLine());
+            putField(channelFieldModel, EmailDescriptor.KEY_SUBJECT_LINE, emailJobDetails.getSubjectLine().orElse(null));
             putField(channelFieldModel, EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, emailJobDetails.getAttachmentFileType());
             putField(channelFieldModel, EmailDescriptor.KEY_PROJECT_OWNER_ONLY, Boolean.toString(emailJobDetails.isProjectOwnerOnly()));
             putField(channelFieldModel, EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, Boolean.toString(emailJobDetails.isAdditionalEmailAddressesOnly()));

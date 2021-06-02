@@ -88,23 +88,30 @@ repositories {
 dependencies {
     implementation platform(project(':alert-platform'))
 
-    implementation project(':api-common-model')
-    implementation project(':api-event')
-    implementation project(':api-processor')
     implementation project(':alert-common')
     implementation project(':alert-database')
+
+    implementation project(':api-common-model')
+    implementation project(':api-channel')
+    implementation project(':api-descriptor')
+    implementation project(':api-event')
+    implementation project(':api-processor')
+    implementation project(':api-provider')
+    implementation project(':api-task')
+
     implementation project(':channel')
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
+    implementation project(':channel-jira-cloud')
+    implementation project(':channel-jira-server')
+
     implementation project(':component')
-    implementation project(':api-descriptor')
     implementation project(':provider-blackduck')
     implementation project(':ui')
     implementation project(':web')
     implementation project(':service-email')
 
     testImplementation project(':test-common')
-    testImplementation project(':api-channel')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'

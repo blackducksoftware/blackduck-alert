@@ -32,7 +32,8 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
 
     @Override
     protected List<EmailChannelMessageModel> convertSimpleMessageToChannelMessages(EmailJobDetailsModel distributionDetails, SimpleMessage simpleMessage, List<String> messageChunks) {
-        String subjectLine = String.format("%s | %s", distributionDetails.getSubjectLine(), simpleMessage.getSummary());
+        String subjectLinePrefix = createSubjectLinePrefix(distributionDetails);
+        String subjectLine = String.format("%s%s", subjectLinePrefix, simpleMessage.getSummary());
         subjectLine = StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
         String messageContent = StringUtils.join(messageChunks, "");
 
@@ -63,15 +64,20 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
 
     private String createSubjectLine(EmailJobDetailsModel distributionDetails, ProjectMessage projectMessage) {
         LinkableItem project = projectMessage.getProject();
-        String subjectLine = String.format("%s | %s | %s", distributionDetails.getSubjectLine(), projectMessage.getMessageReason().name(), project.getValue());
+        String subjectLinePrefix = createSubjectLinePrefix(distributionDetails);
+        String subjectLine = String.format("%s%s | %s", subjectLinePrefix, projectMessage.getMessageReason().name(), project.getValue());
 
         Optional<String> projectVersionName = projectMessage.getProjectVersion()
                                                   .map(LinkableItem::getValue);
         if (projectVersionName.isPresent()) {
-            subjectLine += String.format(" %s", projectVersionName.get());
+            subjectLine += String.format("[%s]", projectVersionName.get());
         }
 
         return StringUtils.abbreviate(subjectLine, SUBJECT_LINE_MAX_LENGTH);
+    }
+
+    private String createSubjectLinePrefix(EmailJobDetailsModel distributionDetails) {
+        return distributionDetails.getSubjectLine().map(txt -> String.format("%s | ", txt)).orElse("");
     }
 
 }

@@ -13,15 +13,18 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':alert-database')
     implementation project(':api-common-model')
+    implementation project(':api-descriptor')
     implementation project(':channel')
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
+    implementation project(':channel-jira-cloud')
+    implementation project(':channel-jira-server')
     implementation project(':component')
-    implementation project(':api-descriptor')
+
+    implementation project(':api-provider')
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'
     implementation 'com.synopsys.integration:integration-rest'
-    implementation 'com.synopsys.integration:integration-common'
 
     // Spring
     implementation 'org.springframework:spring-webmvc'

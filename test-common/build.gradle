@@ -4,8 +4,6 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
 
-    implementation 'com.synopsys.integration:integration-common'
-
     api 'org.springframework:spring-test'
     api 'org.springframework.security:spring-security-test'
     api 'org.springframework.boot:spring-boot-test-autoconfigure'

@@ -29,8 +29,8 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.CustomCertificateAccessor;
 import com.synopsys.integration.alert.common.persistence.model.CustomCertificateModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.common.security.CertificateUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.certificates.AlertTrustStoreManager;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptor;
 import com.synopsys.integration.alert.component.certificates.CertificatesDescriptorKey;
 import com.synopsys.integration.util.IntegrationEscapeUtil;
@@ -39,15 +39,15 @@ import com.synopsys.integration.util.IntegrationEscapeUtil;
 public class CertificateActions extends AbstractResourceActions<CertificateModel, CustomCertificateModel, MultiCertificateModel> {
     private final Logger logger = LoggerFactory.getLogger(CertificateActions.class);
     private static final String ERROR_DUPLICATE_ALIAS = "A certificate with this alias already exists.";
-    private final CertificateUtility certificateUtility;
+    private final AlertTrustStoreManager trustStoreService;
     private final CustomCertificateAccessor certificateAccessor;
     private final IntegrationEscapeUtil escapeUtil;
 
     @Autowired
-    public CertificateActions(CertificatesDescriptorKey descriptorKey, AuthorizationManager authorizationManager, CustomCertificateAccessor certificateAccessor, CertificateUtility certificateUtility) {
+    public CertificateActions(CertificatesDescriptorKey descriptorKey, AuthorizationManager authorizationManager, CustomCertificateAccessor certificateAccessor, AlertTrustStoreManager trustStoreService) {
         super(descriptorKey, ConfigContextEnum.GLOBAL, authorizationManager);
         this.certificateAccessor = certificateAccessor;
-        this.certificateUtility = certificateUtility;
+        this.trustStoreService = trustStoreService;
         escapeUtil = new IntegrationEscapeUtil();
     }
 
@@ -132,7 +132,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
         CustomCertificateModel certificateToStore = convertToDatabaseModel(certificateModel);
         try {
             CustomCertificateModel storedCertificate = certificateAccessor.storeCertificate(certificateToStore);
-            certificateUtility.importCertificate(storedCertificate);
+            trustStoreService.importCertificate(storedCertificate);
             return convertDatabaseModelToRestModel(storedCertificate);
         } catch (AlertException importException) {
             deleteByAlias(certificateToStore);
@@ -147,7 +147,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             if (certificate.isPresent()) {
                 CustomCertificateModel certificateModel = certificate.get();
                 logger.info("Delete certificate with id: {} and alias: {}", certificateModel.getNullableId(), certificateModel.getAlias());
-                certificateUtility.removeCertificate(certificateModel);
+                trustStoreService.removeCertificate(certificateModel);
                 certificateAccessor.deleteCertificate(id);
             }
         } catch (AlertException ex) {
@@ -161,7 +161,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
     private void deleteByAlias(CustomCertificateModel certificateModel) {
         try {
             certificateAccessor.deleteCertificate(certificateModel.getAlias());
-            certificateUtility.removeCertificate(certificateModel.getAlias());
+            trustStoreService.removeCertificate(certificateModel.getAlias());
         } catch (AlertException deleteEx) {
             logger.error("Error deleting certificate with alias {}. Error: {}", certificateModel.getAlias(), deleteEx.getMessage());
             logger.debug("Caused by: ", deleteEx);
@@ -197,7 +197,7 @@ public class CertificateActions extends AbstractResourceActions<CertificateModel
             fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, "Certificate content cannot be empty."));
         } else {
             try {
-                certificateUtility.validateCertificateContent(convertedModel);
+                trustStoreService.validateCertificateContent(convertedModel);
             } catch (AlertException ex) {
                 logger.error(ex.getMessage(), ex);
                 fieldErrors.add(AlertFieldStatus.error(CertificatesDescriptor.KEY_CERTIFICATE_CONTENT, String.format("Certificate content not valid: %s", ex.getMessage())));

@@ -58,7 +58,7 @@ class ConfigButtons extends Component {
 
     createDeleteButton() {
         const {
-            includeDelete, includeSave, onDeleteClick, deleteLabel, deleteId
+            includeDelete, includeSave, deleteLabel, deleteId
         } = this.props;
         const borderLeft = includeSave ? '1px solid #aaa' : 'none';
         const style = {
@@ -172,6 +172,7 @@ ConfigButtons.propTypes = {
     submitLabel: PropTypes.string,
     testLabel: PropTypes.string,
     cancelLabel: PropTypes.string,
+    deleteLabel: PropTypes.string,
     isFixed: PropTypes.bool,
     confirmDeleteTitle: PropTypes.string,
     confirmDeleteMessage: PropTypes.string

@@ -9,6 +9,8 @@ dependencies {
     implementation project(':api-descriptor')
     implementation project(':api-event')
     implementation project(':api-processor')
+    implementation project(':api-provider')
+    implementation project(':api-task')
 
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-web'

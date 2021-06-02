@@ -8,13 +8,7 @@ import ConfigurationLabel from 'common/ConfigurationLabel';
 import { NavLink } from 'react-router-dom';
 import LabeledField from 'common/input/field/LabeledField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
-import { AZURE_INFO } from 'page/channel/azure/AzureModel';
-import { EMAIL_INFO } from 'page/channel/email/EmailModels';
-import { JIRA_SERVER_INFO } from 'page/channel/jira/server/JiraServerModel';
-import { JIRA_CLOUD_INFO } from 'page/channel/jira/cloud/JiraCloudModel';
-import { MSTEAMS_INFO } from 'page/channel/msteams/MSTeamsModel';
-import { SLACK_INFO } from 'page/channel/slack/SlackModels';
+import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
 
 const AboutInfo = ({
     getAbout, version, projectUrl, documentationUrl, globalDescriptorMap, distributionDescriptorMap
@@ -61,18 +55,6 @@ const AboutInfo = ({
         );
     };
 
-    const existingProviders = {
-        [BLACKDUCK_INFO.key]: BLACKDUCK_INFO
-    };
-    const existingChannels = {
-        [AZURE_INFO.key]: AZURE_INFO,
-        [EMAIL_INFO.key]: EMAIL_INFO,
-        [JIRA_CLOUD_INFO.key]: JIRA_CLOUD_INFO,
-        [JIRA_SERVER_INFO.key]: JIRA_SERVER_INFO,
-        [MSTEAMS_INFO.key]: MSTEAMS_INFO,
-        [SLACK_INFO.key]: SLACK_INFO
-    };
-
     const createTableData = (descriptorMapping, existingData) => Object.values(descriptorMapping)
         .filter((descriptor) => existingData[descriptor.name])
         .map((descriptor) => {
@@ -83,8 +65,8 @@ const AboutInfo = ({
             };
         });
 
-    const providerData = createTableData(globalDescriptorMap, existingProviders);
-    const channelData = createTableData(distributionDescriptorMap, existingChannels);
+    const providerData = createTableData(globalDescriptorMap, EXISTING_PROVIDERS);
+    const channelData = createTableData(distributionDescriptorMap, EXISTING_CHANNELS);
     const providerTable = createDescriptorTable('about-providers', providerData, '/alert/providers/', 'Providers');
     const channelTable = createDescriptorTable('about-channels', channelData, '/alert/channels/', 'Distribution Channels');
     const providersMissing = !providerData || providerData.length <= 0;

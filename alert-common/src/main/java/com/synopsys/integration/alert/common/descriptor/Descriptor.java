@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -45,11 +46,17 @@ public abstract class Descriptor extends Stringable {
     private final DescriptorKey descriptorKey;
     private final DescriptorType type;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;
+    private final GlobalValidator globalValidator;
 
     public Descriptor(DescriptorKey descriptorKey, DescriptorType type) {
+        this(descriptorKey, type, null);
+    }
+
+    public Descriptor(DescriptorKey descriptorKey, DescriptorType type, GlobalValidator globalValidator) {
         this.descriptorKey = descriptorKey;
         this.type = type;
         uiConfigs = new EnumMap<>(ConfigContextEnum.class);
+        this.globalValidator = globalValidator;
     }
 
     public DescriptorKey getDescriptorKey() {
@@ -70,6 +77,10 @@ public abstract class Descriptor extends Stringable {
 
     public Optional<UIConfig> getUIConfig(ConfigContextEnum actionApiType) {
         return Optional.ofNullable(uiConfigs.get(actionApiType));
+    }
+
+    public Optional<GlobalValidator> getGlobalValidator() {
+        return Optional.ofNullable(globalValidator);
     }
 
     public Optional<DescriptorMetadata> createMetaData(ConfigContextEnum context) {

@@ -16,12 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.task.ScheduledTask;
+import com.synopsys.integration.alert.api.task.TaskManager;
+import com.synopsys.integration.alert.api.task.TaskMetaData;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.common.workflow.task.ScheduledTask;
-import com.synopsys.integration.alert.common.workflow.task.TaskManager;
-import com.synopsys.integration.alert.common.workflow.task.TaskMetaData;
 import com.synopsys.integration.alert.component.tasks.TaskManagementDescriptorKey;
 
 @Component
@@ -50,4 +50,5 @@ public class TaskActions {
         MultiTaskMetaDataModel content = new MultiTaskMetaDataModel(taskList);
         return new ActionResponse<>(HttpStatus.OK, content);
     }
+
 }
