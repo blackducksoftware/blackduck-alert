@@ -192,7 +192,7 @@ const DistributionConfigurationTable = ({
         </div>
     );
 
-    const selectRowOnSelect = (row, isSelect) => {
+    const selectRowOnSelectAction = (row, isSelect) => {
         const inSelectedRows = selectedRowsWithData.some(selectedRow => selectedRow.id === row.id);
         if (isSelect && !inSelectedRows) {
             let newSelectedRows = [];
@@ -205,13 +205,27 @@ const DistributionConfigurationTable = ({
         }
     }
 
+    const selectRowOnSelectAllAction = (isSelect, selectedRows) => {
+        if (isSelect) {
+            let newSelectedRows = [];
+            newSelectedRows.push(...selectedRowsWithData);
+            newSelectedRows.push(
+                ...selectedRowsWithData.filter(row => !selectedRows.some(selectedRow => selectedRow.id === row.id))
+            );
+            setSelectedRowsWithData(newSelectedRows);
+        } else {
+            setSelectedRowsWithData([]);
+        }
+    }
+
     const selectRow = {
         mode: 'checkbox',
         clickToSelect: true,
         bgColor(row, isSelect) {
             return isSelect && '#e8e8e8';
         },
-        onSelect: selectRowOnSelect
+        onSelect: selectRowOnSelectAction,
+        onSelectAll: selectRowOnSelectAllAction
     };
 
     const column = (header, value, dataFormat = assignedDataFormat, columnClassName = 'tableCell') => (
