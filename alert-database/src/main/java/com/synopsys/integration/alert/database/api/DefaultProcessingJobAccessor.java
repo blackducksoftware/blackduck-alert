@@ -54,8 +54,15 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
         Set<String> vulnerabilitySeverities = filteredDistributionJobRequestModel.getVulnerabilitySeverities().isEmpty() ? null : filteredDistributionJobRequestModel.getVulnerabilitySeverities();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageLimit);
-        Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobRepository
-                                                                        .findMatchingEnabledJobsByFilteredNotifications(frequencyTypes, notificationTypes, projectNames, policyNames, vulnerabilitySeverities, pageRequest);
+        Page<DistributionJobEntity> pageOfDistributionJobEntities = distributionJobRepository.findMatchingEnabledJobsByFilteredNotifications(
+            filteredDistributionJobRequestModel.getProviderConfigId(),
+            frequencyTypes,
+            notificationTypes,
+            projectNames,
+            policyNames,
+            vulnerabilitySeverities,
+            pageRequest
+        );
 
         List<FilteredDistributionJobResponseModel> distributionJobResponseModels = pageOfDistributionJobEntities.getContent()
                                                                                        .stream()
@@ -91,5 +98,6 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
             projectNamePattern
         );
     }
+
 }
 
