@@ -1,9 +1,19 @@
 import * as PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    useState
+} from 'react';
 import { useHistory } from 'react-router-dom';
-import { DISTRIBUTION_COMMON_FIELD_KEYS, DISTRIBUTION_URLS } from 'page/distribution/DistributionModel';
 import {
-    BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn
+    DISTRIBUTION_COMMON_FIELD_KEYS,
+    DISTRIBUTION_URLS
+} from 'page/distribution/DistributionModel';
+import {
+    BootstrapTable,
+    DeleteButton,
+    InsertButton,
+    TableHeaderColumn
 } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DescriptorLabel from 'common/DescriptorLabel';
@@ -13,16 +23,20 @@ import ConfirmModal from 'common/ConfirmModal';
 import AutoRefresh from 'common/table/AutoRefresh';
 import IconTableCellFormatter from 'common/table/IconTableCellFormatter';
 import * as DistributionRequestUtility from 'page/distribution/DistributionTableRequestUtility';
-import { EXISTING_CHANNELS, EXISTING_PROVIDERS } from 'common/DescriptorInfo';
+import {
+    EXISTING_CHANNELS,
+    EXISTING_PROVIDERS
+} from 'common/DescriptorInfo';
 
 const DistributionConfigurationTable = ({
-    csrfToken, errorHandler, readonly, showRefreshButton, descriptors
-}) => {
+                                            csrfToken, errorHandler, readonly, showRefreshButton, descriptors
+                                        }) => {
     const [error, setError] = useState(HTTPErrorUtils.createEmptyErrorObject());
     const [progress, setProgress] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [selectedRowsWithData, setSelectedRowsWithData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
@@ -89,7 +103,7 @@ const DistributionConfigurationTable = ({
             const newTableData = tableData.filter((distribution) => !ids.includes(distribution.id));
             setTableData(newTableData);
         }
-        setSelectedRows([]);
+        setSelectedRowsWithData([]);
         setShowDelete(false);
     };
 
@@ -112,16 +126,8 @@ const DistributionConfigurationTable = ({
     }, [currentPage, pageSize, searchTerm]);
 
     useEffect(() => {
-        let possibleDeleteEntries = [];
-        selectedRows.forEach((id) => {
-            possibleDeleteEntries = possibleDeleteEntries.concat(tableData.filter((distribution) => distribution.id === id));
-        });
-        if (possibleDeleteEntries && possibleDeleteEntries.length === 0) {
-            setEntriesToDelete(null);
-        } else {
-            setEntriesToDelete(possibleDeleteEntries);
-        }
-    }, [selectedRows]);
+        setEntriesToDelete(selectedRowsWithData);
+    }, [selectedRowsWithData]);
 
     const navigateToConfigPage = (id, copy) => {
         const url = (copy) ? DISTRIBUTION_URLS.distributionConfigCopyUrl : DISTRIBUTION_URLS.distributionConfigUrl;
@@ -186,12 +192,40 @@ const DistributionConfigurationTable = ({
         </div>
     );
 
+    const selectRowOnSelectAction = (row, isSelect) => {
+        const inSelectedRows = selectedRowsWithData.some(selectedRow => selectedRow.id === row.id);
+        if (isSelect && !inSelectedRows) {
+            let newSelectedRows = [];
+            newSelectedRows.push(...selectedRowsWithData);
+            newSelectedRows.push(row);
+            setSelectedRowsWithData(newSelectedRows);
+        } else if (!isSelect && inSelectedRows) {
+            const newSelectedRows = selectedRowsWithData.filter(selectedRow => selectedRow.id !== row.id);
+            setSelectedRowsWithData(newSelectedRows);
+        }
+    }
+
+    const selectRowOnSelectAllAction = (isSelect, selectedRows) => {
+        if (isSelect) {
+            let newSelectedRows = [];
+            newSelectedRows.push(...selectedRowsWithData);
+            newSelectedRows.push(
+                ...selectedRowsWithData.filter(row => !selectedRows.some(selectedRow => selectedRow.id === row.id))
+            );
+            setSelectedRowsWithData(newSelectedRows);
+        } else {
+            setSelectedRowsWithData([]);
+        }
+    }
+
     const selectRow = {
         mode: 'checkbox',
         clickToSelect: true,
         bgColor(row, isSelect) {
             return isSelect && '#e8e8e8';
-        }
+        },
+        onSelect: selectRowOnSelectAction,
+        onSelectAll: selectRowOnSelectAllAction
     };
 
     const column = (header, value, dataFormat = assignedDataFormat, columnClassName = 'tableCell') => (
@@ -238,13 +272,11 @@ const DistributionConfigurationTable = ({
     };
 
     const editButtonClicked = ({ id }) => {
-        setSelectedRows(id);
         // Navigate to config page
         navigateToConfigPage(id);
     };
 
     const copyButtonClicked = ({ id }) => {
-        setSelectedRows(id);
         // Navigate to config page
         navigateToConfigPage(id, true);
     };
