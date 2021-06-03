@@ -15,6 +15,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingJobAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.FilteredDistributionJobRequestModel;
@@ -97,10 +98,16 @@ public class JobNotificationMapper {
         public AlertPagedDetails<FilteredJobNotificationWrapper> retrievePage(int currentOffset, int currentLimit) throws RuntimeException {
             return mapPageOfJobsToNotification(detailedContents, frequencies, currentOffset, currentLimit);
         }
+
     }
 
     private FilteredDistributionJobRequestModel createRequestModelFromNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
-        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(frequencies);
+        Long commonProviderConfigId = detailedContents
+                                          .stream()
+                                          .map(DetailedNotificationContent::getProviderConfigId)
+                                          .findAny()
+                                          .orElseThrow(() -> new AlertRuntimeException("Notification(s) missing provider configuration id"));
+        FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(commonProviderConfigId, frequencies);
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
             detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);
             filteredDistributionJobRequestModel.addNotificationType(detailedNotificationContent.getNotificationContentWrapper().extractNotificationType());
@@ -109,4 +116,5 @@ public class JobNotificationMapper {
         }
         return filteredDistributionJobRequestModel;
     }
+
 }

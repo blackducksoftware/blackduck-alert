@@ -20,6 +20,7 @@ import com.synopsys.integration.util.Stringable;
 
 // NotificationContentWrapper is not serializable, so this class cannot be serializable (and doesn't need to be)
 public class DetailedNotificationContent extends Stringable {
+    private final Long providerConfigId;
     private final String projectName;
     private final String policyName;
     private final List<String> vulnerabilitySeverities;
@@ -58,10 +59,15 @@ public class DetailedNotificationContent extends Stringable {
         @Nullable String policyName,
         List<String> vulnerabilitySeverities
     ) {
+        this.providerConfigId = alertNotificationModel.getProviderConfigId();
         this.projectName = StringUtils.trimToNull(projectName);
         this.policyName = StringUtils.trimToNull(policyName);
         this.vulnerabilitySeverities = vulnerabilitySeverities;
         this.notificationContentWrapper = new NotificationContentWrapper(alertNotificationModel, notificationContent, notificationContent.getClass());
+    }
+
+    public Long getProviderConfigId() {
+        return providerConfigId;
     }
 
     public Optional<String> getProjectName() {

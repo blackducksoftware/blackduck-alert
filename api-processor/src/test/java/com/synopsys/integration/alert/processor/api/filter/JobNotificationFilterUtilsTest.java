@@ -175,4 +175,5 @@ public class JobNotificationFilterUtilsTest {
 
         assertTrue(JobNotificationFilterUtils.doesNotificationApplyToJob(jobResponseModel, detailedNotificationContent));
     }
+
 }
