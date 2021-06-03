@@ -97,7 +97,7 @@ public class UpdateChecker {
     private IntHttpClient createHttpClient() {
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         Boolean alwaysTrustServerCert = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
-        return new IntHttpClient(logger, 120, alwaysTrustServerCert, proxyInfo);
+        return new IntHttpClient(logger, gson, 120, alwaysTrustServerCert, proxyInfo);
     }
 
     private Optional<VersionDateModel> getLatestAvailableTag(DockerTagRetriever dockerTagRetriever, boolean isProduction) {

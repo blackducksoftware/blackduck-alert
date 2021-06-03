@@ -18,9 +18,9 @@ import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNoti
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.wait.WaitJobTask;
+import com.synopsys.integration.wait.WaitJobCondition;
 
-public class NotificationWaitJobTask implements WaitJobTask {
+public class NotificationWaitJobTask implements WaitJobCondition {
     private final IntLogger intLogger;
     private final DateTimeFormatter dateTimeFormatter;
     private final Gson gson;

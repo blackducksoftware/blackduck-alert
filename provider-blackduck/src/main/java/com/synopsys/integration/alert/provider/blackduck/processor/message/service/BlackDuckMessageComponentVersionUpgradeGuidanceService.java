@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
-import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionRemediatingView;
 import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
@@ -28,30 +27,6 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
 
     public BlackDuckMessageComponentVersionUpgradeGuidanceService(ComponentService componentService) {
         this.componentService = componentService;
-    }
-
-    public List<LinkableItem> requestRemediationItems(ComponentVersionView componentVersionView) throws IntegrationException {
-        Optional<ComponentVersionRemediatingView> optionalRemediationInformation = componentService.getRemediationInformation(componentVersionView);
-        if (optionalRemediationInformation.isPresent()) {
-            ComponentVersionRemediatingView remediatingView = optionalRemediationInformation.get();
-
-            List<LinkableItem> remediationItems = new ArrayList<>(3);
-
-            Optional.ofNullable(remediatingView.getFixesPreviousVulnerabilities())
-                .map(remediationView -> createRemediationItem(BlackDuckMessageLabels.LABEL_REMEDIATION_FIX_PREVIOUS, remediationView))
-                .ifPresent(remediationItems::add);
-
-            Optional.ofNullable(remediatingView.getLatestAfterCurrent())
-                .map(remediationView -> createRemediationItem(BlackDuckMessageLabels.LABEL_REMEDIATION_LATEST, remediationView))
-                .ifPresent(remediationItems::add);
-
-            Optional.ofNullable(remediatingView.getNoVulnerabilities())
-                .map(remediationView -> createRemediationItem(BlackDuckMessageLabels.LABEL_REMEDIATION_CLEAN, remediationView))
-                .ifPresent(remediationItems::add);
-
-            return remediationItems;
-        }
-        return List.of();
     }
 
     public List<LinkableItem> requestUpgradeGuidanceItems(ComponentVersionView componentVersionView) throws IntegrationException {

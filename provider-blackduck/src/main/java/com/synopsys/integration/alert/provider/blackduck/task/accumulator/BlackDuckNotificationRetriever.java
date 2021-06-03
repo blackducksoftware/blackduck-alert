@@ -7,11 +7,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
-import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
@@ -19,67 +15,50 @@ import com.synopsys.integration.alert.processor.api.filter.PageRetriever;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestFilter;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
+import com.synopsys.integration.blackduck.service.request.NotificationEditor;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.RestConstants;
 
 public class BlackDuckNotificationRetriever {
     public static final int DEFAULT_PAGE_SIZE = 100;
     public static final int INITIAL_PAGE_OFFSET = 0;
 
-    private final BlackDuckRequestFactory blackDuckRequestFactory;
     private final BlackDuckApiClient blackDuckApiClient;
+    private final ApiDiscovery apiDiscovery;
 
-    public BlackDuckNotificationRetriever(BlackDuckRequestFactory blackDuckRequestFactory, BlackDuckApiClient blackDuckApiClient) {
-        this.blackDuckRequestFactory = blackDuckRequestFactory;
+    public BlackDuckNotificationRetriever(BlackDuckApiClient blackDuckApiClient, ApiDiscovery apiDiscovery) {
         this.blackDuckApiClient = blackDuckApiClient;
+        this.apiDiscovery = apiDiscovery;
     }
 
     public StatefulAlertPage<NotificationView, IntegrationException> retrievePageOfFilteredNotifications(DateRange dateRange, List<String> types) throws IntegrationException {
-        BlackDuckRequestBuilder requestBuilder = createNotificationRequestBuilder(dateRange, types);
-        NotificationPageRetriever notificationRetriever = new NotificationPageRetriever(requestBuilder);
+        BlackDuckMultipleRequest<NotificationView> spec = createNotificationsRequest(dateRange, types);
+        NotificationPageRetriever notificationRetriever = new NotificationPageRetriever(spec);
         AlertPagedDetails<NotificationView> firstPage = notificationRetriever.retrievePage(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE);
         return new StatefulAlertPage<>(firstPage, notificationRetriever);
     }
 
-    private BlackDuckPageResponse<NotificationView> retrievePageOfFilteredNotifications(BlackDuckRequestBuilder requestBuilder, BlackDuckPageDefinition pageDefinition) throws IntegrationException {
-        return blackDuckApiClient.getPageResponse(requestBuilder, NotificationView.class, pageDefinition);
+    private BlackDuckPageResponse<NotificationView> retrievePageOfFilteredNotifications(BlackDuckMultipleRequest<NotificationView> spec) throws IntegrationException {
+        return blackDuckApiClient.getPageResponse(spec);
     }
 
-    private BlackDuckRequestBuilder createNotificationRequestBuilder(DateRange dateRange, List<String> notificationTypesToInclude) throws IntegrationException {
-        HttpUrl requestUrl = blackDuckApiClient.getUrl(ApiDiscovery.NOTIFICATIONS_LINK);
-
-        SimpleDateFormat sdf = new SimpleDateFormat(RestConstants.JSON_DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        String startDateString = toDateString(sdf, dateRange.getStart());
-        String endDateString = toDateString(sdf, dateRange.getEnd());
-
-        BlackDuckRequestFilter notificationTypeFilter = BlackDuckRequestFilter.createFilterWithMultipleValues("notificationType", notificationTypesToInclude);
-        return blackDuckRequestFactory
-                   .createCommonGetRequestBuilder()
-                   .url(requestUrl)
-                   .addQueryParameter("startDate", startDateString)
-                   .addQueryParameter("endDate", endDateString)
-                   .addBlackDuckFilter(notificationTypeFilter);
-    }
-
-    private String toDateString(SimpleDateFormat sdf, OffsetDateTime offsetDateTime) {
-        Date date = Date.from(offsetDateTime.toInstant());
-        return sdf.format(date);
+    private BlackDuckMultipleRequest<NotificationView> createNotificationsRequest(DateRange dateRange, List<String> notificationTypesToInclude) throws IntegrationException {
+        NotificationEditor notificationEditor = new NotificationEditor(dateRange.getStart(), dateRange.getEnd(), notificationTypesToInclude);
+        BlackDuckMultipleRequest<NotificationView> spec = new BlackDuckRequestBuilder()
+                                                              .commonGet()
+                                                              .apply(notificationEditor)
+                                                              .buildBlackDuckRequest(apiDiscovery.metaNotificationsLink());
+        return spec;
     }
 
     private class NotificationPageRetriever implements PageRetriever<NotificationView, IntegrationException> {
-        private final BlackDuckRequestBuilder blackDuckRequestBuilder;
+        private final BlackDuckMultipleRequest<NotificationView> spec;
 
-        public NotificationPageRetriever(BlackDuckRequestBuilder blackDuckRequestBuilder) {
-            this.blackDuckRequestBuilder = blackDuckRequestBuilder;
+        public NotificationPageRetriever(BlackDuckMultipleRequest<NotificationView> spec) {
+            this.spec = spec;
         }
 
         @Override
@@ -90,11 +69,12 @@ public class BlackDuckNotificationRetriever {
 
         @Override
         public AlertPagedDetails<NotificationView> retrievePage(int currentOffset, int currentLimit) throws IntegrationException {
-            BlackDuckPageDefinition pageDefinition = new BlackDuckPageDefinition(currentLimit, currentOffset);
-            BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(blackDuckRequestBuilder, pageDefinition);
+            BlackDuckMultipleRequest<NotificationView> pageSpec = new BlackDuckRequestBuilder(spec)
+                                                                      .setLimitAndOffset(currentLimit, currentOffset)
+                                                                      .buildBlackDuckRequest(spec.getUrlResponse());
+            BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(pageSpec);
             return new AlertPagedDetails<>(notificationPage.getTotalCount(), currentOffset, currentLimit, notificationPage.getItems());
         }
-
     }
 
 }

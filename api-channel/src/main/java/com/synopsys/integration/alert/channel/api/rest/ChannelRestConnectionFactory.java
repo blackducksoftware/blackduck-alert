@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.log.IntLogger;
@@ -27,11 +28,13 @@ public class ChannelRestConnectionFactory {
 
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
+    private final Gson gson;
 
     @Autowired
-    public ChannelRestConnectionFactory(AlertProperties alertProperties, ProxyManager proxyManager) {
+    public ChannelRestConnectionFactory(AlertProperties alertProperties, ProxyManager proxyManager, Gson gson) {
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
+        this.gson = gson;
     }
 
     public IntHttpClient createIntHttpClient() {
@@ -41,7 +44,7 @@ public class ChannelRestConnectionFactory {
     public IntHttpClient createIntHttpClient(IntLogger intLogger, int timeout) {
         Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        return new IntHttpClient(intLogger, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
+        return new IntHttpClient(intLogger, gson, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
     }
 
 }

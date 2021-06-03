@@ -125,7 +125,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(samlAuthenticationProvider());
     }
 
@@ -157,7 +157,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
             logger.info("Alert Application Configuration: Removing Bouncy Castle provider");
             Security.addProvider(bouncycastle);
             logger.info("Alert Application Configuration: Adding Bouncy Castle provider to the end of the provider list");
-
         } catch (Exception e) {
             // nothing needed here if that provider does not exist
             logger.info("Alert Application Configuration: Bouncy Castle provider not found");
@@ -201,7 +200,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     private ObjectPostProcessor<AffirmativeBased> createRoleProcessor() {
         return new ObjectPostProcessor<>() {
             @Override
-            public AffirmativeBased postProcess(AffirmativeBased affirmativeBased) {
+            public <O extends AffirmativeBased> O postProcess(O affirmativeBased) {
                 WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
                 DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
                 expressionHandler.setRoleHierarchy(authorities -> {

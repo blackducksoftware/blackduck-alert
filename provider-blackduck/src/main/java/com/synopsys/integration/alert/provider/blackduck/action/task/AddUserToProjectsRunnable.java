@@ -27,6 +27,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
+import com.synopsys.integration.blackduck.service.dataservice.UserService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.HttpUrl;
@@ -55,10 +56,11 @@ public class AddUserToProjectsRunnable implements Runnable {
             BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, intLogger);
 
             BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+            UserService userService = blackDuckServicesFactory.createUserService();
             ProjectService projectService = blackDuckServicesFactory.createProjectService();
             ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
 
-            UserView currentUser = blackDuckApiClient.getResponse(ApiDiscovery.CURRENT_USER_LINK_RESPONSE);
+            UserView currentUser = userService.findCurrentUser();
             List<ProjectView> projectViews = filterByProject ? getTheseProjects(blackDuckApiClient, blackDuckProjectModels) : projectService.getAllProjects();
             updateBlackDuckProjectPermissions(projectUsersService, currentUser, projectViews);
         } catch (Exception e) {

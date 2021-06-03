@@ -38,19 +38,18 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.wait.WaitJob;
+import com.synopsys.integration.wait.WaitJobConfig;
 
 @Tag(TestTags.DEFAULT_PERFORMANCE)
 public class ScalingPerformanceTest {
     private final IntLogger intLogger = new Slf4jIntLogger(LoggerFactory.getLogger(this.getClass()));
+    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
     private final static String SLACK_SCALING_PERFORMANCE_JOB_NAME = "Slack Scaling Performance Job";
 
-    private final IntHttpClient client = new IntHttpClient(intLogger, 60, true, ProxyInfo.NO_PROXY_INFO);
+    private final IntHttpClient client = new IntHttpClient(intLogger, gson, 60, true, ProxyInfo.NO_PROXY_INFO);
     private final String alertURL = "https://localhost:8443/alert";
 
-    private final Gson gson = IntegrationPerformanceTestRunner.createGson();
     private final DateTimeFormatter dateTimeFormatter = IntegrationPerformanceTestRunner.createDateTimeFormatter();
-
-    private final String blackDuckProviderID = "-1";
 
     private static String SLACK_CHANNEL_WEBHOOK;
     private static String SLACK_CHANNEL_NAME;
@@ -109,10 +108,12 @@ public class ScalingPerformanceTest {
         logTimeElapsedWithMessage("Triggering the Black Duck notification took %s", startingNotificationSearchDateTime, LocalDateTime.now());
 
         LocalDateTime startingNotificationWaitForTenJobs = LocalDateTime.now();
+
         // check that all jobs have processed the notification successfully, log how long it took
+        WaitJobConfig waitJobConfig = new WaitJobConfig(intLogger, "scaling notification wait", 900, startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 30);
         NotificationWaitJobTask notificationWaitJobTask = new NotificationWaitJobTask(intLogger, dateTimeFormatter, gson, alertRequestUtility, startingNotificationSearchDateTime, jobIds);
         notificationWaitJobTask.setFailOnJobFailure(false);
-        WaitJob waitForNotificationToBeProcessed = WaitJob.create(intLogger, 900, startingNotificationSearchDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 30, notificationWaitJobTask);
+        WaitJob<Boolean> waitForNotificationToBeProcessed = WaitJob.createSimpleWait(waitJobConfig, notificationWaitJobTask);
         boolean isComplete = waitForNotificationToBeProcessed.waitFor();
         logTimeElapsedWithMessage("Waiting for " + numberOfJobsToCreate + " jobs to process the notification took %s", startingNotificationWaitForTenJobs, LocalDateTime.now());
 

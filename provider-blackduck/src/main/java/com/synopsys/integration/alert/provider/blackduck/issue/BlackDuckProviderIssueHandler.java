@@ -21,9 +21,11 @@ import com.synopsys.integration.blackduck.api.manual.temporary.component.IssueRe
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.dataservice.IssueService;
+import com.synopsys.integration.blackduck.service.request.BlackDuckResponseRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
+import com.synopsys.integration.rest.body.BodyContentConverter;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.request.Request;
 
@@ -73,11 +75,10 @@ public class BlackDuckProviderIssueHandler {
     }
 
     private void performRequest(HttpUrl httpUrl, HttpMethod httpMethod, IssueRequest issueRequest) throws IntegrationException {
-        Request request = new BlackDuckRequestBuilder(new Request.Builder())
-                              .url(httpUrl)
+        BlackDuckResponseRequest request = new BlackDuckRequestBuilder()
                               .method(httpMethod)
-                              .bodyContent(new StringBodyContent(gson.toJson(issueRequest)))
-                              .build();
+                              .bodyContent(new StringBodyContent(gson.toJson(issueRequest), BodyContentConverter.DEFAULT))
+                              .buildBlackDuckResponseRequest(httpUrl);
         blackDuckApiClient.execute(request);
     }
 

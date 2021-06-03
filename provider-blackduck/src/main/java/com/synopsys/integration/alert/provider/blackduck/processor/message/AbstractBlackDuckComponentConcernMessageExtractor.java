@@ -57,7 +57,7 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
         List<BomComponentDetails> bomComponentDetails;
         try {
             BlackDuckServicesFactory blackDuckServicesFactory = servicesFactoryCache.retrieveBlackDuckServicesFactory(providerConfigId);
-            providerUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBaseUrl().toString();
+            providerUrl = blackDuckServicesFactory.getBlackDuckHttpClient().getBlackDuckUrl().string();
             bomComponentDetails = createBomComponentDetails(notificationContent, blackDuckServicesFactory);
         } catch (AlertConfigurationException e) {
             logger.warn("Invalid BlackDuck configuration for notification. ID: {}. Name: {}", providerConfigId, notificationModel.getProviderConfigName(), e);

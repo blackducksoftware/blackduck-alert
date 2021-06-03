@@ -51,7 +51,7 @@ public class DockerTagRetrieverTest {
     })
     public void getTagsModelTestIT() throws IntegrationException {
         IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
-        IntHttpClient intHttpClient = new IntHttpClient(intLogger, 10, true, ProxyInfo.NO_PROXY_INFO);
+        IntHttpClient intHttpClient = new IntHttpClient(intLogger, gson, 10, true, ProxyInfo.NO_PROXY_INFO);
 
         HttpUrl httpUrl = new HttpUrl("https://google.com");
         Request testRequest = new Request.Builder(httpUrl).build();

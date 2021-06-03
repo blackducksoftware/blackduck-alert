@@ -148,7 +148,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
     private PhoneHomeService createPhoneHomeService(ExecutorService phoneHomeExecutor) {
         IntLogger intLogger = new Slf4jIntLogger(logger);
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        IntHttpClient intHttpClient = new IntHttpClient(intLogger, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
+        IntHttpClient intHttpClient = new IntHttpClient(intLogger, gson, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
 
         PhoneHomeClient phoneHomeClient = BlackDuckPhoneHomeHelper.createPhoneHomeClient(intLogger, intHttpClient.getClientBuilder(), gson);
         return PhoneHomeService.createAsynchronousPhoneHomeService(intLogger, phoneHomeClient, phoneHomeExecutor);

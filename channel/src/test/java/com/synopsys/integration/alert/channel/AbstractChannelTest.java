@@ -36,7 +36,7 @@ public abstract class AbstractChannelTest {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
+        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
         return new RestChannelUtility(channelRestConnectionFactory);
     }
 

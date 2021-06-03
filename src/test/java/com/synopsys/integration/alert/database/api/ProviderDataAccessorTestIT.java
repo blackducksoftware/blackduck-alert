@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderDataAc
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
-import com.synopsys.integration.blackduck.api.core.response.BlackDuckPathMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
@@ -39,6 +38,7 @@ import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectService;
 import com.synopsys.integration.blackduck.service.dataservice.ProjectUsersService;
+import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.SilentIntLogger;
@@ -125,7 +125,7 @@ public class ProviderDataAccessorTestIT {
         Long providerConfigId = providerConfiguration.getConfigurationId();
 
         List<UserView> userViews = new ArrayList<>(createUserViews());
-        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
+        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckMultipleRequest.class))).thenReturn(userViews);
 
         BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigId(providerConfigId);
@@ -135,7 +135,7 @@ public class ProviderDataAccessorTestIT {
     @Test
     public void getAllUsersByConfigNameTest() throws Exception {
         List<UserView> userViews = new ArrayList<>(createUserViews());
-        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(userViews);
+        Mockito.when(blackDuckService.getAllResponses(Mockito.any(BlackDuckMultipleRequest.class))).thenReturn(userViews);
 
         BlackDuckProviderDataAccessor providerDataAccessor = new BlackDuckProviderDataAccessor(configurationAccessor, blackDuckPropertiesFactory, blackDuckJsonTransformer);
         List<ProviderUserModel> allProviderUsers = providerDataAccessor.getUsersByProviderConfigName(PROVIDER_CONFIG_NAME);

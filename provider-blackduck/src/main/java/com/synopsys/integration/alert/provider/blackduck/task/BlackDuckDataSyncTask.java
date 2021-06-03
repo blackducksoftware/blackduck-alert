@@ -57,12 +57,13 @@ public class BlackDuckDataSyncTask extends ProviderTask {
                 BlackDuckServicesFactory blackDuckServicesFactory = providerProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 ProjectUsersService projectUsersService = blackDuckServicesFactory.createProjectUsersService();
                 BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+                ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
 
-                List<ProjectView> projectViews = blackDuckApiClient.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
+                List<ProjectView> projectViews = blackDuckApiClient.getAllResponses(apiDiscovery.metaProjectsLink());
                 Map<ProjectView, ProviderProject> blackDuckToAlertProjects = mapBlackDuckProjectsToAlertProjects(projectViews, blackDuckApiClient);
 
                 Map<ProviderProject, Set<String>> projectToEmailAddresses = getEmailsPerProject(blackDuckToAlertProjects, projectUsersService);
-                Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckApiClient);
+                Set<String> allRelevantBlackDuckUsers = getAllActiveBlackDuckUserEmailAddresses(blackDuckApiClient, apiDiscovery);
                 blackDuckDataAccessor.updateProjectAndUserData(providerProperties.getConfigId(), projectToEmailAddresses, allRelevantBlackDuckUsers);
             } else {
                 logger.error("Missing BlackDuck global configuration.");
@@ -123,8 +124,8 @@ public class BlackDuckDataSyncTask extends ProviderTask {
         return projectToEmailAddresses;
     }
 
-    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckApiClient blackDuckService) throws IntegrationException {
-        return blackDuckService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE)
+    private Set<String> getAllActiveBlackDuckUserEmailAddresses(BlackDuckApiClient blackDuckService, ApiDiscovery apiDiscovery) throws IntegrationException {
+        return blackDuckService.getAllResponses(apiDiscovery.metaUsersLink())
                    .stream()
                    .filter(UserView::getActive)
                    .map(UserView::getEmail)

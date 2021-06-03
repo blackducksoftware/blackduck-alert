@@ -24,11 +24,12 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageAttributesUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
+import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
-import com.synopsys.integration.blackduck.http.BlackDuckRequestFactory;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
@@ -128,13 +129,14 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             return ComponentVulnerabilities.none();
         }
 
-        BlackDuckRequestFactory blackDuckRequestFactory = new BlackDuckRequestFactory();
-
         HttpUrl vulnerabilitiesUrl = bomComponent.getHref().appendRelativeUrl(VULNERABILITIES_LINK.getLink());
-        BlackDuckRequestBuilder vulnerabilitiesRequestBuilder = blackDuckRequestFactory.createCommonGetRequestBuilder(vulnerabilitiesUrl)
-                                                                    .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE);
+        UrlMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> urlMultipleResponses = new UrlMultipleResponses<>(vulnerabilitiesUrl, VULNERABILITIES_LINK.getResponseClass());
+        BlackDuckMultipleRequest<BlackDuckProjectVersionComponentVulnerabilitiesView> spec = new BlackDuckRequestBuilder()
+                                                                                                 .commonGet()
+                                                                                                 .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE)
+                                                                                                 .buildBlackDuckRequest(urlMultipleResponses);
 
-        List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(vulnerabilitiesRequestBuilder, VULNERABILITIES_LINK.getResponseClass());
+        List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(spec);
         return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilities);
     }
 
@@ -142,7 +144,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         if (ProjectVersionComponentPolicyStatusType.NOT_IN_VIOLATION.equals(bomComponent.getPolicyStatus())) {
             return List.of();
         }
-        return blackDuckApiClient.getAllResponses(bomComponent, ProjectVersionComponentView.POLICY_RULES_LINK_RESPONSE)
+        return blackDuckApiClient.getAllResponses(bomComponent.metaPolicyRulesLink())
                    .stream()
                    .map(policyDetailsCreator::toComponentPolicy)
                    .collect(Collectors.toList());

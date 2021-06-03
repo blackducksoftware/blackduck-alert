@@ -22,6 +22,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.body.BodyContentConverter;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
@@ -77,7 +78,7 @@ public class RestChannelUtility {
             requestBuilder.queryParameters(queryParameters);
         }
         if (jsonString != null) {
-            requestBuilder.bodyContent(new StringBodyContent(jsonString));
+            requestBuilder.bodyContent(new StringBodyContent(jsonString, BodyContentConverter.DEFAULT));
         }
         return requestBuilder.build();
     }

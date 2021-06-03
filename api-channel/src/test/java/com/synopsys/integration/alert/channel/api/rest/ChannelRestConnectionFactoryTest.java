@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.rest.client.IntHttpClient;
@@ -15,6 +16,8 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 public class ChannelRestConnectionFactoryTest {
+    private final Gson gson = new Gson();
+
     @Test
     public void testConnectionFields() {
         final String host = "host";
@@ -36,7 +39,7 @@ public class ChannelRestConnectionFactoryTest {
         testAlertProperties.setAlertTrustCertificate(true);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);
-        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
+        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
 
         IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient();
 

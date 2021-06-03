@@ -38,17 +38,17 @@ import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckProper
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.http.BlackDuckPageDefinition;
 import com.synopsys.integration.blackduck.http.BlackDuckPageResponse;
+import com.synopsys.integration.blackduck.http.BlackDuckQuery;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestFilter;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.rest.HttpUrl;
-import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFunctionAction<NotificationFilterModelOptions> {
@@ -102,15 +102,16 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
     }
 
     private BlackDuckPageResponse<PolicyRuleView> retrievePolicyRules(BlackDuckServicesFactory blackDuckServicesFactory, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
+        ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
-        HttpUrl policyRulesUrl = blackDuckApiClient.getUrl(ApiDiscovery.POLICY_RULES_LINK);
-        BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder(new Request.Builder())
-                                                     .url(policyRulesUrl)
-                                                     .addQueryParameter("q", "name:" + searchTerm)
-                                                     .addQueryParameter("filter", "policyRuleEnabled:true");
-        BlackDuckPageDefinition blackDuckPageDefinition = new BlackDuckPageDefinition(pageSize, pageNumber * pageSize);
-        return blackDuckApiClient.getPageResponse(requestBuilder, PolicyRuleView.class, blackDuckPageDefinition);
+        BlackDuckMultipleRequest<PolicyRuleView> spec = new BlackDuckRequestBuilder()
+                                                            .commonGet()
+                                                            .setLimitAndOffset(pageSize, pageNumber * pageSize)
+                                                            .addBlackDuckQuery(new BlackDuckQuery("name", searchTerm))
+                                                            .addBlackDuckFilter(BlackDuckRequestFilter.createFilterWithSingleValue("policyRuleEnabled", "true"))
+                                                            .buildBlackDuckRequest(apiDiscovery.metaPolicyRulesLink());
+        return blackDuckApiClient.getPageResponse(spec);
     }
 
     private List<NotificationFilterModel> convertToNotificationFilterModel(List<PolicyRuleView> policyRules) {
