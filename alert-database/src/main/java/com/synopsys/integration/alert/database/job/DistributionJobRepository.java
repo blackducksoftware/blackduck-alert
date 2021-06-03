@@ -46,6 +46,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobVulnerabilitySeverityFilters vulnerabilitySeverityFilters ON jobEntity.jobId = vulnerabilitySeverityFilters.jobId "
                        + "    LEFT JOIN blackDuckDetails.blackDuckJobProjects projects ON jobEntity.jobId = projects.jobId "
                        + "    WHERE jobEntity.enabled = true"
+                       + "    AND blackDuckDetails.globalConfigId = :blackDuckConfigId"
                        + "    AND notificationTypes.notificationType IN (:notificationTypeSet)"
                        + "    AND jobEntity.distributionFrequency IN (:frequencies)"
                        + "    AND (blackDuckDetails.filterByProject = false OR blackDuckDetails.projectNamePattern IS NOT NULL OR projects.projectName IN (:projectNames))"
@@ -62,6 +63,7 @@ public interface DistributionJobRepository extends JpaRepository<DistributionJob
                        + "    )"
     )
     Page<DistributionJobEntity> findMatchingEnabledJobsByFilteredNotifications(
+        @Param("blackDuckConfigId") Long blackDuckConfigId,
         @Param("frequencies") Collection<String> frequencies,
         @Param("notificationTypeSet") Set<String> notificationTypeSet,
         @Param("projectNames") Set<String> projectNames,
