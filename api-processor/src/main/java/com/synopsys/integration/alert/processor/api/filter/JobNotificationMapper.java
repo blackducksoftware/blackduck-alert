@@ -56,6 +56,10 @@ public class JobNotificationMapper {
     }
 
     private AlertPagedDetails<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
+        if (detailedContents.isEmpty()) {
+            return new AlertPagedDetails<>(1, pageNumber, pageSize, List.of());
+        }
+
         Map<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedFilterableNotifications = new HashMap<>();
 
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = createRequestModelFromNotifications(detailedContents, frequencies);
