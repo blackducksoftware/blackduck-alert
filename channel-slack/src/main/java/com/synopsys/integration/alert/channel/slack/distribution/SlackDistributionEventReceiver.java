@@ -1,5 +1,5 @@
 /*
- * channel
+ * channel-slack
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
@@ -10,14 +10,16 @@ package com.synopsys.integration.alert.channel.slack.distribution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.MessageBoardChannel;
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
+import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;
 
 @Component
-public class SlackChannel extends MessageBoardChannel<SlackJobDetailsModel, SlackChannelMessageModel> {
+public class SlackDistributionEventReceiver extends DistributionEventReceiver<SlackJobDetailsModel> {
     @Autowired
-    protected SlackChannel(SlackChannelMessageConverter slackChannelMessageConverter, SlackChannelMessageSender slackChannelMessageSender) {
-        super(slackChannelMessageConverter, slackChannelMessageSender);
+    public SlackDistributionEventReceiver(Gson gson, SlackChannelKey channelKey, SlackDistributionEventHandler distributionEventHandler) {
+        super(gson, channelKey, distributionEventHandler);
     }
 
 }
