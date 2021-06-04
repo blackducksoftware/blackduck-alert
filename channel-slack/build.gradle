@@ -9,7 +9,6 @@ dependencies {
     implementation project(':api-processor')
     implementation project(':api-descriptor')
 
-    implementation 'org.springframework:spring-web'
     implementation 'com.synopsys.integration:integration-rest'
 
     testImplementation project(':test-common')
