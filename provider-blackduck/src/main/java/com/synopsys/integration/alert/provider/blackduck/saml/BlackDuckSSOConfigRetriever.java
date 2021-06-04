@@ -15,13 +15,16 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.core.BlackDuckPath;
 import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.http.client.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.request.BlackDuckRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class BlackDuckSSOConfigRetriever {
+    private static final String SSO_CONFIGURATION_MIME_TYPE = "application/vnd.blackducksoftware.admin-4+json";
     private static final BlackDuckPath<BlackDuckSSOConfig> SSO_CONFIGURATION_PATH = BlackDuckPath.single("/api/sso/configuration", BlackDuckSSOConfig.class);
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckSSOConfigRetriever.class);
@@ -42,7 +45,9 @@ public class BlackDuckSSOConfigRetriever {
     }
 
     public BlackDuckSSOConfig retrieve() throws AlertException {
-        UrlSingleResponse<BlackDuckSSOConfig> ssoConfigurationRequest = apiDiscovery.metaSingleResponse(SSO_CONFIGURATION_PATH);
+        BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder().acceptMimeType(SSO_CONFIGURATION_MIME_TYPE);
+        UrlSingleResponse<BlackDuckSSOConfig> ssoConfigurationSingleResponse = apiDiscovery.metaSingleResponse(SSO_CONFIGURATION_PATH);
+        BlackDuckRequest<BlackDuckSSOConfig, UrlSingleResponse<BlackDuckSSOConfig>> ssoConfigurationRequest = new BlackDuckRequest<>(requestBuilder, ssoConfigurationSingleResponse);
         try {
             return blackDuckApiClient.getResponse(ssoConfigurationRequest);
         } catch (IntegrationException e) {
