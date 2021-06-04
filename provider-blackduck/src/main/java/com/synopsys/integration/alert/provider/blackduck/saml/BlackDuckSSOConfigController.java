@@ -27,8 +27,8 @@ public class BlackDuckSSOConfigController {
     }
 
     @GetMapping
-    public BlackDuckSSOConfig getBlackDuckSSOConfig(@PathVariable Long blackDuckConfigId) {
-        ActionResponse<BlackDuckSSOConfig> configActionResponse = blackDuckSSOConfigActions.retrieveBlackDuckSSOConfig(blackDuckConfigId);
+    public BlackDuckSSOConfigResponseModel getBlackDuckSSOConfig(@PathVariable Long blackDuckConfigId) {
+        ActionResponse<BlackDuckSSOConfigResponseModel> configActionResponse = blackDuckSSOConfigActions.retrieveBlackDuckSSOConfig(blackDuckConfigId);
         return ResponseFactory.createContentResponseFromAction(configActionResponse);
     }
 

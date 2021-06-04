@@ -38,7 +38,7 @@ public class BlackDuckSSOConfigActions {
         this.authorizationManager = authorizationManager;
     }
 
-    public ActionResponse<BlackDuckSSOConfig> retrieveBlackDuckSSOConfig(Long blackDuckConfigId) {
+    public ActionResponse<BlackDuckSSOConfigResponseModel> retrieveBlackDuckSSOConfig(Long blackDuckConfigId) {
         if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, blackDuckProviderKey)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -53,13 +53,28 @@ public class BlackDuckSSOConfigActions {
             }
 
             try {
-                BlackDuckSSOConfig config = ssoConfigRetriever.retrieve();
-                return new ActionResponse<>(HttpStatus.OK, config);
+                BlackDuckSSOConfigView config = ssoConfigRetriever.retrieve();
+                BlackDuckSSOConfigResponseModel configResponseModel = fromView(config);
+                return new ActionResponse<>(HttpStatus.OK, configResponseModel);
             } catch (AlertException e) {
                 return new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("Failed to retrieve Black Duck SSO configuration: %s", e.getMessage()));
             }
         }
         return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Failed to find Black Duck global configuration with id [%s]", blackDuckConfigId));
+    }
+
+    private BlackDuckSSOConfigResponseModel fromView(BlackDuckSSOConfigView view) {
+        return new BlackDuckSSOConfigResponseModel(
+            view.getSsoEnabled(),
+            view.getSpEntityId(),
+            view.getIdpMetadataUrl(),
+            view.getIdpMetadataFileUploaded(),
+            view.getGroupSynchronizationEnabled(),
+            view.getLocalLogoutEnabled(),
+            view.getSpExternalUrl(),
+            view.getUserCreationEnabled(),
+            view.getSamlMetadataUrl()
+        );
     }
 
 }
