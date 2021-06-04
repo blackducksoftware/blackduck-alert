@@ -25,7 +25,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 
 public class BlackDuckSSOConfigRetriever {
     private static final String SSO_CONFIGURATION_MIME_TYPE = "application/vnd.blackducksoftware.admin-4+json";
-    private static final BlackDuckPath<BlackDuckSSOConfig> SSO_CONFIGURATION_PATH = BlackDuckPath.single("/api/sso/configuration", BlackDuckSSOConfig.class);
+    private static final BlackDuckPath<BlackDuckSSOConfigView> SSO_CONFIGURATION_PATH = BlackDuckPath.single("/api/sso/configuration", BlackDuckSSOConfigView.class);
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckSSOConfigRetriever.class);
     private final ApiDiscovery apiDiscovery;
@@ -44,10 +44,10 @@ public class BlackDuckSSOConfigRetriever {
         this.blackDuckApiClient = blackDuckApiClient;
     }
 
-    public BlackDuckSSOConfig retrieve() throws AlertException {
+    public BlackDuckSSOConfigView retrieve() throws AlertException {
         BlackDuckRequestBuilder requestBuilder = new BlackDuckRequestBuilder().acceptMimeType(SSO_CONFIGURATION_MIME_TYPE);
-        UrlSingleResponse<BlackDuckSSOConfig> ssoConfigurationSingleResponse = apiDiscovery.metaSingleResponse(SSO_CONFIGURATION_PATH);
-        BlackDuckRequest<BlackDuckSSOConfig, UrlSingleResponse<BlackDuckSSOConfig>> ssoConfigurationRequest = new BlackDuckRequest<>(requestBuilder, ssoConfigurationSingleResponse);
+        UrlSingleResponse<BlackDuckSSOConfigView> ssoConfigurationSingleResponse = apiDiscovery.metaSingleResponse(SSO_CONFIGURATION_PATH);
+        BlackDuckRequest<BlackDuckSSOConfigView, UrlSingleResponse<BlackDuckSSOConfigView>> ssoConfigurationRequest = new BlackDuckRequest<>(requestBuilder, ssoConfigurationSingleResponse);
         try {
             return blackDuckApiClient.getResponse(ssoConfigurationRequest);
         } catch (IntegrationException e) {

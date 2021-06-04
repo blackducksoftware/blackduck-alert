@@ -57,7 +57,7 @@ public class BlackDuckSSOConfigRetrieverTest {
         BlackDuckProperties blackDuckProperties = createBlackDuckProperties();
         BlackDuckSSOConfigRetriever ssoConfigRetriever = BlackDuckSSOConfigRetriever.fromProperties(blackDuckProperties);
         try {
-            BlackDuckSSOConfig ssoConfig = ssoConfigRetriever.retrieve();
+            BlackDuckSSOConfigView ssoConfig = ssoConfigRetriever.retrieve();
             System.out.println("SSO Config:");
             System.out.println(ssoConfig);
         } catch (AlertException e) {

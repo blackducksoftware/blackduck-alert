@@ -7,14 +7,9 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.saml;
 
-import java.util.Optional;
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-import com.synopsys.integration.blackduck.api.core.BlackDuckView;
-import com.synopsys.integration.rest.HttpUrl;
-
-public class BlackDuckSSOConfig extends BlackDuckView {
-    public static final String SSO_IDP_METADATA_LINK_KEY = "sso-idp-metadata";
-
+public class BlackDuckSSOConfigResponseModel extends AlertSerializableModel {
     private Boolean ssoEnabled;
     private String spEntityId;
     private String idpMetadataUrl;
@@ -25,12 +20,21 @@ public class BlackDuckSSOConfig extends BlackDuckView {
     private Boolean userCreationEnabled;
     private String samlMetadataUrl;
 
-    private BlackDuckSSOConfig() {
+    private BlackDuckSSOConfigResponseModel() {
         // For serialization
     }
 
-    public BlackDuckSSOConfig(Boolean ssoEnabled, String spEntityId, String idpMetadataUrl, Boolean idpMetadataFileUploaded, Boolean groupSynchronizationEnabled, Boolean localLogoutEnabled, String spExternalUrl,
-        Boolean userCreationEnabled, String samlMetadataUrl) {
+    public BlackDuckSSOConfigResponseModel(
+        Boolean ssoEnabled,
+        String spEntityId,
+        String idpMetadataUrl,
+        Boolean idpMetadataFileUploaded,
+        Boolean groupSynchronizationEnabled,
+        Boolean localLogoutEnabled,
+        String spExternalUrl,
+        Boolean userCreationEnabled,
+        String samlMetadataUrl
+    ) {
         this.ssoEnabled = ssoEnabled;
         this.spEntityId = spEntityId;
         this.idpMetadataUrl = idpMetadataUrl;
@@ -76,14 +80,6 @@ public class BlackDuckSSOConfig extends BlackDuckView {
 
     public String getSamlMetadataUrl() {
         return samlMetadataUrl;
-    }
-
-    public HttpUrl metaSSOIdpMetadataLink() {
-        return getFirstLink(SSO_IDP_METADATA_LINK_KEY);
-    }
-
-    public Optional<HttpUrl> metaSSOIdpMetadataSafeLink() {
-        return getFirstLinkSafely(SSO_IDP_METADATA_LINK_KEY);
     }
 
 }
