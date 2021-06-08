@@ -3,20 +3,22 @@ import React, {
     useState
 } from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
-import PopUp from "common/PopUp";
-import EndpointSelectField from "common/input/EndpointSelectField";
+import PopUp from 'common/PopUp';
+import EndpointSelectField from 'common/input/EndpointSelectField';
 import {
     DISTRIBUTION_COMMON_FIELD_KEYS,
     DISTRIBUTION_URLS
-} from "page/distribution/DistributionModel";
-import { CONTEXT_TYPE } from "common/util/descriptorUtilities";
-import { BLACKDUCK_INFO } from "page/provider/blackduck/BlackDuckModel";
-import { createReadRequest } from "common/util/configurationRequestBuilder";
-import { AUTHENTICATION_SAML_FIELD_KEYS } from "./AuthenticationModel";
-import * as PropTypes from "prop-types";
-import StatusMessage from "../../common/StatusMessage";
+} from 'page/distribution/DistributionModel';
+import { CONTEXT_TYPE } from 'common/util/descriptorUtilities';
+import { BLACKDUCK_INFO } from 'page/provider/blackduck/BlackDuckModel';
+import { createReadRequest } from 'common/util/configurationRequestBuilder';
+import * as PropTypes from 'prop-types';
+import StatusMessage from 'common/StatusMessage';
+import { AUTHENTICATION_SAML_FIELD_KEYS } from './AuthenticationModel';
 
-const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData }) => {
+const BlackDuckSSOConfigImportModal = ({
+                                           csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData
+                                       }) => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState();
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
@@ -34,8 +36,8 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
                 response.json().then((data) => {
                     if (data) {
                         let updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(initialSSOFieldData, AUTHENTICATION_SAML_FIELD_KEYS.enabled, data.ssoEnabled);
-                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.entityId, data.spEntityId || "");
-                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl, data.idpMetadataUrl || "");
+                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.entityId, data.spEntityId || '');
+                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl, data.idpMetadataUrl || '');
                         updateSSOFieldData(updatedFieldData);
                     }
                     setLoading(false);
@@ -44,7 +46,7 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
             } else {
                 response.json()
                     .then((data) => {
-                        console.log(`Error: {data}`)
+                        console.log('Error: {data}');
                         setErrorMessage(data.message);
                     });
             }
@@ -64,8 +66,8 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
                 setLoading(true);
                 retrieveBlackDuckSSOConfig();
             }}
-            testLabel={"Import"}
-            includeTest={true}
+            testLabel="Import"
+            includeTest
             show={show}
             title={label}
             performingAction={loading}
@@ -86,7 +88,7 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
             />
             <StatusMessage
-                id={"import-status-message"}
+                id="import-status-message"
                 errorMessage={errorMessage}
                 errorIsDetailed={false}
             />
@@ -106,7 +108,7 @@ BlackDuckSSOConfigImportModal.propTypes = {
 
 BlackDuckSSOConfigImportModal.defaultProps = {
     readOnly: false,
-    label: "BlackDuck SSO Config Import",
+    label: 'BlackDuck SSO Config Import',
     show: false
 };
 
