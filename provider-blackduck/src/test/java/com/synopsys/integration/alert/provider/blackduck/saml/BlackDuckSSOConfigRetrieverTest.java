@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.provider.blackduck.saml;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
@@ -50,7 +49,6 @@ public class BlackDuckSSOConfigRetrieverTest {
     }
 
     @Test
-    @Disabled
     @Tags({
         @Tag(TestTags.DEFAULT_INTEGRATION),
         @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
