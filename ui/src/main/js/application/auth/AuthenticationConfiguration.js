@@ -21,6 +21,7 @@ import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 import GeneralButton from 'common/button/GeneralButton';
 import BlackDuckSSOConfigImportModal from "./BlackDuckSSOConfigImportModal";
+import LabeledField from "../../common/input/field/LabeledField";
 
 const AuthenticationConfiguration = ({
                                          csrfToken, errorHandler, readonly, displayTest, displaySave, fileRead, fileDelete, fileWrite
@@ -83,7 +84,8 @@ const AuthenticationConfiguration = ({
     const hasLdapConfig = Object.keys(AUTHENTICATION_LDAP_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS[key]));
     const hasSamlConfig = Object.keys(AUTHENTICATION_SAML_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_SAML_FIELD_KEYS[key]));
 
-    const importBlackDuckSSOConfigLabel = "Populate fields from Black Duck";
+    const importBlackDuckSSOConfigLabel = "Retrieve Black Duck SAML Configuration";
+    const importBlackDuckSSOConfigDescription = "Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).";
 
     const importBlackDuckSSOConfigFields = (
         <div>
@@ -282,12 +284,11 @@ const AuthenticationConfiguration = ({
                     expanded={hasSamlConfig}
                 >
                     <h2>SAML Configuration</h2>
-                    <GeneralButton
-                        id={"blackduck-sso-import-button"}
-                        onClick={() => setShowBlackDuckSSOImportModal(true)}
-                    >
-                        {importBlackDuckSSOConfigLabel}
-                    </GeneralButton>
+                    <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
+                        <div className="d-inline-flex p-2">
+                            <GeneralButton id={"blackduck-sso-import-button"} onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
+                        </div>
+                    </LabeledField>
                     <CheckboxInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.enabled}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.enabled}

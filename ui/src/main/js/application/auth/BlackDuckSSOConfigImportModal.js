@@ -32,7 +32,7 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    if (data && data.ssoEnabled) {
+                    if (data) {
                         let updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(initialSSOFieldData, AUTHENTICATION_SAML_FIELD_KEYS.enabled, data.ssoEnabled);
                         updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.entityId, data.spEntityId || "");
                         updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl, data.idpMetadataUrl || "");
@@ -75,8 +75,8 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
                 csrfToken={csrfToken}
                 endpoint={DISTRIBUTION_URLS.endpointSelectPath}
                 fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId}
-                label="BlackDuck Configuration"
-                description="The provider configuration from which to import."
+                label="Black Duck Configuration"
+                description="The Black Duck configuration from which to retrieve the SAML configuration."
                 clearable={false}
                 readOnly={readOnly}
                 required
