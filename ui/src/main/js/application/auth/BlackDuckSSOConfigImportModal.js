@@ -13,32 +13,17 @@ import { CONTEXT_TYPE } from "common/util/descriptorUtilities";
 import { BLACKDUCK_INFO } from "page/provider/blackduck/BlackDuckModel";
 import { createReadRequest } from "common/util/configurationRequestBuilder";
 import { AUTHENTICATION_SAML_FIELD_KEYS } from "./AuthenticationModel";
-import * as HttpErrorUtilities from "../../common/util/httpErrorUtilities";
 import * as PropTypes from "prop-types";
+import StatusMessage from "../../common/StatusMessage";
 
-const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHide, currentSamlFields, updateSamlFields }) => {
+const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData }) => {
     const [loading, setLoading] = useState(false);
-    const [blackDuckSSOConfig, setBlackDuckSSOConfig] = useState({});
-    const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
+    const [errorMessage, setErrorMessage] = useState();
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
 
     useEffect(() => {
-        if (blackDuckSSOConfig.ssoEnabled) {
-            const newKeyToValues = {};
-            newKeyToValues[AUTHENTICATION_SAML_FIELD_KEYS.enabled] = blackDuckSSOConfig.ssoEnabled || currentSamlFields.keyToValues[AUTHENTICATION_SAML_FIELD_KEYS.enabled];
-            newKeyToValues[AUTHENTICATION_SAML_FIELD_KEYS.entityId] = blackDuckSSOConfig.spEntityId || currentSamlFields.keyToValues[AUTHENTICATION_SAML_FIELD_KEYS.entityId];
-            newKeyToValues[AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl] = blackDuckSSOConfig.idpMetadataUrl || currentSamlFields.keyToValues[AUTHENTICATION_SAML_FIELD_KEYS.entityBaseUrl];
-            newKeyToValues[AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl] = blackDuckSSOConfig.samlMetadataUrl || currentSamlFields.keyToValues[AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl];
-            // blackDuckSSOConfig.idpMetadataFileUploaded;
-            // blackDuckSSOConfig.groupSynchronizationEnabled;
-            // blackDuckSSOConfig.localLogoutEnabled;
-            // blackDuckSSOConfig.spExternalUrl;
-            // blackDuckSSOConfig.userCreationEnabled;
-            const combinedFieldModels = FieldModelUtilities.combineFieldModels(currentSamlFields, { keyToValues: newKeyToValues });
-            // updateSamlFields(combinedFieldModels);
-        }
         setLoading(false);
-    }, [blackDuckSSOConfig]);
+    }, [errorMessage]);
 
     const blackDuckConfigId = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
 
@@ -47,14 +32,20 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    setBlackDuckSSOConfig(data);
+                    if (data && data.ssoEnabled) {
+                        let updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(initialSSOFieldData, AUTHENTICATION_SAML_FIELD_KEYS.enabled, data.ssoEnabled);
+                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.entityId, data.spEntityId || "");
+                        updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl, data.idpMetadataUrl || "");
+                        updateSSOFieldData(updatedFieldData);
+                    }
+                    setLoading(false);
+                    onHide();
                 });
             } else {
                 response.json()
                     .then((data) => {
-                        setBlackDuckSSOConfig({});
                         console.log(`Error: {data}`)
-                        setErrors(data);
+                        setErrorMessage(data.message);
                     });
             }
         });
@@ -67,7 +58,6 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
             onClick={(e) => e.stopPropagation()}
             onFocus={(e) => e.stopPropagation()}
             onMouseOver={(e) => e.stopPropagation()}
-            cancelLabel={"Done"}
             onCancel={onHide}
             includeSave={false}
             handleTest={() => {
@@ -94,7 +84,11 @@ const BlackDuckSSOConfigImportModal = ({ csrfToken, readOnly, label, show, onHid
                 onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                 value={blackDuckConfigId}
                 errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
-                errorValue={undefined}
+            />
+            <StatusMessage
+                id={"import-status-message"}
+                errorMessage={errorMessage}
+                errorIsDetailed={false}
             />
         </PopUp>
     );
@@ -106,8 +100,8 @@ BlackDuckSSOConfigImportModal.propTypes = {
     label: PropTypes.string,
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
-    currentSamlFields: PropTypes.object.isRequired,
-    updateSamlFields: PropTypes.func.isRequired
+    initialSSOFieldData: PropTypes.object.isRequired,
+    updateSSOFieldData: PropTypes.func.isRequired
 };
 
 BlackDuckSSOConfigImportModal.defaultProps = {

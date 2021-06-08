@@ -83,7 +83,7 @@ const AuthenticationConfiguration = ({
     const hasLdapConfig = Object.keys(AUTHENTICATION_LDAP_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS[key]));
     const hasSamlConfig = Object.keys(AUTHENTICATION_SAML_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_SAML_FIELD_KEYS[key]));
 
-    const importBlackDuckSSOConfigLabel = "Import from BlackDuck";
+    const importBlackDuckSSOConfigLabel = "Populate fields from Black Duck";
 
     const importBlackDuckSSOConfigFields = (
         <div>
@@ -93,8 +93,8 @@ const AuthenticationConfiguration = ({
                 readOnly={readonly}
                 show={showBlackDuckSSOImportModal}
                 onHide={() => setShowBlackDuckSSOImportModal(false)}
-                currentSamlFields={formData}
-                updateSamlFields={FieldModelUtilities.handleChange(formData, setFormData)}
+                initialSSOFieldData={formData}
+                updateSSOFieldData={(data) => setFormData(data)}
             />
         </div>
     );
@@ -284,7 +284,6 @@ const AuthenticationConfiguration = ({
                     <h2>SAML Configuration</h2>
                     <GeneralButton
                         id={"blackduck-sso-import-button"}
-                        className="d-inline-flex p-2"
                         onClick={() => setShowBlackDuckSSOImportModal(true)}
                     >
                         {importBlackDuckSSOConfigLabel}
