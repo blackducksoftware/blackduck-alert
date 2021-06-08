@@ -8,10 +8,12 @@ import {
     DISTRIBUTION_COMMON_FIELD_KEYS,
     DISTRIBUTION_FREQUENCY_OPTIONS,
     DISTRIBUTION_NOTIFICATION_TYPE_OPTIONS,
-    DISTRIBUTION_POLICY_SELECT_COLUMNS, DISTRIBUTION_PROCESSING_TYPES,
+    DISTRIBUTION_POLICY_SELECT_COLUMNS,
+    DISTRIBUTION_PROCESSING_TYPES,
     DISTRIBUTION_PROJECT_SELECT_COLUMNS,
     DISTRIBUTION_TEST_FIELD_KEYS,
-    DISTRIBUTION_URLS, DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS
+    DISTRIBUTION_URLS,
+    DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS
 } from 'page/distribution/DistributionModel';
 import EndpointSelectField from 'common/input/EndpointSelectField';
 import TextInput from 'common/input/TextInput';
@@ -92,13 +94,9 @@ const DistributionConfigurationForm = ({
         return FieldModelUtilities.updateFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId, providerConfigId);
     };
 
-    const createProjectRequestBody = () => {
+    const createProviderRequestBody = () => {
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
         delete providerModel.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
-        return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
-    };
-    const createPolicyFilterRequestBody = () => {
-        const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
         return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
     };
 
@@ -436,7 +434,7 @@ const DistributionConfigurationForm = ({
                             paged
                             searchable
                             useRowAsValue
-                            createRequestBody={createProjectRequestBody}
+                            createRequestBody={createProviderRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects)}
@@ -462,7 +460,7 @@ const DistributionConfigurationForm = ({
                             readOnly={readonly}
                             paged
                             searchable
-                            createRequestBody={createPolicyFilterRequestBody}
+                            createRequestBody={createProviderRequestBody}
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                             value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
                             errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter)}
