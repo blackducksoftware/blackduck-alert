@@ -88,7 +88,8 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         try {
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
             if (!savedFieldModel.isPresent()) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("The configuration is invalid. Please test the configuration."));
+                String error = "The configuration is invalid. Please test the configuration.";
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, error, createErrorResponse(error));
             }
             FieldUtility fieldUtility = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldUtility.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
