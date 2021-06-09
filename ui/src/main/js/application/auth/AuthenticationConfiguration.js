@@ -6,7 +6,10 @@ import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import TextInput from 'common/input/TextInput';
 import {
-    AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS
+    AUTHENTICATION_INFO,
+    AUTHENTICATION_LDAP_FIELD_KEYS,
+    AUTHENTICATION_SAML_FIELD_KEYS,
+    AUTHENTICATION_TEST_FIELD_KEYS
 } from 'application/auth/AuthenticationModel';
 import CheckboxInput from 'common/input/CheckboxInput';
 import PasswordInput from 'common/input/PasswordInput';
@@ -16,6 +19,9 @@ import UploadFileButtonField from 'common/input/field/UploadFileButtonField';
 import ReadOnlyField from 'common/input/field/ReadOnlyField';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
+import GeneralButton from 'common/button/GeneralButton';
+import LabeledField from 'common/input/field/LabeledField';
+import BlackDuckSSOConfigImportModal from './BlackDuckSSOConfigImportModal';
 
 const AuthenticationConfiguration = ({
     csrfToken, errorHandler, readonly, displayTest, displaySave, fileRead, fileDelete, fileWrite
@@ -23,6 +29,7 @@ const AuthenticationConfiguration = ({
     const [formData, setFormData] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.GLOBAL, AUTHENTICATION_INFO.key));
     const [errors, setErrors] = useState(HttpErrorUtilities.createEmptyErrorObject());
     const [testFieldData, setTestFieldData] = useState({});
+    const [showBlackDuckSSOImportModal, setShowBlackDuckSSOImportModal] = useState(false);
 
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(AUTHENTICATION_INFO.key, csrfToken);
@@ -76,6 +83,9 @@ const AuthenticationConfiguration = ({
 
     const hasLdapConfig = Object.keys(AUTHENTICATION_LDAP_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS[key]));
     const hasSamlConfig = Object.keys(AUTHENTICATION_SAML_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_SAML_FIELD_KEYS[key]));
+
+    const importBlackDuckSSOConfigLabel = 'Retrieve Black Duck SAML Configuration';
+    const importBlackDuckSSOConfigDescription = 'Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).';
 
     return (
         <CommonGlobalConfiguration
@@ -152,7 +162,6 @@ const AuthenticationConfiguration = ({
                     />
                     <DynamicSelectInput
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
-                        id={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType}
                         label="LDAP Authentication Type"
                         description="The type of authentication required to connect to the LDAP server."
@@ -164,7 +173,6 @@ const AuthenticationConfiguration = ({
                         errorValue={errors.fieldErrors[AUTHENTICATION_LDAP_FIELD_KEYS.authenticationType]}
                     />
                     <DynamicSelectInput
-                        id={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
                         id={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
                         name={AUTHENTICATION_LDAP_FIELD_KEYS.referral}
                         label="LDAP Referral"
@@ -260,6 +268,11 @@ const AuthenticationConfiguration = ({
                     expanded={hasSamlConfig}
                 >
                     <h2>SAML Configuration</h2>
+                    <LabeledField label={importBlackDuckSSOConfigLabel} description={importBlackDuckSSOConfigDescription}>
+                        <div className="d-inline-flex p-2">
+                            <GeneralButton id="blackduck-sso-import-button" onClick={() => setShowBlackDuckSSOImportModal(true)}>Fill Form</GeneralButton>
+                        </div>
+                    </LabeledField>
                     <CheckboxInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.enabled}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.enabled}
@@ -343,7 +356,7 @@ const AuthenticationConfiguration = ({
                         id={AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping}
                         name={AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping}
                         label="SAML Role Attribute Mapping"
-                        description="The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert.  The roles contained in the Attribute Statement can be the role names defined in the mapping fields above."
+                        description="The SAML attribute in the Attribute Statements that contains the roles for the user logged into Alert. The roles contained in the Attribute Statement can be the role names defined in the mapping fields above."
                         readOnly={readonly}
                         onChange={FieldModelUtilities.handleChange(formData, setFormData)}
                         value={FieldModelUtilities.getFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping)}
@@ -351,6 +364,15 @@ const AuthenticationConfiguration = ({
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping]}
                     />
                 </CollapsiblePane>
+                <BlackDuckSSOConfigImportModal
+                    label={importBlackDuckSSOConfigLabel}
+                    csrfToken={csrfToken}
+                    readOnly={readonly}
+                    show={showBlackDuckSSOImportModal}
+                    onHide={() => setShowBlackDuckSSOImportModal(false)}
+                    initialSSOFieldData={formData}
+                    updateSSOFieldData={(data) => setFormData(data)}
+                />
             </CommonGlobalConfigurationForm>
         </CommonGlobalConfiguration>
     );
