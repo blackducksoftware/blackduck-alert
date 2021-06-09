@@ -1,5 +1,4 @@
 import React, {
-    useEffect,
     useState
 } from 'react';
 import * as FieldModelUtilities from 'common/util/fieldModelUtilities';
@@ -15,21 +14,33 @@ import { createReadRequest } from 'common/util/configurationRequestBuilder';
 import * as PropTypes from 'prop-types';
 import StatusMessage from 'common/StatusMessage';
 import { AUTHENTICATION_SAML_FIELD_KEYS } from './AuthenticationModel';
+import {
+    getFieldModelSingleValue,
+    getFieldModelSingleValueOrDefault
+} from "common/util/fieldModelUtilities";
 
 const BlackDuckSSOConfigImportModal = ({
-                                           csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData
-                                       }) => {
+    csrfToken, readOnly, label, show, onHide, initialSSOFieldData, updateSSOFieldData
+}) => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState();
     const [providerModel, setProviderModel] = useState(FieldModelUtilities.createEmptyFieldModel([], CONTEXT_TYPE.DISTRIBUTION, BLACKDUCK_INFO.key));
 
-    useEffect(() => {
-        setLoading(false);
-    }, [errorMessage]);
+    const blackDuckConfigId = FieldModelUtilities.getFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
 
-    const blackDuckConfigId = FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId);
+    const hideAndClearModal = () => {
+        setErrorMessage(undefined);
+        setLoading(false);
+        onHide();
+    };
 
     const retrieveBlackDuckSSOConfig = () => {
+        if (!blackDuckConfigId) {
+            setErrorMessage('Please choose a Black Duck configuration from which to import.');
+            setLoading(false);
+            return;
+        }
+
         const request = createReadRequest(`/alert/api/blackduck/${blackDuckConfigId}/sso/configuration`, csrfToken);
         request.then((response) => {
             if (response.ok) {
@@ -40,14 +51,13 @@ const BlackDuckSSOConfigImportModal = ({
                         updatedFieldData = FieldModelUtilities.updateFieldModelSingleValue(updatedFieldData, AUTHENTICATION_SAML_FIELD_KEYS.metadataUrl, data.idpMetadataUrl || '');
                         updateSSOFieldData(updatedFieldData);
                     }
-                    setLoading(false);
-                    onHide();
+                    hideAndClearModal();
                 });
             } else {
                 response.json()
                     .then((data) => {
-                        console.log('Error: {data}');
                         setErrorMessage(data.message);
+                        setLoading(false);
                     });
             }
         });
@@ -60,7 +70,7 @@ const BlackDuckSSOConfigImportModal = ({
             onClick={(e) => e.stopPropagation()}
             onFocus={(e) => e.stopPropagation()}
             onMouseOver={(e) => e.stopPropagation()}
-            onCancel={onHide}
+            onCancel={hideAndClearModal}
             includeSave={false}
             handleTest={() => {
                 setLoading(true);

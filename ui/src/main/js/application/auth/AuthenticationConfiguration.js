@@ -87,20 +87,6 @@ const AuthenticationConfiguration = ({
     const importBlackDuckSSOConfigLabel = 'Retrieve Black Duck SAML Configuration';
     const importBlackDuckSSOConfigDescription = 'Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).';
 
-    const importBlackDuckSSOConfigFields = (
-        <div>
-            <BlackDuckSSOConfigImportModal
-                label={importBlackDuckSSOConfigLabel}
-                csrfToken={csrfToken}
-                readOnly={readonly}
-                show={showBlackDuckSSOImportModal}
-                onHide={() => setShowBlackDuckSSOImportModal(false)}
-                initialSSOFieldData={formData}
-                updateSSOFieldData={(data) => setFormData(data)}
-            />
-        </div>
-    );
-
     return (
         <CommonGlobalConfiguration
             label={AUTHENTICATION_INFO.label}
@@ -378,7 +364,15 @@ const AuthenticationConfiguration = ({
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.roleAttributeMapping]}
                     />
                 </CollapsiblePane>
-                {showBlackDuckSSOImportModal && importBlackDuckSSOConfigFields}
+                <BlackDuckSSOConfigImportModal
+                    label={importBlackDuckSSOConfigLabel}
+                    csrfToken={csrfToken}
+                    readOnly={readonly}
+                    show={showBlackDuckSSOImportModal}
+                    onHide={() => setShowBlackDuckSSOImportModal(false)}
+                    initialSSOFieldData={formData}
+                    updateSSOFieldData={(data) => setFormData(data)}
+                />
             </CommonGlobalConfigurationForm>
         </CommonGlobalConfiguration>
     );
