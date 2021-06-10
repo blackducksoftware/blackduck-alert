@@ -55,6 +55,8 @@ const DistributionConfigurationForm = ({
     const [selectedChannel, setSelectedChannel] = useState(AZURE_INFO.key);
     const [testFieldModel, setTestFieldModel] = useState({});
     const [readonly, setReadonly] = useState(false);
+    const [processingTypes, setProcessingTypes] = useState(DISTRIBUTION_PROCESSING_TYPES);
+
     const retrieveData = async () => DistributionRequestUtility.getDataById(id, csrfToken, errorHandler, setErrors);
 
     const createDistributionData = (channelModelData, providerModelData) => {
@@ -151,6 +153,20 @@ const DistributionConfigurationForm = ({
             setReadonly(descriptors[firstValue].readOnly);
         }
     };
+
+    useEffect(() => {
+        switch (selectedChannel.toString()) {
+            case AZURE_INFO.key:
+            case JIRA_SERVER_INFO.key:
+            case JIRA_CLOUD_INFO.key: {
+                const filtered = DISTRIBUTION_PROCESSING_TYPES.filter((type) => type.value !== 'SUMMARY');
+                setProcessingTypes(filtered);
+                break;
+            }
+            default:
+                setProcessingTypes(DISTRIBUTION_PROCESSING_TYPES);
+        }
+    }, [selectedChannel]);
 
     const renderChannelFields = () => {
         switch (selectedChannel.toString()) {
@@ -387,7 +403,7 @@ const DistributionConfigurationForm = ({
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.processingType}
                             label="Processing"
                             description="Select the way messages will be processed: <TODO create the dynamic description>"
-                            options={DISTRIBUTION_PROCESSING_TYPES}
+                            options={processingTypes}
                             readOnly={readonly}
                             required
                             onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
