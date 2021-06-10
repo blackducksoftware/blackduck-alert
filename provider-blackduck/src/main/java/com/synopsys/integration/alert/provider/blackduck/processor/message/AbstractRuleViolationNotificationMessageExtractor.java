@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
@@ -19,6 +21,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BomComponent404Handler;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicyComponentConcernCreator;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.util.BlackDuckMessageLinkUtils;
 import com.synopsys.integration.alert.provider.blackduck.processor.model.AbstractRuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.manual.component.ComponentVersionStatus;
@@ -75,13 +78,27 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
             bomComponent404Handler.logIf404OrThrow(e, componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName());
             return bomComponentDetailsCreator.createMissingBomComponentDetails(
                 componentVersionStatus.getComponentName(),
-                componentVersionStatus.getComponent(),
+                createComponentUrl(componentVersionStatus),
                 componentVersionStatus.getComponentVersionName(),
-                componentVersionStatus.getComponentVersion(),
+                createComponentVersionUrl(componentVersionStatus),
                 List.of(policyConcern),
                 List.of()
             );
         }
+    }
+
+    private String createComponentUrl(ComponentVersionStatus status) {
+        if (StringUtils.isNotBlank(status.getBomComponent()) && StringUtils.isNotBlank(status.getComponent()) && StringUtils.isNotBlank(status.getComponentName())) {
+            return BlackDuckMessageLinkUtils.createComponentQueryLink(status.getBomComponent(), status.getComponentName());
+        }
+        return status.getComponent();
+    }
+
+    private String createComponentVersionUrl(ComponentVersionStatus status) {
+        if (StringUtils.isNotBlank(status.getBomComponent()) && StringUtils.isNotBlank(status.getComponentVersion()) && StringUtils.isNotBlank(status.getComponentName())) {
+            return BlackDuckMessageLinkUtils.createComponentQueryLink(status.getBomComponent(), status.getComponentName());
+        }
+        return status.getComponentVersion();
     }
 
 }

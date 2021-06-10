@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.synopsys.integration.alert.channel.api.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
@@ -29,6 +32,8 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 import com.synopsys.integration.function.ThrowingSupplier;
 
 public abstract class IssueTrackerSearcher<T extends Serializable> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public final List<ActionableIssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
         ProviderDetails providerDetails = projectMessage.getProviderDetails();
         LinkableItem project = projectMessage.getProject();
@@ -57,7 +62,11 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
         List<ActionableIssueSearchResult<T>> projectIssueSearchResults = new LinkedList<>();
         for (ProjectIssueModel projectIssueModel : projectIssueModels) {
             ActionableIssueSearchResult<T> searchResult = findIssueByProjectIssueModel(projectIssueModel);
-            projectIssueSearchResults.add(searchResult);
+            if (searchResult.getExistingIssueDetails().isEmpty() && isOnlyDeleteOperation(projectIssueModel)) {
+                logger.debug("Ignoring component-level notification for issue-tracker because no matching issue(s) existed and it only contained DELETE operations");
+            } else {
+                projectIssueSearchResults.add(searchResult);
+            }
         }
         return projectIssueSearchResults;
     }
@@ -116,6 +125,7 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                        .map(this::convertToDeleteResult)
                        .collect(Collectors.toList());
         }
+        logger.debug("Ignoring project-level notification for issue-tracker because no action would be taken");
         return List.of();
     }
 
@@ -129,6 +139,26 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
 
     private ActionableIssueSearchResult<T> convertToOperationResult(ProjectIssueSearchResult<T> projectIssueSearchResult, ItemOperation operation) {
         return new ActionableIssueSearchResult<>(projectIssueSearchResult.getExistingIssueDetails(), projectIssueSearchResult.getProjectIssueModel(), operation);
+    }
+
+    private boolean isOnlyDeleteOperation(ProjectIssueModel projectIssueModel) {
+        boolean isPolicyDelete = projectIssueModel.getPolicyDetails()
+                                     .map(IssuePolicyDetails::getOperation)
+                                     .filter(ItemOperation.DELETE::equals)
+                                     .isPresent();
+
+        boolean isVulnerabilityDelete = false;
+        Optional<IssueVulnerabilityDetails> optionalVulnDetails = projectIssueModel.getVulnerabilityDetails();
+        if (optionalVulnDetails.isPresent()) {
+            IssueVulnerabilityDetails vulnDetails = optionalVulnDetails.get();
+            boolean allVulnsRemediated = vulnDetails.areAllComponentVulnerabilitiesRemediated();
+            boolean hasDeletions = !vulnDetails.getVulnerabilitiesDeleted().isEmpty();
+            boolean doesNotHaveAdditions = vulnDetails.getVulnerabilitiesAdded().isEmpty();
+            boolean doesNotHaveUpdates = vulnDetails.getVulnerabilitiesUpdated().isEmpty();
+            isVulnerabilityDelete = allVulnsRemediated || (hasDeletions && doesNotHaveAdditions && doesNotHaveUpdates);
+        }
+
+        return isPolicyDelete || isVulnerabilityDelete;
     }
 
 }

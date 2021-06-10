@@ -21,6 +21,20 @@ public final class BlackDuckMessageLinkUtils {
 
     public static String createProjectVersionComponentsLink(ProjectVersionComponentView bomComponent) {
         String bomComponentUrl = bomComponent.getHref().toString();
+        return createProjectVersionComponentsLink(bomComponentUrl);
+    }
+
+    public static String createComponentQueryLink(String bomComponentUrl, String bomComponentName) {
+        String projectVersionComponentsLink = createProjectVersionComponentsLink(bomComponentUrl);
+        return createComponentQueryLinkFromProjectVersionComponentsLink(projectVersionComponentsLink, bomComponentName);
+    }
+
+    public static String createComponentQueryLink(ProjectVersionComponentView bomComponent) {
+        String projectVersionComponentsLink = createProjectVersionComponentsLink(bomComponent);
+        return createComponentQueryLinkFromProjectVersionComponentsLink(projectVersionComponentsLink, bomComponent.getComponentName());
+    }
+
+    private static String createProjectVersionComponentsLink(String bomComponentUrl) {
         int componentsStartIndex = StringUtils.lastIndexOf(bomComponentUrl, URI_PIECE_COMPONENTS);
         if (componentsStartIndex > 0) {
             return StringUtils.substring(bomComponentUrl, 0, componentsStartIndex + URI_PIECE_COMPONENTS_LENGTH);
@@ -28,9 +42,8 @@ public final class BlackDuckMessageLinkUtils {
         return bomComponentUrl;
     }
 
-    public static String createComponentQueryLink(ProjectVersionComponentView bomComponent) {
-        String projectVersionComponentsLink = createProjectVersionComponentsLink(bomComponent);
-        String encodedQueryValue = URLEncoder.encode(bomComponent.getComponentName(), StandardCharsets.UTF_8);
+    private static String createComponentQueryLinkFromProjectVersionComponentsLink(String projectVersionComponentsLink, String bomComponentName) {
+        String encodedQueryValue = URLEncoder.encode(bomComponentName, StandardCharsets.UTF_8);
         // Encoding a space as a '+' is the standard (https://www.w3.org/TR/html4/references.html#ref-RFC1738). Black Duck does not decode the '+' as a space resulting in unsuccessful queries.
         String blackDuckEncodedQueryValue = encodedQueryValue.replace("+", "%20");
         return String.format("%s?q=%s:%s", projectVersionComponentsLink, QUERY_PARAM_COMPONENT_NAME, blackDuckEncodedQueryValue);
