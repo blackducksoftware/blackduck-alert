@@ -14,6 +14,7 @@ const SlackDistributionConfiguration = ({
             name={SLACK_DISTRIBUTION_FIELD_KEYS.webhook}
             label="Webhook"
             description="The Slack URL to receive alerts."
+            required
             readOnly={readonly}
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.webhook)}
@@ -26,6 +27,7 @@ const SlackDistributionConfiguration = ({
             name={SLACK_DISTRIBUTION_FIELD_KEYS.channelName}
             label="Channel Name"
             description="The name of the Slack channel."
+            required
             readOnly={readonly}
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, SLACK_DISTRIBUTION_FIELD_KEYS.channelName)}

@@ -14,6 +14,7 @@ const MsTeamsDistributionConfiguration = ({
             name={MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook}
             label="Webhook"
             description="The MS Teams URL to receive alerts."
+            required
             readOnly={readonly}
             onChange={FieldModelUtilities.handleChange(data, setData)}
             value={FieldModelUtilities.getFieldModelSingleValue(data, MSTEAMS_DISTRIBUTION_FIELD_KEYS.webhook)}
