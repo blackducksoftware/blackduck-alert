@@ -93,7 +93,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         Optional<IssuePolicyDetails> policyDetails = projectIssueModel.getPolicyDetails();
         Optional<String> optionalPolicyName = policyDetails.map(IssuePolicyDetails::getName);
         if (optionalPolicyName.isPresent()) {
-            categoryKey = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL;
+            categoryKey = AzureBoardsAlertIssuePropertiesManager.CATEGORY_TYPE_POLICY_COMPATIBILITY_LABEL;
 
             String additionalInfoKey = AzureBoardsAlertIssuePropertiesManager.POLICY_ADDITIONAL_KEY_COMPATIBILITY_LABEL + optionalPolicyName.get();
             fieldRefNameToValue.put(AzureCustomFieldManager.ALERT_ADDITIONAL_INFO_KEY_FIELD_REFERENCE_NAME, additionalInfoKey);
