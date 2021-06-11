@@ -48,7 +48,7 @@ public class EmailGlobalValidator extends GlobalValidator {
 
         List<AlertFieldStatus> authRelatedStatuses = List.of();
         if (useAuth) {
-            authRelatedStatuses = FieldValidator.containsRelatedRequiredFields(fieldModel, List.of(
+            authRelatedStatuses = FieldValidator.containsRequiredFields(fieldModel, List.of(
                 EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
                 EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()
             ));

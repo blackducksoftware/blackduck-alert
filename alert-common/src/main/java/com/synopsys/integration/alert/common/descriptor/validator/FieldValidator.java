@@ -18,18 +18,25 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public final class FieldValidator {
 
+    // TODO remove severity of none and return optional here that only returns value if there's an issue
     public static AlertFieldStatus validateIsARequiredField(FieldModel fieldModel, String fieldKey) {
-        Boolean containsData = !getFieldValues(fieldModel, fieldKey).map(FieldValueModel::containsNoData).orElse(true);
-        if (containsData) {
+        if (fieldContainsData(fieldModel, fieldKey)) {
             return AlertFieldStatus.success(fieldKey);
         }
 
         return AlertFieldStatus.error(fieldKey, "Required field missing");
     }
 
-    public static List<AlertFieldStatus> containsRelatedRequiredFields(FieldModel fieldModel, List<String> fieldKeys) {
+    public static List<AlertFieldStatus> containsRequiredFields(FieldModel fieldModel, List<String> fieldKeys) {
         return fieldKeys.stream()
                    .map(key -> validateIsARequiredField(fieldModel, key))
+                   .collect(Collectors.toList());
+    }
+
+    public static List<AlertFieldStatus> containsDisallowedRelatedFields(FieldModel fieldModel, String fieldLabel, List<String> fieldKeys) {
+        return fieldKeys.stream()
+                   .filter(key -> fieldContainsData(fieldModel, key))
+                   .map(key -> AlertFieldStatus.error(key, String.format("Cannot be set if %s is already set", fieldLabel)))
                    .collect(Collectors.toList());
     }
 
@@ -45,6 +52,10 @@ public final class FieldValidator {
         }
 
         return AlertFieldStatus.success(fieldKey);
+    }
+
+    private static boolean fieldContainsData(FieldModel fieldModel, String fieldKey) {
+        return !getFieldValues(fieldModel, fieldKey).map(FieldValueModel::containsNoData).orElse(true);
     }
 
     private static Optional<FieldValueModel> getFieldValues(FieldModel fieldModel, String fieldKey) {

@@ -8,13 +8,17 @@
 package com.synopsys.integration.alert.common.descriptor;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
-public class ComponentDescriptor extends Descriptor {
+public abstract class ComponentDescriptor extends Descriptor {
     public ComponentDescriptor(DescriptorKey descriptorKey, UIConfig componentUIConfig) {
-        super(descriptorKey, DescriptorType.COMPONENT);
-        addGlobalUiConfig(componentUIConfig);
+        this(descriptorKey, componentUIConfig, null);
     }
 
+    public ComponentDescriptor(DescriptorKey descriptorKey, UIConfig componentUIConfig, GlobalValidator globalValidator) {
+        super(descriptorKey, DescriptorType.COMPONENT, globalValidator);
+        addGlobalUiConfig(componentUIConfig);
+    }
 }
