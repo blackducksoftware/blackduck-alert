@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -28,7 +30,7 @@ public final class FieldValidator {
     public static List<AlertFieldStatus> containsRequiredFields(FieldModel fieldModel, List<String> fieldKeys) {
         return fieldKeys.stream()
                    .map(key -> validateIsARequiredField(fieldModel, key))
-                   .map(Optional::get)
+                   .flatMap(Optional::stream)
                    .collect(Collectors.toList());
     }
 
@@ -40,17 +42,15 @@ public final class FieldValidator {
     }
 
     public static Optional<AlertFieldStatus> validateIsANumber(FieldModel fieldModel, String fieldKey) {
-        Optional<String> fieldValue = getFieldValues(fieldModel, fieldKey).flatMap(FieldValueModel::getValue);
-        if (fieldValue.isPresent()) {
-            String value = fieldValue.get();
-            try {
-                Integer.valueOf(value);
-            } catch (NumberFormatException ex) {
-                return Optional.of(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
-            }
+        boolean isANumberOrEmpty = getFieldValues(fieldModel, fieldKey)
+                                       .flatMap(FieldValueModel::getValue)
+                                       .map(NumberUtils::isCreatable)
+                                       .orElse(true);
+        if (isANumberOrEmpty) {
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        return Optional.of(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
     }
 
     private static boolean fieldContainsData(FieldModel fieldModel, String fieldKey) {

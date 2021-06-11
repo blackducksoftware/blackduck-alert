@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidato
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class AzureBoardsGlobalValidator extends GlobalValidator {
+public class AzureBoardsGlobalValidator implements GlobalValidator {
     private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired

@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 @Component
-public class AuthenticationValidator extends GlobalValidator {
+public class AuthenticationValidator implements GlobalValidator {
     private static final String SAML_LDAP_ENABLED_ERROR = "Can't enable both SAML and LDAP authentication";
 
     private final FilePersistenceUtil filePersistenceUtil;

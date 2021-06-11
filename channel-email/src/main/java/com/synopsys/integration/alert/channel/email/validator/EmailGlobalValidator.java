@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 @Component
-public class EmailGlobalValidator extends GlobalValidator {
+public class EmailGlobalValidator implements GlobalValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();

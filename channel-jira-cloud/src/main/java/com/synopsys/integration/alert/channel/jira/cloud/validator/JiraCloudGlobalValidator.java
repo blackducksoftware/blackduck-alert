@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidato
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class JiraCloudGlobalValidator extends GlobalValidator {
+public class JiraCloudGlobalValidator implements GlobalValidator {
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
