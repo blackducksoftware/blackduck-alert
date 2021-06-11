@@ -17,19 +17,18 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 public final class FieldValidator {
-
-    // TODO remove severity of none and return optional here that only returns value if there's an issue
-    public static AlertFieldStatus validateIsARequiredField(FieldModel fieldModel, String fieldKey) {
+    public static Optional<AlertFieldStatus> validateIsARequiredField(FieldModel fieldModel, String fieldKey) {
         if (fieldContainsData(fieldModel, fieldKey)) {
-            return AlertFieldStatus.success(fieldKey);
+            return Optional.empty();
         }
 
-        return AlertFieldStatus.error(fieldKey, "Required field missing");
+        return Optional.of(AlertFieldStatus.error(fieldKey, "Required field missing"));
     }
 
     public static List<AlertFieldStatus> containsRequiredFields(FieldModel fieldModel, List<String> fieldKeys) {
         return fieldKeys.stream()
                    .map(key -> validateIsARequiredField(fieldModel, key))
+                   .map(Optional::get)
                    .collect(Collectors.toList());
     }
 
@@ -40,18 +39,18 @@ public final class FieldValidator {
                    .collect(Collectors.toList());
     }
 
-    public static AlertFieldStatus validateIsANumber(FieldModel fieldModel, String fieldKey) {
+    public static Optional<AlertFieldStatus> validateIsANumber(FieldModel fieldModel, String fieldKey) {
         Optional<String> fieldValue = getFieldValues(fieldModel, fieldKey).flatMap(FieldValueModel::getValue);
         if (fieldValue.isPresent()) {
             String value = fieldValue.get();
             try {
                 Integer.valueOf(value);
             } catch (NumberFormatException ex) {
-                return AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE);
+                return Optional.of(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
             }
         }
 
-        return AlertFieldStatus.success(fieldKey);
+        return Optional.empty();
     }
 
     private static boolean fieldContainsData(FieldModel fieldModel, String fieldKey) {

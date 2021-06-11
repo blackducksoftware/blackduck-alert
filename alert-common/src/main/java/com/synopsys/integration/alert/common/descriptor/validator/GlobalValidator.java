@@ -7,21 +7,12 @@
  */
 package com.synopsys.integration.alert.common.descriptor.validator;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 public abstract class GlobalValidator {
 
-    protected abstract Set<AlertFieldStatus> validate(FieldModel fieldModel);
-
-    public List<AlertFieldStatus> validateFieldModel(FieldModel fieldModel) {
-        return validate(fieldModel).stream()
-                   .filter(validation -> FieldStatusSeverity.NONE != validation.getSeverity())
-                   .collect(Collectors.toList());
-    }
+    public abstract Set<AlertFieldStatus> validate(FieldModel fieldModel);
 }

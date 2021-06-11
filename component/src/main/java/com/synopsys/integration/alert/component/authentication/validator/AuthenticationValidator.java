@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.component.authentication.validator;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class AuthenticationValidator extends GlobalValidator {
     }
 
     @Override
-    protected Set<AlertFieldStatus> validate(FieldModel fieldModel) {
+    public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> validationResults = new HashSet<>();
 
         Boolean ldapEnabled = fieldModel.getFieldValue(AuthenticationDescriptor.KEY_LDAP_ENABLED).map(Boolean::valueOf).orElse(false);
@@ -70,27 +71,27 @@ public class AuthenticationValidator extends GlobalValidator {
             AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL
         ));
 
-        requiredFieldStatuses.add(validateMetaDataFile(fieldModel));
-        requiredFieldStatuses.add(validateMetaDataUrl(fieldModel, AuthenticationDescriptor.KEY_SAML_METADATA_URL));
-        requiredFieldStatuses.add(validateMetaDataUrl(fieldModel, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL));
+        validateMetaDataFile(fieldModel).ifPresent(requiredFieldStatuses::add);
+        validateMetaDataUrl(fieldModel, AuthenticationDescriptor.KEY_SAML_METADATA_URL).ifPresent(requiredFieldStatuses::add);
+        validateMetaDataUrl(fieldModel, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL).ifPresent(requiredFieldStatuses::add);
 
         return requiredFieldStatuses;
     }
 
-    private AlertFieldStatus validateMetaDataUrl(FieldModel fieldModel, String fieldKey) {
+    private Optional<AlertFieldStatus> validateMetaDataUrl(FieldModel fieldModel, String fieldKey) {
         boolean fieldHasValues = fieldModel.getFieldValueModel(fieldKey).map(FieldValueModel::hasValues).orElse(false);
         if (!fieldHasValues && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-            return AlertFieldStatus.error(fieldKey, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
+            return Optional.of(AlertFieldStatus.error(fieldKey, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING));
         }
-        return AlertFieldStatus.success(fieldKey);
+        return Optional.empty();
     }
 
-    private AlertFieldStatus validateMetaDataFile(FieldModel fieldModel) {
+    private Optional<AlertFieldStatus> validateMetaDataFile(FieldModel fieldModel) {
         boolean metadataUrlEmpty = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL)
                                        .map(field -> !field.hasValues()).orElse(true);
         if (metadataUrlEmpty && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-            return AlertFieldStatus.error(AuthenticationDescriptor.SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
+            return Optional.of(AlertFieldStatus.error(AuthenticationDescriptor.SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING));
         }
-        return AlertFieldStatus.success(AuthenticationDescriptor.SAML_METADATA_FILE);
+        return Optional.empty();
     }
 }
