@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
@@ -66,12 +67,13 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             createdIssues = messageSender.sendMessages(creationRequestModelHolder);
         } catch (AlertException e) {
             logger.debug("Failed to create test issue", e);
-            return new MessageResult("Failed to create issue: " + e.getMessage());
+            return new MessageResult("Failed to create issue: " + e.getMessage(), createAlertFieldStatusWithoutField(e.getMessage()));
         }
 
         int createdIssuesSize = createdIssues.size();
         if (createdIssuesSize != 1) {
-            return new MessageResult(String.format("Expected [1] issue to be created, but there were actually [%d]", createdIssuesSize));
+            String errorMessage = String.format("Expected [1] issue to be created, but there were actually [%d]", createdIssuesSize);
+            return new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage));
         }
 
         IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
@@ -113,15 +115,18 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         } catch (IssueMissingTransitionException e) {
             logger.debug("Failed to transition test issue", e);
             String validTransitions = StringUtils.join(e.getValidTransitions(), ", ");
-            return Optional.of(new MessageResult(String.format("Invalid transition: %s. Please choose a valid transition: %s", e.getMissingTransition(), validTransitions)));
+            String errorMessage = String.format("Invalid transition: %s. Please choose a valid transition: %s", e.getMissingTransition(), validTransitions);
+            return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
         } catch (AlertException e) {
             logger.debug("Failed to transition test issue", e);
-            return Optional.of(new MessageResult(String.format("Failed to perform %s transition: %s", operation.name(), e.getMessage())));
+            String errorMessage = String.format("Failed to perform %s transition: %s", operation.name(), e.getMessage());
+            return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
         }
 
         int transitionedIssuesSize = transitionedIssues.size();
         if (transitionedIssuesSize != 1) {
-            return Optional.of(new MessageResult(String.format("Expected [1] issue to be transitioned, but there were actually [%d]", transitionedIssuesSize)));
+            String errorMessage = String.format("Expected [1] issue to be transitioned, but there were actually [%d]", transitionedIssuesSize);
+            return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
         }
         return Optional.empty();
     }
@@ -142,6 +147,11 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             projectVersionItem,
             bomComponentDetails
         );
+    }
+
+    //TODO: This addresses that hasErrors is set in the UI but this should be improved upon since it is not associated with a field
+    private List<AlertFieldStatus> createAlertFieldStatusWithoutField(String errorMessage) {
+        return List.of(AlertFieldStatus.error("none", errorMessage));
     }
 
 }
