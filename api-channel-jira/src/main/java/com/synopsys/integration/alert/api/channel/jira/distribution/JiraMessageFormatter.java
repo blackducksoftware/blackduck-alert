@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.channel.api.issue.convert.IssueTrackerMess
 
 @Component
 public class JiraMessageFormatter extends IssueTrackerMessageFormatter {
-    private static final int TITLE_SIZE_LIMIT = 255;
+    private static final int TITLE_SIZE_LIMIT = 254;
     private static final int MESSAGE_SIZE_LIMIT = 30000;
 
     public JiraMessageFormatter() {
