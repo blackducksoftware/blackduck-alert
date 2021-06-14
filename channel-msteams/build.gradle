@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.channel'
+ext.moduleName = 'com.synopsys.integration.alert.channel.msteams'
 
 dependencies {
     implementation platform(project(':alert-platform'))
