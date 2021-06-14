@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.exception.IntegrationException;
@@ -46,7 +46,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final NotificationAccessor notificationAccessor;
-    private final BlackDuckValidator blackDuckValidator;
+    private final BlackDuckSystemValidator blackDuckSystemValidator;
     private final EventManager eventManager;
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
     private final BlackDuckAccumulatorSearchDateManager searchDateManager;
@@ -57,14 +57,14 @@ public class BlackDuckAccumulator extends ProviderTask {
         NotificationAccessor notificationAccessor,
         ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
         ProviderProperties providerProperties,
-        BlackDuckValidator blackDuckValidator,
+        BlackDuckSystemValidator blackDuckSystemValidator,
         EventManager eventManager,
         BlackDuckNotificationRetrieverFactory notificationRetrieverFactory
     ) {
         super(blackDuckProviderKey, taskScheduler, providerProperties);
         this.blackDuckProviderKey = blackDuckProviderKey;
         this.notificationAccessor = notificationAccessor;
-        this.blackDuckValidator = blackDuckValidator;
+        this.blackDuckSystemValidator = blackDuckSystemValidator;
         this.eventManager = eventManager;
         this.notificationRetrieverFactory = notificationRetrieverFactory;
         this.searchDateManager = new BlackDuckAccumulatorSearchDateManager(providerTaskPropertiesAccessor, providerProperties.getConfigId(), getTaskName());
@@ -77,7 +77,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     @Override
     protected void runProviderTask() {
-        if (blackDuckValidator.validate(getProviderProperties())) {
+        if (blackDuckSystemValidator.validate(getProviderProperties())) {
             accumulateNotifications();
         }
     }
