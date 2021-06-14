@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
@@ -30,7 +31,6 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -196,8 +196,9 @@ public class ConfigActions extends AbstractConfigResourceActions {
             return new ValidationActionResponse(validationResponseModel);
         }
 
-        Optional<GlobalValidator> globalValidator = fieldModelProcessor.getGlobalValidator(resource);
-        List<AlertFieldStatus> fieldStatuses = (globalValidator.isPresent()) ? globalValidator.get().validateFieldModel(resource) : fieldModelProcessor.validateFieldModel(resource);
+        Set<AlertFieldStatus> fieldStatuses = fieldModelProcessor.getGlobalValidator(resource)
+                                                  .map(globalValidator -> globalValidator.validate(resource))
+                                                  .orElse(Set.copyOf(fieldModelProcessor.validateFieldModel(resource)));
 
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;

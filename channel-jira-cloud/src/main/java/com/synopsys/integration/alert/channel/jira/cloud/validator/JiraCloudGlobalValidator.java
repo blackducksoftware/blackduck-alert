@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.validator;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -18,15 +19,16 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidato
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class JiraCloudGlobalValidator extends GlobalValidator {
+public class JiraCloudGlobalValidator implements GlobalValidator {
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        AlertFieldStatus urlValidation = FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_URL);
-        AlertFieldStatus userValidation = FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
-        AlertFieldStatus apiValidation = FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
+        Set<AlertFieldStatus> statuses = new HashSet<>();
+        FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_URL).ifPresent(statuses::add);
+        FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).ifPresent(statuses::add);
+        FieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN).ifPresent(statuses::add);
 
-        return Set.of(urlValidation, userValidation, apiValidation);
+        return statuses;
     }
 
 }

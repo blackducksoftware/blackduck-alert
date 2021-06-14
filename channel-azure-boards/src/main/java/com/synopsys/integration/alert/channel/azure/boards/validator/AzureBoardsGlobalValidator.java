@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidato
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class AzureBoardsGlobalValidator extends GlobalValidator {
+public class AzureBoardsGlobalValidator implements GlobalValidator {
     private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired
@@ -30,15 +30,11 @@ public class AzureBoardsGlobalValidator extends GlobalValidator {
     }
 
     @Override
-    protected Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        AlertFieldStatus nameStatus = FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
-        AlertFieldStatus clientStatus = FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_ID);
-        AlertFieldStatus clientSecretStatus = FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_SECRET);
-
+    public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        statuses.add(nameStatus);
-        statuses.add(clientStatus);
-        statuses.add(clientSecretStatus);
+        FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_ORGANIZATION_NAME).ifPresent(statuses::add);
+        FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_ID).ifPresent(statuses::add);
+        FieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_SECRET).ifPresent(statuses::add);
 
         if (oAuthRequestValidator.hasRequests()) {
             AlertFieldStatus oauthStatus = AlertFieldStatus.error(AzureBoardsDescriptor.KEY_OAUTH, "Authentication in Progress cannot perform current action.");

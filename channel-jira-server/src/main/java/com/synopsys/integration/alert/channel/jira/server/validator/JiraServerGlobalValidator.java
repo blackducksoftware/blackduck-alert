@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.validator;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -18,13 +19,14 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidato
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class JiraServerGlobalValidator extends GlobalValidator {
+public class JiraServerGlobalValidator implements GlobalValidator {
     @Override
-    protected Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        AlertFieldStatus urlStatus = FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_URL);
-        AlertFieldStatus usernameStatus = FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_USERNAME);
-        AlertFieldStatus passwordStatus = FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_PASSWORD);
+    public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
+        Set<AlertFieldStatus> statuses = new HashSet<>();
+        FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_URL).ifPresent(statuses::add);
+        FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_USERNAME).ifPresent(statuses::add);
+        FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_PASSWORD).ifPresent(statuses::add);
 
-        return Set.of(urlStatus, usernameStatus, passwordStatus);
+        return statuses;
     }
 }

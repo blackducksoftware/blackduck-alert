@@ -7,11 +7,9 @@
  */
 package com.synopsys.integration.alert.channel.email.validator;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
@@ -23,37 +21,35 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
 @Component
-public class EmailGlobalValidator extends GlobalValidator {
+public class EmailGlobalValidator implements GlobalValidator {
     @Override
-    protected Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        AlertFieldStatus hostStatus = FieldValidator.validateIsARequiredField(fieldModel, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        AlertFieldStatus fromStatus = FieldValidator.validateIsARequiredField(fieldModel, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+    public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
+        Set<AlertFieldStatus> statuses = new HashSet<>();
+        FieldValidator.validateIsARequiredField(fieldModel, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsARequiredField(fieldModel, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).ifPresent(statuses::add);
 
-        AlertFieldStatus portStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
-        AlertFieldStatus connectionTimeoutStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey());
-        AlertFieldStatus timeoutStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey());
-        AlertFieldStatus writeTimeoutStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey());
-        AlertFieldStatus localhostPortStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey());
-        AlertFieldStatus authNTLMFlagsStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey());
-        AlertFieldStatus proxyPortStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey());
-        AlertFieldStatus socksPortStatus = FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey());
-
-        Set<AlertFieldStatus> fieldStatuses = Set.of(hostStatus, fromStatus, portStatus, connectionTimeoutStatus, timeoutStatus, writeTimeoutStatus, localhostPortStatus,
-            authNTLMFlagsStatus, proxyPortStatus, socksPortStatus);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        FieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
 
         Boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
                               .flatMap(FieldValueModel::getValue)
                               .map(Boolean::valueOf)
                               .orElse(false);
 
-        List<AlertFieldStatus> authRelatedStatuses = List.of();
         if (useAuth) {
-            authRelatedStatuses = FieldValidator.containsRelatedRequiredFields(fieldModel, List.of(
+            List<AlertFieldStatus> authRelatedStatuses = FieldValidator.containsRequiredFields(fieldModel, List.of(
                 EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
                 EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()
             ));
+            statuses.addAll(authRelatedStatuses);
         }
 
-        return Stream.of(fieldStatuses, authRelatedStatuses).flatMap(Collection::stream).collect(Collectors.toSet());
+        return statuses;
     }
 }
