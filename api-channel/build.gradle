@@ -10,7 +10,6 @@ dependencies {
     implementation project(':alert-common')
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
-    implementation project(':api-processor')
 
     implementation 'com.synopsys.integration:integration-rest'
 
