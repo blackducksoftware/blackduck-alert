@@ -53,6 +53,19 @@ public final class FieldValidator {
         return Optional.of(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
     }
 
+    public static Optional<AlertFieldStatus> validateIsAnOption(FieldModel fieldModel, String fieldKey, List<String> options) {
+        boolean isValueInOptions = getFieldValues(fieldModel, fieldKey)
+                                       .map(model -> model.getValues()
+                                                         .stream()
+                                                         .anyMatch(options::contains))
+                                       .orElse(false);
+        if (isValueInOptions) {
+            return Optional.empty();
+        }
+
+        return Optional.of(AlertFieldStatus.error(fieldKey, "Invalid option selected"));
+    }
+
     private static boolean fieldContainsData(FieldModel fieldModel, String fieldKey) {
         return !getFieldValues(fieldModel, fieldKey).map(FieldValueModel::containsNoData).orElse(true);
     }
