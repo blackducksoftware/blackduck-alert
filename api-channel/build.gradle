@@ -4,7 +4,7 @@ dependencies {
     api project(':api-event')
     api project(':api-processor')
     api 'jakarta.jms:jakarta.jms-api'
-    api 'org.springframework:spring-context'\
+    api 'org.springframework:spring-context'
 
     implementation platform(project(':alert-platform'))
     implementation project(':alert-common')
