@@ -16,6 +16,9 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
 public class EmailChannelMessageModel extends AlertSerializableModel {
+    public static final String FORMAT_SUMMARY = "Summary Format";
+    public static final String FORMAT_STANDARD = "Standard Format";
+
     private final String subjectLine;
     private final String content;
 
@@ -27,12 +30,20 @@ public class EmailChannelMessageModel extends AlertSerializableModel {
     private final ProjectMessage source;
 
     public static EmailChannelMessageModel simple(String subjectLine, String content, String providerName, String providerUrl) {
-        return new EmailChannelMessageModel(subjectLine, content, "Summary Format", providerName, providerUrl, null, null);
+        return new EmailChannelMessageModel(subjectLine, content, FORMAT_SUMMARY, providerName, providerUrl, null, null);
     }
 
-    public static EmailChannelMessageModel project(String subjectLine, String content, String providerName, String providerUrl, ProjectMessage projectMessage) {
+    public static EmailChannelMessageModel simpleProject(String subjectLine, String content, String providerName, String providerUrl, ProjectMessage projectMessage) {
+        return project(subjectLine, content, providerName, providerUrl, projectMessage, FORMAT_SUMMARY);
+    }
+
+    public static EmailChannelMessageModel standardProject(String subjectLine, String content, String providerName, String providerUrl, ProjectMessage projectMessage) {
+        return project(subjectLine, content, providerName, providerUrl, projectMessage, FORMAT_STANDARD);
+    }
+
+    private static EmailChannelMessageModel project(String subjectLine, String content, String providerName, String providerUrl, ProjectMessage projectMessage, String format) {
         LinkableItem project = projectMessage.getProject();
-        return new EmailChannelMessageModel(subjectLine, content, "Standard Format", providerName, providerUrl, project.getValue(), projectMessage);
+        return new EmailChannelMessageModel(subjectLine, content, format, providerName, providerUrl, project.getValue(), projectMessage);
     }
 
     private EmailChannelMessageModel(

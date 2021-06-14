@@ -45,7 +45,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
 
         EmailChannelMessageModel model;
         if (optionalSource.isPresent()) {
-            model = EmailChannelMessageModel.project(subjectLine, messageContent, providerName, providerUrl, optionalSource.get());
+            model = EmailChannelMessageModel.simpleProject(subjectLine, messageContent, providerName, providerUrl, optionalSource.get());
         } else {
             model = EmailChannelMessageModel.simple(subjectLine, messageContent, providerName, providerUrl);
         }
@@ -58,7 +58,7 @@ public class EmailChannelMessageConverter extends AbstractChannelMessageConverte
         String messageContent = StringUtils.join(messageChunks, "");
         LinkableItem provider = projectMessage.getProvider();
 
-        EmailChannelMessageModel model = EmailChannelMessageModel.project(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
+        EmailChannelMessageModel model = EmailChannelMessageModel.standardProject(subjectLine, messageContent, provider.getValue(), provider.getUrl().orElse("#"), projectMessage);
         return List.of(model);
     }
 
