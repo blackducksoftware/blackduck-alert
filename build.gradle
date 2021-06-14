@@ -99,11 +99,11 @@ dependencies {
     implementation project(':api-provider')
     implementation project(':api-task')
 
-    implementation project(':channel')
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
     implementation project(':channel-jira-cloud')
     implementation project(':channel-jira-server')
+    implementation project(':channel-msteams')
     implementation project(':channel-slack')
 
     implementation project(':component')

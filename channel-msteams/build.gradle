@@ -1,20 +1,14 @@
-ext.moduleName = 'com.synopsys.integration.alert.channel-api'
+ext.moduleName = 'com.synopsys.integration.alert.channel'
 
 dependencies {
-    api project(':api-event')
-    api project(':api-processor')
-    api 'jakarta.jms:jakarta.jms-api'
-    api 'org.springframework:spring-context'\
-
     implementation platform(project(':alert-platform'))
+
     implementation project(':alert-common')
     implementation project(':api-common-model')
+    implementation project(':api-channel')
     implementation project(':api-descriptor')
-    implementation project(':api-processor')
 
     implementation 'com.synopsys.integration:integration-rest'
-
-    implementation 'org.springframework:spring-jms'
 
     testImplementation project(':test-common')
 }
