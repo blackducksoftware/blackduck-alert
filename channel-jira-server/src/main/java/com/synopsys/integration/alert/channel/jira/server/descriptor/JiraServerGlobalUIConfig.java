@@ -33,7 +33,8 @@ public class JiraServerGlobalUIConfig extends UIConfig {
     public static final String DESCRIPTION_SERVER_USER_NAME = "The username of the Jira Server user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin.";
     public static final String DESCRIPTION_SERVER_PASSWORD = "The password of the specified Jira Server user.";
     public static final String DESCRIPTION_SERVER_DISABLE_PLUGIN_CHECK = "This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance."
-                                                                             + " Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly.";
+                                                                             + " Please ensure that the plugin is manually installed before using Alert with Jira."
+                                                                             + " If not, issues created by Alert will not be updated properly, and duplicate issues may be created.";
     public static final String DESCRIPTION_SERVER_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira server.";
 
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
