@@ -33,7 +33,8 @@ public class JiraCloudGlobalUIConfig extends UIConfig {
     public static final String DESCRIPTION_USER_NAME = "The email address of the Jira Cloud user. Note: Unless 'Disable Plugin Check' is checked, this user must be a Jira admin.";
     public static final String DESCRIPTION_API_TOKEN = "The API token of the specified Jira user.";
     public static final String DESCRIPTION_DISABLE_PLUGIN_CHECK = "This will disable checking whether the 'Alert Issue Property Indexer' plugin is installed on the specified Jira instance."
-                                                                      + " Please ensure that the plugin is manually installed before using Alert with Jira. If not, issues created by Alert will not be updated properly.";
+                                                                      + " Please ensure that the plugin is manually installed before using Alert with Jira."
+                                                                      + " If not, issues created by Alert will not be updated properly, and duplicate issues may be created.";
     public static final String DESCRIPTION_CONFIGURE_PLUGIN = "Installs a required plugin on the Jira Cloud server.";
 
     public static final String BUTTON_LABEL_PLUGIN_CONFIGURATION = "Install Plugin Remotely";
