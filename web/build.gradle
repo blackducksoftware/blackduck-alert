@@ -18,8 +18,8 @@ dependencies {
     implementation project(':channel-email')
     implementation project(':channel-jira-cloud')
     implementation project(':channel-jira-server')
-    implementation project(':channel-slack')
     implementation project(':channel-msteams')
+    implementation project(':channel-slack')
     implementation project(':component')
 
     implementation project(':api-provider')
