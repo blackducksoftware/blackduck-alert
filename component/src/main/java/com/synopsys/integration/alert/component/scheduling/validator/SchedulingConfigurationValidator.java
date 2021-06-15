@@ -7,7 +7,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.FieldValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
@@ -18,14 +18,14 @@ public class SchedulingConfigurationValidator implements GlobalConfigurationVali
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        List<AlertFieldStatus> alertFieldStatuses = FieldValidator.containsRequiredFields(fieldModel, List.of(
+        List<AlertFieldStatus> alertFieldStatuses = ConfigurationFieldValidator.containsRequiredFields(fieldModel, List.of(
             SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY,
             SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
         ));
         statuses.addAll(alertFieldStatuses);
 
-        FieldValidator.validateIsAnOption(fieldModel, SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours()).ifPresent(statuses::add);
-        FieldValidator.validateIsAnOption(fieldModel, SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency()).ifPresent(statuses::add);
+        ConfigurationFieldValidator.validateIsAnOption(fieldModel, SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours()).ifPresent(statuses::add);
+        ConfigurationFieldValidator.validateIsAnOption(fieldModel, SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency()).ifPresent(statuses::add);
 
         return statuses;
     }

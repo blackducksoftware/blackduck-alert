@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.FieldValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -37,7 +37,7 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        List<AlertFieldStatus> requiredStatuses = FieldValidator.containsRequiredFields(fieldModel, List.of(
+        List<AlertFieldStatus> requiredStatuses = ConfigurationFieldValidator.containsRequiredFields(fieldModel, List.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME,
             BlackDuckDescriptor.KEY_BLACKDUCK_URL,
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY,
@@ -45,7 +45,7 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
         ));
         statuses.addAll(requiredStatuses);
 
-        FieldValidator.validateIsANumber(fieldModel, BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+        ConfigurationFieldValidator.validateIsANumber(fieldModel, BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
             .ifPresentOrElse(statuses::add, () -> validateTimeout(fieldModel).ifPresent(statuses::add));
         validateAPIToken(fieldModel).ifPresent(statuses::add);
         validateDuplicateNames(fieldModel).ifPresent(statuses::add);

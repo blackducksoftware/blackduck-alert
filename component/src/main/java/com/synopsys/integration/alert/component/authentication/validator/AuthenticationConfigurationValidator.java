@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.FieldValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -58,7 +58,7 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
     }
 
     private List<AlertFieldStatus> validateLdapConfiguration(FieldModel fieldModel) {
-        return FieldValidator.containsRequiredFields(fieldModel, List.of(
+        return ConfigurationFieldValidator.containsRequiredFields(fieldModel, List.of(
             AuthenticationDescriptor.KEY_LDAP_SERVER,
             AuthenticationDescriptor.KEY_LDAP_MANAGER_DN,
             AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD
@@ -66,7 +66,7 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
     }
 
     private List<AlertFieldStatus> validateSamlConfiguration(FieldModel fieldModel) {
-        List<AlertFieldStatus> requiredFieldStatuses = FieldValidator.containsRequiredFields(fieldModel, List.of(
+        List<AlertFieldStatus> requiredFieldStatuses = ConfigurationFieldValidator.containsRequiredFields(fieldModel, List.of(
             AuthenticationDescriptor.KEY_SAML_ENTITY_ID,
             AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL
         ));
