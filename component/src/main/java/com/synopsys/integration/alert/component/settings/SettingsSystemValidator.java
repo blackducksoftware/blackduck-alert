@@ -20,12 +20,12 @@ import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 @Component
-public class SettingsValidator extends BaseSystemValidator {
-    private final Logger logger = LoggerFactory.getLogger(SettingsValidator.class);
-    private EncryptionUtility encryptionUtility;
+public class SettingsSystemValidator extends BaseSystemValidator {
+    private final Logger logger = LoggerFactory.getLogger(SettingsSystemValidator.class);
+    private final EncryptionUtility encryptionUtility;
 
     @Autowired
-    public SettingsValidator(EncryptionUtility encryptionUtility, SystemMessageAccessor systemMessageAccessor) {
+    public SettingsSystemValidator(EncryptionUtility encryptionUtility, SystemMessageAccessor systemMessageAccessor) {
         super(systemMessageAccessor);
         this.encryptionUtility = encryptionUtility;
     }
