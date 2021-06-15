@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.FieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -25,11 +25,11 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 @Component
-public class BlackDuckGlobalValidator implements GlobalValidator {
+public class BlackDuckGlobalConfigurationValidator implements GlobalConfigurationValidator {
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public BlackDuckGlobalValidator(ConfigurationAccessor configurationAccessor) {
+    public BlackDuckGlobalConfigurationValidator(ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
 

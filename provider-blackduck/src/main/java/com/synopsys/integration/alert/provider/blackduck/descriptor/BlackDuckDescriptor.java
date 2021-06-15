@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckGlobalValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckGlobalConfigurationValidator;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {
@@ -27,7 +27,8 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String BLACKDUCK_DESCRIPTION = "This is the configuration to connect to the Black Duck server. Configuring this will cause Alert to start pulling data from Black Duck.";
 
     @Autowired
-    public BlackDuckDescriptor(BlackDuckProviderKey blackDuckProviderKey, BlackDuckProviderUIConfig blackDuckProviderUIConfig, BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, BlackDuckGlobalValidator globalValidator) {
+    public BlackDuckDescriptor(BlackDuckProviderKey blackDuckProviderKey, BlackDuckProviderUIConfig blackDuckProviderUIConfig, BlackDuckDistributionUIConfig blackDuckDistributionUIConfig,
+        BlackDuckGlobalConfigurationValidator globalValidator) {
         super(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig, globalValidator);
     }
 

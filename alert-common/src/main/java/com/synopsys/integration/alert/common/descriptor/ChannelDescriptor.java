@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.common.descriptor;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
@@ -18,8 +18,8 @@ public abstract class ChannelDescriptor extends Descriptor {
         this(channelKey, distributionUIConfig, globalUIConfig, null);
     }
 
-    public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig, GlobalValidator globalValidator) {
-        super(channelKey, DescriptorType.CHANNEL, globalValidator);
+    public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig, GlobalConfigurationValidator globalConfigurationValidator) {
+        super(channelKey, DescriptorType.CHANNEL, globalConfigurationValidator);
         addDistributionUiConfig(distributionUIConfig);
         addGlobalUiConfig(globalUIConfig);
     }

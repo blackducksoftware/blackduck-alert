@@ -17,20 +17,20 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.FieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 @Component
-public class AuthenticationValidator implements GlobalValidator {
+public class AuthenticationConfigurationValidator implements GlobalConfigurationValidator {
     private static final String SAML_LDAP_ENABLED_ERROR = "Can't enable both SAML and LDAP authentication";
 
     private final FilePersistenceUtil filePersistenceUtil;
 
     @Autowired
-    public AuthenticationValidator(FilePersistenceUtil filePersistenceUtil) {
+    public AuthenticationConfigurationValidator(FilePersistenceUtil filePersistenceUtil) {
         this.filePersistenceUtil = filePersistenceUtil;
     }
 

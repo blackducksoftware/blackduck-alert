@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.component.scheduling.validator.SchedulingValidator;
+import com.synopsys.integration.alert.component.scheduling.validator.SchedulingConfigurationValidator;
 
 @Component
 public class SchedulingDescriptor extends ComponentDescriptor {
@@ -25,7 +25,7 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String KEY_PURGE_DATA_NEXT_RUN = "scheduling.purge.data.next.run";
 
     @Autowired
-    public SchedulingDescriptor(SchedulingDescriptorKey schedulingDescriptorKey, SchedulingUIConfig schedulingUIConfig, SchedulingValidator schedulingValidator) {
+    public SchedulingDescriptor(SchedulingDescriptorKey schedulingDescriptorKey, SchedulingUIConfig schedulingUIConfig, SchedulingConfigurationValidator schedulingValidator) {
         super(schedulingDescriptorKey, schedulingUIConfig, schedulingValidator);
     }
 
