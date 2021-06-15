@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -116,7 +116,7 @@ public class FieldModelProcessor {
         return fieldValidationAction.validateConfig(configFields, fieldModel);
     }
 
-    public Optional<GlobalValidator> getGlobalValidator(FieldModel fieldModel) {
+    public Optional<GlobalConfigurationValidator> getGlobalValidator(FieldModel fieldModel) {
         String descriptorName = fieldModel.getDescriptorName();
         return descriptorProcessor.retrieveDescriptor(descriptorName).flatMap(Descriptor::getGlobalValidator);
     }

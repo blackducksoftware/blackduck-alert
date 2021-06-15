@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.component.authentication.validator.AuthenticationValidator;
+import com.synopsys.integration.alert.component.authentication.validator.AuthenticationConfigurationValidator;
 
 @Component
 public class AuthenticationDescriptor extends ComponentDescriptor {
@@ -58,7 +58,7 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String SAML_METADATA_FILE = "saml_metadata.xml";
 
     @Autowired
-    public AuthenticationDescriptor(AuthenticationDescriptorKey descriptorKey, AuthenticationUIConfig componentUIConfig, AuthenticationValidator authenticationValidator) {
+    public AuthenticationDescriptor(AuthenticationDescriptorKey descriptorKey, AuthenticationUIConfig componentUIConfig, AuthenticationConfigurationValidator authenticationValidator) {
         super(descriptorKey, componentUIConfig, authenticationValidator);
     }
 }

@@ -15,9 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.system.BaseSystemValidator;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -27,18 +27,18 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckValidator extends BaseSystemValidator {
+public class BlackDuckSystemValidator extends BaseSystemValidator {
     public static final String MISSING_BLACKDUCK_URL_ERROR_W_CONFIG_FORMAT = "Black Duck configuration '%s' is invalid. Black Duck URL missing.";
     public static final String MISSING_BLACKDUCK_CONFIG_ERROR_FORMAT = "Black Duck configuration is invalid. Black Duck configurations missing.";
     public static final String BLACKDUCK_LOCALHOST_ERROR_FORMAT = "Black Duck configuration '%s' is using localhost.";
     public static final String BLACKDUCK_API_PERMISSION_FORMAT = "User permission failed, cannot read notifications from Black Duck.";
-    private final Logger logger = LoggerFactory.getLogger(BlackDuckValidator.class);
+    private final Logger logger = LoggerFactory.getLogger(BlackDuckSystemValidator.class);
 
     public static String createProviderSystemMessageType(BlackDuckProperties properties, SystemMessageType systemMessageType) {
         return String.format("%d_%s", properties.getConfigId(), systemMessageType.name());
     }
 
-    public BlackDuckValidator(SystemMessageAccessor systemMessageAccessor) {
+    public BlackDuckSystemValidator(SystemMessageAccessor systemMessageAccessor) {
         super(systemMessageAccessor);
     }
 
