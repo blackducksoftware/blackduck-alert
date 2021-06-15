@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
+// TODO change this from static to stateful (Maybe change name)
 public final class FieldValidator {
     public static Optional<AlertFieldStatus> validateIsARequiredField(FieldModel fieldModel, String fieldKey) {
         if (fieldContainsData(fieldModel, fieldKey)) {
