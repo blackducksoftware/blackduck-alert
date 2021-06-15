@@ -32,9 +32,10 @@ public class AzureBoardsGlobalConfigurationValidator implements GlobalConfigurat
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_ORGANIZATION_NAME).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_ID).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, AzureBoardsDescriptor.KEY_CLIENT_SECRET).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
+        configurationFieldValidator.validateIsARequiredField(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsARequiredField(AzureBoardsDescriptor.KEY_CLIENT_ID).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsARequiredField(AzureBoardsDescriptor.KEY_CLIENT_SECRET).ifPresent(statuses::add);
 
         if (oAuthRequestValidator.hasRequests()) {
             AlertFieldStatus oauthStatus = AlertFieldStatus.error(AzureBoardsDescriptor.KEY_OAUTH, "Authentication in Progress cannot perform current action.");

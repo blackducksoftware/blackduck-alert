@@ -25,17 +25,18 @@ public class EmailGlobalConfigurationValidator implements GlobalConfigurationVal
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
+        configurationFieldValidator.validateIsARequiredField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsARequiredField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).ifPresent(statuses::add);
 
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
 
         Boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
                               .flatMap(FieldValueModel::getValue)
@@ -43,7 +44,7 @@ public class EmailGlobalConfigurationValidator implements GlobalConfigurationVal
                               .orElse(false);
 
         if (useAuth) {
-            List<AlertFieldStatus> authRelatedStatuses = ConfigurationFieldValidator.containsRequiredFields(fieldModel, List.of(
+            List<AlertFieldStatus> authRelatedStatuses = configurationFieldValidator.containsRequiredFields(List.of(
                 EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
                 EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()
             ));

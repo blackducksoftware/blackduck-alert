@@ -24,9 +24,10 @@ public class JiraCloudGlobalConfigurationValidator implements GlobalConfiguratio
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_URL).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsARequiredField(fieldModel, JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
+        configurationFieldValidator.validateIsARequiredField(JiraCloudDescriptor.KEY_JIRA_URL).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsARequiredField(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsARequiredField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN).ifPresent(statuses::add);
 
         return statuses;
     }

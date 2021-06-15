@@ -18,14 +18,15 @@ public class SchedulingConfigurationValidator implements GlobalConfigurationVali
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        List<AlertFieldStatus> alertFieldStatuses = ConfigurationFieldValidator.containsRequiredFields(fieldModel, List.of(
+        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
+        List<AlertFieldStatus> alertFieldStatuses = configurationFieldValidator.containsRequiredFields(List.of(
             SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY,
             SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
         ));
         statuses.addAll(alertFieldStatuses);
 
-        ConfigurationFieldValidator.validateIsAnOption(fieldModel, SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours()).ifPresent(statuses::add);
-        ConfigurationFieldValidator.validateIsAnOption(fieldModel, SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency()).ifPresent(statuses::add);
 
         return statuses;
     }

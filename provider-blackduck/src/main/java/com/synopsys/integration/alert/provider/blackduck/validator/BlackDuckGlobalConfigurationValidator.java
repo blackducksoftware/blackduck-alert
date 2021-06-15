@@ -37,7 +37,8 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
-        List<AlertFieldStatus> requiredStatuses = ConfigurationFieldValidator.containsRequiredFields(fieldModel, List.of(
+        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
+        List<AlertFieldStatus> requiredStatuses = configurationFieldValidator.containsRequiredFields(List.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME,
             BlackDuckDescriptor.KEY_BLACKDUCK_URL,
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY,
@@ -45,7 +46,7 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
         ));
         statuses.addAll(requiredStatuses);
 
-        ConfigurationFieldValidator.validateIsANumber(fieldModel, BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+        configurationFieldValidator.validateIsANumber(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
             .ifPresentOrElse(statuses::add, () -> validateTimeout(fieldModel).ifPresent(statuses::add));
         validateAPIToken(fieldModel).ifPresent(statuses::add);
         validateDuplicateNames(fieldModel).ifPresent(statuses::add);
