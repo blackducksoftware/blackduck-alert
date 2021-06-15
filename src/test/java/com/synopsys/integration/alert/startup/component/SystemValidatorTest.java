@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
-import com.synopsys.integration.alert.component.settings.SettingsValidator;
+import com.synopsys.integration.alert.component.settings.validator.SettingsSystemValidator;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 import com.synopsys.integration.alert.database.system.DefaultSystemMessageAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -53,12 +53,12 @@ public class SystemValidatorTest {
         Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("Black Duck URL"));
         Mockito.when(blackDuckProperties.getApiToken()).thenReturn("Black Duck API Token");
         Mockito.when(blackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
-        SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
+        SettingsSystemValidator settingsSystemValidator = Mockito.mock(SettingsSystemValidator.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         UserSystemValidator userSystemValidator = Mockito.mock(UserSystemValidator.class);
         SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
 
-        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsValidator, configurationAccessor, userSystemValidator, systemMessageAccessor);
+        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsSystemValidator, configurationAccessor, userSystemValidator, systemMessageAccessor);
         systemValidator.validate();
     }
 
@@ -68,12 +68,12 @@ public class SystemValidatorTest {
         Mockito.when(blackDuckProperties.getBlackDuckUrl()).thenReturn(Optional.of("Black Duck URL"));
         Mockito.when(blackDuckProperties.getApiToken()).thenReturn("Black Duck API Token");
         Mockito.when(blackDuckProperties.getBlackDuckTimeout()).thenReturn(BlackDuckProperties.DEFAULT_TIMEOUT);
-        SettingsValidator settingsValidator = Mockito.mock(SettingsValidator.class);
+        SettingsSystemValidator settingsSystemValidator = Mockito.mock(SettingsSystemValidator.class);
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         UserSystemValidator userSystemValidator = Mockito.mock(UserSystemValidator.class);
         SystemMessageAccessor systemMessageAccessor = Mockito.mock(SystemMessageAccessor.class);
 
-        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsValidator, configurationAccessor, userSystemValidator, systemMessageAccessor);
+        SystemMessageInitializer systemValidator = new SystemMessageInitializer(List.of(), settingsSystemValidator, configurationAccessor, userSystemValidator, systemMessageAccessor);
         systemValidator.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
     }

@@ -18,24 +18,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.component.settings.SettingsValidator;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
+import com.synopsys.integration.alert.component.settings.validator.SettingsSystemValidator;
 
 @Component
 public class SettingsGlobalApiAction extends ApiAction {
     private final Logger logger = LoggerFactory.getLogger(SettingsGlobalApiAction.class);
     private final EncryptionUtility encryptionUtility;
-    private final SettingsValidator settingsValidator;
+    private final SettingsSystemValidator settingsSystemValidator;
 
     @Autowired
-    public SettingsGlobalApiAction(EncryptionUtility encryptionUtility, SettingsValidator settingsValidator) {
+    public SettingsGlobalApiAction(EncryptionUtility encryptionUtility, SettingsSystemValidator settingsSystemValidator) {
         this.encryptionUtility = encryptionUtility;
-        this.settingsValidator = settingsValidator;
+        this.settingsSystemValidator = settingsSystemValidator;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class SettingsGlobalApiAction extends ApiAction {
     }
 
     private void handleAfterNewAndUpdate() {
-        settingsValidator.validateEncryption();
+        settingsSystemValidator.validateEncryption();
     }
 
     private FieldModel scrubModel(FieldModel fieldModel) {

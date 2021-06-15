@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.component.settings.SettingsValidator;
+import com.synopsys.integration.alert.component.settings.validator.SettingsSystemValidator;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
@@ -29,15 +29,16 @@ import com.synopsys.integration.alert.component.users.UserSystemValidator;
 public class SystemMessageInitializer extends StartupComponent {
     private final Logger logger = LoggerFactory.getLogger(SystemMessageInitializer.class);
     private final List<Provider> providers;
-    private final SettingsValidator settingsValidator;
+    private final SettingsSystemValidator settingsSystemValidator;
     private final ConfigurationAccessor configurationAccessor;
     private final UserSystemValidator userSystemValidator;
     private final SystemMessageAccessor systemMessageAccessor;
 
     @Autowired
-    public SystemMessageInitializer(List<Provider> providers, SettingsValidator settingsValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator, SystemMessageAccessor systemMessageAccessor) {
+    public SystemMessageInitializer(List<Provider> providers, SettingsSystemValidator settingsSystemValidator, ConfigurationAccessor configurationAccessor, UserSystemValidator userSystemValidator,
+        SystemMessageAccessor systemMessageAccessor) {
         this.providers = providers;
-        this.settingsValidator = settingsValidator;
+        this.settingsSystemValidator = settingsSystemValidator;
         this.configurationAccessor = configurationAccessor;
         this.userSystemValidator = userSystemValidator;
         this.systemMessageAccessor = systemMessageAccessor;
@@ -54,7 +55,7 @@ public class SystemMessageInitializer extends StartupComponent {
 
         clearOldMessages();
         boolean defaultAdminValid = userSystemValidator.validateDefaultAdminUser();
-        boolean encryptionValid = settingsValidator.validateEncryption();
+        boolean encryptionValid = settingsSystemValidator.validateEncryption();
         boolean providersValid = validateProviders();
         boolean valid = defaultAdminValid && encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
