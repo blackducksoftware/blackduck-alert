@@ -25,6 +25,10 @@ public class ConfigurationFieldValidator {
         this.fieldModel = fieldModel;
     }
 
+    public FieldModel getFieldModel() {
+        return fieldModel;
+    }
+
     public Optional<AlertFieldStatus> validateIsARequiredField(String fieldKey) {
         if (fieldContainsData(fieldKey)) {
             return Optional.empty();

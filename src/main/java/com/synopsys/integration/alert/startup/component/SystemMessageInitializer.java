@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.component.settings.SettingsSystemValidator;
+import com.synopsys.integration.alert.component.settings.validator.SettingsSystemValidator;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
 
 @Component
