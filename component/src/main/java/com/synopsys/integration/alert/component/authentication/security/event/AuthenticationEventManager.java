@@ -19,13 +19,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.ldap.userdetails.InetOrgPerson;
 import org.springframework.security.saml.SAMLAuthenticationToken;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.EventManager;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.UserModel;
 import com.synopsys.integration.alert.common.persistence.model.UserRoleModel;
 
@@ -43,12 +44,16 @@ public class AuthenticationEventManager {
         String username;
         String emailAddress = null;
         try {
+            Object authPrincipal = authentication.getPrincipal();
             if (authentication instanceof SAMLAuthenticationToken) {
                 SAMLAuthenticationToken samlAuthenticationToken = (SAMLAuthenticationToken) authentication;
                 SAMLMessageContext credentials = samlAuthenticationToken.getCredentials();
                 NameIDImpl subjectNameIdentifier = (NameIDImpl) credentials.getSubjectNameIdentifier();
                 username = subjectNameIdentifier.getValue();
                 emailAddress = username;
+            } else if (authPrincipal instanceof InetOrgPerson) {
+                username = authentication.getName();
+                emailAddress = ((InetOrgPerson) authPrincipal).getMail();
             } else {
                 username = authentication.getName();
             }
