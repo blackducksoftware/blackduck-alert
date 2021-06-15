@@ -18,31 +18,37 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
-public final class FieldValidator {
-    public static Optional<AlertFieldStatus> validateIsARequiredField(FieldModel fieldModel, String fieldKey) {
-        if (fieldContainsData(fieldModel, fieldKey)) {
+public class ConfigurationFieldValidator {
+    private final FieldModel fieldModel;
+
+    public ConfigurationFieldValidator(FieldModel fieldModel) {
+        this.fieldModel = fieldModel;
+    }
+
+    public Optional<AlertFieldStatus> validateIsARequiredField(String fieldKey) {
+        if (fieldContainsData(fieldKey)) {
             return Optional.empty();
         }
 
         return Optional.of(AlertFieldStatus.error(fieldKey, "Required field missing"));
     }
 
-    public static List<AlertFieldStatus> containsRequiredFields(FieldModel fieldModel, List<String> fieldKeys) {
+    public List<AlertFieldStatus> containsRequiredFields(List<String> fieldKeys) {
         return fieldKeys.stream()
-                   .map(key -> validateIsARequiredField(fieldModel, key))
+                   .map(key -> validateIsARequiredField(key))
                    .flatMap(Optional::stream)
                    .collect(Collectors.toList());
     }
 
-    public static List<AlertFieldStatus> containsDisallowedRelatedFields(FieldModel fieldModel, String fieldLabel, List<String> fieldKeys) {
+    public List<AlertFieldStatus> containsDisallowedRelatedFields(String fieldLabel, List<String> fieldKeys) {
         return fieldKeys.stream()
-                   .filter(key -> fieldContainsData(fieldModel, key))
+                   .filter(key -> fieldContainsData(key))
                    .map(key -> AlertFieldStatus.error(key, String.format("Cannot be set if %s is already set", fieldLabel)))
                    .collect(Collectors.toList());
     }
 
-    public static Optional<AlertFieldStatus> validateIsANumber(FieldModel fieldModel, String fieldKey) {
-        boolean isANumberOrEmpty = getFieldValues(fieldModel, fieldKey)
+    public Optional<AlertFieldStatus> validateIsANumber(String fieldKey) {
+        boolean isANumberOrEmpty = getFieldValues(fieldKey)
                                        .flatMap(FieldValueModel::getValue)
                                        .map(NumberUtils::isCreatable)
                                        .orElse(true);
@@ -53,8 +59,8 @@ public final class FieldValidator {
         return Optional.of(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
     }
 
-    public static Optional<AlertFieldStatus> validateIsAnOption(FieldModel fieldModel, String fieldKey, List<String> options) {
-        boolean isValueInOptions = getFieldValues(fieldModel, fieldKey)
+    public Optional<AlertFieldStatus> validateIsAnOption(String fieldKey, List<String> options) {
+        boolean isValueInOptions = getFieldValues(fieldKey)
                                        .map(model -> model.getValues()
                                                          .stream()
                                                          .anyMatch(options::contains))
@@ -66,11 +72,11 @@ public final class FieldValidator {
         return Optional.of(AlertFieldStatus.error(fieldKey, "Invalid option selected"));
     }
 
-    private static boolean fieldContainsData(FieldModel fieldModel, String fieldKey) {
-        return !getFieldValues(fieldModel, fieldKey).map(FieldValueModel::containsNoData).orElse(true);
+    private boolean fieldContainsData(String fieldKey) {
+        return !getFieldValues(fieldKey).map(FieldValueModel::containsNoData).orElse(true);
     }
 
-    private static Optional<FieldValueModel> getFieldValues(FieldModel fieldModel, String fieldKey) {
+    private Optional<FieldValueModel> getFieldValues(String fieldKey) {
         return fieldModel.getFieldValueModel(fieldKey);
     }
 

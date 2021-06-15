@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.task.BlackDuckDataSyncTask;
 import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.task.accumulator.BlackDuckNotificationRetrieverFactory;
-import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 
 @Component
 public class BlackDuckTaskFactory implements ProviderTaskFactory {
@@ -33,7 +33,7 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
     private final ProviderDataAccessor blackDuckDataAccessor;
     private final NotificationAccessor notificationAccessor;
     private final ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor;
-    private final BlackDuckValidator blackDuckValidator;
+    private final BlackDuckSystemValidator blackDuckSystemValidator;
     private final EventManager eventManager;
     private final BlackDuckNotificationRetrieverFactory notificationRetrieverFactory;
 
@@ -44,7 +44,7 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         ProviderDataAccessor blackDuckDataAccessor,
         NotificationAccessor notificationAccessor,
         ProviderTaskPropertiesAccessor providerTaskPropertiesAccessor,
-        BlackDuckValidator blackDuckValidator,
+        BlackDuckSystemValidator blackDuckSystemValidator,
         EventManager eventManager,
         BlackDuckNotificationRetrieverFactory notificationRetrieverFactory
     ) {
@@ -53,7 +53,7 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
         this.blackDuckDataAccessor = blackDuckDataAccessor;
         this.notificationAccessor = notificationAccessor;
         this.providerTaskPropertiesAccessor = providerTaskPropertiesAccessor;
-        this.blackDuckValidator = blackDuckValidator;
+        this.blackDuckSystemValidator = blackDuckSystemValidator;
         this.eventManager = eventManager;
         this.notificationRetrieverFactory = notificationRetrieverFactory;
     }
@@ -66,7 +66,7 @@ public class BlackDuckTaskFactory implements ProviderTaskFactory {
             notificationAccessor,
             providerTaskPropertiesAccessor,
             providerProperties,
-            blackDuckValidator,
+            blackDuckSystemValidator,
             eventManager,
             notificationRetrieverFactory
         );

@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.validator.EmailGlobalValidator;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -30,7 +30,7 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String EMAIL_DESCRIPTION = "Configure the email server that Alert will send emails to.";
 
     @Autowired
-    public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig, EmailGlobalValidator emailGlobalValidator) {
+    public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig, EmailGlobalConfigurationValidator emailGlobalValidator) {
         super(ChannelKeys.EMAIL, emailDistributionUIConfig, emailGlobalUIConfig, emailGlobalValidator);
     }
 

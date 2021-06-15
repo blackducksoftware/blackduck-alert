@@ -14,18 +14,19 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.FieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class JiraServerGlobalValidator implements GlobalValidator {
+public class JiraServerGlobalConfigurationValidator implements GlobalConfigurationValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
-        FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_URL).ifPresent(statuses::add);
-        FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_USERNAME).ifPresent(statuses::add);
-        FieldValidator.validateIsARequiredField(fieldModel, JiraServerDescriptor.KEY_SERVER_PASSWORD).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
+        configurationFieldValidator.validateIsARequiredField(JiraServerDescriptor.KEY_SERVER_URL).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsARequiredField(JiraServerDescriptor.KEY_SERVER_USERNAME).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsARequiredField(JiraServerDescriptor.KEY_SERVER_PASSWORD).ifPresent(statuses::add);
 
         return statuses;
     }

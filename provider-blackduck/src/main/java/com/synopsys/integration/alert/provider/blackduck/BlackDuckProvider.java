@@ -21,17 +21,17 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckTaskFactory;
-import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckValidator;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 
 @Component
 public class BlackDuckProvider extends Provider {
     private final BlackDuckPropertiesFactory propertiesFactory;
-    private final BlackDuckValidator validator;
+    private final BlackDuckSystemValidator validator;
     private final BlackDuckTaskFactory taskFactory;
 
     @Autowired
     public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckContent blackDuckContent,
-        BlackDuckPropertiesFactory propertiesFactory, BlackDuckValidator validator, BlackDuckTaskFactory taskFactory) {
+        BlackDuckPropertiesFactory propertiesFactory, BlackDuckSystemValidator validator, BlackDuckTaskFactory taskFactory) {
         super(blackDuckProviderKey, blackDuckContent);
         this.propertiesFactory = propertiesFactory;
         this.validator = validator;
