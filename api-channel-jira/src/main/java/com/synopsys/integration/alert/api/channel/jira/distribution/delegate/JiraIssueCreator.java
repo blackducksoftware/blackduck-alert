@@ -18,16 +18,17 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraI
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueSearchPropertyStringCompatibilityUtils;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.channel.api.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
@@ -98,12 +99,27 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     protected JiraCustomFieldReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
         IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
+        //TODO: 3 conditionals, if none, if policy, if vuln
+        Optional<IssuePolicyDetails> policyDetails = alertIssueSource.getPolicyDetails();
+        Optional<IssueVulnerabilityDetails> vulnerabilityDetails = alertIssueSource.getVulnerabilityDetails();
+
+        Optional<String> severity = Optional.empty();
+
+        if (policyDetails.isPresent()) {
+            severity = Optional.ofNullable(policyDetails.get().getSeverity().getPolicyLabel());
+        }
+        if (vulnerabilityDetails.isPresent()) {
+            //TODO: need to come up with a good algorithm for this. Right now it just finds the first severity
+            severity = Optional.ofNullable(vulnerabilityDetails.get().getVulnerabilitiesAdded().stream().findFirst().get().getSeverity().getVulnerabilityLabel());
+        }
+
         return new JiraCustomFieldReplacementValues(
             alertIssueSource.getProvider().getLabel(),
             alertIssueSource.getProject().getValue(),
             alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(null),
             bomComponent.getComponent().getValue(),
-            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null)
+            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null),
+            severity.orElse(null)
         );
     }
 

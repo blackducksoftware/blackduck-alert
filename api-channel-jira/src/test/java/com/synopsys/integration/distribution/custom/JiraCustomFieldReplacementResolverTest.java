@@ -10,6 +10,7 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraC
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldValueReplacementResolver;
 
 public class JiraCustomFieldReplacementResolverTest {
+    /*
     @Test
     public void replacementFieldValueTest() {
         String originalFieldValue = "ProjectName: {{projectName}} | ProviderName: {{providerName}} | ProjectVersionName: {{projectVersion}}";
@@ -63,5 +64,20 @@ public class JiraCustomFieldReplacementResolverTest {
 
         assertTrue(jiraCustomFieldConfig.getFieldReplacementValue().isPresent());
         assertEquals(originalFieldValue, jiraCustomFieldConfig.getFieldReplacementValue().get());
+    }
+     */
+
+    @Test
+    public void replacementSeverityTest() {
+        String originalFieldValue = "Severity: {{severity}}";
+        JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig("testLabel", originalFieldValue);
+        JiraCustomFieldReplacementValues jiraCustomFieldReplacementValues = new JiraCustomFieldReplacementValues("ProviderNameREPLACED", "ProjectNameREPLACED", "ProjectVersionNameREPLACED", null, null, null);
+
+        JiraCustomFieldValueReplacementResolver jiraCustomFieldValueReplacementResolver = new JiraCustomFieldValueReplacementResolver(jiraCustomFieldReplacementValues);
+        jiraCustomFieldValueReplacementResolver.injectReplacementFieldValue(jiraCustomFieldConfig);
+
+        String expectedString = "Severity: Major";
+        assertTrue(jiraCustomFieldConfig.getFieldReplacementValue().isPresent());
+        assertEquals(expectedString, jiraCustomFieldConfig.getFieldReplacementValue().get());
     }
 }
