@@ -98,8 +98,9 @@ const DistributionConfigurationForm = ({
 
     const createProviderRequestBody = () => {
         const providerName = FieldModelUtilities.getFieldModelSingleValue(channelModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName);
-        delete providerModel.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
-        return FieldModelUtilities.updateFieldModelSingleValue(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
+        const copiedProviderModel = JSON.parse(JSON.stringify(providerModel));
+        delete copiedProviderModel.keyToValues[DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects];
+        return FieldModelUtilities.updateFieldModelSingleValue(copiedProviderModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerName, providerName);
     };
 
     useEffect(() => {
