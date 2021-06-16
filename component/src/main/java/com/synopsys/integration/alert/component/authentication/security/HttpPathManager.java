@@ -25,7 +25,6 @@ public class HttpPathManager {
     public static final String PATH_CSS_STYLE_CSS = "/css/style.css";
     public static final String PATH_FAVICON_ICO = "/favicon.ico";
     public static final String PATH_FONTS = "/fonts/**";
-    public static final String PATH_H2_CONSOLE = "/h2/**";
     public static final String PATH_INDEX_HTML = "index.html";
     public static final String PATH_JS_BUNDLE_JS = "/js/bundle.js";
     public static final String PATH_JS_BUNDLE_JS_MAP = "/js/bundle.js.map";
