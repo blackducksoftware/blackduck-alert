@@ -374,7 +374,7 @@ const DistributionConfigurationForm = ({
                     clearable={false}
                     readOnly={readonly}
                     required
-                    createRequestBody={() => providerModel}
+                    createRequestBody={createProviderRequestBody}
                     onChange={FieldModelUtilities.handleChange(providerModel, setProviderModel)}
                     value={FieldModelUtilities.getFieldModelValues(providerModel, DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(DISTRIBUTION_COMMON_FIELD_KEYS.providerConfigId)}
