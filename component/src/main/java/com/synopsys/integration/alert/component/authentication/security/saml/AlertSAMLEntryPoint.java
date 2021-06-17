@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -31,15 +32,21 @@ public class AlertSAMLEntryPoint extends SAMLEntryPoint {
 
     @Override
     protected boolean processFilter(HttpServletRequest request) {
-        return samlContext.isSAMLEnabled() && super.processFilter(request);
+        String ignoreSAMLParam = request.getParameter("ignoreSAML");
+        boolean ignoreSAML = BooleanUtils.toBoolean(ignoreSAMLParam);
+        return samlContext.isSAMLEnabled() && !ignoreSAML && super.processFilter(request);
     }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         if (samlContext.isSAMLEnabled()) {
-            alertLogger.debug("SAML Enabled commencing SAML entry point.");
-            super.commence(request, response, e);
-            return;
+            String ignoreSAMLParam = request.getParameter("ignoreSAML");
+            boolean ignoreSAML = BooleanUtils.toBoolean(ignoreSAMLParam);
+            if (!ignoreSAML) {
+                alertLogger.debug("SAML Enabled commencing SAML entry point.");
+                super.commence(request, response, e);
+                return;
+            }
         }
         alertLogger.debug("AuthenticationException", e);
         if (e instanceof InsufficientAuthenticationException) {

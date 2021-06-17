@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.web.api.home;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -51,7 +52,9 @@ public class HomeActions {
         return new ActionResponse<>(HttpStatus.OK);
     }
 
-    public ActionResponse<SAMLEnabledResponseModel> verifySaml() {
-        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(samlContext.isSAMLEnabled()));
+    public ActionResponse<SAMLEnabledResponseModel> verifySaml(HttpServletRequest request) {
+        boolean isSamlEnabled = samlContext.isSAMLEnabled() && BooleanUtils.toBoolean(request.getParameter("ignoreSAML"));
+        return new ActionResponse<>(HttpStatus.OK, new SAMLEnabledResponseModel(isSamlEnabled));
     }
+
 }

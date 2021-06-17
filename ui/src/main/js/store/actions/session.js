@@ -114,6 +114,8 @@ export function login(username, password) {
     return (dispatch) => {
         dispatch(loggingIn());
 
+        const ignoreSAML = new URLSearchParams(window.location.search).get('ignoreSAML') || 'false';
+
         const body = {
             alertUsername: username,
             alertPassword: password
@@ -121,7 +123,7 @@ export function login(username, password) {
 
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
-        fetch('/alert/api/login', {
+        fetch(`/alert/api/login?ignoreSAML=${ignoreSAML}`, {
             method: 'POST',
             credentials: 'same-origin',
             headers: headersUtil.getHeaders(),
