@@ -62,6 +62,12 @@ function logOut() {
     };
 }
 
+const PARAM_IGNORE_SAML = 'ignoreSAML';
+
+function extractIgnoreSAMLParam() {
+    return new URLSearchParams(window.location.search).get(PARAM_IGNORE_SAML) || 'false';
+}
+
 export function loginError(errorMessage, errors) {
     return {
         type: SESSION_LOGIN_ERROR,
@@ -94,8 +100,11 @@ export function verifyLogin() {
 
 export function verifySaml() {
     return (dispatch) => {
+
+        const ignoreSAML = extractIgnoreSAMLParam();
+
         dispatch(initializing());
-        fetch('/alert/api/verify/saml', {
+        fetch(`/alert/api/verify/saml?${PARAM_IGNORE_SAML}=${ignoreSAML}`, {
             credentials: 'same-origin'
         }).then((response) => {
             if (!response.ok) {
@@ -114,7 +123,7 @@ export function login(username, password) {
     return (dispatch) => {
         dispatch(loggingIn());
 
-        const ignoreSAML = new URLSearchParams(window.location.search).get('ignoreSAML') || 'false';
+        const ignoreSAML = extractIgnoreSAMLParam();
 
         const body = {
             alertUsername: username,
@@ -123,7 +132,7 @@ export function login(username, password) {
 
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
-        fetch(`/alert/api/login?ignoreSAML=${ignoreSAML}`, {
+        fetch(`/alert/api/login?${PARAM_IGNORE_SAML}=${ignoreSAML}`, {
             method: 'POST',
             credentials: 'same-origin',
             headers: headersUtil.getHeaders(),
@@ -162,7 +171,7 @@ export function logout() {
         const headersUtil = new HeaderUtilities();
         headersUtil.addApplicationJsonContentType();
         headersUtil.addXCsrfToken(csrfToken);
-        fetch('/alert/api/logout', {
+        fetch('/alert/api/logout?', {
             method: 'POST',
             credentials: 'same-origin',
             headers: headersUtil.getHeaders()

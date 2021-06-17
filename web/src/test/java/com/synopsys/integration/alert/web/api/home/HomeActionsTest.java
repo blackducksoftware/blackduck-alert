@@ -138,10 +138,15 @@ public class HomeActionsTest {
         SAMLContext samlContext = Mockito.mock(SAMLContext.class);
         Mockito.when(samlContext.isSAMLEnabled()).thenReturn(Boolean.TRUE);
         HomeActions actions = new HomeActions(null, samlContext);
-        ActionResponse<SAMLEnabledResponseModel> response = actions.verifySaml();
+
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(mockRequest.getParameter("ignoreSAML")).thenReturn("true");
+
+        ActionResponse<SAMLEnabledResponseModel> response = actions.verifySaml(mockRequest);
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
         SAMLEnabledResponseModel samlEnabledResponseModel = response.getContent().orElse(null);
         assertTrue(samlEnabledResponseModel.getSamlEnabled());
     }
+
 }
