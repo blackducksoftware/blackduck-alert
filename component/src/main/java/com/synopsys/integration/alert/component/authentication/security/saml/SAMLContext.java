@@ -27,8 +27,9 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 public class SAMLContext implements Serializable {
+    public static final String PARAM_IGNORE_SAML = "ignoreSAML";
+
     private static final long serialVersionUID = 4696749244318473215L;
-    private static final String PARAM_IGNORE_SAML = "ignoreSAML";
 
     private final transient Logger logger = LoggerFactory.getLogger(SAMLContext.class);
 
