@@ -15,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -29,13 +28,9 @@ public class AlertFilterChainProxy extends FilterChainProxy {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (samlContext.isSAMLEnabled()) {
-            String ignoreSAMLParam = request.getParameter("ignoreSAML");
-            boolean ignoreSAML = BooleanUtils.toBoolean(ignoreSAMLParam);
-            if (!ignoreSAML) {
-                super.doFilter(request, response, chain);
-                return;
-            }
+        if (samlContext.isSAMLEnabledForRequest(request)) {
+            super.doFilter(request, response, chain);
+            return;
         }
         chain.doFilter(request, response);
     }

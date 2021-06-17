@@ -11,13 +11,15 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.ServletRequest;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -25,8 +27,11 @@ import com.synopsys.integration.alert.component.authentication.descriptor.Authen
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptorKey;
 
 public class SAMLContext implements Serializable {
-    private final transient Logger logger = LoggerFactory.getLogger(SAMLContext.class);
     private static final long serialVersionUID = 4696749244318473215L;
+    private static final String PARAM_IGNORE_SAML = "ignoreSAML";
+
+    private final transient Logger logger = LoggerFactory.getLogger(SAMLContext.class);
+
     private final AuthenticationDescriptorKey descriptorKey;
     private final transient ConfigurationAccessor configurationAccessor;
 
@@ -46,6 +51,11 @@ public class SAMLContext implements Serializable {
                                                       .stream()
                                                       .findFirst();
         return isSAMLEnabled(samlConfig);
+    }
+
+    public boolean isSAMLEnabledForRequest(ServletRequest request) {
+        String ignoreSAMLRequestParam = request.getParameter(PARAM_IGNORE_SAML);
+        return isSAMLEnabled() && !BooleanUtils.toBoolean(ignoreSAMLRequestParam);
     }
 
     public void disableSAML() {

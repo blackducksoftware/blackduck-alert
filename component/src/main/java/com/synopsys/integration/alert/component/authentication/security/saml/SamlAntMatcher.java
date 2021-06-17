@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -40,9 +39,7 @@ public class SamlAntMatcher implements RequestMatcher {
     public boolean matches(HttpServletRequest request) {
         Collection<RequestMatcher> requestMatchers = disabledMatchers;
 
-        String ignoreSAMLParam = request.getParameter("ignoreSAML");
-        boolean ignoreSAML = BooleanUtils.toBoolean(ignoreSAMLParam);
-        if (context.isSAMLEnabled() && !ignoreSAML) {
+        if (context.isSAMLEnabledForRequest(request)) {
             requestMatchers = enabledMatchers;
         }
 
