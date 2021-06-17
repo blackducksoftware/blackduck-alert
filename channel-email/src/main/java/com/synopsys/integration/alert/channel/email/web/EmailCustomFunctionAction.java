@@ -58,7 +58,7 @@ public class EmailCustomFunctionAction extends PagedCustomFunctionAction<EmailAd
             }
             List<EmailAddressSelectOption> options = pageOfUsers.getModels()
                                                          .stream()
-                                                         .map(providerUser -> new EmailAddressSelectOption(providerUser.getEmailAddress(), providerUser.getOptOut()))
+                                                         .map(providerUser -> new EmailAddressSelectOption(providerUser.getUsername(), providerUser.getEmailAddress(), providerUser.getOptOut()))
                                                          .collect(Collectors.toList());
             EmailAddressOptions optionList = new EmailAddressOptions(pageOfUsers.getTotalPages(), pageNumber, pageSize, options);
             return new ActionResponse<>(HttpStatus.OK, optionList);
