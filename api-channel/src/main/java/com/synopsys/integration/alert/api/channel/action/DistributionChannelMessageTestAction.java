@@ -13,8 +13,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.channel.DistributionChannel;
-import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -25,6 +25,9 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessag
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 
 public abstract class DistributionChannelMessageTestAction<D extends DistributionJobDetailsModel> extends DistributionChannelTestAction {
+    public static final String DEFAULT_TOPIC = "Alert Test Topic";
+    public static final String DEFAULT_MESSAGE = "Alert Test Message";
+
     private final DistributionChannel<D> distributionChannel;
 
     public DistributionChannelMessageTestAction(ChannelKey channelKey, DistributionChannel<D> distributionChannel) {
@@ -34,8 +37,8 @@ public abstract class DistributionChannelMessageTestAction<D extends Distributio
 
     @Override
     public final MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
-        String topicString = Optional.ofNullable(customTopic).orElse("Alert Test Topic");
-        String messageString = Optional.ofNullable(customMessage).orElse("Alert Test Message");
+        String topicString = Optional.ofNullable(customTopic).orElse(DEFAULT_TOPIC);
+        String messageString = Optional.ofNullable(customMessage).orElse(DEFAULT_MESSAGE);
 
         D distributionJobDetails = resolveTestDistributionDetails(testJobModel);
         ProviderMessageHolder messages = createTestMessageHolder(testJobModel, topicString, messageString);
