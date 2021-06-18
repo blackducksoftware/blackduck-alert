@@ -24,6 +24,8 @@ import com.synopsys.integration.alert.channel.api.issue.model.IssueTrackerModelH
 import com.synopsys.integration.alert.channel.api.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
@@ -77,7 +79,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
-        ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(createdIssue.getIssueId(), createdIssue.getIssueKey(), createdIssue.getIssueTitle(), createdIssue.getIssueLink());
+        ExistingIssueDetails<T> existingIssueDetails = new ExistingIssueDetails<>(createdIssue.getIssueId(), createdIssue.getIssueKey(), createdIssue.getIssueTitle(), createdIssue.getIssueLink(), IssueStatus.RESOLVABLE, IssueCategory.BOM);
 
         if (!hasResolveTransition(distributionDetails)) {
             return createSuccessMessageResult(existingIssueDetails);

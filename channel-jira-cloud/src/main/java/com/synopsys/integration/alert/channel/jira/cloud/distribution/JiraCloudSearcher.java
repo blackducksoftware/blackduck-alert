@@ -17,15 +17,19 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraS
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
+import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
+import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
 public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
+    private final IssueService issueService;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager) {
+    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, IssueService issueService) {
         super(jiraProjectKey, issuePropertiesManager);
         this.issueSearchService = issueSearchService;
+        this.issueService = issueService;
     }
 
     @Override
@@ -35,6 +39,11 @@ public class JiraCloudSearcher extends JiraSearcher {
                    .stream()
                    .map(this::convertModel)
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    protected StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException {
+        return issueService.getStatus(issueKey);
     }
 
     private JiraSearcherResponseModel convertModel(IssueResponseModel issue) {

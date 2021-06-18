@@ -16,29 +16,37 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.model.components.StatusCategory;
+import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 
 public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     private final String jiraProjectKey;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
+    //private final IssueService issueService;
 
     protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager) {
         this.jiraProjectKey = jiraProjectKey;
         this.issuePropertiesManager = issuePropertiesManager;
+        //this.issueService = issueService;
     }
 
     protected abstract List<JiraSearcherResponseModel> executeQueryForIssues(String jql) throws IntegrationException;
+
+    protected abstract StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException;
 
     @Override
     protected final List<ProjectIssueSearchResult<String>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
@@ -97,9 +105,10 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
             policyName
         );
 
+        IssueCategory issueCategory = getIssueCategoryFromComponentConcernType(concernType);
         return queryForIssues(jqlString)
                    .stream()
-                   .map(this::createExistingIssueDetails)
+                   .map(jiraSearcherResponseModel -> createExistingIssueDetails(jiraSearcherResponseModel, issueCategory))
                    .collect(Collectors.toList());
     }
 
@@ -147,13 +156,47 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     }
 
     private ProjectIssueSearchResult<String> createIssueResult(JiraSearcherResponseModel issue, ProjectIssueModel projectIssueModel) {
-        ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue);
+        //TODO: This is similar to findExistingIssuesByProjectIssueModel.
+        //  Is it always going to  be either a vulnerability or a policy? Could it happen on a BOM?
+        ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
+        if (projectIssueModel.getPolicyDetails().isPresent()) {
+            concernType = ComponentConcernType.POLICY;
+        }
+        IssueCategory issueCategory = getIssueCategoryFromComponentConcernType(concernType);
+        ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue, issueCategory);
         return new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
     }
 
-    private ExistingIssueDetails<String> createExistingIssueDetails(JiraSearcherResponseModel issue) {
+    private ExistingIssueDetails<String> createExistingIssueDetails(JiraSearcherResponseModel issue, IssueCategory issueCategory) {
         String issueCallbackLink = JiraCallbackUtils.createUILink(issue);
-        return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink);
+        //TODO: get the issue status, hardcoded to OPEN
+        IssueStatus issueStatus = IssueStatus.UNKNOWN;
+        try {
+            StatusCategory issueStatusCategory = retrieveIssueStatusCategory(issue.getIssueKey());
+        } catch (AlertException e) {
+            issueStatus = IssueStatus.UNKNOWN;
+        }
+        return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
+    }
+
+    private IssueCategory getIssueCategoryFromComponentConcernType(ComponentConcernType componentConcernType) {
+        IssueCategory issueCategory = IssueCategory.BOM; //If BOM doesn't get used, remove the default and make this an if/else statement
+        if (componentConcernType.equals(ComponentConcernType.VULNERABILITY)) {
+            issueCategory = IssueCategory.VULNERABILITY;
+        }
+        if (componentConcernType.equals(ComponentConcernType.POLICY)) {
+            issueCategory = IssueCategory.POLICY;
+        }
+        return issueCategory;
+    }
+
+    private StatusCategory retrieveIssueStatusCategory(String issueKey) throws AlertException {
+        try {
+            StatusDetailsComponent issueStatus = fetchIssueStatus(issueKey);
+            return issueStatus.getStatusCategory();
+        } catch (IntegrationException e) {
+            throw new AlertException(String.format("Failed to retrieve issue status from Jira. Issue Key: %s", issueKey), e);
+        }
     }
 
 }

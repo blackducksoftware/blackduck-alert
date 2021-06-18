@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.channel.api.issue.search;
 import java.io.Serializable;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueStatus;
 
 // TODO consider including status and category (policy or vulnerability)
 public class ExistingIssueDetails<T extends Serializable> extends AlertSerializableModel {
@@ -17,12 +19,16 @@ public class ExistingIssueDetails<T extends Serializable> extends AlertSerializa
     private final String issueKey;
     private final String issueSummary;
     private final String issueUILink;
+    private final IssueStatus issueStatus;
+    private final IssueCategory issueCategory;
 
-    public ExistingIssueDetails(T issueId, String issueKey, String issueSummary, String issueUILink) {
+    public ExistingIssueDetails(T issueId, String issueKey, String issueSummary, String issueUILink, IssueStatus issueStatus, IssueCategory issueCategory) {
         this.issueId = issueId;
         this.issueKey = issueKey;
         this.issueSummary = issueSummary;
         this.issueUILink = issueUILink;
+        this.issueStatus = issueStatus;
+        this.issueCategory = issueCategory;
     }
 
     public T getIssueId() {
@@ -39,6 +45,14 @@ public class ExistingIssueDetails<T extends Serializable> extends AlertSerializa
 
     public String getIssueUILink() {
         return issueUILink;
+    }
+
+    public IssueStatus getIssueStatus() {
+        return issueStatus;
+    }
+
+    public IssueCategory getIssueCategory() {
+        return issueCategory;
     }
 
 }

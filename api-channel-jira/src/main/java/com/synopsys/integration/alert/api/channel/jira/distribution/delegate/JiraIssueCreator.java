@@ -18,16 +18,18 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraI
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueSearchPropertyStringCompatibilityUtils;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.channel.api.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
@@ -71,7 +73,19 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             IssueFieldsComponent createdIssueFields = createdIssue.getFields();
 
             String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
-            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink);
+
+            IssueCategory issueCategory = IssueCategory.BOM;
+            Optional<ProjectIssueModel> issueSourceOptional = alertIssueCreationModel.getSource();
+            if (issueSourceOptional.isPresent()) {
+                ProjectIssueModel issueSource = issueSourceOptional.get();
+                if (issueSource.getPolicyDetails().isPresent()) {
+                    issueCategory = IssueCategory.POLICY;
+                }
+                if (issueSource.getVulnerabilityDetails().isPresent()) {
+                    issueCategory = IssueCategory.VULNERABILITY;
+                }
+            }
+            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink, IssueStatus.RESOLVABLE, issueCategory);
         } catch (IntegrationRestException restException) {
             throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
         } catch (JiraPreconditionNotMetException jiraException) {

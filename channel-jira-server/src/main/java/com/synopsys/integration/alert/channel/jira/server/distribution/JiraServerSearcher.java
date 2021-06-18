@@ -14,16 +14,21 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraI
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.server.service.IssueSearchService;
+import com.synopsys.integration.jira.common.server.service.IssueService;
 
 public class JiraServerSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
+    //TODO: Does the IssueService go here?
+    private final IssueService issueService;
 
-    public JiraServerSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager) {
+    public JiraServerSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, IssueService issueService) {
         super(jiraProjectKey, issuePropertiesManager);
         this.issueSearchService = issueSearchService;
+        this.issueService = issueService;
     }
 
     @Override
@@ -33,6 +38,11 @@ public class JiraServerSearcher extends JiraSearcher {
                    .stream()
                    .map(this::convertModel)
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    protected StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException {
+        return issueService.getStatus(issueKey);
     }
 
     private JiraSearcherResponseModel convertModel(IssueSearchIssueComponent issue) {
