@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
@@ -14,7 +15,7 @@ public class ComponentConcernConverterTest {
     @Disabled
     @Test
     public void previewFormatting() {
-        ChannelMessageFormatter channelMessageFormatter = createChannelMessageFormatter();
+        ChannelMessageFormatter channelMessageFormatter = new MockChannelMessageFormatter(Integer.MAX_VALUE);
         ComponentConcernConverter componentConcernConverter = new ComponentConcernConverter(channelMessageFormatter);
 
         List<ComponentConcern> componentConcerns = createALotOfComponentConcerns();
@@ -40,26 +41,6 @@ public class ComponentConcernConverterTest {
             ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln01", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com"),
             ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln02", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com")
         );
-    }
-
-    private ChannelMessageFormatter createChannelMessageFormatter() {
-        return new ChannelMessageFormatter(Integer.MAX_VALUE, System.lineSeparator()) {
-
-            @Override
-            public String encode(String txt) {
-                return txt;
-            }
-
-            @Override
-            public String emphasize(String txt) {
-                return "<!>" + txt + "</!>";
-            }
-
-            @Override
-            public String createLink(String txt, String url) {
-                return "<ln>" + txt + " - " + url + "</ln>";
-            }
-        };
     }
 
 }
