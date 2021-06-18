@@ -8,7 +8,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 
-import com.synopsys.integration.alert.channel.api.DistributionChannel;
+import com.synopsys.integration.alert.api.channel.DistributionChannel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;

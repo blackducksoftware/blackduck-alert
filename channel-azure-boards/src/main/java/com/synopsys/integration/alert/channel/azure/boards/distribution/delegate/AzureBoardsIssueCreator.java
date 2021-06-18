@@ -13,12 +13,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueCreationModel;
-import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCreator;
+import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;

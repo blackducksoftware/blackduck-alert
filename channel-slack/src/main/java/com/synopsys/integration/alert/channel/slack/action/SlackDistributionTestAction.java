@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.channel.slack.action;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
+import com.synopsys.integration.alert.api.channel.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.slack.distribution.SlackChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.SlackChannelKey;

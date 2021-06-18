@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.api.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.api.rest.RestChannelUtility;
+import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.api.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.distribution.mock.MockProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
