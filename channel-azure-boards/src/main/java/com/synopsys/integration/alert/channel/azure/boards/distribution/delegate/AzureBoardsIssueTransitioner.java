@@ -17,10 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueTransitioner;
+import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsWorkItemTypeStateRetriever;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;

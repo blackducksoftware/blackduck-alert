@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.jira.distribution;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.issue.convert.IssueTrackerMessageFormatter;
+import com.synopsys.integration.alert.api.channel.issue.convert.IssueTrackerMessageFormatter;
 
 @Component
 public class JiraMessageFormatter extends IssueTrackerMessageFormatter {

@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.email.distribution;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.convert.ChannelMessageFormatter;
+import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 
 @Component
 public class EmailChannelMessageFormatter extends ChannelMessageFormatter {

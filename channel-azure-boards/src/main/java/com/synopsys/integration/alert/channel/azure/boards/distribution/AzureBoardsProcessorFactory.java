@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtractor;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
