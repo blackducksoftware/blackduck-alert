@@ -257,8 +257,10 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
         Predicate<UserView> searchFilter = userView -> StringUtils.isNotBlank(userView.getEmail());
         if (StringUtils.isNotBlank(searchTerm)) {
-            searchFilter = searchFilter
-                               .and(userView -> StringUtils.containsIgnoreCase(userView.getEmail(), searchTerm) || StringUtils.containsIgnoreCase(userView.getUserName(), searchTerm));
+            Predicate<UserView> emailMatches = userView -> StringUtils.containsIgnoreCase(userView.getEmail(), searchTerm);
+            Predicate<UserView> usernameMatches = userView -> StringUtils.containsIgnoreCase(userView.getUserName(), searchTerm);
+
+            searchFilter = searchFilter.and(emailMatches.or(usernameMatches));
         }
 
         ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
