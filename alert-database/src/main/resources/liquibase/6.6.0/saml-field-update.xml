@@ -22,7 +22,7 @@
             <column name="CONTEXT_ID" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
         </insert>
     </changeSet>
-    <changeSet id="bmandel" author="saml-want-assertions-field-default">
+    <changeSet author="bmandel" id="saml-want-assertions-field-default">
         <sql>
             INSERT INTO ALERT.FIELD_VALUES (FIELD_VALUE, FIELD_ID, CONFIG_ID)
             SELECT 'true', GET_FIELD_ID('settings.saml.want.assertions.signed'), ID
