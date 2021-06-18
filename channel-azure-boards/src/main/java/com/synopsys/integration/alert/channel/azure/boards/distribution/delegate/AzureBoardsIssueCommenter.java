@@ -9,10 +9,10 @@ package com.synopsys.integration.alert.channel.azure.boards.distribution.delegat
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;

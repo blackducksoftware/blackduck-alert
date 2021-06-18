@@ -1,4 +1,4 @@
-ext.moduleName = 'com.synopsys.integration.alert.channel-api'
+ext.moduleName = 'com.synopsys.integration.alert.api-channel'
 
 dependencies {
     api project(':api-event')

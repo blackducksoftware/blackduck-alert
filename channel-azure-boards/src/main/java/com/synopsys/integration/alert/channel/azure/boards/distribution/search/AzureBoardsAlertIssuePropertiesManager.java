@@ -13,9 +13,9 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.azure.boards.common.service.workitem.request.WorkItemElementOperation;

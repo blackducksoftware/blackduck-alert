@@ -18,10 +18,10 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageF
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerModelExtractor;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessor;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerProcessorFactory;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtractor;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
