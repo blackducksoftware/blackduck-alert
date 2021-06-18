@@ -12,17 +12,26 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 
 public class ComponentConcernConverterTest {
+    @Test
+    public void gatherComponentConcernSectionPiecesTest() {
+        callGatherComponentConcernSectionPieces();
+    }
+
     @Disabled
     @Test
     public void previewFormatting() {
+        List<String> sectionPieces = callGatherComponentConcernSectionPieces();
+        String joinedSectionPieces = StringUtils.join(sectionPieces, "");
+        System.out.print(joinedSectionPieces);
+    }
+
+    private List<String> callGatherComponentConcernSectionPieces() {
         ChannelMessageFormatter channelMessageFormatter = new MockChannelMessageFormatter(Integer.MAX_VALUE);
         ComponentConcernConverter componentConcernConverter = new ComponentConcernConverter(channelMessageFormatter);
 
         List<ComponentConcern> componentConcerns = createALotOfComponentConcerns();
 
-        List<String> sectionPieces = componentConcernConverter.gatherComponentConcernSectionPieces(componentConcerns);
-        String joinedSectionPieces = StringUtils.join(sectionPieces, "");
-        System.out.print(joinedSectionPieces);
+        return componentConcernConverter.gatherComponentConcernSectionPieces(componentConcerns);
     }
 
     private List<ComponentConcern> createALotOfComponentConcerns() {
