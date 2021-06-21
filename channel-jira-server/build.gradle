@@ -5,7 +5,7 @@ dependencies {
 
     implementation project(':alert-common')
     implementation project(':api-common-model')
-    implementation project(':api-channel')
+    implementation project(':api-channel-issue-tracker')
     implementation project(':api-channel-jira')
     implementation project(':api-processor')
     implementation project(':api-descriptor')
