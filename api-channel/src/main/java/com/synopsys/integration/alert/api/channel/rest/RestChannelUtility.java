@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +36,8 @@ public class RestChannelUtility {
     }
 
     public void sendMessage(List<Request> requests, String eventDestination) throws AlertException {
-        try {
-            for (Request request : requests) {
-                sendMessageRequest(intHttpClient, request, eventDestination);
-            }
-        } catch (AlertException alertException) {
-            throw alertException;
-        } catch (Exception ex) {
-            throw new AlertException(ex);
+        for (Request request : requests) {
+            sendMessageRequest(request, eventDestination);
         }
     }
 
@@ -50,7 +45,7 @@ public class RestChannelUtility {
         return createPostMessageRequest(url, headers, null, jsonString);
     }
 
-    public Request createPostMessageRequest(String url, Map<String, String> headers, Map<String, Set<String>> queryParameters, String jsonString) {
+    public Request createPostMessageRequest(String url, Map<String, String> headers, @Nullable Map<String, Set<String>> queryParameters, String jsonString) {
         HttpUrl httpUrl;
         try {
             httpUrl = new HttpUrl(url);
@@ -58,21 +53,21 @@ public class RestChannelUtility {
             throw new AlertRuntimeException(e);
         }
 
-        Request.Builder requestBuilder = new Request.Builder().method(HttpMethod.POST)
+        Request.Builder requestBuilder = new Request.Builder()
+                                             .method(HttpMethod.POST)
                                              .url(httpUrl);
         requestBuilder.getHeaders().putAll(headers);
+        requestBuilder.bodyContent(new StringBodyContent(jsonString, BodyContentConverter.DEFAULT));
+
         if (queryParameters != null && !queryParameters.isEmpty()) {
             requestBuilder.queryParameters(queryParameters);
-        }
-        if (jsonString != null) {
-            requestBuilder.bodyContent(new StringBodyContent(jsonString, BodyContentConverter.DEFAULT));
         }
         return requestBuilder.build();
     }
 
-    private void sendMessageRequest(IntHttpClient intHttpClient, Request request, String messageType) throws AlertException {
+    private void sendMessageRequest(Request request, String messageType) throws AlertException {
         logger.info("Attempting to send a {} message...", messageType);
-        try (Response response = sendGenericRequest(intHttpClient, request)) {
+        try (Response response = sendGenericRequest(request)) {
             if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
                 logger.info("Successfully sent a {} message!", messageType);
             } else {
@@ -84,7 +79,7 @@ public class RestChannelUtility {
         }
     }
 
-    private Response sendGenericRequest(IntHttpClient intHttpClient, Request request) throws IntegrationException {
+    private Response sendGenericRequest(Request request) throws IntegrationException {
         Response response = intHttpClient.execute(request);
         logger.trace("Response: {}", response);
         return response;
