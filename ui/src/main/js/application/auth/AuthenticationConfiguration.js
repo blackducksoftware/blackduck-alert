@@ -6,10 +6,7 @@ import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import TextInput from 'common/input/TextInput';
 import {
-    AUTHENTICATION_INFO,
-    AUTHENTICATION_LDAP_FIELD_KEYS,
-    AUTHENTICATION_SAML_FIELD_KEYS,
-    AUTHENTICATION_TEST_FIELD_KEYS
+    AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS
 } from 'application/auth/AuthenticationModel';
 import CheckboxInput from 'common/input/CheckboxInput';
 import PasswordInput from 'common/input/PasswordInput';
@@ -283,6 +280,17 @@ const AuthenticationConfiguration = ({
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.enabled]}
+                    />
+                    <CheckboxInput
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned}
+                        name={AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned}
+                        label="Sign Assertions"
+                        description="If true, signature verification will be performed in SAML when communicating with server."
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned)}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned]}
                     />
                     <CheckboxInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.forceAuth}

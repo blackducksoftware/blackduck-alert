@@ -28,6 +28,7 @@ export const AUTHENTICATION_LDAP_FIELD_KEYS = {
 
 export const AUTHENTICATION_SAML_FIELD_KEYS = {
     enabled: 'settings.saml.enabled',
+    wantAssertionsSigned: 'settings.saml.want.assertions.signed',
     forceAuth: 'settings.saml.force.auth',
     metadataUrl: 'settings.saml.metadata.url',
     entityId: 'settings.saml.entity.id',

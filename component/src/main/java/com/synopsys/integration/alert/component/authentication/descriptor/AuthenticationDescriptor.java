@@ -41,6 +41,7 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String KEY_SAML_ENTITY_ID = "settings.saml.entity.id";
     public static final String KEY_SAML_ENTITY_BASE_URL = "settings.saml.entity.base.url";
     public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";
+    public static final String KEY_SAML_WANT_ASSERTIONS_SIGNED = "settings.saml.want.assertions.signed";
 
     // User Management
     // Role Mappings
