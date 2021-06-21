@@ -13,8 +13,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
@@ -28,23 +26,16 @@ import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
 
-@Component
 public class RestChannelUtility {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ChannelRestConnectionFactory channelRestConnectionFactory;
+    private final IntHttpClient intHttpClient;
 
-    @Autowired
-    public RestChannelUtility(ChannelRestConnectionFactory channelRestConnectionFactory) {
-        this.channelRestConnectionFactory = channelRestConnectionFactory;
-    }
-
-    public void sendSingleMessage(Request request, String eventDestination) throws AlertException {
-        sendMessage(List.of(request), eventDestination);
+    public RestChannelUtility(IntHttpClient intHttpClient) {
+        this.intHttpClient = intHttpClient;
     }
 
     public void sendMessage(List<Request> requests, String eventDestination) throws AlertException {
         try {
-            IntHttpClient intHttpClient = getIntHttpClient();
             for (Request request : requests) {
                 sendMessageRequest(intHttpClient, request, eventDestination);
             }
@@ -57,10 +48,6 @@ public class RestChannelUtility {
 
     public Request createPostMessageRequest(String url, Map<String, String> headers, String jsonString) {
         return createPostMessageRequest(url, headers, null, jsonString);
-    }
-
-    public Request createPostMessageRequest(String url, Map<String, String> headers, Map<String, Set<String>> queryParameters) {
-        return createPostMessageRequest(url, headers, queryParameters, null);
     }
 
     public Request createPostMessageRequest(String url, Map<String, String> headers, Map<String, Set<String>> queryParameters, String jsonString) {
@@ -83,7 +70,7 @@ public class RestChannelUtility {
         return requestBuilder.build();
     }
 
-    public void sendMessageRequest(IntHttpClient intHttpClient, Request request, String messageType) throws AlertException {
+    private void sendMessageRequest(IntHttpClient intHttpClient, Request request, String messageType) throws AlertException {
         logger.info("Attempting to send a {} message...", messageType);
         try (Response response = sendGenericRequest(intHttpClient, request)) {
             if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.MULT_CHOICE_300) {
@@ -97,14 +84,10 @@ public class RestChannelUtility {
         }
     }
 
-    public Response sendGenericRequest(IntHttpClient intHttpClient, Request request) throws IntegrationException {
+    private Response sendGenericRequest(IntHttpClient intHttpClient, Request request) throws IntegrationException {
         Response response = intHttpClient.execute(request);
         logger.trace("Response: {}", response);
         return response;
-    }
-
-    public IntHttpClient getIntHttpClient() {
-        return channelRestConnectionFactory.createIntHttpClient();
     }
 
 }

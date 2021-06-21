@@ -18,11 +18,13 @@ import org.springframework.stereotype.Component;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
+import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;
+import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
@@ -30,13 +32,13 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
     private static final String MESSAGE_THEME_COLOR = "5A2A82"; // Synopsys Purple
     private static final String MESSAGE_SUMMARY = "New Content from Alert";
 
-    private final RestChannelUtility restChannelUtility;
     private final MsTeamsKey msTeamsKey;
+    private final ChannelRestConnectionFactory connectionFactory;
 
     @Autowired
-    public MSTeamsChannelMessageSender(RestChannelUtility restChannelUtility, MsTeamsKey msTeamsKey) {
-        this.restChannelUtility = restChannelUtility;
+    public MSTeamsChannelMessageSender(MsTeamsKey msTeamsKey, ChannelRestConnectionFactory connectionFactory) {
         this.msTeamsKey = msTeamsKey;
+        this.connectionFactory = connectionFactory;
     }
 
     @Override
@@ -46,18 +48,17 @@ public class MSTeamsChannelMessageSender implements ChannelMessageSender<MSTeams
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
+        IntHttpClient intHttpClient = connectionFactory.createIntHttpClient();
+        RestChannelUtility restChannelUtility = new RestChannelUtility(intHttpClient);
+
         List<Request> messageRequests = channelMessages.stream()
-                                            .map(it -> createRequestForMessage(webhook, it, requestHeaders))
+                                            .map(this::createJsonString)
+                                            .map(jsonString -> restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString))
                                             .collect(Collectors.toList());
 
         restChannelUtility.sendMessage(messageRequests, msTeamsKey.getUniversalKey());
 
         return new MessageResult(String.format("Successfully sent %d MSTeams message(s)", channelMessages.size()));
-    }
-
-    private Request createRequestForMessage(String webhook, MSTeamsChannelMessageModel messageModel, Map<String, String> requestHeaders) {
-        String jsonString = createJsonString(messageModel);
-        return restChannelUtility.createPostMessageRequest(webhook, requestHeaders, jsonString);
     }
 
     private String createJsonString(MSTeamsChannelMessageModel messageModel) {
