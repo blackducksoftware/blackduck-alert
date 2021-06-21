@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.api.channel.rest.RestChannelUtility;
 import com.synopsys.integration.alert.channel.slack.ChannelITTestAssertions;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.ProxyManager;
@@ -48,7 +47,8 @@ public class SlackChannelTestIT {
         SlackChannelMessageFormatter slackChannelMessageFormatter = new SlackChannelMessageFormatter(markupEncoderUtil);
         SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
 
-        SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(createRestChannelUtility(), ChannelKeys.SLACK);
+        ChannelRestConnectionFactory connectionFactory = createConnectionFactory();
+        SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(ChannelKeys.SLACK, connectionFactory);
 
         SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender);
 
@@ -62,12 +62,11 @@ public class SlackChannelTestIT {
         ChannelITTestAssertions.assertSendSimpleMessageSuccess(slackChannel, distributionDetails);
     }
 
-    private RestChannelUtility createRestChannelUtility() {
+    private ChannelRestConnectionFactory createConnectionFactory() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
-        return new RestChannelUtility(channelRestConnectionFactory);
+        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
     }
 
 }
