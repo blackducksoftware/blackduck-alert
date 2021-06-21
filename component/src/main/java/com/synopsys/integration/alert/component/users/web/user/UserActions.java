@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.users.UserManagementDescriptorKey;
 import com.synopsys.integration.alert.component.users.UserSystemValidator;
-import com.synopsys.integration.alert.database.api.DefaultUserAccessor;
 
 @Component
 @Transactional
@@ -251,7 +250,7 @@ public class UserActions extends AbstractResourceActions<UserConfig, UserModel, 
         }
 
         long userId = Long.parseLong(id);
-        if (DefaultUserAccessor.DEFAULT_ADMIN_USER_ID == userId) {
+        if (UserAccessor.DEFAULT_ADMIN_USER_ID == userId) {
             return ensureUserHasRole(userConfig.getRoleNames(), DefaultUserRole.ALERT_ADMIN);
         }
         return Optional.empty();
