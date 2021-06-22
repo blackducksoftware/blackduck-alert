@@ -265,6 +265,7 @@ const DistributionConfigurationTable = ({
                 columnClassName="tableCell"
                 dataFormat={dataFormat}
                 thStyle={{ textAlign: 'center' }}
+                tdStyle={{ textAlign: 'center' }}
             >
                 {text}
             </TableHeaderColumn>
@@ -446,7 +447,16 @@ const DistributionConfigurationTable = ({
                 {column('frequency', 'Frequency Type', frequencyColumnFormatter)}
                 {column('lastRan', 'Last Run')}
                 {column('status', 'Status', assignedDataFormat, statusColumnClassName)}
-                {column('enabled', 'Enabled', enabledColumnFormatter)}
+                <TableHeaderColumn
+                    dataField="enabled"
+                    width="70"
+                    columnClassName="tableCell"
+                    dataFormat={enabledColumnFormatter}
+                    thStyle={{ textAlign: 'center' }}
+                    tdStyle={{ textAlign: 'center' }}
+                >
+                    Enabled
+                </TableHeaderColumn>
                 {createIconColumn('pencil-alt', 'Edit', editButtonClicked)}
                 {createIconColumn('copy', 'Copy', copyButtonClicked)}
             </BootstrapTable>
