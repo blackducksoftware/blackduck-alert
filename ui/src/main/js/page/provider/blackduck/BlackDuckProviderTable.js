@@ -185,6 +185,7 @@ const BlackDuckProviderTable = ({
             columnClassName="tableCell"
             dataFormat={dataFormat}
             thStyle={{ textAlign: 'center' }}
+            tdStyle={{ textAlign: 'center' }}
         >
             {text}
         </TableHeaderColumn>
@@ -238,7 +239,16 @@ const BlackDuckProviderTable = ({
                 {column('name', 'Name')}
                 {column('createdAt', 'Created At')}
                 {column('lastUpdated', 'Last Updated')}
-                <TableHeaderColumn dataField="enabled" dataFormat={editFormat}>Enabled</TableHeaderColumn>
+                <TableHeaderColumn
+                    dataField="enabled"
+                    width="70"
+                    columnClassName="tableCell"
+                    dataFormat={editFormat}
+                    thStyle={{ textAlign: 'center' }}
+                    tdStyle={{ textAlign: 'center' }}
+                >
+                    Enabled
+                </TableHeaderColumn>
                 {createIconTableHeader(editColumnFormatter(), 'Edit')}
                 {createIconTableHeader(copyColumnFormatter(), 'Copy')}
             </BootstrapTable>
