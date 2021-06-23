@@ -7,11 +7,15 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -42,11 +46,23 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
 
     public static final String DEFAULT_WORK_ITEM_TYPE = "Task";
 
+    private final AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
+
     @Autowired
     public AzureBoardsDescriptor(AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig, AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig, AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator) {
-        super(ChannelKeys.AZURE_BOARDS, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig, azureBoardsGlobalValidator);
+        super(ChannelKeys.AZURE_BOARDS, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig);
+        this.azureBoardsGlobalConfigurationValidator = azureBoardsGlobalValidator;
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.of(azureBoardsGlobalConfigurationValidator);
+    }
+
+    @Override
+    public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+        return Optional.empty();
+    }
 }
 
 

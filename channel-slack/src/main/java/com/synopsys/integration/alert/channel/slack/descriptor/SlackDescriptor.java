@@ -7,10 +7,14 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -31,4 +35,13 @@ public class SlackDescriptor extends ChannelDescriptor {
         super(ChannelKeys.SLACK, slackUIConfig, slackGlobalUIConfig);
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+        return Optional.empty();
+    }
 }

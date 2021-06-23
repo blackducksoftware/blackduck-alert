@@ -7,11 +7,15 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -29,9 +33,21 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String EMAIL_URL = "email";
     public static final String EMAIL_DESCRIPTION = "Configure the email server that Alert will send emails to.";
 
+    private final EmailGlobalConfigurationValidator emailGlobalValidator;
+
     @Autowired
     public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig, EmailGlobalConfigurationValidator emailGlobalValidator) {
-        super(ChannelKeys.EMAIL, emailDistributionUIConfig, emailGlobalUIConfig, emailGlobalValidator);
+        super(ChannelKeys.EMAIL, emailDistributionUIConfig, emailGlobalUIConfig);
+        this.emailGlobalValidator = emailGlobalValidator;
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.of(emailGlobalValidator);
+    }
+
+    @Override
+    public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+        return Optional.empty();
+    }
 }

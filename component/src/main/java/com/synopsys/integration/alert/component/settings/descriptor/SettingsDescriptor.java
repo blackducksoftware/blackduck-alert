@@ -7,10 +7,13 @@
  */
 package com.synopsys.integration.alert.component.settings.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.component.settings.validator.SettingsGlobalConfigurationValidator;
 
 @Component
@@ -26,10 +29,16 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT = "The value must be at least 8 characters.";
     public static final String FIELD_ERROR_ENCRYPTION_PWD = "Encryption password missing";
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
+    private final SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator;
 
     @Autowired
     public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsUIConfig uiConfig, SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator) {
-        super(settingsDescriptorKey, uiConfig, settingsGlobalConfigurationValidator);
+        super(settingsDescriptorKey, uiConfig);
+        this.settingsGlobalConfigurationValidator = settingsGlobalConfigurationValidator;
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.of(settingsGlobalConfigurationValidator);
+    }
 }
