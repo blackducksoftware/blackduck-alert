@@ -19,6 +19,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
@@ -48,6 +50,9 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class AzureBoardsProperties {
     private static final String DEFAULT_AZURE_OAUTH_USER_ID = "azure_default_user";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final AzureBoardsCredentialDataStoreFactory credentialDataStoreFactory;
     private final String organizationName;
     private final String clientId;
@@ -78,6 +83,8 @@ public class AzureBoardsProperties {
         this.oauthUserId = oauthUserId;
         this.scopes = scopes;
         this.redirectUri = redirectUri;
+
+        logger.debug("Initializing Azure Boards Properties with values: organizationName=[{}], oAuthUserId=[{}], scopes=[{}], redirectUri=[{}]", organizationName, oauthUserId, StringUtils.join(scopes, ","), redirectUri);
     }
 
     public String getOrganizationName() {

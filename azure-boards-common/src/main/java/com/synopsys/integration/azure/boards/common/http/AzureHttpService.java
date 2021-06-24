@@ -22,8 +22,12 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.gson.Gson;
+import com.synopsys.integration.function.ThrowingSupplier;
 
 public class AzureHttpService {
+    public static final String CONTENT_TYPE_DEFAULT = "application/json";
+    public static final String CONTENT_TYPE_JSON_PATCH = "application/json-patch+json";
+
     private final String baseUrl;
     private final HttpRequestFactory httpRequestFactory;
     private final Gson gson;
@@ -36,79 +40,34 @@ public class AzureHttpService {
         this.azureApiVersionAppender = azureApiVersionAppender;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public HttpRequestFactory getHttpRequestFactory() {
-        return httpRequestFactory;
-    }
-
-    public Gson getGson() {
-        return gson;
-    }
-
-    public HttpResponse getResponse(String urlEndpoint) throws IOException {
-        GenericUrl url = constructRequestUrl(urlEndpoint);
-        HttpRequest request = buildRequestWithDefaultHeaders(HttpMethods.GET, url, null);
-        return request.execute();
-    }
-
-    public HttpResponse deleteResponse(String urlEndpoint) throws IOException {
-        GenericUrl url = constructRequestUrl(urlEndpoint);
-        HttpRequest request = buildRequestWithDefaultHeaders(HttpMethods.DELETE, url, null);
-        return request.execute();
-    }
-
     public <T> T get(String urlEndpoint, Type responseType) throws HttpServiceException {
-        HttpResponse httpResponse = null;
-        try {
-            httpResponse = getResponse(urlEndpoint);
-            if (!httpResponse.isSuccessStatusCode()) {
-                throw new HttpServiceException(httpResponse.getStatusMessage(), httpResponse.getStatusCode());
-            }
-            return parseResponse(httpResponse, responseType);
-        } catch (IOException e) {
-            throw HttpServiceException.internalServerError(e);
-        } finally {
-            disconnectResponse(httpResponse);
-        }
+        return executeRequestAndParseResponse(() -> createGetRequest(urlEndpoint), responseType);
     }
 
-    public HttpResponse post(String urlEndpoint, Object requestBodyObject) throws IOException {
+    public <T> T post(String urlEndpoint, Object requestBodyObject, Type responseType) throws HttpServiceException {
+        return post(urlEndpoint, requestBodyObject, responseType, contentType());
+    }
+
+    public <T> T post(String urlEndpoint, Object requestBodyObject, Type responseType, String contentType) throws HttpServiceException {
         GenericUrl url = constructRequestUrl(urlEndpoint);
-        HttpRequest postRequest = buildRequestWithDefaultHeaders(HttpMethods.POST, url, requestBodyObject);
-        return postRequest.execute();
-    }
-
-    public <T> T post(String urlEndpoint, Object requestBodyObject, Type responseType) throws HttpServiceException, IOException {
-        GenericUrl url = constructRequestUrl(urlEndpoint);
-        HttpRequest postRequest = buildRequestWithDefaultHeaders(HttpMethods.POST, url, requestBodyObject);
-        return executeRequestAndParseResponse(postRequest, responseType);
-    }
-
-    public HttpResponse delete(String urlEndpoint) throws IOException {
-        return deleteResponse(urlEndpoint);
+        return executeRequestAndParseResponse(
+            () -> buildRequest(HttpMethods.POST, url, requestBodyObject, acceptHeader(), contentType),
+            responseType
+        );
     }
 
     public <T> T delete(String urlEndpoint, Type responseType) throws HttpServiceException {
-        HttpResponse httpResponse = null;
-        try {
-            httpResponse = deleteResponse(urlEndpoint);
-            if (!httpResponse.isSuccessStatusCode()) {
-                throw new HttpServiceException(httpResponse.getStatusMessage(), httpResponse.getStatusCode());
-            }
-            return parseResponse(httpResponse, responseType);
-        } catch (IOException e) {
-            throw HttpServiceException.internalServerError(e);
-        } finally {
-            disconnectResponse(httpResponse);
-        }
+        return executeRequestAndParseResponse(() -> createDeleteRequest(urlEndpoint), responseType);
     }
 
     public <T> T executeRequestAndParseResponse(HttpRequest httpRequest, Type responseType) throws HttpServiceException {
+        return executeRequestAndParseResponse(() -> httpRequest, responseType);
+    }
+
+    public <T> T executeRequestAndParseResponse(ThrowingSupplier<HttpRequest, IOException> httpRequestSupplier, Type responseType) throws HttpServiceException {
         HttpResponse httpResponse = null;
         try {
+            HttpRequest httpRequest = httpRequestSupplier.get();
             httpResponse = httpRequest.execute();
             if (!httpResponse.isSuccessStatusCode()) {
                 throw new HttpServiceException(httpResponse.getStatusMessage(), httpResponse.getStatusCode());
@@ -122,10 +81,14 @@ public class AzureHttpService {
     }
 
     public HttpRequest buildRequestWithDefaultHeaders(String httpMethod, GenericUrl url, Object requestBodyObject) throws IOException {
+        return buildRequest(httpMethod, url, requestBodyObject, acceptHeader(), contentType());
+    }
+
+    public HttpRequest buildRequest(String httpMethod, GenericUrl url, Object requestBodyObject, String acceptHeader, String contentType) throws IOException {
         HttpContent requestContent = requestBodyObject != null ? buildPostRequestContent(requestBodyObject) : null;
         HttpRequest postRequest = httpRequestFactory.buildRequest(httpMethod, url, requestContent);
-        postRequest.getHeaders().setAccept(acceptHeader());
-        postRequest.getHeaders().setContentType(contentType());
+        postRequest.getHeaders().setAccept(acceptHeader);
+        postRequest.getHeaders().setContentType(contentType);
         return postRequest;
     }
 
@@ -149,19 +112,19 @@ public class AzureHttpService {
     }
 
     protected String acceptHeader() {
-        return "application/json";
+        return CONTENT_TYPE_DEFAULT;
     }
 
     protected String contentType() {
-        return "application/json";
+        return CONTENT_TYPE_DEFAULT;
     }
 
-    protected HttpContent buildPostRequestContent(Object requestBodyObject) {
+    private HttpContent buildPostRequestContent(Object requestBodyObject) {
         String objectJson = gson.toJson(requestBodyObject);
         return ByteArrayContent.fromString(null, objectJson);
     }
 
-    protected void disconnectResponse(HttpResponse response) throws HttpServiceException {
+    private void disconnectResponse(HttpResponse response) throws HttpServiceException {
         if (response == null) {
             return;
         }
@@ -172,12 +135,22 @@ public class AzureHttpService {
         }
     }
 
-    protected <T> T parseResponse(HttpResponse response, Type responseType) throws IOException {
+    private <T> T parseResponse(HttpResponse response, Type responseType) throws IOException {
         String responseString = response.parseAsString();
         return gson.fromJson(responseString, responseType);
     }
 
-    private String sanitizeUrl(String url) {
+    private HttpRequest createGetRequest(String urlEndpoint) throws IOException {
+        GenericUrl url = constructRequestUrl(urlEndpoint);
+        return buildRequestWithDefaultHeaders(HttpMethods.GET, url, null);
+    }
+
+    private HttpRequest createDeleteRequest(String urlEndpoint) throws IOException {
+        GenericUrl url = constructRequestUrl(urlEndpoint);
+        return buildRequestWithDefaultHeaders(HttpMethods.DELETE, url, null);
+    }
+
+    private static String sanitizeUrl(String url) {
         url = StringUtils.trim(url);
         if (StringUtils.endsWith(url, "/")) {
             return StringUtils.chomp(url);
