@@ -30,7 +30,7 @@ public class IssuePolicyDetailsConverterTest {
         List.of(COMPONENT_POLICY),
         new LinkableItem("License", "A software license", "https://license-url"),
         "Example Usage",
-        null,
+        List.of(),
         "https://issues-url"
     ) {};
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
