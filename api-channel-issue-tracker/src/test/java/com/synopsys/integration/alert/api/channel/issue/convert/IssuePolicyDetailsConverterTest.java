@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.channel.issue.convert.mock.MockIssueTrackerChannelMessageFormatter;
+import com.synopsys.integration.alert.api.channel.issue.convert.mock.MockIssueTrackerMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -65,7 +65,7 @@ public class IssuePolicyDetailsConverterTest {
     }
 
     private List<String> callCreatePolicyDetailsSectionPieces(IssuePolicyDetails policyDetails) {
-        MockIssueTrackerChannelMessageFormatter formatter = MockIssueTrackerChannelMessageFormatter.withIntegerMaxValueLength();
+        MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         IssuePolicyDetailsConverter converter = new IssuePolicyDetailsConverter(formatter);
         return converter.createPolicyDetailsSectionPieces(ISSUE_BOM_COMPONENT_DETAILS, policyDetails);
     }

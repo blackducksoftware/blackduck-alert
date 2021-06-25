@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.channel.issue.convert.mock.MockIssueTrackerChannelMessageFormatter;
+import com.synopsys.integration.alert.api.channel.issue.convert.mock.MockIssueTrackerMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
@@ -28,7 +28,7 @@ class IssueTrackerSimpleMessageConverterTest {
     void convertToIssueCreationModelTruncateTitleTest() {
         int maxTitleLength = 10;
         int maxDescriptionLength = 12;
-        MockIssueTrackerChannelMessageFormatter formatter = new MockIssueTrackerChannelMessageFormatter(maxTitleLength, maxDescriptionLength, 1000);
+        MockIssueTrackerMessageFormatter formatter = new MockIssueTrackerMessageFormatter(maxTitleLength, maxDescriptionLength, 1000);
         IssueTrackerSimpleMessageConverter converter = new IssueTrackerSimpleMessageConverter(formatter);
 
         IssueCreationModel issueCreationModel = converter.convertToIssueCreationModel(SIMPLE_MESSAGE);
@@ -39,7 +39,7 @@ class IssueTrackerSimpleMessageConverterTest {
 
     @Test
     void convertToIssueCreationModelUnboundedTest() {
-        MockIssueTrackerChannelMessageFormatter formatter = MockIssueTrackerChannelMessageFormatter.withIntegerMaxValueLength();
+        MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         IssueTrackerSimpleMessageConverter converter = new IssueTrackerSimpleMessageConverter(formatter);
 
         IssueCreationModel issueCreationModel = converter.convertToIssueCreationModel(SIMPLE_MESSAGE);

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.api.channel.issue.convert.mock.MockIssueTrackerChannelMessageFormatter;
+import com.synopsys.integration.alert.api.channel.issue.convert.mock.MockIssueTrackerMessageFormatter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
@@ -58,7 +58,7 @@ public class ComponentVulnerabilitiesConverterTest {
     }
 
     private List<String> callCreateComponentVulnerabilitiesSectionPieces(ComponentVulnerabilities componentVulnerabilities) {
-        MockIssueTrackerChannelMessageFormatter formatter = MockIssueTrackerChannelMessageFormatter.withIntegerMaxValueLength();
+        MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         ComponentVulnerabilitiesConverter converter = new ComponentVulnerabilitiesConverter(formatter);
         return converter.createComponentVulnerabilitiesSectionPieces(componentVulnerabilities);
     }
