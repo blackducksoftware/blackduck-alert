@@ -32,6 +32,9 @@ public class IssueTrackerTestActionTest {
     private static final String EXPECTED_NO_ERRORS = "Expected the message result not to have errors";
     private static final String EXPECTED_NO_WARNINGS = "Expected the message result not to have warnings";
 
+    private final DistributionJobModel TEST_JOB_MODEL = createTestJobModel();
+    private final IssueTrackerIssueResponseModel<String> TEST_ISSUE_RESPONSE_MODEL = createIssueResponseModel();
+
     @Test
     public void testConfigSendMessagesThrowsException() throws AlertException {
         String testExceptionMessage = "test exception message";
@@ -41,8 +44,7 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
-        DistributionJobModel testJobModel = createTestJobModel();
-        MessageResult messageResult = issueTrackerTestAction.testConfig(testJobModel, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
         assertTrue(messageResult.getStatusMessage().contains(testExceptionMessage), "Expected the message result to contain the expected exception message");
     }
 
@@ -54,34 +56,30 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
-        DistributionJobModel testJobModel = createTestJobModel();
-        MessageResult messageResult = issueTrackerTestAction.testConfig(testJobModel, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
         assertTrue(messageResult.hasErrors(), EXPECTED_ERRORS);
     }
 
     @Test
     public void testConfigNoResolveTransition() throws AlertException {
-        IssueTrackerIssueResponseModel<String> issueResponseModel = createIssueResponseModel();
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
-        Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(issueResponseModel));
+        Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
-        DistributionJobModel testJobModel = createTestJobModel();
-        MessageResult messageResult = issueTrackerTestAction.testConfig(testJobModel, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
         assertFalse(messageResult.hasErrors(), EXPECTED_NO_ERRORS);
         assertFalse(messageResult.hasWarnings(), EXPECTED_NO_WARNINGS);
     }
 
     @Test
     public void testConfigResolveFailure() throws AlertException {
-        IssueTrackerIssueResponseModel<String> issueResponseModel = createIssueResponseModel();
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenAnswer(invocation -> {
             IssueTrackerModelHolder<String> argument = invocation.getArgument(0);
             if (!argument.getIssueCreationModels().isEmpty()) {
-                return List.of(issueResponseModel);
+                return List.of(TEST_ISSUE_RESPONSE_MODEL);
             }
             return List.of();
         });
@@ -89,52 +87,47 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
-        DistributionJobModel testJobModel = createTestJobModel();
-        MessageResult messageResult = issueTrackerTestAction.testConfig(testJobModel, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
         assertTrue(messageResult.hasErrors(), EXPECTED_ERRORS);
     }
 
     @Test
     public void testConfigNoReopen() throws AlertException {
-        IssueTrackerIssueResponseModel<String> issueResponseModel = createIssueResponseModel();
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
-        Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(issueResponseModel));
+        Mockito.when(messageSender.sendMessages(Mockito.any())).thenReturn(List.of(TEST_ISSUE_RESPONSE_MODEL));
 
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
-        DistributionJobModel testJobModel = createTestJobModel();
-        MessageResult messageResult = issueTrackerTestAction.testConfig(testJobModel, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
         assertFalse(messageResult.hasErrors(), EXPECTED_NO_ERRORS);
         assertFalse(messageResult.hasWarnings(), EXPECTED_NO_WARNINGS);
     }
 
     @Test
     public void testConfigReopenFailure() throws AlertException {
-        IssueTrackerIssueResponseModel<String> issueResponseModel = createIssueResponseModel();
         IssueTrackerMessageSender<String> messageSender = Mockito.mock(IssueTrackerMessageSender.class);
         Mockito.when(messageSender.sendMessages(Mockito.any())).thenAnswer(invocation -> {
             IssueTrackerModelHolder<String> argument = invocation.getArgument(0);
             List<IssueTransitionModel<String>> transitionModels = argument.getIssueTransitionModels();
             if (!transitionModels.isEmpty()) {
                 if (transitionModels.stream().anyMatch(model -> IssueOperation.RESOLVE.equals(model.getIssueOperation()))) {
-                    return List.of(issueResponseModel);
+                    return List.of(TEST_ISSUE_RESPONSE_MODEL);
                 } else {
                     return List.of();
                 }
             }
-            return List.of(issueResponseModel);
+            return List.of(TEST_ISSUE_RESPONSE_MODEL);
         });
 
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, true);
 
-        DistributionJobModel testJobModel = createTestJobModel();
-        MessageResult messageResult = issueTrackerTestAction.testConfig(testJobModel, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
         assertTrue(messageResult.hasErrors(), EXPECTED_ERRORS);
     }
 
-    private DistributionJobModel createTestJobModel() {
+    private static DistributionJobModel createTestJobModel() {
         return DistributionJobModel.builder()
                    .jobId(UUID.randomUUID())
                    .name(CLASS_NAME)
@@ -148,7 +141,7 @@ public class IssueTrackerTestActionTest {
                    .build();
     }
 
-    private IssueTrackerIssueResponseModel<String> createIssueResponseModel() {
+    private static IssueTrackerIssueResponseModel<String> createIssueResponseModel() {
         return new IssueTrackerIssueResponseModel<>("issue-id", "issue-key", "https://a-url", "a title", IssueOperation.OPEN, null);
     }
 
