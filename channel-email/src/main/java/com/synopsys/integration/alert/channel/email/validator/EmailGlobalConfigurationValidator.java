@@ -26,8 +26,8 @@ public class EmailGlobalConfigurationValidator implements GlobalConfigurationVal
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        configurationFieldValidator.validateIsARequiredField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsARequiredField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).ifPresent(statuses::add);
 
         configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
         configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
@@ -44,7 +44,7 @@ public class EmailGlobalConfigurationValidator implements GlobalConfigurationVal
                               .orElse(false);
 
         if (useAuth) {
-            List<AlertFieldStatus> authRelatedStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+            List<AlertFieldStatus> authRelatedStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
                 EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
                 EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()
             ));

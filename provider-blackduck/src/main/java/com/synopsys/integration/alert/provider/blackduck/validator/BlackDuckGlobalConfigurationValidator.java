@@ -45,7 +45,7 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
         ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        List<AlertFieldStatus> requiredStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+        List<AlertFieldStatus> requiredStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME,
             BlackDuckDescriptor.KEY_BLACKDUCK_URL,
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY,

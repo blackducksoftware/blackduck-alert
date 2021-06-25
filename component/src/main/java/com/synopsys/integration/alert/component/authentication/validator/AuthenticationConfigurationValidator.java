@@ -60,7 +60,7 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
 
     private List<AlertFieldStatus> validateLdapConfiguration(FieldModel fieldModel) {
         ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        return configurationFieldValidator.containsRequiredFields(List.of(
+        return configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             AuthenticationDescriptor.KEY_LDAP_SERVER,
             AuthenticationDescriptor.KEY_LDAP_MANAGER_DN,
             AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD
@@ -69,7 +69,7 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
 
     private List<AlertFieldStatus> validateSamlConfiguration(FieldModel fieldModel) {
         ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        List<AlertFieldStatus> requiredFieldStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+        List<AlertFieldStatus> requiredFieldStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             AuthenticationDescriptor.KEY_SAML_ENTITY_ID,
             AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL
         ));

@@ -26,7 +26,7 @@ public class SchedulingConfigurationValidator implements GlobalConfigurationVali
         Set<AlertFieldStatus> statuses = new HashSet<>();
 
         ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        List<AlertFieldStatus> alertFieldStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+        List<AlertFieldStatus> alertFieldStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY,
             SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
         ));

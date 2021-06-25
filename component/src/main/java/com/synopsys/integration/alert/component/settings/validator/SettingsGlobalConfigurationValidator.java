@@ -29,7 +29,7 @@ public class SettingsGlobalConfigurationValidator implements GlobalConfiguration
         Set<AlertFieldStatus> statuses = new HashSet<>();
         ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
 
-        configurationFieldValidator.containsRequiredFields(List.of(
+        configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             SettingsDescriptor.KEY_ENCRYPTION_PWD,
             SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT
         ));
@@ -48,16 +48,16 @@ public class SettingsGlobalConfigurationValidator implements GlobalConfiguration
         FieldModel fieldModel = configurationFieldValidator.getFieldModel();
 
         if (hasValue(fieldModel, ProxyManager.KEY_PROXY_HOST)) {
-            configurationFieldValidator.validateIsARequiredField(ProxyManager.KEY_PROXY_PORT).ifPresent(statuses::add);
+            configurationFieldValidator.validateRequiredFieldIsNotBlank(ProxyManager.KEY_PROXY_PORT).ifPresent(statuses::add);
         }
 
         if (hasValue(fieldModel, ProxyManager.KEY_PROXY_PORT)) {
-            configurationFieldValidator.validateIsARequiredField(ProxyManager.KEY_PROXY_HOST).ifPresent(statuses::add);
+            configurationFieldValidator.validateRequiredFieldIsNotBlank(ProxyManager.KEY_PROXY_HOST).ifPresent(statuses::add);
             configurationFieldValidator.validateIsANumber(ProxyManager.KEY_PROXY_PORT).ifPresent(statuses::add);
         }
 
         if (hasValue(fieldModel, ProxyManager.KEY_PROXY_USERNAME)) {
-            List<AlertFieldStatus> usernameStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+            List<AlertFieldStatus> usernameStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
                 ProxyManager.KEY_PROXY_PWD,
                 ProxyManager.KEY_PROXY_HOST
             ));
@@ -65,7 +65,7 @@ public class SettingsGlobalConfigurationValidator implements GlobalConfiguration
         }
 
         if (hasValue(fieldModel, ProxyManager.KEY_PROXY_PWD)) {
-            List<AlertFieldStatus> pwdStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+            List<AlertFieldStatus> pwdStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
                 ProxyManager.KEY_PROXY_USERNAME,
                 ProxyManager.KEY_PROXY_HOST
             ));

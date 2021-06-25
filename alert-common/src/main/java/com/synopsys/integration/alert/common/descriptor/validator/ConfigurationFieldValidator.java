@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor.validator;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +31,7 @@ public class ConfigurationFieldValidator {
         return fieldModel;
     }
 
-    public Optional<AlertFieldStatus> validateIsARequiredField(String fieldKey) {
+    public Optional<AlertFieldStatus> validateRequiredFieldIsNotBlank(String fieldKey) {
         if (fieldContainsData(fieldKey)) {
             return Optional.empty();
         }
@@ -37,17 +39,35 @@ public class ConfigurationFieldValidator {
         return Optional.of(AlertFieldStatus.error(fieldKey, "Required field missing"));
     }
 
-    public List<AlertFieldStatus> containsRequiredFields(List<String> fieldKeys) {
+    public List<AlertFieldStatus> validateRequiredFieldsAreNotBlank(List<String> fieldKeys) {
         return fieldKeys.stream()
-                   .map(key -> validateIsARequiredField(key))
+                   .map(this::validateRequiredFieldIsNotBlank)
                    .flatMap(Optional::stream)
                    .collect(Collectors.toList());
     }
 
+    public List<AlertFieldStatus> validateAllOrNoneSet(String... relatedFieldKeys) {
+        boolean anyFieldSet = Arrays.stream(relatedFieldKeys)
+                                .anyMatch(this::fieldContainsData);
+
+        if (anyFieldSet) {
+            return validateRequiredFieldsAreNotBlank(Arrays.asList(relatedFieldKeys));
+        }
+
+        return Collections.emptyList();
+    }
+
+    public Optional<AlertFieldStatus> containsDisallowedRelatedField(String fieldLabel, String disallowedRelatedFieldKey) {
+        if (fieldContainsData(disallowedRelatedFieldKey)) {
+            return Optional.of(AlertFieldStatus.error(disallowedRelatedFieldKey, String.format("Cannot be set if %s is already set", fieldLabel)));
+        }
+        return Optional.empty();
+    }
+
     public List<AlertFieldStatus> containsDisallowedRelatedFields(String fieldLabel, List<String> fieldKeys) {
         return fieldKeys.stream()
-                   .filter(key -> fieldContainsData(key))
-                   .map(key -> AlertFieldStatus.error(key, String.format("Cannot be set if %s is already set", fieldLabel)))
+                   .map(key -> containsDisallowedRelatedField(fieldLabel, key))
+                   .flatMap(Optional::stream)
                    .collect(Collectors.toList());
     }
 
