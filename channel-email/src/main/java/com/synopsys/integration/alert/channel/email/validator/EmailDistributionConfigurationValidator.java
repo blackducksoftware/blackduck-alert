@@ -17,21 +17,15 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 
 @Component
 public class EmailDistributionConfigurationValidator implements DistributionConfigurationValidator {
-    /*
-        ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
-                                                       .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
-
-        ConfigField attachmentFormat = new SelectConfigField(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, LABEL_ATTACHMENT_FORMAT, DESCRIPTION_ATTACHMENT_FORMAT, attachmentFormats)
-                                           .applyClearable(false)
-                                           .applyRemoveSelected(true)
-                                           .applyDefaultValue(EmailAttachmentFormat.NONE.name());
-     */
-
-
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
+
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_NAME);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_FREQUENCY);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
 
         statuses.addAll(configurationFieldValidator.validateAllOrNoneSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID));
 
