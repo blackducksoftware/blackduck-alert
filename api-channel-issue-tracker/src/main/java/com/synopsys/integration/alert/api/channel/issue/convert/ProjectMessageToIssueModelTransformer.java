@@ -10,6 +10,8 @@ package com.synopsys.integration.alert.api.channel.issue.convert;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
@@ -22,8 +24,9 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
-public final class ProjectMessageToIssueModelTransformer {
-    public static List<ProjectIssueModel> convertToIssueModels(ProjectMessage projectMessage) {
+@Component
+public class ProjectMessageToIssueModelTransformer {
+    public List<ProjectIssueModel> convertToIssueModels(ProjectMessage projectMessage) {
         List<ProjectIssueModel> projectIssueModels = new LinkedList<>();
         for (BomComponentDetails bomComponent : projectMessage.getBomComponents()) {
             IssueBomComponentDetails issueBomComponent = IssueBomComponentDetails.fromBomComponentDetails(bomComponent);
@@ -33,7 +36,7 @@ public final class ProjectMessageToIssueModelTransformer {
         return projectIssueModels;
     }
 
-    private static List<ProjectIssueModel> convertToIssueModels(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> componentConcerns) {
+    private List<ProjectIssueModel> convertToIssueModels(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> componentConcerns) {
         List<ComponentConcern> policyConcerns = new LinkedList<>();
         List<ComponentConcern> vulnerabilityConcerns = new LinkedList<>();
 
@@ -71,7 +74,7 @@ public final class ProjectMessageToIssueModelTransformer {
         );
     }
 
-    private static ProjectIssueModel createVulnerabilityProjectIssueModel(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> vulnerabilityConcerns) {
+    private ProjectIssueModel createVulnerabilityProjectIssueModel(ProjectMessage projectMessage, IssueBomComponentDetails issueBomComponent, List<ComponentConcern> vulnerabilityConcerns) {
         List<IssueVulnerabilityModel> issueVulnerabilitiesAdded = new LinkedList<>();
         List<IssueVulnerabilityModel> issueVulnerabilitiesUpdated = new LinkedList<>();
         List<IssueVulnerabilityModel> issueVulnerabilitiesDeleted = new LinkedList<>();
@@ -103,9 +106,6 @@ public final class ProjectMessageToIssueModelTransformer {
             issueBomComponent,
             vulnerabilityDetails
         );
-    }
-
-    private ProjectMessageToIssueModelTransformer() {
     }
 
 }

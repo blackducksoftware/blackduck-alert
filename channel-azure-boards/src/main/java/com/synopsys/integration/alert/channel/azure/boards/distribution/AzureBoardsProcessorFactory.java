@@ -14,11 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
@@ -41,6 +42,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
     private final AzureBoardsPropertiesFactory azureBoardsPropertiesFactory;
     private final AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory;
     private final ProxyManager proxyManager;
+    private final ProjectMessageToIssueModelTransformer modelTransformer;
 
     @Autowired
     public AzureBoardsProcessorFactory(
@@ -48,13 +50,15 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         AzureBoardsMessageFormatter formatter,
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
-        ProxyManager proxyManager
+        ProxyManager proxyManager,
+        ProjectMessageToIssueModelTransformer modelTransformer
     ) {
         this.gson = gson;
         this.formatter = formatter;
         this.azureBoardsPropertiesFactory = azureBoardsPropertiesFactory;
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;
         this.proxyManager = proxyManager;
+        this.modelTransformer = modelTransformer;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
 
         // Extractor Requirements
         AzureBoardsIssueTrackerQueryManager queryManager = new AzureBoardsIssueTrackerQueryManager(organizationName, distributionDetails, workItemService, workItemQueryService);
-        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager);
+        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer);
 
         IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 
