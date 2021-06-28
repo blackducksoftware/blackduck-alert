@@ -20,9 +20,9 @@ import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageTo
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
@@ -33,6 +33,12 @@ import com.synopsys.integration.function.ThrowingSupplier;
 
 public abstract class IssueTrackerSearcher<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final ProjectMessageToIssueModelTransformer modelTransformer;
+
+    protected IssueTrackerSearcher(ProjectMessageToIssueModelTransformer modelTransformer) {
+        this.modelTransformer = modelTransformer;
+    }
 
     public final List<ActionableIssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
         ProviderDetails providerDetails = projectMessage.getProviderDetails();
@@ -57,7 +63,7 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
             return findIssuesByAllComponents(providerDetails, project, projectVersion, projectMessage.getBomComponents());
         }
 
-        List<ProjectIssueModel> projectIssueModels = ProjectMessageToIssueModelTransformer.convertToIssueModels(projectMessage);
+        List<ProjectIssueModel> projectIssueModels = modelTransformer.convertToIssueModels(projectMessage);
 
         List<ActionableIssueSearchResult<T>> projectIssueSearchResults = new LinkedList<>();
         for (ProjectIssueModel projectIssueModel : projectIssueModels) {

@@ -14,12 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
+import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
-import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
@@ -61,7 +62,8 @@ public class JiraServerExternalConnectionTest {
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator, jiraErrorMessageUtility);
 
-        JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory);
+        ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
+        JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory, modelTransformer);
         IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails());
 
         IssueTrackerResponse<String> response = processor.processMessages(createMessage());
