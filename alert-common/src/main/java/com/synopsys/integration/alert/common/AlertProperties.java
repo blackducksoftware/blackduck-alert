@@ -75,9 +75,6 @@ public class AlertProperties {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
-    @Value("${spring.h2.console.enabled:false}")
-    private Boolean h2ConsoleEnabled;
-
     @Value("${server.ssl.enabled:false}")
     private Boolean sslEnabled;
 
@@ -107,10 +104,6 @@ public class AlertProperties {
 
     public String getAlertEmailAttachmentsDir() {
         return alertEmailAttachmentsDir;
-    }
-
-    public boolean getH2ConsoleEnabled() {
-        return BooleanUtils.isTrue(h2ConsoleEnabled);
     }
 
     public boolean getSslEnabled() {

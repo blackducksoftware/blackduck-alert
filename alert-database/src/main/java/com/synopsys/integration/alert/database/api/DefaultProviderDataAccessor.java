@@ -185,7 +185,7 @@ public class DefaultProviderDataAccessor {
     }
 
     private ProviderUserModel convertToUserModel(ProviderUserEntity providerUserEntity) {
-        return new ProviderUserModel(providerUserEntity.getEmailAddress(), providerUserEntity.getOptOut());
+        return new ProviderUserModel(StringUtils.EMPTY, providerUserEntity.getEmailAddress(), providerUserEntity.getOptOut());
     }
 
     private ProviderUserEntity convertToUserEntity(Long providerConfigId, ProviderUserModel providerUserModel) {
@@ -243,7 +243,7 @@ public class DefaultProviderDataAccessor {
 
         List<ProviderUserModel> providerUserEntitiesToAdd = emailsToAdd
                                                                 .stream()
-                                                                .map(email -> new ProviderUserModel(email, false))
+                                                                .map(email -> new ProviderUserModel(StringUtils.EMPTY, email, false))
                                                                 .collect(Collectors.toList());
         deleteUsers(providerConfigId, providerUserEntitiesToRemove);
         saveUsers(providerConfigId, providerUserEntitiesToAdd);

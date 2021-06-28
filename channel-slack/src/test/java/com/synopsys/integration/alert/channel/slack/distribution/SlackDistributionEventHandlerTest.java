@@ -15,8 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.api.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.api.rest.RestChannelUtility;
+import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.slack.distribution.mock.MockProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
@@ -52,7 +51,7 @@ public class SlackDistributionEventHandlerTest {
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
         SlackChannelMessageFormatter slackChannelMessageFormatter = new SlackChannelMessageFormatter(markupEncoderUtil);
         SlackChannelMessageConverter slackChannelMessageConverter = new SlackChannelMessageConverter(slackChannelMessageFormatter);
-        SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(createRestChannelUtility(), ChannelKeys.SLACK);
+        SlackChannelMessageSender slackChannelMessageSender = new SlackChannelMessageSender(ChannelKeys.SLACK, createConnectionFactory());
         SlackChannel slackChannel = new SlackChannel(slackChannelMessageConverter, slackChannelMessageSender);
 
         mockSlackServer.start();
@@ -106,12 +105,11 @@ public class SlackDistributionEventHandlerTest {
         assertEquals(4, mockSlackServer.getRequestCount());
     }
 
-    private RestChannelUtility createRestChannelUtility() {
+    private ChannelRestConnectionFactory createConnectionFactory() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
-        return new RestChannelUtility(channelRestConnectionFactory);
+        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
     }
 
     private ProviderMessageHolder createTwoMessages() {

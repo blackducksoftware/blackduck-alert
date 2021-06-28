@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.api.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSender;
-import com.synopsys.integration.alert.channel.api.issue.send.IssueTrackerMessageSenderFactory;
+import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;

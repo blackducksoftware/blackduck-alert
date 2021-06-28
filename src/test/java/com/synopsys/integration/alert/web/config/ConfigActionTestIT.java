@@ -79,8 +79,7 @@ public class ConfigActionTestIT {
 
         FieldValueModel proxyHostFieldValue = new FieldValueModel(Set.of("proxyHost"), true);
         FieldValueModel proxyPortFieldValue = new FieldValueModel(Set.of("80"), true);
-        final String newUsername = "Hello";
-        FieldValueModel proxyUsernameFieldValue = new FieldValueModel(Set.of(newUsername), true);
+        FieldValueModel proxyUsernameFieldValue = new FieldValueModel(Set.of(), false);
         FieldValueModel proxyPasswordFieldValue = new FieldValueModel(Set.of(), false);
 
         Long longConfigId = configurationModel.getConfigurationId();
@@ -93,10 +92,9 @@ public class ConfigActionTestIT {
         ActionResponse<FieldModel> response = configActions.update(longConfigId, fieldModel);
         assertTrue(response.hasContent());
         FieldModel updatedConfig = response.getContent().orElseThrow(() -> new AssertionFailedError("content missing from response."));
-        Map<String, FieldValueModel> updatedValues = updatedConfig.getKeyToValues();
 
-        assertEquals(newUsername, updatedValues.get(ProxyManager.KEY_PROXY_USERNAME).getValue().orElse(""));
-        assertNull(updatedValues.get(ProxyManager.KEY_PROXY_PWD), "Saving an empty values should remove it from DB.");
+        assertTrue(updatedConfig.getFieldValue(ProxyManager.KEY_PROXY_USERNAME).isEmpty(), "Need to remove username in order to remove password as well.");
+        assertTrue(updatedConfig.getFieldValue(ProxyManager.KEY_PROXY_PWD).isEmpty(), "Saving an empty values should remove it from DB.");
     }
 
 }

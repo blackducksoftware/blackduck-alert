@@ -289,6 +289,8 @@ class UserTable extends Component {
                     options={this.retrieveRoles()}
                     value={user[roleNames]}
                     onFocus={getRoles}
+                    errorName={roleNames}
+                    errorValue={fieldErrors[roleNames]}
                 />
             </div>
         );

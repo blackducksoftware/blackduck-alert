@@ -133,7 +133,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         configureActiveMQProvider();
         configureWithSSL(http);
-        configureH2Console(http);
         http.authorizeRequests()
             .requestMatchers(createAllowedPathMatchers()).permitAll()
             .and().authorizeRequests().anyRequest().authenticated()
@@ -160,13 +159,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
         } catch (Exception e) {
             // nothing needed here if that provider does not exist
             logger.info("Alert Application Configuration: Bouncy Castle provider not found");
-        }
-    }
-
-    private void configureH2Console(HttpSecurity http) throws Exception {
-        if (alertProperties.getH2ConsoleEnabled()) {
-            ignorePaths(HttpPathManager.PATH_H2_CONSOLE);
-            http.headers().frameOptions().disable();
         }
     }
 

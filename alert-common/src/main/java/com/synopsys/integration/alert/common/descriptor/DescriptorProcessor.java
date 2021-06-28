@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
+@Deprecated(forRemoval = true)
 @Component
 public class DescriptorProcessor {
     private final DescriptorMap descriptorMap;
@@ -64,21 +65,21 @@ public class DescriptorProcessor {
         return retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
     }
 
-    public Optional<ApiAction> retrieveApiAction(String descriptorName, String context) {
-        ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
-    }
-
-    public Optional<ConfigurationAction> retrieveConfigurationAction(String descriptorName) {
-        return Optional.ofNullable(allConfigurationActions.get(descriptorName));
-    }
-
     public List<ConfigField> retrieveUIConfigFields(String context, String descriptorName) {
         ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return retrieveUIConfigFields(descriptorContext, descriptorName);
     }
 
-    public List<ConfigField> retrieveUIConfigFields(ConfigContextEnum context, String descriptorName) {
+    private Optional<ApiAction> retrieveApiAction(String descriptorName, String context) {
+        ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+        return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
+    }
+
+    private Optional<ConfigurationAction> retrieveConfigurationAction(String descriptorName) {
+        return Optional.ofNullable(allConfigurationActions.get(descriptorName));
+    }
+
+    private List<ConfigField> retrieveUIConfigFields(ConfigContextEnum context, String descriptorName) {
         Optional<Descriptor> optionalDescriptor = retrieveDescriptor(descriptorName);
         List<ConfigField> fieldsToReturn = new LinkedList<>();
         if (optionalDescriptor.isPresent()) {

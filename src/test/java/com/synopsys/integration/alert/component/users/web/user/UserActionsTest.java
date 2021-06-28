@@ -15,12 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.accessor.RoleAccessor;
 import com.synopsys.integration.alert.common.enumeration.AuthenticationType;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.common.enumeration.DefaultUserRole;
 import com.synopsys.integration.alert.common.exception.AlertForbiddenOperationException;
 import com.synopsys.integration.alert.common.persistence.accessor.AuthenticationTypeAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.UserAccessor;
@@ -132,6 +133,7 @@ public class UserActionsTest {
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
+        roleNames.add(DefaultUserRole.ALERT_ADMIN.name());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", emailAddress, roleNames, false, false, false, true, false, authenticationType.name(), false);
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
         ValidationActionResponse validationActionResponse = userActions.testWithoutChecks(userConfig);
@@ -309,6 +311,7 @@ public class UserActionsTest {
                                     .stream()
                                     .map(UserRoleModel::getName)
                                     .collect(Collectors.toSet());
+        roleNames.add(DefaultUserRole.ALERT_ADMIN.name());
         UserConfig userConfig = new UserConfig(id.toString(), name, "newPassword", null, roleNames, false, false, false, true, false, authenticationTypeLDAP.name(), true);
         UserActions userActions = new UserActions(userManagementDescriptorKey, userAccessor, roleAccessor, authorizationManager, authenticationTypeAccessor, userSystemValidator);
 

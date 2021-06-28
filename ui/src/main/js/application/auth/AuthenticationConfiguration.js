@@ -6,10 +6,7 @@ import * as PropTypes from 'prop-types';
 import CommonGlobalConfiguration from 'common/global/CommonGlobalConfiguration';
 import TextInput from 'common/input/TextInput';
 import {
-    AUTHENTICATION_INFO,
-    AUTHENTICATION_LDAP_FIELD_KEYS,
-    AUTHENTICATION_SAML_FIELD_KEYS,
-    AUTHENTICATION_TEST_FIELD_KEYS
+    AUTHENTICATION_INFO, AUTHENTICATION_LDAP_FIELD_KEYS, AUTHENTICATION_SAML_FIELD_KEYS, AUTHENTICATION_TEST_FIELD_KEYS
 } from 'application/auth/AuthenticationModel';
 import CheckboxInput from 'common/input/CheckboxInput';
 import PasswordInput from 'common/input/PasswordInput';
@@ -69,6 +66,11 @@ const AuthenticationConfiguration = ({
         </div>
     );
 
+    if (!FieldModelUtilities.hasKey(formData, AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned)) {
+        const defaultValueModel = FieldModelUtilities.updateFieldModelSingleValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned, true);
+        setFormData(defaultValueModel);
+    }
+
     const authTypes = [
         { label: 'Simple', value: 'simple' },
         { label: 'None', value: 'none' },
@@ -82,7 +84,9 @@ const AuthenticationConfiguration = ({
     ];
 
     const hasLdapConfig = Object.keys(AUTHENTICATION_LDAP_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_LDAP_FIELD_KEYS[key]));
-    const hasSamlConfig = Object.keys(AUTHENTICATION_SAML_FIELD_KEYS).some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_SAML_FIELD_KEYS[key]));
+    const hasSamlConfig = Object.keys(AUTHENTICATION_SAML_FIELD_KEYS)
+        .filter((key) => key !== 'wantAssertionsSigned')
+        .some((key) => FieldModelUtilities.hasValue(formData, AUTHENTICATION_SAML_FIELD_KEYS[key]));
 
     const importBlackDuckSSOConfigLabel = 'Retrieve Black Duck SAML Configuration';
     const importBlackDuckSSOConfigDescription = 'Fills in some of the form fields based on the SAML configuration from the chosen Black Duck server (if a SAML configuration exists).';
@@ -283,6 +287,17 @@ const AuthenticationConfiguration = ({
                         isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.enabled)}
                         errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.enabled]}
+                    />
+                    <CheckboxInput
+                        id={AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned}
+                        name={AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned}
+                        label="Sign Assertions"
+                        description="If true, signature verification will be performed in SAML when communicating with server."
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        isChecked={FieldModelUtilities.getFieldModelBooleanValue(formData, AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned)}
+                        errorValue={errors.fieldErrors[AUTHENTICATION_SAML_FIELD_KEYS.wantAssertionsSigned]}
                     />
                     <CheckboxInput
                         id={AUTHENTICATION_SAML_FIELD_KEYS.forceAuth}

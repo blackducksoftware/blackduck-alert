@@ -42,8 +42,8 @@ public class HomeController {
 
     @ResponseBody
     @GetMapping("/api/verify/saml")
-    public SAMLEnabledResponseModel checkSaml() {
-        return ResponseFactory.createContentResponseFromAction(actions.verifySaml());
+    public SAMLEnabledResponseModel checkSaml(HttpServletRequest request) {
+        return ResponseFactory.createContentResponseFromAction(actions.verifySaml(request));
     }
 
 }

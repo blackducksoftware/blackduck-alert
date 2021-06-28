@@ -32,6 +32,15 @@ public class AlertExceptionTest {
     }
 
     @Test
+    public void emptyConstructorTest() {
+        try {
+            throw new AlertException();
+        } catch (Exception e) {
+            // Pass
+        }
+    }
+
+    @Test
     public void testFullConstructor() throws Exception {
         for (Class<? extends Exception> exceptionClass : exceptionSet) {
             final String message = "Exception Message";

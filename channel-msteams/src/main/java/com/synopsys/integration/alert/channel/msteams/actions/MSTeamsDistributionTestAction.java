@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.channel.msteams.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.action.DistributionChannelMessageTestAction;
+import com.synopsys.integration.alert.api.channel.action.DistributionChannelMessageTestAction;
 import com.synopsys.integration.alert.channel.msteams.distribution.MSTeamsChannel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.MsTeamsKey;

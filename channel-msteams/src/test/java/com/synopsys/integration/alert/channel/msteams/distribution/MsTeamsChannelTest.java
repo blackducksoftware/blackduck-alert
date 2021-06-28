@@ -10,9 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.channel.api.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.channel.api.rest.RestChannelUtility;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
@@ -55,11 +54,11 @@ public class MsTeamsChannelTest {
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() {
-        RestChannelUtility restChannelUtility = createRestChannelUtility();
+        ChannelRestConnectionFactory connectionFactory = createConnectionFactory();
         MarkupEncoderUtil markupEncoderUtil = new MarkupEncoderUtil();
 
         MSTeamsChannelMessageConverter messageConverter = new MSTeamsChannelMessageConverter(new MSTeamsChannelMessageFormatter(markupEncoderUtil));
-        MSTeamsChannelMessageSender messageSender = new MSTeamsChannelMessageSender(restChannelUtility, ChannelKeys.MS_TEAMS);
+        MSTeamsChannelMessageSender messageSender = new MSTeamsChannelMessageSender(ChannelKeys.MS_TEAMS, connectionFactory);
 
         MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender);
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(UUID.randomUUID(), properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
@@ -75,12 +74,11 @@ public class MsTeamsChannelTest {
         Assertions.assertFalse(messageResult.hasWarnings(), "The message result had warnings");
     }
 
-    private RestChannelUtility createRestChannelUtility() {
+    private ChannelRestConnectionFactory createConnectionFactory() {
         MockAlertProperties testAlertProperties = new MockAlertProperties();
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
-        return new RestChannelUtility(channelRestConnectionFactory);
+        return new ChannelRestConnectionFactory(testAlertProperties, proxyManager, gson);
     }
 
 }

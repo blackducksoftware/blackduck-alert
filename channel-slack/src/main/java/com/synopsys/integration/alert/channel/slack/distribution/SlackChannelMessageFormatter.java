@@ -13,7 +13,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.convert.ChannelMessageFormatter;
+import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 
 @Component

@@ -21,18 +21,19 @@ public class AlertSAMLMetadataGeneratorFilter extends MetadataGeneratorFilter {
 
     private final SAMLContext samlContext;
 
-    public AlertSAMLMetadataGeneratorFilter(final MetadataGenerator metadataGenerator, final SAMLContext samlContext) {
+    public AlertSAMLMetadataGeneratorFilter(MetadataGenerator metadataGenerator, SAMLContext samlContext) {
         super(metadataGenerator);
         this.samlContext = samlContext;
     }
 
     @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        if (samlContext.isSAMLEnabled()) {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (samlContext.isSAMLEnabledForRequest(request)) {
             super.doFilter(request, response, chain);
-            return;
+        } else {
+            chain.doFilter(request, response);
         }
-        chain.doFilter(request, response);
     }
+
 }
 
