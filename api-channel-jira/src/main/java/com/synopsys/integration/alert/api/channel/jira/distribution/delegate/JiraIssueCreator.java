@@ -11,6 +11,16 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldReplacementValues;
@@ -18,14 +28,6 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraI
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueSearchPropertyStringCompatibilityUtils;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
-import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
-import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;

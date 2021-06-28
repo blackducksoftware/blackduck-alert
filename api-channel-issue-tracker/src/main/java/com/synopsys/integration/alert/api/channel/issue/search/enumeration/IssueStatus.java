@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.channel.api.issue.search.enumeration;
+package com.synopsys.integration.alert.api.channel.issue.search.enumeration;
 
 public enum IssueStatus {
     RESOLVABLE,

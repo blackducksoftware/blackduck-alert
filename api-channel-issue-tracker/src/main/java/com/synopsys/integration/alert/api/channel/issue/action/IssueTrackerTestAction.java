@@ -21,6 +21,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueR
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
