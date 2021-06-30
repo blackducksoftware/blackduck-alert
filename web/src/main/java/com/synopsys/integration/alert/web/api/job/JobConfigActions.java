@@ -280,7 +280,25 @@ public class JobConfigActions extends AbstractJobResourceActions {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
 
         validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
-        fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+
+        boolean validateWithValidators = resource.getFieldModels()
+                                                    .stream()
+                                                    .map(FieldModel::getDescriptorName)
+                                                    .map(descriptorProcessor::retrieveDescriptor)
+                                                    .flatMap(Optional::stream)
+                                                    .map(Descriptor::getDistributionValidator)
+                                                    .allMatch(Optional::isPresent);
+
+        if (validateWithValidators) {
+            for (FieldModel fieldModel : resource.getFieldModels()) {
+                descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName())
+                    .flatMap(Descriptor::getDistributionValidator)
+                    .map(validator -> validator.validate(fieldModel))
+                    .ifPresent(fieldStatuses::addAll);
+            }
+        } else {
+            fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+        }
 
         if (!fieldStatuses.isEmpty()) {
             ValidationResponseModel responseModel = ValidationResponseModel.fromStatusCollection("Invalid Configuration", fieldStatuses);

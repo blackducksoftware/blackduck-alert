@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractConfigResourceActions;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -196,7 +197,8 @@ public class ConfigActions extends AbstractConfigResourceActions {
             return new ValidationActionResponse(validationResponseModel);
         }
 
-        Set<AlertFieldStatus> fieldStatuses = fieldModelProcessor.getGlobalValidator(resource)
+        Set<AlertFieldStatus> fieldStatuses = descriptorProcessor.retrieveDescriptor(resource.getDescriptorName())
+                                                  .flatMap(Descriptor::getGlobalValidator)
                                                   .map(globalValidator -> globalValidator.validate(resource))
                                                   .orElse(Set.copyOf(fieldModelProcessor.validateFieldModel(resource)));
 
