@@ -99,11 +99,11 @@ dependencies {
     implementation project(':api-provider')
     implementation project(':api-task')
 
-    implementation project(':channel')
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
     implementation project(':channel-jira-cloud')
     implementation project(':channel-jira-server')
+    implementation project(':channel-msteams')
     implementation project(':channel-slack')
 
     implementation project(':component')
@@ -146,6 +146,7 @@ dependencies {
         runtimeClasspath 'org.springframework.boot:spring-boot-devtools'
     }
 
+    testImplementation project(':api-channel-issue-tracker')
     testImplementation 'org.springframework.security.extensions:spring-security-saml2-core'
     testImplementation 'org.springframework.security:spring-security-ldap'
     testImplementation 'jakarta.persistence:jakarta.persistence-api'

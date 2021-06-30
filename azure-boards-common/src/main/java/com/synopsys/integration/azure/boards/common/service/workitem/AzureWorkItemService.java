@@ -57,12 +57,7 @@ public class AzureWorkItemService {
 
     public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException {
         String requestSpec = createWorkItemSpecWithProject(organizationName, projectIdOrName, workItemType);
-        try {
-            HttpRequest httpRequest = buildWriteRequest(HttpMethods.POST, requestSpec, workItemRequest.getElementOperationModels());
-            return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemResponseModel.class);
-        } catch (IOException e) {
-            throw HttpServiceException.internalServerError(e);
-        }
+        return azureHttpService.post(requestSpec, workItemRequest.getElementOperationModels(), WorkItemResponseModel.class, AzureHttpService.CONTENT_TYPE_JSON_PATCH);
     }
 
     public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException {
@@ -83,7 +78,7 @@ public class AzureWorkItemService {
     private HttpRequest buildWriteRequest(String httpMethod, String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
         HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(httpMethod, requestUrl, requestModel);
-        httpRequest.getHeaders().setContentType("application/json-patch+json");
+        httpRequest.getHeaders().setContentType(AzureHttpService.CONTENT_TYPE_JSON_PATCH);
         return httpRequest;
     }
 

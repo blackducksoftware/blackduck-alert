@@ -14,14 +14,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
+import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
-import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
@@ -33,7 +34,8 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     private final String jiraProjectKey;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
 
-    protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager) {
+    protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer) {
+        super(modelTransformer);
         this.jiraProjectKey = jiraProjectKey;
         this.issuePropertiesManager = issuePropertiesManager;
     }

@@ -7,6 +7,7 @@
  */
 package com.synopsys.integration.alert.component.authentication.security.saml;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.saml.metadata.MetadataGenerator;
@@ -21,6 +22,12 @@ public class AlertSAMLMetadataGenerator extends MetadataGenerator {
 
     public AlertSAMLMetadataGenerator(SAMLContext samlContext) {
         this.samlContext = samlContext;
+    }
+
+    @Override
+    public boolean isWantAssertionSigned() {
+        String wantAssertionsSigned = getEntityString(AuthenticationDescriptor.KEY_SAML_WANT_ASSERTIONS_SIGNED);
+        return Boolean.parseBoolean(wantAssertionsSigned);
     }
 
     @Override

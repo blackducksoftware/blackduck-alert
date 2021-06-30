@@ -20,6 +20,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
+import org.springframework.security.ldap.userdetails.InetOrgPersonContextMapper;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
@@ -37,12 +38,19 @@ public class LdapManager {
     private final AuthenticationDescriptorKey authenticationDescriptorKey;
     private final ConfigurationAccessor configurationAccessor;
     private final UserManagementAuthoritiesPopulator authoritiesPopulator;
+    private final InetOrgPersonContextMapper inetOrgPersonContextMapper;
 
     @Autowired
-    public LdapManager(AuthenticationDescriptorKey authenticationDescriptorKey, ConfigurationAccessor configurationAccessor, UserManagementAuthoritiesPopulator authoritiesPopulator) {
+    public LdapManager(
+        AuthenticationDescriptorKey authenticationDescriptorKey,
+        ConfigurationAccessor configurationAccessor,
+        UserManagementAuthoritiesPopulator authoritiesPopulator,
+        InetOrgPersonContextMapper inetOrgPersonContextMapper
+    ) {
         this.authenticationDescriptorKey = authenticationDescriptorKey;
         this.configurationAccessor = configurationAccessor;
         this.authoritiesPopulator = authoritiesPopulator;
+        this.inetOrgPersonContextMapper = inetOrgPersonContextMapper;
     }
 
     public boolean isLdapEnabled() {
@@ -86,7 +94,8 @@ public class LdapManager {
                 ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(configuration));
             }
             ldapContextSource.afterPropertiesSet();
-            return Optional.of(updateAuthenticationProvider(configuration, ldapContextSource));
+            LdapAuthenticationProvider ldapAuthenticationProvider = updateAuthenticationProvider(configuration, ldapContextSource);
+            return Optional.of(ldapAuthenticationProvider);
         } catch (IllegalArgumentException ex) {
             throw new AlertConfigurationException("Error creating LDAP Context Source", ex);
         }
@@ -113,7 +122,10 @@ public class LdapManager {
     private LdapAuthenticationProvider updateAuthenticationProvider(FieldUtility configurationModel, LdapContextSource contextSource) throws AlertConfigurationException {
         LdapAuthenticator authenticator = createAuthenticator(configurationModel, contextSource);
         LdapAuthoritiesPopulator ldapAuthoritiesPopulator = createAuthoritiesPopulator(configurationModel, contextSource);
-        return new LdapAuthenticationProvider(authenticator, ldapAuthoritiesPopulator);
+
+        LdapAuthenticationProvider ldapAuthenticationProvider = new LdapAuthenticationProvider(authenticator, ldapAuthoritiesPopulator);
+        ldapAuthenticationProvider.setUserDetailsContextMapper(inetOrgPersonContextMapper);
+        return ldapAuthenticationProvider;
     }
 
     private LdapAuthenticator createAuthenticator(FieldUtility configurationModel, LdapContextSource contextSource) throws AlertConfigurationException {

@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
+@Deprecated(forRemoval = true)
 @Component
 public class FieldModelProcessor {
     private final ConfigurationFieldModelConverter fieldModelConverter;
@@ -67,7 +68,7 @@ public class FieldModelProcessor {
     }
 
     public void performAfterDeleteAction(FieldModel fieldModel) throws AlertException {
-        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
             ApiAction apiAction = optionalApiAction.get();
             apiAction.afterDeleteAction(fieldModel);
@@ -116,7 +117,7 @@ public class FieldModelProcessor {
         return fieldValidationAction.validateConfig(configFields, fieldModel);
     }
 
-    public Optional<GlobalValidator> getGlobalValidator(FieldModel fieldModel) {
+    public Optional<GlobalConfigurationValidator> getGlobalValidator(FieldModel fieldModel) {
         String descriptorName = fieldModel.getDescriptorName();
         return descriptorProcessor.retrieveDescriptor(descriptorName).flatMap(Descriptor::getGlobalValidator);
     }

@@ -18,18 +18,19 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.api.issue.model.IssueBomComponentDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.IssuePolicyDetails;
-import com.synopsys.integration.alert.channel.api.issue.model.ProjectIssueModel;
-import com.synopsys.integration.alert.channel.api.issue.search.ExistingIssueDetails;
-import com.synopsys.integration.alert.channel.api.issue.search.IssueTrackerSearcher;
-import com.synopsys.integration.alert.channel.api.issue.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
+import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsSearchPropertiesUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsWorkItemExtractionUtils;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
@@ -47,7 +48,8 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     private final String organizationName;
     private final AzureBoardsIssueTrackerQueryManager queryManager;
 
-    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager) {
+    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer) {
+        super(modelTransformer);
         this.gson = gson;
         this.organizationName = organizationName;
         this.queryManager = queryManager;

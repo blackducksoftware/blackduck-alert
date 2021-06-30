@@ -1,0 +1,16 @@
+ext.moduleName = 'com.synopsys.integration.alert.api-channel-issue-tracker'
+
+dependencies {
+    api project(':api-channel')
+
+    implementation platform(project(':alert-platform'))
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-descriptor')
+
+    implementation 'com.synopsys.integration:integration-rest'
+
+    implementation 'org.springframework:spring-jms'
+
+    testImplementation project(':test-common')
+}

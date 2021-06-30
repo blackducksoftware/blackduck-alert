@@ -23,7 +23,7 @@ public class SamlAntMatcher implements RequestMatcher {
     private Collection<RequestMatcher> enabledMatchers;
     private Collection<RequestMatcher> disabledMatchers;
 
-    public SamlAntMatcher(final SAMLContext context, final String[] samlEnabledPatterns, final String[] samlDisabledPattern) {
+    public SamlAntMatcher(SAMLContext context, String[] samlEnabledPatterns, String[] samlDisabledPattern) {
         this.context = context;
         this.enabledPatterns = Set.of(samlEnabledPatterns);
         this.disabledPatterns = Set.of(samlDisabledPattern);
@@ -36,13 +36,14 @@ public class SamlAntMatcher implements RequestMatcher {
     }
 
     @Override
-    public boolean matches(final HttpServletRequest request) {
+    public boolean matches(HttpServletRequest request) {
         Collection<RequestMatcher> requestMatchers = disabledMatchers;
 
-        if (context.isSAMLEnabled()) {
+        if (context.isSAMLEnabledForRequest(request)) {
             requestMatchers = enabledMatchers;
         }
 
         return requestMatchers.stream().anyMatch(requestMatcher -> requestMatcher.matches(request));
     }
+
 }

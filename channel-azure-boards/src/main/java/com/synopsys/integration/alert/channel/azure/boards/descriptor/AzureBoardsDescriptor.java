@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.channel.azure.boards.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalValidator;
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -43,7 +43,7 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String DEFAULT_WORK_ITEM_TYPE = "Task";
 
     @Autowired
-    public AzureBoardsDescriptor(AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig, AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig, AzureBoardsGlobalValidator azureBoardsGlobalValidator) {
+    public AzureBoardsDescriptor(AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig, AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig, AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator) {
         super(ChannelKeys.AZURE_BOARDS, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig, azureBoardsGlobalValidator);
     }
 

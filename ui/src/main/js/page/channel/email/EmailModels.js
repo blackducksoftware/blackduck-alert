@@ -16,7 +16,8 @@ export const EMAIL_DISTRIBUTION_ATTACHMENT_OPTIONS = [
 ];
 
 export const EMAIL_DISTRIBUTION_ADDITIONAL_EMAIL_COLUMNS = [
-    createTableSelectColumn('emailAddress', 'Email Address', true, true, true)
+    createTableSelectColumn('userName', 'User', true, true, true),
+    createTableSelectColumn('emailAddress', 'Email Address', false, true, true)
 ];
 
 export const EMAIL_INFO = {

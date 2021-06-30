@@ -21,7 +21,7 @@ import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
 import com.synopsys.integration.alert.api.event.AlertMessageListener;
-import com.synopsys.integration.alert.channel.api.DistributionEventReceiver;
+import com.synopsys.integration.alert.api.channel.DistributionEventReceiver;
 
 @Configuration
 public class EventListenerConfigurer implements JmsListenerConfigurer {

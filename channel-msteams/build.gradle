@@ -1,0 +1,14 @@
+ext.moduleName = 'com.synopsys.integration.alert.channel.msteams'
+
+dependencies {
+    implementation platform(project(':alert-platform'))
+
+    implementation project(':alert-common')
+    implementation project(':api-common-model')
+    implementation project(':api-channel')
+    implementation project(':api-descriptor')
+
+    implementation 'com.synopsys.integration:integration-rest'
+
+    testImplementation project(':test-common')
+}

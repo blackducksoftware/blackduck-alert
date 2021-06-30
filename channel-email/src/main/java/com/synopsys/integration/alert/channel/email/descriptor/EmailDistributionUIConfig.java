@@ -49,12 +49,15 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
     @Override
     public List<ConfigField> createChannelDistributionFields() {
         ConfigField subjectLine = new TextInputConfigField(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, DESCRIPTION_EMAIL_SUBJECT_LINE);
+
         ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
-                                                   .applyColumn(TableSelectColumn.visible("emailAddress", "Email Address", true, true))
+                                                   .applyColumn(TableSelectColumn.visible("userName", "User",true, true))
+                                                   .applyColumn(TableSelectColumn.visible("emailAddress", "Email Address", false, true))
                                                    .applySearchable(true)
                                                    .applyPaged(true)
                                                    .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                                    .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
                                                        .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
                                                        .applyDisallowedRelatedField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);

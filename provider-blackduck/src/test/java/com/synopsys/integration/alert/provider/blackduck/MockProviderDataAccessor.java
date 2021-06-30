@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
@@ -187,7 +189,7 @@ public final class MockProviderDataAccessor implements ProviderDataAccessor {
 
         Set<ProviderUserModel> providerUserEntitiesToAdd = emailsToAdd
                                                                .stream()
-                                                               .map(email -> new ProviderUserModel(email, false))
+                                                               .map(email -> new ProviderUserModel(StringUtils.substringBefore(email, "@"), email, false))
                                                                .collect(Collectors.toSet());
         providerUsers.computeIfPresent(providerConfigId, (id, users) -> {
             users.removeAll(providerUserEntitiesToRemove);

@@ -7,15 +7,9 @@
  */
 package com.synopsys.integration.azure.boards.common.service.comment;
 
-import java.io.IOException;
-
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpMethods;
-import com.google.api.client.http.HttpRequest;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -46,18 +40,13 @@ public class AzureWorkItemCommentService {
 
     public WorkItemCommentResponseModel addComment(String organizationName, String projectIdOrName, Integer workItemId, String commentText) throws HttpServiceException {
         String requestSpec = createCommentsSpec(organizationName, projectIdOrName, workItemId);
-        GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
-        try {
-            WorkItemCommentRequestModel requestModel = new WorkItemCommentRequestModel(commentText);
-            HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(HttpMethods.POST, requestUrl, requestModel);
-            return azureHttpService.executeRequestAndParseResponse(httpRequest, WorkItemCommentResponseModel.class);
-        } catch (IOException e) {
-            throw HttpServiceException.internalServerError(e);
-        }
+        WorkItemCommentRequestModel requestModel = new WorkItemCommentRequestModel(commentText);
+        return azureHttpService.post(requestSpec, requestModel, WorkItemCommentResponseModel.class);
     }
 
     private String createCommentsSpec(String organizationName, String projectIdOrName, Integer workItemId) {
         String spec = String.format("/%s/%s/_apis/wit/workItems/%s/comments", organizationName, projectIdOrName, workItemId);
         return azureApiVersionAppender.appendApiVersion5_1_Preview_3(spec);
     }
+
 }

@@ -14,11 +14,11 @@ dependencies {
     implementation project(':alert-database')
     implementation project(':api-common-model')
     implementation project(':api-descriptor')
-    implementation project(':channel')
     implementation project(':channel-azure-boards')
     implementation project(':channel-email')
     implementation project(':channel-jira-cloud')
     implementation project(':channel-jira-server')
+    implementation project(':channel-msteams')
     implementation project(':channel-slack')
     implementation project(':component')
 

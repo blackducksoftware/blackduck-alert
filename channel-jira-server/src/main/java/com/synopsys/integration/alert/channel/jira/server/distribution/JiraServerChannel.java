@@ -10,8 +10,8 @@ package com.synopsys.integration.alert.channel.jira.server.distribution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerChannel;
-import com.synopsys.integration.alert.channel.api.issue.IssueTrackerResponsePostProcessor;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerChannel;
+import com.synopsys.integration.alert.api.channel.issue.IssueTrackerResponsePostProcessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component

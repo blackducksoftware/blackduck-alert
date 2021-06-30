@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.component.settings.validator.SettingsGlobalConfigurationValidator;
 
 @Component
 public class SettingsDescriptor extends ComponentDescriptor {
@@ -27,8 +28,8 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
 
     @Autowired
-    public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsUIConfig uiConfig) {
-        super(settingsDescriptorKey, uiConfig);
+    public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsUIConfig uiConfig, SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator) {
+        super(settingsDescriptorKey, uiConfig, settingsGlobalConfigurationValidator);
     }
 
 }
