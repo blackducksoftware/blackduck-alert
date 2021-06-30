@@ -32,21 +32,25 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.StatusCategory;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
+import com.synopsys.integration.jira.common.model.components.TransitionComponent;
+import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     private final String jiraProjectKey;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
-    //private final IssueService issueService;
+    private final JiraIssueStatusCreator jiraIssueStatusCreator;
 
-    protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager) {
+    protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager, JiraIssueStatusCreator jiraIssueStatusCreator) {
         this.jiraProjectKey = jiraProjectKey;
         this.issuePropertiesManager = issuePropertiesManager;
-        //this.issueService = issueService;
+        this.jiraIssueStatusCreator = jiraIssueStatusCreator;
     }
 
     protected abstract List<JiraSearcherResponseModel> executeQueryForIssues(String jql) throws IntegrationException;
 
     protected abstract StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException;
+
+    protected abstract TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException;
 
     @Override
     protected final List<ProjectIssueSearchResult<String>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
@@ -169,18 +173,13 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
 
     private ExistingIssueDetails<String> createExistingIssueDetails(JiraSearcherResponseModel issue, IssueCategory issueCategory) {
         String issueCallbackLink = JiraCallbackUtils.createUILink(issue);
-        //TODO: get the issue status, hardcoded to OPEN
-        IssueStatus issueStatus = IssueStatus.UNKNOWN;
-        try {
-            StatusCategory issueStatusCategory = retrieveIssueStatusCategory(issue.getIssueKey());
-        } catch (AlertException e) {
-            issueStatus = IssueStatus.UNKNOWN;
-        }
+        IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(issue, this::fetchIssueStatus, this::fetchIssueTransitions);
         return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
     }
 
     private IssueCategory getIssueCategoryFromComponentConcernType(ComponentConcernType componentConcernType) {
-        IssueCategory issueCategory = IssueCategory.BOM; //If BOM doesn't get used, remove the default and make this an if/else statement
+        //TODO: If BOM doesn't get used, remove the default and make this an if/else statement
+        IssueCategory issueCategory = IssueCategory.BOM;
         if (componentConcernType.equals(ComponentConcernType.VULNERABILITY)) {
             issueCategory = IssueCategory.VULNERABILITY;
         }
@@ -190,12 +189,22 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         return issueCategory;
     }
 
+    //TODO: If these methods are unused, they should be removed (Now exists in  JiraIssueStatusCreator)
     private StatusCategory retrieveIssueStatusCategory(String issueKey) throws AlertException {
         try {
             StatusDetailsComponent issueStatus = fetchIssueStatus(issueKey);
             return issueStatus.getStatusCategory();
         } catch (IntegrationException e) {
             throw new AlertException(String.format("Failed to retrieve issue status from Jira. Issue Key: %s", issueKey), e);
+        }
+    }
+
+    private List<TransitionComponent> retrieveTransitions(String issueKey) throws AlertException {
+        try {
+            TransitionsResponseModel transitionsResponse = fetchIssueTransitions(issueKey);
+            return transitionsResponse.getTransitions();
+        } catch (IntegrationException e) {
+            throw new AlertException(String.format("Failed to retrieve transitions from Jira. Issue Key: %s", issueKey), e);
         }
     }
 

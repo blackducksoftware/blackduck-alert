@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -21,13 +22,14 @@ import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
+import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
     private final IssueService issueService;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, IssueService issueService) {
-        super(jiraProjectKey, issuePropertiesManager);
+    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, IssueService issueService, JiraIssueStatusCreator jiraIssueStatusCreator) {
+        super(jiraProjectKey, issuePropertiesManager, jiraIssueStatusCreator);
         this.issueSearchService = issueSearchService;
         this.issueService = issueService;
     }
@@ -44,6 +46,11 @@ public class JiraCloudSearcher extends JiraSearcher {
     @Override
     protected StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException {
         return issueService.getStatus(issueKey);
+    }
+
+    @Override
+    protected TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException {
+        return issueService.getTransitions(issueKey);
     }
 
     private JiraSearcherResponseModel convertModel(IssueResponseModel issue) {
