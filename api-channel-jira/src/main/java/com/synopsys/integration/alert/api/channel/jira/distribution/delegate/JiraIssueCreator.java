@@ -109,8 +109,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             severity = Optional.ofNullable(policyDetails.get().getSeverity().getPolicyLabel());
         }
         if (vulnerabilityDetails.isPresent()) {
-            //TODO: need to come up with a good algorithm for this. Right now it just finds the first severity
-            severity = Optional.ofNullable(vulnerabilityDetails.get().getVulnerabilitiesAdded().stream().findFirst().get().getSeverity().getVulnerabilityLabel());
+            severity = Optional.ofNullable(vulnerabilityDetails.get().getHighestVulnerabilityAddedOrUpdated());
         }
 
         return new JiraCustomFieldReplacementValues(
