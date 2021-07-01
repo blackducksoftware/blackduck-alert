@@ -27,6 +27,7 @@ import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponse
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
@@ -34,6 +35,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckMessageBomComponentDetailsCreator {
+    private static final String ORIGIN_SPEC = "/origins";
     private static final LinkMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> VULNERABILITIES_LINK =
         new LinkMultipleResponses<>("vulnerabilities", BlackDuckProjectVersionComponentVulnerabilitiesView.class);
     private static final String VULNERABILITIES_MEDIA_TYPE = "application/vnd.blackducksoftware.internal-1+json";
@@ -129,7 +131,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             return ComponentVulnerabilities.none();
         }
 
-        HttpUrl vulnerabilitiesUrl = bomComponent.getHref().appendRelativeUrl(VULNERABILITIES_LINK.getLink());
+        HttpUrl vulnerabilitiesUrl = createVulnerabilitiesLink(bomComponent);
         UrlMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> urlMultipleResponses = new UrlMultipleResponses<>(vulnerabilitiesUrl, VULNERABILITIES_LINK.getResponseClass());
         BlackDuckMultipleRequest<BlackDuckProjectVersionComponentVulnerabilitiesView> spec = new BlackDuckRequestBuilder()
                                                                                                  .commonGet()
@@ -148,6 +150,22 @@ public class BlackDuckMessageBomComponentDetailsCreator {
                    .stream()
                    .map(policyDetailsCreator::toComponentPolicy)
                    .collect(Collectors.toList());
+    }
+
+    private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentView bomComponent) throws IntegrationException {
+        HttpUrl vulnerabilitiesUrl = bomComponent.getHref();
+
+        List<VersionBomOriginView> origins = bomComponent.getOrigins();
+        // TODO determine what to do when there are multiple origins
+        if (null != origins && origins.size() == 1) {
+            VersionBomOriginView singleOrigin = origins.get(0);
+            String originUrl = singleOrigin.getOrigin();
+            if (StringUtils.isNotBlank(originUrl)) {
+                String originId = StringUtils.substringAfterLast(originUrl, ORIGIN_SPEC);
+                vulnerabilitiesUrl = vulnerabilitiesUrl.appendRelativeUrl(ORIGIN_SPEC).appendRelativeUrl(originId);
+            }
+        }
+        return vulnerabilitiesUrl.appendRelativeUrl(VULNERABILITIES_LINK.getLink());
     }
 
 }
