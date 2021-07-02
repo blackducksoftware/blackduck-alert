@@ -7,9 +7,7 @@
  */
 package com.synopsys.integration.alert.component.authentication.validator;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationF
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.persistence.util.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
 
 @Component
@@ -36,65 +33,41 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> validationResults = new HashSet<>();
-
-        Boolean ldapEnabled = fieldModel.getFieldValue(AuthenticationDescriptor.KEY_LDAP_ENABLED).map(Boolean::valueOf).orElse(false);
-        Boolean samlEnabled = fieldModel.getFieldValue(AuthenticationDescriptor.KEY_SAML_ENABLED).map(Boolean::valueOf).orElse(false);
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        boolean ldapEnabled = configurationFieldValidator.getBooleanValue(AuthenticationDescriptor.KEY_LDAP_ENABLED).orElse(false);
+        boolean samlEnabled = configurationFieldValidator.getBooleanValue(AuthenticationDescriptor.KEY_SAML_ENABLED).orElse(false);
 
         if (ldapEnabled && samlEnabled) {
-            validationResults.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, SAML_LDAP_ENABLED_ERROR));
-            validationResults.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENABLED, SAML_LDAP_ENABLED_ERROR));
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, SAML_LDAP_ENABLED_ERROR));
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_ENABLED, SAML_LDAP_ENABLED_ERROR));
         }
 
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
         if (ldapEnabled) {
-            validationResults.addAll(validateLdapConfiguration(fieldModel));
+            configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
+                AuthenticationDescriptor.KEY_LDAP_SERVER,
+                AuthenticationDescriptor.KEY_LDAP_MANAGER_DN,
+                AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD
+            ));
         }
 
         if (samlEnabled) {
-            validationResults.addAll(validateSamlConfiguration(fieldModel));
+            configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
+                AuthenticationDescriptor.KEY_SAML_ENTITY_ID,
+                AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL
+            ));
+
+            validateMetaData(configurationFieldValidator, AuthenticationDescriptor.SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
+            validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_METADATA_URL, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
+            validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
         }
 
-        return validationResults;
+        return configurationFieldValidator.getValidationResults();
     }
 
-    private List<AlertFieldStatus> validateLdapConfiguration(FieldModel fieldModel) {
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        return configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
-            AuthenticationDescriptor.KEY_LDAP_SERVER,
-            AuthenticationDescriptor.KEY_LDAP_MANAGER_DN,
-            AuthenticationDescriptor.KEY_LDAP_MANAGER_PWD
-        ));
-    }
-
-    private List<AlertFieldStatus> validateSamlConfiguration(FieldModel fieldModel) {
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        List<AlertFieldStatus> requiredFieldStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
-            AuthenticationDescriptor.KEY_SAML_ENTITY_ID,
-            AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL
-        ));
-
-        validateMetaDataFile(fieldModel).ifPresent(requiredFieldStatuses::add);
-        validateMetaDataUrl(fieldModel, AuthenticationDescriptor.KEY_SAML_METADATA_URL).ifPresent(requiredFieldStatuses::add);
-        validateMetaDataUrl(fieldModel, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL).ifPresent(requiredFieldStatuses::add);
-
-        return requiredFieldStatuses;
-    }
-
-    private Optional<AlertFieldStatus> validateMetaDataUrl(FieldModel fieldModel, String fieldKey) {
-        boolean fieldHasValues = fieldModel.getFieldValueModel(fieldKey).map(FieldValueModel::hasValues).orElse(false);
-        if (!fieldHasValues && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-            return Optional.of(AlertFieldStatus.error(fieldKey, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING));
+    private void validateMetaData(ConfigurationFieldValidator configurationFieldValidator, String fieldKey, String message) {
+        if (configurationFieldValidator.fieldHasNoReadableValue(fieldKey) && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(fieldKey, message));
         }
-        return Optional.empty();
     }
 
-    private Optional<AlertFieldStatus> validateMetaDataFile(FieldModel fieldModel) {
-        boolean metadataUrlEmpty = fieldModel.getFieldValueModel(AuthenticationDescriptor.KEY_SAML_METADATA_URL)
-                                       .map(field -> !field.hasValues()).orElse(true);
-        if (metadataUrlEmpty && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
-            return Optional.of(AlertFieldStatus.error(AuthenticationDescriptor.SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING));
-        }
-        return Optional.empty();
-    }
 }

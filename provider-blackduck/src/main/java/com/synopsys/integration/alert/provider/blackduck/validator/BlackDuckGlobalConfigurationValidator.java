@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.validator;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
@@ -42,43 +42,45 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> statuses = new HashSet<>();
-
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        List<AlertFieldStatus> requiredStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME,
             BlackDuckDescriptor.KEY_BLACKDUCK_URL,
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY,
             BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT
         ));
-        statuses.addAll(requiredStatuses);
 
-        configurationFieldValidator.validateIsANumber(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
-            .ifPresentOrElse(statuses::add, () -> validateTimeout(fieldModel).ifPresent(statuses::add));
-        validateAPIToken(fieldModel).ifPresent(statuses::add);
-        validateDuplicateNames(fieldModel).ifPresent(statuses::add);
+        validateAPIToken(configurationFieldValidator);
+        validateDuplicateNames(fieldModel).ifPresent(configurationFieldValidator::addValidationResults);
+        validateTimeout(configurationFieldValidator);
 
-        return statuses;
+        return configurationFieldValidator.getValidationResults();
     }
 
-    private Optional<AlertFieldStatus> validateAPIToken(FieldModel fieldModel) {
-        String apiKey = fieldModel.getFieldValue(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse("");
+    private Optional<AlertFieldStatus> validateAPIToken(ConfigurationFieldValidator configurationFieldValidator) {
+        String apiKey = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse("");
         if (StringUtils.isNotBlank(apiKey) && (apiKey.length() < 64 || apiKey.length() > 256)) {
             return Optional.of(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "Invalid Black Duck API Token."));
         }
         return Optional.empty();
     }
 
-    private Optional<AlertFieldStatus> validateTimeout(FieldModel fieldModel) {
-        int timeoutInt = fieldModel.getFieldValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
-                             .map(NumberUtils::toInt)
-                             .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
-        if (timeoutInt < 1) {
-            return Optional.of(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Invalid timeout: The timeout must be a positive integer"));
-        } else if (timeoutInt > 300) {
-            return Optional.of(AlertFieldStatus.warning(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "The provided timeout is greater than five minutes. Please ensure this is the desired behavior."));
-        }
-        return Optional.empty();
+    private void validateTimeout(ConfigurationFieldValidator configurationFieldValidator) {
+        boolean isANumberOrEmpty = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+                                       .map(NumberUtils::isCreatable)
+                                       .orElse(true);
+         if (isANumberOrEmpty) {
+             int timeoutInt = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+                                  .map(NumberUtils::toInt)
+                                  .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
+             if (timeoutInt < 1) {
+                 configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Invalid timeout: The timeout must be a positive integer"));
+             } else if (timeoutInt > 300) {
+                 configurationFieldValidator.addValidationResults(AlertFieldStatus.warning(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "The provided timeout is greater than five minutes. Please ensure this is the desired behavior."));
+             }
+         } else {
+             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, NumberConfigField.NOT_AN_INTEGER_VALUE));
+         }
     }
 
     private Optional<AlertFieldStatus> validateDuplicateNames(FieldModel fieldModel) {

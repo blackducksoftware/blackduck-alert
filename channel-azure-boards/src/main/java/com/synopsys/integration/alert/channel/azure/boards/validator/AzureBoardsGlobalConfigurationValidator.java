@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.azure.boards.validator;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +30,15 @@ public class AzureBoardsGlobalConfigurationValidator implements GlobalConfigurat
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> statuses = new HashSet<>();
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME).ifPresent(statuses::add);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(AzureBoardsDescriptor.KEY_CLIENT_ID).ifPresent(statuses::add);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(AzureBoardsDescriptor.KEY_CLIENT_SECRET).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(AzureBoardsDescriptor.KEY_ORGANIZATION_NAME);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(AzureBoardsDescriptor.KEY_CLIENT_ID);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
 
         if (oAuthRequestValidator.hasRequests()) {
-            AlertFieldStatus oauthStatus = AlertFieldStatus.error(AzureBoardsDescriptor.KEY_OAUTH, "Authentication in Progress cannot perform current action.");
-            statuses.add(oauthStatus);
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AzureBoardsDescriptor.KEY_OAUTH, "Authentication in Progress cannot perform current action."));
         }
 
-        return statuses;
+        return configurationFieldValidator.getValidationResults();
     }
 }

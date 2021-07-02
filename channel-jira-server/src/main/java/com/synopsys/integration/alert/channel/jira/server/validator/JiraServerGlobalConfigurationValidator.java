@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.validator;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -22,12 +21,11 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 public class JiraServerGlobalConfigurationValidator implements GlobalConfigurationValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> statuses = new HashSet<>();
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_URL).ifPresent(statuses::add);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_USERNAME).ifPresent(statuses::add);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_PASSWORD).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_URL);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_USERNAME);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_PASSWORD);
 
-        return statuses;
+        return configurationFieldValidator.getValidationResults();
     }
 }

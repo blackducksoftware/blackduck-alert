@@ -290,12 +290,16 @@ public class JobConfigActions extends AbstractJobResourceActions {
                                                     .allMatch(Optional::isPresent);
 
         if (validateWithValidators) {
-            for (FieldModel fieldModel : resource.getFieldModels()) {
-                descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName())
-                    .flatMap(Descriptor::getDistributionValidator)
-                    .map(validator -> validator.validate(fieldModel))
-                    .ifPresent(fieldStatuses::addAll);
-            }
+            fieldStatuses = resource.getFieldModels()
+                .stream()
+                .map(FieldModel::getDescriptorName)
+                .map(descriptorProcessor::retrieveDescriptor)
+                .flatMap(Optional::stream)
+                .map(Descriptor::getDistributionValidator)
+                .flatMap(Optional::stream)
+                .map(validator -> validator.validate(resource))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         } else {
             fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
         }

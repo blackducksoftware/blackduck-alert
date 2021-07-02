@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.component.scheduling.validator;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,19 +22,16 @@ import com.synopsys.integration.alert.component.scheduling.descriptor.Scheduling
 public class SchedulingConfigurationValidator implements GlobalConfigurationValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> statuses = new HashSet<>();
-
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        List<AlertFieldStatus> alertFieldStatuses = configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY,
             SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
         ));
-        statuses.addAll(alertFieldStatuses);
 
-        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours());
+        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency());
 
-        return statuses;
+        return configurationFieldValidator.getValidationResults();
     }
 
     private List<String> getDigestHours() {
