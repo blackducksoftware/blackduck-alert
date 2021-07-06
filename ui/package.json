@@ -1,6 +1,6 @@
 {
     "name": "blackduck-alert",
-    "version": "6.5.0-SIGQA11-SNAPSHOT",
+    "version": "6.5.0",
     "description": "Alert UI",
     "keywords": [
         "blackduck",
