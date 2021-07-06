@@ -31,13 +31,16 @@ import com.synopsys.integration.alert.common.channel.message.ChunkedStringBuilde
 import com.synopsys.integration.alert.common.channel.message.RechunkedModel;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class ProjectIssueModelConverter {
     public static final int COMPONENT_CONCERN_TITLE_SECTION_CHAR_COUNT = 20;
     public static final LinkableItem MISSING_PROJECT_VERSION_PLACEHOLDER = new LinkableItem("Project Version", "Unknown");
     public static final String DESCRIPTION_CONTINUED_TEXT = "(description continued...)";
     public static final String COMMA_SPACE = ", ";
+    public static final String LABEL_SEVERITY_STATUS = "Severity Status: ";
 
     private final IssueTrackerMessageFormatter formatter;
     private final BomComponentDetailConverter bomComponentDetailConverter;
@@ -74,6 +77,8 @@ public class ProjectIssueModelConverter {
         IssueBomComponentDetails bomComponent = projectIssueModel.getBomComponentDetails();
         List<String> bomComponentPieces = bomComponentDetailConverter.gatherAbstractBomComponentSectionPieces(bomComponent);
         bomComponentPieces.forEach(descriptionBuilder::append);
+
+        createVulnerabilitySeverityStatusSectionPieces(projectIssueModel).forEach(descriptionBuilder::append);
 
         descriptionBuilder.append(formatter.getLineSeparator());
         createProjectIssueModelConcernSectionPieces(projectIssueModel, false)
@@ -119,6 +124,8 @@ public class ProjectIssueModelConverter {
         commentBuilder.append(formatter.getLineSeparator());
         commentBuilder.append(formatter.getSectionSeparator());
         commentBuilder.append(formatter.getLineSeparator());
+
+        createVulnerabilitySeverityStatusSectionPieces(projectIssueModel).forEach(commentBuilder::append);
 
         createProjectIssueModelConcernSectionPieces(projectIssueModel, true)
             .forEach(commentBuilder::append);
@@ -215,6 +222,26 @@ public class ProjectIssueModelConverter {
         }
 
         return concernSectionPieces;
+    }
+
+    private List<String> createVulnerabilitySeverityStatusSectionPieces(ProjectIssueModel projectIssueModel) {
+        List<String> severityStatusSectionPieces = new LinkedList<>();
+        String encodedSeverityStatus = formatter.encode(LABEL_SEVERITY_STATUS);
+        IssueBomComponentDetails bomComponentDetails = projectIssueModel.getBomComponentDetails();
+
+        Optional<IssueVulnerabilityDetails> vulnerabilityDetails = projectIssueModel.getVulnerabilityDetails();
+        if (vulnerabilityDetails.isPresent()) {
+            ComponentVulnerabilities componentVulnerabilities = bomComponentDetails.getComponentVulnerabilities();
+            componentVulnerabilities.computeHighestSeverity()
+                .map(ComponentConcernSeverity::getVulnerabilityLabel)
+                .map(formatter::encode)
+                .map(severity -> encodedSeverityStatus + severity)
+                .ifPresent(severityStatusSectionPieces::add);
+            severityStatusSectionPieces.add(formatter.getLineSeparator());
+            severityStatusSectionPieces.add(formatter.getSectionSeparator());
+            severityStatusSectionPieces.add(formatter.getLineSeparator());
+        }
+        return severityStatusSectionPieces;
     }
 
 }
