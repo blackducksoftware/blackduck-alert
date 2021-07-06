@@ -49,4 +49,20 @@ public class ComponentVulnerabilities extends AlertSerializableModel {
         return !critical.isEmpty() || !high.isEmpty() || !medium.isEmpty() || !low.isEmpty();
     }
 
+    //TODO: Determine if we should find highest vuln severity here
+    public String getHighestVulnerabilitySeverity() {
+        if (!hasVulnerabilities()) {
+            return "None";
+        }
+        if (getCritical().size() > 0) {
+            return "CRITICAL";
+        } else if (getHigh().size() > 0) {
+            return "HIGH";
+        } else if (getMedium().size() > 0) {
+            return "MEDIUM";
+        } else {
+            return "LOW";
+        }
+    }
+
 }
