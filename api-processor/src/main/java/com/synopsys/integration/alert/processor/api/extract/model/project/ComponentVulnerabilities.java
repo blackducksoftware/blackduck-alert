@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -49,20 +50,19 @@ public class ComponentVulnerabilities extends AlertSerializableModel {
         return !critical.isEmpty() || !high.isEmpty() || !medium.isEmpty() || !low.isEmpty();
     }
 
-    //TODO: Determine if we should find highest vuln severity here
-    public String getHighestVulnerabilitySeverity() {
-        if (!hasVulnerabilities()) {
-            return "None";
+    public Optional<ComponentConcernSeverity> computeHighestSeverity() {
+        ComponentConcernSeverity severity = null;
+        if (hasVulnerabilities()) {
+            if (!getCritical().isEmpty()) {
+                severity = ComponentConcernSeverity.CRITICAL;
+            } else if (!getHigh().isEmpty()) {
+                severity = ComponentConcernSeverity.MAJOR_HIGH;
+            } else if (!getMedium().isEmpty()) {
+                severity = ComponentConcernSeverity.MINOR_MEDIUM;
+            } else if (!getLow().isEmpty()) {
+                severity = ComponentConcernSeverity.TRIVIAL_LOW;
+            }
         }
-        if (getCritical().size() > 0) {
-            return "CRITICAL";
-        } else if (getHigh().size() > 0) {
-            return "HIGH";
-        } else if (getMedium().size() > 0) {
-            return "MEDIUM";
-        } else {
-            return "LOW";
-        }
+        return Optional.ofNullable(severity);
     }
-
 }

@@ -56,14 +56,6 @@ public class ComponentVulnerabilitiesConverter {
 
         if (componentVulnerabilities.hasVulnerabilities()) {
             componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
-
-            //TODO: It is possible that we can display the highest vulnerability  in this section here.
-            //  This is the "Current Vulnerabilities" section of the issue tracker.
-            //  If this is the correct location we need to extract the highest vulnerability severity from ComponentVulnerabilities
-            String encodedCurrentVulnerabilities = formatter.encode("Vulnerability Severity: " + componentVulnerabilities.getHighestVulnerabilitySeverity());
-            componentVulnerabilitiesSectionPieces.add(encodedCurrentVulnerabilities);
-            componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
-
             List<String> criticalSection = createSeveritySection(encodedLabelCritical, componentVulnerabilities.getCritical());
             componentVulnerabilitiesSectionPieces.addAll(criticalSection);
             componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
