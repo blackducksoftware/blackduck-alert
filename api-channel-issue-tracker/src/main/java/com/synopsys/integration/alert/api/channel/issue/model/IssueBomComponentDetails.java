@@ -46,7 +46,6 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
         );
     }
 
-    @Deprecated
     private IssueBomComponentDetails(
         LinkableItem component,
         @Nullable LinkableItem componentVersion,

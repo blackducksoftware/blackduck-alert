@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
+@Deprecated(forRemoval = true)
 @Component
 public class FieldModelProcessor {
     private final ConfigurationFieldModelConverter fieldModelConverter;
@@ -65,7 +66,7 @@ public class FieldModelProcessor {
     }
 
     public void performAfterDeleteAction(FieldModel fieldModel) throws AlertException {
-        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
+        Optional<ApiAction> optionalApiAction = descriptorProcessor.retrieveApiAction(fieldModel);
         if (optionalApiAction.isPresent()) {
             ApiAction apiAction = optionalApiAction.get();
             apiAction.afterDeleteAction(fieldModel);

@@ -11,25 +11,21 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
-import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -62,18 +58,20 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         IssueCreationModel creationRequest = IssueCreationModel.simple(topicString, messageString, List.of(postCreateComment), testProjectIssueModel.getProvider());
         IssueTrackerModelHolder<T> creationRequestModelHolder = new IssueTrackerModelHolder<>(List.of(creationRequest), List.of(), List.of());
 
+        IssueTrackerTestActionFieldStatusCreator fieldStatusCreator = new IssueTrackerTestActionFieldStatusCreator();
+
         List<IssueTrackerIssueResponseModel<T>> createdIssues;
         try {
             createdIssues = messageSender.sendMessages(creationRequestModelHolder);
         } catch (AlertException e) {
             logger.debug("Failed to create test issue", e);
-            return new MessageResult("Failed to create issue: " + e.getMessage(), createAlertFieldStatusWithoutField(e.getMessage()));
+            return new MessageResult("Failed to create issue: " + e.getMessage(), fieldStatusCreator.createWithoutField(e.getMessage()));
         }
 
         int createdIssuesSize = createdIssues.size();
         if (createdIssuesSize != 1) {
             String errorMessage = String.format("Expected [1] issue to be created, but there were actually [%d]", createdIssuesSize);
-            return new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage));
+            return new MessageResult(errorMessage, fieldStatusCreator.createWithoutField(errorMessage));
         }
 
         IssueTrackerIssueResponseModel<T> createdIssue = createdIssues.get(0);
@@ -83,7 +81,9 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             return createSuccessMessageResult(existingIssueDetails);
         }
 
-        Optional<MessageResult> optionalResolveFailure = transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel);
+        IssueTrackerTransitionTestAction<T> transitionTestAction = new IssueTrackerTransitionTestAction<>(messageSender, fieldStatusCreator);
+
+        Optional<MessageResult> optionalResolveFailure = transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel);
         if (optionalResolveFailure.isPresent()) {
             return optionalResolveFailure.get();
         }
@@ -92,8 +92,8 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             return createSuccessMessageResult(existingIssueDetails);
         }
 
-        return transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.OPEN, existingIssueDetails, testProjectIssueModel)
-                   .orElseGet(() -> transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails)));
+        return transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.OPEN, existingIssueDetails, testProjectIssueModel)
+                   .orElseGet(() -> transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails)));
     }
 
     protected abstract boolean hasResolveTransition(D distributionDetails);
@@ -102,33 +102,6 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
 
     private MessageResult createSuccessMessageResult(ExistingIssueDetails<T> issueDetails) {
         return new MessageResult(String.format("Success: %s", issueDetails.getIssueUILink()));
-    }
-
-    private Optional<MessageResult> transitionTestIssueOrReturnFailureResult(IssueTrackerMessageSender<T> messageSender, IssueOperation operation, ExistingIssueDetails<T> existingIssueDetails, ProjectIssueModel testProjectIssueModel) {
-        String postTransitionComment = String.format("Successfully tested the %s operation", operation.name());
-        IssueTransitionModel<T> resolveRequest = new IssueTransitionModel<>(existingIssueDetails, operation, List.of(postTransitionComment), testProjectIssueModel);
-        IssueTrackerModelHolder<T> resolveRequestModelHolder = new IssueTrackerModelHolder<>(List.of(), List.of(resolveRequest), List.of());
-
-        List<IssueTrackerIssueResponseModel<T>> transitionedIssues;
-        try {
-            transitionedIssues = messageSender.sendMessages(resolveRequestModelHolder);
-        } catch (IssueMissingTransitionException e) {
-            logger.debug("Failed to transition test issue", e);
-            String validTransitions = StringUtils.join(e.getValidTransitions(), ", ");
-            String errorMessage = String.format("Invalid transition: %s. Please choose a valid transition: %s", e.getMissingTransition(), validTransitions);
-            return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
-        } catch (AlertException e) {
-            logger.debug("Failed to transition test issue", e);
-            String errorMessage = String.format("Failed to perform %s transition: %s", operation.name(), e.getMessage());
-            return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
-        }
-
-        int transitionedIssuesSize = transitionedIssues.size();
-        if (transitionedIssuesSize != 1) {
-            String errorMessage = String.format("Expected [1] issue to be transitioned, but there were actually [%d]", transitionedIssuesSize);
-            return Optional.of(new MessageResult(errorMessage, createAlertFieldStatusWithoutField(errorMessage)));
-        }
-        return Optional.empty();
     }
 
     private ProjectIssueModel createPlaceholderProjectIssueModel(Long blackDuckConfigId) {
@@ -147,11 +120,6 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
             projectVersionItem,
             bomComponentDetails
         );
-    }
-
-    //TODO: This addresses that hasErrors is set in the UI but this should be improved upon since it is not associated with a field
-    private List<AlertFieldStatus> createAlertFieldStatusWithoutField(String errorMessage) {
-        return List.of(AlertFieldStatus.error("none", errorMessage));
     }
 
 }
