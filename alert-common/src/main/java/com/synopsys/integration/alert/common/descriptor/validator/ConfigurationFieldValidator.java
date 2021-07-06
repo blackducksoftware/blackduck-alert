@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.common.descriptor.validator;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -71,15 +72,20 @@ public class ConfigurationFieldValidator {
         }
     }
 
-    public void containsDisallowedRelatedField(String fieldLabel, String disallowedRelatedFieldKey) {
-        if (fieldContainsData(disallowedRelatedFieldKey)) {
-            statuses.add(AlertFieldStatus.error(disallowedRelatedFieldKey, String.format("Cannot be set if %s is already set", fieldLabel)));
+    public void validateRequiredRelatedSet(String fieldKey, String fieldLabel, String... requiredRelatedFieldKeys) {
+        if (fieldContainsData(fieldKey)) {
+            for (String requiredFieldKey : requiredRelatedFieldKeys) {
+                if (fieldContainsNoData(requiredFieldKey)) {
+                    statuses.add(AlertFieldStatus.error(fieldLabel, String.format("Must be set if %s is set", fieldLabel)));
+                }
+            }
         }
     }
 
-    public void containsDisallowedRelatedFields(String fieldLabel, List<String> fieldKeys) {
-        for (String fieldKey : fieldKeys) {
-            containsDisallowedRelatedField(fieldLabel, fieldKey);
+    public void validateBothNotSet(String firstFieldLabel, String firstFieldKey, String secondFieldLabel, String secondFieldKey) {
+        if (fieldContainsData(firstFieldKey) && fieldContainsData(secondFieldKey)) {
+            statuses.add(AlertFieldStatus.error(firstFieldKey, String.format("Cannot be set if %s is already set", secondFieldLabel)));
+            statuses.add(AlertFieldStatus.error(secondFieldKey, String.format("Cannot be set if %s is already set", firstFieldLabel)));
         }
     }
 
@@ -140,5 +146,12 @@ public class ConfigurationFieldValidator {
         return getFieldValues(fieldKey).flatMap(FieldValueModel::getValue).map(Boolean::valueOf);
     }
 
+    public Optional<Collection<String>> getCollectionOfValues(String fieldKey) {
+        return getFieldValues(fieldKey)
+                   .map(FieldValueModel::getValues);
+    }
 
+    public Optional<Long> getLongValue(String fieldKey) {
+        return getFieldValues(fieldKey).flatMap(FieldValueModel::getValue).map(Long::valueOf);
+    }
 }

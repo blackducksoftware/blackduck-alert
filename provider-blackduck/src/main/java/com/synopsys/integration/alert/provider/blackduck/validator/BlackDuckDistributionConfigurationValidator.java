@@ -9,6 +9,10 @@ package com.synopsys.integration.alert.provider.blackduck.validator;
 
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.api.provider.CommonProviderDistributionValidator;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -17,38 +21,34 @@ import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationF
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 
+@Component
 public class BlackDuckDistributionConfigurationValidator implements DistributionConfigurationValidator {
-    /*
-            ConfigField policyNotificationTypeFilter = new EndpointTableSelectField(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
-            DESCRIPTION_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER)
-                                                       .applyColumn(TableSelectColumn.visible("name", "Name", true, true))
-                                                       .applyPaged(true)
-                                                       .applyRequiredRelatedField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES)
-                                                       .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                       .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
-                                                       .applyPanel(PANEL_NOTIFICATION_FILTERING);
+    private final CommonProviderDistributionValidator commonProviderDistributionValidator;
 
-        ConfigField vulnerabilityNotificationTypeFilter = new EndpointSelectField(BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, LABEL_BALCKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
-            DESCRIPTION_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER)
-                                                              .applyMultiSelect(true)
-                                                              .applyClearable(true)
-                                                              .applyPanel(PANEL_NOTIFICATION_FILTERING)
-                                                              .applyRequiredRelatedField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
-
-        return List.of(policyNotificationTypeFilter, vulnerabilityNotificationTypeFilter);
-     */
+    @Autowired
+    public BlackDuckDistributionConfigurationValidator(CommonProviderDistributionValidator commonProviderDistributionValidator) {
+        this.commonProviderDistributionValidator = commonProviderDistributionValidator;
+    }
 
     @Override
     public Set<AlertFieldStatus> validate(JobFieldModel jobFieldModel) {
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromJobFieldModel(jobFieldModel);
 
-        configurationFieldValidator.validateAllOrNoneSet(
-            BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
+        commonProviderDistributionValidator.validate(configurationFieldValidator);
+
+        configurationFieldValidator.validateRequiredRelatedSet(
+            BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, BlackDuckDistributionUIConfig.LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
             ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES,
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
+        configurationFieldValidator.validateRequiredRelatedSet(
+            BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, BlackDuckDistributionUIConfig.LABEL_BALCKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
+            ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
+
         return configurationFieldValidator.getValidationResults();
     }
+
 }
