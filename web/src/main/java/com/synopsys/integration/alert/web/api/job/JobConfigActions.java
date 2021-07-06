@@ -271,6 +271,19 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return Optional.empty();
     }
 
+    private boolean shouldValidateWithDescriptorValidators(JobFieldModel resource) {
+        for (FieldModel fieldModel : resource.getFieldModels()) {
+            boolean descriptorOrValidatorDoNotExist = descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName())
+                                                      .map(Descriptor::getDistributionValidator)
+                                                      .isEmpty();
+
+            if (descriptorOrValidatorDoNotExist) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     protected ValidationActionResponse validateWithoutChecks(JobFieldModel resource) {
         UUID jobId = null;
@@ -281,15 +294,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
         validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
 
-        boolean validateWithValidators = resource.getFieldModels()
-                                                    .stream()
-                                                    .map(FieldModel::getDescriptorName)
-                                                    .map(descriptorProcessor::retrieveDescriptor)
-                                                    .flatMap(Optional::stream)
-                                                    .map(Descriptor::getDistributionValidator)
-                                                    .allMatch(Optional::isPresent);
+        boolean validateWithDescriptorValidators = shouldValidateWithDescriptorValidators(resource);
 
-        if (validateWithValidators) {
+        if (validateWithDescriptorValidators) {
             fieldStatuses = resource.getFieldModels()
                 .stream()
                 .map(FieldModel::getDescriptorName)
