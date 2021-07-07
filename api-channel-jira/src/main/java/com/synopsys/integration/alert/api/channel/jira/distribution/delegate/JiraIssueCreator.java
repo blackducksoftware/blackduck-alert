@@ -99,17 +99,15 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     protected JiraCustomFieldReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
         IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
-        //TODO: 3 conditionals, if none, if policy, if vuln
-        Optional<IssuePolicyDetails> policyDetails = alertIssueSource.getPolicyDetails();
-        Optional<IssueVulnerabilityDetails> vulnerabilityDetails = alertIssueSource.getVulnerabilityDetails();
 
         Optional<String> severity = Optional.empty();
-
+        Optional<IssuePolicyDetails> policyDetails = alertIssueSource.getPolicyDetails();
+        Optional<IssueVulnerabilityDetails> vulnerabilityDetails = alertIssueSource.getVulnerabilityDetails();
         if (policyDetails.isPresent()) {
             severity = Optional.ofNullable(policyDetails.get().getSeverity().getPolicyLabel());
         }
         if (vulnerabilityDetails.isPresent()) {
-            severity = Optional.ofNullable(vulnerabilityDetails.get().getHighestVulnerabilityAddedOrUpdated());
+            severity = vulnerabilityDetails.get().getHighestVulnerabilityAddedOrUpdated();
         }
 
         return new JiraCustomFieldReplacementValues(
