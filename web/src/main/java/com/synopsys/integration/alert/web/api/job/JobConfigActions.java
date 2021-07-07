@@ -275,7 +275,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         for (FieldModel fieldModel : resource.getFieldModels()) {
             boolean descriptorOrValidatorDoNotExist = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
                                                                       .flatMap(descriptorMap::getDescriptor)
-                                                                      .map(Descriptor::getDistributionValidator)
+                                                                      .flatMap(Descriptor::getDistributionValidator)
                                                                       .isEmpty();
 
             if (descriptorOrValidatorDoNotExist) {
