@@ -236,7 +236,7 @@ public class ProjectIssueModelConverter {
                 .map(ComponentConcernSeverity::getVulnerabilityLabel)
                 .map(formatter::encode)
                 .map(severity -> encodedSeverityStatus + severity)
-                .ifPresent(severityStatusSectionPieces::add);
+                .ifPresentOrElse(severityStatusSectionPieces::add, () -> severityStatusSectionPieces.add(encodedSeverityStatus + "None"));
             severityStatusSectionPieces.add(formatter.getLineSeparator());
             severityStatusSectionPieces.add(formatter.getSectionSeparator());
             severityStatusSectionPieces.add(formatter.getLineSeparator());
