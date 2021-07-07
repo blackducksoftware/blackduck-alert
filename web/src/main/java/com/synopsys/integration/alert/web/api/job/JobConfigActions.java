@@ -271,6 +271,20 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return Optional.empty();
     }
 
+    private boolean shouldValidateWithDescriptorValidators(JobFieldModel resource) {
+        for (FieldModel fieldModel : resource.getFieldModels()) {
+            boolean descriptorOrValidatorDoNotExist = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+                                                                      .flatMap(descriptorMap::getDescriptor)
+                                                                      .flatMap(Descriptor::getDistributionValidator)
+                                                                      .isEmpty();
+
+            if (descriptorOrValidatorDoNotExist) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     protected ValidationActionResponse validateWithoutChecks(JobFieldModel resource) {
         UUID jobId = null;
@@ -280,7 +294,14 @@ public class JobConfigActions extends AbstractJobResourceActions {
         List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
 
         validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
-        fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+
+        boolean validateWithDescriptorValidators = shouldValidateWithDescriptorValidators(resource);
+
+        if (validateWithDescriptorValidators) {
+            fieldStatuses = validateWithDescriptorValidators(resource);
+        } else {
+            fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
+        }
 
         if (!fieldStatuses.isEmpty()) {
             ValidationResponseModel responseModel = ValidationResponseModel.fromStatusCollection("Invalid Configuration", fieldStatuses);
@@ -319,12 +340,35 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            List<AlertFieldStatus> fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
+            List<AlertFieldStatus> fieldErrors;
+            if (shouldValidateWithDescriptorValidators(jobFieldModel)) {
+                fieldErrors = validateWithDescriptorValidators(jobFieldModel);
+            } else {
+                fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
+            }
+
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));
             }
         }
         return new ActionResponse<>(HttpStatus.OK, errorsList);
+    }
+
+    private List<AlertFieldStatus> validateWithDescriptorValidators(JobFieldModel jobFieldModel) {
+        List<AlertFieldStatus> fieldErrors;
+        fieldErrors = jobFieldModel.getFieldModels()
+                          .stream()
+                          .map(FieldModel::getDescriptorName)
+                          .map(descriptorMap::getDescriptorKey)
+                          .flatMap(Optional::stream)
+                          .map(descriptorMap::getDescriptor)
+                          .flatMap(Optional::stream)
+                          .map(Descriptor::getDistributionValidator)
+                          .flatMap(Optional::stream)
+                          .map(validator -> validator.validate(jobFieldModel))
+                          .flatMap(Collection::stream)
+                          .collect(Collectors.toList());
+        return fieldErrors;
     }
 
     @Override

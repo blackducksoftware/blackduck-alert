@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.validator;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -23,13 +22,12 @@ public class JiraCloudGlobalConfigurationValidator implements GlobalConfiguratio
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> statuses = new HashSet<>();
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        configurationFieldValidator.validateIsARequiredField(JiraCloudDescriptor.KEY_JIRA_URL).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsARequiredField(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsARequiredField(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_URL);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
 
-        return statuses;
+        return configurationFieldValidator.getValidationResults();
     }
 
 }

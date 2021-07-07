@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.api.provider;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
@@ -25,12 +24,6 @@ public abstract class ProviderDescriptor extends Descriptor {
 
     public ProviderDescriptor(ProviderKey providerKey, ProviderGlobalUIConfig providerUiConfig, ProviderDistributionUIConfig distributionUIConfig) {
         super(providerKey, DescriptorType.PROVIDER);
-        addGlobalUiConfig(providerUiConfig);
-        addDistributionUiConfig(distributionUIConfig);
-    }
-
-    public ProviderDescriptor(ProviderKey providerKey, ProviderGlobalUIConfig providerUiConfig, ProviderDistributionUIConfig distributionUIConfig, GlobalConfigurationValidator globalConfigurationValidator) {
-        super(providerKey, DescriptorType.PROVIDER, globalConfigurationValidator);
         addGlobalUiConfig(providerUiConfig);
         addDistributionUiConfig(distributionUIConfig);
     }

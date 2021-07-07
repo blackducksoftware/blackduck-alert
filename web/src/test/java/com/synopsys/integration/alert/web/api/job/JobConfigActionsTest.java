@@ -35,6 +35,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -624,6 +626,16 @@ public class JobConfigActionsTest {
             @Override
             public DescriptorKey getDescriptorKey() {
                 return descriptorKey;
+            }
+
+            @Override
+            public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+                return Optional.empty();
             }
         };
         UIConfig uiConfig = new UIConfig("label", "description", "url", "componentNamespace") {

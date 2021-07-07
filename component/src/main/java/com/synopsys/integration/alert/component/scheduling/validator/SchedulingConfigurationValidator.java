@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.component.scheduling.validator;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,26 +22,23 @@ import com.synopsys.integration.alert.component.scheduling.descriptor.Scheduling
 public class SchedulingConfigurationValidator implements GlobalConfigurationValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> statuses = new HashSet<>();
-
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        List<AlertFieldStatus> alertFieldStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
             SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY,
             SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
         ));
-        statuses.addAll(alertFieldStatuses);
 
-        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsAValidOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours());
+        configurationFieldValidator.validateIsAValidOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency());
 
-        return statuses;
+        return configurationFieldValidator.getValidationResults();
     }
 
-    private List<String> getDigestHours() {
-        return List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23");
+    private Set<String> getDigestHours() {
+        return Set.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23");
     }
 
-    private List<String> getPurgeFrequency() {
-        return List.of("1", "2", "3", "4", "5", "6", "7");
+    private Set<String> getPurgeFrequency() {
+        return Set.of("1", "2", "3", "4", "5", "6", "7");
     }
 }

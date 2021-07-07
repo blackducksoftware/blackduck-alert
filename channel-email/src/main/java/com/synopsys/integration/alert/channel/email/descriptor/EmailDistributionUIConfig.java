@@ -30,17 +30,17 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
-    private static final String LABEL_SUBJECT_LINE = "Subject Line";
-    private static final String LABEL_ADDITIONAL_ADDRESSES = "Additional Email Addresses";
-    private static final String LABEL_ADDITIONAL_ADDRESSES_ONLY = "Additional Email Addresses Only";
-    private static final String LABEL_PROJECT_OWNER_ONLY = "Project Owner Only";
-    private static final String LABEL_ATTACHMENT_FORMAT = "Attachment File Type";
+    public static final String LABEL_SUBJECT_LINE = "Subject Line";
+    public static final String LABEL_ADDITIONAL_ADDRESSES = "Additional Email Addresses";
+    public static final String LABEL_ADDITIONAL_ADDRESSES_ONLY = "Additional Email Addresses Only";
+    public static final String LABEL_PROJECT_OWNER_ONLY = "Project Owner Only";
+    public static final String LABEL_ATTACHMENT_FORMAT = "Attachment File Type";
 
-    private static final String DESCRIPTION_EMAIL_SUBJECT_LINE = "The subject line to use in the emails sent for this distribution job.";
-    private static final String DESCRIPTION_ADDITIONAL_ADDRESSES = "Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to.";
-    private static final String DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY = "Rather than sending emails to users assigned to the configured projects, send emails to only the users selected in 'Additional Email Addresses'.";
-    private static final String DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
-    private static final String DESCRIPTION_ATTACHMENT_FORMAT = "If a file type is selected, a file of that type, representing the message content, will be attached to the email.";
+    public static final String DESCRIPTION_EMAIL_SUBJECT_LINE = "The subject line to use in the emails sent for this distribution job.";
+    public static final String DESCRIPTION_ADDITIONAL_ADDRESSES = "Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to.";
+    public static final String DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY = "Rather than sending emails to users assigned to the configured projects, send emails to only the users selected in 'Additional Email Addresses'.";
+    public static final String DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
+    public static final String DESCRIPTION_ATTACHMENT_FORMAT = "If a file type is selected, a file of that type, representing the message content, will be attached to the email.";
 
     public EmailDistributionUIConfig() {
         super(ChannelKeys.EMAIL, EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL);

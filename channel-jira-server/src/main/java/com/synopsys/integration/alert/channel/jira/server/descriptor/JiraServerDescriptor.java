@@ -7,11 +7,15 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -37,9 +41,21 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String JIRA_URL = "jira_server";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Server instance that Alert will send issue updates to.";
 
+    private final JiraServerGlobalConfigurationValidator jiraServerGlobalValidator;
+
     @Autowired
     public JiraServerDescriptor(JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig, JiraServerGlobalConfigurationValidator jiraServerGlobalValidator) {
-        super(ChannelKeys.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig, jiraServerGlobalValidator);
+        super(ChannelKeys.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
+        this.jiraServerGlobalValidator = jiraServerGlobalValidator;
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.of(jiraServerGlobalValidator);
+    }
+
+    @Override
+    public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+        return Optional.empty();
+    }
 }
