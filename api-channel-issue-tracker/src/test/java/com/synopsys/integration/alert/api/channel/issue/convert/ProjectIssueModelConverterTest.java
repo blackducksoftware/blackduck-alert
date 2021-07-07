@@ -72,6 +72,27 @@ public class ProjectIssueModelConverterTest {
     }
 
     @Test
+    public void toIssueCreationModelWithVulnerabilitySeverityTest() {
+        MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
+        ProjectIssueModelConverter converter = new ProjectIssueModelConverter(formatter);
+
+        IssueVulnerabilityModel vuln = createIssueVulnerability(ComponentConcernSeverity.MAJOR_HIGH, "CVE-13579", "https://a-url");
+        IssueVulnerabilityDetails vulnerabilityDetails = new IssueVulnerabilityDetails(false, List.of(), List.of(vuln), List.of());
+        ComponentVulnerabilities componentVulnerabilities = new ComponentVulnerabilities(
+            List.of(new LinkableItem("VulnerabilityCritical", "CVE-004")),
+            List.of(new LinkableItem("VulnerabilityHigh", "CVE-005")),
+            List.of(new LinkableItem("VulnerabilityMedium", "CVE-006")),
+            List.of(new LinkableItem("VulnerabilityLow", "CVE-007")));
+        AbstractBomComponentDetails vulnerableBomComponentDetails = createBomComponentDetailsWithComponentVulnerabilities(componentVulnerabilities);
+        IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(vulnerableBomComponentDetails);
+
+        ProjectIssueModel projectIssueModel = ProjectIssueModel.vulnerability(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, issueBomComponentDetails, vulnerabilityDetails);
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel);
+
+        assertTrue(issueCreationModel.getDescription().contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability severity in the description to be CRITICAL");
+    }
+
+    @Test
     public void toIssueTransitionModelOpenTest() {
         IssueTransitionModel<String> issueTransitionModel = basicIssueTransitionModelTest(ItemOperation.ADD);
         assertEquals(IssueOperation.OPEN, issueTransitionModel.getIssueOperation());
@@ -116,7 +137,7 @@ public class ProjectIssueModelConverterTest {
         IssueCommentModel<String> issueCommentModel = converter.toIssueCommentModel(EXISTING_ISSUE_DETAILS, projectIssueModel);
         assertEquals(1, issueCommentModel.getComments().size());
         String comments = issueCommentModel.getComments().get(0);
-        assertTrue(comments.contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability to be CRITICAL");
+        assertTrue(comments.contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability severity in the comment to be CRITICAL");
     }
 
     @Test
