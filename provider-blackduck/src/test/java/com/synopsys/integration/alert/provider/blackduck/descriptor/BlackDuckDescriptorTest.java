@@ -7,12 +7,14 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.api.provider.CommonProviderDistributionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckDistributionConfigurationValidator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckGlobalConfigurationValidator;
 
 public class BlackDuckDescriptorTest {
@@ -28,7 +30,9 @@ public class BlackDuckDescriptorTest {
         BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig(blackDuckProviderKey, encryptionValidator, configurationAccessor);
         blackDuckProviderUIConfig.setConfigFields();
         BlackDuckGlobalConfigurationValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationValidator(configurationAccessor);
-        BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig, blackDuckGlobalConfigurationValidator);
+        CommonProviderDistributionValidator commonProviderDistributionValidator = new CommonProviderDistributionValidator(configurationAccessor);
+        BlackDuckDistributionConfigurationValidator blackDuckDistributionConfigurationValidator = new BlackDuckDistributionConfigurationValidator(commonProviderDistributionValidator);
+        BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig, blackDuckGlobalConfigurationValidator, blackDuckDistributionConfigurationValidator);
         Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
         assertEquals(5, fields.size());
 
