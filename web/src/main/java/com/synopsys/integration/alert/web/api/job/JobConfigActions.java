@@ -298,18 +298,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         boolean validateWithDescriptorValidators = shouldValidateWithDescriptorValidators(resource);
 
         if (validateWithDescriptorValidators) {
-            fieldStatuses = resource.getFieldModels()
-                .stream()
-                .map(FieldModel::getDescriptorName)
-                .map(descriptorMap::getDescriptorKey)
-                .flatMap(Optional::stream)
-                .map(descriptorMap::getDescriptor)
-                .flatMap(Optional::stream)
-                .map(Descriptor::getDistributionValidator)
-                .flatMap(Optional::stream)
-                .map(validator -> validator.validate(resource))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+            fieldStatuses = validateWithDescriptorValidators(resource);
         } else {
             fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
         }
@@ -353,18 +342,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors;
             if (shouldValidateWithDescriptorValidators(jobFieldModel)) {
-                fieldErrors = jobFieldModel.getFieldModels()
-                                  .stream()
-                                  .map(FieldModel::getDescriptorName)
-                                  .map(descriptorMap::getDescriptorKey)
-                                  .flatMap(Optional::stream)
-                                  .map(descriptorMap::getDescriptor)
-                                  .flatMap(Optional::stream)
-                                  .map(Descriptor::getDistributionValidator)
-                                  .flatMap(Optional::stream)
-                                  .map(validator -> validator.validate(jobFieldModel))
-                                  .flatMap(Collection::stream)
-                                  .collect(Collectors.toList());
+                fieldErrors = validateWithDescriptorValidators(jobFieldModel);
             } else {
                 fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
             }
@@ -374,6 +352,23 @@ public class JobConfigActions extends AbstractJobResourceActions {
             }
         }
         return new ActionResponse<>(HttpStatus.OK, errorsList);
+    }
+
+    private List<AlertFieldStatus> validateWithDescriptorValidators(JobFieldModel jobFieldModel) {
+        List<AlertFieldStatus> fieldErrors;
+        fieldErrors = jobFieldModel.getFieldModels()
+                          .stream()
+                          .map(FieldModel::getDescriptorName)
+                          .map(descriptorMap::getDescriptorKey)
+                          .flatMap(Optional::stream)
+                          .map(descriptorMap::getDescriptor)
+                          .flatMap(Optional::stream)
+                          .map(Descriptor::getDistributionValidator)
+                          .flatMap(Optional::stream)
+                          .map(validator -> validator.validate(jobFieldModel))
+                          .flatMap(Collection::stream)
+                          .collect(Collectors.toList());
+        return fieldErrors;
     }
 
     @Override

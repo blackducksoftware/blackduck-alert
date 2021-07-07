@@ -28,17 +28,17 @@ public class SchedulingConfigurationValidator implements GlobalConfigurationVali
             SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
         ));
 
-        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours());
-        configurationFieldValidator.validateIsAnOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency());
+        configurationFieldValidator.validateValueIn(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours());
+        configurationFieldValidator.validateValueIn(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency());
 
         return configurationFieldValidator.getValidationResults();
     }
 
-    private List<String> getDigestHours() {
-        return List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23");
+    private Set<String> getDigestHours() {
+        return Set.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23");
     }
 
-    private List<String> getPurgeFrequency() {
-        return List.of("1", "2", "3", "4", "5", "6", "7");
+    private Set<String> getPurgeFrequency() {
+        return Set.of("1", "2", "3", "4", "5", "6", "7");
     }
 }

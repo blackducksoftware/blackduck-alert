@@ -63,15 +63,6 @@ public class ConfigurationFieldValidator {
         }
     }
 
-    public void validateAllOrNoneSet(String... relatedFieldKeys) {
-        boolean anyFieldSet = Arrays.stream(relatedFieldKeys)
-                                .anyMatch(this::fieldContainsData);
-
-        if (anyFieldSet) {
-            validateRequiredFieldsAreNotBlank(Arrays.asList(relatedFieldKeys));
-        }
-    }
-
     public void validateRequiredRelatedSet(String fieldKey, String fieldLabel, String... requiredRelatedFieldKeys) {
         if (fieldContainsData(fieldKey)) {
             for (String requiredFieldKey : requiredRelatedFieldKeys) {
@@ -99,11 +90,9 @@ public class ConfigurationFieldValidator {
         }
     }
 
-    public void validateIsAnOption(String fieldKey, List<String> options) {
-        boolean isValueInOptions = getFieldValues(fieldKey)
-                                       .map(model -> model.getValues()
-                                                         .stream()
-                                                         .anyMatch(options::contains))
+    public void validateValueIn(String fieldKey, Set<String> options) {
+        boolean isValueInOptions = getCollectionOfValues(fieldKey)
+                                       .map(options::containsAll)
                                        .orElse(false);
         if (!isValueInOptions) {
             statuses.add(AlertFieldStatus.error(fieldKey, "Invalid option selected"));

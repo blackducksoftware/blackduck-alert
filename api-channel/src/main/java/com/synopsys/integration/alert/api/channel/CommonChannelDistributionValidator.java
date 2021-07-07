@@ -7,10 +7,15 @@
  */
 package com.synopsys.integration.alert.api.channel;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 @Component
 public class CommonChannelDistributionValidator {
@@ -18,6 +23,12 @@ public class CommonChannelDistributionValidator {
         configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_NAME);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_FREQUENCY);
+
+        Set<String> validValues = Arrays.stream(FrequencyType.values())
+                                           .map(FrequencyType::name)
+                                            .collect(Collectors.toSet());
+        configurationFieldValidator.validateValueIn(ChannelDistributionUIConfig.KEY_FREQUENCY, validValues);
+
         configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
     }
 
