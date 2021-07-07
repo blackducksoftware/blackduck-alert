@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.common.descriptor.validator;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -73,13 +75,6 @@ public class ConfigurationFieldValidator {
         }
     }
 
-    public void validateBothNotSet(String firstFieldLabel, String firstFieldKey, String secondFieldLabel, String secondFieldKey) {
-        if (fieldContainsData(firstFieldKey) && fieldContainsData(secondFieldKey)) {
-            statuses.add(AlertFieldStatus.error(firstFieldKey, String.format("Cannot be set if %s is already set", secondFieldLabel)));
-            statuses.add(AlertFieldStatus.error(secondFieldKey, String.format("Cannot be set if %s is already set", firstFieldLabel)));
-        }
-    }
-
     public void validateIsANumber(String fieldKey) {
         boolean isANumberOrEmpty = getStringValue(fieldKey)
                                        .map(NumberUtils::isCreatable)
@@ -90,11 +85,14 @@ public class ConfigurationFieldValidator {
         }
     }
 
-    public void validateValueIn(String fieldKey, Set<String> options) {
-        boolean isValueInOptions = getCollectionOfValues(fieldKey)
-                                       .map(options::containsAll)
-                                       .orElse(false);
-        if (!isValueInOptions) {
+    public void validateIsAValidOption(String fieldKey, Set<String> validOptions) {
+        boolean allValuesInValidOptions = getCollectionOfValues(fieldKey)
+                                       .orElse(Collections.emptySet())
+                                       .stream()
+                                       .map(StringUtils::trimToEmpty)
+                                       .allMatch(option -> validOptions.stream().anyMatch(validOption -> StringUtils.equalsIgnoreCase(option, validOption)));
+
+        if (!allValuesInValidOptions) {
             statuses.add(AlertFieldStatus.error(fieldKey, "Invalid option selected"));
         }
     }

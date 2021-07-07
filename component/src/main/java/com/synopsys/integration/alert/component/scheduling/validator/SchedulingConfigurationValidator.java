@@ -28,8 +28,8 @@ public class SchedulingConfigurationValidator implements GlobalConfigurationVali
             SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS
         ));
 
-        configurationFieldValidator.validateValueIn(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours());
-        configurationFieldValidator.validateValueIn(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency());
+        configurationFieldValidator.validateIsAValidOption(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, getDigestHours());
+        configurationFieldValidator.validateIsAValidOption(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, getPurgeFrequency());
 
         return configurationFieldValidator.getValidationResults();
     }

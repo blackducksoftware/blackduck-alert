@@ -41,16 +41,21 @@ public class EmailDistributionConfigurationValidator implements DistributionConf
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
-        configurationFieldValidator.validateBothNotSet(
-            EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES_ONLY, EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY,
-            EmailDistributionUIConfig.LABEL_PROJECT_OWNER_ONLY, EmailDescriptor.KEY_PROJECT_OWNER_ONLY
-        );
-
         boolean additionalEmailsOnly = configurationFieldValidator.getBooleanValue(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY)
                                            .orElse(false);
+        boolean projectOwnerOnly = configurationFieldValidator.getBooleanValue(EmailDescriptor.KEY_PROJECT_OWNER_ONLY)
+                                           .orElse(false);
+
+        if (additionalEmailsOnly && projectOwnerOnly) {
+            configurationFieldValidator.addValidationResults(
+                AlertFieldStatus.error(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, String.format("Cannot be set if %s is already set", EmailDistributionUIConfig.LABEL_PROJECT_OWNER_ONLY)),
+                AlertFieldStatus.error(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, String.format("Cannot be set if %s is already set", EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES_ONLY))
+            );
+        }
 
         if (additionalEmailsOnly) {
-            configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
+            configurationFieldValidator.validateRequiredRelatedSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES,
+                EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
         }
 
         return configurationFieldValidator.getValidationResults();
