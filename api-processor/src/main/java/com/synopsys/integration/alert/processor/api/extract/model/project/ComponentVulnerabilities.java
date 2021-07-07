@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
@@ -49,4 +50,19 @@ public class ComponentVulnerabilities extends AlertSerializableModel {
         return !critical.isEmpty() || !high.isEmpty() || !medium.isEmpty() || !low.isEmpty();
     }
 
+    public Optional<ComponentConcernSeverity> computeHighestSeverity() {
+        ComponentConcernSeverity severity = null;
+        if (hasVulnerabilities()) {
+            if (!getCritical().isEmpty()) {
+                severity = ComponentConcernSeverity.CRITICAL;
+            } else if (!getHigh().isEmpty()) {
+                severity = ComponentConcernSeverity.MAJOR_HIGH;
+            } else if (!getMedium().isEmpty()) {
+                severity = ComponentConcernSeverity.MINOR_MEDIUM;
+            } else if (!getLow().isEmpty()) {
+                severity = ComponentConcernSeverity.TRIVIAL_LOW;
+            }
+        }
+        return Optional.ofNullable(severity);
+    }
 }

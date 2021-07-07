@@ -34,18 +34,8 @@ public class ProjectIssueModelConverterTest {
     private static final LinkableItem COMPONENT_ITEM = new LinkableItem("Component", "A BOM component");
     private static final LinkableItem COMPONENT_VERSION_ITEM = new LinkableItem("Component Version", "1.0.0-SNAPSHOT");
     private static final ComponentPolicy COMPONENT_POLICY = new ComponentPolicy("A policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, false);
-    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new AbstractBomComponentDetails(
-        COMPONENT_ITEM,
-        COMPONENT_VERSION_ITEM,
-        new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of(new LinkableItem("Vulnerability", "CVE-007"))),
-        List.of(COMPONENT_POLICY),
-        new LinkableItem("License", "A software license", "https://license-url"),
-        "Example Usage",
-        List.of(
-            new LinkableItem("Attribute", "Example attribute")
-        ),
-        "https://issues-url"
-    ) {};
+    private static final ComponentVulnerabilities COMPONENT_VULNERABILITIES = new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of(new LinkableItem("Vulnerability", "CVE-007")));
+    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = createBomComponentDetailsWithComponentVulnerabilities(COMPONENT_VULNERABILITIES);
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
     private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("issue-id", "issue-key", "a summary", "https://ui-link");
 
@@ -82,6 +72,27 @@ public class ProjectIssueModelConverterTest {
     }
 
     @Test
+    public void toIssueCreationModelWithVulnerabilitySeverityTest() {
+        MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
+        ProjectIssueModelConverter converter = new ProjectIssueModelConverter(formatter);
+
+        IssueVulnerabilityModel vuln = createIssueVulnerability(ComponentConcernSeverity.MAJOR_HIGH, "CVE-13579", "https://a-url");
+        IssueVulnerabilityDetails vulnerabilityDetails = new IssueVulnerabilityDetails(false, List.of(), List.of(vuln), List.of());
+        ComponentVulnerabilities componentVulnerabilities = new ComponentVulnerabilities(
+            List.of(new LinkableItem("VulnerabilityCritical", "CVE-004")),
+            List.of(new LinkableItem("VulnerabilityHigh", "CVE-005")),
+            List.of(new LinkableItem("VulnerabilityMedium", "CVE-006")),
+            List.of(new LinkableItem("VulnerabilityLow", "CVE-007")));
+        AbstractBomComponentDetails vulnerableBomComponentDetails = createBomComponentDetailsWithComponentVulnerabilities(componentVulnerabilities);
+        IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(vulnerableBomComponentDetails);
+
+        ProjectIssueModel projectIssueModel = ProjectIssueModel.vulnerability(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, issueBomComponentDetails, vulnerabilityDetails);
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel);
+
+        assertTrue(issueCreationModel.getDescription().contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability severity in the description to be CRITICAL");
+    }
+
+    @Test
     public void toIssueTransitionModelOpenTest() {
         IssueTransitionModel<String> issueTransitionModel = basicIssueTransitionModelTest(ItemOperation.ADD);
         assertEquals(IssueOperation.OPEN, issueTransitionModel.getIssueOperation());
@@ -104,6 +115,48 @@ public class ProjectIssueModelConverterTest {
         assertEquals(EXISTING_ISSUE_DETAILS, issueCommentModel.getExistingIssueDetails());
         assertEquals(projectIssueModel, issueCommentModel.getSource().orElse(null));
         assertTrue(issueCommentModel.getComments().size() > 0, "Expected non-zero number of comments");
+    }
+
+    @Test
+    public void toIssueCommentModelWithVulnerabilitySeverityTest() {
+        IssueVulnerabilityModel vuln1 = createIssueVulnerability(ComponentConcernSeverity.MAJOR_HIGH, "CVE-13579", "https://a-url");
+        IssueVulnerabilityDetails vulnerabilityDetails = new IssueVulnerabilityDetails(false, List.of(), List.of(vuln1), List.of());
+        ComponentVulnerabilities componentVulnerabilities = new ComponentVulnerabilities(
+            List.of(new LinkableItem("VulnerabilityCritical", "CVE-004")),
+            List.of(new LinkableItem("VulnerabilityHigh", "CVE-005")),
+            List.of(new LinkableItem("VulnerabilityMedium", "CVE-006")),
+            List.of(new LinkableItem("VulnerabilityLow", "CVE-007")));
+        AbstractBomComponentDetails vulnerableBomComponentDetails = createBomComponentDetailsWithComponentVulnerabilities(componentVulnerabilities);
+        IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(vulnerableBomComponentDetails);
+
+        ProjectIssueModel projectIssueModel = ProjectIssueModel.vulnerability(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, issueBomComponentDetails, vulnerabilityDetails);
+
+        MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
+        ProjectIssueModelConverter converter = new ProjectIssueModelConverter(formatter);
+
+        IssueCommentModel<String> issueCommentModel = converter.toIssueCommentModel(EXISTING_ISSUE_DETAILS, projectIssueModel);
+        assertEquals(1, issueCommentModel.getComments().size());
+        String comments = issueCommentModel.getComments().get(0);
+        assertTrue(comments.contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability severity in the comment to be CRITICAL");
+    }
+
+    @Test
+    public void toIssueCommentModelWithEmptyVulnerabilitySeverityTest() {
+        IssueVulnerabilityModel vuln1 = createIssueVulnerability(ComponentConcernSeverity.MAJOR_HIGH, "CVE-13579", "https://a-url");
+        IssueVulnerabilityDetails vulnerabilityDetails = new IssueVulnerabilityDetails(false, List.of(), List.of(vuln1), List.of());
+        ComponentVulnerabilities componentVulnerabilities = new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of());
+        AbstractBomComponentDetails vulnerableBomComponentDetails = createBomComponentDetailsWithComponentVulnerabilities(componentVulnerabilities);
+        IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(vulnerableBomComponentDetails);
+
+        ProjectIssueModel projectIssueModel = ProjectIssueModel.vulnerability(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, issueBomComponentDetails, vulnerabilityDetails);
+
+        MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
+        ProjectIssueModelConverter converter = new ProjectIssueModelConverter(formatter);
+
+        IssueCommentModel<String> issueCommentModel = converter.toIssueCommentModel(EXISTING_ISSUE_DETAILS, projectIssueModel);
+        assertEquals(1, issueCommentModel.getComments().size());
+        String comments = issueCommentModel.getComments().get(0);
+        assertTrue(comments.contains("None"), "Expected missing vulnerability severity to return Severity Status: None");
     }
 
     private IssueCreationModel basicIssueCreationModelTest(ProjectIssueModel projectIssueModel) {
@@ -139,4 +192,18 @@ public class ProjectIssueModelConverterTest {
         return new IssueVulnerabilityModel(severity, vulnerability);
     }
 
+    private static AbstractBomComponentDetails createBomComponentDetailsWithComponentVulnerabilities(ComponentVulnerabilities componentVulnerabilities) {
+        return new AbstractBomComponentDetails(
+            COMPONENT_ITEM,
+            COMPONENT_VERSION_ITEM,
+            componentVulnerabilities,
+            List.of(COMPONENT_POLICY),
+            new LinkableItem("License", "A software license", "https://license-url"),
+            "Example Usage",
+            List.of(
+                new LinkableItem("Attribute", "Example attribute")
+            ),
+            "https://issues-url"
+        ) {};
+    }
 }

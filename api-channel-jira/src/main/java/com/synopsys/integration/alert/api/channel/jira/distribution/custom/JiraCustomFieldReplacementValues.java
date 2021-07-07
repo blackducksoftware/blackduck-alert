@@ -23,9 +23,10 @@ public class JiraCustomFieldReplacementValues {
     private final String projectVersionName;
     private final String componentName;
     private final String componentVersionName;
+    private final String severity;
 
     public static JiraCustomFieldReplacementValues trivial(LinkableItem provider) {
-        return new JiraCustomFieldReplacementValues(provider.getLabel(), DEFAULT_REPLACEMENT, null, null, null);
+        return new JiraCustomFieldReplacementValues(provider.getLabel(), DEFAULT_REPLACEMENT, null, null, null, null);
     }
 
     public JiraCustomFieldReplacementValues(
@@ -33,13 +34,15 @@ public class JiraCustomFieldReplacementValues {
         String projectName,
         @Nullable String projectVersionName,
         @Nullable String componentName,
-        @Nullable String componentVersionName
+        @Nullable String componentVersionName,
+        @Nullable String severity
     ) {
         this.providerName = providerName;
         this.projectName = projectName;
         this.projectVersionName = StringUtils.trimToNull(projectVersionName);
         this.componentName = StringUtils.trimToNull(componentName);
         this.componentVersionName = StringUtils.trimToNull(componentVersionName);
+        this.severity = StringUtils.trimToNull(severity);
     }
 
     public String getProviderName() {
@@ -60,6 +63,10 @@ public class JiraCustomFieldReplacementValues {
 
     public Optional<String> getComponentVersionName() {
         return Optional.ofNullable(componentVersionName);
+    }
+
+    public Optional<String> getSeverity() {
+        return Optional.ofNullable(severity);
     }
 
 }
