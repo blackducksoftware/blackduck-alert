@@ -38,9 +38,9 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public abstract class AbstractJobResourceActions {
     private static final EnumSet<DescriptorType> ALLOWED_JOB_DESCRIPTOR_TYPES = EnumSet.of(DescriptorType.PROVIDER, DescriptorType.CHANNEL);
-    private final AuthorizationManager authorizationManager;
-    private final DescriptorAccessor descriptorAccessor;
-    private final DescriptorMap descriptorMap;
+    protected final AuthorizationManager authorizationManager;
+    protected final DescriptorAccessor descriptorAccessor;
+    protected final DescriptorMap descriptorMap;
 
     public AbstractJobResourceActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, DescriptorMap descriptorMap) {
         this.authorizationManager = authorizationManager;

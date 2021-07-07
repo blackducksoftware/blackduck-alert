@@ -273,9 +273,10 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     private boolean shouldValidateWithDescriptorValidators(JobFieldModel resource) {
         for (FieldModel fieldModel : resource.getFieldModels()) {
-            boolean descriptorOrValidatorDoNotExist = descriptorProcessor.retrieveDescriptor(fieldModel.getDescriptorName())
-                                                      .map(Descriptor::getDistributionValidator)
-                                                      .isEmpty();
+            boolean descriptorOrValidatorDoNotExist = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
+                                                                      .flatMap(descriptorMap::getDescriptor)
+                                                                      .map(Descriptor::getDistributionValidator)
+                                                                      .isEmpty();
 
             if (descriptorOrValidatorDoNotExist) {
                 return false;
@@ -300,7 +301,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
             fieldStatuses = resource.getFieldModels()
                 .stream()
                 .map(FieldModel::getDescriptorName)
-                .map(descriptorProcessor::retrieveDescriptor)
+                .map(descriptorMap::getDescriptorKey)
+                .flatMap(Optional::stream)
+                .map(descriptorMap::getDescriptor)
                 .flatMap(Optional::stream)
                 .map(Descriptor::getDistributionValidator)
                 .flatMap(Optional::stream)
@@ -348,7 +351,24 @@ public class JobConfigActions extends AbstractJobResourceActions {
         }
 
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            List<AlertFieldStatus> fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
+            List<AlertFieldStatus> fieldErrors;
+            if (shouldValidateWithDescriptorValidators(jobFieldModel)) {
+                fieldErrors = jobFieldModel.getFieldModels()
+                                  .stream()
+                                  .map(FieldModel::getDescriptorName)
+                                  .map(descriptorMap::getDescriptorKey)
+                                  .flatMap(Optional::stream)
+                                  .map(descriptorMap::getDescriptor)
+                                  .flatMap(Optional::stream)
+                                  .map(Descriptor::getDistributionValidator)
+                                  .flatMap(Optional::stream)
+                                  .map(validator -> validator.validate(jobFieldModel))
+                                  .flatMap(Collection::stream)
+                                  .collect(Collectors.toList());
+            } else {
+                fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
+            }
+
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));
             }
