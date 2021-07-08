@@ -65,6 +65,12 @@ public class TestProperties {
         return getProperties().getProperty(propertyKey);
     }
 
+    public String getBlackDuckAPIToken() {
+        //Retrieving TEST_BLACKDUCK_PROVIDER_API_KEY if it is not set getting BLACKDUCK_API_TOKEN
+        return getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY)
+                   .orElse(getProperty(TestPropertyKey.BLACKDUCK_API_TOKEN));
+    }
+
     public Optional<String> getOptionalProperty(TestPropertyKey propertyKey) {
         return getOptionalProperty(propertyKey.getPropertyKey());
     }

@@ -13,6 +13,7 @@ public enum TestPropertyKey {
     TEST_BLACKDUCK_PROVIDER_USERNAME("blackduck.provider.username"),
     TEST_BLACKDUCK_PROVIDER_PASSWORD("blackduck.provider.password"),
     TEST_BLACKDUCK_PROVIDER_API_KEY("blackduck.provider.api.key"),
+    BLACKDUCK_API_TOKEN("blackduck.provider.api.key"),
     TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT("blackduck.provider.trust.cert"),
     TEST_BLACKDUCK_PROVIDER_TIMEOUT("blackduck.provider.timeout"),
     TEST_BLACKDUCK_PROVIDER_ACTIVE_USER("blackduck.provider.active.user"),
