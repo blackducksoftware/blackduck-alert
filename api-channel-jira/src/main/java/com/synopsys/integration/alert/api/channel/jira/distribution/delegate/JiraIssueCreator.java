@@ -107,7 +107,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             severity = Optional.ofNullable(policyDetails.get().getSeverity().getPolicyLabel());
         }
         if (vulnerabilityDetails.isPresent()) {
-            severity = vulnerabilityDetails.get().getHighestVulnerabilityAddedOrUpdated();
+            severity = vulnerabilityDetails.get().getHighestSeverityAddedOrUpdated();
         }
 
         return new JiraCustomFieldReplacementValues(
