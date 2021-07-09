@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor.validator;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -82,6 +84,17 @@ public class ConfigurationFieldValidator {
 
         if (!isANumberOrEmpty) {
             statuses.add(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
+        }
+    }
+
+    public void validateIsAURL(String fieldKey) {
+        String url = getStringValue(fieldKey).orElse("");
+        if (StringUtils.isNotBlank(url)) {
+            try {
+                new URL(url);
+            } catch (MalformedURLException e) {
+                statuses.add(AlertFieldStatus.error(fieldKey, e.getMessage()));
+            }
         }
     }
 
