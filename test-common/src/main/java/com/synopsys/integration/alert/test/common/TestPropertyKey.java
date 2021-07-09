@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.test.common;
 
 public enum TestPropertyKey {
     TEST_BLACKDUCK_PROVIDER_URL("blackduck.provider.url"),
+    BLACKDUCK_URL("blackduck.url"),
     TEST_BLACKDUCK_PROVIDER_PORT("blackduck.provider.port"),
     TEST_BLACKDUCK_PROVIDER_USERNAME("blackduck.provider.username"),
     TEST_BLACKDUCK_PROVIDER_PASSWORD("blackduck.provider.password"),

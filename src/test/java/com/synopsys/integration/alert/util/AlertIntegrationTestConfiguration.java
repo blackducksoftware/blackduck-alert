@@ -52,7 +52,7 @@ public class AlertIntegrationTestConfiguration {
         TestProperties testProperties = new TestProperties();
 
         ConfigurationFieldModel blackDuckURLField = ConfigurationFieldModel.create(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
-        blackDuckURLField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+        blackDuckURLField.setFieldValue(testProperties.getBlackDuckURL());
 
         ConfigurationFieldModel blackDuckAPITokenField = ConfigurationFieldModel.createSensitive(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY);
         blackDuckAPITokenField.setFieldValue(testProperties.getBlackDuckAPIToken());
