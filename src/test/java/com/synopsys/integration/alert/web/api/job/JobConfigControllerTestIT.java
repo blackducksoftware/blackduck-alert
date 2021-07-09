@@ -155,7 +155,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY))
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
             )
         );
 
@@ -188,7 +188,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY))
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
             )
         );
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(REQUEST_URL)
