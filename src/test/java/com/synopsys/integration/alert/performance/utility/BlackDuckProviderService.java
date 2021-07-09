@@ -54,7 +54,7 @@ public class BlackDuckProviderService {
         this.blackDuckProviderKey = new BlackDuckProviderKey().getUniversalKey();
 
         TestProperties testProperties = new TestProperties();
-        this.blackDuckProviderUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
+        this.blackDuckProviderUrl = testProperties.getBlackDuckURL();
         this.blackDuckApiToken = testProperties.getBlackDuckAPIToken();
         this.blackDuckTimeout = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT).orElse("300");
         this.blackDuckProviderUniqueName = blackDuckProviderUrl + UUID.randomUUID();
