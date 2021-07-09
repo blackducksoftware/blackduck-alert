@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.bdio.model.Forge;
 import com.synopsys.integration.bdio.model.externalid.ExternalId;
-import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -55,8 +54,8 @@ public class BlackDuckProviderService {
         this.blackDuckProviderKey = new BlackDuckProviderKey().getUniversalKey();
 
         TestProperties testProperties = new TestProperties();
-        this.blackDuckProviderUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
-        this.blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        this.blackDuckProviderUrl = testProperties.getBlackDuckURL();
+        this.blackDuckApiToken = testProperties.getBlackDuckAPIToken();
         this.blackDuckTimeout = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT).orElse("300");
         this.blackDuckProviderUniqueName = blackDuckProviderUrl + UUID.randomUUID();
         this.blackDuckProjectName = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PROJECT_NAME);

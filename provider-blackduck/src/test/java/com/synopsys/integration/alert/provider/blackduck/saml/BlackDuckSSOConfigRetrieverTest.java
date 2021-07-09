@@ -67,8 +67,8 @@ public class BlackDuckSSOConfigRetrieverTest {
 
     private BlackDuckProperties createBlackDuckProperties() {
         TestProperties testProperties = new TestProperties();
-        String blackDuckUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
-        String blackDuckApiKey = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        String blackDuckUrl = testProperties.getBlackDuckURL();
+        String blackDuckApiKey = testProperties.getBlackDuckAPIToken();
         String blackDuckTimeout = testProperties.getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT).orElse("300");
 
         MockAlertProperties mockAlertProperties = new MockAlertProperties();
