@@ -17,7 +17,7 @@ public final class JiraCustomFieldValueReplacementResolver {
     public static final String REPLACEMENT_COMPONENT_VERSION = "{{componentVersion}}";
     public static final String REPLACEMENT_SEVERITY = "{{severity}}";
 
-    private JiraCustomFieldReplacementValues replacementValues;
+    private final JiraCustomFieldReplacementValues replacementValues;
 
     public JiraCustomFieldValueReplacementResolver(JiraCustomFieldReplacementValues replacementValues) {
         this.replacementValues = replacementValues;
@@ -29,13 +29,13 @@ public final class JiraCustomFieldValueReplacementResolver {
     }
 
     private static String replaceFieldValues(String originalFieldValue, JiraCustomFieldReplacementValues replacementValues) {
-        String replacedFieldValue = StringUtils.replace(originalFieldValue, REPLACEMENT_PROVIDER_NAME, replacementValues.getProviderName());
-        replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_PROJECT_NAME, replacementValues.getProjectName());
-        replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_PROJECT_VERSION, replacementValues.getProjectVersionName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
-        replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_COMPONENT_NAME, replacementValues.getComponentName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
-        replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_COMPONENT_VERSION, replacementValues.getComponentVersionName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
-        replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_SEVERITY, replacementValues.getSeverity().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
-        return replacedFieldValue;
+        String modifiedFieldValue = StringUtils.replace(originalFieldValue, REPLACEMENT_PROVIDER_NAME, replacementValues.getProviderName());
+        modifiedFieldValue = StringUtils.replace(modifiedFieldValue, REPLACEMENT_PROJECT_NAME, replacementValues.getProjectName());
+        modifiedFieldValue = StringUtils.replace(modifiedFieldValue, REPLACEMENT_PROJECT_VERSION, replacementValues.getProjectVersionName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
+        modifiedFieldValue = StringUtils.replace(modifiedFieldValue, REPLACEMENT_COMPONENT_NAME, replacementValues.getComponentName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
+        modifiedFieldValue = StringUtils.replace(modifiedFieldValue, REPLACEMENT_COMPONENT_VERSION, replacementValues.getComponentVersionName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
+        modifiedFieldValue = StringUtils.replace(modifiedFieldValue, REPLACEMENT_SEVERITY, replacementValues.getSeverity().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
+        return modifiedFieldValue;
     }
 
 }

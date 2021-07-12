@@ -40,7 +40,7 @@ public class JiraIssueCreationRequestCreator {
                                                              .collect(Collectors.toList());
         return createIssueRequestModel(summary, description, projectId, issueType, customFieldConfigs, customFieldReplacementValues);
     }
-
+    
     public IssueRequestModelFieldsBuilder createIssueRequestModel(
         String summary,
         String description,
