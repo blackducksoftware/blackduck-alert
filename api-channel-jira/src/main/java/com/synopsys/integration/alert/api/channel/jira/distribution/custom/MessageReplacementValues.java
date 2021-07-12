@@ -10,13 +10,9 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.custom;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
-
-public class JiraCustomFieldReplacementValues {
-    // "None" is a frequently used default String for many Jira custom-fields
-    public static final String DEFAULT_REPLACEMENT = "None";
+public class MessageReplacementValues {
+    public final static String DEFAULT_NOTIFICATION_REPLACEMENT_VALUE = "None";
 
     private final String providerName;
     private final String projectName;
@@ -25,17 +21,24 @@ public class JiraCustomFieldReplacementValues {
     private final String componentVersionName;
     private final String severity;
 
-    public static JiraCustomFieldReplacementValues trivial(LinkableItem provider) {
-        return new JiraCustomFieldReplacementValues(provider.getLabel(), DEFAULT_REPLACEMENT, null, null, null, null);
+    public static MessageReplacementValues trivial(String providerLabel, String projectName) {
+        return new MessageReplacementValues(
+            providerLabel,
+            projectName,
+            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
+            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
+            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
+            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE
+        );
     }
 
-    public JiraCustomFieldReplacementValues(
+    public MessageReplacementValues(
         String providerName,
         String projectName,
-        @Nullable String projectVersionName,
-        @Nullable String componentName,
-        @Nullable String componentVersionName,
-        @Nullable String severity
+        String projectVersionName,
+        String componentName,
+        String componentVersionName,
+        String severity
     ) {
         this.providerName = providerName;
         this.projectName = projectName;

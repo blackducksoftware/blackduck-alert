@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldConfig;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldReplacementValues;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldValueReplacementResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraResolvedCustomField;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.jira.common.cloud.builder.IssueRequestModelFieldsBuilder;
 
@@ -31,7 +31,7 @@ public class JiraIssueCreationRequestCreator {
         String description,
         String projectId,
         String issueType,
-        JiraCustomFieldReplacementValues customFieldReplacementValues,
+        MessageReplacementValues customFieldReplacementValues,
         Collection<JiraJobCustomFieldModel> customFields
     ) {
         List<JiraCustomFieldConfig> customFieldConfigs = customFields
@@ -40,14 +40,14 @@ public class JiraIssueCreationRequestCreator {
                                                              .collect(Collectors.toList());
         return createIssueRequestModel(summary, description, projectId, issueType, customFieldConfigs, customFieldReplacementValues);
     }
-    
+
     public IssueRequestModelFieldsBuilder createIssueRequestModel(
         String summary,
         String description,
         String projectId,
         String issueType,
         Collection<JiraCustomFieldConfig> customFields,
-        JiraCustomFieldReplacementValues customFieldReplacementValues
+        MessageReplacementValues customFieldReplacementValues
     ) {
         IssueRequestModelFieldsBuilder fieldsBuilder = new IssueRequestModelFieldsBuilder()
                                                            .setSummary(summary)
@@ -55,8 +55,9 @@ public class JiraIssueCreationRequestCreator {
                                                            .setProject(projectId)
                                                            .setIssueType(issueType);
         for (JiraCustomFieldConfig customField : customFields) {
-            JiraCustomFieldValueReplacementResolver jiraCustomFieldValueReplacementResolver = new JiraCustomFieldValueReplacementResolver(customFieldReplacementValues);
-            jiraCustomFieldValueReplacementResolver.injectReplacementFieldValue(customField);
+            MessageValueReplacementResolver messageValueReplacementResolver = new MessageValueReplacementResolver(customFieldReplacementValues);
+            String replacedFieldValue = messageValueReplacementResolver.createReplacedFieldValue(customField.getFieldOriginalValue());
+            customField.setFieldReplacementValue(replacedFieldValue);
             JiraResolvedCustomField resolvedCustomField = jiraCustomFieldResolver.resolveCustomField(customField);
             fieldsBuilder.setValue(resolvedCustomField.getFieldId(), resolvedCustomField.getFieldValue());
         }
