@@ -28,12 +28,14 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.azure.boards.common.service.query.AzureWorkItemQueryService;
 import com.synopsys.integration.azure.boards.common.service.state.AzureWorkItemTypeStateService;
 import com.synopsys.integration.azure.boards.common.service.workitem.AzureWorkItemService;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory<AzureBoardsJobDetailsModel, Integer> {
@@ -68,7 +70,8 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         azureBoardsProperties.validateProperties();
 
         // Initialize Http Service
-        AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(proxyManager.createProxyInfo(), gson);
+        ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpServiceFactory.DEFAULT_BASE_URL);
+        AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(proxy, gson);
 
         // Common Azure Boards Services
         AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();

@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +49,25 @@ public class ProxyManager {
     }
 
     public ProxyInfo createProxyInfo() throws IllegalArgumentException {
-        Optional<ConfigurationModel> settingsConfiguration = retrieveSettingsConfiguration();
-        if (settingsConfiguration.isPresent()) {
-            // TODO include proxyHostCandidate as param of this method
-            return createProxyInfo(settingsConfiguration.get(), "");
+        Optional<ConfigurationModel> optionalSettingsConfiguration = retrieveSettingsConfiguration();
+        if (optionalSettingsConfiguration.isPresent()) {
+            return createProxyInfo(optionalSettingsConfiguration.get());
+        }
+        return ProxyInfo.NO_PROXY_INFO;
+    }
+
+    public ProxyInfo createProxyInfoForHost(String proxyHostCandidate) throws IllegalArgumentException {
+        Optional<ConfigurationModel> optionalSettingsConfiguration = retrieveSettingsConfiguration();
+        if (optionalSettingsConfiguration.isPresent()) {
+            ConfigurationModel settingsConfiguration = optionalSettingsConfiguration.get();
+
+            Collection<String> nonProxyHosts = extractNonProxyHosts(settingsConfiguration);
+            NonProxyHostChecker nonProxyHostChecker = new NonProxyHostChecker(nonProxyHosts);
+            if (StringUtils.isNotBlank(proxyHostCandidate) && nonProxyHostChecker.isNonProxyHost(proxyHostCandidate)) {
+                return ProxyInfo.NO_PROXY_INFO;
+            }
+
+            return createProxyInfo(settingsConfiguration);
         }
         return ProxyInfo.NO_PROXY_INFO;
     }
@@ -69,13 +85,7 @@ public class ProxyManager {
         return Optional.empty();
     }
 
-    private ProxyInfo createProxyInfo(ConfigurationModel settingsConfiguration, String proxyHostCandidate) {
-        Collection<String> nonProxyHosts = extractNonProxyHosts(settingsConfiguration);
-        NonProxyHostChecker nonProxyHostChecker = new NonProxyHostChecker(nonProxyHosts);
-        if (nonProxyHostChecker.isNonProxyHost(proxyHostCandidate)) {
-            return ProxyInfo.NO_PROXY_INFO;
-        }
-
+    private ProxyInfo createProxyInfo(ConfigurationModel settingsConfiguration) {
         Optional<String> alertProxyHost = extractProxySetting(settingsConfiguration, KEY_PROXY_HOST);
         Optional<String> alertProxyPort = extractProxySetting(settingsConfiguration, KEY_PROXY_PORT);
         Optional<String> alertProxyUsername = extractProxySetting(settingsConfiguration, KEY_PROXY_USERNAME);
