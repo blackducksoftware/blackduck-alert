@@ -19,4 +19,5 @@
     <include file="6.4.0/changelog.xml" relativeToChangelogFile="true"/>
     <include file="6.5.0/changelog.xml" relativeToChangelogFile="true"/>
     <include file="6.6.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="6.7.0/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

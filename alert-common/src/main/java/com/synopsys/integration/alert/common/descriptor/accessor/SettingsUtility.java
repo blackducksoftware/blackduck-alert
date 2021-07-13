@@ -20,7 +20,7 @@ public interface SettingsUtility {
 
     boolean doesConfigurationExist();
 
-    Optional<ConfigurationModel> getConfiguration() throws AlertException;
+    Optional<ConfigurationModel> getConfiguration();
 
     Optional<FieldModel> getFieldModel() throws AlertException;
 
