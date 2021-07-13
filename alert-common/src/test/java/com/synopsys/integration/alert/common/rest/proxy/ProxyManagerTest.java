@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.common.rest.proxy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -12,7 +12,6 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class ProxyManagerTest {
