@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureCustomFieldManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
