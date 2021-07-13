@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.update.model.DockerTagModel;
 import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.alert.update.model.UpdateModel;

@@ -25,6 +25,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -169,6 +171,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         Integer workItemId = workItem.getId();
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
+        //TODO: Determine IssueStatus and IssueCategory
         return new ExistingIssueDetails<>(workItemId, Objects.toString(workItemId), workItemTitle, workItemUILink, IssueStatus.UNKNOWN, IssueCategory.BOM);
     }
 

@@ -68,13 +68,13 @@ public class TestProperties {
     public String getBlackDuckURL() {
         //Retrieving TEST_BLACKDUCK_PROVIDER_URL if it is not set getting BLACKDUCK_URL
         return getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)
-                   .orElse(getProperty(TestPropertyKey.BLACKDUCK_URL));
+                   .orElseGet(() -> getProperty(TestPropertyKey.BLACKDUCK_URL));
     }
 
     public String getBlackDuckAPIToken() {
         //Retrieving TEST_BLACKDUCK_PROVIDER_API_KEY if it is not set getting BLACKDUCK_API_TOKEN
         return getOptionalProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY)
-                   .orElse(getProperty(TestPropertyKey.BLACKDUCK_API_TOKEN));
+                   .orElseGet(() -> getProperty(TestPropertyKey.BLACKDUCK_API_TOKEN));
     }
 
     public Optional<String> getOptionalProperty(TestPropertyKey propertyKey) {
