@@ -52,7 +52,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         Mockito.when(proxyInfo.getPort()).thenReturn(-1);
         Mockito.when(proxyInfo.getUsername()).thenReturn(Optional.empty());
         Mockito.when(proxyInfo.getPassword()).thenReturn(Optional.empty());
-        Mockito.when(proxyManager.createProxyInfo()).thenReturn(proxyInfo);
+        Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(proxyInfo);
         return proxyManager;
     }
 

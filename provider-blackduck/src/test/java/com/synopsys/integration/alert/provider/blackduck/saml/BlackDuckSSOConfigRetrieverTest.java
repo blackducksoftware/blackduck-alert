@@ -73,7 +73,7 @@ public class BlackDuckSSOConfigRetrieverTest {
 
         MockAlertProperties mockAlertProperties = new MockAlertProperties();
         ProxyManager mockProxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(mockProxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
         ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(0L, 0L, null, null, ConfigContextEnum.GLOBAL);
         configurationModel.put(createConfigFieldModel(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED, Boolean.TRUE.toString()));

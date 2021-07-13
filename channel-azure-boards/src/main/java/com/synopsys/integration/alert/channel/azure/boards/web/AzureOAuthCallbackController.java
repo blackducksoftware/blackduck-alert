@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
@@ -116,7 +117,7 @@ public class AzureOAuthCallbackController {
 
     private void testOAuthConnection(AzureBoardsProperties azureBoardsProperties, String authorizationCode, String oAuthRequestKey) {
         try {
-            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+            ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(AzureHttpServiceFactory.DEFAULT_BASE_URL);
             String organizationName = azureBoardsProperties.getOrganizationName();
             // save initiate token requests with the authorization code.
             logger.info(createOAuthRequestLoggerMessage(oAuthRequestKey, "Testing with authorization code to save tokens."));

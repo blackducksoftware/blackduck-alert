@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
@@ -42,7 +43,7 @@ public class AzureOAuthTokenValidator implements ConfigValidationFunction {
     public ValidationResult apply(FieldValueModel fieldValueModel, FieldModel fieldModel) {
         ValidationResult result = ValidationResult.success();
         try {
-            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+            ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(AzureHttpServiceFactory.DEFAULT_BASE_URL);
             FieldUtility fieldUtility = configurationFieldModelConverter.convertToFieldAccessor(fieldModel);
             String oAuthRedirectUri = azureRedirectUrlCreator.createOAuthRedirectUri();
             AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, oAuthRedirectUri, fieldUtility);
