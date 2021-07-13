@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="bmandel" id="add-jira-cloud-column">
+        <preConditions>
+            <not>
+                <columnExists schemaName="alert" tableName="jira_cloud_job_details" columnName="issue_summary"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="jira_cloud_job_details" schemaName="alert">
+            <column name="issue_summary" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
