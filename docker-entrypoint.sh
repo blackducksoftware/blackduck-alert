@@ -336,8 +336,8 @@ liquibaseChangelockReset() {
 validatePostgresConnection() {
   # Since the database is now external to the alert container verify we can connect to the database before starting.
   # https://stackoverflow.com/a/58784528/6921621
-    echo "Checking for postgres connectivity: "
-    if psql "${alertDatabaseConfig}" -c '\l';
+    echo "Checking for postgres connectivity... "
+    if psql "${alertDatabaseConfig}" -c '\l' > /dev/null;
     then
       echo "Alert postgres database connection valid."
     else
@@ -350,10 +350,8 @@ validatePostgresConnection() {
 createPostgresDatabase() {
   # Since the database is now external to the alert container check if the database, schema, and tables have been created for alert.
   # https://stackoverflow.com/a/58784528/6921621
-    echo "Checking if $alertDatabaseName exists: "
-    LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
-    echo "${LIST_DB_OUTPUT}"
-    if  echo ${LIST_DB_OUTPUT} |grep -q "$alertDatabaseName";
+    echo "Checking if $alertDatabaseName exists... "
+    if  psql "${alertDatabaseConfig}" -c '\l' |grep -q "$alertDatabaseName";
     then
         echo "Alert postgres database exists."
         if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';
@@ -372,10 +370,8 @@ createPostgresDatabase() {
 
 validatePostgresDatabase() {
     # https://stackoverflow.com/a/58784528/6921621
-    echo "Checking for postgres databases: "
-    LIST_DB_OUTPUT=`psql "${alertDatabaseConfig}" -c '\l'`;
-    echo "${LIST_DB_OUTPUT}"
-    if  echo ${LIST_DB_OUTPUT} |grep -q "$alertDatabaseName";
+    echo "Checking for postgres databases... "
+    if  psql "${alertDatabaseConfig}" -c '\l' | grep -q "$alertDatabaseName";
     then
         echo "Alert postgres database exists."
         if psql "${alertDatabaseConfig}" -c '\dt ALERT.*' |grep -q 'field_values';

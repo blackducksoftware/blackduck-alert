@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.database.api.DefaultConfigurationAccessor;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -36,7 +36,7 @@ public class PhoneHomeTest {
         Mockito.when(auditAccessor.findFirstByJobId(Mockito.any())).thenReturn(Optional.empty());
         TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
         AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn(TEST_VERSION);

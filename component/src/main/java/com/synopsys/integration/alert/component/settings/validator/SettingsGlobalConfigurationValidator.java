@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 
 @Component
@@ -65,6 +65,10 @@ public class SettingsGlobalConfigurationValidator implements GlobalConfiguration
             ));
         }
 
+        if (configurationFieldValidator.fieldHasReadableValue(ProxyManager.KEY_PROXY_NON_PROXY_HOSTS)) {
+            configurationFieldValidator.validateRequiredFieldIsNotBlank(ProxyManager.KEY_PROXY_HOST);
+        }
+
         return statuses;
     }
 
@@ -75,4 +79,5 @@ public class SettingsGlobalConfigurationValidator implements GlobalConfiguration
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(fieldKey, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_FIELD_TOO_SHORT));
         }
     }
+
 }

@@ -24,12 +24,14 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraI
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
+import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueTrackerException;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
@@ -100,7 +102,8 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
                                                        .stream()
                                                        .findAny()
                                                        .orElseThrow(() -> new AlertConfigurationException("Missing Jira Cloud global configuration"));
-        return JiraCloudProperties.fromConfig(jiraCloudGlobalConfig, proxyManager.createProxyInfo());
+        String jiraUrl = jiraCloudGlobalConfig.getField(JiraCloudDescriptor.KEY_JIRA_URL).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
+        return JiraCloudProperties.fromConfig(jiraCloudGlobalConfig, proxyManager.createProxyInfoForHost(jiraUrl));
     }
 
     private void checkIfAlertPluginIsInstalled(PluginManagerService jiraAppService) throws IssueTrackerException {

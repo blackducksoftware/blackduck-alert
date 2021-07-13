@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.update.model.DockerTagModel;
 import com.synopsys.integration.alert.update.model.DockerTagsResponseModel;
 import com.synopsys.integration.alert.update.model.UpdateModel;
@@ -95,7 +95,7 @@ public class UpdateChecker {
     }
 
     private IntHttpClient createHttpClient() {
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(DockerTagRetriever.ALERT_DOCKER_REGISTRY_URL);
         Boolean alwaysTrustServerCert = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
         return new IntHttpClient(logger, gson, 120, alwaysTrustServerCert, proxyInfo);
     }

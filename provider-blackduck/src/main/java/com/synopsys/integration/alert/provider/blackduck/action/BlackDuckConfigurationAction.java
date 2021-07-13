@@ -16,12 +16,15 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 @Component
 public class BlackDuckConfigurationAction extends ConfigurationAction {
     @Autowired
-    protected BlackDuckConfigurationAction(BlackDuckGlobalApiAction blackDuckGlobalApiAction, BlackDuckGlobalTestAction blackDuckGlobalTestAction, BlackDuckProviderKey blackDuckProviderKey,
-        BlackDuckDistributionApiAction blackDuckDistributionApiAction, BlackDuckDistributionTestAction blackDuckDistributionTestAction) {
+    protected BlackDuckConfigurationAction(
+        BlackDuckGlobalApiAction blackDuckGlobalApiAction,
+        BlackDuckGlobalTestAction blackDuckGlobalTestAction,
+        BlackDuckProviderKey blackDuckProviderKey,
+        BlackDuckDistributionTestAction blackDuckDistributionTestAction
+    ) {
         super(blackDuckProviderKey);
         addGlobalApiAction(blackDuckGlobalApiAction);
         addGlobalTestAction(blackDuckGlobalTestAction);
-        addDistributionApiAction(blackDuckDistributionApiAction);
         addDistributionTestAction(blackDuckDistributionTestAction);
     }
 

@@ -41,11 +41,12 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.AlertWebServerUrlManager;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthEndpointResponse> {
@@ -149,7 +150,8 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
 
     private boolean isAuthenticated(FieldUtility fieldUtility) {
         AzureBoardsProperties properties = AzureBoardsProperties.fromFieldAccessor(azureBoardsCredentialDataStoreFactory, azureRedirectUrlCreator.createOAuthRedirectUri(), fieldUtility);
-        return properties.hasOAuthCredentials(proxyManager.createProxyInfo());
+        ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpServiceFactory.DEFAULT_BASE_URL);
+        return properties.hasOAuthCredentials(proxy);
     }
 
     private String createAuthURL(String clientId, String requestKey) {
