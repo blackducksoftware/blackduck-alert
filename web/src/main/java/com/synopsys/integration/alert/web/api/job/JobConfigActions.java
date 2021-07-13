@@ -298,7 +298,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         boolean validateWithDescriptorValidators = shouldValidateWithDescriptorValidators(resource);
 
         if (validateWithDescriptorValidators) {
-            fieldStatuses = validateWithDescriptorValidators(resource);
+            fieldStatuses.addAll(validateWithDescriptorValidators(resource));
         } else {
             fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
         }
