@@ -7,11 +7,16 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
+import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckDistributionConfigurationValidator;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckGlobalConfigurationValidator;
 
 @Component
@@ -26,10 +31,24 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String BLACKDUCK_URL = "blackduck";
     public static final String BLACKDUCK_DESCRIPTION = "This is the configuration to connect to the Black Duck server. Configuring this will cause Alert to start pulling data from Black Duck.";
 
+    private final BlackDuckGlobalConfigurationValidator globalValidator;
+    private final DistributionConfigurationValidator distributionValidator;
+
     @Autowired
     public BlackDuckDescriptor(BlackDuckProviderKey blackDuckProviderKey, BlackDuckProviderUIConfig blackDuckProviderUIConfig, BlackDuckDistributionUIConfig blackDuckDistributionUIConfig,
-        BlackDuckGlobalConfigurationValidator globalValidator) {
-        super(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig, globalValidator);
+        BlackDuckGlobalConfigurationValidator globalValidator, BlackDuckDistributionConfigurationValidator distributionValidator) {
+        super(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig);
+        this.globalValidator = globalValidator;
+        this.distributionValidator = distributionValidator;
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.of(globalValidator);
+    }
+
+    @Override
+    public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+        return Optional.of(distributionValidator);
+    }
 }

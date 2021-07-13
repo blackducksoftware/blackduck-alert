@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
@@ -28,8 +29,8 @@ public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
     private final IssueService issueService;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, IssueService issueService, JiraIssueStatusCreator jiraIssueStatusCreator) {
-        super(jiraProjectKey, issuePropertiesManager, jiraIssueStatusCreator);
+    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, IssueService issueService, JiraIssueStatusCreator jiraIssueStatusCreator) {
+        super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator);
         this.issueSearchService = issueSearchService;
         this.issueService = issueService;
     }

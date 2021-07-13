@@ -56,7 +56,6 @@ public class ComponentVulnerabilitiesConverter {
 
         if (componentVulnerabilities.hasVulnerabilities()) {
             componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());
-
             List<String> criticalSection = createSeveritySection(encodedLabelCritical, componentVulnerabilities.getCritical());
             componentVulnerabilitiesSectionPieces.addAll(criticalSection);
             componentVulnerabilitiesSectionPieces.add(formatter.getLineSeparator());

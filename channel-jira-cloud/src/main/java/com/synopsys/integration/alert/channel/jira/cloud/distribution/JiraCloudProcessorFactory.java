@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
@@ -48,6 +49,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
     private final ConfigurationAccessor configurationAccessor;
     private final ProxyManager proxyManager;
     private final JiraCloudMessageSenderFactory messageSenderFactory;
+    private final ProjectMessageToIssueModelTransformer modelTransformer;
 
     @Autowired
     public JiraCloudProcessorFactory(
@@ -56,7 +58,8 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         JiraCloudChannelKey jiraCloudChannelKey,
         ConfigurationAccessor configurationAccessor,
         ProxyManager proxyManager,
-        JiraCloudMessageSenderFactory messageSenderFactory
+        JiraCloudMessageSenderFactory messageSenderFactory,
+        ProjectMessageToIssueModelTransformer modelTransformer
     ) {
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
@@ -64,6 +67,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         this.configurationAccessor = configurationAccessor;
         this.proxyManager = proxyManager;
         this.messageSenderFactory = messageSenderFactory;
+        this.modelTransformer = modelTransformer;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraCloudSearcher jiraCloudSearcher = new JiraCloudSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, issueService, jiraIssueStatusCreator);
+        JiraCloudSearcher jiraCloudSearcher = new JiraCloudSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, issueService, jiraIssueStatusCreator);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraCloudSearcher);
         IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(issueService, distributionDetails, jiraCloudServiceFactory, issuePropertiesManager);

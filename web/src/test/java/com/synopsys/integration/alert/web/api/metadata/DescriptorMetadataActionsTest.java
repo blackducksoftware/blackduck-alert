@@ -17,6 +17,8 @@ import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -326,6 +328,16 @@ public class DescriptorMetadataActionsTest {
                 }
 
             });
+        }
+
+        @Override
+        public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+            return Optional.empty();
         }
 
     }

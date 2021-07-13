@@ -78,7 +78,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         if (urlSet) {
             return Optional.ofNullable(blackDuckUrl);
         }
-        return Optional.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+        return Optional.of(testProperties.getBlackDuckURL());
     }
 
     public void setBlackDuckUrl(String blackDuckUrl) {
@@ -91,7 +91,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         if (apiKeySet) {
             return blackDuckApiKey;
         }
-        return testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        return testProperties.getBlackDuckAPIToken();
     }
 
     public void setBlackDuckApiKey(String blackDuckApiKey) {
@@ -128,8 +128,8 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public static ConfigurationModel getConfigurationModel(TestProperties testProperties) {
-        String url = Optional.ofNullable(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)).orElse("URL not set");
-        String apiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        String url = Optional.ofNullable(testProperties.getBlackDuckURL()).orElse("URL not set");
+        String apiToken = testProperties.getBlackDuckAPIToken();
         String timeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
 
         final Long defaultDescriptorId = 1L;

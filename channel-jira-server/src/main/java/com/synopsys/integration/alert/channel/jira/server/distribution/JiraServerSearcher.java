@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.jira.server.distribution;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
@@ -26,8 +27,9 @@ public class JiraServerSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
     private final IssueService issueService;
 
-    public JiraServerSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, IssueService issueService, JiraIssueStatusCreator jiraIssueStatusCreator) {
-        super(jiraProjectKey, issuePropertiesManager, jiraIssueStatusCreator);
+    public JiraServerSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, IssueService issueService,
+        JiraIssueStatusCreator jiraIssueStatusCreator) {
+        super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator);
         this.issueSearchService = issueSearchService;
         this.issueService = issueService;
     }

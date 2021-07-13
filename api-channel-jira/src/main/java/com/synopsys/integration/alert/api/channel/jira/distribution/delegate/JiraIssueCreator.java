@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
@@ -112,12 +113,24 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     protected JiraCustomFieldReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
         IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
+
+        Optional<String> severity = Optional.empty();
+        Optional<IssuePolicyDetails> policyDetails = alertIssueSource.getPolicyDetails();
+        Optional<IssueVulnerabilityDetails> vulnerabilityDetails = alertIssueSource.getVulnerabilityDetails();
+        if (policyDetails.isPresent()) {
+            severity = Optional.ofNullable(policyDetails.get().getSeverity().getPolicyLabel());
+        }
+        if (vulnerabilityDetails.isPresent()) {
+            severity = vulnerabilityDetails.get().getHighestSeverityAddedOrUpdated();
+        }
+
         return new JiraCustomFieldReplacementValues(
             alertIssueSource.getProvider().getLabel(),
             alertIssueSource.getProject().getValue(),
             alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(null),
             bomComponent.getComponent().getValue(),
-            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null)
+            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null),
+            severity.orElse(null)
         );
     }
 

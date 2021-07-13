@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.channel.email.validator;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,33 +23,31 @@ import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKey
 public class EmailGlobalConfigurationValidator implements GlobalConfigurationValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
-        Set<AlertFieldStatus> statuses = new HashSet<>();
-        ConfigurationFieldValidator configurationFieldValidator = new ConfigurationFieldValidator(fieldModel);
-        configurationFieldValidator.validateIsARequiredField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsARequiredField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).ifPresent(statuses::add);
+        ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
 
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
-        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey()).ifPresent(statuses::add);
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey());
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey());
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey());
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey());
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY.getPropertyKey());
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey());
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY.getPropertyKey());
+        configurationFieldValidator.validateIsANumber(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey());
 
-        Boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
+        boolean useAuth = fieldModel.getFieldValueModel(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey())
                               .flatMap(FieldValueModel::getValue)
                               .map(Boolean::valueOf)
                               .orElse(false);
 
         if (useAuth) {
-            List<AlertFieldStatus> authRelatedStatuses = configurationFieldValidator.containsRequiredFields(List.of(
+            configurationFieldValidator.validateRequiredFieldsAreNotBlank(List.of(
                 EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(),
                 EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()
             ));
-            statuses.addAll(authRelatedStatuses);
         }
 
-        return statuses;
+        return configurationFieldValidator.getValidationResults();
     }
 }

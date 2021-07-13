@@ -7,10 +7,13 @@
  */
 package com.synopsys.integration.alert.component.audit;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 
 @Component
 public class AuditDescriptor extends ComponentDescriptor {
@@ -26,4 +29,8 @@ public class AuditDescriptor extends ComponentDescriptor {
         super(auditDescriptorKey, auditUIConfig);
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.empty();
+    }
 }

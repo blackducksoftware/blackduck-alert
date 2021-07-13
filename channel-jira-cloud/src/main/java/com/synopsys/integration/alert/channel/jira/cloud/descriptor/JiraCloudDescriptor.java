@@ -7,11 +7,15 @@
  */
 package com.synopsys.integration.alert.channel.jira.cloud.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -37,9 +41,21 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String JIRA_URL = "jira";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Cloud instance that Alert will send issue updates to.";
 
+    private final JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator;
+
     @Autowired
     public JiraCloudDescriptor(JiraCloudGlobalUIConfig globalUIConfig, JiraCloudDistributionUIConfig distributionUIConfig, JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator) {
-        super(ChannelKeys.JIRA_CLOUD, distributionUIConfig, globalUIConfig, jiraCloudGlobalValidator);
+        super(ChannelKeys.JIRA_CLOUD, distributionUIConfig, globalUIConfig);
+        this.jiraCloudGlobalValidator = jiraCloudGlobalValidator;
     }
 
+    @Override
+    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+        return Optional.of(jiraCloudGlobalValidator);
+    }
+
+    @Override
+    public Optional<DistributionConfigurationValidator> getDistributionValidator() {
+        return Optional.empty();
+    }
 }

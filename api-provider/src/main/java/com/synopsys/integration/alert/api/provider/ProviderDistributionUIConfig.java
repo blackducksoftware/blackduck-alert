@@ -43,19 +43,19 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_PROJECT_NAME_PATTERN = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "project.name.pattern";
     public static final String KEY_CONFIGURED_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "configured.project";
 
-    protected static final String LABEL_FILTER_BY_PROJECT = "Filter By Project";
-    protected static final String LABEL_PROJECT_NAME_PATTERN = "Project Name Pattern";
-    protected static final String LABEL_PROJECTS = "Projects";
-    protected static final String DESCRIPTION_FILTER_BY_PROJECT = "If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed.";
-    protected static final String DESCRIPTION_PROJECT_NAME_PATTERN = "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.";
-    private static final String DESCRIPTION_PROJECTS = "Select a project or projects that will be used to retrieve notifications from your provider.";
+    public static final String LABEL_FILTER_BY_PROJECT = "Filter By Project";
+    public static final String LABEL_PROJECT_NAME_PATTERN = "Project Name Pattern";
+    public static final String LABEL_PROJECTS = "Projects";
+    public static final String DESCRIPTION_FILTER_BY_PROJECT = "If selected, only notifications from the selected Projects table will be processed. Otherwise notifications from all Projects are processed.";
+    public static final String DESCRIPTION_PROJECT_NAME_PATTERN = "The regular expression to use to determine what Projects to include. These are in addition to the Projects selected in the table.";
+    public static final String DESCRIPTION_PROJECTS = "Select a project or projects that will be used to retrieve notifications from your provider.";
 
-    private static final String LABEL_NOTIFICATION_TYPES = "Notification Types";
-    private static final String LABEL_PROCESSING = "Processing";
-    private static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
-    private static final String DESCRIPTION_PROCESSING = "Select the way messages will be processed: ";
+    public static final String LABEL_NOTIFICATION_TYPES = "Notification Types";
+    public static final String LABEL_PROCESSING = "Processing";
+    public static final String DESCRIPTION_NOTIFICATION_TYPES = "Select one or more of the notification types. Only these notification types will be included for this distribution job.";
+    public static final String DESCRIPTION_PROCESSING = "Select the way messages will be processed: ";
 
-    private static final String DESCRIPTION_PROVIDER_CONFIG_FIELD = "The provider configuration to use with this distribution job.";
+    public static final String DESCRIPTION_PROVIDER_CONFIG_FIELD = "The provider configuration to use with this distribution job.";
 
     private final ProviderContent providerContent;
     private final ConfigurationAccessor configurationAccessor;

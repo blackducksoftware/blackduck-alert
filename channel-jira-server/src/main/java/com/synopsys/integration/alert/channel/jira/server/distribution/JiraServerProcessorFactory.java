@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtractor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
@@ -41,18 +42,21 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     private final JiraMessageFormatter jiraMessageFormatter;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final JiraServerMessageSenderFactory jiraServerMessageSenderFactory;
+    private final ProjectMessageToIssueModelTransformer modelTransformer;
 
     @Autowired
     public JiraServerProcessorFactory(
         Gson gson,
         JiraMessageFormatter jiraMessageFormatter,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
-        JiraServerMessageSenderFactory jiraServerMessageSenderFactory
+        JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
+        ProjectMessageToIssueModelTransformer modelTransformer
     ) {
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
+        this.modelTransformer = modelTransformer;
     }
 
     @Override
@@ -74,7 +78,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraServerSearcher jiraServerSearcher = new JiraServerSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, issueService, jiraIssueStatusCreator);
+        JiraServerSearcher jiraServerSearcher = new JiraServerSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, issueService, jiraIssueStatusCreator);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraServerSearcher);
         IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(issueService, distributionDetails, jiraServerServiceFactory, issuePropertiesManager);

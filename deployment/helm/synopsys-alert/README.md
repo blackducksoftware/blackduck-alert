@@ -235,8 +235,8 @@ This section describes how to configure Alert using kubernetes secrets to set th
 - Execute the command
   ```bash 
    $ kubectl create secret generic <SECRET_NAME> -n <ALERT_NAMESPACE> \
-   --from-file=<USERNAME_KEY>=<USER_USERNAME> \
-   --from-file=<PASSWORD_KEY>=<USER_PASSWORD>
+   --from-literal=<USERNAME_KEY>=<USER_USERNAME> \
+   --from-literal=<PASSWORD_KEY>=<USER_PASSWORD>
   ```
   - Replace `<SECRET_NAME>` with the desired name for the secret.
   - Replace `<ALERT_NAMESPACE>` with the namespace being used for Alert.
@@ -249,8 +249,8 @@ This section describes how to configure Alert using kubernetes secrets to set th
 - Example: 
     ```bash 
    $ kubectl create secret generic alert-db-user-secret -n example \
-   --from-file=ALERT_DB_USERNAME=sa \
-   --from-file=ALERT_DB_PASSWORD=blackduck
+   --from-literal=ALERT_DB_USERNAME=sa \
+   --from-literal=ALERT_DB_PASSWORD=blackduck
    ```
    - Creates a secret with the name 'alert-db-user-secret' in the 'example' namespace.
 
@@ -259,8 +259,8 @@ This section describes how to configure Alert using kubernetes secrets to set th
 - Execute the command
   ```bash 
    $ kubectl create secret generic <SECRET_NAME> -n <ALERT_NAMESPACE> \
-   --from-file=<ADMIN_USERNAME_KEY>=<ADMIN_USERNAME> \
-   --from-file=<ADMIN_PASSWORD_KEY>=<ADMIN_PASSWORD>
+   --from-literal=<ADMIN_USERNAME_KEY>=<ADMIN_USERNAME> \
+   --from-literal=<ADMIN_PASSWORD_KEY>=<ADMIN_PASSWORD>
   ```
   - Replace `<SECRET_NAME>` with the desired name for the secret.
   - Replace `<ALERT_NAMESPACE>` with the namespace being used for Alert.
@@ -273,8 +273,8 @@ This section describes how to configure Alert using kubernetes secrets to set th
 - Example: 
     ```bash 
    $ kubectl create secret generic alert-db-admin-secret -n example \
-   --from-file=ALERT_DB_ADMIN_USERNAME=postgres \
-   --from-file=ALERT_DB_ADMIN_PASSWORD=adminPassword
+   --from-literal=ALERT_DB_ADMIN_USERNAME=postgres \
+   --from-literal=ALERT_DB_ADMIN_PASSWORD=adminPassword
    ```
    - Creates a secret with the name 'alert-db-admin-secret' in the 'example' namespace.
    - Note: For an on-premise database deployment of alert the ALERT_DB_ADMIN_USERNAME is required to be set to 'postgres'.

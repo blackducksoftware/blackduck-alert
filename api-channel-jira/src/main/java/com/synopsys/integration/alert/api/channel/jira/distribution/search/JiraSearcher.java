@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -40,7 +41,8 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final JiraIssueStatusCreator jiraIssueStatusCreator;
 
-    protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager, JiraIssueStatusCreator jiraIssueStatusCreator) {
+    protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, JiraIssueStatusCreator jiraIssueStatusCreator) {
+        super(modelTransformer);
         this.jiraProjectKey = jiraProjectKey;
         this.issuePropertiesManager = issuePropertiesManager;
         this.jiraIssueStatusCreator = jiraIssueStatusCreator;

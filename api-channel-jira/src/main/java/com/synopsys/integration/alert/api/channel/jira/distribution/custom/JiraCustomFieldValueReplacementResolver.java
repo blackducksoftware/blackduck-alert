@@ -15,6 +15,7 @@ public final class JiraCustomFieldValueReplacementResolver {
     public static final String REPLACEMENT_PROJECT_VERSION = "{{projectVersion}}";
     public static final String REPLACEMENT_COMPONENT_NAME = "{{componentName}}";
     public static final String REPLACEMENT_COMPONENT_VERSION = "{{componentVersion}}";
+    public static final String REPLACEMENT_SEVERITY = "{{severity}}";
 
     private JiraCustomFieldReplacementValues replacementValues;
 
@@ -33,6 +34,7 @@ public final class JiraCustomFieldValueReplacementResolver {
         replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_PROJECT_VERSION, replacementValues.getProjectVersionName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
         replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_COMPONENT_NAME, replacementValues.getComponentName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
         replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_COMPONENT_VERSION, replacementValues.getComponentVersionName().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
+        replacedFieldValue = StringUtils.replace(replacedFieldValue, REPLACEMENT_SEVERITY, replacementValues.getSeverity().orElse(JiraCustomFieldReplacementValues.DEFAULT_REPLACEMENT));
         return replacedFieldValue;
     }
 

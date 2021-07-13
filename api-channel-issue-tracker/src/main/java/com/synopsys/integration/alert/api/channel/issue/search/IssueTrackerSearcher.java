@@ -35,6 +35,12 @@ import com.synopsys.integration.function.ThrowingSupplier;
 public abstract class IssueTrackerSearcher<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final ProjectMessageToIssueModelTransformer modelTransformer;
+
+    protected IssueTrackerSearcher(ProjectMessageToIssueModelTransformer modelTransformer) {
+        this.modelTransformer = modelTransformer;
+    }
+
     public final List<ActionableIssueSearchResult<T>> findIssues(ProjectMessage projectMessage) throws AlertException {
         ProviderDetails providerDetails = projectMessage.getProviderDetails();
         LinkableItem project = projectMessage.getProject();
@@ -58,7 +64,7 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
             return findIssuesByAllComponents(providerDetails, project, projectVersion, projectMessage.getBomComponents());
         }
 
-        List<ProjectIssueModel> projectIssueModels = ProjectMessageToIssueModelTransformer.convertToIssueModels(projectMessage);
+        List<ProjectIssueModel> projectIssueModels = modelTransformer.convertToIssueModels(projectMessage);
 
         List<ActionableIssueSearchResult<T>> projectIssueSearchResults = new LinkedList<>();
         for (ProjectIssueModel projectIssueModel : projectIssueModels) {

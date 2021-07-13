@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.TestProperties;
-import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.alert.util.AlertIntegrationTestConstants;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 
@@ -154,8 +153,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testUpdateConfig() throws Exception {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
-            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY))
+            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getBlackDuckURL()),
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
             )
         );
 
@@ -187,8 +186,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     public void testSaveConfig() throws Exception {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
             ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
-            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY))
+            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getBlackDuckURL()),
+            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
             )
         );
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(REQUEST_URL)

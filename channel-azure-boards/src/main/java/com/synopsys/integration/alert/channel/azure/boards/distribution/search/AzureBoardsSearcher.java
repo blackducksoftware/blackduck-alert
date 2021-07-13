@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -49,7 +50,8 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     private final String organizationName;
     private final AzureBoardsIssueTrackerQueryManager queryManager;
 
-    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager) {
+    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer) {
+        super(modelTransformer);
         this.gson = gson;
         this.organizationName = organizationName;
         this.queryManager = queryManager;
