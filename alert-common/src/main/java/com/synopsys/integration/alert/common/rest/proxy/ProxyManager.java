@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -35,8 +34,6 @@ public class ProxyManager {
     public static final String KEY_PROXY_PORT = "settings.proxy.port";
     public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
     public static final String KEY_PROXY_PWD = "settings.proxy.password";
-
-    // TODO store this
     public static final String KEY_PROXY_NON_PROXY_HOSTS = "settings.proxy.non.proxy.hosts";
 
     private final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
@@ -49,7 +46,7 @@ public class ProxyManager {
     }
 
     public ProxyInfo createProxyInfo() throws IllegalArgumentException {
-        Optional<ConfigurationModel> optionalSettingsConfiguration = retrieveSettingsConfiguration();
+        Optional<ConfigurationModel> optionalSettingsConfiguration = settingsUtility.getConfiguration();
         if (optionalSettingsConfiguration.isPresent()) {
             return createProxyInfo(optionalSettingsConfiguration.get());
         }
@@ -57,7 +54,7 @@ public class ProxyManager {
     }
 
     public ProxyInfo createProxyInfoForHost(String proxyHostCandidate) throws IllegalArgumentException {
-        Optional<ConfigurationModel> optionalSettingsConfiguration = retrieveSettingsConfiguration();
+        Optional<ConfigurationModel> optionalSettingsConfiguration = settingsUtility.getConfiguration();
         if (optionalSettingsConfiguration.isPresent()) {
             ConfigurationModel settingsConfiguration = optionalSettingsConfiguration.get();
 
@@ -74,15 +71,6 @@ public class ProxyManager {
 
     private Optional<String> extractProxySetting(ConfigurationModel settingsConfiguration, String key) {
         return settingsConfiguration.getField(key).flatMap(ConfigurationFieldModel::getFieldValue);
-    }
-
-    private Optional<ConfigurationModel> retrieveSettingsConfiguration() {
-        try {
-            return settingsUtility.getConfiguration();
-        } catch (AlertException ex) {
-            logger.error("Could not find the settings configuration for proxy data", ex);
-        }
-        return Optional.empty();
     }
 
     private ProxyInfo createProxyInfo(ConfigurationModel settingsConfiguration) {
