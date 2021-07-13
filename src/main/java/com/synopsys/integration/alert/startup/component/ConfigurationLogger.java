@@ -17,7 +17,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 @Order(40)
@@ -35,10 +36,11 @@ public class ConfigurationLogger extends StartupComponent {
 
     @Override
     protected void initialize() {
-        Optional<String> proxyHost = proxyManager.getProxyHost();
-        Optional<String> proxyPort = proxyManager.getProxyPort();
-        Optional<String> proxyUsername = proxyManager.getProxyUsername();
-        Optional<String> proxyPassword = proxyManager.getProxyPassword();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        Optional<String> proxyHost = proxyInfo.getHost();
+        Optional<String> proxyPort = Optional.of(proxyInfo.getPort()).map(Object::toString);
+        Optional<String> proxyUsername = proxyInfo.getUsername();
+        Optional<String> proxyPassword = proxyInfo.getMaskedPassword();
 
         boolean authenticatedProxy = StringUtils.isNotBlank(proxyPassword.orElse(""));
 
