@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.api.provider.state.ProviderProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
@@ -147,19 +147,20 @@ public class BlackDuckProperties extends ProviderProperties {
 
     public BlackDuckServerConfigBuilder createServerConfigBuilderWithoutAuthentication(IntLogger logger, int blackDuckTimeout) {
         BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
-        blackDuckServerConfigBuilder.setProperties(getBlackDuckProperties().entrySet());
+        String blackDuckUrl = getBlackDuckUrl().orElse("");
+        blackDuckServerConfigBuilder.setProperties(createBlackDuckProperties(blackDuckUrl).entrySet());
         blackDuckServerConfigBuilder.setLogger(logger);
         blackDuckServerConfigBuilder.setTimeoutInSeconds(blackDuckTimeout);
-        blackDuckServerConfigBuilder.setUrl(getBlackDuckUrl().orElse(""));
+        blackDuckServerConfigBuilder.setUrl(blackDuckUrl);
 
         return blackDuckServerConfigBuilder;
     }
 
-    private Map<String, String> getBlackDuckProperties() {
+    private Map<String, String> createBlackDuckProperties(String blackDuckUrl) {
         Map<String, String> properties = new HashMap<>();
         properties.put(BlackDuckServerConfigBuilder.TRUST_CERT_KEY.getKey(), String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
 
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(blackDuckUrl);
         properties.put(BlackDuckServerConfigBuilder.PROXY_HOST_KEY.getKey(), proxyInfo.getHost().orElse(""));
         properties.put(BlackDuckServerConfigBuilder.PROXY_PORT_KEY.getKey(), String.valueOf(proxyInfo.getPort()));
         properties.put(BlackDuckServerConfigBuilder.PROXY_USERNAME_KEY.getKey(), proxyInfo.getUsername().orElse(""));

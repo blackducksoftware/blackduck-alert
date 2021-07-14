@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.client.IntHttpClient;
@@ -37,13 +37,13 @@ public class ChannelRestConnectionFactory {
         this.gson = gson;
     }
 
-    public IntHttpClient createIntHttpClient() {
-        return createIntHttpClient(new Slf4jIntLogger(logger), 5 * 60 * 1000);
+    public IntHttpClient createIntHttpClient(String baseUrl) {
+        return createIntHttpClient(baseUrl, new Slf4jIntLogger(logger), 5 * 60 * 1000);
     }
 
-    public IntHttpClient createIntHttpClient(IntLogger intLogger, int timeout) {
+    public IntHttpClient createIntHttpClient(String baseUrl, IntLogger intLogger, int timeout) {
         Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(baseUrl);
         return new IntHttpClient(intLogger, gson, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
     }
 

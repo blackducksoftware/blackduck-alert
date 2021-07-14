@@ -31,10 +31,6 @@ public abstract class ConfigurationAction {
         apiActionMap.put(ConfigContextEnum.GLOBAL, apiAction);
     }
 
-    public void addDistributionApiAction(ApiAction apiAction) {
-        apiActionMap.put(ConfigContextEnum.DISTRIBUTION, apiAction);
-    }
-
     public void addGlobalTestAction(TestAction testAction) {
         testActionMap.put(ConfigContextEnum.GLOBAL, testAction);
     }
