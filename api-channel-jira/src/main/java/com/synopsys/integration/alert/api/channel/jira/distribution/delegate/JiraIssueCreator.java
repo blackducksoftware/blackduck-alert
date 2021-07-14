@@ -114,10 +114,10 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         return new MessageReplacementValues(
             alertIssueSource.getProvider().getLabel(),
             alertIssueSource.getProject().getValue(),
-            alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(null),
+            alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
             bomComponent.getComponent().getValue(),
-            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(null),
-            severity.orElse(null)
+            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
+            severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE)
         );
     }
 
