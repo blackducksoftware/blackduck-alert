@@ -9,14 +9,17 @@ package com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldReplacementValues;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
@@ -62,10 +65,18 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
     }
 
     @Override
-    protected IssueCreationRequestModel createIssueCreationRequest(IssueCreationModel alertIssueCreationModel, JiraCustomFieldReplacementValues replacementValues) throws AlertException {
+    protected IssueCreationRequestModel createIssueCreationRequest(IssueCreationModel alertIssueCreationModel, MessageReplacementValues replacementValues) throws AlertException {
         ProjectComponent jiraProject = retrieveProjectComponent();
+        String issueSummary = distributionDetails.getIssueSummary();
+        String title = alertIssueCreationModel.getTitle();
+
+        if (StringUtils.isNotEmpty(issueSummary)) {
+            MessageValueReplacementResolver messageValueReplacementResolver = new MessageValueReplacementResolver(replacementValues);
+            title = messageValueReplacementResolver.createReplacedFieldValue(issueSummary);
+        }
+
         IssueRequestModelFieldsMapBuilder fieldsBuilder = jiraIssueCreationRequestCreator.createIssueRequestModel(
-            alertIssueCreationModel.getTitle(),
+            title,
             alertIssueCreationModel.getDescription(),
             jiraProject.getId(),
             distributionDetails.getIssueType(),
