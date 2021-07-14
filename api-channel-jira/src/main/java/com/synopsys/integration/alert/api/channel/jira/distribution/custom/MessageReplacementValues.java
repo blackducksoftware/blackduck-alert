@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.custom;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class MessageReplacementValues {
@@ -35,10 +37,10 @@ public class MessageReplacementValues {
     public MessageReplacementValues(
         String providerName,
         String projectName,
-        String projectVersionName,
-        String componentName,
-        String componentVersionName,
-        String severity
+        @Nullable String projectVersionName,
+        @Nullable String componentName,
+        @Nullable String componentVersionName,
+        @Nullable String severity
     ) {
         this.providerName = providerName;
         this.projectName = projectName;
