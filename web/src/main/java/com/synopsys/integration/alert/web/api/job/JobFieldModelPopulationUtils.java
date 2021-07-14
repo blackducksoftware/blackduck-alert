@@ -159,6 +159,7 @@ public final class JobFieldModelPopulationUtils {
             putField(channelFieldModel, JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, jiraCloudJobDetails.getResolveTransition());
             putField(channelFieldModel, JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, jiraCloudJobDetails.getReopenTransition());
             putJsonField(channelFieldModel, JiraCloudDescriptor.KEY_FIELD_MAPPING, jiraCloudJobDetails.getCustomFields());
+            putField(channelFieldModel, JiraCloudDescriptor.KEY_ISSUE_SUMMARY, jiraCloudJobDetails.getIssueSummary());
         }
     }
 

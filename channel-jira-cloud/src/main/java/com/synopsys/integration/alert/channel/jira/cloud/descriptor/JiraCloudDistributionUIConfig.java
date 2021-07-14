@@ -71,12 +71,13 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField resolveWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
         ConfigField openWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
                                        .applyRequiredRelatedField(resolveWorkflow.getKey());
+        ConfigField issueSummary = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_SUMMARY, "", "");
         ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
                                        .applyNewMappingTitle("Create Jira Field Mapping")
                                        .applyValidationFunctions(this::validateFieldMapping)
                                        .applyPanel("Advanced Jira Configuration");
 
-        return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, fieldMapping);
+        return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, issueSummary, fieldMapping);
     }
 
     private ValidationResult validateFieldMapping(FieldValueModel fieldToValidate, FieldModel fieldModel) {

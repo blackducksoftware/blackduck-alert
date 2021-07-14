@@ -19,5 +19,6 @@ export const JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS = {
     issueType: 'channel.jira.cloud.issue.type',
     project: 'channel.jira.cloud.project.name',
     resolveWorkflow: 'channel.jira.cloud.resolve.workflow',
-    reopenWorkflow: 'channel.jira.cloud.reopen.workflow'
+    reopenWorkflow: 'channel.jira.cloud.reopen.workflow',
+    issueSummary: 'channel.jira.cloud.issue.summary'
 };
