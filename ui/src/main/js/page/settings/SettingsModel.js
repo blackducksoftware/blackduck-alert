@@ -10,5 +10,6 @@ export const SETTINGS_FIELD_KEYS = {
     proxyHost: 'settings.proxy.host',
     proxyPort: 'settings.proxy.port',
     proxyUsername: 'settings.proxy.username',
-    proxyPassword: 'settings.proxy.password'
+    proxyPassword: 'settings.proxy.password',
+    proxyNonProxyHosts: 'settings.proxy.non.proxy.hosts'
 };

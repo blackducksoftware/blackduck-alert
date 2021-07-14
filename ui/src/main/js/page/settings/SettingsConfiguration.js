@@ -9,6 +9,7 @@ import PasswordInput from 'common/input/PasswordInput';
 import CollapsiblePane from 'common/CollapsiblePane';
 import TextInput from 'common/input/TextInput';
 import NumberInput from 'common/input/NumberInput';
+import DynamicSelectInput from 'common/input/DynamicSelectInput';
 import * as GlobalRequestHelper from 'common/global/GlobalRequestHelper';
 import * as HttpErrorUtilities from 'common/util/httpErrorUtilities';
 
@@ -21,7 +22,8 @@ const SettingsConfiguration = ({
     const shouldExpand = FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyHost)
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyPort)
         || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyPassword)
-        || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyUsername);
+        || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyUsername)
+        || FieldModelUtilities.hasValue(formData, SETTINGS_FIELD_KEYS.proxyNonProxyHosts);
 
     const retrieveData = async () => {
         const data = await GlobalRequestHelper.getDataFindFirst(SETTINGS_INFO.key, csrfToken);
@@ -29,6 +31,13 @@ const SettingsConfiguration = ({
             setFormData(data);
         }
     };
+
+    const nonProxyHostOptions = [
+        { label: 'Hosted Azure Boards (dev.azure.com)', value: 'dev.azure.com' },
+        { label: 'Jira Cloud (atlassian.net)', value: 'atlassian.net' },
+        { label: 'Hosted MS Teams (outlook.office.com)', value: 'outlook.office.com' },
+        { label: 'Hosted Slack (api.slack.com)', value: 'api.slack.com' }
+    ];
 
     return (
         <CommonGlobalConfiguration
@@ -121,6 +130,22 @@ const SettingsConfiguration = ({
                         isSet={FieldModelUtilities.isFieldModelValueSet(formData, SETTINGS_FIELD_KEYS.proxyPassword)}
                         errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyPassword)}
                         errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.proxyPassword]}
+                    />
+                    <DynamicSelectInput
+                        id={SETTINGS_FIELD_KEYS.proxyNonProxyHosts}
+                        name={SETTINGS_FIELD_KEYS.proxyNonProxyHosts}
+                        label="Non-Proxy Hosts"
+                        description="Hosts whose network traffic should not go through the proxy."
+                        readOnly={readonly}
+                        onChange={FieldModelUtilities.handleChange(formData, setFormData)}
+                        value={FieldModelUtilities.getFieldModelValues(formData, SETTINGS_FIELD_KEYS.proxyNonProxyHosts)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(SETTINGS_FIELD_KEYS.proxyNonProxyHosts)}
+                        errorValue={errors.fieldErrors[SETTINGS_FIELD_KEYS.proxyNonProxyHosts]}
+                        creatable
+                        searchable
+                        multiSelect
+                        options={nonProxyHostOptions}
+                        placeholder="Choose an option or type to add your own"
                     />
                 </CollapsiblePane>
             </CommonGlobalConfigurationForm>
