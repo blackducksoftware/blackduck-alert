@@ -8,6 +8,8 @@
 package com.synopsys.integration.alert.channel.azure.boards;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +39,10 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
-import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
@@ -171,10 +174,21 @@ public class AzureBoardsProperties {
 
         HttpClientBuilder httpClientBuilder = ApacheHttpTransport.newDefaultHttpClientBuilder();
         if (proxyInfo.shouldUseProxy()) {
-            httpClientBuilder.setProxy(new HttpHost(proxyInfo.getHost().orElse(null), proxyInfo.getPort()));
+            String proxyHost = proxyInfo.getHost().orElse(null);
+            int proxyPort = proxyInfo.getPort();
+
+            InetSocketAddress proxyAddress = InetSocketAddress.createUnresolved(proxyHost, proxyPort);
+            ProxySelector proxySelector = ProxySelector.of(proxyAddress);
+            httpClientBuilder.setRoutePlanner(new SystemDefaultRoutePlanner(proxySelector));
+
+            httpClientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
             if (proxyInfo.hasAuthenticatedProxySettings()) {
-                NTCredentials credentials = new NTCredentials(proxyInfo.getUsername().orElse(null), proxyInfo.getPassword().orElse(null), proxyInfo.getNtlmWorkstation().orElse(null),
-                    proxyInfo.getNtlmDomain().orElse(null));
+                NTCredentials credentials = new NTCredentials(
+                    proxyInfo.getUsername().orElse(null),
+                    proxyInfo.getPassword().orElse(null),
+                    proxyInfo.getNtlmWorkstation().orElse(null),
+                    proxyInfo.getNtlmDomain().orElse(null)
+                );
                 CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                 credentialsProvider.setCredentials(new AuthScope(proxyInfo.getHost().orElse(null), proxyInfo.getPort()), credentials);
 
