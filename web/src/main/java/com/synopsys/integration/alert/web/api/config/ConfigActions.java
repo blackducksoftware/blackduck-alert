@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
+import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -192,7 +193,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
-        if (!encryptionUtility.isInitialized()) {
+        if (!encryptionUtility.isInitialized() && !new SettingsDescriptorKey().getUniversalKey().equals(resource.getDescriptorName())) {
             ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(EncryptionSettingsValidator.ENCRYPTION_MISSING);
             return new ValidationActionResponse(validationResponseModel);
         }
