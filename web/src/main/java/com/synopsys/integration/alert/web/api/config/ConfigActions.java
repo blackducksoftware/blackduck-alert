@@ -62,11 +62,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
     private final DescriptorMap descriptorMap;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
     private final EncryptionUtility encryptionUtility;
+    private final SettingsDescriptorKey settingsDescriptorKey;
 
     @Autowired
     public ConfigActions(AuthorizationManager authorizationManager, DescriptorAccessor descriptorAccessor, ConfigurationAccessor configurationAccessor,
         FieldModelProcessor fieldModelProcessor, DescriptorProcessor descriptorProcessor, ConfigurationFieldModelConverter modelConverter,
-        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility) {
+        DescriptorMap descriptorMap, PKIXErrorResponseFactory pkixErrorResponseFactory, EncryptionUtility encryptionUtility, SettingsDescriptorKey settingsDescriptorKey) {
         super(authorizationManager, descriptorAccessor);
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
@@ -75,6 +76,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         this.descriptorMap = descriptorMap;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.encryptionUtility = encryptionUtility;
+        this.settingsDescriptorKey = settingsDescriptorKey;
     }
 
     @Override
@@ -193,7 +195,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
 
     @Override
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
-        if (!encryptionUtility.isInitialized() && !new SettingsDescriptorKey().getUniversalKey().equals(resource.getDescriptorName())) {
+        if (!encryptionUtility.isInitialized() && !settingsDescriptorKey.getUniversalKey().equals(resource.getDescriptorName())) {
             ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(EncryptionSettingsValidator.ENCRYPTION_MISSING);
             return new ValidationActionResponse(validationResponseModel);
         }
