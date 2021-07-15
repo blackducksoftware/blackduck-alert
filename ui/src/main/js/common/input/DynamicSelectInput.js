@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Select, { components } from 'react-select';
+import Select, {
+    components,
+    Creatable
+} from 'react-select';
 import LabeledField, { LabelFieldPropertyDefaults } from 'common/input/field/LabeledField';
 import DescriptorOption from 'common/DescriptorOption';
 
@@ -26,15 +29,23 @@ const DynamicSelectInput = ({
     label,
     errorName,
     errorValue,
-    required
+    required,
+    creatable
 }) => {
     const selectClasses = `${selectSpacingClass} d-inline-flex p-2`;
-    const selectValue = options.filter((option) => value.includes(option.value));
+    const selectedOptions = options.filter((option) => value.includes(option.value));
+    if (creatable) {
+        const selectedOptionValues = selectedOptions.map((selection) => selection.value);
+        const customOptions = value
+            .filter((customValue) => customValue)
+            .filter((customValue) => !selectedOptionValues.includes(customValue))
+            .map((customValue) => ({ label: customValue, value: customValue }));
+        selectedOptions.push(...customOptions);
+    }
 
     const handleChange = (option) => {
-        const optionValue = option ? option.value : null;
-        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map((mappedOption) => mappedOption.value) : [optionValue];
-
+        const singleSelectOptionValue = option ? option.value : null;
+        const parsedArray = (Array.isArray(option) && option.length > 0) ? option.map((mappedOption) => mappedOption.value) : [singleSelectOptionValue];
         onChange({
             target: {
                 name: id,
@@ -67,6 +78,48 @@ const DynamicSelectInput = ({
         MultiValue: multiTypeLabel
     };
 
+    const createStandardSelect = () => (
+        <Select
+            id={id}
+            className={inputClass}
+            onChange={handleChange}
+            isSearchable={searchable}
+            isClearable={clearable}
+            removeSelected={removeSelected}
+            options={options}
+            placeholder={placeholder}
+            value={selectedOptions}
+            isMulti={multiSelect}
+            closeMenuOnSelect={!multiSelect}
+            components={selectInputComponents}
+            isDisabled={readOnly}
+            noOptionsMessage={() => 'No options available'}
+            onFocus={onFocus}
+        />
+    );
+
+    const createCreatableSelect = () => (
+        <Creatable
+            id={id}
+            className={inputClass}
+            onChange={handleChange}
+            isSearchable={searchable}
+            isClearable={clearable}
+            removeSelected={removeSelected}
+            options={options}
+            placeholder={placeholder}
+            value={selectedOptions}
+            isMulti={multiSelect}
+            closeMenuOnSelect={!multiSelect}
+            components={selectInputComponents}
+            isDisabled={readOnly}
+            noOptionsMessage={() => 'Create your own options'}
+            onFocus={onFocus}
+        />
+    );
+
+    const selectComponent = creatable ? createCreatableSelect() : createStandardSelect();
+
     return (
         <LabeledField
             description={description}
@@ -78,23 +131,7 @@ const DynamicSelectInput = ({
             showDescriptionPlaceHolder={showDescriptionPlaceHolder}
         >
             <div className={selectClasses}>
-                <Select
-                    id={id}
-                    className={inputClass}
-                    onChange={handleChange}
-                    isSearchable={searchable}
-                    isClearable={clearable}
-                    removeSelected={removeSelected}
-                    options={options}
-                    placeholder={placeholder}
-                    value={selectValue}
-                    isMulti={multiSelect}
-                    closeMenuOnSelect={!multiSelect}
-                    components={selectInputComponents}
-                    isDisabled={readOnly}
-                    noOptionsMessage={() => 'No options available'}
-                    onFocus={onFocus}
-                />
+                {selectComponent}
             </div>
         </LabeledField>
     );
@@ -120,7 +157,8 @@ DynamicSelectInput.propTypes = {
     showDescriptionPlaceHolder: PropTypes.bool,
     errorName: PropTypes.string,
     errorValue: PropTypes.object,
-    required: PropTypes.bool
+    required: PropTypes.bool,
+    creatable: PropTypes.bool
 };
 
 DynamicSelectInput.defaultProps = {
@@ -141,7 +179,8 @@ DynamicSelectInput.defaultProps = {
     errorName: LabelFieldPropertyDefaults.ERROR_NAME_DEFAULT,
     errorValue: LabelFieldPropertyDefaults.ERROR_VALUE_DEFAULT,
     required: LabelFieldPropertyDefaults.REQUIRED_DEFAULT,
-    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT
+    showDescriptionPlaceHolder: LabelFieldPropertyDefaults.SHOW_DESCRIPTION_PLACEHOLDER_DEFAULT,
+    creatable: false
 };
 
 export default DynamicSelectInput;
