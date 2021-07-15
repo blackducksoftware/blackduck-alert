@@ -33,10 +33,11 @@ const SettingsConfiguration = ({
     };
 
     const nonProxyHostOptions = [
-        { label: 'Hosted Azure Boards (dev.azure.com)', value: 'dev.azure.com' },
-        { label: 'Jira Cloud (atlassian.net)', value: 'atlassian.net' },
-        { label: 'Hosted MS Teams (outlook.office.com)', value: 'outlook.office.com' },
-        { label: 'Hosted Slack (api.slack.com)', value: 'api.slack.com' }
+        { label: 'Hosted Azure Boards OAuth (app.vssps.visualstudio.com)', value: 'app.vssps.visualstudio.com' },
+        { label: 'Hosted Azure Boards API (dev.azure.com)', value: 'dev.azure.com' },
+        { label: 'Jira Cloud (*.atlassian.net)', value: '*.atlassian.net' },
+        { label: 'Hosted MS Teams (*.office.com)', value: '*.office.com' },
+        { label: 'Hosted Slack (*.slack.com)', value: '*.slack.com' }
     ];
 
     return (
