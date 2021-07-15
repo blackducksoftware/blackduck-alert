@@ -20,6 +20,7 @@ public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
     private final String resolveTransition;
     private final String reopenTransition;
     private final List<JiraJobCustomFieldModel> customFields;
+    private final String issueSummary;
 
     public JiraCloudJobDetailsModel(
         UUID jobId,
@@ -29,7 +30,8 @@ public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
         String issueType,
         String resolveTransition,
         String reopenTransition,
-        List<JiraJobCustomFieldModel> customFields
+        List<JiraJobCustomFieldModel> customFields,
+        String issueSummary
     ) {
         super(ChannelKeys.JIRA_CLOUD, jobId);
         this.addComments = addComments;
@@ -39,6 +41,7 @@ public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
         this.resolveTransition = resolveTransition;
         this.reopenTransition = reopenTransition;
         this.customFields = customFields;
+        this.issueSummary = issueSummary;
     }
 
     public boolean isAddComments() {
@@ -69,4 +72,7 @@ public class JiraCloudJobDetailsModel extends DistributionJobDetailsModel {
         return customFields;
     }
 
+    public String getIssueSummary() {
+        return issueSummary;
+    }
 }

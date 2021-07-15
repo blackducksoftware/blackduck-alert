@@ -338,10 +338,10 @@ class StaticJobAccessorTest {
     @Test
     public void createJiraCloudJobTest() {
         UUID jobId = UUID.randomUUID();
-        JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(jobId, false, null, null, null, null, null, List.of());
+        JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(jobId, false, null, null, null, null, null, List.of(), null);
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.JIRA_CLOUD.getUniversalKey(), jiraCloudJobDetailsModel);
 
-        JiraCloudJobDetailsEntity jiraCloudJobDetailsEntity = new JiraCloudJobDetailsEntity(null, false, null, null, null, null, null);
+        JiraCloudJobDetailsEntity jiraCloudJobDetailsEntity = new JiraCloudJobDetailsEntity(null, false, null, null, null, null, null, null);
         jiraCloudJobDetailsEntity.setJobCustomFields(List.of());
         DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
         distributionJobEntity.setJiraCloudJobDetails(jiraCloudJobDetailsEntity);

@@ -257,8 +257,8 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getIssueType(),
                 jobDetails.getResolveTransition(),
                 jobDetails.getReopenTransition(),
-                customFields
-            );
+                customFields,
+                jobDetails.getIssueSummary());
         } else if (ChannelKeys.JIRA_SERVER.equals(channelKey)) {
             JiraServerJobDetailsEntity jobDetails = jobEntity.getJiraServerJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
