@@ -19,5 +19,6 @@ export const JIRA_SERVER_DISTRIBUTION_FIELD_KEYS = {
     issueType: 'channel.jira.server.issue.type',
     project: 'channel.jira.server.project.name',
     resolveWorkflow: 'channel.jira.server.resolve.workflow',
-    reopenWorkflow: 'channel.jira.server.reopen.workflow'
+    reopenWorkflow: 'channel.jira.server.reopen.workflow',
+    issueSummary: 'channel.jira.server.issue.summary'
 };
