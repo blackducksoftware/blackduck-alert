@@ -13,13 +13,13 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
+import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
@@ -100,7 +100,7 @@ public class JiraServerSummaryFieldLengthTestIT {
         String password = testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PASSWORD);
 
         JiraServerPropertiesFactory jiraServerPropertiesFactory = Mockito.mock(JiraServerPropertiesFactory.class);
-        JiraServerProperties jiraServerProperties = new JiraServerProperties(url, password, username, true, ProxyInfo.NO_PROXY_INFO);
+        JiraServerProperties jiraServerProperties = new JiraServerProperties(url, password, username, true, ProxyInfo.NO_PROXY_INFO, true);
         Mockito.when(jiraServerPropertiesFactory.createJiraProperties()).thenReturn(jiraServerProperties);
 
         return jiraServerPropertiesFactory;
@@ -122,7 +122,7 @@ public class JiraServerSummaryFieldLengthTestIT {
             resolveTransition,
             reopenTransition,
             List.of(),
-            issueSummary);
+            "");
     }
 
 }

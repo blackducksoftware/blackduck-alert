@@ -19,7 +19,7 @@ public class JiraServerPropertiesTest {
     @Test
     public void testBuildConfigException() {
         try {
-            JiraServerProperties properties = new JiraServerProperties(null, null, null, false, ProxyInfo.NO_PROXY_INFO);
+            JiraServerProperties properties = new JiraServerProperties(null, null, null, false, ProxyInfo.NO_PROXY_INFO, true);
             properties.createJiraServerConfig();
             assertNull(properties.getUrl());
             assertNull(properties.getPassword());
@@ -38,7 +38,7 @@ public class JiraServerPropertiesTest {
             String password = "password";
             String user = "user";
             boolean pluginCheckDisabled = true;
-            JiraServerProperties properties = new JiraServerProperties(url, password, user, pluginCheckDisabled, ProxyInfo.NO_PROXY_INFO);
+            JiraServerProperties properties = new JiraServerProperties(url, password, user, pluginCheckDisabled, ProxyInfo.NO_PROXY_INFO, true);
             assertEquals(url, properties.getUrl());
             assertEquals(password, properties.getPassword());
             assertEquals(user, properties.getUsername());
@@ -54,7 +54,7 @@ public class JiraServerPropertiesTest {
     @Test
     public void testServerServiceFactory() {
         try {
-            JiraServerProperties properties = new JiraServerProperties("http://localhost:2990", "password", "user", false, ProxyInfo.NO_PROXY_INFO);
+            JiraServerProperties properties = new JiraServerProperties("http://localhost:2990", "password", "user", false, ProxyInfo.NO_PROXY_INFO, true);
             JiraServerServiceFactory serviceFactory = properties.createJiraServicesServerFactory(LoggerFactory.getLogger(getClass()), new Gson());
             assertNotNull(serviceFactory);
         } catch (IssueTrackerException ex) {
