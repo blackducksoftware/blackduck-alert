@@ -21,8 +21,6 @@ import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
-import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
-import com.synopsys.integration.alert.api.channel.jira.util.JiraCallbackUtils;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
@@ -164,13 +162,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     }
 
     private ProjectIssueSearchResult<String> createIssueResult(JiraSearcherResponseModel issue, ProjectIssueModel projectIssueModel) {
-        //TODO: This is similar to findExistingIssuesByProjectIssueModel.
-        //  Is it always going to  be either a vulnerability or a policy? Could it happen on a BOM?
-        ComponentConcernType concernType = ComponentConcernType.VULNERABILITY;
-        if (projectIssueModel.getPolicyDetails().isPresent()) {
-            concernType = ComponentConcernType.POLICY;
-        }
-        IssueCategory issueCategory = getIssueCategoryFromComponentConcernType(concernType);
+        IssueCategory issueCategory = getIssueCategoryFromProjectIssueModel(projectIssueModel);
         ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue, issueCategory);
         return new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
     }
@@ -181,13 +173,21 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
     }
 
+    private IssueCategory getIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
+        IssueCategory issueCategory = IssueCategory.BOM;
+        if (projectIssueModel.getVulnerabilityDetails().isPresent()) {
+            issueCategory = IssueCategory.VULNERABILITY;
+        } else if (projectIssueModel.getPolicyDetails().isPresent()) {
+            issueCategory = IssueCategory.POLICY;
+        }
+        return issueCategory;
+    }
+
     private IssueCategory getIssueCategoryFromComponentConcernType(ComponentConcernType componentConcernType) {
-        //TODO: If BOM doesn't get used, remove the default and make this an if/else statement
         IssueCategory issueCategory = IssueCategory.BOM;
         if (componentConcernType.equals(ComponentConcernType.VULNERABILITY)) {
             issueCategory = IssueCategory.VULNERABILITY;
-        }
-        if (componentConcernType.equals(ComponentConcernType.POLICY)) {
+        } else if (componentConcernType.equals(ComponentConcernType.POLICY)) {
             issueCategory = IssueCategory.POLICY;
         }
         return issueCategory;
