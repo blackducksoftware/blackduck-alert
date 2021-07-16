@@ -101,7 +101,7 @@ public class JiraServerExternalConnectionTest {
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_TYPE),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_RESOLVE_TRANSITION),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_REOPEN_TRANSITION),
-            customFields);
+            customFields, issueSummary);
     }
 
     private void addConfigurationFieldToMap(Map<String, ConfigurationFieldModel> configuredFields, String key, String value) {

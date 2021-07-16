@@ -121,8 +121,8 @@ public class JiraServerSummaryFieldLengthTestIT {
             issueType,
             resolveTransition,
             reopenTransition,
-            List.of()
-        );
+            List.of(),
+            issueSummary);
     }
 
 }
