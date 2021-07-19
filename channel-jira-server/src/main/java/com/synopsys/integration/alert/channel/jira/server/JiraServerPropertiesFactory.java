@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -31,14 +30,12 @@ public class JiraServerPropertiesFactory {
     private final JiraServerChannelKey channelKey;
     private final ProxyManager proxyManager;
     private final ConfigurationAccessor configurationAccessor;
-    private final AlertProperties alertProperties;
 
     @Autowired
-    public JiraServerPropertiesFactory(JiraServerChannelKey channelKey, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor, AlertProperties alertProperties) {
+    public JiraServerPropertiesFactory(JiraServerChannelKey channelKey, ProxyManager proxyManager, ConfigurationAccessor configurationAccessor) {
         this.channelKey = channelKey;
         this.proxyManager = proxyManager;
         this.configurationAccessor = configurationAccessor;
-        this.alertProperties = alertProperties;
     }
 
     public JiraServerProperties createJiraProperties(FieldUtility fieldUtility) {
@@ -47,8 +44,7 @@ public class JiraServerPropertiesFactory {
         String password = fieldUtility.getStringOrNull(JiraServerDescriptor.KEY_SERVER_PASSWORD);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
-        boolean trustCert = alertProperties.getAlertTrustCertificate().orElse(false);
-        return new JiraServerProperties(url, password, username, pluginCheckDisabled, proxy, trustCert);
+        return new JiraServerProperties(url, password, username, pluginCheckDisabled, proxy);
     }
 
     public JiraServerProperties createJiraProperties(FieldModel fieldModel) {
@@ -60,8 +56,7 @@ public class JiraServerPropertiesFactory {
         boolean pluginCheckDisabled = fieldModel.getFieldValue(JiraServerDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK).map(Boolean::parseBoolean).orElse(false);
 
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
-        boolean trustCert = alertProperties.getAlertTrustCertificate().orElse(false);
-        return new JiraServerProperties(url, password, username, pluginCheckDisabled, proxy, trustCert);
+        return new JiraServerProperties(url, password, username, pluginCheckDisabled, proxy);
     }
 
     public JiraServerProperties createJiraProperties() throws AlertConfigurationException {

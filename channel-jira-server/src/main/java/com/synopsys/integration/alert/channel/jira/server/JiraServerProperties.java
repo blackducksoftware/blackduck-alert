@@ -24,15 +24,13 @@ public class JiraServerProperties {
     private final String username;
     private final boolean pluginCheckDisabled;
     private final ProxyInfo proxyInfo;
-    private final boolean trustCert;
 
-    public JiraServerProperties(String url, String password, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo, boolean trustCert) {
+    public JiraServerProperties(String url, String password, String username, boolean pluginCheckDisabled, ProxyInfo proxyInfo) {
         this.url = url;
         this.password = password;
         this.username = username;
         this.pluginCheckDisabled = pluginCheckDisabled;
         this.proxyInfo = proxyInfo;
-        this.trustCert = trustCert;
     }
 
     public JiraServerRestConfig createJiraServerConfig() throws IssueTrackerException {
@@ -42,7 +40,6 @@ public class JiraServerProperties {
         jiraServerConfigBuilder.setAuthPassword(password);
         jiraServerConfigBuilder.setAuthUsername(username);
         jiraServerConfigBuilder.setProxyInfo(proxyInfo);
-        jiraServerConfigBuilder.setTrustCert(trustCert);
         try {
             return jiraServerConfigBuilder.build();
         } catch (IllegalArgumentException e) {

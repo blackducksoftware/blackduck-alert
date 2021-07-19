@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Disabled;
@@ -25,7 +24,6 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.server.distribution.JiraServerProcessorFactory;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -57,10 +55,8 @@ public class JiraServerExternalConnectionTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(createConfigurationModelForJiraServer()));
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(true));
         Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(null);
-        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationAccessor, alertProperties);
+        JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationAccessor);
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
