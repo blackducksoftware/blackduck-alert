@@ -95,6 +95,8 @@ const DynamicSelectInput = ({
             isDisabled={readOnly}
             noOptionsMessage={() => 'No options available'}
             onFocus={onFocus}
+            menuPlacement="auto"
+            maxMenuHeight={250}
         />
     );
 
@@ -115,6 +117,8 @@ const DynamicSelectInput = ({
             isDisabled={readOnly}
             noOptionsMessage={() => 'Create your own options'}
             onFocus={onFocus}
+            menuPlacement="auto"
+            maxMenuHeight={250}
         />
     );
 
