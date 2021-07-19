@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor.validator;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +29,9 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
 public class ConfigurationFieldValidator {
+    public static final String REQUIRED_FIELD_MISSING_MESSAGE = "Required field missing";
+    public static final String INVALID_OPTION_MESSAGE = "Invalid option selected";
+
     private final Map<String, FieldValueModel> fieldMap;
     private final Set<AlertFieldStatus> statuses;
 
@@ -55,7 +60,7 @@ public class ConfigurationFieldValidator {
 
     public void validateRequiredFieldIsNotBlank(String fieldKey) {
         if (fieldContainsNoData(fieldKey)) {
-            statuses.add(AlertFieldStatus.error(fieldKey, "Required field missing"));
+            statuses.add(AlertFieldStatus.error(fieldKey, REQUIRED_FIELD_MISSING_MESSAGE));
         }
     }
 
@@ -85,6 +90,17 @@ public class ConfigurationFieldValidator {
         }
     }
 
+    public void validateIsAURL(String fieldKey) {
+        String url = getStringValue(fieldKey).orElse("");
+        if (StringUtils.isNotBlank(url)) {
+            try {
+                new URL(url);
+            } catch (MalformedURLException e) {
+                statuses.add(AlertFieldStatus.error(fieldKey, e.getMessage()));
+            }
+        }
+    }
+
     public void validateIsAValidOption(String fieldKey, Set<String> validOptions) {
         boolean allValuesInValidOptions = getCollectionOfValues(fieldKey)
                                        .orElse(Collections.emptySet())
@@ -93,7 +109,7 @@ public class ConfigurationFieldValidator {
                                        .allMatch(option -> validOptions.stream().anyMatch(validOption -> StringUtils.equalsIgnoreCase(option, validOption)));
 
         if (!allValuesInValidOptions) {
-            statuses.add(AlertFieldStatus.error(fieldKey, "Invalid option selected"));
+            statuses.add(AlertFieldStatus.error(fieldKey, INVALID_OPTION_MESSAGE));
         }
     }
 
