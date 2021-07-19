@@ -18,7 +18,7 @@ import com.synopsys.integration.blackduck.api.generated.component.ComponentVersi
 import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceShortTermVulnerabilityRiskView;
 import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
@@ -32,7 +32,7 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
         BlackDuckApiClient blackDuckApiClient = createBlackDuckApiClient(expectedUrl, upgradeGuidanceView);
 
         LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceLink = new LinkSingleResponse<>("upgrade-guidance", ComponentVersionUpgradeGuidanceView.class);
-        ProjectVersionComponentView bomComponent = createBomComponent(upgradeGuidanceLink, expectedUrl);
+        ProjectVersionComponentVersionView bomComponent = createBomComponent(upgradeGuidanceLink, expectedUrl);
 
         BlackDuckMessageComponentVersionUpgradeGuidanceService upgradeGuidanceService = new BlackDuckMessageComponentVersionUpgradeGuidanceService(blackDuckApiClient);
         List<LinkableItem> upgradeGuidanceItems = upgradeGuidanceService.requestUpgradeGuidanceItems(bomComponent);
@@ -53,8 +53,8 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
         assertEquals(1, upgradeGuidanceItems.size());
     }
 
-    private ProjectVersionComponentView createBomComponent(LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceLink, UrlSingleResponse<ComponentVersionUpgradeGuidanceView> expectedUrl) {
-        ProjectVersionComponentView bomComponent = Mockito.mock(ProjectVersionComponentView.class);
+    private ProjectVersionComponentVersionView createBomComponent(LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceLink, UrlSingleResponse<ComponentVersionUpgradeGuidanceView> expectedUrl) {
+        ProjectVersionComponentVersionView bomComponent = Mockito.mock(ProjectVersionComponentVersionView.class);
         Mockito.when(bomComponent.metaSingleResponseSafely(Mockito.eq(upgradeGuidanceLink))).thenReturn(Optional.of(expectedUrl));
         return bomComponent;
     }

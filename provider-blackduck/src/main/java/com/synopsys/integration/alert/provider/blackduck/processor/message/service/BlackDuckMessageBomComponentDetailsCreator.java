@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.util.
 import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
@@ -54,11 +54,11 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         this.policyDetailsCreator = policyDetailsCreator;
     }
 
-    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) throws IntegrationException {
+    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) throws IntegrationException {
         return createBomComponentDetails(bomComponent, List.of(componentConcern), additionalAttributes);
     }
 
-    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
+    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
         LinkableItem component;
         LinkableItem componentVersion = null;
 
@@ -126,7 +126,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         );
     }
 
-    private ComponentVulnerabilities retrieveComponentVulnerabilities(ProjectVersionComponentView bomComponent) throws IntegrationException {
+    private ComponentVulnerabilities retrieveComponentVulnerabilities(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         if (!vulnerabilityDetailsCreator.hasSecurityRisk(bomComponent)) {
             return ComponentVulnerabilities.none();
         }
@@ -142,7 +142,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilities);
     }
 
-    private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentView bomComponent) throws IntegrationException {
+    private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         if (ProjectVersionComponentPolicyStatusType.NOT_IN_VIOLATION.equals(bomComponent.getPolicyStatus())) {
             return List.of();
         }
@@ -152,7 +152,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
                    .collect(Collectors.toList());
     }
 
-    private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentView bomComponent) throws IntegrationException {
+    private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         HttpUrl vulnerabilitiesUrl = bomComponent.getHref();
 
         List<VersionBomOriginView> origins = bomComponent.getOrigins();

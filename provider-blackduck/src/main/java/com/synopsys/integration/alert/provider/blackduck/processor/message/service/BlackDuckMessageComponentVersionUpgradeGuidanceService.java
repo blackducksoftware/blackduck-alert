@@ -19,7 +19,7 @@ import com.synopsys.integration.blackduck.api.core.response.LinkSingleResponse;
 import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
@@ -31,7 +31,7 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
         this.blackDuckApiClient = blackDuckApiClient;
     }
 
-    public List<LinkableItem> requestUpgradeGuidanceItems(ProjectVersionComponentView bomComponent) throws IntegrationException {
+    public List<LinkableItem> requestUpgradeGuidanceItems(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
         // TODO determine what to do with multiple origins
         Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> upgradeGuidanceUrl = Optional.empty();
         Optional<VersionBomOriginView> optionalOrigin = bomComponent.getOrigins().stream().findFirst();
