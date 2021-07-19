@@ -29,8 +29,8 @@ import {
 } from 'common/DescriptorInfo';
 
 const DistributionConfigurationTable = ({
-                                            csrfToken, errorHandler, readonly, showRefreshButton, descriptors
-                                        }) => {
+    csrfToken, errorHandler, readonly, showRefreshButton, descriptors
+}) => {
     const [error, setError] = useState(HTTPErrorUtils.createEmptyErrorObject());
     const [progress, setProgress] = useState(false);
     const [tableData, setTableData] = useState([]);
@@ -193,30 +193,28 @@ const DistributionConfigurationTable = ({
     );
 
     const selectRowOnSelectAction = (row, isSelect) => {
-        const inSelectedRows = selectedRowsWithData.some(selectedRow => selectedRow.id === row.id);
+        const inSelectedRows = selectedRowsWithData.some((selectedRow) => selectedRow.id === row.id);
         if (isSelect && !inSelectedRows) {
-            let newSelectedRows = [];
+            const newSelectedRows = [];
             newSelectedRows.push(...selectedRowsWithData);
             newSelectedRows.push(row);
             setSelectedRowsWithData(newSelectedRows);
         } else if (!isSelect && inSelectedRows) {
-            const newSelectedRows = selectedRowsWithData.filter(selectedRow => selectedRow.id !== row.id);
+            const newSelectedRows = selectedRowsWithData.filter((selectedRow) => selectedRow.id !== row.id);
             setSelectedRowsWithData(newSelectedRows);
         }
-    }
+    };
 
-    const selectRowOnSelectAllAction = (isSelect, selectedRows) => {
+    const selectRowOnSelectAllAction = (isSelect, allSelectedRows) => {
         if (isSelect) {
-            let newSelectedRows = [];
-            newSelectedRows.push(...selectedRowsWithData);
-            newSelectedRows.push(
-                ...selectedRowsWithData.filter(row => !selectedRows.some(selectedRow => selectedRow.id === row.id))
-            );
+            const newSelectedRows = [];
+            newSelectedRows.push(...allSelectedRows);
+            newSelectedRows.push(...selectedRowsWithData.filter((row) => !allSelectedRows.some((selectedRow) => selectedRow.id === row.id)));
             setSelectedRowsWithData(newSelectedRows);
         } else {
             setSelectedRowsWithData([]);
         }
-    }
+    };
 
     const selectRow = {
         mode: 'checkbox',
