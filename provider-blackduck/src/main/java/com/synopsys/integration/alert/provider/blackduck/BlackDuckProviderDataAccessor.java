@@ -145,7 +145,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 UserService userService = blackDuckServicesFactory.createUserService();
 
                 UserView providerConfigUser = userService.findCurrentUser();
-                return new ProviderUserModel(providerConfigUser.getUserName(), providerConfigUser.getEmail(), false);
+                return new ProviderUserModel(providerConfigUser.getEmail(), false);
             }
         } catch (IntegrationException e) {
             throw new AlertConfigurationException(createUserNotFoundString(providerConfigId, e.getMessage()), e);
@@ -203,7 +203,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
                 return userService.findUsersByEmail(emailAddress, new BlackDuckPageDefinition(1, 0))
                            .getItems()
                            .stream()
-                           .map(userView -> new ProviderUserModel(userView.getUserName(), userView.getEmail(), false))
+                           .map(userView -> new ProviderUserModel(userView.getEmail(), false))
                            .findFirst();
             } catch (IntegrationException e) {
                 logger.errorAndDebug(createProjectNotFoundString(providerConfigId, e.getMessage()), e);
@@ -257,10 +257,7 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
         Predicate<UserView> searchFilter = userView -> StringUtils.isNotBlank(userView.getEmail());
         if (StringUtils.isNotBlank(searchTerm)) {
-            Predicate<UserView> emailMatches = userView -> StringUtils.containsIgnoreCase(userView.getEmail(), searchTerm);
-            Predicate<UserView> usernameMatches = userView -> StringUtils.containsIgnoreCase(userView.getUserName(), searchTerm);
-
-            searchFilter = searchFilter.and(emailMatches.or(usernameMatches));
+            searchFilter = searchFilter.and(userView -> StringUtils.containsIgnoreCase(userView.getEmail(), searchTerm));
         }
 
         ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
@@ -268,7 +265,8 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
         List<ProviderUserModel> foundUsers = pageOfUsers.getItems()
                                                  .stream()
-                                                 .map(userView -> new ProviderUserModel(userView.getUserName(), userView.getEmail(), false))
+                                                 .map(UserView::getEmail)
+                                                 .map(email -> new ProviderUserModel(email, false))
                                                  .collect(Collectors.toList());
         // Due to a limitation in the blackduck-common library, the totalCount in the BlackDuckPageResponse does not represent the count the matches the searchFilter. It is the totalCount from Black Duck
         int totalPageCount = computeTotalCount(pageOfUsers, pageSize);
@@ -279,9 +277,9 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
         BlackDuckServicesFactory blackDuckServicesFactory = createBlackDuckServicesFactory(blackDuckConfiguration);
         BlackDuckApiClient blackDuckService = blackDuckServicesFactory.getBlackDuckApiClient();
         ApiDiscovery apiDiscovery = blackDuckServicesFactory.getApiDiscovery();
-        Set<UserView> allActiveBlackDuckUserViews = getAllActiveBlackDuckUserViews(blackDuckService, apiDiscovery);
-        return allActiveBlackDuckUserViews.stream()
-                   .map(userView -> new ProviderUserModel(userView.getUserName(), userView.getEmail(), false))
+        Set<String> allActiveBlackDuckEmailAddresses = getAllActiveBlackDuckEmailAddresses(blackDuckService, apiDiscovery);
+        return allActiveBlackDuckEmailAddresses.stream()
+                   .map(email -> new ProviderUserModel(email, false))
                    .collect(Collectors.toList());
     }
 
@@ -326,11 +324,12 @@ public class BlackDuckProviderDataAccessor implements ProviderDataAccessor {
 
     }
 
-    private Set<UserView> getAllActiveBlackDuckUserViews(BlackDuckApiClient blackDuckService, ApiDiscovery apiDiscovery) throws IntegrationException {
+    private Set<String> getAllActiveBlackDuckEmailAddresses(BlackDuckApiClient blackDuckService, ApiDiscovery apiDiscovery) throws IntegrationException {
         return blackDuckService.getAllResponses(apiDiscovery.metaUsersLink())
                    .stream()
                    .filter(UserView::getActive)
-                   .filter(userView -> StringUtils.isNotBlank(userView.getEmail()))
+                   .map(UserView::getEmail)
+                   .filter(StringUtils::isNotBlank)
                    .collect(Collectors.toSet());
     }
 
