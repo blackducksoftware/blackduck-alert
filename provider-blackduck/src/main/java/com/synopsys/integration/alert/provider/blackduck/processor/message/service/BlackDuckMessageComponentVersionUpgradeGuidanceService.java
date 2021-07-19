@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.processor.message.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
-import com.synopsys.integration.blackduck.api.generated.component.RemediatingVersionView;
 import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
@@ -49,22 +47,6 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
             return guidanceItems;
         }
         return List.of();
-    }
-
-    private LinkableItem createRemediationItem(String label, RemediatingVersionView remediatingVersionView) {
-        String remediationText = createRemediationText(remediatingVersionView);
-        return new LinkableItem(label, remediationText, remediatingVersionView.getComponentVersion());
-    }
-
-    private String createRemediationText(RemediatingVersionView remediatingVersionView) {
-        BigDecimal vulnerabilityCount = remediatingVersionView.getVulnerabilityCount();
-        String vulnerabilityCountString;
-        if (vulnerabilityCount != null && vulnerabilityCount.intValue() > 0) {
-            vulnerabilityCountString = vulnerabilityCount.toPlainString();
-        } else {
-            vulnerabilityCountString = "None";
-        }
-        return String.format("%s Vulnerability Count: %s", remediatingVersionView.getName(), vulnerabilityCountString);
     }
 
     private LinkableItem createUpgradeGuidanceItem(String label, CommonUpgradeGuidanceModel upgradeGuidanceModel) {
