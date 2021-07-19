@@ -57,30 +57,29 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
         return configurationFieldValidator.getValidationResults();
     }
 
-    private Optional<AlertFieldStatus> validateAPIToken(ConfigurationFieldValidator configurationFieldValidator) {
+    private void validateAPIToken(ConfigurationFieldValidator configurationFieldValidator) {
         String apiKey = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse("");
         if (StringUtils.isNotBlank(apiKey) && (apiKey.length() < 64 || apiKey.length() > 256)) {
-            return Optional.of(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "Invalid Black Duck API Token."));
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "Invalid Black Duck API Token."));
         }
-        return Optional.empty();
     }
 
     private void validateTimeout(ConfigurationFieldValidator configurationFieldValidator) {
         boolean isANumberOrEmpty = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
                                        .map(NumberUtils::isCreatable)
                                        .orElse(true);
-         if (isANumberOrEmpty) {
-             int timeoutInt = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
-                                  .map(NumberUtils::toInt)
-                                  .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
-             if (timeoutInt < 1) {
-                 configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Invalid timeout: The timeout must be a positive integer"));
-             } else if (timeoutInt > 300) {
-                 configurationFieldValidator.addValidationResults(AlertFieldStatus.warning(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "The provided timeout is greater than five minutes. Please ensure this is the desired behavior."));
-             }
-         } else {
-             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, NumberConfigField.NOT_AN_INTEGER_VALUE));
-         }
+        if (isANumberOrEmpty) {
+            int timeoutInt = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+                                 .map(NumberUtils::toInt)
+                                 .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
+            if (timeoutInt < 1) {
+                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Invalid timeout: The timeout must be a positive integer"));
+            } else if (timeoutInt > 300) {
+                configurationFieldValidator.addValidationResults(AlertFieldStatus.warning(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "The provided timeout is greater than five minutes. Please ensure this is the desired behavior."));
+            }
+        } else {
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, NumberConfigField.NOT_AN_INTEGER_VALUE));
+        }
     }
 
     private Optional<AlertFieldStatus> validateDuplicateNames(FieldModel fieldModel) {

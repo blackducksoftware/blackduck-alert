@@ -44,6 +44,9 @@ public class JiraCloudJobDetailsEntity {
     @Column(name = "reopen_transition")
     private String reopenTransition;
 
+    @Column(name = "issue_summary")
+    private String issueSummary;
+
     @OneToMany
     @JoinColumn(name = "job_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private List<JiraCloudJobCustomFieldEntity> jobCustomFields;
@@ -51,7 +54,7 @@ public class JiraCloudJobDetailsEntity {
     public JiraCloudJobDetailsEntity() {
     }
 
-    public JiraCloudJobDetailsEntity(UUID jobId, Boolean addComments, String issueCreatorEmail, String projectNameOrKey, String issueType, String resolveTransition, String reopenTransition) {
+    public JiraCloudJobDetailsEntity(UUID jobId, Boolean addComments, String issueCreatorEmail, String projectNameOrKey, String issueType, String resolveTransition, String reopenTransition, String issueSummary) {
         this.jobId = jobId;
         this.addComments = addComments;
         this.issueCreatorEmail = issueCreatorEmail;
@@ -59,6 +62,7 @@ public class JiraCloudJobDetailsEntity {
         this.issueType = issueType;
         this.resolveTransition = resolveTransition;
         this.reopenTransition = reopenTransition;
+        this.issueSummary = issueSummary;
     }
 
     public UUID getJobId() {
@@ -123,6 +127,14 @@ public class JiraCloudJobDetailsEntity {
 
     public void setJobCustomFields(List<JiraCloudJobCustomFieldEntity> jobCustomFields) {
         this.jobCustomFields = jobCustomFields;
+    }
+
+    public String getIssueSummary() {
+        return issueSummary;
+    }
+
+    public void setIssueSummary(String issueSummary) {
+        this.issueSummary = issueSummary;
     }
 
 }
