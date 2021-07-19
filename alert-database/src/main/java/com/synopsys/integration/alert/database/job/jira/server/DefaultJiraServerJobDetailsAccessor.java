@@ -50,7 +50,8 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
             jiraServerJobDetails.getProjectNameOrKey(),
             jiraServerJobDetails.getIssueType(),
             jiraServerJobDetails.getResolveTransition(),
-            jiraServerJobDetails.getReopenTransition()
+            jiraServerJobDetails.getReopenTransition(),
+            jiraServerJobDetails.getIssueSummary()
         );
         JiraServerJobDetailsEntity savedJobDetails = jiraServerJobDetailsRepository.save(jiraServerJobDetailsToSave);
 
@@ -84,7 +85,7 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
             jobDetails.getIssueType(),
             jobDetails.getResolveTransition(),
             jobDetails.getReopenTransition(),
-            customFields
-        );
+            customFields,
+            jobDetails.getIssueSummary());
     }
 }

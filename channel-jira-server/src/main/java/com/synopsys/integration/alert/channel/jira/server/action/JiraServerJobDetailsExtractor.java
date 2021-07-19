@@ -42,7 +42,8 @@ public class JiraServerJobDetailsExtractor extends JiraJobDetailsExtractor {
             fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_TYPE, configuredFieldsMap),
             fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, configuredFieldsMap),
             fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, configuredFieldsMap),
-            extractJiraFieldMappings(JiraServerDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap)
+            extractJiraFieldMappings(JiraServerDescriptor.KEY_FIELD_MAPPING, configuredFieldsMap),
+            fieldExtractor.extractFieldValueOrEmptyString(JiraServerDescriptor.KEY_ISSUE_SUMMARY, configuredFieldsMap)
         );
     }
 

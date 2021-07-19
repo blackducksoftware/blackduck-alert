@@ -360,10 +360,10 @@ class StaticJobAccessorTest {
     @Test
     public void createJiraServerJobTest() {
         UUID jobId = UUID.randomUUID();
-        JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(jobId, false, null, null, null, null, null, List.of());
+        JiraServerJobDetailsModel jiraServerJobDetailsModel = new JiraServerJobDetailsModel(jobId, false, null, null, null, null, null, List.of(), "issueSummary");
         DistributionJobRequestModel distributionJobRequestModel = createDistributionJobEntity(ChannelKeys.JIRA_SERVER.getUniversalKey(), jiraServerJobDetailsModel);
 
-        JiraServerJobDetailsEntity jiraServerJobDetailsEntity = new JiraServerJobDetailsEntity(null, false, null, null, null, null, null);
+        JiraServerJobDetailsEntity jiraServerJobDetailsEntity = new JiraServerJobDetailsEntity(null, false, null, null, null, null, null, null);
         jiraServerJobDetailsEntity.setJobCustomFields(List.of());
         DistributionJobEntity distributionJobEntity = createDistributionJobEntity(jobId, distributionJobRequestModel);
         distributionJobEntity.setJiraServerJobDetails(jiraServerJobDetailsEntity);

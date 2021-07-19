@@ -273,8 +273,8 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getIssueType(),
                 jobDetails.getResolveTransition(),
                 jobDetails.getReopenTransition(),
-                customFields
-            );
+                customFields,
+                jobDetails.getIssueSummary());
         } else if (ChannelKeys.MS_TEAMS.equals(channelKey)) {
             MSTeamsJobDetailsEntity jobDetails = jobEntity.getMsTeamsJobDetails();
             distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobId, jobDetails.getWebhook());
