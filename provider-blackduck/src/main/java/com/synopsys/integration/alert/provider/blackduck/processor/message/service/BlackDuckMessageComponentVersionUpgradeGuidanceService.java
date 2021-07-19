@@ -15,38 +15,77 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
+import com.synopsys.integration.blackduck.api.core.ResourceLink;
+import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.core.response.LinkSingleResponse;
+import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.response.ComponentVersionUpgradeGuidanceView;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
-import com.synopsys.integration.blackduck.service.dataservice.ComponentService;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckMessageComponentVersionUpgradeGuidanceService {
-    private final ComponentService componentService;
+    private static final String LINK_UPGRADE_GUIDANCE = "upgrade-guidance";
+    private final BlackDuckApiClient blackDuckApiClient;
 
-    public BlackDuckMessageComponentVersionUpgradeGuidanceService(ComponentService componentService) {
-        this.componentService = componentService;
+    public BlackDuckMessageComponentVersionUpgradeGuidanceService(BlackDuckApiClient blackDuckApiClient) {
+        this.blackDuckApiClient = blackDuckApiClient;
+    }
+
+    public List<LinkableItem> requestUpgradeGuidanceItems(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
+        // TODO determine what to do with multiple origins
+        Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> upgradeGuidanceUrl = bomComponent.getOrigins()
+                                                                                                  .stream()
+                                                                                                  .findFirst()
+                                                                                                  .flatMap(origin -> Optional.ofNullable(origin.getMeta()))
+                                                                                                  .flatMap(this::extractFirstUpgradeGuidanceLinkSafely)
+                                                                                                  .map(url -> new UrlSingleResponse<>(url, ComponentVersionUpgradeGuidanceView.class))
+                                                                                                  .or(() -> extractComponentVersionUpgradeGuidanceUrl(bomComponent));
+        if (upgradeGuidanceUrl.isPresent()) {
+            ComponentVersionUpgradeGuidanceView upgradeGuidanceView = blackDuckApiClient.getResponse(upgradeGuidanceUrl.get());
+            return createUpgradeGuidanceItems(upgradeGuidanceView);
+        }
+        return List.of();
     }
 
     public List<LinkableItem> requestUpgradeGuidanceItems(ComponentVersionView componentVersionView) throws IntegrationException {
-        Optional<ComponentVersionUpgradeGuidanceView> optionalUpgradeGuidance = componentService.getUpgradeGuidance(componentVersionView);
-        if (optionalUpgradeGuidance.isPresent()) {
-            ComponentVersionUpgradeGuidanceView upgradeGuidanceView = optionalUpgradeGuidance.get();
-
-            List<LinkableItem> guidanceItems = new ArrayList<>(2);
-
-            Optional.ofNullable(upgradeGuidanceView.getShortTerm())
-                .map(CommonUpgradeGuidanceModel::fromShortTermGuidance)
-                .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_SHORT_TERM, guidanceModel))
-                .ifPresent(guidanceItems::add);
-
-            Optional.ofNullable(upgradeGuidanceView.getLongTerm())
-                .map(CommonUpgradeGuidanceModel::fromLongTermGuidance)
-                .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_LONG_TERM, guidanceModel))
-                .ifPresent(guidanceItems::add);
-
-            return guidanceItems;
+        Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> upgradeGuidanceUrl = componentVersionView.metaUpgradeGuidanceLinkSafely();
+        if (upgradeGuidanceUrl.isPresent()) {
+            ComponentVersionUpgradeGuidanceView upgradeGuidanceView = blackDuckApiClient.getResponse(upgradeGuidanceUrl.get());
+            return createUpgradeGuidanceItems(upgradeGuidanceView);
         }
         return List.of();
+    }
+
+    private Optional<HttpUrl> extractFirstUpgradeGuidanceLinkSafely(ResourceMetadata meta) {
+        return meta.getLinks()
+                   .stream()
+                   .filter(resourceLink -> resourceLink.getRel().equals(LINK_UPGRADE_GUIDANCE))
+                   .map(ResourceLink::getHref)
+                   .findFirst();
+    }
+
+    private Optional<UrlSingleResponse<ComponentVersionUpgradeGuidanceView>> extractComponentVersionUpgradeGuidanceUrl(ProjectVersionComponentVersionView bomComponent) {
+        LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceViewLinkName = new LinkSingleResponse<>(LINK_UPGRADE_GUIDANCE, ComponentVersionUpgradeGuidanceView.class);
+        return bomComponent.metaSingleResponseSafely(upgradeGuidanceViewLinkName);
+    }
+
+    private List<LinkableItem> createUpgradeGuidanceItems(ComponentVersionUpgradeGuidanceView upgradeGuidanceView) {
+        List<LinkableItem> guidanceItems = new ArrayList<>(2);
+
+        Optional.ofNullable(upgradeGuidanceView.getShortTerm())
+            .map(CommonUpgradeGuidanceModel::fromShortTermGuidance)
+            .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_SHORT_TERM, guidanceModel))
+            .ifPresent(guidanceItems::add);
+
+        Optional.ofNullable(upgradeGuidanceView.getLongTerm())
+            .map(CommonUpgradeGuidanceModel::fromLongTermGuidance)
+            .map(guidanceModel -> createUpgradeGuidanceItem(BlackDuckMessageLabels.LABEL_GUIDANCE_LONG_TERM, guidanceModel))
+            .ifPresent(guidanceItems::add);
+
+        return guidanceItems;
     }
 
     private LinkableItem createUpgradeGuidanceItem(String label, CommonUpgradeGuidanceModel upgradeGuidanceModel) {
