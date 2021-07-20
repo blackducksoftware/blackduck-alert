@@ -33,6 +33,7 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.manual.view.NotificationUserView;
 import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -105,9 +106,9 @@ public class BlackDuckAccumulator extends ProviderTask {
     }
 
     private void retrieveAndStoreNotifications(BlackDuckNotificationRetriever notificationRetriever, DateRange dateRange) throws IntegrationException {
-        StatefulAlertPage<NotificationView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
+        StatefulAlertPage<NotificationUserView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
         while (!notificationPage.isEmpty()) {
-            List<NotificationView> currentNotifications = notificationPage.getCurrentModels();
+            List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
             logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
             storeNotifications(currentNotifications);
 
@@ -115,7 +116,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         }
     }
 
-    private void storeNotifications(List<NotificationView> notifications) {
+    private void storeNotifications(List<NotificationUserView> notifications) {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
         write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
@@ -127,7 +128,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         }
     }
 
-    private List<AlertNotificationModel> convertToAlertNotificationModels(List<NotificationView> notifications) {
+    private List<AlertNotificationModel> convertToAlertNotificationModels(List<NotificationUserView> notifications) {
         return notifications
                    .stream()
                    .sorted(Comparator.comparing(NotificationView::getCreatedAt))
