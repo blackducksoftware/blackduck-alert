@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.test.common.TestProperties;
 import com.synopsys.integration.alert.test.common.TestPropertyKey;
 import com.synopsys.integration.bdio.model.Forge;
 import com.synopsys.integration.bdio.model.externalid.ExternalId;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
@@ -72,11 +72,11 @@ public class BlackDuckProviderService {
                                                    .orElseThrow(() -> new IntegrationException(String.format("Could not find the Black Duck project '%s' version '%s'", blackDuckProjectName, blackDuckProjectVersion)));
 
         ProjectVersionView projectVersionView = projectVersion.getProjectVersionView();
-        List<ProjectVersionComponentView> bomComponents = blackDuckService.getAllResponses(projectVersionView.metaComponentsLink());
-        Optional<ProjectVersionComponentView> apacheCommonsFileUpload = bomComponents.stream()
-                                                                            .filter(component -> component.getComponentName().equals("Apache Commons FileUpload"))
-                                                                            .filter(component -> component.getComponentVersionName().equals("1.2.1"))
-                                                                            .findFirst();
+        List<ProjectVersionComponentVersionView> bomComponents = blackDuckService.getAllResponses(projectVersionView.metaComponentsLink());
+        Optional<ProjectVersionComponentVersionView> apacheCommonsFileUpload = bomComponents.stream()
+                                                                                   .filter(component -> component.getComponentName().equals("Apache Commons FileUpload"))
+                                                                                   .filter(component -> component.getComponentVersionName().equals("1.2.1"))
+                                                                                   .findFirst();
         if (apacheCommonsFileUpload.isPresent()) {
             blackDuckService.delete(apacheCommonsFileUpload.get());
             //Thread.currentThread().wait(1000);

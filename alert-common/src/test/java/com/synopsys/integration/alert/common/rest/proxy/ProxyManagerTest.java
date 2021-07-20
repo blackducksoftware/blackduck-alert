@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.common.rest.proxy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,11 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.descriptor.accessor.SettingsUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class ProxyManagerTest {
@@ -33,7 +31,7 @@ public class ProxyManagerTest {
     }
 
     @Test
-    public void testCreate() throws AlertException {
+    public void testCreate() {
         ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
         ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
         ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);

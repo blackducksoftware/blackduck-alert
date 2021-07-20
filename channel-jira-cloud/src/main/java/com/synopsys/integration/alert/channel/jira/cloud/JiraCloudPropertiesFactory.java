@@ -18,11 +18,12 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class JiraCloudPropertiesFactory {
@@ -42,7 +43,8 @@ public class JiraCloudPropertiesFactory {
         String username = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_EMAIL_ADDRESS);
         String accessToken = fieldUtility.getStringOrNull(JiraCloudDescriptor.KEY_JIRA_ADMIN_API_TOKEN);
         boolean pluginCheckDisabled = fieldUtility.getBooleanOrFalse(JiraCloudDescriptor.KEY_JIRA_DISABLE_PLUGIN_CHECK);
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxyManager.createProxyInfo());
+        ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy);
     }
 
     public JiraCloudProperties createJiraProperties(FieldModel fieldModel) {
@@ -55,7 +57,8 @@ public class JiraCloudPropertiesFactory {
                                           .map(Boolean::parseBoolean)
                                           .orElse(false);
 
-        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxyManager.createProxyInfo());
+        ProxyInfo proxy = proxyManager.createProxyInfoForHost(url);
+        return new JiraCloudProperties(url, accessToken, username, pluginCheckDisabled, proxy);
     }
 
     public JiraCloudProperties createJiraProperties() throws AlertConfigurationException {

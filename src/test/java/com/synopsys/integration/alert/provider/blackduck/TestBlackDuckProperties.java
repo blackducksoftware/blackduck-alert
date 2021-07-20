@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
 import com.synopsys.integration.alert.test.common.TestProperties;
@@ -52,7 +52,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         Mockito.when(proxyInfo.getPort()).thenReturn(-1);
         Mockito.when(proxyInfo.getUsername()).thenReturn(Optional.empty());
         Mockito.when(proxyInfo.getPassword()).thenReturn(Optional.empty());
-        Mockito.when(proxyManager.createProxyInfo()).thenReturn(proxyInfo);
+        Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(proxyInfo);
         return proxyManager;
     }
 

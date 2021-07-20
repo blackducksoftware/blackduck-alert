@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
 
@@ -18,7 +18,7 @@ public class BlackDuckMessageLinkUtilsTest {
         String inputUrl = expectUrl + "/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9b36b6b4-8221-4071-8685-8c567d68e90e/licenses/7cae335f-1193-421e-92f1-8802b4243e93";
         HttpUrl inputHttpUrl = new HttpUrl(inputUrl);
 
-        ProjectVersionComponentView bomComponent = Mockito.mock(ProjectVersionComponentView.class);
+        ProjectVersionComponentVersionView bomComponent = Mockito.mock(ProjectVersionComponentVersionView.class);
         Mockito.when(bomComponent.getHref()).thenReturn(inputHttpUrl);
 
         String projectVersionComponentsLink = BlackDuckMessageLinkUtils.createProjectVersionComponentsLink(bomComponent);
@@ -35,7 +35,7 @@ public class BlackDuckMessageLinkUtilsTest {
         String inputUrl = componentsUrl + "/bb9a56d3-8a48-43fd-8db1-5a7529b857f0/versions/9b36b6b4-8221-4071-8685-8c567d68e90e/licenses/7cae335f-1193-421e-92f1-8802b4243e93";
         HttpUrl inputHttpUrl = new HttpUrl(inputUrl);
 
-        ProjectVersionComponentView bomComponent = Mockito.mock(ProjectVersionComponentView.class);
+        ProjectVersionComponentVersionView bomComponent = Mockito.mock(ProjectVersionComponentVersionView.class);
         Mockito.when(bomComponent.getComponentName()).thenReturn(componentName);
         Mockito.when(bomComponent.getHref()).thenReturn(inputHttpUrl);
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gavink" id="add-non-proxy-hosts-field">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM alert.descriptor_fields
+                WHERE descriptor_id = GET_DESCRIPTOR_ID('component_settings')
+                AND field_id = GET_FIELD_ID('settings.proxy.non.proxy.hosts')
+            </sqlCheck>
+        </preConditions>
+        <insert schemaName="alert" tableName="defined_fields">
+            <column name="source_key">settings.proxy.non.proxy.hosts</column>
+            <column name="sensitive">false</column>
+        </insert>
+        <insert schemaName="alert" tableName="descriptor_fields">
+            <column name="descriptor_id" valueComputed="GET_DESCRIPTOR_ID('component_settings')"/>
+            <column name="field_id" valueComputed="GET_FIELD_ID('settings.proxy.non.proxy.hosts')"/>
+        </insert>
+        <insert schemaName="alert" tableName="field_contexts">
+            <column name="field_id" valueComputed="GET_FIELD_ID('settings.proxy.non.proxy.hosts')"/>
+            <column name="context_id" valueComputed="GET_CONTEXT_ID('GLOBAL')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

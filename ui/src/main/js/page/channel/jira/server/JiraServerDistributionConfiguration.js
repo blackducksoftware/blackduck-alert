@@ -85,6 +85,17 @@ const JiraServerDistributionConfiguration = ({
                 errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow)}
                 errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.reopenWorkflow]}
             />
+            <TextInput
+                id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueSummary}
+                label="Issue Summary"
+                description="The summary to use for each issue created. Can use the following variables to populate data from the message content {{providerName}}, {{projectName}}, {{projectVersion}}, {{componentName}}, {{componentVersion}}, {{severity}}"
+                name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueSummary}
+                readOnly={readonly}
+                onChange={FieldModelUtilities.handleChange(data, setData)}
+                value={FieldModelUtilities.getFieldModelSingleValue(data, JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueSummary)}
+                errorName={FieldModelUtilities.createFieldModelErrorKey(JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueSummary)}
+                errorValue={errors.fieldErrors[JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueSummary]}
+            />
             <CollapsiblePane
                 id="distribution-jira-server-advanced-configuration"
                 title="Advanced Jira Configuration"

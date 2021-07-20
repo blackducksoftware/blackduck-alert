@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.mutable.ConfigurationModelMutable;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
@@ -73,7 +73,7 @@ public class BlackDuckSSOConfigRetrieverTest {
 
         MockAlertProperties mockAlertProperties = new MockAlertProperties();
         ProxyManager mockProxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(mockProxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        Mockito.when(mockProxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
         ConfigurationModelMutable configurationModel = new ConfigurationModelMutable(0L, 0L, null, null, ConfigContextEnum.GLOBAL);
         configurationModel.put(createConfigFieldModel(ProviderDescriptor.KEY_PROVIDER_CONFIG_ENABLED, Boolean.TRUE.toString()));

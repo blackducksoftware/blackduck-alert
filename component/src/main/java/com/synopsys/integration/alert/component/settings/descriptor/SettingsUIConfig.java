@@ -22,9 +22,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
@@ -118,6 +118,7 @@ public class SettingsUIConfig extends UIConfig {
             }
             return ValidationResult.errors(ConfigField.REQUIRED_FIELD_MISSING);
         }
+
     }
 
     private class EncryptionFieldValidator extends EncryptionValidator {
@@ -128,6 +129,7 @@ public class SettingsUIConfig extends UIConfig {
             }
             return ValidationResult.success();
         }
+
     }
 
 }

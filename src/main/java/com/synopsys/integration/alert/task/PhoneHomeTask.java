@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.common.persistence.accessor.RestApiAuditAc
 import com.synopsys.integration.alert.common.persistence.model.AuditJobStatusModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
-import com.synopsys.integration.alert.common.rest.ProxyManager;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
+import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 import com.synopsys.integration.alert.web.api.about.AboutReader;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
@@ -47,6 +47,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeClient;
 import com.synopsys.integration.phonehome.PhoneHomeResponse;
 import com.synopsys.integration.phonehome.PhoneHomeService;
+import com.synopsys.integration.phonehome.google.analytics.GoogleAnalyticsConstants;
 import com.synopsys.integration.phonehome.request.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.request.PhoneHomeRequestBodyBuilder;
 import com.synopsys.integration.rest.client.IntHttpClient;
@@ -147,7 +148,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     private PhoneHomeService createPhoneHomeService(ExecutorService phoneHomeExecutor) {
         IntLogger intLogger = new Slf4jIntLogger(logger);
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(GoogleAnalyticsConstants.BASE_URL);
         IntHttpClient intHttpClient = new IntHttpClient(intLogger, gson, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
 
         PhoneHomeClient phoneHomeClient = BlackDuckPhoneHomeHelper.createPhoneHomeClient(intLogger, intHttpClient.getClientBuilder(), gson);
