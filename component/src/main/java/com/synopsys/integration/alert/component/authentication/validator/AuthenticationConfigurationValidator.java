@@ -56,7 +56,10 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
                 AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL
             ));
 
-            validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
+            if (configurationFieldValidator.fieldHasNoReadableValue(AuthenticationDescriptor.KEY_SAML_METADATA_URL) && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
+                configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AuthenticationDescriptor.KEY_SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING));
+            }
+
             validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_METADATA_URL, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
             validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
         }
@@ -65,7 +68,7 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
     }
 
     private void validateMetaData(ConfigurationFieldValidator configurationFieldValidator, String fieldKey, String message) {
-        if (configurationFieldValidator.fieldHasNoReadableValue(fieldKey) && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.KEY_SAML_METADATA_FILE)) {
+        if (configurationFieldValidator.fieldHasNoReadableValue(fieldKey) && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(fieldKey, message));
         }
     }
