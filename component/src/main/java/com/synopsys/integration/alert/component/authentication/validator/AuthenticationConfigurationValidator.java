@@ -56,7 +56,7 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
                 AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL
             ));
 
-            validateMetaData(configurationFieldValidator, AuthenticationDescriptor.SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
+            validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_METADATA_FILE, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_FILE_MISSING);
             validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_METADATA_URL, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
             validateMetaData(configurationFieldValidator, AuthenticationDescriptor.KEY_SAML_ENTITY_BASE_URL, AuthenticationDescriptor.FIELD_ERROR_SAML_METADATA_URL_MISSING);
         }
