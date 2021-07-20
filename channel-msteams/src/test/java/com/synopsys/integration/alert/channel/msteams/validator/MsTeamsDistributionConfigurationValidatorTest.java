@@ -13,37 +13,37 @@ import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValid
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.test.common.FieldModelUtils;
 import com.synopsys.integration.alert.test.common.ValidationConstants;
 
 public class MsTeamsDistributionConfigurationValidatorTest {
-    public static Stream<Arguments> getModelAndExpectedErrors() {
+    public static final String EXPECTED_VALID_WEBHOOK_URL = "https://www.example.com/webhook";
+    public static final String INVALID_WEBHOOK_URL = "bad_url";
+
+    public static Stream<Arguments> getFieldsAndExpectedErrors() {
         return Stream.of(
             Arguments.of(
-                FieldModelUtils.createJobFieldModel(
-                    ValidationConstants.COMMON_CHANNEL_FIELDS,
-                    Map.of(MsTeamsDescriptor.KEY_WEBHOOK, FieldModelUtils.createFieldValue("https://www.example.com/webhook"))
-                ),
+                Map.of(MsTeamsDescriptor.KEY_WEBHOOK, FieldModelUtils.createFieldValue(EXPECTED_VALID_WEBHOOK_URL)),
                 Set.of()
             ),
             Arguments.of(
-                FieldModelUtils.createJobFieldModel(ValidationConstants.COMMON_CHANNEL_FIELDS),
+                Map.of(),
                 Set.of(AlertFieldStatus.error(MsTeamsDescriptor.KEY_WEBHOOK, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE))
             ),
             Arguments.of(
-                FieldModelUtils.createJobFieldModel(
-                    ValidationConstants.COMMON_CHANNEL_FIELDS,
-                    Map.of(MsTeamsDescriptor.KEY_WEBHOOK, FieldModelUtils.createFieldValue("bad_url"))
-                ),
-                Set.of(AlertFieldStatus.error(MsTeamsDescriptor.KEY_WEBHOOK, "no protocol: bad_url"))
+                Map.of(MsTeamsDescriptor.KEY_WEBHOOK, FieldModelUtils.createFieldValue(INVALID_WEBHOOK_URL)),
+                Set.of(AlertFieldStatus.error(MsTeamsDescriptor.KEY_WEBHOOK, "no protocol: " + INVALID_WEBHOOK_URL))
             )
         );
     }
 
-    @MethodSource("getModelAndExpectedErrors")
+    @MethodSource("getFieldsAndExpectedErrors")
     @ParameterizedTest()
-    public void testValidate(JobFieldModel testJobFieldModel, Set<AlertFieldStatus> expectedValidationErrors) {
+    public void testValidate(Map<String, FieldValueModel> fieldModelMap, Set<AlertFieldStatus> expectedValidationErrors) {
+        JobFieldModel testJobFieldModel = FieldModelUtils.createJobFieldModel(ValidationConstants.COMMON_CHANNEL_FIELDS, fieldModelMap);
+
         CommonChannelDistributionValidator commonChannelDistributionValidator = new CommonChannelDistributionValidator();
         MsTeamsDistributionConfigurationValidator msTeamsDistributionConfigurationValidator = new MsTeamsDistributionConfigurationValidator(commonChannelDistributionValidator);
 

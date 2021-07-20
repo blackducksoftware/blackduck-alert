@@ -20,6 +20,10 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 
 public class FieldModelUtils {
+    public static final String DEFAULT_MODEL_DESCRIPTOR_NAME = "Descriptor Name";
+    public static final String DEFAULT_MODEL_CONTEXT = "context";
+    public static final String DEFAULT_MODEL_JOB_ID = "id";
+
     public static void addConfigurationFieldToMap(Map<String, ConfigurationFieldModel> map, String key, String value) {
         map.put(key, createConfigurationFieldModel(key, value));
     }
@@ -40,34 +44,19 @@ public class FieldModelUtils {
         return field;
     }
 
-    public static void addFieldValueToMap(Map<String, FieldValueModel> map, String key, String value) {
-        map.put(key, createFieldValue(value));
-    }
-
-    public static void addFieldValueToMap(Map<String, FieldValueModel> map, String key, Collection<String> values) {
-        map.put(key, createFieldValue(values));
-    }
-
-    public static FieldValueModel createFieldValue(Collection<String> values) {
-        return new FieldValueModel(values, true);
-    }
-
     public static FieldValueModel createFieldValue(String value) {
         return new FieldValueModel(List.of(value), true);
     }
 
-    public static <K extends String, V extends FieldValueModel> JobFieldModel createJobFieldModel(K k1, V v1) {
-        return createJobFieldModel(Map.of(k1, v1));
-    }
-
+    @SafeVarargs
     public static JobFieldModel createJobFieldModel(Map<String, FieldValueModel>... multipleMaps) {
         Map<String, FieldValueModel> finalMap = Arrays.stream(multipleMaps).collect(HashMap::new, Map::putAll, Map::putAll);
-        FieldModel fieldModel = new FieldModel("someDescriptor", "someContext", finalMap);
-        return new JobFieldModel("jobId", Set.of(fieldModel), List.of());
+        return createJobFieldModel(finalMap);
     }
 
     public static JobFieldModel createJobFieldModel(Map<String, FieldValueModel> fieldValueModelMap) {
-        FieldModel fieldModel = new FieldModel("someDescriptor", "someContext", fieldValueModelMap);
-        return new JobFieldModel("jobId", Set.of(fieldModel), List.of());
+        FieldModel fieldModel = new FieldModel(DEFAULT_MODEL_DESCRIPTOR_NAME, DEFAULT_MODEL_CONTEXT, fieldValueModelMap);
+        return new JobFieldModel(DEFAULT_MODEL_JOB_ID, Set.of(fieldModel), List.of());
     }
+
 }
