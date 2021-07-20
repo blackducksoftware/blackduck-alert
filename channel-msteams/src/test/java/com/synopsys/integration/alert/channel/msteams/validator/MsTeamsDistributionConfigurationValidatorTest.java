@@ -12,36 +12,28 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.test.common.FieldModelUtils;
+import com.synopsys.integration.alert.test.common.ValidationConstants;
 
 public class MsTeamsDistributionConfigurationValidatorTest {
     public static Stream<Arguments> getModelAndExpectedErrors() {
-        Map<String, FieldValueModel> commonFields = Map.of(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, FieldModelUtils.createFieldValue("Channel Name"),
-            ChannelDistributionUIConfig.KEY_NAME, FieldModelUtils.createFieldValue("Name"),
-            ChannelDistributionUIConfig.KEY_FREQUENCY, FieldModelUtils.createFieldValue(FrequencyType.REAL_TIME.toString()),
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, FieldModelUtils.createFieldValue("Provider Name")
-        );
-
         return Stream.of(
             Arguments.of(
                 FieldModelUtils.createJobFieldModel(
-                    commonFields,
+                    ValidationConstants.COMMON_CHANNEL_FIELDS,
                     Map.of(MsTeamsDescriptor.KEY_WEBHOOK, FieldModelUtils.createFieldValue("https://www.example.com/webhook"))
                 ),
                 Set.of()
             ),
             Arguments.of(
-                FieldModelUtils.createJobFieldModel(commonFields),
+                FieldModelUtils.createJobFieldModel(ValidationConstants.COMMON_CHANNEL_FIELDS),
                 Set.of(AlertFieldStatus.error(MsTeamsDescriptor.KEY_WEBHOOK, ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE))
             ),
             Arguments.of(
                 FieldModelUtils.createJobFieldModel(
-                    commonFields,
+                    ValidationConstants.COMMON_CHANNEL_FIELDS,
                     Map.of(MsTeamsDescriptor.KEY_WEBHOOK, FieldModelUtils.createFieldValue("bad_url"))
                 ),
                 Set.of(AlertFieldStatus.error(MsTeamsDescriptor.KEY_WEBHOOK, "no protocol: bad_url"))
