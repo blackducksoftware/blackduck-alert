@@ -65,7 +65,7 @@ public class AuthenticationConfigurationValidator implements GlobalConfiguration
     }
 
     private void validateMetaData(ConfigurationFieldValidator configurationFieldValidator, String fieldKey, String message) {
-        if (configurationFieldValidator.fieldHasNoReadableValue(fieldKey) && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.SAML_METADATA_FILE)) {
+        if (configurationFieldValidator.fieldHasNoReadableValue(fieldKey) && !filePersistenceUtil.uploadFileExists(AuthenticationDescriptor.KEY_SAML_METADATA_FILE)) {
             configurationFieldValidator.addValidationResults(AlertFieldStatus.error(fieldKey, message));
         }
     }
