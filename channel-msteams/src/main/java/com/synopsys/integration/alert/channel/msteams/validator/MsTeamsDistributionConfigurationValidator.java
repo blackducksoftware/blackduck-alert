@@ -1,5 +1,5 @@
 /*
- * channel-email
+ * channel-msteams
  *
  * Copyright (c) 2021 Synopsys, Inc.
  *
