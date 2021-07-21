@@ -13,8 +13,6 @@ import com.synopsys.integration.alert.api.channel.issue.search.enumeration.Issue
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.function.ThrowingFunction;
-import com.synopsys.integration.jira.common.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
@@ -27,14 +25,9 @@ public class JiraIssueStatusCreator {
         this.reopenTransition = reopenTransition;
     }
 
-    public IssueStatus createIssueStatus(JiraSearcherResponseModel issue, ThrowingFunction<String, StatusDetailsComponent, IntegrationException> statusCategoryRetriever,
-        ThrowingFunction<String, TransitionsResponseModel, IntegrationException> transitionsRetriever) {
+    public IssueStatus createIssueStatus(JiraSearcherResponseModel issue, ThrowingFunction<String, TransitionsResponseModel, IntegrationException> transitionsRetriever) {
         try {
-            //Get the status category from the issue we are extracting
             String issueKey = issue.getIssueKey();
-            StatusCategory issueStatusCategory = retrieveIssueStatusCategory(issueKey, statusCategoryRetriever);
-
-            //get the available transitions and compare to see which is currently being used by the status category above.
             List<TransitionComponent> issueTransitions = retrieveTransitions(issueKey, transitionsRetriever);
             for (TransitionComponent transition : issueTransitions) {
                 String transitionName = transition.getName();
@@ -48,17 +41,6 @@ public class JiraIssueStatusCreator {
             return IssueStatus.UNKNOWN;
         }
         return IssueStatus.UNKNOWN;
-    }
-
-    //TODO: The method above does NOT use the StatusCategory. If there is no reason for it going forward, it  should be removed with this method
-    //  In addition, it should be removed from JiraSearcher and is children
-    private StatusCategory retrieveIssueStatusCategory(String issueKey, ThrowingFunction<String, StatusDetailsComponent, IntegrationException> statusCategoryRetriever) throws AlertException {
-        try {
-            StatusDetailsComponent issueStatus = statusCategoryRetriever.apply(issueKey);
-            return issueStatus.getStatusCategory();
-        } catch (IntegrationException e) {
-            throw new AlertException(String.format("Failed to retrieve issue status from Jira. Issue Key: %s", issueKey), e);
-        }
     }
 
     private List<TransitionComponent> retrieveTransitions(String issueKey, ThrowingFunction<String, TransitionsResponseModel, IntegrationException> transitionsRetriever) throws AlertException {

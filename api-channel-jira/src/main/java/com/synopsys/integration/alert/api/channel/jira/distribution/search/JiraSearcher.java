@@ -31,9 +31,6 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.StatusCategory;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
-import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
@@ -49,8 +46,6 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     }
 
     protected abstract List<JiraSearcherResponseModel> executeQueryForIssues(String jql) throws IntegrationException;
-
-    protected abstract StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException;
 
     protected abstract TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException;
 
@@ -169,7 +164,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
 
     private ExistingIssueDetails<String> createExistingIssueDetails(JiraSearcherResponseModel issue, IssueCategory issueCategory) {
         String issueCallbackLink = JiraCallbackUtils.createUILink(issue);
-        IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(issue, this::fetchIssueStatus, this::fetchIssueTransitions);
+        IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(issue, this::fetchIssueTransitions);
         return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
     }
 
@@ -192,24 +187,4 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         }
         return issueCategory;
     }
-
-    //TODO: If these methods are unused, they should be removed (Now exists in  JiraIssueStatusCreator)
-    private StatusCategory retrieveIssueStatusCategory(String issueKey) throws AlertException {
-        try {
-            StatusDetailsComponent issueStatus = fetchIssueStatus(issueKey);
-            return issueStatus.getStatusCategory();
-        } catch (IntegrationException e) {
-            throw new AlertException(String.format("Failed to retrieve issue status from Jira. Issue Key: %s", issueKey), e);
-        }
-    }
-
-    private List<TransitionComponent> retrieveTransitions(String issueKey) throws AlertException {
-        try {
-            TransitionsResponseModel transitionsResponse = fetchIssueTransitions(issueKey);
-            return transitionsResponse.getTransitions();
-        } catch (IntegrationException e) {
-            throw new AlertException(String.format("Failed to retrieve transitions from Jira. Issue Key: %s", issueKey), e);
-        }
-    }
-
 }

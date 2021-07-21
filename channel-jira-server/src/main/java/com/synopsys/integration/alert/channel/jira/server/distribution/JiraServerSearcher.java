@@ -16,7 +16,6 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraI
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
@@ -41,11 +40,6 @@ public class JiraServerSearcher extends JiraSearcher {
                    .stream()
                    .map(this::convertModel)
                    .collect(Collectors.toList());
-    }
-
-    @Override
-    protected StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException {
-        return issueService.getStatus(issueKey);
     }
 
     @Override

@@ -21,7 +21,6 @@ import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
-import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
@@ -29,7 +28,8 @@ public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
     private final IssueService issueService;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, IssueService issueService, JiraIssueStatusCreator jiraIssueStatusCreator) {
+    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, IssueService issueService,
+        JiraIssueStatusCreator jiraIssueStatusCreator) {
         super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator);
         this.issueSearchService = issueSearchService;
         this.issueService = issueService;
@@ -42,11 +42,6 @@ public class JiraCloudSearcher extends JiraSearcher {
                    .stream()
                    .map(this::convertModel)
                    .collect(Collectors.toList());
-    }
-
-    @Override
-    protected StatusDetailsComponent fetchIssueStatus(String issueKey) throws IntegrationException {
-        return issueService.getStatus(issueKey);
     }
 
     @Override
