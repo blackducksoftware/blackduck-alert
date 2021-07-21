@@ -26,7 +26,7 @@ public class BlackDuckApiTokenValidator {
     public static final String ROLE_NAME_SYSTEM_ADMINISTRATOR = "System Administrator";
     public static final String ROLE_NAME_SUPER_USER = "Super User";
 
-    // FIXME use these when it is deserialized correctly (requires blackduck-common-api support)
+    // FIXME use these when RoleAssignmentView is deserialized correctly (requires blackduck-common-api support)
     public static final String ROLE_KEY_GLOBAL_PROJECT_VIEWER = "globalprojectviewer";
     public static final String ROLE_KEY_SYSTEM_ADMINISTRATOR = "sysadmin";
     public static final String ROLE_KEY_SUPER_USER = "superuser";
