@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsIssueStatusResolver;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureCustomFieldManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
@@ -84,8 +85,9 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         );
 
         // Extractor Requirements
+        AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver = new AzureBoardsIssueStatusResolver(distributionDetails.getWorkItemCompletedState(), distributionDetails.getWorkItemReopenState());
         AzureBoardsIssueTrackerQueryManager queryManager = new AzureBoardsIssueTrackerQueryManager(organizationName, distributionDetails, workItemService, workItemQueryService);
-        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer);
+        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer, azureBoardsIssueStatusResolver);
 
         IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 

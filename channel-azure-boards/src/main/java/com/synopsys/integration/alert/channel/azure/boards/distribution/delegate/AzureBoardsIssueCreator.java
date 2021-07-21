@@ -70,7 +70,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         WorkItemRequest workItemCreationRequest = createWorkItemCreationRequest(alertIssueCreationModel);
         try {
             WorkItemResponseModel workItem = workItemService.createWorkItem(organizationName, distributionDetails.getProjectNameOrId(), distributionDetails.getWorkItemType(), workItemCreationRequest);
-            return extractIssueDetails(workItem);
+            return extractIssueDetails(workItem, alertIssueCreationModel);
         } catch (HttpServiceException e) {
             Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
             if (improvedExceptionMessage.isPresent()) {
@@ -109,13 +109,24 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         return WorkItemElementOperationModel.fieldElement(WorkItemElementOperation.ADD, field, value);
     }
 
-    private ExistingIssueDetails<Integer> extractIssueDetails(WorkItemResponseModel workItem) {
+    private ExistingIssueDetails<Integer> extractIssueDetails(WorkItemResponseModel workItem, IssueCreationModel alertIssueCreationModel) {
         WorkItemFieldsWrapper workItemFields = workItem.createFieldsWrapper(gson);
         String workItemKey = Objects.toString(workItem.getId());
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
-        return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink, IssueStatus.UNKNOWN, IssueCategory.BOM);
+        IssueCategory issueCategory = IssueCategory.BOM;
+        Optional<ProjectIssueModel> issueSourceOptional = alertIssueCreationModel.getSource();
+        if (issueSourceOptional.isPresent()) {
+            ProjectIssueModel issueSource = issueSourceOptional.get();
+            if (issueSource.getPolicyDetails().isPresent()) {
+                issueCategory = IssueCategory.POLICY;
+            }
+            if (issueSource.getVulnerabilityDetails().isPresent()) {
+                issueCategory = IssueCategory.VULNERABILITY;
+            }
+        }
+        return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink, IssueStatus.RESOLVABLE, issueCategory);
     }
 
 }
