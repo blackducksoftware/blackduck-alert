@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.slack.validator.SlackDistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
@@ -30,9 +31,12 @@ public class SlackDescriptor extends ChannelDescriptor {
     public static final String SLACK_URL = "slack";
     public static final String SLACK_DESCRIPTION = "Configure Slack for Alert.";
 
+    private final SlackDistributionConfigurationValidator distributionValidator;
+
     @Autowired
-    public SlackDescriptor(SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig) {
+    public SlackDescriptor(SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig, SlackDistributionConfigurationValidator distributionValidator) {
         super(ChannelKeys.SLACK, slackUIConfig, slackGlobalUIConfig);
+        this.distributionValidator = distributionValidator;
     }
 
     @Override
@@ -42,6 +46,6 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     @Override
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
-        return Optional.empty();
+        return Optional.of(distributionValidator);
     }
 }
