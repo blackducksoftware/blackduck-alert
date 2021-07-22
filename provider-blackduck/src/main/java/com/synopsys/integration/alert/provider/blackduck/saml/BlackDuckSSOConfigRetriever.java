@@ -27,7 +27,6 @@ public class BlackDuckSSOConfigRetriever {
     private static final String SSO_CONFIGURATION_MIME_TYPE = "application/vnd.blackducksoftware.admin-4+json";
     private static final BlackDuckPath<BlackDuckSSOConfigView> SSO_CONFIGURATION_PATH = BlackDuckPath.single("/api/sso/configuration", BlackDuckSSOConfigView.class);
 
-    private final Logger logger = LoggerFactory.getLogger(BlackDuckSSOConfigRetriever.class);
     private final ApiDiscovery apiDiscovery;
     private final BlackDuckApiClient blackDuckApiClient;
 
@@ -51,8 +50,7 @@ public class BlackDuckSSOConfigRetriever {
         try {
             return blackDuckApiClient.getResponse(ssoConfigurationRequest);
         } catch (IntegrationException e) {
-            String errorMessage = "Unable to retrieve SSO configuration from BlackDuck";
-            logger.debug(errorMessage, e);
+            String errorMessage = String.format("Unable to retrieve SSO configuration from Black Duck: %s", e.getMessage());
             throw new AlertException(errorMessage, e);
         }
     }
