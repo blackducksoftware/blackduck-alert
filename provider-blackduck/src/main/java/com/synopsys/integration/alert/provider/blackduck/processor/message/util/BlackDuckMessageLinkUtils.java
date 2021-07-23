@@ -12,14 +12,14 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 
 public final class BlackDuckMessageLinkUtils {
     public static final String QUERY_PARAM_COMPONENT_NAME = "componentOrVersionName";
     public static final String URI_PIECE_COMPONENTS = "/components";
     public static final int URI_PIECE_COMPONENTS_LENGTH = URI_PIECE_COMPONENTS.length();
 
-    public static String createProjectVersionComponentsLink(ProjectVersionComponentView bomComponent) {
+    public static String createProjectVersionComponentsLink(ProjectVersionComponentVersionView bomComponent) {
         String bomComponentUrl = bomComponent.getHref().toString();
         return createProjectVersionComponentsLink(bomComponentUrl);
     }
@@ -29,7 +29,7 @@ public final class BlackDuckMessageLinkUtils {
         return createComponentQueryLinkFromProjectVersionComponentsLink(projectVersionComponentsLink, bomComponentName);
     }
 
-    public static String createComponentQueryLink(ProjectVersionComponentView bomComponent) {
+    public static String createComponentQueryLink(ProjectVersionComponentVersionView bomComponent) {
         String projectVersionComponentsLink = createProjectVersionComponentsLink(bomComponent);
         return createComponentQueryLinkFromProjectVersionComponentsLink(projectVersionComponentsLink, bomComponent.getComponentName());
     }

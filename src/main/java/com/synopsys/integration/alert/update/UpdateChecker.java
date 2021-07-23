@@ -95,7 +95,7 @@ public class UpdateChecker {
     }
 
     private IntHttpClient createHttpClient() {
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(DockerTagRetriever.ALERT_DOCKER_REGISTRY_URL);
         Boolean alwaysTrustServerCert = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
         return new IntHttpClient(logger, gson, 120, alwaysTrustServerCert, proxyInfo);
     }

@@ -65,6 +65,10 @@ public class SettingsGlobalConfigurationValidator implements GlobalConfiguration
             ));
         }
 
+        if (configurationFieldValidator.fieldHasReadableValue(ProxyManager.KEY_PROXY_NON_PROXY_HOSTS)) {
+            configurationFieldValidator.validateRequiredFieldIsNotBlank(ProxyManager.KEY_PROXY_HOST);
+        }
+
         return statuses;
     }
 

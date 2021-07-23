@@ -242,7 +242,7 @@ public class UpdateCheckerTest {
     })
     public void getUpdateModelTest() {
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
         DefaultSystemStatusAccessor defaultSystemStatusUtility = Mockito.mock(DefaultSystemStatusAccessor.class);
         Mockito.when(defaultSystemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);

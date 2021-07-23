@@ -49,7 +49,7 @@ public class SlackChannelMessageSender implements ChannelMessageSender<SlackJobD
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Content-Type", "application/json");
 
-        IntHttpClient intHttpClient = connectionFactory.createIntHttpClient();
+        IntHttpClient intHttpClient = connectionFactory.createIntHttpClient(webhook);
         RestChannelUtility restChannelUtility = new RestChannelUtility(intHttpClient);
 
         List<Request> requests = channelMessages.stream()

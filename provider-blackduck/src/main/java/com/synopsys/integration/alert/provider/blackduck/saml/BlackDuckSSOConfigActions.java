@@ -9,6 +9,8 @@ package com.synopsys.integration.alert.provider.blackduck.saml;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,8 @@ import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckProper
 
 @Component
 public class BlackDuckSSOConfigActions {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final BlackDuckPropertiesFactory blackDuckPropertiesFactory;
     private final AuthorizationManager authorizationManager;
@@ -49,7 +53,9 @@ public class BlackDuckSSOConfigActions {
             try {
                 ssoConfigRetriever = BlackDuckSSOConfigRetriever.fromProperties(optionalBlackDuckProperties.get());
             } catch (AlertException e) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("Failed to initialize a Black Duck connection for configuration with id [%s]: %s", blackDuckConfigId, e.getMessage()));
+                String errorMessage = String.format("Failed to initialize a Black Duck connection for configuration with id [%s]: %s", blackDuckConfigId, e.getMessage());
+                logger.debug(errorMessage, e);
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, errorMessage);
             }
 
             try {
@@ -57,7 +63,9 @@ public class BlackDuckSSOConfigActions {
                 BlackDuckSSOConfigResponseModel configResponseModel = fromView(config);
                 return new ActionResponse<>(HttpStatus.OK, configResponseModel);
             } catch (AlertException e) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("Failed to retrieve Black Duck SSO configuration: %s", e.getMessage()));
+                String errorMessage = String.format("Failed to retrieve Black Duck SSO configuration: %s", e.getMessage());
+                logger.debug(errorMessage, e);
+                return new ActionResponse<>(HttpStatus.BAD_REQUEST, errorMessage);
             }
         }
         return new ActionResponse<>(HttpStatus.NOT_FOUND, String.format("Failed to find Black Duck global configuration with id [%s]", blackDuckConfigId));

@@ -274,9 +274,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private boolean shouldValidateWithDescriptorValidators(JobFieldModel resource) {
         for (FieldModel fieldModel : resource.getFieldModels()) {
             boolean descriptorOrValidatorDoNotExist = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
-                                                                      .flatMap(descriptorMap::getDescriptor)
-                                                                      .flatMap(Descriptor::getDistributionValidator)
-                                                                      .isEmpty();
+                                                          .flatMap(descriptorMap::getDescriptor)
+                                                          .flatMap(Descriptor::getDistributionValidator)
+                                                          .isEmpty();
 
             if (descriptorOrValidatorDoNotExist) {
                 return false;
@@ -298,7 +298,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         boolean validateWithDescriptorValidators = shouldValidateWithDescriptorValidators(resource);
 
         if (validateWithDescriptorValidators) {
-            fieldStatuses = validateWithDescriptorValidators(resource);
+            fieldStatuses.addAll(validateWithDescriptorValidators(resource));
         } else {
             fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
         }
@@ -313,6 +313,26 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     public ActionResponse<List<JobFieldStatuses>> validateJobsById(JobIdsRequestModel jobIdsValidationModel) {
+        List<PermissionKey> keys = gatherPermissionKeys();
+        if (!getAuthorizationManager().anyReadPermission(keys)) {
+            return ActionResponse.createForbiddenResponse();
+        }
+
+        List<UUID> jobIdsToValidate = jobIdsValidationModel.getJobIds();
+        if (null == jobIdsToValidate || jobIdsToValidate.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.OK, List.of());
+        }
+
+        List<DistributionJobModel> distributionJobModels = jobAccessor.getJobsById(jobIdsToValidate);
+        List<JobFieldModel> jobFieldModels = new LinkedList<>();
+        for (DistributionJobModel distributionJobModel : distributionJobModels) {
+            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
+            jobFieldModels.add(jobFieldModel);
+        }
+        return validateJobFieldModels(jobFieldModels);
+    }
+
+    private List<PermissionKey> gatherPermissionKeys() {
         List<PermissionKey> keys = new LinkedList<>();
         for (Descriptor descriptor : getDescriptorMap().getDescriptorMap().values()) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();
@@ -322,23 +342,11 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 }
             }
         }
-        if (!getAuthorizationManager().anyReadPermission(keys)) {
-            return ActionResponse.createForbiddenResponse();
-        }
+        return keys;
+    }
 
+    private ActionResponse<List<JobFieldStatuses>> validateJobFieldModels(List<JobFieldModel> jobFieldModels) {
         List<JobFieldStatuses> errorsList = new LinkedList<>();
-        List<UUID> jobIdsToValidate = jobIdsValidationModel.getJobIds();
-        if (null == jobIdsToValidate || jobIdsToValidate.isEmpty()) {
-            return new ActionResponse<>(HttpStatus.OK, errorsList);
-        }
-
-        List<DistributionJobModel> distributionJobModels = jobAccessor.getJobsById(jobIdsToValidate);
-        List<JobFieldModel> jobFieldModels = new LinkedList<>();
-        for (DistributionJobModel distributionJobModel : distributionJobModels) {
-            JobFieldModel jobFieldModel = JobFieldModelPopulationUtils.createJobFieldModelWithDefaultProviderProjectState(distributionJobModel);
-            jobFieldModels.add(jobFieldModel);
-        }
-
         for (JobFieldModel jobFieldModel : jobFieldModels) {
             List<AlertFieldStatus> fieldErrors;
             if (shouldValidateWithDescriptorValidators(jobFieldModel)) {

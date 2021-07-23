@@ -473,7 +473,7 @@ const DistributionConfigurationForm = ({
                             fieldKey={DISTRIBUTION_COMMON_FIELD_KEYS.policyFilter}
                             columns={DISTRIBUTION_POLICY_SELECT_COLUMNS}
                             label="Policy Notification Type Filter"
-                            description="List of Policies you can choose from to further filter which notifications you want sent via this job (You must have a policy notification selected for this filter to apply)."
+                            description="Filter which notifications you want sent via this job (You must have the policy notification type selected for this filter to apply)."
                             readOnly={readonly}
                             paged
                             searchable
@@ -485,8 +485,8 @@ const DistributionConfigurationForm = ({
                         />
                         <SelectInput
                             id={DISTRIBUTION_COMMON_FIELD_KEYS.vulnerabilitySeverityFilter}
-                            label="Vulnerability Notification Type Filter"
-                            description="List of Vulnerability severities you can choose from to further filter which notifications you want sent via this job (You must have a vulnerability notification selected for this filter to apply)."
+                            label="Vulnerability Notification Contains Severities"
+                            description="Filters out the notifications that do not contain any of the relevant severities (You must have the vulnerability notification type selected for this filter to apply)."
                             options={DISTRIBUTION_VULNERABILITY_SEVERITY_OPTIONS}
                             multiSelect
                             readOnly={readonly}

@@ -55,7 +55,7 @@ public class JiraServerExternalConnectionTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorKeyAndContext(Mockito.any(), Mockito.any())).thenReturn(List.of(createConfigurationModelForJiraServer()));
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.createProxyInfo()).thenReturn(null);
+        Mockito.when(proxyManager.createProxyInfoForHost(Mockito.anyString())).thenReturn(null);
         JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationAccessor);
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
@@ -101,7 +101,9 @@ public class JiraServerExternalConnectionTest {
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_TYPE),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_RESOLVE_TRANSITION),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_REOPEN_TRANSITION),
-            customFields);
+            customFields,
+            ""
+        );
     }
 
     private void addConfigurationFieldToMap(Map<String, ConfigurationFieldModel> configuredFields, String key, String value) {

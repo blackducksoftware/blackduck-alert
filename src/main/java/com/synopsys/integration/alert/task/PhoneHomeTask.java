@@ -47,6 +47,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeClient;
 import com.synopsys.integration.phonehome.PhoneHomeResponse;
 import com.synopsys.integration.phonehome.PhoneHomeService;
+import com.synopsys.integration.phonehome.google.analytics.GoogleAnalyticsConstants;
 import com.synopsys.integration.phonehome.request.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.request.PhoneHomeRequestBodyBuilder;
 import com.synopsys.integration.rest.client.IntHttpClient;
@@ -147,7 +148,7 @@ public class PhoneHomeTask extends StartupScheduledTask {
 
     private PhoneHomeService createPhoneHomeService(ExecutorService phoneHomeExecutor) {
         IntLogger intLogger = new Slf4jIntLogger(logger);
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        ProxyInfo proxyInfo = proxyManager.createProxyInfoForHost(GoogleAnalyticsConstants.BASE_URL);
         IntHttpClient intHttpClient = new IntHttpClient(intLogger, gson, IntHttpClient.DEFAULT_TIMEOUT, true, proxyInfo);
 
         PhoneHomeClient phoneHomeClient = BlackDuckPhoneHomeHelper.createPhoneHomeClient(intLogger, intHttpClient.getClientBuilder(), gson);

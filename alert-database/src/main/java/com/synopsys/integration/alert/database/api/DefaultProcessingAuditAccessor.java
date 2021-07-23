@@ -75,7 +75,11 @@ public class DefaultProcessingAuditAccessor implements ProcessingAuditAccessor {
     @Override
     @Transactional
     public void setAuditEntrySuccess(UUID jobId, Set<Long> notificationIds) {
-        updateAuditEntries(jobId, notificationIds, auditEntry -> auditEntry.setStatus(AuditEntryStatus.SUCCESS.name()));
+        updateAuditEntries(jobId, notificationIds, auditEntry -> {
+            auditEntry.setStatus(AuditEntryStatus.SUCCESS.name());
+            auditEntry.setErrorMessage(null);
+            auditEntry.setErrorStackTrace(null);
+        });
     }
 
     @Override

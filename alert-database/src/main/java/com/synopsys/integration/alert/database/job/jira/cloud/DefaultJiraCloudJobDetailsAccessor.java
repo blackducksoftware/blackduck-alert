@@ -49,7 +49,8 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
             jiraCloudJobDetails.getProjectNameOrKey(),
             jiraCloudJobDetails.getIssueType(),
             jiraCloudJobDetails.getResolveTransition(),
-            jiraCloudJobDetails.getReopenTransition()
+            jiraCloudJobDetails.getReopenTransition(),
+            jiraCloudJobDetails.getIssueSummary()
         );
         JiraCloudJobDetailsEntity savedJobDetails = jiraCloudJobDetailsRepository.save(jiraCloudJobDetailsToSave);
         jiraCloudJobCustomFieldRepository.deleteByJobId(jobId);
@@ -82,8 +83,8 @@ public class DefaultJiraCloudJobDetailsAccessor implements JiraCloudJobDetailsAc
             jobDetails.getIssueType(),
             jobDetails.getResolveTransition(),
             jobDetails.getReopenTransition(),
-            customFields
-        );
+            customFields,
+            jobDetails.getIssueSummary());
     }
 
 }

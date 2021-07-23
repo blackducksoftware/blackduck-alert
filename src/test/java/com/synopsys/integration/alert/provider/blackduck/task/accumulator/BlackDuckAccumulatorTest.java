@@ -19,8 +19,7 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
 import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
-import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
+import com.synopsys.integration.blackduck.api.manual.view.NotificationUserView;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckAccumulatorTest {
@@ -36,7 +35,7 @@ public class BlackDuckAccumulatorTest {
         BlackDuckSystemValidator validator = createBlackDuckValidator(blackDuckProperties, true);
 
         PageRetriever pageRetriever = Mockito.mock(PageRetriever.class);
-        StatefulAlertPage<NotificationView, IntegrationException> notificationPage = createMockNotificationPage(pageRetriever);
+        StatefulAlertPage<NotificationUserView, IntegrationException> notificationPage = createMockNotificationPage(pageRetriever);
         BlackDuckNotificationRetriever notificationRetriever = Mockito.mock(BlackDuckNotificationRetriever.class);
         Mockito.when(notificationRetriever.retrievePageOfFilteredNotifications(Mockito.any(), Mockito.anyList())).thenReturn(notificationPage);
         Mockito.when(pageRetriever.retrieveNextPage(Mockito.anyInt(), Mockito.anyInt())).thenReturn(AlertPagedDetails.emptyPage());
@@ -115,15 +114,14 @@ public class BlackDuckAccumulatorTest {
         return notificationRetrieverFactory;
     }
 
-    private StatefulAlertPage<NotificationView, IntegrationException> createMockNotificationPage(PageRetriever pageRetriever) throws IntegrationException {
-        NotificationView notificationView = createMockNotificationView();
-        AlertPagedDetails alertPagedDetails = new AlertPagedDetails(1, 1, 1, List.of(notificationView));
-        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, pageRetriever);
-        return statefulAlertPage;
+    private StatefulAlertPage<NotificationUserView, IntegrationException> createMockNotificationPage(PageRetriever pageRetriever) throws IntegrationException {
+        NotificationUserView notificationView = createMockNotificationView();
+        AlertPagedDetails<NotificationUserView> alertPagedDetails = new AlertPagedDetails<>(1, 1, 1, List.of(notificationView));
+        return new StatefulAlertPage<>(alertPagedDetails, pageRetriever);
     }
 
-    private NotificationView createMockNotificationView() {
-        NotificationView notificationView = Mockito.mock(ProjectNotificationView.class);
+    private NotificationUserView createMockNotificationView() {
+        NotificationUserView notificationView = Mockito.mock(NotificationUserView.class);
         Mockito.when(notificationView.getCreatedAt()).thenReturn(new Date());
         Mockito.when(notificationView.getType()).thenReturn(NotificationType.PROJECT);
         Mockito.when(notificationView.getJson()).thenReturn("{}");
