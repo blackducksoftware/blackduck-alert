@@ -13,7 +13,6 @@ import com.synopsys.integration.alert.api.channel.issue.search.enumeration.Issue
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
-// TODO consider including status and category (policy or vulnerability)
 public class ExistingIssueDetails<T extends Serializable> extends AlertSerializableModel {
     private final T issueId;
     private final String issueKey;

@@ -114,16 +114,13 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                 searchResultOperation = policyOperation.get();
             } else if (optionalVulnerabilityDetails.isPresent()) {
                 IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
-                // TODO when ExistingIssueDetails has information about issue-status, use that to make a better choice of ItemOperation here.
-                //consider a private method for this
                 if (issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && (IssueStatus.RESOLVABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus()))) {
-                    searchResultOperation = ItemOperation.DELETE; //Delete will be translated to an IssueOperation RESOLVE in ProjectIssueModelConverter
+                    searchResultOperation = ItemOperation.DELETE;
                 } else if (!issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && (IssueStatus.REOPENABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus()))) {
-                    searchResultOperation = ItemOperation.ADD;  //translates to an OPEN IssueOperation
+                    searchResultOperation = ItemOperation.ADD;
                 } else {
                     searchResultOperation = ItemOperation.UPDATE;
                 }
-                //searchResultOperation = issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() ? ItemOperation.DELETE : ItemOperation.ADD;
             }
         } else if (foundIssuesCount > 1) {
             throw new AlertException("Expect to find a unique issue, but more than one was found");
