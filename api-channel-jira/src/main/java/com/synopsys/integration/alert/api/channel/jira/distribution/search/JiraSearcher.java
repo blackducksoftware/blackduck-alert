@@ -168,28 +168,4 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(issue, this::fetchIssueTransitions);
         return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
     }
-
-    /*
-    private IssueCategory getIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
-        IssueCategory issueCategory = IssueCategory.BOM;
-        if (projectIssueModel.getVulnerabilityDetails().isPresent()) {
-            issueCategory = IssueCategory.VULNERABILITY;
-        } else if (projectIssueModel.getPolicyDetails().isPresent()) {
-            issueCategory = IssueCategory.POLICY;
-        }
-        return issueCategory;
-    }*/
-
-    /*
-    private IssueCategory getIssueCategoryFromComponentConcernType(ComponentConcernType componentConcernType) {
-        IssueCategory issueCategory = IssueCategory.BOM;
-        if (componentConcernType.equals(ComponentConcernType.VULNERABILITY)) {
-            issueCategory = IssueCategory.VULNERABILITY;
-        } else if (componentConcernType.equals(ComponentConcernType.POLICY)) {
-            issueCategory = IssueCategory.POLICY;
-        }
-        return issueCategory;
-    }
-
-     */
 }

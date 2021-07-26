@@ -196,17 +196,4 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         IssueBomComponentDetails bomComponent = IssueBomComponentDetails.fromSearchResults(component, componentVersion);
         return ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponent);
     }
-
-    /*
-    private IssueCategory getIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
-        IssueCategory issueCategory = IssueCategory.BOM;
-        if (projectIssueModel.getVulnerabilityDetails().isPresent()) {
-            issueCategory = IssueCategory.VULNERABILITY;
-        } else if (projectIssueModel.getPolicyDetails().isPresent()) {
-            issueCategory = IssueCategory.POLICY;
-        }
-        return issueCategory;
-    }
-     */
-
 }

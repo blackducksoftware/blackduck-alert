@@ -9,10 +9,13 @@ package com.synopsys.integration.alert.api.channel.issue.search;
 
 import java.util.function.BooleanSupplier;
 
+import org.springframework.stereotype.Component;
+
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 
+@Component
 public class IssueCategoryRetriever {
     public static IssueCategory retrieveIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
         return getIssueCategory(
