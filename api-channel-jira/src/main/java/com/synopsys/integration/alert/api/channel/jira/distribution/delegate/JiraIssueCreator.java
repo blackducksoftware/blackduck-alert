@@ -77,12 +77,9 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
             String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
 
-            IssueCategory issueCategory = IssueCategory.BOM;
-            Optional<ProjectIssueModel> issueSourceOptional = alertIssueCreationModel.getSource();
-            if (issueSourceOptional.isPresent()) {
-                ProjectIssueModel issueSource = issueSourceOptional.get();
-                issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(issueSource);
-            }
+            IssueCategory issueCategory = alertIssueCreationModel.getSource()
+                                              .map(IssueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                                              .orElse(IssueCategory.BOM);
 
             return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink, IssueStatus.RESOLVABLE, issueCategory);
         } catch (IntegrationRestException restException) {

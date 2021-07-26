@@ -116,12 +116,10 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
-        IssueCategory issueCategory = IssueCategory.BOM;
-        Optional<ProjectIssueModel> issueSourceOptional = alertIssueCreationModel.getSource();
-        if (issueSourceOptional.isPresent()) {
-            ProjectIssueModel issueSource = issueSourceOptional.get();
-            issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(issueSource);
-        }
+        IssueCategory issueCategory = alertIssueCreationModel.getSource()
+                                          .map(IssueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                                          .orElse(IssueCategory.BOM);
+
         return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink, IssueStatus.RESOLVABLE, issueCategory);
     }
 
