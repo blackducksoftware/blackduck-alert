@@ -39,9 +39,8 @@ public class GlobalConfigurationValidatorAsserter {
     public void assertInvalidValue(String key, String invalidValue, Consumer<AlertFieldStatus> additionalAsserts) {
         FieldValueModel apiKeyFieldValueModel = new FieldValueModel(List.of(invalidValue), true);
         defaultKeyToValues.put(key, apiKeyFieldValueModel);
-        FieldModel fieldModel = new FieldModel(descriptorKey, ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
 
-        Set<AlertFieldStatus> alertFieldStatuses = globalConfigurationValidator.validate(fieldModel);
+        Set<AlertFieldStatus> alertFieldStatuses = runValidation();
 
         assertEquals(1, alertFieldStatuses.size());
 
@@ -49,5 +48,20 @@ public class GlobalConfigurationValidatorAsserter {
         assertNotNull(alertFieldStatus);
         assertEquals(key, alertFieldStatus.getFieldName());
         additionalAsserts.accept(alertFieldStatus);
+    }
+
+    public void assertMissingValue(String key) {
+        Set<AlertFieldStatus> alertFieldStatuses = runValidation();
+
+        assertEquals(1, alertFieldStatuses.size());
+
+        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
+        assertNotNull(alertFieldStatus);
+        assertEquals(key, alertFieldStatus.getFieldName());
+    }
+
+    private Set<AlertFieldStatus> runValidation() {
+        FieldModel fieldModel = new FieldModel(descriptorKey, ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
+        return globalConfigurationValidator.validate(fieldModel);
     }
 }

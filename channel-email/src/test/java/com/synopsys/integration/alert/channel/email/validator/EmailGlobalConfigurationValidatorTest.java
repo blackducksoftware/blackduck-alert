@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.channel.email.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +15,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 public class EmailGlobalConfigurationValidatorTest {
 
@@ -59,15 +59,8 @@ public class EmailGlobalConfigurationValidatorTest {
         defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), authFieldValueModel);
         defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), usernameFieldValueModel);
 
-        FieldModel fieldModel = new FieldModel(new EmailChannelKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
-        EmailGlobalConfigurationValidator emailGlobalConfigurationValidator = new EmailGlobalConfigurationValidator();
-        Set<AlertFieldStatus> alertFieldStatuses = emailGlobalConfigurationValidator.validate(fieldModel);
-
-        assertEquals(1, alertFieldStatuses.size());
-
-        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
-        assertNotNull(alertFieldStatus);
-        assertEquals(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), alertFieldStatus.getFieldName());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationValidator(), defaultKeyToValues);
+        globalConfigurationValidatorAsserter.assertMissingValue(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
     }
 
     private Map<String, FieldValueModel> createDefaultKeyToValues() {
