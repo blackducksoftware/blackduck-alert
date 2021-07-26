@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
@@ -80,13 +81,9 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             Optional<ProjectIssueModel> issueSourceOptional = alertIssueCreationModel.getSource();
             if (issueSourceOptional.isPresent()) {
                 ProjectIssueModel issueSource = issueSourceOptional.get();
-                if (issueSource.getPolicyDetails().isPresent()) {
-                    issueCategory = IssueCategory.POLICY;
-                }
-                if (issueSource.getVulnerabilityDetails().isPresent()) {
-                    issueCategory = IssueCategory.VULNERABILITY;
-                }
+                issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(issueSource);
             }
+
             return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink, IssueStatus.RESOLVABLE, issueCategory);
         } catch (IntegrationRestException restException) {
             throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));

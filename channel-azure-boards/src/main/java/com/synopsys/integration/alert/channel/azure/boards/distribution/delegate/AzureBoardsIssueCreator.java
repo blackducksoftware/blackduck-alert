@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
@@ -119,12 +120,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         Optional<ProjectIssueModel> issueSourceOptional = alertIssueCreationModel.getSource();
         if (issueSourceOptional.isPresent()) {
             ProjectIssueModel issueSource = issueSourceOptional.get();
-            if (issueSource.getPolicyDetails().isPresent()) {
-                issueCategory = IssueCategory.POLICY;
-            }
-            if (issueSource.getVulnerabilityDetails().isPresent()) {
-                issueCategory = IssueCategory.VULNERABILITY;
-            }
+            issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(issueSource);
         }
         return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink, IssueStatus.RESOLVABLE, issueCategory);
     }

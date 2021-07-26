@@ -23,6 +23,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
@@ -171,7 +172,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
-        IssueCategory issueCategory = getIssueCategoryFromProjectIssueModel(projectIssueModel);
+        IssueCategory issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
         String workItemState = workItemFields.getField(WorkItemResponseFields.System_State).orElse("Unknown");
         IssueStatus issueStatus = azureBoardsIssueStatusResolver.resolveIssueStatus(workItemState);
         return new ExistingIssueDetails<>(workItemId, Objects.toString(workItemId), workItemTitle, workItemUILink, issueStatus, issueCategory);
@@ -196,6 +197,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         return ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponent);
     }
 
+    /*
     private IssueCategory getIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
         IssueCategory issueCategory = IssueCategory.BOM;
         if (projectIssueModel.getVulnerabilityDetails().isPresent()) {
@@ -205,5 +207,6 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         }
         return issueCategory;
     }
+     */
 
 }

@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
@@ -106,7 +107,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
             policyName
         );
 
-        IssueCategory issueCategory = getIssueCategoryFromComponentConcernType(concernType);
+        IssueCategory issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromComponentConcernType(concernType);
         return queryForIssues(jqlString)
                    .stream()
                    .map(jiraSearcherResponseModel -> createExistingIssueDetails(jiraSearcherResponseModel, issueCategory))
@@ -157,7 +158,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     }
 
     private ProjectIssueSearchResult<String> createIssueResult(JiraSearcherResponseModel issue, ProjectIssueModel projectIssueModel) {
-        IssueCategory issueCategory = getIssueCategoryFromProjectIssueModel(projectIssueModel);
+        IssueCategory issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
         ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue, issueCategory);
         return new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
     }
@@ -168,6 +169,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
     }
 
+    /*
     private IssueCategory getIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
         IssueCategory issueCategory = IssueCategory.BOM;
         if (projectIssueModel.getVulnerabilityDetails().isPresent()) {
@@ -176,8 +178,9 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
             issueCategory = IssueCategory.POLICY;
         }
         return issueCategory;
-    }
+    }*/
 
+    /*
     private IssueCategory getIssueCategoryFromComponentConcernType(ComponentConcernType componentConcernType) {
         IssueCategory issueCategory = IssueCategory.BOM;
         if (componentConcernType.equals(ComponentConcernType.VULNERABILITY)) {
@@ -187,4 +190,6 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         }
         return issueCategory;
     }
+
+     */
 }
