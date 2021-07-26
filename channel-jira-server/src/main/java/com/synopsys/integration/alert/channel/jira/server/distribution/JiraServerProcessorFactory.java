@@ -21,10 +21,6 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessage
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
@@ -82,7 +78,8 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraServerSearcher jiraServerSearcher = new JiraServerSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, issueService, jiraIssueStatusCreator);
+        JiraServerIssueTransitionRetriever jiraServerIssueTransitionRetriever = new JiraServerIssueTransitionRetriever(issueService);
+        JiraServerSearcher jiraServerSearcher = new JiraServerSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, jiraServerIssueTransitionRetriever, jiraIssueStatusCreator);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraServerSearcher);
         IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(issueService, distributionDetails, jiraServerServiceFactory, issuePropertiesManager);

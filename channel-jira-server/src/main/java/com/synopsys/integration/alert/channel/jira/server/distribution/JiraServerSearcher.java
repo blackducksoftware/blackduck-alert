@@ -20,17 +20,16 @@ import com.synopsys.integration.jira.common.model.response.TransitionsResponseMo
 import com.synopsys.integration.jira.common.server.model.IssueSearchIssueComponent;
 import com.synopsys.integration.jira.common.server.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.server.service.IssueSearchService;
-import com.synopsys.integration.jira.common.server.service.IssueService;
 
 public class JiraServerSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
-    private final IssueService issueService;
+    private final JiraServerIssueTransitionRetriever jiraServerIssueTransitionRetriever;
 
-    public JiraServerSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, IssueService issueService,
-        JiraIssueStatusCreator jiraIssueStatusCreator) {
+    public JiraServerSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer,
+        JiraServerIssueTransitionRetriever jiraServerIssueTransitionRetriever, JiraIssueStatusCreator jiraIssueStatusCreator) {
         super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator);
         this.issueSearchService = issueSearchService;
-        this.issueService = issueService;
+        this.jiraServerIssueTransitionRetriever = jiraServerIssueTransitionRetriever;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class JiraServerSearcher extends JiraSearcher {
 
     @Override
     protected TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException {
-        return issueService.getTransitions(issueKey);
+        return jiraServerIssueTransitionRetriever.fetchIssueTransitions(issueKey);
     }
 
     private JiraSearcherResponseModel convertModel(IssueSearchIssueComponent issue) {

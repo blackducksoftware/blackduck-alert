@@ -114,9 +114,11 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                 searchResultOperation = policyOperation.get();
             } else if (optionalVulnerabilityDetails.isPresent()) {
                 IssueVulnerabilityDetails issueVulnerabilityDetails = optionalVulnerabilityDetails.get();
-                if (issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && (IssueStatus.RESOLVABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus()))) {
+                boolean isResolvableOrUnknown = IssueStatus.RESOLVABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
+                boolean isReopenableOrUnknown = IssueStatus.REOPENABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus());
+                if (issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isResolvableOrUnknown) {
                     searchResultOperation = ItemOperation.DELETE;
-                } else if (!issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && (IssueStatus.REOPENABLE.equals(existingIssue.getIssueStatus()) || IssueStatus.UNKNOWN.equals(existingIssue.getIssueStatus()))) {
+                } else if (!issueVulnerabilityDetails.areAllComponentVulnerabilitiesRemediated() && isReopenableOrUnknown) {
                     searchResultOperation = ItemOperation.ADD;
                 } else {
                     searchResultOperation = ItemOperation.UPDATE;

@@ -19,20 +19,20 @@ import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraS
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
-import com.synopsys.integration.jira.common.cloud.service.IssueService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
-    private final IssueService issueService;
+    private final JiraCloudIssueTransitionRetriever jiraCloudIssueTransitionRetriever;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, IssueService issueService,
+    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer,
+        JiraCloudIssueTransitionRetriever jiraCloudIssueTransitionRetriever,
         JiraIssueStatusCreator jiraIssueStatusCreator) {
         super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator);
         this.issueSearchService = issueSearchService;
-        this.issueService = issueService;
+        this.jiraCloudIssueTransitionRetriever = jiraCloudIssueTransitionRetriever;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class JiraCloudSearcher extends JiraSearcher {
 
     @Override
     protected TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException {
-        return issueService.getTransitions(issueKey);
+        return jiraCloudIssueTransitionRetriever.fetchIssueTransitions(issueKey);
     }
 
     private JiraSearcherResponseModel convertModel(IssueResponseModel issue) {

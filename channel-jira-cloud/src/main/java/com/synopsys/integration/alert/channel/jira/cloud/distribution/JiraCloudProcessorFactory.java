@@ -91,7 +91,8 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraCloudSearcher jiraCloudSearcher = new JiraCloudSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, issueService, jiraIssueStatusCreator);
+        JiraCloudIssueTransitionRetriever jiraCloudIssueTransitionRetriever = new JiraCloudIssueTransitionRetriever(issueService);
+        JiraCloudSearcher jiraCloudSearcher = new JiraCloudSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, jiraCloudIssueTransitionRetriever, jiraIssueStatusCreator);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraCloudSearcher);
         IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(issueService, distributionDetails, jiraCloudServiceFactory, issuePropertiesManager);
