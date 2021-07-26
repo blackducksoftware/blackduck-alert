@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,6 +23,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
 public class BlackDuckGlobalConfigurationValidatorTest {
 
@@ -74,47 +74,34 @@ public class BlackDuckGlobalConfigurationValidatorTest {
 
     @Test
     public void invalidUrl() {
-        assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "badUrl");
+        BlackDuckGlobalConfigurationValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationValidator(createDefaultConfigurationAccessor());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
+        globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "badUrl");
     }
 
     @Test
     public void givesTimeoutWarning() {
-        assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "500", (fieldStatus) -> {
+        BlackDuckGlobalConfigurationValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationValidator(createDefaultConfigurationAccessor());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
+        globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "500", (fieldStatus) -> {
             assertEquals(FieldStatusSeverity.WARNING, fieldStatus.getSeverity());
         });
     }
 
     @Test
     public void givesTimeoutError() {
-        assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "0", (fieldStatus) -> {
+        BlackDuckGlobalConfigurationValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationValidator(createDefaultConfigurationAccessor());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
+        globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "0", (fieldStatus) -> {
             assertEquals(FieldStatusSeverity.ERROR, fieldStatus.getSeverity());
         });
     }
 
     @Test
     public void apiKeyTooShort() {
-        assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "too short");
-    }
-
-    private void assertInvalidValue(String key, String invalidValue) {
-        assertInvalidValue(key, invalidValue, (value) -> {});
-    }
-
-    private void assertInvalidValue(String key, String invalidValue, Consumer<AlertFieldStatus> additionalAsserts) {
-        Map<String, FieldValueModel> defaultKeyToValues = createDefaultKeyToValues();
-        FieldValueModel apiKeyFieldValueModel = new FieldValueModel(List.of(invalidValue), true);
-        defaultKeyToValues.put(key, apiKeyFieldValueModel);
-        FieldModel fieldModel = new FieldModel(new BlackDuckProviderKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
-
         BlackDuckGlobalConfigurationValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationValidator(createDefaultConfigurationAccessor());
-        Set<AlertFieldStatus> alertFieldStatuses = blackDuckGlobalConfigurationValidator.validate(fieldModel);
-
-        assertEquals(1, alertFieldStatuses.size());
-
-        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
-        assertNotNull(alertFieldStatus);
-        assertEquals(key, alertFieldStatus.getFieldName());
-        additionalAsserts.accept(alertFieldStatus);
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new BlackDuckProviderKey().getUniversalKey(), blackDuckGlobalConfigurationValidator, createDefaultKeyToValues());
+        globalConfigurationValidatorAsserter.assertInvalidValue(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "too short");
     }
 
     private ConfigurationAccessor createDefaultConfigurationAccessor() {

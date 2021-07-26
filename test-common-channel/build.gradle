@@ -1,0 +1,8 @@
+dependencies {
+    api project(':api-channel')
+    api project(':api-channel-issue-tracker')
+    api project(':test-common')
+
+    implementation platform(project(':alert-platform'))
+    implementation project(':alert-common')
+}
