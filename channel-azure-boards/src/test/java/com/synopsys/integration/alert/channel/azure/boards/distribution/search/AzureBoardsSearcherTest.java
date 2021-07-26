@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -50,6 +51,7 @@ public class AzureBoardsSearcherTest {
         String organizationName = "orgName";
         ProjectMessageToIssueModelTransformer modelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);
         AzureBoardsIssueTrackerQueryManager azureBoardsIssueTrackerQueryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
         AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, azureBoardsIssueTrackerQueryManager, modelTransformer, azureBoardsIssueStatusResolver, issueCategoryRetriever);
 
         IssuePolicyDetails testPolicy = new IssuePolicyDetails("Test Policy", ItemOperation.ADD, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);

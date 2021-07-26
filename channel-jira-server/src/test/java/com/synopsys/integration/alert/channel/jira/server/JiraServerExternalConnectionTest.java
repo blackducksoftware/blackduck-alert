@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
@@ -60,11 +61,12 @@ public class JiraServerExternalConnectionTest {
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator, jiraErrorMessageUtility,
             issueCategoryRetriever);
 
         ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
-        JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory, modelTransformer);
+        JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory, modelTransformer, issueCategoryRetriever);
         IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails());
 
         IssueTrackerResponse<String> response = processor.processMessages(createMessage());

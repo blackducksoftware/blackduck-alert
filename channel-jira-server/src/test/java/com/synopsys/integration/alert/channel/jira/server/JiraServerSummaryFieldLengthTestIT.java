@@ -16,6 +16,7 @@ import com.google.gson.GsonBuilder;
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerModelHolder;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
@@ -83,6 +84,8 @@ public class JiraServerSummaryFieldLengthTestIT {
     private static IssueTrackerMessageSender<String> createJiraServerMessageSender() throws AlertException {
         TestProperties testProperties = new TestProperties();
         Gson gson = new GsonBuilder().create();
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
+
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(
             gson,
             ChannelKeys.JIRA_SERVER,
