@@ -14,12 +14,14 @@ public class ComponentPolicy extends AlertSerializableModel {
     private final ComponentConcernSeverity severity;
     private final boolean overridden;
     private final boolean vulnerabilityPolicy;
+    private final String description;
 
-    public ComponentPolicy(String policyName, ComponentConcernSeverity severity, boolean overridden, boolean vulnerabilityPolicy) {
+    public ComponentPolicy(String policyName, ComponentConcernSeverity severity, boolean overridden, boolean vulnerabilityPolicy, String description) {
         this.policyName = policyName;
         this.severity = severity;
         this.overridden = overridden;
         this.vulnerabilityPolicy = vulnerabilityPolicy;
+        this.description = description;
     }
 
     public String getPolicyName() {
@@ -38,4 +40,7 @@ public class ComponentPolicy extends AlertSerializableModel {
         return vulnerabilityPolicy;
     }
 
+    public String getDescription() {
+        return description;
+    }
 }

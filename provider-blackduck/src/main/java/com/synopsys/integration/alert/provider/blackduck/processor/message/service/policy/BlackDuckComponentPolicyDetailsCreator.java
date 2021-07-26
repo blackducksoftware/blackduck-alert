@@ -34,7 +34,7 @@ public class BlackDuckComponentPolicyDetailsCreator {
         ComponentConcernSeverity componentConcernSeverity = policySeverityConverter.toComponentConcernSeverity(componentPolicyRulesView.getSeverity().name());
         boolean overridden = ProjectVersionComponentPolicyStatusType.IN_VIOLATION_OVERRIDDEN.equals(componentPolicyRulesView.getPolicyApprovalStatus());
         boolean vulnerabilityPolicy = isVulnerabilityPolicy(componentPolicyRulesView);
-        return new ComponentPolicy(componentPolicyRulesView.getName(), componentConcernSeverity, overridden, vulnerabilityPolicy);
+        return new ComponentPolicy(componentPolicyRulesView.getName(), componentConcernSeverity, overridden, vulnerabilityPolicy, componentPolicyRulesView.getDescription());
     }
 
     private boolean isVulnerabilityPolicy(ComponentPolicyRulesView componentPolicyRulesView) {

@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 public class IssuePolicyDetailsConverter {
     private static final String LABEL_POLICY = "Policy: ";
     private static final String LABEL_SEVERITY = "Severity: ";
+    private static final String LABEL_DESCRIPTION = "Policy Description: ";
 
     private final ChannelMessageFormatter formatter;
     private final ComponentVulnerabilitiesConverter componentVulnerabilitiesConverter;
@@ -35,6 +36,10 @@ public class IssuePolicyDetailsConverter {
         policyDetailsSectionPieces.add(formatter.getLineSeparator());
         policyDetailsSectionPieces.add(formatter.encode(LABEL_SEVERITY));
         policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().getPolicyLabel()));
+        //TODO: Change should go here
+        policyDetailsSectionPieces.add(formatter.encode(LABEL_DESCRIPTION));
+        //figure out how to manage a list of policies
+        policyDetailsSectionPieces.add(formatter.encode(bomComponentDetails.getComponentPolicies().get(0).getDescription()));
 
         List<String> additionalPolicyDetailsSections = createAdditionalPolicyDetailsSections(bomComponentDetails, policyDetails);
         if (!additionalPolicyDetailsSections.isEmpty()) {
