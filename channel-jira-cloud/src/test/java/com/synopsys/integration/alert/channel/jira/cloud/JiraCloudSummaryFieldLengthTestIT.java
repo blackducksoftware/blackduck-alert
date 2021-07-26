@@ -88,8 +88,8 @@ public class JiraCloudSummaryFieldLengthTestIT {
             ChannelKeys.JIRA_CLOUD,
             createJiraCloudPropertiesFactory(testProperties),
             new IssueTrackerCallbackInfoCreator(),
-            new JiraErrorMessageUtility(gson)
-        );
+            new JiraErrorMessageUtility(gson),
+            issueCategoryRetriever);
         JiraCloudJobDetailsModel jiraCloudJobDetails = createJiraCloudJobDetails(testProperties);
         return jiraCloudMessageSenderFactory.createMessageSender(jiraCloudJobDetails);
     }

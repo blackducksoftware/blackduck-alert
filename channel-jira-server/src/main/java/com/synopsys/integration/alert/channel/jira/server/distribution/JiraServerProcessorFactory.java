@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtract
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
@@ -43,6 +44,7 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final JiraServerMessageSenderFactory jiraServerMessageSenderFactory;
     private final ProjectMessageToIssueModelTransformer modelTransformer;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
     @Autowired
     public JiraServerProcessorFactory(
@@ -50,13 +52,15 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
         JiraMessageFormatter jiraMessageFormatter,
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         JiraServerMessageSenderFactory jiraServerMessageSenderFactory,
-        ProjectMessageToIssueModelTransformer modelTransformer
+        ProjectMessageToIssueModelTransformer modelTransformer,
+        IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
         this.jiraMessageFormatter = jiraMessageFormatter;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.jiraServerMessageSenderFactory = jiraServerMessageSenderFactory;
         this.modelTransformer = modelTransformer;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -78,7 +82,8 @@ public class JiraServerProcessorFactory implements IssueTrackerProcessorFactory<
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraServerSearcher jiraServerSearcher = new JiraServerSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, issueService::getTransitions, jiraIssueStatusCreator);
+        JiraServerSearcher jiraServerSearcher = new JiraServerSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, issueService::getTransitions, jiraIssueStatusCreator,
+            issueCategoryRetriever);
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraServerSearcher);
         IssueTrackerMessageSender<String> messageSender = jiraServerMessageSenderFactory.createMessageSender(issueService, distributionDetails, jiraServerServiceFactory, issuePropertiesManager);

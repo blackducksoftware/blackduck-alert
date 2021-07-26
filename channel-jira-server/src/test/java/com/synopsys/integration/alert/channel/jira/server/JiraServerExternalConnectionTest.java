@@ -60,7 +60,8 @@ public class JiraServerExternalConnectionTest {
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
         JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
-        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator, jiraErrorMessageUtility);
+        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator, jiraErrorMessageUtility,
+            issueCategoryRetriever);
 
         ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
         JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory, modelTransformer);

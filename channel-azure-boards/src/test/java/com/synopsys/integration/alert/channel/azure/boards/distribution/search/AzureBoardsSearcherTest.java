@@ -50,7 +50,7 @@ public class AzureBoardsSearcherTest {
         String organizationName = "orgName";
         ProjectMessageToIssueModelTransformer modelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);
         AzureBoardsIssueTrackerQueryManager azureBoardsIssueTrackerQueryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
-        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, azureBoardsIssueTrackerQueryManager, modelTransformer, azureBoardsIssueStatusResolver);
+        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, azureBoardsIssueTrackerQueryManager, modelTransformer, azureBoardsIssueStatusResolver, issueCategoryRetriever);
 
         IssuePolicyDetails testPolicy = new IssuePolicyDetails("Test Policy", ItemOperation.ADD, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         ProjectIssueModel projectIssueModel = ProjectIssueModel.policy(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, ISSUE_BOM_COMPONENT_DETAILS, testPolicy);

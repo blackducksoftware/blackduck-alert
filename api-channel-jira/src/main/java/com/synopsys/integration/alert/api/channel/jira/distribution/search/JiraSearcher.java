@@ -32,23 +32,31 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     private final String jiraProjectKey;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final JiraIssueStatusCreator jiraIssueStatusCreator;
+    private final JiraIssueTransitionRetriever jiraIssueTransitionRetriever;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
-    protected JiraSearcher(String jiraProjectKey, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer, JiraIssueStatusCreator jiraIssueStatusCreator) {
+    protected JiraSearcher(
+        String jiraProjectKey,
+        JiraIssueAlertPropertiesManager issuePropertiesManager,
+        ProjectMessageToIssueModelTransformer modelTransformer,
+        JiraIssueStatusCreator jiraIssueStatusCreator,
+        JiraIssueTransitionRetriever jiraIssueTransitionRetriever,
+        IssueCategoryRetriever issueCategoryRetriever
+    ) {
         super(modelTransformer);
         this.jiraProjectKey = jiraProjectKey;
         this.issuePropertiesManager = issuePropertiesManager;
         this.jiraIssueStatusCreator = jiraIssueStatusCreator;
+        this.jiraIssueTransitionRetriever = jiraIssueTransitionRetriever;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     protected abstract List<JiraSearcherResponseModel> executeQueryForIssues(String jql) throws IntegrationException;
-
-    protected abstract TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException;
 
     @Override
     protected final List<ProjectIssueSearchResult<String>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException {
@@ -107,7 +115,7 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
             policyName
         );
 
-        IssueCategory issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromComponentConcernType(concernType);
+        IssueCategory issueCategory = issueCategoryRetriever.retrieveIssueCategoryFromComponentConcernType(concernType);
         return queryForIssues(jqlString)
                    .stream()
                    .map(jiraSearcherResponseModel -> createExistingIssueDetails(jiraSearcherResponseModel, issueCategory))
@@ -158,14 +166,14 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
     }
 
     private ProjectIssueSearchResult<String> createIssueResult(JiraSearcherResponseModel issue, ProjectIssueModel projectIssueModel) {
-        IssueCategory issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
+        IssueCategory issueCategory = issueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
         ExistingIssueDetails<String> issueDetails = createExistingIssueDetails(issue, issueCategory);
         return new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
     }
 
     private ExistingIssueDetails<String> createExistingIssueDetails(JiraSearcherResponseModel issue, IssueCategory issueCategory) {
         String issueCallbackLink = JiraCallbackUtils.createUILink(issue);
-        IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(issue, this::fetchIssueTransitions);
+        IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(issue, jiraIssueTransitionRetriever::fetchIssueTransitions);
         return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
     }
 }

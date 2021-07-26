@@ -88,8 +88,8 @@ public class JiraServerSummaryFieldLengthTestIT {
             ChannelKeys.JIRA_SERVER,
             createJiraServerPropertiesFactory(testProperties),
             new IssueTrackerCallbackInfoCreator(),
-            new JiraErrorMessageUtility(gson)
-        );
+            new JiraErrorMessageUtility(gson),
+            issueCategoryRetriever);
         JiraServerJobDetailsModel jiraServerJobDetails = createJiraServerJobDetails(testProperties);
         return jiraServerMessageSenderFactory.createMessageSender(jiraServerJobDetails);
     }

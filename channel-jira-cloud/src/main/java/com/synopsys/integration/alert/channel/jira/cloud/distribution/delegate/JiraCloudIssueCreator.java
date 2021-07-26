@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
@@ -48,7 +49,8 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
         ProjectService projectService,
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
-        JiraErrorMessageUtility jiraErrorMessageUtility
+        JiraErrorMessageUtility jiraErrorMessageUtility,
+        IssueCategoryRetriever issueCategoryRetriever
     ) {
         super(
             jiraCloudChannelKey,
@@ -56,7 +58,8 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             callbackInfoCreator,
             jiraErrorMessageUtility,
             issuePropertiesManager,
-            JiraCloudDescriptor.KEY_ISSUE_CREATOR
+            JiraCloudDescriptor.KEY_ISSUE_CREATOR,
+            issueCategoryRetriever
         );
         this.distributionDetails = distributionDetails;
         this.issueService = issueService;

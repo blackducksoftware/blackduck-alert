@@ -45,6 +45,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     private final AzureWorkItemService workItemService;
     private final AzureBoardsAlertIssuePropertiesManager issuePropertiesManager;
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
     public AzureBoardsIssueCreator(
         AzureBoardsChannelKey channelKey,
@@ -55,7 +56,8 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         AzureBoardsJobDetailsModel distributionDetails,
         AzureWorkItemService workItemService,
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager,
-        AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover
+        AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
+        IssueCategoryRetriever issueCategoryRetriever
     ) {
         super(channelKey, commenter, callbackInfoCreator);
         this.gson = gson;
@@ -64,6 +66,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         this.workItemService = workItemService;
         this.issuePropertiesManager = issuePropertiesManager;
         this.exceptionMessageImprover = exceptionMessageImprover;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -117,7 +120,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
         IssueCategory issueCategory = alertIssueCreationModel.getSource()
-                                          .map(IssueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                                          .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
                                           .orElse(IssueCategory.BOM);
 
         return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink, IssueStatus.RESOLVABLE, issueCategory);

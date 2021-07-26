@@ -51,13 +51,16 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     private final String organizationName;
     private final AzureBoardsIssueTrackerQueryManager queryManager;
     private final AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
-    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer, AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver) {
+    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer, AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver,
+        IssueCategoryRetriever issueCategoryRetriever) {
         super(modelTransformer);
         this.gson = gson;
         this.organizationName = organizationName;
         this.queryManager = queryManager;
         this.azureBoardsIssueStatusResolver = azureBoardsIssueStatusResolver;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -172,7 +175,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
-        IssueCategory issueCategory = IssueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
+        IssueCategory issueCategory = issueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
         String workItemState = workItemFields.getField(WorkItemResponseFields.System_State).orElse("Unknown");
         IssueStatus issueStatus = azureBoardsIssueStatusResolver.resolveIssueStatus(workItemState);
         return new ExistingIssueDetails<>(workItemId, Objects.toString(workItemId), workItemTitle, workItemUILink, issueStatus, issueCategory);

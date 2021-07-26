@@ -17,19 +17,19 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 
 @Component
 public class IssueCategoryRetriever {
-    public static IssueCategory retrieveIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
+    public IssueCategory retrieveIssueCategoryFromProjectIssueModel(ProjectIssueModel projectIssueModel) {
         return getIssueCategory(
             () -> projectIssueModel.getVulnerabilityDetails().isPresent(),
             () -> projectIssueModel.getPolicyDetails().isPresent());
     }
 
-    public static IssueCategory retrieveIssueCategoryFromComponentConcernType(ComponentConcernType componentConcernType) {
+    public IssueCategory retrieveIssueCategoryFromComponentConcernType(ComponentConcernType componentConcernType) {
         return getIssueCategory(
             () -> ComponentConcernType.VULNERABILITY.equals(componentConcernType),
             () -> ComponentConcernType.POLICY.equals(componentConcernType));
     }
 
-    private static IssueCategory getIssueCategory(BooleanSupplier vulnerability, BooleanSupplier policy) {
+    private IssueCategory getIssueCategory(BooleanSupplier vulnerability, BooleanSupplier policy) {
         IssueCategory issueCategory = IssueCategory.BOM;
         if (vulnerability.getAsBoolean()) {
             issueCategory = IssueCategory.VULNERABILITY;

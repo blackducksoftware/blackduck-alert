@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueTransitionRetriever;
@@ -22,18 +23,21 @@ import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
-import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 
 public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
-    private final JiraIssueTransitionRetriever jiraIssueTransitionRetriever;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer,
+    public JiraCloudSearcher(
+        String jiraProjectKey,
+        IssueSearchService issueSearchService,
+        JiraIssueAlertPropertiesManager issuePropertiesManager,
+        ProjectMessageToIssueModelTransformer modelTransformer,
         JiraIssueTransitionRetriever jiraIssueTransitionRetriever,
-        JiraIssueStatusCreator jiraIssueStatusCreator) {
-        super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator);
+        JiraIssueStatusCreator jiraIssueStatusCreator,
+        IssueCategoryRetriever issueCategoryRetriever
+    ) {
+        super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator, jiraIssueTransitionRetriever, issueCategoryRetriever);
         this.issueSearchService = issueSearchService;
-        this.jiraIssueTransitionRetriever = jiraIssueTransitionRetriever;
     }
 
     @Override
@@ -43,11 +47,6 @@ public class JiraCloudSearcher extends JiraSearcher {
                    .stream()
                    .map(this::convertModel)
                    .collect(Collectors.toList());
-    }
-
-    @Override
-    protected TransitionsResponseModel fetchIssueTransitions(String issueKey) throws IntegrationException {
-        return jiraIssueTransitionRetriever.fetchIssueTransitions(issueKey);
     }
 
     private JiraSearcherResponseModel convertModel(IssueResponseModel issue) {
