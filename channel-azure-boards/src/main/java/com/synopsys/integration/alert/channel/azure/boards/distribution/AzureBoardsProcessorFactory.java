@@ -18,10 +18,12 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerModelExtract
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsIssueStatusResolver;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureCustomFieldManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
@@ -45,6 +47,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
     private final AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory;
     private final ProxyManager proxyManager;
     private final ProjectMessageToIssueModelTransformer modelTransformer;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
     @Autowired
     public AzureBoardsProcessorFactory(
@@ -53,7 +56,8 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         AzureBoardsPropertiesFactory azureBoardsPropertiesFactory,
         AzureBoardsMessageSenderFactory azureBoardsMessageSenderFactory,
         ProxyManager proxyManager,
-        ProjectMessageToIssueModelTransformer modelTransformer
+        ProjectMessageToIssueModelTransformer modelTransformer,
+        IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
         this.formatter = formatter;
@@ -61,6 +65,7 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         this.azureBoardsMessageSenderFactory = azureBoardsMessageSenderFactory;
         this.proxyManager = proxyManager;
         this.modelTransformer = modelTransformer;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -87,8 +92,9 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         );
 
         // Extractor Requirements
+        AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver = new AzureBoardsIssueStatusResolver(distributionDetails.getWorkItemCompletedState(), distributionDetails.getWorkItemReopenState());
         AzureBoardsIssueTrackerQueryManager queryManager = new AzureBoardsIssueTrackerQueryManager(organizationName, distributionDetails, workItemService, workItemQueryService);
-        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer);
+        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer, azureBoardsIssueStatusResolver, issueCategoryRetriever);
 
         IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 

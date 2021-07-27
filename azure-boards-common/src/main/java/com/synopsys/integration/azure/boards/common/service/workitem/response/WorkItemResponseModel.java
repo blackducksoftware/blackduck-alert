@@ -30,6 +30,17 @@ public class WorkItemResponseModel {
         // For serialization
     }
 
+    public WorkItemResponseModel(Integer id, Integer rev, JsonObject fields, List<WorkItemRelationModel> relations, WorkItemCommentVersionRefModel commentVersionRef, String url,
+        Map<String, ReferenceLinkModel> _links) {
+        this.id = id;
+        this.rev = rev;
+        this.fields = fields;
+        this.relations = relations;
+        this.commentVersionRef = commentVersionRef;
+        this.url = url;
+        this._links = _links;
+    }
+
     public Integer getId() {
         return id;
     }

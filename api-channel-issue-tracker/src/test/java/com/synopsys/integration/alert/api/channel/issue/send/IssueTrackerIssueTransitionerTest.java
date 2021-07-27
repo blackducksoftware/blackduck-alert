@@ -16,6 +16,8 @@ import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTransitionModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.channel.issuetracker.exception.IssueMissingTransitionException;
@@ -33,7 +35,7 @@ public class IssueTrackerIssueTransitionerTest {
     @Test
     public void transitionIssueTest() throws AlertException {
         IssueOperation testOperation = IssueOperation.RESOLVE;
-        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "title", "https://link");
+        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("id", "key", "title", "https://link", IssueStatus.UNKNOWN, IssueCategory.BOM);
         IssueTransitionModel<String> issueTransitionModel = new IssueTransitionModel<>(existingIssueDetails, testOperation, List.of("comment 1"), null);
 
         IssueTrackerCallbackInfoCreator callbackInfoCreator = new IssueTrackerCallbackInfoCreator();

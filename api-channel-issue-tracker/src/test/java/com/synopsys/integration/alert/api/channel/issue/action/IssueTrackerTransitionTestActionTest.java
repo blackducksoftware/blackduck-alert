@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
@@ -19,7 +21,7 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 
 public class IssueTrackerTransitionTestActionTest {
     private static final IssueTrackerTestActionFieldStatusCreator FIELD_STATUS_CREATOR = new IssueTrackerTestActionFieldStatusCreator();
-    private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("test-id", "test-key", "a test summary", "https://a-link");
+    private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("test-id", "test-key", "a test summary", "https://a-link", IssueStatus.UNKNOWN, IssueCategory.BOM);
     private static final ProjectIssueModel PROJECT_ISSUE_MODEL = ProjectIssueModel.bom(null, null, null, null);
     private static final IssueTrackerIssueResponseModel<String> ISSUE_RESPONSE_MODEL = new IssueTrackerIssueResponseModel<>("issue-id", "issue-key", "https://a-url", "a title", IssueOperation.OPEN, null);
 
