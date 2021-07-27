@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
@@ -106,8 +107,9 @@ public class JiraCloudIssueCreatorTest {
         ));
         JiraCustomFieldResolver jiraCustomFieldResolver = new JiraCustomFieldResolver(() -> List.of());
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator = new JiraIssueCreationRequestCreator(jiraCustomFieldResolver);
+        IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
 
-        return new TestJiraCloudIssueCreator(jiraCloudJobDetailsModel, projectService, jiraIssueCreationRequestCreator);
+        return new TestJiraCloudIssueCreator(jiraCloudJobDetailsModel, projectService, jiraIssueCreationRequestCreator, issueCategoryRetriever);
     }
 
     private IssueCreationModel createIssueCreationModel() {
@@ -125,7 +127,7 @@ public class JiraCloudIssueCreatorTest {
 
     class TestJiraCloudIssueCreator extends JiraCloudIssueCreator {
 
-        public TestJiraCloudIssueCreator(JiraCloudJobDetailsModel jiraCloudJobDetailsModel, ProjectService projectService, JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator) {
+        public TestJiraCloudIssueCreator(JiraCloudJobDetailsModel jiraCloudJobDetailsModel, ProjectService projectService, JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator, IssueCategoryRetriever issueCategoryRetriever) {
             super(
                 new JiraCloudChannelKey(),
                 null,
@@ -135,7 +137,8 @@ public class JiraCloudIssueCreatorTest {
                 projectService,
                 jiraIssueCreationRequestCreator,
                 null,
-                null
+                null,
+                issueCategoryRetriever
             );
         }
 

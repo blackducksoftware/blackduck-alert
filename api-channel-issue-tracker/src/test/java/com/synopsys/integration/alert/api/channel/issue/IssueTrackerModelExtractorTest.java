@@ -18,6 +18,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ActionableIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -95,7 +97,7 @@ public class IssueTrackerModelExtractorTest {
     @Test
     public void extractProjectMessageIssueModelsCommentTest() throws AlertException {
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
-        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("issue-id", "issue-key", "issue summary", "https://ui-link");
+        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("issue-id", "issue-key", "issue summary", "https://ui-link", IssueStatus.UNKNOWN, IssueCategory.POLICY);
         IssuePolicyDetails policyDetails = new IssuePolicyDetails("A policy", ItemOperation.UPDATE, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         ProjectIssueModel projectIssueModel = ProjectIssueModel.policy(PROVIDER_DETAILS, PROJECT, PROJECT_VERSION, ISSUE_BOM_COMPONENT_DETAILS, policyDetails);
         ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, ItemOperation.UPDATE);
@@ -118,7 +120,7 @@ public class IssueTrackerModelExtractorTest {
         ItemOperation itemOperation = ItemOperation.DELETE;
         IssueOperation issueOperation = IssueOperation.RESOLVE;
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
-        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("issue-id", "issue-key", "issue summary", "https://ui-link");
+        ExistingIssueDetails<String> existingIssueDetails = new ExistingIssueDetails<>("issue-id", "issue-key", "issue summary", "https://ui-link", IssueStatus.UNKNOWN, IssueCategory.POLICY);
         IssuePolicyDetails policyDetails = new IssuePolicyDetails("A policy", itemOperation, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         ProjectIssueModel projectIssueModel = ProjectIssueModel.policy(PROVIDER_DETAILS, PROJECT, PROJECT_VERSION, ISSUE_BOM_COMPONENT_DETAILS, policyDetails);
         ActionableIssueSearchResult<String> searchResult = new ActionableIssueSearchResult<>(existingIssueDetails, projectIssueModel, itemOperation);

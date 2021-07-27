@@ -12,7 +12,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueTransitionRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -24,8 +27,16 @@ import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 public class JiraCloudSearcher extends JiraSearcher {
     private final IssueSearchService issueSearchService;
 
-    public JiraCloudSearcher(String jiraProjectKey, IssueSearchService issueSearchService, JiraIssueAlertPropertiesManager issuePropertiesManager, ProjectMessageToIssueModelTransformer modelTransformer) {
-        super(jiraProjectKey, issuePropertiesManager, modelTransformer);
+    public JiraCloudSearcher(
+        String jiraProjectKey,
+        IssueSearchService issueSearchService,
+        JiraIssueAlertPropertiesManager issuePropertiesManager,
+        ProjectMessageToIssueModelTransformer modelTransformer,
+        JiraIssueTransitionRetriever jiraIssueTransitionRetriever,
+        JiraIssueStatusCreator jiraIssueStatusCreator,
+        IssueCategoryRetriever issueCategoryRetriever
+    ) {
+        super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator, jiraIssueTransitionRetriever, issueCategoryRetriever);
         this.issueSearchService = issueSearchService;
     }
 

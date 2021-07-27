@@ -23,8 +23,11 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentD
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.search.ProjectIssueSearchResult;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.AzureBoardsIssueTrackerQueryManager;
@@ -47,12 +50,23 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     private final Gson gson;
     private final String organizationName;
     private final AzureBoardsIssueTrackerQueryManager queryManager;
+    private final AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
-    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer) {
+    public AzureBoardsSearcher(
+        Gson gson,
+        String organizationName,
+        AzureBoardsIssueTrackerQueryManager queryManager,
+        ProjectMessageToIssueModelTransformer modelTransformer,
+        AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver,
+        IssueCategoryRetriever issueCategoryRetriever
+    ) {
         super(modelTransformer);
         this.gson = gson;
         this.organizationName = organizationName;
         this.queryManager = queryManager;
+        this.azureBoardsIssueStatusResolver = azureBoardsIssueStatusResolver;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -73,10 +87,9 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
 
         List<ProjectIssueSearchResult<Integer>> searchResults = new ArrayList<>(workItems.size());
         for (WorkItemResponseModel workItem : workItems) {
-            ExistingIssueDetails<Integer> issueDetails = createIssueDetails(workItem, workItem.createFieldsWrapper(gson));
-
             IssueBomComponentDetails issueBomComponent = IssueBomComponentDetails.fromBomComponentDetails(bomComponent);
             ProjectIssueModel projectIssueModel = ProjectIssueModel.bom(providerDetails, project, projectVersion, issueBomComponent);
+            ExistingIssueDetails<Integer> issueDetails = createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel);
 
             ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
             searchResults.add(searchResult);
@@ -105,7 +118,7 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
 
         return findWorkItems(projectIssueModel.getProvider(), projectIssueModel.getProject(), fieldRefNameToValue)
                    .stream()
-                   .map(this::createIssueDetails)
+                   .map(workItemResponseModel -> createIssueDetails(workItemResponseModel, projectIssueModel))
                    .collect(Collectors.toList());
     }
 
@@ -132,8 +145,8 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         List<ProjectIssueSearchResult<Integer>> searchResults = new ArrayList<>(workItems.size());
         for (WorkItemResponseModel workItem : workItems) {
             WorkItemFieldsWrapper workItemFields = workItem.createFieldsWrapper(gson);
-            ExistingIssueDetails<Integer> issueDetails = createIssueDetails(workItem, workItemFields);
             ProjectIssueModel projectIssueModel = createProjectIssueModel(providerDetails, project, projectVersion, workItemFields);
+            ExistingIssueDetails<Integer> issueDetails = createIssueDetails(workItem, workItemFields, projectIssueModel);
             ProjectIssueSearchResult<Integer> searchResult = new ProjectIssueSearchResult<>(issueDetails, projectIssueModel);
             searchResults.add(searchResult);
         }
@@ -159,15 +172,19 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         return queryManager.executeQueryAndRetrieveWorkItems(query);
     }
 
-    private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem) {
-        return createIssueDetails(workItem, workItem.createFieldsWrapper(gson));
+    private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem, ProjectIssueModel projectIssueModel) {
+        return createIssueDetails(workItem, workItem.createFieldsWrapper(gson), projectIssueModel);
     }
 
-    private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem, WorkItemFieldsWrapper workItemFields) {
+    private ExistingIssueDetails<Integer> createIssueDetails(WorkItemResponseModel workItem, WorkItemFieldsWrapper workItemFields, ProjectIssueModel projectIssueModel) {
         Integer workItemId = workItem.getId();
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
-        return new ExistingIssueDetails<>(workItemId, Objects.toString(workItemId), workItemTitle, workItemUILink);
+
+        IssueCategory issueCategory = issueCategoryRetriever.retrieveIssueCategoryFromProjectIssueModel(projectIssueModel);
+        String workItemState = workItemFields.getField(WorkItemResponseFields.System_State).orElse("Unknown");
+        IssueStatus issueStatus = azureBoardsIssueStatusResolver.resolveIssueStatus(workItemState);
+        return new ExistingIssueDetails<>(workItemId, Objects.toString(workItemId), workItemTitle, workItemUILink, issueStatus, issueCategory);
     }
 
     private ProjectIssueModel createProjectIssueModel(ProviderDetails providerDetails, LinkableItem project, @Nullable LinkableItem nullableProjectVersion, WorkItemFieldsWrapper workItemFields) {
@@ -188,5 +205,4 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
         IssueBomComponentDetails bomComponent = IssueBomComponentDetails.fromSearchResults(component, componentVersion);
         return ProjectIssueModel.bom(providerDetails, project, projectVersion, bomComponent);
     }
-
 }
