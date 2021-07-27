@@ -29,13 +29,8 @@ public class EmailGlobalConfigurationValidatorTest {
 
     @Test
     public void verifyValidConfig() {
-        Map<String, FieldValueModel> keyToValues = createDefaultKeyToValues();
-        FieldModel fieldModel = new FieldModel(new EmailChannelKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), keyToValues);
-
-        EmailGlobalConfigurationValidator emailGlobalConfigurationValidator = new EmailGlobalConfigurationValidator();
-        Set<AlertFieldStatus> alertFieldStatuses = emailGlobalConfigurationValidator.validate(fieldModel);
-
-        assertEquals(0, alertFieldStatuses.size());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationValidator(), createDefaultKeyToValues());
+        globalConfigurationValidatorAsserter.assertValid();
     }
 
     @Test
