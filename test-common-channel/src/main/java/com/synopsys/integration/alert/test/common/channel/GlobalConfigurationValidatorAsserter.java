@@ -42,7 +42,7 @@ public class GlobalConfigurationValidatorAsserter {
 
         Set<AlertFieldStatus> alertFieldStatuses = runValidation();
 
-        assertEquals(1, alertFieldStatuses.size());
+        assertEquals(1, alertFieldStatuses.size(), alertFieldStatuses.toString());
 
         AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
         assertNotNull(alertFieldStatus);
@@ -54,7 +54,7 @@ public class GlobalConfigurationValidatorAsserter {
         defaultKeyToValues.remove(key);
         Set<AlertFieldStatus> alertFieldStatuses = runValidation();
 
-        assertEquals(1, alertFieldStatuses.size());
+        assertEquals(1, alertFieldStatuses.size(), alertFieldStatuses.toString());
 
         AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
         assertNotNull(alertFieldStatus);
@@ -63,7 +63,7 @@ public class GlobalConfigurationValidatorAsserter {
 
     public void assertValid() {
         Set<AlertFieldStatus> fieldStatuses = runValidation();
-        assertEquals(0, fieldStatuses.size());
+        assertEquals(0, fieldStatuses.size(), fieldStatuses.toString());
     }
 
     private Set<AlertFieldStatus> runValidation() {
