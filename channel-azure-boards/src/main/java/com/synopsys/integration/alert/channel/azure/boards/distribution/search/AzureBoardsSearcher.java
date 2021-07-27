@@ -53,8 +53,14 @@ public class AzureBoardsSearcher extends IssueTrackerSearcher<Integer> {
     private final AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver;
     private final IssueCategoryRetriever issueCategoryRetriever;
 
-    public AzureBoardsSearcher(Gson gson, String organizationName, AzureBoardsIssueTrackerQueryManager queryManager, ProjectMessageToIssueModelTransformer modelTransformer, AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver,
-        IssueCategoryRetriever issueCategoryRetriever) {
+    public AzureBoardsSearcher(
+        Gson gson,
+        String organizationName,
+        AzureBoardsIssueTrackerQueryManager queryManager,
+        ProjectMessageToIssueModelTransformer modelTransformer,
+        AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver,
+        IssueCategoryRetriever issueCategoryRetriever
+    ) {
         super(modelTransformer);
         this.gson = gson;
         this.organizationName = organizationName;

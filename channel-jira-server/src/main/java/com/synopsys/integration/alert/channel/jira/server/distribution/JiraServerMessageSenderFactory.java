@@ -54,7 +54,8 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
         JiraServerPropertiesFactory jiraServerPropertiesFactory,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         JiraErrorMessageUtility jiraErrorMessageUtility,
-        IssueCategoryRetriever issueCategoryRetriever) {
+        IssueCategoryRetriever issueCategoryRetriever
+    ) {
         this.gson = gson;
         this.channelKey = channelKey;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
