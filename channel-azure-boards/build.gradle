@@ -22,5 +22,5 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'org.freemarker:freemarker'
 
-    testImplementation project(':test-common')
+    testImplementation project(':test-common-channel')
 }
