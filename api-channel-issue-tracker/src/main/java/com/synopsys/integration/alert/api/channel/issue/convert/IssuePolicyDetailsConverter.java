@@ -9,7 +9,6 @@ package com.synopsys.integration.alert.api.channel.issue.convert;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
@@ -69,21 +68,21 @@ public class IssuePolicyDetailsConverter {
             return List.of();
         }
 
-        List<String> policyDescriptionPieces = new LinkedList<>();
-
         String policyName = policyDetails.getName();
-        for (ComponentPolicy policy : policies) {
-            if (policyName.equals(policy.getPolicyName())) {
-                Optional<String> description = policy.getDescription();
-                if (description.isPresent()) {
-                    policyDescriptionPieces.add(formatter.getLineSeparator());
-                    policyDescriptionPieces.add(formatter.encode(LABEL_DESCRIPTION));
-                    policyDescriptionPieces.add(formatter.encode(description.get()));
-                    return policyDescriptionPieces;
-                }
-            }
-        }
-        return policyDescriptionPieces;
+        // Blackduck does not allow duplicate policy names, we only expect one policy to ever match
+        return policies.stream()
+                   .filter(policy -> policyName.equals(policy.getPolicyName()))
+                   .findAny()
+                   .flatMap(ComponentPolicy::getDescription)
+                   .map(this::addPolicyDescriptionPieces)
+                   .orElse(List.of());
     }
 
+    private List<String> addPolicyDescriptionPieces(String description) {
+        List<String> descriptionPieces = new LinkedList<>();
+        descriptionPieces.add(formatter.getLineSeparator());
+        descriptionPieces.add(formatter.encode(LABEL_DESCRIPTION));
+        descriptionPieces.add(formatter.encode(description));
+        return descriptionPieces;
+    }
 }
