@@ -23,6 +23,7 @@ public class JiraServerGlobalConfigurationValidator implements GlobalConfigurati
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_URL);
+        configurationFieldValidator.validateIsAURL(JiraServerDescriptor.KEY_SERVER_URL);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_USERNAME);
         configurationFieldValidator.validateRequiredFieldIsNotBlank(JiraServerDescriptor.KEY_SERVER_PASSWORD);
 

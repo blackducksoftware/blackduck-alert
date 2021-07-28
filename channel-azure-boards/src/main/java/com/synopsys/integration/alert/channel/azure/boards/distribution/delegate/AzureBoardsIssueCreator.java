@@ -17,12 +17,15 @@ import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsHttpExceptionMessageImprover;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsAlertIssuePropertiesManager;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.util.AzureBoardsUILinkUtils;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
@@ -42,6 +45,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
     private final AzureWorkItemService workItemService;
     private final AzureBoardsAlertIssuePropertiesManager issuePropertiesManager;
     private final AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
     public AzureBoardsIssueCreator(
         AzureBoardsChannelKey channelKey,
@@ -52,7 +56,8 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         AzureBoardsJobDetailsModel distributionDetails,
         AzureWorkItemService workItemService,
         AzureBoardsAlertIssuePropertiesManager issuePropertiesManager,
-        AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover
+        AzureBoardsHttpExceptionMessageImprover exceptionMessageImprover,
+        IssueCategoryRetriever issueCategoryRetriever
     ) {
         super(channelKey, commenter, callbackInfoCreator);
         this.gson = gson;
@@ -61,6 +66,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         this.workItemService = workItemService;
         this.issuePropertiesManager = issuePropertiesManager;
         this.exceptionMessageImprover = exceptionMessageImprover;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -68,7 +74,7 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         WorkItemRequest workItemCreationRequest = createWorkItemCreationRequest(alertIssueCreationModel);
         try {
             WorkItemResponseModel workItem = workItemService.createWorkItem(organizationName, distributionDetails.getProjectNameOrId(), distributionDetails.getWorkItemType(), workItemCreationRequest);
-            return extractIssueDetails(workItem);
+            return extractIssueDetails(workItem, alertIssueCreationModel);
         } catch (HttpServiceException e) {
             Optional<String> improvedExceptionMessage = exceptionMessageImprover.extractImprovedMessage(e);
             if (improvedExceptionMessage.isPresent()) {
@@ -107,13 +113,17 @@ public class AzureBoardsIssueCreator extends IssueTrackerIssueCreator<Integer> {
         return WorkItemElementOperationModel.fieldElement(WorkItemElementOperation.ADD, field, value);
     }
 
-    private ExistingIssueDetails<Integer> extractIssueDetails(WorkItemResponseModel workItem) {
+    private ExistingIssueDetails<Integer> extractIssueDetails(WorkItemResponseModel workItem, IssueCreationModel alertIssueCreationModel) {
         WorkItemFieldsWrapper workItemFields = workItem.createFieldsWrapper(gson);
         String workItemKey = Objects.toString(workItem.getId());
         String workItemTitle = workItemFields.getField(WorkItemResponseFields.System_Title).orElse("Unknown Title");
         String workItemUILink = AzureBoardsUILinkUtils.extractUILink(organizationName, workItem);
 
-        return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink);
+        IssueCategory issueCategory = alertIssueCreationModel.getSource()
+                                          .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                                          .orElse(IssueCategory.BOM);
+
+        return new ExistingIssueDetails<>(workItem.getId(), workItemKey, workItemTitle, workItemUILink, IssueStatus.RESOLVABLE, issueCategory);
     }
 
 }

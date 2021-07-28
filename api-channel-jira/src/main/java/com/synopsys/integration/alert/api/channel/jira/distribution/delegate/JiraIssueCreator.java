@@ -18,6 +18,9 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails
 import com.synopsys.integration.alert.api.channel.issue.model.IssueVulnerabilityDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCommenter;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
@@ -45,6 +48,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final String issueCreatorDescriptorKey;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
     protected JiraIssueCreator(
         IssueTrackerChannelKey channelKey,
@@ -52,12 +56,14 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
-        String issueCreatorDescriptorKey
+        String issueCreatorDescriptorKey,
+        IssueCategoryRetriever issueCategoryRetriever
     ) {
         super(channelKey, commenter, callbackInfoCreator);
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
         this.issuePropertiesManager = issuePropertiesManager;
         this.issueCreatorDescriptorKey = issueCreatorDescriptorKey;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -73,7 +79,12 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
             IssueFieldsComponent createdIssueFields = createdIssue.getFields();
 
             String issueUILink = JiraCallbackUtils.createUILink(createdIssue);
-            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink);
+
+            IssueCategory issueCategory = alertIssueCreationModel.getSource()
+                                              .map(issueCategoryRetriever::retrieveIssueCategoryFromProjectIssueModel)
+                                              .orElse(IssueCategory.BOM);
+
+            return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink, IssueStatus.RESOLVABLE, issueCategory);
         } catch (IntegrationRestException restException) {
             throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
         } catch (JiraPreconditionNotMetException jiraException) {

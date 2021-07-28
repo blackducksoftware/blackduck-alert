@@ -50,6 +50,7 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
             BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT
         ));
 
+        configurationFieldValidator.validateIsAURL(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
         validateAPIToken(configurationFieldValidator);
         validateDuplicateNames(fieldModel).ifPresent(configurationFieldValidator::addValidationResults);
         validateTimeout(configurationFieldValidator);
