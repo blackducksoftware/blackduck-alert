@@ -72,6 +72,7 @@ public class SettingsGlobalConfigurationValidator implements GlobalConfiguration
         return statuses;
     }
 
+    // TODO can add a common minimum length check to ConfigurationFieldValidator
     private void minimumEncryptionFieldLength(ConfigurationFieldValidator configurationFieldValidator, String fieldKey) {
         boolean hasValues = configurationFieldValidator.fieldHasReadableValue(fieldKey);
         String fieldValue = configurationFieldValidator.getStringValue(fieldKey).orElse("");
