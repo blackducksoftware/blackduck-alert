@@ -17,17 +17,14 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class IssuePolicyDetailsConverterTest {
-    private static final ComponentPolicy COMPONENT_POLICY = new ComponentPolicy(
-        "A vulnerability policy",
-        ComponentConcernSeverity.MINOR_MEDIUM,
-        false,
-        true
-    );
+    private static final ComponentPolicy COMPONENT_POLICY = createComponentPolicy("A vulnerability policy", "Description of a policy");
+    private static final ComponentPolicy COMPONENT_POLICY_NO_DESCRIPTION = createComponentPolicy("policy without description", null);
+
     private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new AbstractBomComponentDetails(
         new LinkableItem("Component", "A BOM component"),
         new LinkableItem("Component Version", "1.0.0-SNAPSHOT"),
         new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of()),
-        List.of(COMPONENT_POLICY),
+        List.of(COMPONENT_POLICY, COMPONENT_POLICY_NO_DESCRIPTION),
         new LinkableItem("License", "A software license", "https://license-url"),
         "Example Usage",
         List.of(),
@@ -37,6 +34,7 @@ public class IssuePolicyDetailsConverterTest {
 
     private static final IssuePolicyDetails POLICY_DETAILS_WITH_VULNERABILITY = new IssuePolicyDetails(COMPONENT_POLICY.getPolicyName(), ItemOperation.ADD, COMPONENT_POLICY.getSeverity());
     private static final IssuePolicyDetails POLICY_DETAILS_WITHOUT_VULNERABILITY = new IssuePolicyDetails("Normal Policy", ItemOperation.DELETE, ComponentConcernSeverity.TRIVIAL_LOW);
+    private static final IssuePolicyDetails POLICY_DETAILS_WITHOUT_DESCRIPTION = new IssuePolicyDetails(COMPONENT_POLICY_NO_DESCRIPTION.getPolicyName(), ItemOperation.DELETE, ComponentConcernSeverity.TRIVIAL_LOW);
 
     @Test
     public void createPolicyDetailsSectionPiecesWithVulnerabilityTest() {
@@ -64,10 +62,33 @@ public class IssuePolicyDetailsConverterTest {
         System.out.print(joinedSectionPieces);
     }
 
+    @Test
+    public void createPolicyDetailsSectionWithoutDescriptionTest() {
+        callCreatePolicyDetailsSectionPieces(POLICY_DETAILS_WITHOUT_DESCRIPTION);
+    }
+
+    @Disabled
+    @Test
+    public void previewFromattingWithoutDescription() {
+        List<String> sectionPieces = callCreatePolicyDetailsSectionPieces(POLICY_DETAILS_WITHOUT_DESCRIPTION);
+        String joinedSectionPieces = StringUtils.join(sectionPieces, "");
+        System.out.print(joinedSectionPieces);
+    }
+
     private List<String> callCreatePolicyDetailsSectionPieces(IssuePolicyDetails policyDetails) {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         IssuePolicyDetailsConverter converter = new IssuePolicyDetailsConverter(formatter);
         return converter.createPolicyDetailsSectionPieces(ISSUE_BOM_COMPONENT_DETAILS, policyDetails);
+    }
+
+    private static ComponentPolicy createComponentPolicy(String policyName, String description) {
+        return new ComponentPolicy(
+            policyName,
+            ComponentConcernSeverity.MINOR_MEDIUM,
+            false,
+            true,
+            description
+        );
     }
 
 }

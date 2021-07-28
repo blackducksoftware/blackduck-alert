@@ -49,8 +49,8 @@ public class ProjectMessageToIssueModelTransformerTest {
         List.of(VULNERABILITY_4, VULNERABILITY_5, VULNERABILITY_6)
     );
 
-    private static final ComponentPolicy COMPONENT_POLICY_1 = new ComponentPolicy("First Policy", ComponentConcernSeverity.MINOR_MEDIUM, false, true);
-    private static final ComponentPolicy COMPONENT_POLICY_2 = new ComponentPolicy("Second Policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false);
+    private static final ComponentPolicy COMPONENT_POLICY_1 = new ComponentPolicy("First Policy", ComponentConcernSeverity.MINOR_MEDIUM, false, true, null);
+    private static final ComponentPolicy COMPONENT_POLICY_2 = new ComponentPolicy("Second Policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false, null);
     private static final List<ComponentPolicy> COMPONENT_POLICIES = List.of(
         COMPONENT_POLICY_1,
         COMPONENT_POLICY_2
