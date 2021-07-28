@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.api.channel.issue.convert;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatter;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
@@ -36,10 +37,9 @@ public class IssuePolicyDetailsConverter {
         policyDetailsSectionPieces.add(formatter.getLineSeparator());
         policyDetailsSectionPieces.add(formatter.encode(LABEL_SEVERITY));
         policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().getPolicyLabel()));
-        //TODO: Change should go here
-        policyDetailsSectionPieces.add(formatter.encode(LABEL_DESCRIPTION));
-        //figure out how to manage a list of policies
-        policyDetailsSectionPieces.add(formatter.encode(bomComponentDetails.getComponentPolicies().get(0).getDescription()));
+
+        List<String> policyDescriptionSection = createPolicyDescription(bomComponentDetails, policyDetails);
+        policyDetailsSectionPieces.addAll(policyDescriptionSection);
 
         List<String> additionalPolicyDetailsSections = createAdditionalPolicyDetailsSections(bomComponentDetails, policyDetails);
         if (!additionalPolicyDetailsSections.isEmpty()) {
@@ -61,6 +61,29 @@ public class IssuePolicyDetailsConverter {
             return componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(bomComponentDetails.getComponentVulnerabilities());
         }
         return List.of();
+    }
+
+    private List<String> createPolicyDescription(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails) {
+        List<ComponentPolicy> policies = bomComponentDetails.getComponentPolicies();
+        if (policies.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> policyDescriptionPieces = new LinkedList<>();
+
+        String policyName = policyDetails.getName();
+        for (ComponentPolicy policy : policies) {
+            if (policyName.equals(policy.getPolicyName())) {
+                Optional<String> description = policy.getDescription();
+                if (description.isPresent()) {
+                    policyDescriptionPieces.add(formatter.getLineSeparator());
+                    policyDescriptionPieces.add(formatter.encode(LABEL_DESCRIPTION));
+                    policyDescriptionPieces.add(formatter.encode(description.get()));
+                    return policyDescriptionPieces;
+                }
+            }
+        }
+        return policyDescriptionPieces;
     }
 
 }

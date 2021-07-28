@@ -7,6 +7,10 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 
 public class ComponentPolicy extends AlertSerializableModel {
@@ -16,7 +20,7 @@ public class ComponentPolicy extends AlertSerializableModel {
     private final boolean vulnerabilityPolicy;
     private final String description;
 
-    public ComponentPolicy(String policyName, ComponentConcernSeverity severity, boolean overridden, boolean vulnerabilityPolicy, String description) {
+    public ComponentPolicy(String policyName, ComponentConcernSeverity severity, boolean overridden, boolean vulnerabilityPolicy, @Nullable String description) {
         this.policyName = policyName;
         this.severity = severity;
         this.overridden = overridden;
@@ -40,7 +44,7 @@ public class ComponentPolicy extends AlertSerializableModel {
         return vulnerabilityPolicy;
     }
 
-    public String getDescription() {
-        return description;
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(description);
     }
 }
