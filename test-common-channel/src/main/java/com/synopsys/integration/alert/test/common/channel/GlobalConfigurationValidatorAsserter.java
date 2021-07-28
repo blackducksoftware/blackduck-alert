@@ -61,6 +61,11 @@ public class GlobalConfigurationValidatorAsserter {
         assertEquals(key, alertFieldStatus.getFieldName());
     }
 
+    public void assertCustom(Consumer<Set<AlertFieldStatus>> additionalAsserts) {
+        Set<AlertFieldStatus> alertFieldStatuses = runValidation();
+        additionalAsserts.accept(alertFieldStatuses);
+    }
+
     public void assertValid() {
         Set<AlertFieldStatus> fieldStatuses = runValidation();
         assertEquals(0, fieldStatuses.size(), fieldStatuses.toString());
