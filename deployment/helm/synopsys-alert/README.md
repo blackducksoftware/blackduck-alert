@@ -15,6 +15,7 @@ Helm Charts for Synopsys Alert
   - [Custom Certificates](#custom-certificates)
   - [Persistent Storage](#persistent-storage)
   - [External Postgres Database](#external-postgres-database)
+    - [External Postgres Database Requirements](#external-postgres-database-requirements)
   - [Database Admin User Password](#database-admin-user-password)
   - [Installing with Black Duck](#installing-with-black-duck)
 
@@ -500,6 +501,42 @@ For the on-premise database deployment a second Persistent Volume must be create
 - Configure Postgres admin username and password following the instructions outlined here: [Using On-Premise Database Configuration](#using-on-premise-database-configuration)
 
 ### External Postgres Database
+
+#### External Postgres Database Requirements
+- Postgres Version: 12
+- Extension: uuid-ossp (Note: this should be installed prior to creating the database)
+- Schemas: public, alert
+- Roles/Privileges: Alert requires two sets of Postgres Privileges. One set of privileges is necessary for initializing and upgrading the database. The other set (which is a subset of the first) is for reading and writing data when the
+  application is running. Although it is possible to use one role to handle both of these cases, it is recommended to separate them.
+    - Ensure the DB roles have the public schema on their search_path(s):
+      ```bash
+      ALTER ROLE <user> SET search_path = "$user", public;
+      ```
+    - The Alert Admin role should have the following privileges on all objects in the alert schema (or the schema/database when relevant):
+        - SELECT
+        - INSERT
+        - CREATE
+        - UPDATE
+        - DELETE
+        - TRUNCATE
+        - REFERENCES
+        - TRIGGER
+        - TEMPORARY
+        - EXECUTE
+        - USAGE
+    - The Alert Admin role should have the following privileges on all objects in the public schema (or the schema/database when relevant):
+        - SELECT
+        - INSERT
+        - UPDATE
+        - DELETE
+        - EXECUTE
+    - The Alert User role should have the following privileges on all objects in the alert schema (or the schema/database when relevant):
+        - SELECT
+        - INSERT
+        - UPDATE
+        - DELETE
+        - EXECUTE
+
 - On the external database create a user to own the Alert database
 
   ```sql 
