@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -128,7 +127,6 @@ public class JmsNotificationReceiverTestIT {
     }
 
     @Test
-    @Ignore
     @Disabled
     public void testJms() throws InterruptedException {
         // Set breakpoints throughout this test, there is nothing to assert against here. Suggestions for breakpoints:
