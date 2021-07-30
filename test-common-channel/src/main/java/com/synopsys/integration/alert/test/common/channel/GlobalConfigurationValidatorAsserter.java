@@ -9,6 +9,7 @@ package com.synopsys.integration.alert.test.common.channel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class GlobalConfigurationValidatorAsserter {
     public GlobalConfigurationValidatorAsserter(String descriptorKey, GlobalConfigurationValidator globalConfigurationValidator, Map<String, FieldValueModel> defaultKeyToValues) {
         this.descriptorKey = descriptorKey;
         this.globalConfigurationValidator = globalConfigurationValidator;
-        this.defaultKeyToValues = defaultKeyToValues;
+        this.defaultKeyToValues = new HashMap<>(defaultKeyToValues);
     }
 
     public void assertInvalidValue(String key, String invalidValue) {
