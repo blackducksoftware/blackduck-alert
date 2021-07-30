@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.test.common.channel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class GlobalConfigurationValidatorAsserter {
     }
 
     public void assertInvalidValue(String key, String invalidValue) {
-        assertInvalidValue(key, invalidValue, (value) -> {});
+        assertInvalidValue(key, invalidValue, value -> {});
     }
 
     public void assertInvalidValue(String key, String invalidValue, Consumer<AlertFieldStatus> additionalAsserts) {
@@ -43,9 +42,8 @@ public class GlobalConfigurationValidatorAsserter {
         Set<AlertFieldStatus> alertFieldStatuses = runValidation();
 
         assertEquals(1, alertFieldStatuses.size(), alertFieldStatuses.toString());
+        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElseThrow();
 
-        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
-        assertNotNull(alertFieldStatus);
         assertEquals(key, alertFieldStatus.getFieldName());
         additionalAsserts.accept(alertFieldStatus);
     }
@@ -55,9 +53,7 @@ public class GlobalConfigurationValidatorAsserter {
         Set<AlertFieldStatus> alertFieldStatuses = runValidation();
 
         assertEquals(1, alertFieldStatuses.size(), alertFieldStatuses.toString());
-
-        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
-        assertNotNull(alertFieldStatus);
+        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElseThrow();
         assertEquals(key, alertFieldStatus.getFieldName());
     }
 
@@ -75,4 +71,5 @@ public class GlobalConfigurationValidatorAsserter {
         FieldModel fieldModel = new FieldModel(descriptorKey, ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
         return globalConfigurationValidator.validate(fieldModel);
     }
+
 }
