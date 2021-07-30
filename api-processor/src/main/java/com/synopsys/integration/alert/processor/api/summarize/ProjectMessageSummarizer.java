@@ -113,10 +113,11 @@ public class ProjectMessageSummarizer {
         for (Map.Entry<ComponentConcernSummaryGrouping, Integer> groupedConcernCount : groupedConcernCounts.entrySet()) {
             ComponentConcernSummaryGrouping concernGrouping = groupedConcernCount.getKey();
 
+            String severityLabel = ComponentConcernType.POLICY.equals(concernGrouping.type) ? concernGrouping.severity.getPolicyLabel() : concernGrouping.severity.getVulnerabilityLabel();
             String stateTypeString = convertToUppercasePlural(concernGrouping.type);
             String stateAdjective = convertToAdjective(concernGrouping.type, concernGrouping.operation);
 
-            String label = String.format("(%s) %s %s count", concernGrouping.severity, stateTypeString, stateAdjective);
+            String label = String.format("(%s) %s %s count", severityLabel, stateTypeString, stateAdjective);
             LinkableItem concernDetail = new LinkableItem(label, groupedConcernCount.getValue().toString());
             concernDetail.setNumericValueFlag(true);
             details.add(concernDetail);
