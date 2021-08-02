@@ -18,8 +18,13 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
+// TODO remove in favor of IssueTrackerSearcherV2
 public abstract class IssueTrackerSearcher<T extends Serializable> {
     private final IssueTrackerSearcherV2<T> issueTrackerSearcherV2;
+
+    public IssueTrackerSearcher(IssueTrackerSearcherV2<T> issueTrackerSearcherV2) {
+        this.issueTrackerSearcherV2 = issueTrackerSearcherV2;
+    }
 
     protected IssueTrackerSearcher(ProjectMessageToIssueModelTransformer modelTransformer) {
         this.issueTrackerSearcherV2 = new IssueTrackerSearcherV2<>(
