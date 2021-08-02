@@ -8,8 +8,8 @@
 package com.synopsys.integration.alert.test.common.channel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,11 +29,11 @@ public class GlobalConfigurationValidatorAsserter {
     public GlobalConfigurationValidatorAsserter(String descriptorKey, GlobalConfigurationValidator globalConfigurationValidator, Map<String, FieldValueModel> defaultKeyToValues) {
         this.descriptorKey = descriptorKey;
         this.globalConfigurationValidator = globalConfigurationValidator;
-        this.defaultKeyToValues = defaultKeyToValues;
+        this.defaultKeyToValues = new HashMap<>(defaultKeyToValues);
     }
 
     public void assertInvalidValue(String key, String invalidValue) {
-        assertInvalidValue(key, invalidValue, (value) -> {});
+        assertInvalidValue(key, invalidValue, value -> {});
     }
 
     public void assertInvalidValue(String key, String invalidValue, Consumer<AlertFieldStatus> additionalAsserts) {
@@ -43,9 +43,8 @@ public class GlobalConfigurationValidatorAsserter {
         Set<AlertFieldStatus> alertFieldStatuses = runValidation();
 
         assertEquals(1, alertFieldStatuses.size(), alertFieldStatuses.toString());
+        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElseThrow();
 
-        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
-        assertNotNull(alertFieldStatus);
         assertEquals(key, alertFieldStatus.getFieldName());
         additionalAsserts.accept(alertFieldStatus);
     }
@@ -55,9 +54,7 @@ public class GlobalConfigurationValidatorAsserter {
         Set<AlertFieldStatus> alertFieldStatuses = runValidation();
 
         assertEquals(1, alertFieldStatuses.size(), alertFieldStatuses.toString());
-
-        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElse(null);
-        assertNotNull(alertFieldStatus);
+        AlertFieldStatus alertFieldStatus = alertFieldStatuses.stream().findFirst().orElseThrow();
         assertEquals(key, alertFieldStatus.getFieldName());
     }
 
@@ -75,4 +72,5 @@ public class GlobalConfigurationValidatorAsserter {
         FieldModel fieldModel = new FieldModel(descriptorKey, ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
         return globalConfigurationValidator.validate(fieldModel);
     }
+
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Deleting from alert.defined_fields will also delete from alert.field_contexts and alert.descriptor_fields thanks to ON DELETE CASCADE -->
+    <changeSet author="gavink" id="remove-role-mapping-user-field">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM alert.defined_fields
+                WHERE source_key = 'settings.role.mapping.name.user'
+            </sqlCheck>
+        </preConditions>
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>
+                source_key = 'settings.role.mapping.name.user'
+            </where>
+        </delete>
+    </changeSet>
+    <changeSet author="gavink" id="remove-role-mapping-job-manager-field">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM alert.defined_fields
+                WHERE source_key = 'settings.role.mapping.name.job.manager'
+            </sqlCheck>
+        </preConditions>
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>
+                source_key = 'settings.role.mapping.name.job.manager'
+            </where>
+        </delete>
+    </changeSet>
+    <changeSet author="gavink" id="remove-role-mapping-admin-field">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM alert.defined_fields
+                WHERE source_key = 'settings.role.mapping.name.admin'
+            </sqlCheck>
+        </preConditions>
+        <delete schemaName="alert" tableName="defined_fields">
+            <where>
+                source_key = 'settings.role.mapping.name.admin'
+            </where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>

@@ -3,4 +3,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <include file="jira-config-update.xml" relativeToChangelogFile="true"/>
     <include file="non-proxy-hosts.xml" relativeToChangelogFile="true"/>
+    <include file="remove-role-mapping-fields.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
