@@ -55,7 +55,7 @@ public class BomEditNotificationMessageExtractor extends AbstractBlackDuckCompon
     @Override
     protected List<BomComponentDetails> createBomComponentDetails(BomEditWithProjectNameNotificationContent notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
+        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckServicesFactory);
 
         BomComponentDetails bomComponentDetails;
         try {

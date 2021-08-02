@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
 
 @Component
 public class BlackDuckMessageBomComponentDetailsCreatorFactory {
@@ -27,8 +29,10 @@ public class BlackDuckMessageBomComponentDetailsCreatorFactory {
         this.policyDetailsCreator = policyDetailsCreator;
     }
 
-    public BlackDuckMessageBomComponentDetailsCreator createBomComponentDetailsCreator(BlackDuckApiClient blackDuckApiClient) {
-        return new BlackDuckMessageBomComponentDetailsCreator(blackDuckApiClient, vulnerabilityDetailsCreator, policyDetailsCreator);
+    public BlackDuckMessageBomComponentDetailsCreator createBomComponentDetailsCreator(BlackDuckServicesFactory blackDuckServicesFactory) {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
+        return new BlackDuckMessageBomComponentDetailsCreator(blackDuckApiClient, vulnerabilityDetailsCreator, policyDetailsCreator, policyRuleService);
     }
 
 }

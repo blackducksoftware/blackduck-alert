@@ -57,18 +57,17 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
 
     @Override
     protected List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-
         List<BomComponentDetails> bomComponentDetails = new LinkedList<>();
         for (ComponentVersionStatus componentVersionStatus : notificationContent.getComponentVersionStatuses()) {
-            BomComponentDetails componentVersionDetails = createBomComponentDetails(blackDuckApiClient, notificationContent, componentVersionStatus);
+            BomComponentDetails componentVersionDetails = createBomComponentDetails(blackDuckServicesFactory, notificationContent, componentVersionStatus);
             bomComponentDetails.add(componentVersionDetails);
         }
         return bomComponentDetails;
     }
 
-    private BomComponentDetails createBomComponentDetails(BlackDuckApiClient blackDuckApiClient, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
-        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
+    private BomComponentDetails createBomComponentDetails(BlackDuckServicesFactory blackDuckServicesFactory, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckServicesFactory);
 
         ComponentConcern policyConcern = policyComponentConcernCreator.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
         try {

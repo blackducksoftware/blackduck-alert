@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.message.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,10 +27,12 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.util.
 import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
 import com.synopsys.integration.blackduck.service.request.BlackDuckMultipleRequest;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpUrl;
@@ -43,15 +46,18 @@ public class BlackDuckMessageBomComponentDetailsCreator {
     private final BlackDuckApiClient blackDuckApiClient;
     private final BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator;
     private final BlackDuckComponentPolicyDetailsCreator policyDetailsCreator;
+    private final PolicyRuleService policyRuleService;
 
     public BlackDuckMessageBomComponentDetailsCreator(
         BlackDuckApiClient blackDuckApiClient,
         BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator,
-        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator
+        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator,
+        PolicyRuleService policyRuleService
     ) {
         this.blackDuckApiClient = blackDuckApiClient;
         this.vulnerabilityDetailsCreator = vulnerabilityDetailsCreator;
         this.policyDetailsCreator = policyDetailsCreator;
+        this.policyRuleService = policyRuleService;
     }
 
     public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) throws IntegrationException {
@@ -148,8 +154,18 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         }
         return blackDuckApiClient.getAllResponses(bomComponent.metaPolicyRulesLink())
                    .stream()
-                   .map(policyDetailsCreator::toComponentPolicy)
+                   .map(componentPolicyRulesView -> policyDetailsCreator.toComponentPolicy(componentPolicyRulesView, getPolicyRuleView(componentPolicyRulesView.getName())))
                    .collect(Collectors.toList());
+    }
+
+    private Optional<PolicyRuleView> getPolicyRuleView(String policyName) {
+        Optional<PolicyRuleView> policyRuleView;
+        try {
+            policyRuleView = policyRuleService.getPolicyRuleViewByName(policyName);
+        } catch (IntegrationException e) {
+            return Optional.empty();
+        }
+        return policyRuleView;
     }
 
     private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
