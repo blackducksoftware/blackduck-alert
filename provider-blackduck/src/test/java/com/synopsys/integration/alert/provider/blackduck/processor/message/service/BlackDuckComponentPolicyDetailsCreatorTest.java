@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,9 +14,11 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckPolicySeverityConverter;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleCategoryType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleSeverityType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 
 public class BlackDuckComponentPolicyDetailsCreatorTest {
     private static final String EXAMPLE_VULNERABILITY_EXPRESSION = "a-vuln-expression";
@@ -33,12 +36,18 @@ public class BlackDuckComponentPolicyDetailsCreatorTest {
         componentPolicyRulesView.setSeverity(severity);
         componentPolicyRulesView.setPolicyApprovalStatus(ProjectVersionComponentPolicyStatusType.IN_VIOLATION);
 
-        ComponentPolicy componentPolicy = policyDetailsCreator.toComponentPolicy(componentPolicyRulesView);
+        PolicyRuleView policyRuleView = new PolicyRuleView();
+        policyRuleView.setName(componentPolicyRulesView.getName());
+        policyRuleView.setCategory(PolicyRuleCategoryType.UNCATEGORIZED);
+
+        ComponentPolicy componentPolicy = policyDetailsCreator.toComponentPolicy(componentPolicyRulesView, Optional.of(policyRuleView));
 
         assertEquals(policyName, componentPolicy.getPolicyName());
         assertEquals(severity.name(), componentPolicy.getSeverity().getPolicyLabel());
         assertFalse(componentPolicy.isVulnerabilityPolicy(), "Did not expect a vulnerability policy");
         assertFalse(componentPolicy.isOverridden(), "Did not expect the policy to be overridden");
+        assertTrue(componentPolicy.getCategory().isPresent());
+        assertEquals(PolicyRuleCategoryType.UNCATEGORIZED.name(), componentPolicy.getCategory().get());
     }
 
     @Test
@@ -57,7 +66,11 @@ public class BlackDuckComponentPolicyDetailsCreatorTest {
         componentPolicyRulesView.setPolicyApprovalStatus(ProjectVersionComponentPolicyStatusType.IN_VIOLATION);
         componentPolicyRulesView.setExpression(policyRuleExpression);
 
-        ComponentPolicy componentPolicy = policyDetailsCreator.toComponentPolicy(componentPolicyRulesView);
+        PolicyRuleView policyRuleView = new PolicyRuleView();
+        policyRuleView.setName(componentPolicyRulesView.getName());
+        policyRuleView.setCategory(PolicyRuleCategoryType.UNCATEGORIZED);
+
+        ComponentPolicy componentPolicy = policyDetailsCreator.toComponentPolicy(componentPolicyRulesView, Optional.of(policyRuleView));
         assertTrue(componentPolicy.isVulnerabilityPolicy(), "Expected a vulnerability policy");
     }
 
@@ -76,7 +89,11 @@ public class BlackDuckComponentPolicyDetailsCreatorTest {
         componentPolicyRulesView.setSeverity(PolicyRuleSeverityType.TRIVIAL);
         componentPolicyRulesView.setPolicyApprovalStatus(ProjectVersionComponentPolicyStatusType.IN_VIOLATION_OVERRIDDEN);
 
-        ComponentPolicy componentPolicy = policyDetailsCreator.toComponentPolicy(componentPolicyRulesView);
+        PolicyRuleView policyRuleView = new PolicyRuleView();
+        policyRuleView.setName(componentPolicyRulesView.getName());
+        policyRuleView.setCategory(PolicyRuleCategoryType.UNCATEGORIZED);
+
+        ComponentPolicy componentPolicy = policyDetailsCreator.toComponentPolicy(componentPolicyRulesView, Optional.of(policyRuleView));
         assertTrue(componentPolicy.isOverridden(), "Expected the policy to be overridden");
     }
 

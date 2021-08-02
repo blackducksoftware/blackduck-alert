@@ -71,8 +71,8 @@ public class ProjectMessageConverterTest {
     }
 
     private static BomComponentDetails createBomComponentDetails() {
-        ComponentPolicy componentPolicy1 = new ComponentPolicy("A component policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false, null);
-        ComponentPolicy componentPolicy2 = new ComponentPolicy("A different policy", ComponentConcernSeverity.MAJOR_HIGH, false, true, null);
+        ComponentPolicy componentPolicy1 = new ComponentPolicy("A component policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false, null, "Uncategorized");
+        ComponentPolicy componentPolicy2 = new ComponentPolicy("A different policy", ComponentConcernSeverity.MAJOR_HIGH, false, true, null, "Uncategorized");
 
         ComponentConcern policyConcern1 = ComponentConcern.policy(ItemOperation.DELETE, "A non-severe policy");
         ComponentConcern policyConcern2 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW);
