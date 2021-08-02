@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpr
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionView;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
+import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
 
 @Component
 public class BlackDuckComponentPolicyDetailsCreator {
@@ -30,11 +32,12 @@ public class BlackDuckComponentPolicyDetailsCreator {
         this.policySeverityConverter = policySeverityConverter;
     }
 
-    public ComponentPolicy toComponentPolicy(ComponentPolicyRulesView componentPolicyRulesView) {
+    public ComponentPolicy toComponentPolicy(ComponentPolicyRulesView componentPolicyRulesView, Optional<PolicyRuleView> policyRuleView) {
         ComponentConcernSeverity componentConcernSeverity = policySeverityConverter.toComponentConcernSeverity(componentPolicyRulesView.getSeverity().name());
         boolean overridden = ProjectVersionComponentPolicyStatusType.IN_VIOLATION_OVERRIDDEN.equals(componentPolicyRulesView.getPolicyApprovalStatus());
         boolean vulnerabilityPolicy = isVulnerabilityPolicy(componentPolicyRulesView);
-        return new ComponentPolicy(componentPolicyRulesView.getName(), componentConcernSeverity, overridden, vulnerabilityPolicy, componentPolicyRulesView.getDescription());
+        String category = policyRuleView.map(ruleView -> ruleView.getCategory().name()).orElse(null);
+        return new ComponentPolicy(componentPolicyRulesView.getName(), componentConcernSeverity, overridden, vulnerabilityPolicy, componentPolicyRulesView.getDescription(), category);
     }
 
     private boolean isVulnerabilityPolicy(ComponentPolicyRulesView componentPolicyRulesView) {

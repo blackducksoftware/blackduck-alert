@@ -121,7 +121,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         if (vulnerabilityDetails.isPresent()) {
             severity = vulnerabilityDetails.get().getHighestSeverityAddedOrUpdated();
         }
-
+        //TODO: Extract the policy category here from bomComponent.getComponentPolicies, use private method to compare List of policies vs. the name from IssuePolicyDetails
         return new MessageReplacementValues(
             alertIssueSource.getProvider().getLabel(),
             alertIssueSource.getProject().getValue(),
