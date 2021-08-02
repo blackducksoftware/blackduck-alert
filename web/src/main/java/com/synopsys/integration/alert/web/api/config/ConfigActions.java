@@ -197,7 +197,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
         if (!encryptionUtility.isInitialized() && !settingsDescriptorKey.getUniversalKey().equals(resource.getDescriptorName())) {
             ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(EncryptionSettingsValidator.ENCRYPTION_MISSING);
-            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, validationResponseModel);
+            return new ValidationActionResponse(HttpStatus.INTERNAL_SERVER_ERROR, validationResponseModel);
         }
 
         Set<AlertFieldStatus> fieldStatuses = descriptorProcessor.retrieveDescriptor(resource.getDescriptorName())
