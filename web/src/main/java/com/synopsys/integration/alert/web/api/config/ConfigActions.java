@@ -197,13 +197,13 @@ public class ConfigActions extends AbstractConfigResourceActions {
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
         if (!encryptionUtility.isInitialized() && !settingsDescriptorKey.getUniversalKey().equals(resource.getDescriptorName())) {
             ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(EncryptionSettingsValidator.ENCRYPTION_MISSING);
-            return new ValidationActionResponse(validationResponseModel);
+            return new ValidationActionResponse(HttpStatus.BAD_REQUEST, validationResponseModel);
         }
 
         Set<AlertFieldStatus> fieldStatuses = descriptorProcessor.retrieveDescriptor(resource.getDescriptorName())
-                                                  .flatMap(Descriptor::getGlobalValidator)
-                                                  .map(globalValidator -> globalValidator.validate(resource))
-                                                  .orElse(Set.copyOf(fieldModelProcessor.validateFieldModel(resource)));
+            .flatMap(Descriptor::getGlobalValidator)
+            .map(globalValidator -> globalValidator.validate(resource))
+            .orElse(Set.copyOf(fieldModelProcessor.validateFieldModel(resource)));
 
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;
@@ -240,12 +240,12 @@ public class ConfigActions extends AbstractConfigResourceActions {
             } catch (IntegrationException e) {
                 // FIXME there are definitely other possibilities than this
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
-                                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
+                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
-                                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
+                    .orElse(ValidationResponseModel.generalError(e.getMessage()));
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }
         }

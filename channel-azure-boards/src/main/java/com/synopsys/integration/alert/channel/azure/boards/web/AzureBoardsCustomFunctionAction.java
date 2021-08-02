@@ -88,18 +88,17 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
         try {
             Optional<FieldModel> savedFieldModel = saveIfValid(fieldModel);
             if (!savedFieldModel.isPresent()) {
-                String error = "The configuration is invalid. Please test the configuration.";
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, error, createErrorResponse(error));
+                return createErrorResponse("The configuration is invalid. Please test the configuration.");
             }
             FieldUtility fieldUtility = createFieldAccessor(savedFieldModel.get());
             Optional<String> clientId = fieldUtility.getString(AzureBoardsDescriptor.KEY_CLIENT_ID);
             if (!clientId.isPresent()) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("App ID not found."));
+                return createErrorResponse("App ID not found.");
             }
 
             Optional<String> alertServerUrl = alertWebServerUrlManager.getServerUrl();
             if (!alertServerUrl.isPresent()) {
-                return new ActionResponse<>(HttpStatus.BAD_REQUEST, createErrorResponse("Could not determine the alert server url for the callback."));
+                return createErrorResponse("Could not determine the alert server url for the callback.");
             }
 
             String requestKey = createRequestKey();
@@ -116,13 +115,18 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             return new ActionResponse<>(HttpStatus.OK, new OAuthEndpointResponse(isAuthenticated(fieldUtility), authUrl, "Authenticating..."));
         } catch (Exception ex) {
             logger.error("Error activating Azure Boards", ex);
-            return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, createErrorResponse("Error activating azure oauth."));
+            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error activating azure oauth.");
         }
     }
 
-    private OAuthEndpointResponse createErrorResponse(String errorMessage) {
+    private ActionResponse<OAuthEndpointResponse> createErrorResponse(String errorMessage) {
+        return createErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
+    private ActionResponse<OAuthEndpointResponse> createErrorResponse(HttpStatus httpStatus, String errorMessage) {
         oAuthRequestValidator.removeAllRequests();
-        return new OAuthEndpointResponse(false, "", errorMessage);
+        OAuthEndpointResponse oAuthEndpointResponse = new OAuthEndpointResponse(false, "", errorMessage);
+        return new ActionResponse<>(httpStatus, errorMessage, oAuthEndpointResponse);
     }
 
     private Optional<FieldModel> saveIfValid(FieldModel fieldModel) {
