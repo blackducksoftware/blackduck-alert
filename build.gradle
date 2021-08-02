@@ -113,6 +113,7 @@ dependencies {
     implementation project(':service-email')
 
     testImplementation project(':test-common')
+    testImplementation project(':test-common-channel')
 
     implementation 'com.synopsys.integration:blackduck-common', rootProject.ext.blackduckCommonExcludes
     implementation 'org.apache.tomcat.embed:tomcat-embed-core'

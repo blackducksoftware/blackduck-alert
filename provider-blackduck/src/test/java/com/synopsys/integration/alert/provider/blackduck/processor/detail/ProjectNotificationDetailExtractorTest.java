@@ -14,10 +14,7 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
 import com.synopsys.integration.alert.test.common.TestResourceUtils;
 import com.synopsys.integration.blackduck.api.manual.component.ProjectNotificationContent;
-import com.synopsys.integration.blackduck.api.manual.enumeration.NotificationType;
-import com.synopsys.integration.blackduck.api.manual.view.NotificationView;
 import com.synopsys.integration.blackduck.api.manual.view.ProjectNotificationView;
-import com.synopsys.integration.blackduck.http.transform.subclass.BlackDuckResponseResolver;
 
 public class ProjectNotificationDetailExtractorTest {
     public static final String NOTIFICATION_JSON_PATH = "json/projectNotification.json";

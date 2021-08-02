@@ -46,11 +46,6 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String KEY_SAML_METADATA_FILE = "settings.saml.metadata.file";
     public static final String KEY_SAML_WANT_ASSERTIONS_SIGNED = "settings.saml.want.assertions.signed";
 
-    // User Management
-    // Role Mappings
-    public static final String KEY_ROLE_MAPPING_NAME_ADMIN = "settings.role.mapping.name.admin";
-    public static final String KEY_ROLE_MAPPING_NAME_JOB_MANAGER = "settings.role.mapping.name.job.manager";
-    public static final String KEY_ROLE_MAPPING_NAME_USER = "settings.role.mapping.name.user";
     // SAML Role Attribute Mapping
     public static final String KEY_SAML_ROLE_ATTRIBUTE_MAPPING = "settings.saml.role.attribute.mapping.name";
 
@@ -72,4 +67,5 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public Optional<GlobalConfigurationValidator> getGlobalValidator() {
         return Optional.of(authenticationValidator);
     }
+
 }

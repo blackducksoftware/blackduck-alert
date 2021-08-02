@@ -14,6 +14,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerIssueResponseModel;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueCategory;
+import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 
@@ -56,7 +58,7 @@ public class IssueTrackerIssueCreatorTest {
 
         @Override
         protected ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) {
-            return new ExistingIssueDetails<>(null, null, alertIssueCreationModel.getTitle(), null);
+            return new ExistingIssueDetails<>(null, null, alertIssueCreationModel.getTitle(), null, IssueStatus.UNKNOWN, IssueCategory.BOM);
         }
 
         @Override

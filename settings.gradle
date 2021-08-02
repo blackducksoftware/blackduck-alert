@@ -24,4 +24,5 @@ include 'component'
 include 'ui'
 include 'web'
 include 'test-common'
+include 'test-common-channel'
 

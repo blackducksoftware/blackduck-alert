@@ -13,5 +13,5 @@ dependencies {
     implementation 'com.synopsys.integration:integration-rest'
     implementation 'org.springframework:spring-web'
 
-    testImplementation project(':test-common')
+    testImplementation project(':test-common-channel')
 }

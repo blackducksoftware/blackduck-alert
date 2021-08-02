@@ -18,5 +18,5 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'javax.mail:javax.mail-api'
 
-    testImplementation project(':test-common')
+    testImplementation project(':test-common-channel')
 }

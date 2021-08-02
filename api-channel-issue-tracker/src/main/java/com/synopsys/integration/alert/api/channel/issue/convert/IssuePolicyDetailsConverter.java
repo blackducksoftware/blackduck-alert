@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 public class IssuePolicyDetailsConverter {
     private static final String LABEL_POLICY = "Policy: ";
     private static final String LABEL_SEVERITY = "Severity: ";
+    private static final String LABEL_DESCRIPTION = "Policy Description: ";
 
     private final ChannelMessageFormatter formatter;
     private final ComponentVulnerabilitiesConverter componentVulnerabilitiesConverter;
@@ -35,6 +36,9 @@ public class IssuePolicyDetailsConverter {
         policyDetailsSectionPieces.add(formatter.getLineSeparator());
         policyDetailsSectionPieces.add(formatter.encode(LABEL_SEVERITY));
         policyDetailsSectionPieces.add(formatter.encode(policyDetails.getSeverity().getPolicyLabel()));
+
+        List<String> policyDescriptionSection = createPolicyDescription(bomComponentDetails, policyDetails);
+        policyDetailsSectionPieces.addAll(policyDescriptionSection);
 
         List<String> additionalPolicyDetailsSections = createAdditionalPolicyDetailsSections(bomComponentDetails, policyDetails);
         if (!additionalPolicyDetailsSections.isEmpty()) {
@@ -58,4 +62,27 @@ public class IssuePolicyDetailsConverter {
         return List.of();
     }
 
+    private List<String> createPolicyDescription(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails) {
+        List<ComponentPolicy> policies = bomComponentDetails.getComponentPolicies();
+        if (policies.isEmpty()) {
+            return List.of();
+        }
+
+        String policyName = policyDetails.getName();
+        // Blackduck does not allow duplicate policy names, we only expect one policy to ever match
+        return policies.stream()
+                   .filter(policy -> policyName.equals(policy.getPolicyName()))
+                   .findAny()
+                   .flatMap(ComponentPolicy::getDescription)
+                   .map(this::addPolicyDescriptionPieces)
+                   .orElse(List.of());
+    }
+
+    private List<String> addPolicyDescriptionPieces(String description) {
+        List<String> descriptionPieces = new LinkedList<>();
+        descriptionPieces.add(formatter.getLineSeparator());
+        descriptionPieces.add(formatter.encode(LABEL_DESCRIPTION));
+        descriptionPieces.add(formatter.encode(description));
+        return descriptionPieces;
+    }
 }

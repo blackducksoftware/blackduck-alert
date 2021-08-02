@@ -13,15 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
+import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCallbackInfoCreator;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueResponseCreator;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
-import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSenderFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCommenter;
@@ -44,6 +45,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
     private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
+    private final IssueCategoryRetriever issueCategoryRetriever;
 
     @Autowired
     public JiraCloudMessageSenderFactory(
@@ -51,13 +53,15 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         JiraCloudChannelKey channelKey,
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
-        JiraErrorMessageUtility jiraErrorMessageUtility
+        JiraErrorMessageUtility jiraErrorMessageUtility,
+        IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
         this.channelKey = channelKey;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.callbackInfoCreator = callbackInfoCreator;
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
+        this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
     @Override
@@ -114,7 +118,8 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             projectService,
             issueCreationRequestCreator,
             issuePropertiesManager,
-            jiraErrorMessageUtility
+            jiraErrorMessageUtility,
+            issueCategoryRetriever
         );
     }
 
