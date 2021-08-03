@@ -7,30 +7,24 @@
  */
 package com.synopsys.integration.alert.channel.email.web;
 
-import java.util.HashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
-import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @RestController
 @RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
-public class EmailGlobalConfigurationController implements BaseResourceController<EmailGlobalConfigResponse>, TestController<EmailGlobalConfigResponse>, ValidateController<EmailGlobalConfigResponse> {
-    private final EmailGlobalConfigurationActions configActions;
+public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigResponse>, TestController<EmailGlobalConfigResponse>, ValidateController<EmailGlobalConfigResponse> {
+    private final EmailGlobalConfigActions configActions;
 
     @Autowired
-    public EmailGlobalConfigurationController(EmailGlobalConfigurationActions configActions) {
+    public EmailGlobalConfigController(EmailGlobalConfigActions configActions) {
         this.configActions = configActions;
     }
 
@@ -63,21 +57,5 @@ public class EmailGlobalConfigurationController implements BaseResourceControlle
     public ValidationResponseModel test(EmailGlobalConfigResponse resource) {
         return ResponseFactory.createContentResponseFromAction(configActions.test(resource));
     }
-
-    private FieldModel toFieldModel(EmailGlobalConfigResponse response) {
-        HashMap<String, FieldValueModel> responseAsMap = new HashMap<>();
-
-        // TBI
-        // There must be some way better than just:
-        //
-        // responseAsMap.put(
-        //     EmailPropertyKeys.JAVAMAIL_WHATEVER_PROPERTY.getPropertyKey(),
-        //     FieldValueModelConverter.convert(response.getWhateverProperty())
-        // )
-
-        return new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), responseAsMap);
-    }
-
-
 
 }
