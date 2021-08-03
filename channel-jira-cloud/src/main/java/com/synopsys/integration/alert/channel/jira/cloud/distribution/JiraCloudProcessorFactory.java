@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFac
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcherV2;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
@@ -100,10 +99,9 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
         JiraSearcherFactory jiraSearcherFactory = new JiraSearcherFactory(issuePropertiesManager, jiraIssueStatusCreator, issueService::getTransitions, issueCategoryRetriever, modelTransformer);
         JiraCloudQueryExecutor jiraCloudQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
-        IssueTrackerSearcherV2<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
-        IssueTrackerSearcher<String> oldJiraSearcher = new IssueTrackerSearcher<>(jiraSearcher);
+        IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 
-        IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, oldJiraSearcher);
+        IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
         IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(issueService, distributionDetails, jiraCloudServiceFactory, issuePropertiesManager);
 
         return new IssueTrackerProcessor<>(extractor, messageSender);

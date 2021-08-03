@@ -23,8 +23,8 @@ import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
 import com.synopsys.integration.alert.api.channel.issue.search.ActionableIssueSearchResult;
 import com.synopsys.integration.alert.api.channel.issue.search.ExistingIssueDetails;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
-import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
