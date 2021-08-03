@@ -176,4 +176,5 @@ public abstract class JiraSearcher extends IssueTrackerSearcher<String> {
         IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(issue, jiraIssueTransitionRetriever::fetchIssueTransitions);
         return new ExistingIssueDetails<>(issue.getIssueId(), issue.getIssueKey(), issue.getSummaryField(), issueCallbackLink, issueStatus, issueCategory);
     }
+
 }

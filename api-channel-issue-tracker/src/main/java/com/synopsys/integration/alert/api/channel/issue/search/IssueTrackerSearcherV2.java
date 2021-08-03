@@ -41,7 +41,7 @@ public class IssueTrackerSearcherV2<T extends Serializable> {
     private final ExactIssueFinder<T> exactIssueFinder;
     private final ProjectMessageToIssueModelTransformer modelTransformer;
 
-    protected IssueTrackerSearcherV2(
+    public IssueTrackerSearcherV2(
         ProjectIssueFinder<T> projectIssueFinder,
         ProjectVersionIssueFinder<T> projectVersionIssueFinder,
         ProjectVersionComponentIssueFinder<T> projectVersionComponentIssueFinder,
