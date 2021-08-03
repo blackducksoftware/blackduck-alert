@@ -32,12 +32,26 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Projec
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 import com.synopsys.integration.function.ThrowingSupplier;
 
-public abstract class IssueTrackerSearcher<T extends Serializable> {
+public class IssueTrackerSearcher<T extends Serializable> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final ProjectIssueFinder<T> projectIssueFinder;
+    private final ProjectVersionIssueFinder<T> projectVersionIssueFinder;
+    private final ProjectVersionComponentIssueFinder<T> projectVersionComponentIssueFinder;
+    private final ExactIssueFinder<T> exactIssueFinder;
     private final ProjectMessageToIssueModelTransformer modelTransformer;
 
-    protected IssueTrackerSearcher(ProjectMessageToIssueModelTransformer modelTransformer) {
+    public IssueTrackerSearcher(
+        ProjectIssueFinder<T> projectIssueFinder,
+        ProjectVersionIssueFinder<T> projectVersionIssueFinder,
+        ProjectVersionComponentIssueFinder<T> projectVersionComponentIssueFinder,
+        ExactIssueFinder<T> exactIssueFinder,
+        ProjectMessageToIssueModelTransformer modelTransformer
+    ) {
+        this.projectIssueFinder = projectIssueFinder;
+        this.projectVersionIssueFinder = projectVersionIssueFinder;
+        this.projectVersionComponentIssueFinder = projectVersionComponentIssueFinder;
+        this.exactIssueFinder = exactIssueFinder;
         this.modelTransformer = modelTransformer;
     }
 
@@ -51,13 +65,13 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
                                          .isPresent();
 
         if (MessageReason.PROJECT_STATUS.equals(messageReason)) {
-            return findProjectIssues(isEntireBomDeleted, () -> findProjectIssues(providerDetails, project));
+            return findProjectIssues(isEntireBomDeleted, () -> projectIssueFinder.findProjectIssues(providerDetails, project));
         }
 
         LinkableItem projectVersion = projectMessage.getProjectVersion()
                                           .orElseThrow(() -> new AlertRuntimeException("Missing project version"));
         if (MessageReason.PROJECT_VERSION_STATUS.equals(messageReason)) {
-            return findProjectIssues(isEntireBomDeleted, () -> findProjectVersionIssues(providerDetails, project, projectVersion));
+            return findProjectIssues(isEntireBomDeleted, () -> projectVersionIssueFinder.findProjectVersionIssues(providerDetails, project, projectVersion));
         }
 
         if (MessageReason.COMPONENT_UPDATE.equals(messageReason)) {
@@ -78,18 +92,10 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
         return projectIssueSearchResults;
     }
 
-    protected abstract List<ProjectIssueSearchResult<T>> findProjectIssues(ProviderDetails providerDetails, LinkableItem project) throws AlertException;
-
-    protected abstract List<ProjectIssueSearchResult<T>> findProjectVersionIssues(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion) throws AlertException;
-
-    protected abstract List<ProjectIssueSearchResult<T>> findIssuesByComponent(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, BomComponentDetails bomComponent) throws AlertException;
-
-    protected abstract List<ExistingIssueDetails<T>> findExistingIssuesByProjectIssueModel(ProjectIssueModel projectIssueModel) throws AlertException;
-
     private List<ActionableIssueSearchResult<T>> findIssuesByAllComponents(ProviderDetails providerDetails, LinkableItem project, LinkableItem projectVersion, List<BomComponentDetails> bomComponents) throws AlertException {
         List<ProjectIssueSearchResult<T>> componentIssues = new LinkedList<>();
         for (BomComponentDetails bomComponent : bomComponents) {
-            List<ProjectIssueSearchResult<T>> issuesByComponent = findIssuesByComponent(providerDetails, project, projectVersion, bomComponent);
+            List<ProjectIssueSearchResult<T>> issuesByComponent = projectVersionComponentIssueFinder.findIssuesByComponent(providerDetails, project, projectVersion, bomComponent);
             componentIssues.addAll(issuesByComponent);
         }
         return componentIssues
@@ -102,7 +108,7 @@ public abstract class IssueTrackerSearcher<T extends Serializable> {
         ExistingIssueDetails<T> existingIssue = null;
         ItemOperation searchResultOperation = ItemOperation.UPDATE;
 
-        List<ExistingIssueDetails<T>> existingIssues = findExistingIssuesByProjectIssueModel(projectIssueModel);
+        List<ExistingIssueDetails<T>> existingIssues = exactIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
         int foundIssuesCount = existingIssues.size();
 
         if (foundIssuesCount == 1) {

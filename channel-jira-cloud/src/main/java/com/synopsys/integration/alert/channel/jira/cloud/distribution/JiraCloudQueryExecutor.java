@@ -11,42 +11,37 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueTransitionRetriever;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcher;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JqlQueryExecutor;
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 
-public class JiraCloudSearcher extends JiraSearcher {
+public class JiraCloudQueryExecutor implements JqlQueryExecutor {
     private final IssueSearchService issueSearchService;
 
-    public JiraCloudSearcher(
-        String jiraProjectKey,
-        IssueSearchService issueSearchService,
-        JiraIssueAlertPropertiesManager issuePropertiesManager,
-        ProjectMessageToIssueModelTransformer modelTransformer,
-        JiraIssueTransitionRetriever jiraIssueTransitionRetriever,
-        JiraIssueStatusCreator jiraIssueStatusCreator,
-        IssueCategoryRetriever issueCategoryRetriever
-    ) {
-        super(jiraProjectKey, issuePropertiesManager, modelTransformer, jiraIssueStatusCreator, jiraIssueTransitionRetriever, issueCategoryRetriever);
+    public JiraCloudQueryExecutor(IssueSearchService issueSearchService) {
         this.issueSearchService = issueSearchService;
     }
 
     @Override
-    protected List<JiraSearcherResponseModel> executeQueryForIssues(String jql) throws IntegrationException {
-        IssueSearchResponseModel issueSearchResponseModel = issueSearchService.queryForIssues(jql);
+    public List<JiraSearcherResponseModel> executeQuery(String jql) throws AlertException {
+        IssueSearchResponseModel issueSearchResponseModel = queryForIssues(jql);
         return issueSearchResponseModel.getIssues()
                    .stream()
                    .map(this::convertModel)
                    .collect(Collectors.toList());
+    }
+
+    private IssueSearchResponseModel queryForIssues(String jql) throws AlertException {
+        try {
+            return issueSearchService.queryForIssues(jql);
+        } catch (IntegrationException e) {
+            throw new AlertException("Failed to query for Jira Cloud issues", e);
+        }
     }
 
     private JiraSearcherResponseModel convertModel(IssueResponseModel issue) {

@@ -18,11 +18,13 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
+import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherFactory;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
@@ -95,10 +97,11 @@ public class JiraCloudProcessorFactory implements IssueTrackerProcessorFactory<J
 
         // Extractor Requirement
         JiraIssueStatusCreator jiraIssueStatusCreator = new JiraIssueStatusCreator(distributionDetails.getResolveTransition(), distributionDetails.getReopenTransition());
-        JiraCloudSearcher jiraCloudSearcher = new JiraCloudSearcher(distributionDetails.getProjectNameOrKey(), issueSearchService, issuePropertiesManager, modelTransformer, issueService::getTransitions, jiraIssueStatusCreator,
-            issueCategoryRetriever);
+        JiraSearcherFactory jiraSearcherFactory = new JiraSearcherFactory(issuePropertiesManager, jiraIssueStatusCreator, issueService::getTransitions, issueCategoryRetriever, modelTransformer);
+        JiraCloudQueryExecutor jiraCloudQueryExecutor = new JiraCloudQueryExecutor(issueSearchService);
+        IssueTrackerSearcher<String> jiraSearcher = jiraSearcherFactory.createJiraSearcher(distributionDetails.getProjectNameOrKey(), jiraCloudQueryExecutor);
 
-        IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraCloudSearcher);
+        IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(jiraMessageFormatter, jiraSearcher);
         IssueTrackerMessageSender<String> messageSender = messageSenderFactory.createMessageSender(issueService, distributionDetails, jiraCloudServiceFactory, issuePropertiesManager);
 
         return new IssueTrackerProcessor<>(extractor, messageSender);
