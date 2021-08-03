@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerRespon
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
 /**
@@ -30,8 +31,8 @@ public abstract class IssueTrackerChannel<D extends DistributionJobDetailsModel,
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
-        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails);
+    public MessageResult distributeMessages(NamedDistributionJobDetailsModel<D> distributionDetails, ProviderMessageHolder messages) throws AlertException {
+        IssueTrackerProcessor<T> processor = processorFactory.createProcessor(distributionDetails.getDistributionJobDetailsModel());
         IssueTrackerResponse<T> issueTrackerResponse = processor.processMessages(messages);
 
         responsePostProcessor.postProcess(issueTrackerResponse);

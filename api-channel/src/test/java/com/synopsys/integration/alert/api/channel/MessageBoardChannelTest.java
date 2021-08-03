@@ -11,6 +11,7 @@ import com.synopsys.integration.alert.api.channel.convert.ChannelMessageFormatte
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
@@ -20,12 +21,13 @@ public class MessageBoardChannelTest {
     public void distributeMessagesTest() throws AlertException {
         MessageResult expectedResult = new MessageResult("Test result");
         DistributionJobDetailsModel testDetails = new DistributionJobDetailsModel(null, null) {};
+        NamedDistributionJobDetailsModel<DistributionJobDetailsModel> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(testDetails, "jobName");
 
         AbstractChannelMessageConverter<DistributionJobDetailsModel, Object> converter = createConverter();
         ChannelMessageSender<DistributionJobDetailsModel, Object, MessageResult> sender = (x, y) -> expectedResult;
         MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender) {};
 
-        MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty());
+        MessageResult testResult = messageBoardChannel.distributeMessages(namedDistributionJobDetailsModel, ProviderMessageHolder.empty());
         assertEquals(expectedResult, testResult);
     }
 

@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
@@ -41,8 +42,9 @@ public abstract class DistributionChannelMessageTestAction<D extends Distributio
         String messageString = Optional.ofNullable(customMessage).orElse(DEFAULT_MESSAGE);
 
         D distributionJobDetails = resolveTestDistributionDetails(testJobModel);
+        NamedDistributionJobDetailsModel<D> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(distributionJobDetails, testJobModel.getName());
         ProviderMessageHolder messages = createTestMessageHolder(testJobModel, topicString, messageString);
-        return distributionChannel.distributeMessages(distributionJobDetails, messages);
+        return distributionChannel.distributeMessages(namedDistributionJobDetailsModel, messages);
     }
 
     protected D resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {

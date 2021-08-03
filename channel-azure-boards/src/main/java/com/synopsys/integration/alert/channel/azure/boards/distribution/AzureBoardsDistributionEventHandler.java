@@ -12,14 +12,15 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.AzureBoardsJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 
 @Component
 public class AzureBoardsDistributionEventHandler extends DistributionEventHandler<AzureBoardsJobDetailsModel> {
     @Autowired
-    public AzureBoardsDistributionEventHandler(AzureBoardsChannel channel, AzureBoardsJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
-        super(channel, jobDetailsAccessor, auditAccessor);
+    public AzureBoardsDistributionEventHandler(AzureBoardsChannel channel, AzureBoardsJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, JobAccessor jobAccessor) {
+        super(channel, jobDetailsAccessor, auditAccessor, jobAccessor);
     }
 
 }

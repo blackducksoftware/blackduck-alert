@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
@@ -32,7 +33,7 @@ public final class EmailITTestAssertions {
 
     private static final ProviderMessageHolder TEST_MESSAGE_HOLDER = new ProviderMessageHolder(List.of(), List.of(TEST_SIMPLE_MESSAGE));
 
-    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannel<D> channel, D distributionDetails) {
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannel<D> channel, NamedDistributionJobDetailsModel<D> distributionDetails) {
         MessageResult messageResult = null;
         try {
             messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
@@ -44,11 +45,11 @@ public final class EmailITTestAssertions {
         assertFalse(messageResult.hasWarnings(), "The message result had warnings");
     }
 
-    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, D distributionDetails) {
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, NamedDistributionJobDetailsModel<D> distributionDetails) {
         assertSendSimpleMessageException(channel, distributionDetails, null);
     }
 
-    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, D distributionDetails, @Nullable String expectedExceptionMessage) {
+    public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, NamedDistributionJobDetailsModel<D> distributionDetails, @Nullable String expectedExceptionMessage) {
         try {
             channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
             Assertions.fail("Expected an exception to be thrown");

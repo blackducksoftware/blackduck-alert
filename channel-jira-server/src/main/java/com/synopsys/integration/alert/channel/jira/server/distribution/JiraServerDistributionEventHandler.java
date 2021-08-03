@@ -12,14 +12,15 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.channel.DistributionEventHandler;
 import com.synopsys.integration.alert.common.persistence.accessor.JiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
 
 @Component
 public class JiraServerDistributionEventHandler extends DistributionEventHandler<JiraServerJobDetailsModel> {
     @Autowired
-    public JiraServerDistributionEventHandler(JiraServerChannel channel, JiraServerJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
-        super(channel, jobDetailsAccessor, auditAccessor);
+    public JiraServerDistributionEventHandler(JiraServerChannel channel, JiraServerJobDetailsAccessor jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, JobAccessor jobAccessor) {
+        super(channel, jobDetailsAccessor, auditAccessor, jobAccessor);
     }
 
 }

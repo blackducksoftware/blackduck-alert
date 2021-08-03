@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.api.channel.convert.mock.MockChannelMessageFormatter;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
@@ -32,7 +33,8 @@ public class AbstractChannelMessageConverterTest {
         SimpleMessage simpleMessage = SimpleMessage.original(providerDetails, "Summary", "Description", List.of());
         ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(List.of(projectCreateMessage), List.of(simpleMessage));
 
-        List<MockOutputModel> mockOutputModels = mockChannelMessageConverter.convertToChannelMessages(jobDetails, providerMessageHolder);
+        NamedDistributionJobDetailsModel<MockDistributionJobDetailsModel> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(jobDetails, "jobName");
+        List<MockOutputModel> mockOutputModels = mockChannelMessageConverter.convertToChannelMessages(namedDistributionJobDetailsModel, providerMessageHolder);
         assertEquals(2, mockOutputModels.size());
 
         for (MockOutputModel mockOutputModel : mockOutputModels) {

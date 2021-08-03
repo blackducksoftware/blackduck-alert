@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -62,10 +63,11 @@ public class MsTeamsChannelTest {
 
         MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender);
         MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(UUID.randomUUID(), properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
+        NamedDistributionJobDetailsModel<MSTeamsJobDetailsModel> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(msTeamsJobDetailsModel, "jobName");
 
         MessageResult messageResult = null;
         try {
-            messageResult = msTeamsChannel.distributeMessages(msTeamsJobDetailsModel, TEST_MESSAGE_HOLDER);
+            messageResult = msTeamsChannel.distributeMessages(namedDistributionJobDetailsModel, TEST_MESSAGE_HOLDER);
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }

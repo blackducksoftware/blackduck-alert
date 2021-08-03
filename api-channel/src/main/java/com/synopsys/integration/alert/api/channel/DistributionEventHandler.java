@@ -14,9 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.event.AlertEventHandler;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
 public class DistributionEventHandler<D extends DistributionJobDetailsModel> implements AlertEventHandler<DistributionEvent> {
@@ -25,19 +28,24 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
     private final DistributionChannel<D> channel;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
     private final ProcessingAuditAccessor auditAccessor;
+    private final JobAccessor jobAccessor;
 
-    public DistributionEventHandler(DistributionChannel<D> channel, JobDetailsAccessor<D> jobDetailsAccessor, ProcessingAuditAccessor auditAccessor) {
+    public DistributionEventHandler(DistributionChannel<D> channel, JobDetailsAccessor<D> jobDetailsAccessor, ProcessingAuditAccessor auditAccessor, JobAccessor jobAccessor) {
         this.channel = channel;
         this.jobDetailsAccessor = jobDetailsAccessor;
         this.auditAccessor = auditAccessor;
+        this.jobAccessor = jobAccessor;
     }
 
     @Override
     public final void handle(DistributionEvent event) {
-        Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
-        if (details.isPresent()) {
+        Optional<D> detailsOptional = jobDetailsAccessor.retrieveDetails(event.getJobId());
+        if (detailsOptional.isPresent()) {
+            D details = detailsOptional.get();
+            String jobName = jobAccessor.getJobById(details.getJobId()).map(DistributionJobModel::getName).orElse("UNKNOWN");
+            NamedDistributionJobDetailsModel<D> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(details, jobName);
             try {
-                channel.distributeMessages(details.get(), event.getProviderMessages());
+                channel.distributeMessages(namedDistributionJobDetailsModel, event.getProviderMessages());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);

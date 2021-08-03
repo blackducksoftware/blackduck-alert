@@ -13,6 +13,7 @@ import com.synopsys.integration.alert.api.channel.convert.AbstractChannelMessage
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
 /**
@@ -30,9 +31,9 @@ public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel,
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
+    public MessageResult distributeMessages(NamedDistributionJobDetailsModel<D> distributionDetails, ProviderMessageHolder messages) throws AlertException {
         List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages);
-        return channelMessageSender.sendMessages(distributionDetails, channelMessages);
+        return channelMessageSender.sendMessages(distributionDetails.getDistributionJobDetailsModel(), channelMessages);
     }
 
 }

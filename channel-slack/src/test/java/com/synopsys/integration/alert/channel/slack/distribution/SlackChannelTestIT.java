@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.slack.ChannelITTestAssertions;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
@@ -58,8 +59,9 @@ public class SlackChannelTestIT {
             properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME)
         );
+        NamedDistributionJobDetailsModel<SlackJobDetailsModel> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(distributionDetails, "jobName");
 
-        ChannelITTestAssertions.assertSendSimpleMessageSuccess(slackChannel, distributionDetails);
+        ChannelITTestAssertions.assertSendSimpleMessageSuccess(slackChannel, namedDistributionJobDetailsModel);
     }
 
     private ChannelRestConnectionFactory createConnectionFactory() {

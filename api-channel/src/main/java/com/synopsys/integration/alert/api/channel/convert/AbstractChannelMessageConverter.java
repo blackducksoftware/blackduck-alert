@@ -15,6 +15,7 @@ import java.util.function.Function;
 import org.apache.commons.collections4.ListUtils;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
@@ -34,17 +35,17 @@ public abstract class AbstractChannelMessageConverter<D extends DistributionJobD
     }
 
     @Override
-    public final List<T> convertToChannelMessages(D distributionDetails, ProviderMessageHolder messages) {
+    public final List<T> convertToChannelMessages(NamedDistributionJobDetailsModel<D> distributionDetails, ProviderMessageHolder messages) {
         List<T> convertedSimpleMessages = convertProviderMessagesToChannelMessages(
             messages.getSimpleMessages(),
             simpleMessageConverter::convertToFormattedMessageChunks,
-            (message, formattedMessageChunks) -> convertSimpleMessageToChannelMessages(distributionDetails, message, formattedMessageChunks)
+            (message, formattedMessageChunks) -> convertSimpleMessageToChannelMessages(distributionDetails.getDistributionJobDetailsModel(), message, formattedMessageChunks)
         );
 
         List<T> convertedProjectMessages = convertProviderMessagesToChannelMessages(
             messages.getProjectMessages(),
             projectMessageConverter::convertToFormattedMessageChunks,
-            (message, formattedMessageChunks) -> convertProjectMessageToChannelMessages(distributionDetails, message, formattedMessageChunks)
+            (message, formattedMessageChunks) -> convertProjectMessageToChannelMessages(distributionDetails.getDistributionJobDetailsModel(), message, formattedMessageChunks)
         );
 
         return ListUtils.union(convertedSimpleMessages, convertedProjectMessages);

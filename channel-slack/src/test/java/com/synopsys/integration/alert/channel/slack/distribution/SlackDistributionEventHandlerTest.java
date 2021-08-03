@@ -18,7 +18,9 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.slack.distribution.mock.MockProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.common.persistence.accessor.JobAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.SlackJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.common.util.MarkupEncoderUtil;
@@ -61,7 +63,11 @@ public class SlackDistributionEventHandlerTest {
 
         SlackJobDetailsAccessor slackJobDetailsAccessor = jobId -> Optional.of(slackJobDetailsModel);
 
-        distributionEventHandler = new SlackDistributionEventHandler(slackChannel, slackJobDetailsAccessor, processingAuditAccessor);
+        JobAccessor jobAccessor = Mockito.mock(JobAccessor.class);
+        DistributionJobModel distributionJobModel = Mockito.mock(DistributionJobModel.class);
+        Mockito.when(distributionJobModel.getName()).thenReturn("jobName");
+        Mockito.when(jobAccessor.getJobById(Mockito.any())).thenReturn(Optional.of(distributionJobModel));
+        distributionEventHandler = new SlackDistributionEventHandler(slackChannel, slackJobDetailsAccessor, processingAuditAccessor, jobAccessor);
     }
 
     @AfterEach

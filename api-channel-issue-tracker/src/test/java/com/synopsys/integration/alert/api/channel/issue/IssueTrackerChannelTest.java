@@ -17,10 +17,11 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCo
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueTransitioner;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
-import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.channel.issuetracker.enumeration.IssueOperation;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderMessageHolder;
 
 public class IssueTrackerChannelTest {
@@ -37,8 +38,9 @@ public class IssueTrackerChannelTest {
             }
         };
         IssueTrackerChannel<DistributionJobDetailsModel, String> issueTrackerChannel = new IssueTrackerChannel<>(processorFactory, postProcessor) {};
+        NamedDistributionJobDetailsModel<DistributionJobDetailsModel> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(null, "jobName");
 
-        MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty());
+        MessageResult testResult = issueTrackerChannel.distributeMessages(namedDistributionJobDetailsModel, ProviderMessageHolder.empty());
 
         IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty());
         assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());

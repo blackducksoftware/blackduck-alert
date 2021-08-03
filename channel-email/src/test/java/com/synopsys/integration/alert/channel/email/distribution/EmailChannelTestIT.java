@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.NamedDistributionJobDetailsModel;
 import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
@@ -70,8 +71,9 @@ public class EmailChannelTestIT {
 
         List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+        NamedDistributionJobDetailsModel<EmailJobDetailsModel> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(emailJobDetails, "jobName");
 
-        EmailITTestAssertions.assertSendSimpleMessageSuccess(emailChannel, emailJobDetails);
+        EmailITTestAssertions.assertSendSimpleMessageSuccess(emailChannel, namedDistributionJobDetailsModel);
     }
 
     @Test
@@ -92,8 +94,9 @@ public class EmailChannelTestIT {
 
         List<String> emailAddresses = List.of(testEmailRecipient);
         EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+        NamedDistributionJobDetailsModel<EmailJobDetailsModel> namedDistributionJobDetailsModel = new NamedDistributionJobDetailsModel<>(emailJobDetails, "jobName");
 
-        EmailITTestAssertions.assertSendSimpleMessageException(emailChannel, emailJobDetails, "ERROR: Missing Email global config.");
+        EmailITTestAssertions.assertSendSimpleMessageException(emailChannel, namedDistributionJobDetailsModel, "ERROR: Missing Email global config.");
     }
 
     private ConfigurationModel createEmailGlobalConfig() {
