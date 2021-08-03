@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcherV2;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 
 public class JiraSearcherFactory {
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
@@ -32,13 +32,13 @@ public class JiraSearcherFactory {
         this.modelTransformer = modelTransformer;
     }
 
-    public IssueTrackerSearcherV2<String> createJiraSearcher(String jiraProjectKey, JqlQueryExecutor jqlQueryExecutor) {
+    public IssueTrackerSearcher<String> createJiraSearcher(String jiraProjectKey, JqlQueryExecutor jqlQueryExecutor) {
         JiraIssueSearchResultCreator searchResultCreator = new JiraIssueSearchResultCreator(issuePropertiesManager, jiraIssueStatusCreator, jiraIssueTransitionRetriever, issueCategoryRetriever);
         JiraProjectAndVersionIssueFinder projectIssueFinder = new JiraProjectAndVersionIssueFinder(jiraProjectKey, jqlQueryExecutor, searchResultCreator);
         JiraComponentIssueFinder componentIssueFinder = new JiraComponentIssueFinder(jiraProjectKey, jqlQueryExecutor, searchResultCreator);
         JiraExactIssueFinder exactIssueFinder = new JiraExactIssueFinder(jiraProjectKey, jqlQueryExecutor, searchResultCreator, issueCategoryRetriever);
 
-        return new IssueTrackerSearcherV2<>(
+        return new IssueTrackerSearcher<>(
             projectIssueFinder,
             projectIssueFinder,
             componentIssueFinder,

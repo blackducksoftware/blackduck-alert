@@ -20,7 +20,6 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFac
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
-import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcherV2;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
@@ -105,10 +104,9 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager);
         AzureBoardsProjectAndVersionIssueFinder projectAndVersionIssueFinder = new AzureBoardsProjectAndVersionIssueFinder(gson, issueDetailsCreator, workItemFinder);
         AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
-        IssueTrackerSearcherV2<Integer> azureBoardsSearcher = new IssueTrackerSearcherV2<>(projectAndVersionIssueFinder, projectAndVersionIssueFinder, componentIssueFinder, componentIssueFinder, modelTransformer);
-        IssueTrackerSearcher<Integer> oldAzureBoardsSearcher = new IssueTrackerSearcher<>(azureBoardsSearcher);
+        IssueTrackerSearcher<Integer> azureBoardsSearcher = new IssueTrackerSearcher<>(projectAndVersionIssueFinder, projectAndVersionIssueFinder, componentIssueFinder, componentIssueFinder, modelTransformer);
 
-        IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, oldAzureBoardsSearcher);
+        IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 
         // Message Sender Requirements
         AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
