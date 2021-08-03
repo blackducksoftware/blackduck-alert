@@ -60,8 +60,8 @@ public class BomComponentDetailConverterTest {
     }
 
     private static AbstractBomComponentDetails createBomComponentDetails() {
-        ComponentPolicy componentPolicy1 = new ComponentPolicy("A Black Duck Policy", ComponentConcernSeverity.MAJOR_HIGH, true, false, null);
-        ComponentPolicy componentPolicy2 = new ComponentPolicy("A Different Black Duck Policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, true, null);
+        ComponentPolicy componentPolicy1 = new ComponentPolicy("A Black Duck Policy", ComponentConcernSeverity.MAJOR_HIGH, true, false, null, "Uncategorized");
+        ComponentPolicy componentPolicy2 = new ComponentPolicy("A Different Black Duck Policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, true, null, "Uncategorized");
 
         LinkableItem attribute1 = new LinkableItem("Attribute", "Number 1");
         LinkableItem attribute2 = new LinkableItem("Attribute", "Number 2");

@@ -87,7 +87,8 @@ public class IssuePolicyDetailsConverterTest {
             ComponentConcernSeverity.MINOR_MEDIUM,
             false,
             true,
-            description
+            description,
+            "Uncategorized"
         );
     }
 
