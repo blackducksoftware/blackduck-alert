@@ -101,9 +101,9 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional(readOnly = true)
     public List<DistributionJobModel> getJobsById(Collection<UUID> jobIds) {
         return distributionJobRepository.findAllById(jobIds)
-                   .stream()
-                   .map(this::convertToDistributionJobModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(this::convertToDistributionJobModel)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -143,7 +143,7 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional(readOnly = true)
     public Optional<DistributionJobModel> getJobByName(String jobName) {
         return distributionJobRepository.findByName(jobName)
-                   .map(this::convertToDistributionJobModel);
+            .map(this::convertToDistributionJobModel);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class StaticJobAccessor implements JobAccessor {
     @Transactional
     public DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException {
         DistributionJobEntity jobEntity = distributionJobRepository.findById(jobId)
-                                              .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId)));
+            .orElseThrow(() -> new AlertConfigurationException(String.format("No job exists with the id [%s]", jobId)));
         OffsetDateTime createdAt = jobEntity.getCreatedAt();
 
         if (!jobEntity.getChannelDescriptorName().equals(requestModel.getChannelDescriptorName())) {
@@ -217,12 +217,14 @@ public class StaticJobAccessor implements JobAccessor {
 
     private DistributionJobModel convertToDistributionJobModel(DistributionJobEntity jobEntity) {
         UUID jobId = jobEntity.getJobId();
+        String jobName = jobEntity.getName();
         DistributionJobDetailsModel distributionJobDetailsModel = null;
         ChannelKey channelKey = ChannelKeys.getChannelKey(jobEntity.getChannelDescriptorName());
         if (ChannelKeys.AZURE_BOARDS.equals(channelKey)) {
             AzureBoardsJobDetailsEntity jobDetails = jobEntity.getAzureBoardsJobDetails();
             distributionJobDetailsModel = new AzureBoardsJobDetailsModel(
                 jobId,
+                jobName,
                 jobDetails.getAddComments(),
                 jobDetails.getProjectNameOrId(),
                 jobDetails.getWorkItemType(),
@@ -232,11 +234,12 @@ public class StaticJobAccessor implements JobAccessor {
         } else if (ChannelKeys.EMAIL.equals(channelKey)) {
             EmailJobDetailsEntity jobDetails = jobEntity.getEmailJobDetails();
             List<String> additionalEmailAddresses = jobDetails.getEmailJobAdditionalEmailAddresses()
-                                                        .stream()
-                                                        .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
-                                                        .collect(Collectors.toList());
+                .stream()
+                .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
+                .collect(Collectors.toList());
             distributionJobDetailsModel = new EmailJobDetailsModel(
                 jobId,
+                jobName,
                 jobDetails.getSubjectLine(),
                 jobDetails.getProjectOwnerOnly(),
                 jobDetails.getAdditionalEmailAddressesOnly(),
@@ -246,11 +249,12 @@ public class StaticJobAccessor implements JobAccessor {
         } else if (ChannelKeys.JIRA_CLOUD.equals(channelKey)) {
             JiraCloudJobDetailsEntity jobDetails = jobEntity.getJiraCloudJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
-                                                             .stream()
-                                                             .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-                                                             .collect(Collectors.toList());
+                .stream()
+                .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraCloudJobDetailsModel(
                 jobId,
+                jobName,
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorEmail(),
                 jobDetails.getProjectNameOrKey(),
@@ -262,11 +266,12 @@ public class StaticJobAccessor implements JobAccessor {
         } else if (ChannelKeys.JIRA_SERVER.equals(channelKey)) {
             JiraServerJobDetailsEntity jobDetails = jobEntity.getJiraServerJobDetails();
             List<JiraJobCustomFieldModel> customFields = jobDetails.getJobCustomFields()
-                                                             .stream()
-                                                             .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-                                                             .collect(Collectors.toList());
+                .stream()
+                .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+                .collect(Collectors.toList());
             distributionJobDetailsModel = new JiraServerJobDetailsModel(
                 jobId,
+                jobName,
                 jobDetails.getAddComments(),
                 jobDetails.getIssueCreatorUsername(),
                 jobDetails.getProjectNameOrKey(),
@@ -277,11 +282,16 @@ public class StaticJobAccessor implements JobAccessor {
                 jobDetails.getIssueSummary());
         } else if (ChannelKeys.MS_TEAMS.equals(channelKey)) {
             MSTeamsJobDetailsEntity jobDetails = jobEntity.getMsTeamsJobDetails();
-            distributionJobDetailsModel = new MSTeamsJobDetailsModel(jobId, jobDetails.getWebhook());
+            distributionJobDetailsModel = new MSTeamsJobDetailsModel(
+                jobId,
+                jobName,
+                jobDetails.getWebhook()
+            );
         } else if (ChannelKeys.SLACK.equals(channelKey)) {
             SlackJobDetailsEntity slackJobDetails = jobEntity.getSlackJobDetails();
             distributionJobDetailsModel = new SlackJobDetailsModel(
                 jobId,
+                jobName,
                 slackJobDetails.getWebhook(),
                 slackJobDetails.getChannelName(),
                 slackJobDetails.getChannelUsername()
@@ -295,25 +305,25 @@ public class StaticJobAccessor implements JobAccessor {
         List<String> vulnerabilitySeverityNames = blackDuckJobDetailsAccessor.retrieveVulnerabilitySeverityNamesForJob(jobId);
 
         return new DistributionJobModelBuilder()
-                   .jobId(jobId)
-                   .name(jobEntity.getName())
-                   .enabled(jobEntity.getEnabled())
-                   .distributionFrequency(jobEntity.getDistributionFrequency())
-                   .processingType(jobEntity.getProcessingType())
-                   .channelDescriptorName(channelKey.getUniversalKey())
-                   .createdAt(jobEntity.getCreatedAt())
-                   .lastUpdated(jobEntity.getLastUpdated())
-                   .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())
-                   .filterByProject(blackDuckJobDetails.getFilterByProject())
-                   .projectNamePattern(blackDuckJobDetails.getProjectNamePattern())
-                   .notificationTypes(notificationTypes)
-                   .projectFilterDetails(projectDetails)
-                   .policyFilterPolicyNames(policyNames)
-                   .vulnerabilityFilterSeverityNames(vulnerabilitySeverityNames)
-                   .distributionJobDetails(distributionJobDetailsModel)
-                   .createdAt(jobEntity.getCreatedAt())
-                   .lastUpdated(jobEntity.getLastUpdated())
-                   .build();
+            .jobId(jobId)
+            .name(jobEntity.getName())
+            .enabled(jobEntity.getEnabled())
+            .distributionFrequency(jobEntity.getDistributionFrequency())
+            .processingType(jobEntity.getProcessingType())
+            .channelDescriptorName(channelKey.getUniversalKey())
+            .createdAt(jobEntity.getCreatedAt())
+            .lastUpdated(jobEntity.getLastUpdated())
+            .blackDuckGlobalConfigId(blackDuckJobDetails.getGlobalConfigId())
+            .filterByProject(blackDuckJobDetails.getFilterByProject())
+            .projectNamePattern(blackDuckJobDetails.getProjectNamePattern())
+            .notificationTypes(notificationTypes)
+            .projectFilterDetails(projectDetails)
+            .policyFilterPolicyNames(policyNames)
+            .vulnerabilityFilterSeverityNames(vulnerabilitySeverityNames)
+            .distributionJobDetails(distributionJobDetailsModel)
+            .createdAt(jobEntity.getCreatedAt())
+            .lastUpdated(jobEntity.getLastUpdated())
+            .build();
     }
 
 }

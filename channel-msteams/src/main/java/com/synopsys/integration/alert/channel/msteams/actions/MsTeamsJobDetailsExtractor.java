@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.MSTeamsJobDetailsModel;
@@ -33,7 +34,11 @@ public class MsTeamsJobDetailsExtractor extends DistributionJobDetailsExtractor 
 
     @Override
     public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
-        return new MSTeamsJobDetailsModel(jobId, fieldExtractor.extractFieldValueOrEmptyString(MsTeamsDescriptor.KEY_WEBHOOK, configuredFieldsMap));
+        return new MSTeamsJobDetailsModel(
+            jobId,
+            fieldExtractor.extractFieldValue(ChannelDistributionUIConfig.KEY_NAME, configuredFieldsMap).orElse(DistributionJobDetailsModel.DEFAULT_JOB_NAME),
+            fieldExtractor.extractFieldValueOrEmptyString(MsTeamsDescriptor.KEY_WEBHOOK, configuredFieldsMap)
+        );
     }
 
 }

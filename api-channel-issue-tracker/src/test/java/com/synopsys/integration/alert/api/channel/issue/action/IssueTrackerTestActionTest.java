@@ -129,16 +129,16 @@ public class IssueTrackerTestActionTest {
 
     private static DistributionJobModel createTestJobModel() {
         return DistributionJobModel.builder()
-                   .jobId(UUID.randomUUID())
-                   .name(CLASS_NAME)
-                   .distributionFrequency(FrequencyType.REAL_TIME)
-                   .processingType(ProcessingType.SUMMARY)
-                   .channelDescriptorName(ISSUE_TRACKER_KEY.getUniversalKey())
-                   .createdAt(OffsetDateTime.now())
-                   .blackDuckGlobalConfigId(0L)
-                   .notificationTypes(List.of("irrelevant_string"))
-                   .filterByProject(false)
-                   .build();
+            .jobId(UUID.randomUUID())
+            .name(CLASS_NAME)
+            .distributionFrequency(FrequencyType.REAL_TIME)
+            .processingType(ProcessingType.SUMMARY)
+            .channelDescriptorName(ISSUE_TRACKER_KEY.getUniversalKey())
+            .createdAt(OffsetDateTime.now())
+            .blackDuckGlobalConfigId(0L)
+            .notificationTypes(List.of("irrelevant_string"))
+            .filterByProject(false)
+            .build();
     }
 
     private static IssueTrackerIssueResponseModel<String> createIssueResponseModel() {
@@ -175,7 +175,7 @@ public class IssueTrackerTestActionTest {
         private final String field1;
 
         public TestJobDetails(UUID jobId, String field1) {
-            super(ISSUE_TRACKER_KEY, jobId);
+            super(ISSUE_TRACKER_KEY, jobId, "jobName");
             this.field1 = field1;
         }
 

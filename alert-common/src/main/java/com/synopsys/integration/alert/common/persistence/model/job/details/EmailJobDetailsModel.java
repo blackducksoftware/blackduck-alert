@@ -24,8 +24,8 @@ public class EmailJobDetailsModel extends DistributionJobDetailsModel {
     private final String attachmentFileType;
     private final List<String> additionalEmailAddresses;
 
-    public EmailJobDetailsModel(UUID jobId, @Nullable String subjectLine, boolean projectOwnerOnly, boolean additionalEmailAddressesOnly, String attachmentFileType, List<String> additionalEmailAddresses) {
-        super(ChannelKeys.EMAIL, jobId);
+    public EmailJobDetailsModel(UUID jobId, String jobName, @Nullable String subjectLine, boolean projectOwnerOnly, boolean additionalEmailAddressesOnly, String attachmentFileType, List<String> additionalEmailAddresses) {
+        super(ChannelKeys.EMAIL, jobId, jobName);
         this.subjectLine = StringUtils.trimToNull(subjectLine);
         this.projectOwnerOnly = projectOwnerOnly;
         this.additionalEmailAddressesOnly = additionalEmailAddressesOnly;

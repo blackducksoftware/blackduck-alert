@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
@@ -34,6 +36,7 @@ public class EmailJobDetailsExtractor extends DistributionJobDetailsExtractor {
     public EmailJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new EmailJobDetailsModel(
             jobId,
+            fieldExtractor.extractFieldValue(ChannelDistributionUIConfig.KEY_NAME, configuredFieldsMap).orElse(DistributionJobDetailsModel.DEFAULT_JOB_NAME),
             fieldExtractor.extractFieldValue(EmailDescriptor.KEY_SUBJECT_LINE, configuredFieldsMap).orElse(null),
             fieldExtractor.extractFieldValue(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             fieldExtractor.extractFieldValue(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, configuredFieldsMap).map(Boolean::valueOf).orElse(false),

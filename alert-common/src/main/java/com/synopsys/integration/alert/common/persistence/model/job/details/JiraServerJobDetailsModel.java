@@ -24,6 +24,7 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
 
     public JiraServerJobDetailsModel(
         UUID jobId,
+        String jobName,
         boolean addComments,
         String issueCreatorUsername,
         String projectNameOrKey,
@@ -33,7 +34,7 @@ public class JiraServerJobDetailsModel extends DistributionJobDetailsModel {
         List<JiraJobCustomFieldModel> customFields,
         String issueSummary
     ) {
-        super(ChannelKeys.JIRA_SERVER, jobId);
+        super(ChannelKeys.JIRA_SERVER, jobId, jobName);
         this.addComments = addComments;
         this.issueCreatorUsername = issueCreatorUsername;
         this.projectNameOrKey = projectNameOrKey;

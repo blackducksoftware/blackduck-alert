@@ -35,6 +35,7 @@ public class JiraCloudIssueCreatorTest {
         String projectNameOrKey = "FakeProject";
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(
             UUID.randomUUID(),
+            "jobName",
             false,
             "my@email.com",
             projectNameOrKey,
@@ -65,6 +66,7 @@ public class JiraCloudIssueCreatorTest {
         String projectNameOrKey = "FakeProject";
         JiraCloudJobDetailsModel jiraCloudJobDetailsModel = new JiraCloudJobDetailsModel(
             UUID.randomUUID(),
+            "jobName",
             false,
             "my@email.com",
             projectNameOrKey,

@@ -20,7 +20,7 @@ public class DistributionEventHandlerTest {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntrySuccess(Mockito.any(), Mockito.anySet());
 
-        DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
+        DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null, "jobName") {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
         DistributionChannel<DistributionJobDetailsModel> channel = (x, y) -> null;
@@ -42,7 +42,7 @@ public class DistributionEventHandlerTest {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
         Mockito.doNothing().when(auditAccessor).setAuditEntryFailure(Mockito.any(), Mockito.anySet(), Mockito.anyString(), Mockito.any());
 
-        DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null) {};
+        DistributionJobDetailsModel details = new DistributionJobDetailsModel(null, null, "jobName") {};
         JobDetailsAccessor<DistributionJobDetailsModel> jobDetailsAccessor = x -> Optional.of(details);
 
         AlertException testException = new AlertException("Test exception");

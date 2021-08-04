@@ -53,7 +53,7 @@ public class JobNotificationMapperTestIT {
         CREATED_JOBS.forEach(jobAccessor::deleteJob);
         CREATED_JOBS.clear();
     }
-    
+
     @Test
     public void test2Notifications15JobsMultiSeverity() {
         //Test the case where a job may have one or multiple types of vulnerability severities across multiple pages.
@@ -192,7 +192,7 @@ public class JobNotificationMapperTestIT {
                 List.of(),
                 List.of(),
                 List.of(),
-                new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+                new SlackJobDetailsModel(null, "jobName", "webhook", "channelName", "username")
             ))
         );
 
@@ -303,8 +303,8 @@ public class JobNotificationMapperTestIT {
         List<String> policies
     ) {
         List<BlackDuckProjectDetailsModel> blackDuckProjectDetailsModels = projectNames.stream()
-                                                                               .map(projectName -> new BlackDuckProjectDetailsModel(projectName, "href"))
-                                                                               .collect(Collectors.toList());
+            .map(projectName -> new BlackDuckProjectDetailsModel(projectName, "href"))
+            .collect(Collectors.toList());
         return new DistributionJobRequestModel(
             true,
             "name",
@@ -318,7 +318,7 @@ public class JobNotificationMapperTestIT {
             blackDuckProjectDetailsModels,
             policies,
             vulns,
-            new SlackJobDetailsModel(null, "webhook", "channelName", "username")
+            new SlackJobDetailsModel(null, "jobName", "webhook", "channelName", "username")
         );
     }
 

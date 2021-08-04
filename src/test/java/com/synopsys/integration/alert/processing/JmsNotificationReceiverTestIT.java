@@ -160,6 +160,7 @@ public class JmsNotificationReceiverTestIT {
 
     private SlackJobDetailsModel createSlackJobDetailsModel() {
         return new SlackJobDetailsModel(UUID.randomUUID(),
+            "jobName",
             properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
             properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME)

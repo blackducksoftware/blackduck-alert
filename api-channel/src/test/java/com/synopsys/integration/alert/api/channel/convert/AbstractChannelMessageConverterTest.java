@@ -63,7 +63,7 @@ public class AbstractChannelMessageConverterTest {
         private static final ChannelKey DEFAULT_CHANNEL_KEY = new ChannelKey(CLASS_NAME, CLASS_NAME);
 
         public MockDistributionJobDetailsModel(UUID jobId) {
-            super(DEFAULT_CHANNEL_KEY, jobId);
+            super(DEFAULT_CHANNEL_KEY, jobId, "jobName");
         }
 
     }

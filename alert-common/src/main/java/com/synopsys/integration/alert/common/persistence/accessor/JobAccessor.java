@@ -27,7 +27,7 @@ public interface JobAccessor {
     Optional<DistributionJobModel> getJobById(UUID jobId);
 
     Optional<DistributionJobModel> getJobByName(String jobName);
-
+    
     DistributionJobModel createJob(DistributionJobRequestModel requestModel);
 
     DistributionJobModel updateJob(UUID jobId, DistributionJobRequestModel requestModel) throws AlertConfigurationException;

@@ -10,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressRepository;
 
 public class EmailJobDetailsAccessorTest {
     private EmailJobDetailsRepository emailJobDetailsRepository;
     private EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository;
+    private DistributionJobRepository distributionJobRepository;
 
     private DefaultEmailJobDetailsAccessor emailJobDetailsAccessor;
 
@@ -23,8 +25,9 @@ public class EmailJobDetailsAccessorTest {
     public void init() {
         emailJobDetailsRepository = Mockito.mock(EmailJobDetailsRepository.class);
         additionalEmailAddressRepository = Mockito.mock(EmailJobAdditionalEmailAddressRepository.class);
+        distributionJobRepository = Mockito.mock(DistributionJobRepository.class);
 
-        emailJobDetailsAccessor = new DefaultEmailJobDetailsAccessor(emailJobDetailsRepository, additionalEmailAddressRepository);
+        emailJobDetailsAccessor = new DefaultEmailJobDetailsAccessor(emailJobDetailsRepository, additionalEmailAddressRepository, distributionJobRepository);
     }
 
     @Test
@@ -32,7 +35,7 @@ public class EmailJobDetailsAccessorTest {
         UUID jobId = UUID.randomUUID();
         String additionalEmailAddress = "fake@synopsys.com";
 
-        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, null, false, false, null, List.of(additionalEmailAddress));
+        EmailJobDetailsModel emailJobDetailsModel = new EmailJobDetailsModel(null, null, null, false, false, null, List.of(additionalEmailAddress));
         EmailJobDetailsEntity emailJobDetailsEntity = new EmailJobDetailsEntity(jobId, null, false, false, null);
         EmailJobAdditionalEmailAddressEntity emailJobAdditionalEmailAddressEntity = new EmailJobAdditionalEmailAddressEntity(jobId, additionalEmailAddress);
 

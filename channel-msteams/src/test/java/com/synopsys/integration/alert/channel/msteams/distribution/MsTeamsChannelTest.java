@@ -61,7 +61,7 @@ public class MsTeamsChannelTest {
         MSTeamsChannelMessageSender messageSender = new MSTeamsChannelMessageSender(ChannelKeys.MS_TEAMS, connectionFactory);
 
         MSTeamsChannel msTeamsChannel = new MSTeamsChannel(messageConverter, messageSender);
-        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(UUID.randomUUID(), properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
+        MSTeamsJobDetailsModel msTeamsJobDetailsModel = new MSTeamsJobDetailsModel(UUID.randomUUID(), "jobName", properties.getProperty(TestPropertyKey.TEST_MSTEAMS_WEBHOOK));
 
         MessageResult messageResult = null;
         try {

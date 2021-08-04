@@ -22,6 +22,8 @@ import org.springframework.data.repository.query.Param;
 public interface DistributionJobRepository extends JpaRepository<DistributionJobEntity, UUID> {
     Optional<DistributionJobEntity> findByName(String name);
 
+    Optional<String> findNameByJobId(UUID id);
+
     List<DistributionJobEntity> findByDistributionFrequency(String distributionFrequency);
 
     Page<DistributionJobEntity> findByChannelDescriptorNameIn(Collection<String> channelDescriptorName, Pageable pageable);

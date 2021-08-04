@@ -19,8 +19,8 @@ public class SlackJobDetailsModel extends DistributionJobDetailsModel {
     private final String channelUsername;
 
     // TODO: Make channelUsername @Nullable since it is an optional field. This would additional validation in SlackChannelMessageSender if it wasn't trimmed to null - JM
-    public SlackJobDetailsModel(UUID jobId, String webhook, String channelName, String channelUsername) {
-        super(ChannelKeys.SLACK, jobId);
+    public SlackJobDetailsModel(UUID jobId, String jobName, String webhook, String channelName, String channelUsername) {
+        super(ChannelKeys.SLACK, jobId, jobName);
         this.webhook = webhook;
         this.channelName = channelName;
         this.channelUsername = StringUtils.trimToNull(channelUsername);

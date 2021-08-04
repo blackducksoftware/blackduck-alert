@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.channel.jira.action.JiraJobDetailsExtractor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
@@ -34,6 +35,7 @@ public class JiraCloudJobDetailsExtractor extends JiraJobDetailsExtractor {
     public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new JiraCloudJobDetailsModel(
             jobId,
+            fieldExtractor.extractFieldValue(ChannelDistributionUIConfig.KEY_NAME, configuredFieldsMap).orElse(DistributionJobDetailsModel.DEFAULT_JOB_NAME),
             fieldExtractor.extractFieldValue(JiraCloudDescriptor.KEY_ADD_COMMENTS, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             fieldExtractor.extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_ISSUE_CREATOR, configuredFieldsMap),
             fieldExtractor.extractFieldValueOrEmptyString(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, configuredFieldsMap),

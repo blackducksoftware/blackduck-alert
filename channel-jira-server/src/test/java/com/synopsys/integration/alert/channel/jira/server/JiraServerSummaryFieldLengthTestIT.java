@@ -118,6 +118,7 @@ public class JiraServerSummaryFieldLengthTestIT {
 
         return new JiraServerJobDetailsModel(
             UUID.randomUUID(),
+            "jobName",
             true,
             issueCreator,
             projectName,

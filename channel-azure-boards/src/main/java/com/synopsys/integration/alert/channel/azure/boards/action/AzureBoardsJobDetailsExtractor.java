@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobDetailsExtractor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.processor.DistributionJobFieldExtractor;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
@@ -34,6 +36,7 @@ public class AzureBoardsJobDetailsExtractor extends DistributionJobDetailsExtrac
     public AzureBoardsJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new AzureBoardsJobDetailsModel(
             jobId,
+            fieldExtractor.extractFieldValue(ChannelDistributionUIConfig.KEY_NAME, configuredFieldsMap).orElse(DistributionJobDetailsModel.DEFAULT_JOB_NAME),
             fieldExtractor.extractFieldValue(AzureBoardsDescriptor.KEY_WORK_ITEM_COMMENT, configuredFieldsMap).map(Boolean::valueOf).orElse(false),
             fieldExtractor.extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_AZURE_PROJECT, configuredFieldsMap),
             fieldExtractor.extractFieldValueOrEmptyString(AzureBoardsDescriptor.KEY_WORK_ITEM_TYPE, configuredFieldsMap),

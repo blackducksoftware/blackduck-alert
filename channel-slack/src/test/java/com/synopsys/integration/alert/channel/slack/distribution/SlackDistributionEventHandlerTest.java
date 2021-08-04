@@ -57,7 +57,7 @@ public class SlackDistributionEventHandlerTest {
         mockSlackServer.start();
         String url = mockSlackServer.url("/").toString();
 
-        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(null, url, "channelName", "userName");
+        SlackJobDetailsModel slackJobDetailsModel = new SlackJobDetailsModel(null, "jobName", url, "channelName", "userName");
 
         SlackJobDetailsAccessor slackJobDetailsAccessor = jobId -> Optional.of(slackJobDetailsModel);
 

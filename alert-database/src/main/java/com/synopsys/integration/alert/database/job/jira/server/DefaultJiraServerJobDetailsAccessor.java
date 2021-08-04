@@ -18,8 +18,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.JiraServerJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraJobCustomFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraServerJobDetailsModel;
+import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldEntity;
 import com.synopsys.integration.alert.database.job.jira.server.custom_field.JiraServerJobCustomFieldRepository;
 
@@ -27,12 +29,14 @@ import com.synopsys.integration.alert.database.job.jira.server.custom_field.Jira
 public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetailsAccessor {
     private final JiraServerJobDetailsRepository jiraServerJobDetailsRepository;
     private final JiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository;
+    private final DistributionJobRepository distributionJobRepository;
 
     @Autowired
     public DefaultJiraServerJobDetailsAccessor(JiraServerJobDetailsRepository jiraServerJobDetailsRepository,
-        JiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository) {
+        JiraServerJobCustomFieldRepository jiraServerJobCustomFieldRepository, DistributionJobRepository distributionJobRepository) {
         this.jiraServerJobDetailsRepository = jiraServerJobDetailsRepository;
         this.jiraServerJobCustomFieldRepository = jiraServerJobCustomFieldRepository;
+        this.distributionJobRepository = distributionJobRepository;
     }
 
     @Override
@@ -57,9 +61,9 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
 
         jiraServerJobCustomFieldRepository.deleteByJobId(jobId);
         List<JiraServerJobCustomFieldEntity> customFieldsToSave = jiraServerJobDetails.getCustomFields()
-                                                                      .stream()
-                                                                      .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))
-                                                                      .collect(Collectors.toList());
+            .stream()
+            .map(model -> new JiraServerJobCustomFieldEntity(savedJobDetails.getJobId(), model.getFieldName(), model.getFieldValue()))
+            .collect(Collectors.toList());
         List<JiraServerJobCustomFieldEntity> savedJobCustomFields = jiraServerJobCustomFieldRepository.saveAll(customFieldsToSave);
         savedJobDetails.setJobCustomFields(savedJobCustomFields);
         return savedJobDetails;
@@ -67,18 +71,20 @@ public class DefaultJiraServerJobDetailsAccessor implements JiraServerJobDetails
 
     public List<JiraJobCustomFieldModel> retrieveCustomFieldsForJob(UUID jobId) {
         return jiraServerJobCustomFieldRepository.findByJobId(jobId)
-                   .stream()
-                   .map(customFieldEntity -> new JiraJobCustomFieldModel(customFieldEntity.getFieldName(), customFieldEntity.getFieldValue()))
-                   .collect(Collectors.toList());
+            .stream()
+            .map(customFieldEntity -> new JiraJobCustomFieldModel(customFieldEntity.getFieldName(), customFieldEntity.getFieldValue()))
+            .collect(Collectors.toList());
     }
 
     private JiraServerJobDetailsModel covertToModel(JiraServerJobDetailsEntity jobDetails) {
         List<JiraJobCustomFieldModel> customFields = jiraServerJobCustomFieldRepository.findByJobId(jobDetails.getJobId())
-                                                         .stream()
-                                                         .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
-                                                         .collect(Collectors.toList());
+            .stream()
+            .map(entity -> new JiraJobCustomFieldModel(entity.getFieldName(), entity.getFieldValue()))
+            .collect(Collectors.toList());
+        String jobName = distributionJobRepository.findNameByJobId(jobDetails.getJobId()).orElse(DistributionJobDetailsModel.DEFAULT_JOB_NAME);
         return new JiraServerJobDetailsModel(
             jobDetails.getJobId(),
+            jobName,
             jobDetails.getAddComments(),
             jobDetails.getIssueCreatorUsername(),
             jobDetails.getProjectNameOrKey(),

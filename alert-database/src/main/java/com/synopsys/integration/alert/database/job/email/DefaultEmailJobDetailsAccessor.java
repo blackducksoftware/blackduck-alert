@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.persistence.accessor.EmailJobDetailsAccessor;
+import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
+import com.synopsys.integration.alert.database.job.DistributionJobRepository;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressEntity;
 import com.synopsys.integration.alert.database.job.email.additional.EmailJobAdditionalEmailAddressRepository;
 
@@ -26,11 +28,14 @@ import com.synopsys.integration.alert.database.job.email.additional.EmailJobAddi
 public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
     private final EmailJobDetailsRepository emailJobDetailsRepository;
     private final EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository;
+    private final DistributionJobRepository distributionJobRepository;
 
     @Autowired
-    public DefaultEmailJobDetailsAccessor(EmailJobDetailsRepository emailJobDetailsRepository, EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository) {
+    public DefaultEmailJobDetailsAccessor(EmailJobDetailsRepository emailJobDetailsRepository, EmailJobAdditionalEmailAddressRepository additionalEmailAddressRepository,
+        DistributionJobRepository distributionJobRepository) {
         this.emailJobDetailsRepository = emailJobDetailsRepository;
         this.additionalEmailAddressRepository = additionalEmailAddressRepository;
+        this.distributionJobRepository = distributionJobRepository;
     }
 
     @Override
@@ -52,9 +57,9 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
 
         additionalEmailAddressRepository.deleteByJobId(jobId);
         List<EmailJobAdditionalEmailAddressEntity> additionalEmailAddressEntitiesToSave = emailJobDetails.getAdditionalEmailAddresses()
-                                                                                              .stream()
-                                                                                              .map(emailAddress -> new EmailJobAdditionalEmailAddressEntity(jobId, emailAddress))
-                                                                                              .collect(Collectors.toList());
+            .stream()
+            .map(emailAddress -> new EmailJobAdditionalEmailAddressEntity(jobId, emailAddress))
+            .collect(Collectors.toList());
         List<EmailJobAdditionalEmailAddressEntity> savedAdditionalEmailAddressEntities = additionalEmailAddressRepository.saveAll(additionalEmailAddressEntitiesToSave);
         savedJobDetails.setEmailJobAdditionalEmailAddresses(savedAdditionalEmailAddressEntities);
 
@@ -63,18 +68,20 @@ public class DefaultEmailJobDetailsAccessor implements EmailJobDetailsAccessor {
 
     public List<String> retrieveAdditionalEmailAddressesForJob(UUID jobId) {
         return additionalEmailAddressRepository.findByJobId(jobId)
-                   .stream()
-                   .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
-                   .collect(Collectors.toList());
+            .stream()
+            .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
+            .collect(Collectors.toList());
     }
 
     private EmailJobDetailsModel convertToModel(EmailJobDetailsEntity details) {
         List<String> additionalEmailAddresses = additionalEmailAddressRepository.findByJobId(details.getJobId())
-                                                    .stream()
-                                                    .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
-                                                    .collect(Collectors.toList());
+            .stream()
+            .map(EmailJobAdditionalEmailAddressEntity::getEmailAddress)
+            .collect(Collectors.toList());
+        String jobName = distributionJobRepository.findNameByJobId(details.getJobId()).orElse(DistributionJobDetailsModel.DEFAULT_JOB_NAME);
         return new EmailJobDetailsModel(
             details.getJobId(),
+            jobName,
             details.getSubjectLine(),
             details.getProjectOwnerOnly(),
             details.getAdditionalEmailAddressesOnly(),

@@ -54,6 +54,7 @@ public class SlackChannelTestIT {
 
         SlackJobDetailsModel distributionDetails = new SlackJobDetailsModel(
             null,
+            "jobName",
             properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK),
             properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME),
             properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME)

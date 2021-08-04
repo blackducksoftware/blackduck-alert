@@ -16,11 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageModel;
 import com.synopsys.integration.alert.channel.email.distribution.EmailChannelMessageSender;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.job.details.EmailJobDetailsModel;
@@ -44,7 +44,7 @@ public class EmailGlobalTestAction extends TestAction {
         EmailProperties emailProperties = new EmailProperties(registeredFieldValues);
 
         List<String> emailAddresses = extractAndValidateDestination(fieldModel);
-        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, TEST_SUBJECT_LINE, false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+        EmailJobDetailsModel distributionDetails = new EmailJobDetailsModel(null, "jobName", TEST_SUBJECT_LINE, false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 

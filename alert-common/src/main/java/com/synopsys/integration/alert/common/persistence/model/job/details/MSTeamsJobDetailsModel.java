@@ -14,8 +14,8 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 public class MSTeamsJobDetailsModel extends DistributionJobDetailsModel {
     private final String webhook;
 
-    public MSTeamsJobDetailsModel(UUID jobId, String webhook) {
-        super(ChannelKeys.MS_TEAMS, jobId);
+    public MSTeamsJobDetailsModel(UUID jobId, String jobName, String webhook) {
+        super(ChannelKeys.MS_TEAMS, jobId, jobName);
         this.webhook = webhook;
     }
 

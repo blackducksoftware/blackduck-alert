@@ -29,7 +29,7 @@ public class DefaultAzureBoardsJobDetailsAccessor implements AzureBoardsJobDetai
 
     @Override
     public Optional<AzureBoardsJobDetailsModel> retrieveDetails(UUID jobId) {
-        return azureBoardsJobDetailsRepository.findById(jobId).map(this::convertToModel);
+        return azureBoardsJobDetailsRepository.findJobDetailsWithNameById(jobId);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -44,16 +44,5 @@ public class DefaultAzureBoardsJobDetailsAccessor implements AzureBoardsJobDetai
         );
         return azureBoardsJobDetailsRepository.save(detailsToSave);
     }
-
-    private AzureBoardsJobDetailsModel convertToModel(AzureBoardsJobDetailsEntity jobDetails) {
-        return new AzureBoardsJobDetailsModel(
-            jobDetails.getJobId(),
-            jobDetails.getAddComments(),
-            jobDetails.getProjectNameOrId(),
-            jobDetails.getWorkItemType(),
-            jobDetails.getWorkItemCompletedState(),
-            jobDetails.getWorkItemReopenState()
-        );
-    }
-
+    
 }

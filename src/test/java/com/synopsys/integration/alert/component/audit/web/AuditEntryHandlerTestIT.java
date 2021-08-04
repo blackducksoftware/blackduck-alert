@@ -227,9 +227,9 @@ public class AuditEntryHandlerTestIT {
         NotificationEntity savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                     .save(new AuditEntryEntity(jobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(),
-                                                         AuditEntryStatus.SUCCESS.toString(),
-                                                         null, null));
+            .save(new AuditEntryEntity(jobModel.getJobId(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(),
+                AuditEntryStatus.SUCCESS.toString(),
+                null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
@@ -259,7 +259,7 @@ public class AuditEntryHandlerTestIT {
     }
 
     private DistributionJobRequestModel createJobRequestModel() {
-        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "test_webhook", "#test-channel", null);
+        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "jobName", "test_webhook", "#test-channel", null);
         return new DistributionJobRequestModel(
             true,
             "Test Slack Job",

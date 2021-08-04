@@ -32,7 +32,6 @@ public class DefaultMSTeamsJobDetailsAccessor implements MSTeamsJobDetailsAccess
 
     @Override
     public Optional<MSTeamsJobDetailsModel> retrieveDetails(UUID jobId) {
-        return msTeamsJobDetailsRepository.findById(jobId)
-                   .map(entity -> new MSTeamsJobDetailsModel(entity.getJobId(), entity.getWebhook()));
+        return msTeamsJobDetailsRepository.findJobDetailsWithNameById(jobId);
     }
 }

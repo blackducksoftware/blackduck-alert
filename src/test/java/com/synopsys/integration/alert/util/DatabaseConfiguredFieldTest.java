@@ -61,10 +61,10 @@ public abstract class DatabaseConfiguredFieldTest {
 
     public ConfigurationModel addGlobalConfiguration(DescriptorKey descriptorKey, Map<String, Collection<String>> fieldsValues) {
         Set<ConfigurationFieldModel> fieldModels = fieldsValues
-                                                       .entrySet()
-                                                       .stream()
-                                                       .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
-                                                       .collect(Collectors.toSet());
+            .entrySet()
+            .stream()
+            .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toSet());
 
         return configurationAccessor.createConfiguration(descriptorKey, ConfigContextEnum.GLOBAL, fieldModels);
     }
@@ -80,7 +80,7 @@ public abstract class DatabaseConfiguredFieldTest {
     }
 
     private DistributionJobRequestModel createDistributionJobRequestModel(Long blackDuckGlobalConfigId) {
-        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "channel_webhook", "#channel-name", getClass().getSimpleName());
+        SlackJobDetailsModel details = new SlackJobDetailsModel(null, "jobName", "channel_webhook", "#channel-name", getClass().getSimpleName());
         return new DistributionJobRequestModel(
             true,
             getClass().getSimpleName() + " Test Job",

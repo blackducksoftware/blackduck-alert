@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.SlackJobDetailsModel;
@@ -35,6 +36,7 @@ public class SlackJobDetailsExtractor extends DistributionJobDetailsExtractor {
     public DistributionJobDetailsModel extractDetails(UUID jobId, Map<String, ConfigurationFieldModel> configuredFieldsMap) {
         return new SlackJobDetailsModel(
             jobId,
+            fieldExtractor.extractFieldValue(ChannelDistributionUIConfig.KEY_NAME, configuredFieldsMap).orElse(DistributionJobDetailsModel.DEFAULT_JOB_NAME),
             fieldExtractor.extractFieldValueOrEmptyString(SlackDescriptor.KEY_WEBHOOK, configuredFieldsMap),
             fieldExtractor.extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_NAME, configuredFieldsMap),
             fieldExtractor.extractFieldValueOrEmptyString(SlackDescriptor.KEY_CHANNEL_USERNAME, configuredFieldsMap)

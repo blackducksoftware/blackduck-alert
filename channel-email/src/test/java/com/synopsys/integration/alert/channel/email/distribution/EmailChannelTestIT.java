@@ -69,7 +69,7 @@ public class EmailChannelTestIT {
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
-        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, "jobName", EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
         EmailITTestAssertions.assertSendSimpleMessageSuccess(emailChannel, emailJobDetails);
     }
@@ -91,7 +91,7 @@ public class EmailChannelTestIT {
         EmailChannel emailChannel = new EmailChannel(emailChannelMessageConverter, emailChannelMessageSender);
 
         List<String> emailAddresses = List.of(testEmailRecipient);
-        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
+        EmailJobDetailsModel emailJobDetails = new EmailJobDetailsModel(null, "jobName", EmailChannelTestIT.class.getSimpleName(), false, true, EmailAttachmentFormat.NONE.name(), emailAddresses);
 
         EmailITTestAssertions.assertSendSimpleMessageException(emailChannel, emailJobDetails, "ERROR: Missing Email global config.");
     }

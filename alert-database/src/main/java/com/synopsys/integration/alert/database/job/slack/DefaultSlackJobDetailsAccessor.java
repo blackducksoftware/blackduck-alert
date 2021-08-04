@@ -32,12 +32,6 @@ public class DefaultSlackJobDetailsAccessor implements SlackJobDetailsAccessor {
 
     @Override
     public Optional<SlackJobDetailsModel> retrieveDetails(UUID jobId) {
-        return slackJobDetailsRepository.findById(jobId)
-                   .map(slackEntity -> new SlackJobDetailsModel(
-                       slackEntity.getJobId(),
-                       slackEntity.getWebhook(),
-                       slackEntity.getChannelName(),
-                       slackEntity.getChannelUsername()
-                   ));
+        return slackJobDetailsRepository.findJobDetailsWithNameById(jobId);
     }
 }

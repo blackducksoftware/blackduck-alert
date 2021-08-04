@@ -55,23 +55,23 @@ public class DistributionChannelMessageTestActionTest {
 
     private DistributionJobModel createDistributionJobModel() {
         return DistributionJobModel.builder()
-                   .jobId(UUID.randomUUID())
-                   .name(CLASS_NAME)
-                   .distributionFrequency(FrequencyType.REAL_TIME)
-                   .processingType(ProcessingType.SUMMARY)
-                   .channelDescriptorName(MockDistributionJobDetailsModel.DEFAULT_CHANNEL_KEY.getUniversalKey())
-                   .createdAt(OffsetDateTime.now())
-                   .blackDuckGlobalConfigId(0L)
-                   .notificationTypes(List.of("irrelevant_string"))
-                   .filterByProject(false)
-                   .build();
+            .jobId(UUID.randomUUID())
+            .name(CLASS_NAME)
+            .distributionFrequency(FrequencyType.REAL_TIME)
+            .processingType(ProcessingType.SUMMARY)
+            .channelDescriptorName(MockDistributionJobDetailsModel.DEFAULT_CHANNEL_KEY.getUniversalKey())
+            .createdAt(OffsetDateTime.now())
+            .blackDuckGlobalConfigId(0L)
+            .notificationTypes(List.of("irrelevant_string"))
+            .filterByProject(false)
+            .build();
     }
 
     private static class MockDistributionJobDetailsModel extends DistributionJobDetailsModel {
         private static final ChannelKey DEFAULT_CHANNEL_KEY = new ChannelKey(CLASS_NAME, CLASS_NAME);
 
         public MockDistributionJobDetailsModel(UUID jobId) {
-            super(DEFAULT_CHANNEL_KEY, jobId);
+            super(DEFAULT_CHANNEL_KEY, jobId, "jobName");
         }
 
     }

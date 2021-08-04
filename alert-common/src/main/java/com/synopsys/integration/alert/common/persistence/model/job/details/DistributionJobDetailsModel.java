@@ -18,6 +18,8 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @JsonAdapter(DistributionJobDetailsModelJsonAdapter.class)
 public abstract class DistributionJobDetailsModel extends AlertSerializableModel {
+    public static final String DEFAULT_JOB_NAME = "UNKNOWN";
+
     public static final Class<AzureBoardsJobDetailsModel> AZURE = AzureBoardsJobDetailsModel.class;
     public static final Class<EmailJobDetailsModel> EMAIL = EmailJobDetailsModel.class;
     public static final Class<JiraCloudJobDetailsModel> JIRA_CLOUD = JiraCloudJobDetailsModel.class;
@@ -42,10 +44,12 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
 
     private final ChannelKey channelKey;
     private final UUID jobId;
+    private final String jobName;
 
-    public DistributionJobDetailsModel(ChannelKey channelKey, UUID jobId) {
+    public DistributionJobDetailsModel(ChannelKey channelKey, UUID jobId, String jobName) {
         this.channelKey = channelKey;
         this.jobId = jobId;
+        this.jobName = jobName;
     }
 
     public boolean isA(ChannelKey channelKey) {
@@ -60,4 +64,7 @@ public abstract class DistributionJobDetailsModel extends AlertSerializableModel
         return jobId;
     }
 
+    public String getJobName() {
+        return jobName;
+    }
 }

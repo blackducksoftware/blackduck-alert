@@ -18,8 +18,8 @@ public class AzureBoardsJobDetailsModel extends DistributionJobDetailsModel {
     private final String workItemCompletedState;
     private final String workItemReopenState;
 
-    public AzureBoardsJobDetailsModel(UUID jobId, boolean addComments, String projectNameOrId, String workItemType, String workItemCompletedState, String workItemReopenState) {
-        super(ChannelKeys.AZURE_BOARDS, jobId);
+    public AzureBoardsJobDetailsModel(UUID jobId, String jobName, boolean addComments, String projectNameOrId, String workItemType, String workItemCompletedState, String workItemReopenState) {
+        super(ChannelKeys.AZURE_BOARDS, jobId, jobName);
         this.addComments = addComments;
         this.projectNameOrId = projectNameOrId;
         this.workItemType = workItemType;

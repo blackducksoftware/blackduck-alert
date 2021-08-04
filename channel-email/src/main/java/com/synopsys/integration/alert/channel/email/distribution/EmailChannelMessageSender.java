@@ -21,9 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertConfigurationException;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.channel.ChannelMessageSender;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFileCreator;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
@@ -94,6 +94,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         if (!invalidEmailAddresses.isEmpty()) {
             emailJobDetails = new EmailJobDetailsModel(
                 emailJobDetails.getJobId(),
+                emailJobDetails.getJobName(),
                 emailJobDetails.getSubjectLine().orElse(null),
                 emailJobDetails.isProjectOwnerOnly(),
                 emailJobDetails.isAdditionalEmailAddressesOnly(),
@@ -106,10 +107,10 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         int totalEmailsSent = 0;
         for (EmailChannelMessageModel message : emailMessages) {
             Set<String> projectHrefs = message.getSource()
-                                           .map(ProjectMessage::getProject)
-                                           .flatMap(LinkableItem::getUrl)
-                                           .map(Set::of)
-                                           .orElse(Set.of());
+                .map(ProjectMessage::getProject)
+                .flatMap(LinkableItem::getUrl)
+                .map(Set::of)
+                .orElse(Set.of());
 
             Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
             validateGatheredEmailAddresses(gatheredEmailAddresses, invalidEmailAddresses);
@@ -129,9 +130,9 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
     private ConfigurationModel retrieveGlobalEmailConfig() throws AlertException {
         return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
-                   .stream()
-                   .findAny()
-                   .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
+            .stream()
+            .findAny()
+            .orElseThrow(() -> new AlertConfigurationException("ERROR: Missing Email global config."));
     }
 
     private ValidatedEmailAddresses validateAdditionalEmailAddresses(EmailJobDetailsModel emailJobDetails) {

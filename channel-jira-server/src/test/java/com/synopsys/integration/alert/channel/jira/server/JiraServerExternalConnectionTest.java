@@ -97,7 +97,9 @@ public class JiraServerExternalConnectionTest {
         //This test requires that the JIRA server has 2 components associated with the project: "component1" and "component2"
         customFields.add(new JiraJobCustomFieldModel("Component/s", "component1 component2"));
 
-        return new JiraServerJobDetailsModel(uuid,
+        return new JiraServerJobDetailsModel(
+            uuid,
+            "jobName",
             Boolean.parseBoolean(testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_ADD_COMMENTS)),
             testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_SERVER_ISSUE_CREATOR).orElse(null),
             testProperties.getProperty(TestPropertyKey.TEST_JIRA_SERVER_PROJECT_NAME),

@@ -19,7 +19,7 @@ public class MessageBoardChannelTest {
     @Test
     public void distributeMessagesTest() throws AlertException {
         MessageResult expectedResult = new MessageResult("Test result");
-        DistributionJobDetailsModel testDetails = new DistributionJobDetailsModel(null, null) {};
+        DistributionJobDetailsModel testDetails = new DistributionJobDetailsModel(null, null, "jobName") {};
 
         AbstractChannelMessageConverter<DistributionJobDetailsModel, Object> converter = createConverter();
         ChannelMessageSender<DistributionJobDetailsModel, Object, MessageResult> sender = (x, y) -> expectedResult;

@@ -41,7 +41,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeAzureBoardsJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        AzureBoardsJobDetailsModel baseModel = new AzureBoardsJobDetailsModel(jobId, true, "project name", "task", "none", "alt");
+        AzureBoardsJobDetailsModel baseModel = new AzureBoardsJobDetailsModel(jobId, "jobName", true, "project name", "task", "none", "alt");
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -49,7 +49,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeEmailJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        EmailJobDetailsModel baseModel = new EmailJobDetailsModel(jobId, "alert subject", false, true, null, List.of("email 1", "email 2"));
+        EmailJobDetailsModel baseModel = new EmailJobDetailsModel(jobId, "jobName", "alert subject", false, true, null, List.of("email 1", "email 2"));
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -57,7 +57,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeJiraCloudJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, true, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
+        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, "jobName", true, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -65,7 +65,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeJiraServerJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
+        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, "jobName", true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -73,7 +73,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeMSTeamsJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        MSTeamsJobDetailsModel baseModel = new MSTeamsJobDetailsModel(jobId, "webhook_url");
+        MSTeamsJobDetailsModel baseModel = new MSTeamsJobDetailsModel(jobId, "jobName", "webhook_url");
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -81,7 +81,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeSlackJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "a-cool-channel", "Channel Tester");
+        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "jobName", "slack_webhook_url", "a-cool-channel", "Channel Tester");
         JsonElement baseJson = gson.toJsonTree(baseModel);
         serializeAndAssert(baseModel, baseJson);
     }
@@ -89,8 +89,8 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void serializeAndVerifyNotEqualTest() {
         UUID jobId = UUID.randomUUID();
-        MSTeamsJobDetailsModel baseModel1 = new MSTeamsJobDetailsModel(jobId, "webhook_url");
-        MSTeamsJobDetailsModel baseModel2 = new MSTeamsJobDetailsModel(jobId, "different_webhook_url");
+        MSTeamsJobDetailsModel baseModel1 = new MSTeamsJobDetailsModel(jobId, "jobName", "webhook_url");
+        MSTeamsJobDetailsModel baseModel2 = new MSTeamsJobDetailsModel(jobId, "jobName", "different_webhook_url");
 
         DistributionJobDetailsModelJsonAdapter jsonAdapter = new DistributionJobDetailsModelJsonAdapter();
         JsonElement json1 = jsonAdapter.serialize(baseModel1, DistributionJobDetailsModel.class, jsonSerializationContext);
@@ -104,7 +104,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeAzureBoardsJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        AzureBoardsJobDetailsModel baseModel = new AzureBoardsJobDetailsModel(jobId, true, "project name", "task", "none", "alt");
+        AzureBoardsJobDetailsModel baseModel = new AzureBoardsJobDetailsModel(jobId, "jobName", true, "project name", "task", "none", "alt");
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.AZURE_BOARDS)));
 
@@ -120,7 +120,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeEmailJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        EmailJobDetailsModel baseModel = new EmailJobDetailsModel(jobId, "alert subject", false, true, null, List.of("email 1", "email 2"));
+        EmailJobDetailsModel baseModel = new EmailJobDetailsModel(jobId, "jobName", "alert subject", false, true, null, List.of("email 1", "email 2"));
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.EMAIL)));
 
@@ -136,7 +136,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeJiraCloudJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, true, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
+        JiraCloudJobDetailsModel baseModel = new JiraCloudJobDetailsModel(jobId, "jobName", true, "unknown", "JIRA-X", "bug", "done", "undone", List.of(), null);
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.JIRA_CLOUD)));
 
@@ -153,7 +153,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeJiraServerJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
+        JiraServerJobDetailsModel baseModel = new JiraServerJobDetailsModel(jobId, "jobName", true, "user_name01", "JIRA-Y", "other", "finished", "unfinished", List.of(), "issueSummary");
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.JIRA_SERVER)));
 
@@ -170,7 +170,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeMSTeamsJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        MSTeamsJobDetailsModel baseModel = new MSTeamsJobDetailsModel(jobId, "webhook_url");
+        MSTeamsJobDetailsModel baseModel = new MSTeamsJobDetailsModel(jobId, "jobName", "webhook_url");
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.MS_TEAMS)));
 
@@ -182,7 +182,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
     @Test
     public void deserializeSlackJobDetailsModelTest() {
         UUID jobId = UUID.randomUUID();
-        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "slack_webhook_url", "a-cool-channel", "Channel Tester");
+        SlackJobDetailsModel baseModel = new SlackJobDetailsModel(jobId, "jobName", "slack_webhook_url", "a-cool-channel", "Channel Tester");
 
         DistributionJobDetailsModel deserializedModel = runDeserializerAndAssert(baseModel, (distributionJobDetailsModel -> distributionJobDetailsModel.isA(ChannelKeys.SLACK)));
 
@@ -227,7 +227,7 @@ public class DistributionJobDetailsModelJsonAdapterTest {
         private final String testField;
 
         public Test_DistributionJobDetailsModel(String testField) {
-            super(TEST_CHANNEL_KEY, UUID.randomUUID());
+            super(TEST_CHANNEL_KEY, UUID.randomUUID(), "jobName");
             this.testField = testField;
         }
 
