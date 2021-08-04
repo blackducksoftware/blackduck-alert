@@ -9,7 +9,9 @@ package com.synopsys.integration.alert.channel.email.web;
 
 import java.util.Optional;
 
-public class EmailGlobalConfigResponse {
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+
+public class EmailGlobalConfigResponse extends AlertSerializableModel {
     private String host;
     private String from;
 

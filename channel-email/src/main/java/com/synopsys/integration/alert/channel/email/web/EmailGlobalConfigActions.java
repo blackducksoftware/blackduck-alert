@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.channel.email.action.EmailGlobalTestAction;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
+
 @Component
 public class EmailGlobalConfigActions {
     private final Logger logger = LoggerFactory.getLogger(EmailGlobalConfigActions.class);
@@ -42,17 +44,29 @@ public class EmailGlobalConfigActions {
     private final ConfigurationAccessor configurationAccessor; // Create configuration
     private final ConfigurationFieldModelConverter modelConverter; // Convert from FieldModel to ConfigurationFieldModelMap
     private final EmailDescriptor emailDescriptor; // Get the stuff we need!
+    private final EmailGlobalTestAction testAction;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailDescriptor emailDescriptor) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailDescriptor emailDescriptor, EmailGlobalTestAction testAction) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
         this.emailDescriptor = emailDescriptor;
+        this.testAction = testAction;
     }
 
     public ActionResponse<EmailGlobalConfigResponse> getOne(Long id) {
-        return new ActionResponse<>(HttpStatus.NOT_IMPLEMENTED);
+        Optional<EmailGlobalConfigResponse> optionalResponse = getEmailGlobalConfigResponse(id);
+
+        if (optionalResponse.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (!authorizationManager.hasReadPermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
+            return ActionResponse.createForbiddenResponse();
+        }
+
+        return new ActionResponse<>(HttpStatus.OK, optionalResponse.get());
     }
 
     public ActionResponse<EmailGlobalConfigResponse> create(EmailGlobalConfigResponse resource) {
@@ -134,11 +148,48 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<EmailGlobalConfigResponse> delete(Long id) {
-        return new ActionResponse<>(HttpStatus.NOT_IMPLEMENTED);
+        if (!authorizationManager.hasDeletePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
+            return ActionResponse.createForbiddenResponse();
+        }
+
+        Optional<ConfigurationModel> existingModel = configurationAccessor.getConfigurationById(id);
+        if (existingModel.isEmpty()) {
+            return new ActionResponse<>(HttpStatus.NOT_FOUND);
+        }
+
+        return deleteWithoutChecks(id);
+    }
+
+    public ActionResponse<EmailGlobalConfigResponse> deleteWithoutChecks(Long id) {
+        configurationAccessor.getConfigurationById(id)
+                         .map(modelConverter::convertToFieldModel)
+                         .map(FieldModel::getId)
+                         .map(Long::parseLong)
+                         .ifPresent(configurationAccessor::deleteConfiguration);
+
+        return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 
     public ActionResponse<ValidationResponseModel> test(EmailGlobalConfigResponse resource) {
+        if (!authorizationManager.hasExecutePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
+            ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
+            return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
+        }
+        ValidationActionResponse validationResponse = validateWithoutChecks(resource);
+        if (validationResponse.isError()) {
+            return ValidationActionResponse.createOKResponseWithContent(validationResponse);
+        }
+        return testWithoutChecks(resource);
+    }
+
+    public ActionResponse<ValidationResponseModel> testWithoutChecks(EmailGlobalConfigResponse resource) {
         return new ActionResponse<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    private Optional<EmailGlobalConfigResponse> getEmailGlobalConfigResponse(Long id) {
+        return configurationAccessor
+                   .getConfigurationById(id)
+                   .map(this::fromConfigurationModel);
     }
 
     private FieldModel toFieldModel(EmailGlobalConfigResponse resource) {
