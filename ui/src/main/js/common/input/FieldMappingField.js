@@ -57,7 +57,7 @@ const FieldMappingField = ({
 
     const createNewRow = () => {
         const { fieldName, fieldValue } = fieldMappingRow;
-        const valueOptions = ['{{providerName}}', '{{projectName}}', '{{projectVersion}}', '{{componentName}}', '{{componentVersion}}', '{{severity}}'];
+        const valueOptions = ['{{providerName}}', '{{projectName}}', '{{projectVersion}}', '{{componentName}}', '{{componentVersion}}', '{{severity}}', '{{policyCategory}}'];
 
         return (
             <div>
