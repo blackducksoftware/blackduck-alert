@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -28,8 +29,10 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
+import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.JobPagedModel;
+import com.synopsys.integration.alert.common.rest.model.JobProviderProjectFieldModel;
 import com.synopsys.integration.alert.common.rest.model.MultiJobFieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -75,7 +78,11 @@ public abstract class AbstractJobResourceActions {
         if (!hasPermissions) {
             return ActionResponse.createForbiddenResponse();
         }
+
+        // Clean input
         resource.setJobId(null);
+        correctProjectsField(resource);
+
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
@@ -139,6 +146,9 @@ public abstract class AbstractJobResourceActions {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
+        // Clean input
+        correctProjectsField(resource);
+
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
@@ -167,6 +177,10 @@ public abstract class AbstractJobResourceActions {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
+
+        // Clean input
+        correctProjectsField(resource);
+
         ValidationActionResponse validationResponse = validateWithoutChecks(resource);
         if (validationResponse.isError()) {
             return ValidationActionResponse.createOKResponseWithContent(validationResponse);
@@ -185,6 +199,10 @@ public abstract class AbstractJobResourceActions {
             ValidationResponseModel responseModel = ValidationResponseModel.generalError(ActionResponse.FORBIDDEN_MESSAGE);
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
+
+        // Clean input
+        correctProjectsField(resource);
+
         ValidationActionResponse response = validateWithoutChecks(resource);
         return ValidationActionResponse.createOKResponseWithContent(response);
     }
@@ -217,6 +235,29 @@ public abstract class AbstractJobResourceActions {
         ConfigContextEnum configContextEnum = ConfigContextEnum.valueOf(fieldModel.getContext());
         DescriptorKey descriptorKey = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName()).orElseThrow(() -> new AlertRuntimeException("Could not find DescriptorKey for: " + fieldModel.getDescriptorName()));
         return permissionChecker.apply(configContextEnum, descriptorKey);
+    }
+
+    // FIXME More tech debt until we fix the Jobs API
+    private void correctProjectsField(JobFieldModel jobFieldModel) {
+        List<JobProviderProjectFieldModel> projects = jobFieldModel.getConfiguredProviderProjects();
+        if (null == projects) {
+            projects = List.of();
+        }
+
+        String projectFieldKey = "channel.common.configured.project";
+        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+            Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+            if (keyToValues.containsKey(projectFieldKey)) {
+                FieldValueModel projectFieldValues = createProjectFieldValues(projects);
+                keyToValues.put(projectFieldKey, projectFieldValues);
+                return;
+            }
+        }
+    }
+
+    private FieldValueModel createProjectFieldValues(List<JobProviderProjectFieldModel> projects) {
+        Set<String> projectNames = projects.stream().map(JobProviderProjectFieldModel::getName).collect(Collectors.toSet());
+        return new FieldValueModel(projectNames, false);
     }
 
 }
