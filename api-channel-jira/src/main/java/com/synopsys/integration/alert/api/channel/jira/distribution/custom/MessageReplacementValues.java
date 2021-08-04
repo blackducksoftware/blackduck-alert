@@ -22,11 +22,13 @@ public class MessageReplacementValues {
     private final String componentName;
     private final String componentVersionName;
     private final String severity;
+    private final String policyCategory;
 
     public static MessageReplacementValues trivial(String providerLabel, String projectName) {
         return new MessageReplacementValues(
             providerLabel,
             projectName,
+            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
             MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
             MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
             MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
@@ -40,7 +42,8 @@ public class MessageReplacementValues {
         @Nullable String projectVersionName,
         @Nullable String componentName,
         @Nullable String componentVersionName,
-        @Nullable String severity
+        @Nullable String severity,
+        @Nullable String policyCategory
     ) {
         this.providerName = providerName;
         this.projectName = projectName;
@@ -48,6 +51,7 @@ public class MessageReplacementValues {
         this.componentName = StringUtils.trimToNull(componentName);
         this.componentVersionName = StringUtils.trimToNull(componentVersionName);
         this.severity = StringUtils.trimToNull(severity);
+        this.policyCategory = StringUtils.trimToNull(policyCategory);
     }
 
     public String getProviderName() {
@@ -72,6 +76,10 @@ public class MessageReplacementValues {
 
     public Optional<String> getSeverity() {
         return Optional.ofNullable(severity);
+    }
+
+    public Optional<String> getPolicyCategory() {
+        return Optional.ofNullable(policyCategory);
     }
 
 }

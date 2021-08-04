@@ -53,7 +53,8 @@ public class JiraCloudIssueCreatorTest {
             "projectVersionName",
             "componentName",
             "componentVersionName",
-            "severity");
+            "severity",
+            "UNCATEGORIZED");
         IssueCreationRequestModel issueCreationRequest = jiraCloudIssueCreator.createIssueCreationRequest(issueCreationModel, messageReplacementValues);
         String summaryText = getSummary(issueCreationRequest);
 
@@ -84,7 +85,8 @@ public class JiraCloudIssueCreatorTest {
             "projectVersionName",
             "componentName",
             "componentVersionName",
-            "severity");
+            "severity",
+            "UNCATEGORIZED");
         IssueCreationRequestModel issueCreationRequest = jiraCloudIssueCreator.createIssueCreationRequest(issueCreationModel, messageReplacementValues);
         String summaryText = getSummary(issueCreationRequest);
 
