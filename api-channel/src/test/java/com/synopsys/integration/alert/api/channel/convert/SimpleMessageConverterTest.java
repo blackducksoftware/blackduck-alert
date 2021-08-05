@@ -34,7 +34,7 @@ public class SimpleMessageConverterTest {
         MockChannelMessageFormatter formatter = new MockChannelMessageFormatter(Integer.MAX_VALUE);
         SimpleMessageConverter simpleMessageConverter = new SimpleMessageConverter(formatter);
 
-        return simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage);
+        return simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage, "jobName");
     }
 
 }

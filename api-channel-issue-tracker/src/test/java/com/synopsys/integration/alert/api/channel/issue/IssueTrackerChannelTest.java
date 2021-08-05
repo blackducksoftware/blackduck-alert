@@ -40,7 +40,7 @@ public class IssueTrackerChannelTest {
 
         MessageResult testResult = issueTrackerChannel.distributeMessages(null, ProviderMessageHolder.empty(), null);
 
-        IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty());
+        IssueTrackerResponse<?> processorResponse = processor.processMessages(ProviderMessageHolder.empty(), "jobName");
         assertEquals(processorResponse.getStatusMessage(), testResult.getStatusMessage());
     }
 

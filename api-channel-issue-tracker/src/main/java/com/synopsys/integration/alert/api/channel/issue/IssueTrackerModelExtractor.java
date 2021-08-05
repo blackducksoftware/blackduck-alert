@@ -39,10 +39,10 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
         this.issueTrackerSearcher = issueTrackerSearcher;
     }
 
-    public final IssueTrackerModelHolder<T> extractSimpleMessageIssueModels(List<SimpleMessage> simpleMessages) {
+    public final IssueTrackerModelHolder<T> extractSimpleMessageIssueModels(List<SimpleMessage> simpleMessages, String jobName) {
         List<IssueCreationModel> simpleMessageIssueCreationModels = new ArrayList<>(simpleMessages.size());
         for (SimpleMessage simpleMessage : simpleMessages) {
-            IssueCreationModel simpleMessageIssueCreationModel = issueTrackerSimpleMessageConverter.convertToIssueCreationModel(simpleMessage);
+            IssueCreationModel simpleMessageIssueCreationModel = issueTrackerSimpleMessageConverter.convertToIssueCreationModel(simpleMessage, jobName);
             simpleMessageIssueCreationModels.add(simpleMessageIssueCreationModel);
         }
 

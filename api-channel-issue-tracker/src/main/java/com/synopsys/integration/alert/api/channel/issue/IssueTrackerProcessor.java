@@ -28,10 +28,10 @@ public class IssueTrackerProcessor<T extends Serializable> {
         this.messageSender = messageSender;
     }
 
-    public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages) throws AlertException {
+    public final IssueTrackerResponse<T> processMessages(ProviderMessageHolder messages, String jobName) throws AlertException {
         List<IssueTrackerIssueResponseModel<T>> issueResponseModels = new LinkedList<>();
 
-        IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages());
+        IssueTrackerModelHolder<T> simpleMessageHolder = modelExtractor.extractSimpleMessageIssueModels(messages.getSimpleMessages(), jobName);
         List<IssueTrackerIssueResponseModel<T>> simpleMessageResponseModels = messageSender.sendMessages(simpleMessageHolder);
         issueResponseModels.addAll(simpleMessageResponseModels);
 
