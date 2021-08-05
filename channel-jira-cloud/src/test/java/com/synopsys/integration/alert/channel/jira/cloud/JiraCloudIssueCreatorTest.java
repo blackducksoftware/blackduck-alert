@@ -15,7 +15,6 @@ import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetr
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValuesBuilder;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.cloud.distribution.delegate.JiraCloudIssueCreator;
 import com.synopsys.integration.alert.common.persistence.model.job.details.JiraCloudJobDetailsModel;
@@ -48,7 +47,7 @@ public class JiraCloudIssueCreatorTest {
 
         TestJiraCloudIssueCreator jiraCloudIssueCreator = createTestJiraCloudIssueCreator(projectNameOrKey, jiraCloudJobDetailsModel);
         IssueCreationModel issueCreationModel = createIssueCreationModel();
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValuesBuilder("providerName", "projectName")
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("providerName", "projectName")
                                                                 .projectVersionName("projectVersionName")
                                                                 .componentName("componentName")
                                                                 .componentVersionName("componentVersionName")
@@ -79,7 +78,7 @@ public class JiraCloudIssueCreatorTest {
 
         IssueCreationModel issueCreationModel = createIssueCreationModel();
         String testProviderName = "providerName";
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValuesBuilder(testProviderName, "projectName")
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder(testProviderName, "projectName")
                                                                 .projectVersionName("projectVersionName")
                                                                 .componentName("componentName")
                                                                 .componentVersionName("componentVersionName")

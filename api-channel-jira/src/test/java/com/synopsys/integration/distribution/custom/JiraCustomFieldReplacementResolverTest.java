@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldConfig;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValuesBuilder;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
 
 public class JiraCustomFieldReplacementResolverTest {
@@ -15,7 +14,7 @@ public class JiraCustomFieldReplacementResolverTest {
     public void replacementFieldValueTest() {
         String originalFieldValue = "ProjectName: {{projectName}} | ProviderName: {{providerName}} | ProjectVersionName: {{projectVersion}}";
         JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig("testLabel", originalFieldValue);
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValuesBuilder("ProviderNameREPLACED", "ProjectNameREPLACED")
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("ProviderNameREPLACED", "ProjectNameREPLACED")
                                                                 .projectVersionName("ProjectVersionNameREPLACED")
                                                                 .build();
 
@@ -32,7 +31,8 @@ public class JiraCustomFieldReplacementResolverTest {
     public void replacementFieldValueNullTest() {
         String originalFieldValue = "ProjectName: {{projectName}}, ProjectVersion: {{projectVersion}}, ComponentName: {{componentName}}, ComponentVersion: {{componentVersion}}";
         JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig("testLabel", originalFieldValue);
-        MessageReplacementValues messageReplacementValues = MessageReplacementValuesBuilder.trivial("ProviderNameREPLACED", "ProjectNameREPLACED");
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("ProviderNameREPLACED", "ProjectNameREPLACED")
+                                                                .build();
 
         MessageValueReplacementResolver messageValueReplacementResolver = new MessageValueReplacementResolver(messageReplacementValues);
         String replacedFieldValue = messageValueReplacementResolver.createReplacedFieldValue(jiraCustomFieldConfig.getFieldOriginalValue());
@@ -47,7 +47,7 @@ public class JiraCustomFieldReplacementResolverTest {
     public void doubleReplacementTest() {
         String originalFieldValue = "ProjectName: {{projectName}} | ProjectName2: {{projectName}}";
         JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig("testLabel", originalFieldValue);
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValuesBuilder("ProviderNameREPLACED", "ProjectNameREPLACED")
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("ProviderNameREPLACED", "ProjectNameREPLACED")
                                                                 .build();
 
         MessageValueReplacementResolver messageValueReplacementResolver = new MessageValueReplacementResolver(messageReplacementValues);
@@ -63,7 +63,7 @@ public class JiraCustomFieldReplacementResolverTest {
     public void noReplacementTest() {
         String originalFieldValue = "ProjectName: {{notAValidReplacement}}";
         JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig("testLabel", originalFieldValue);
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValuesBuilder("ProviderNameREPLACED", "ProjectNameREPLACED")
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("ProviderNameREPLACED", "ProjectNameREPLACED")
                                                                 .build();
 
         MessageValueReplacementResolver messageValueReplacementResolver = new MessageValueReplacementResolver(messageReplacementValues);
@@ -78,7 +78,7 @@ public class JiraCustomFieldReplacementResolverTest {
     public void replacementSeverityTest() {
         String originalFieldValue = "Severity: {{severity}}";
         JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig("testLabel", originalFieldValue);
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValuesBuilder("ProviderNameREPLACED", "ProjectNameREPLACED")
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("ProviderNameREPLACED", "ProjectNameREPLACED")
                                                                 .projectVersionName("ProjectVersionNameREPLACED")
                                                                 .severity("CRITICAL")
                                                                 .build();
@@ -96,7 +96,7 @@ public class JiraCustomFieldReplacementResolverTest {
     public void replacementPolicyCategoryTest() {
         String originalFieldValue = "Policy Category: {{policyCategory}}";
         JiraCustomFieldConfig jiraCustomFieldConfig = new JiraCustomFieldConfig("testLabel", originalFieldValue);
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValuesBuilder("ProviderNameREPLACED", "ProjectNameREPLACED")
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("ProviderNameREPLACED", "ProjectNameREPLACED")
                                                                 .projectVersionName("ProjectVersionNameREPLACED")
                                                                 .policyCategory("UNCATEGORIZED")
                                                                 .build();
