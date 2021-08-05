@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.processor.api;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,23 +42,22 @@ public class JobNotificationProcessor {
         this.lifecycleCaches = lifecycleCaches;
     }
 
-    public void processNotificationForJob(UUID jobId, String destinationChannelName, ProcessingType processingType, List<AlertNotificationModel> notifications) {
+    public void processNotificationForJob(ProcessedNotificationDetails processedNotificationDetails, ProcessingType processingType, List<AlertNotificationModel> notifications) {
         try {
-            processAndDistribute(jobId, destinationChannelName, processingType, notifications);
+            processAndDistribute(processedNotificationDetails, processingType, notifications);
         } finally {
             clearCaches();
         }
     }
 
-    private void processAndDistribute(UUID jobId, String destinationChannelName, ProcessingType processingType, List<AlertNotificationModel> notifications) {
+    private void processAndDistribute(ProcessedNotificationDetails processedNotificationDetails, ProcessingType processingType, List<AlertNotificationModel> notifications) {
         List<NotificationContentWrapper> notificationContentWrappers = notifications
-                                                                           .stream()
-                                                                           .map(notificationDetailExtractionDelegator::wrapNotification)
-                                                                           .flatMap(List::stream)
-                                                                           .map(DetailedNotificationContent::getNotificationContentWrapper)
-                                                                           .collect(Collectors.toList());
+            .stream()
+            .map(notificationDetailExtractionDelegator::wrapNotification)
+            .flatMap(List::stream)
+            .map(DetailedNotificationContent::getNotificationContentWrapper)
+            .collect(Collectors.toList());
 
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobId, destinationChannelName);
         ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(processingType, notificationContentWrappers);
 
         providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);

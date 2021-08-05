@@ -31,7 +31,7 @@ public class DistributionEventHandlerTest {
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
 
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, testNotificationIds, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntrySuccess(Mockito.eq(testJobId), Mockito.eq(testNotificationIds));
@@ -56,7 +56,7 @@ public class DistributionEventHandlerTest {
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
 
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, testNotificationIds, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any());
@@ -74,7 +74,7 @@ public class DistributionEventHandlerTest {
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
 
         ChannelKey channelKey = new ChannelKey("test universal key", null);
-        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, testNotificationIds, null);
+        DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 
         Mockito.verify(auditAccessor, Mockito.times(1)).setAuditEntryFailure(Mockito.eq(testJobId), Mockito.eq(testNotificationIds), Mockito.anyString(), Mockito.any());

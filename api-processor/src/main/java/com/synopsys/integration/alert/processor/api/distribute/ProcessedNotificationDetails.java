@@ -10,14 +10,25 @@ package com.synopsys.integration.alert.processor.api.distribute;
 import java.util.UUID;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 
 public final class ProcessedNotificationDetails extends AlertSerializableModel {
     private final UUID jobId;
     private final String channelName;
+    private final String jobName;
 
-    public ProcessedNotificationDetails(UUID jobId, String channelName) {
+    public static ProcessedNotificationDetails fromDistributionJob(DistributionJobModel distributionJobModel) {
+        return new ProcessedNotificationDetails(
+            distributionJobModel.getJobId(),
+            distributionJobModel.getChannelDescriptorName(),
+            distributionJobModel.getName()
+        );
+    }
+
+    public ProcessedNotificationDetails(UUID jobId, String channelName, String jobName) {
         this.jobId = jobId;
         this.channelName = channelName;
+        this.jobName = jobName;
     }
 
     public UUID getJobId() {
@@ -28,4 +39,7 @@ public final class ProcessedNotificationDetails extends AlertSerializableModel {
         return channelName;
     }
 
+    public String getJobName() {
+        return jobName;
+    }
 }
