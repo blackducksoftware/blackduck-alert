@@ -132,7 +132,7 @@ public class MessageReplacementValues {
         }
 
         private String defaultIfBlank(String replacementField) {
-            if (!StringUtils.isBlank(replacementField)) {
+            if (StringUtils.isNotBlank(replacementField)) {
                 return replacementField;
             } else {
                 return MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE;
