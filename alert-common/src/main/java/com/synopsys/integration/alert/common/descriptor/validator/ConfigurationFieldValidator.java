@@ -74,7 +74,7 @@ public class ConfigurationFieldValidator {
         if (fieldContainsData(fieldKey)) {
             for (String requiredFieldKey : requiredRelatedFieldKeys) {
                 if (fieldContainsNoData(requiredFieldKey)) {
-                    statuses.add(AlertFieldStatus.error(fieldKey, String.format("Must be set if %s is set", fieldLabel)));
+                    statuses.add(AlertFieldStatus.error(requiredFieldKey, String.format("Must be set if %s is set", fieldLabel)));
                 }
             }
         }
