@@ -34,7 +34,7 @@ public abstract class AbstractChannelMessageConverter<D extends DistributionJobD
     }
 
     @Override
-    public final List<T> convertToChannelMessages(D distributionDetails, ProviderMessageHolder messages) {
+    public final List<T> convertToChannelMessages(D distributionDetails, ProviderMessageHolder messages, String jobName) {
         List<T> convertedSimpleMessages = convertProviderMessagesToChannelMessages(
             messages.getSimpleMessages(),
             simpleMessageConverter::convertToFormattedMessageChunks,

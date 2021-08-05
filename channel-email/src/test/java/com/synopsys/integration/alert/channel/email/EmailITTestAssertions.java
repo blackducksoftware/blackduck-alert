@@ -35,7 +35,7 @@ public final class EmailITTestAssertions {
     public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageSuccess(DistributionChannel<D> channel, D distributionDetails) {
         MessageResult messageResult = null;
         try {
-            messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
+            messageResult = channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName");
         } catch (AlertException e) {
             Assertions.fail("Failed to distribute simple channel message due to an exception", e);
         }
@@ -50,7 +50,7 @@ public final class EmailITTestAssertions {
 
     public static <D extends DistributionJobDetailsModel> void assertSendSimpleMessageException(DistributionChannel<D> channel, D distributionDetails, @Nullable String expectedExceptionMessage) {
         try {
-            channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER);
+            channel.distributeMessages(distributionDetails, TEST_MESSAGE_HOLDER, "jobName");
             Assertions.fail("Expected an exception to be thrown");
         } catch (AlertException e) {
             if (null != expectedExceptionMessage) {

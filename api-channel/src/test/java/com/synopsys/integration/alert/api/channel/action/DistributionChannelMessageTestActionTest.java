@@ -26,7 +26,7 @@ public class DistributionChannelMessageTestActionTest {
         DistributionChannelMessageTestAction<MockDistributionJobDetailsModel> testAction = createTestAction(expectedStatusMessage);
 
         DistributionJobModel distributionJobModel = createDistributionJobModel();
-        MessageResult messageResult = testAction.testConfig(distributionJobModel, "Test Topic", "Test Message");
+        MessageResult messageResult = testAction.testConfig(distributionJobModel, "jobName", "Test Topic", "Test Message");
         assertEquals(expectedStatusMessage, messageResult.getStatusMessage());
     }
 
@@ -36,7 +36,7 @@ public class DistributionChannelMessageTestActionTest {
         DistributionChannelMessageTestAction<MockDistributionJobDetailsModel> testAction = createTestAction(expectedStatusMessage);
 
         DistributionJobModel distributionJobModel = createDistributionJobModel();
-        MessageResult messageResult = testAction.testConfig(distributionJobModel, null, null);
+        MessageResult messageResult = testAction.testConfig(distributionJobModel, "jobName", null, null);
         assertEquals(expectedStatusMessage, messageResult.getStatusMessage());
 
     }
@@ -50,21 +50,21 @@ public class DistributionChannelMessageTestActionTest {
     }
 
     private DistributionChannel<MockDistributionJobDetailsModel> createDistributionChannel(String expectedStatusMessage) {
-        return (distributionDetails, messages) -> new MessageResult(expectedStatusMessage);
+        return (distributionDetails, messages, jobName) -> new MessageResult(expectedStatusMessage);
     }
 
     private DistributionJobModel createDistributionJobModel() {
         return DistributionJobModel.builder()
-                   .jobId(UUID.randomUUID())
-                   .name(CLASS_NAME)
-                   .distributionFrequency(FrequencyType.REAL_TIME)
-                   .processingType(ProcessingType.SUMMARY)
-                   .channelDescriptorName(MockDistributionJobDetailsModel.DEFAULT_CHANNEL_KEY.getUniversalKey())
-                   .createdAt(OffsetDateTime.now())
-                   .blackDuckGlobalConfigId(0L)
-                   .notificationTypes(List.of("irrelevant_string"))
-                   .filterByProject(false)
-                   .build();
+            .jobId(UUID.randomUUID())
+            .name(CLASS_NAME)
+            .distributionFrequency(FrequencyType.REAL_TIME)
+            .processingType(ProcessingType.SUMMARY)
+            .channelDescriptorName(MockDistributionJobDetailsModel.DEFAULT_CHANNEL_KEY.getUniversalKey())
+            .createdAt(OffsetDateTime.now())
+            .blackDuckGlobalConfigId(0L)
+            .notificationTypes(List.of("irrelevant_string"))
+            .filterByProject(false)
+            .build();
     }
 
     private static class MockDistributionJobDetailsModel extends DistributionJobDetailsModel {

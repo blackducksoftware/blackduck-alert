@@ -36,13 +36,13 @@ public abstract class DistributionChannelMessageTestAction<D extends Distributio
     }
 
     @Override
-    public final MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
+    public final MessageResult testConfig(DistributionJobModel testJobModel, String jobName, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
         String topicString = Optional.ofNullable(customTopic).orElse(DEFAULT_TOPIC);
         String messageString = Optional.ofNullable(customMessage).orElse(DEFAULT_MESSAGE);
 
         D distributionJobDetails = resolveTestDistributionDetails(testJobModel);
         ProviderMessageHolder messages = createTestMessageHolder(testJobModel, topicString, messageString);
-        return distributionChannel.distributeMessages(distributionJobDetails, messages);
+        return distributionChannel.distributeMessages(distributionJobDetails, messages, jobName);
     }
 
     protected D resolveTestDistributionDetails(DistributionJobModel testJobModel) throws AlertException {

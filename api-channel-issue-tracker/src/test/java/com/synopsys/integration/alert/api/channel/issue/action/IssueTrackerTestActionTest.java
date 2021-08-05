@@ -44,7 +44,7 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
-        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
         assertTrue(messageResult.getStatusMessage().contains(testExceptionMessage), "Expected the message result to contain the expected exception message");
     }
 
@@ -56,7 +56,7 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
-        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
         assertTrue(messageResult.hasErrors(), EXPECTED_ERRORS);
     }
 
@@ -68,7 +68,7 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory);
 
-        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
         assertFalse(messageResult.hasErrors(), EXPECTED_NO_ERRORS);
         assertFalse(messageResult.hasWarnings(), EXPECTED_NO_WARNINGS);
     }
@@ -87,7 +87,7 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
-        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
         assertTrue(messageResult.hasErrors(), EXPECTED_ERRORS);
     }
 
@@ -99,7 +99,7 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, false);
 
-        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
         assertFalse(messageResult.hasErrors(), EXPECTED_NO_ERRORS);
         assertFalse(messageResult.hasWarnings(), EXPECTED_NO_WARNINGS);
     }
@@ -123,22 +123,22 @@ public class IssueTrackerTestActionTest {
         IssueTrackerMessageSenderFactory<TestJobDetails, String> messageSenderFactory = distributionDetails -> messageSender;
         TestIssueTrackerTestAction issueTrackerTestAction = new TestIssueTrackerTestAction(messageSenderFactory, true, true);
 
-        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, null, null);
+        MessageResult messageResult = issueTrackerTestAction.testConfig(TEST_JOB_MODEL, "jobName", null, null);
         assertTrue(messageResult.hasErrors(), EXPECTED_ERRORS);
     }
 
     private static DistributionJobModel createTestJobModel() {
         return DistributionJobModel.builder()
-                   .jobId(UUID.randomUUID())
-                   .name(CLASS_NAME)
-                   .distributionFrequency(FrequencyType.REAL_TIME)
-                   .processingType(ProcessingType.SUMMARY)
-                   .channelDescriptorName(ISSUE_TRACKER_KEY.getUniversalKey())
-                   .createdAt(OffsetDateTime.now())
-                   .blackDuckGlobalConfigId(0L)
-                   .notificationTypes(List.of("irrelevant_string"))
-                   .filterByProject(false)
-                   .build();
+            .jobId(UUID.randomUUID())
+            .name(CLASS_NAME)
+            .distributionFrequency(FrequencyType.REAL_TIME)
+            .processingType(ProcessingType.SUMMARY)
+            .channelDescriptorName(ISSUE_TRACKER_KEY.getUniversalKey())
+            .createdAt(OffsetDateTime.now())
+            .blackDuckGlobalConfigId(0L)
+            .notificationTypes(List.of("irrelevant_string"))
+            .filterByProject(false)
+            .build();
     }
 
     private static IssueTrackerIssueResponseModel<String> createIssueResponseModel() {

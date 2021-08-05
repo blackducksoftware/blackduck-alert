@@ -46,7 +46,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
     }
 
     @Override
-    public MessageResult testConfig(DistributionJobModel testJobModel, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
+    public MessageResult testConfig(DistributionJobModel testJobModel, String jobName, @Nullable String customTopic, @Nullable String customMessage) throws AlertException {
         D distributionDetails = (D) testJobModel.getDistributionJobDetails();
         IssueTrackerMessageSender<T> messageSender = messageSenderFactory.createMessageSender(distributionDetails);
 
@@ -95,7 +95,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         return transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.OPEN, existingIssueDetails, testProjectIssueModel)
-                   .orElseGet(() -> transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails)));
+            .orElseGet(() -> transitionTestAction.transitionTestIssueOrReturnFailureResult(IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails)));
     }
 
     protected abstract boolean hasResolveTransition(D distributionDetails);

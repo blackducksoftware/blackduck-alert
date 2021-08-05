@@ -290,7 +290,7 @@ public class JobConfigActionsTest {
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent(), "Missing content");
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent()
-                                                              .orElseThrow(() -> new AlertRuntimeException("Missing validation response"));
+            .orElseThrow(() -> new AlertRuntimeException("Missing validation response"));
         assertFalse(validationResponseModel.hasErrors(), "Validation response had errors");
     }
 
@@ -564,18 +564,18 @@ public class JobConfigActionsTest {
     private DistributionJobModel createDistributionJobModel() {
         UUID jobId = UUID.randomUUID();
         return DistributionJobModel.builder()
-                   .jobId(jobId)
-                   .enabled(true)
-                   .name("A Job")
-                   .blackDuckGlobalConfigId(-1L)
-                   .distributionFrequency(FrequencyType.REAL_TIME)
-                   .processingType(ProcessingType.DEFAULT)
-                   .channelDescriptorName(DESCRIPTOR_KEY_STRING)
-                   .createdAt(OffsetDateTime.now())
-                   .filterByProject(false)
-                   .notificationTypes(List.of("notification_type"))
-                   .distributionJobDetails(new MSTeamsJobDetailsModel(jobId, "webhook"))
-                   .build();
+            .jobId(jobId)
+            .enabled(true)
+            .name("A Job")
+            .blackDuckGlobalConfigId(-1L)
+            .distributionFrequency(FrequencyType.REAL_TIME)
+            .processingType(ProcessingType.DEFAULT)
+            .channelDescriptorName(DESCRIPTOR_KEY_STRING)
+            .createdAt(OffsetDateTime.now())
+            .filterByProject(false)
+            .notificationTypes(List.of("notification_type"))
+            .distributionJobDetails(new MSTeamsJobDetailsModel(jobId, "webhook"))
+            .build();
     }
 
     private FieldModel createFieldModel() {
@@ -589,7 +589,7 @@ public class JobConfigActionsTest {
     private DistributionChannelTestAction createChannelDistributionTestAction() {
         return new DistributionChannelTestAction(descriptorKey) {
             @Override
-            public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) {
+            public MessageResult testConfig(DistributionJobModel distributionJobModel, String jobName, @Nullable String customTopic, @Nullable String customMessage) {
                 return new MessageResult("Test Status Message");
             }
         };
