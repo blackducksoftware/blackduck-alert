@@ -33,24 +33,6 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
 public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
-    public static final String LABEL_ADD_COMMENTS = "Add Comments";
-    public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
-    public static final String LABEL_JIRA_PROJECT = "Jira Project";
-    public static final String LABEL_ISSUE_TYPE = "Issue Type";
-    public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
-    public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
-    public static final String LABEL_FIELD_MAPPING = "Field Mapping";
-
-    public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
-    public static final String DESCRIPTION_ISSUE_CREATOR = "The email of the Jira Cloud user to assign as the issue creator field of the Jira issue.";
-    public static final String DESCRIPTION_JIRA_PROJECT = "The name or key of the Jira Project for which this job creates and/or updates Jira tickets.";
-    public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Cloud.";
-    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider. "
-                                                                             + "Note: This must be in the 'Done' status category.";
-    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
-                                                                          + "Note: This must be in the 'To Do' status category.";
-    public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to provide static values to Jira fields or map them to information from the notifications.";
-
     private final Gson gson;
 
     @Autowired
@@ -61,21 +43,21 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Override
     public List<ConfigField> createChannelDistributionFields() {
-        ConfigField addComments = new CheckboxConfigField(JiraCloudDescriptor.KEY_ADD_COMMENTS, LABEL_ADD_COMMENTS, DESCRIPTION_ADD_COMMENTS);
-        ConfigField issueCreator = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_CREATOR, LABEL_ISSUE_CREATOR, DESCRIPTION_ISSUE_CREATOR);
-        ConfigField jiraProjectName = new TextInputConfigField(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, LABEL_JIRA_PROJECT, DESCRIPTION_JIRA_PROJECT).applyRequired(true);
+        ConfigField addComments = new CheckboxConfigField(JiraCloudDescriptor.KEY_ADD_COMMENTS, JiraCloudDescriptor.LABEL_ADD_COMMENTS, JiraCloudDescriptor.DESCRIPTION_ADD_COMMENTS);
+        ConfigField issueCreator = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_CREATOR, JiraCloudDescriptor.LABEL_ISSUE_CREATOR, JiraCloudDescriptor.DESCRIPTION_ISSUE_CREATOR);
+        ConfigField jiraProjectName = new TextInputConfigField(JiraCloudDescriptor.KEY_JIRA_PROJECT_NAME, JiraCloudDescriptor.LABEL_JIRA_PROJECT, JiraCloudDescriptor.DESCRIPTION_JIRA_PROJECT).applyRequired(true);
 
-        ConfigField issueType = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_TYPE, LABEL_ISSUE_TYPE, DESCRIPTION_ISSUE_TYPE)
-                                    .applyRequired(true)
-                                    .applyDefaultValue(JiraConstants.DEFAULT_ISSUE_TYPE);
-        ConfigField resolveWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, LABEL_RESOLVE_WORKFLOW_TRANSITION, DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
-        ConfigField openWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, LABEL_OPEN_WORKFLOW_TRANSITION, DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
-                                       .applyRequiredRelatedField(resolveWorkflow.getKey());
+        ConfigField issueType = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_TYPE, JiraCloudDescriptor.LABEL_ISSUE_TYPE, JiraCloudDescriptor.DESCRIPTION_ISSUE_TYPE)
+            .applyRequired(true)
+            .applyDefaultValue(JiraConstants.DEFAULT_ISSUE_TYPE);
+        ConfigField resolveWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_RESOLVE_WORKFLOW_TRANSITION, JiraCloudDescriptor.LABEL_RESOLVE_WORKFLOW_TRANSITION, JiraCloudDescriptor.DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION);
+        ConfigField openWorkflow = new TextInputConfigField(JiraCloudDescriptor.KEY_OPEN_WORKFLOW_TRANSITION, JiraCloudDescriptor.LABEL_OPEN_WORKFLOW_TRANSITION, JiraCloudDescriptor.DESCRIPTION_OPEN_WORKFLOW_TRANSITION)
+            .applyRequiredRelatedField(resolveWorkflow.getKey());
         ConfigField issueSummary = new TextInputConfigField(JiraCloudDescriptor.KEY_ISSUE_SUMMARY, "", "");
-        ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, LABEL_FIELD_MAPPING, DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
-                                       .applyNewMappingTitle("Create Jira Field Mapping")
-                                       .applyValidationFunctions(this::validateFieldMapping)
-                                       .applyPanel("Advanced Jira Configuration");
+        ConfigField fieldMapping = new FieldMappingEndpointField(JiraCloudDescriptor.KEY_FIELD_MAPPING, JiraCloudDescriptor.LABEL_FIELD_MAPPING, JiraCloudDescriptor.DESCRIPTION_FIELD_MAPPING, "Jira Field", "Value")
+            .applyNewMappingTitle("Create Jira Field Mapping")
+            .applyValidationFunctions(this::validateFieldMapping)
+            .applyPanel("Advanced Jira Configuration");
 
         return List.of(addComments, issueCreator, jiraProjectName, issueType, resolveWorkflow, openWorkflow, issueSummary, fieldMapping);
     }
@@ -83,8 +65,8 @@ public class JiraCloudDistributionUIConfig extends ChannelDistributionUIConfig {
     private ValidationResult validateFieldMapping(FieldValueModel fieldToValidate, FieldModel fieldModel) {
         Collection<String> fieldMappingStrings = fieldToValidate.getValues();
         List<JiraJobCustomFieldModel> customFields = fieldMappingStrings.stream()
-                                                         .map(fieldMappingString -> gson.fromJson(fieldMappingString, JiraJobCustomFieldModel.class))
-                                                         .collect(Collectors.toList());
+            .map(fieldMappingString -> gson.fromJson(fieldMappingString, JiraJobCustomFieldModel.class))
+            .collect(Collectors.toList());
         Set<String> fieldNames = new HashSet();
         List<String> duplicateNameList = new ArrayList<>();
         for (JiraJobCustomFieldModel jiraJobCustomFieldModel : customFields) {

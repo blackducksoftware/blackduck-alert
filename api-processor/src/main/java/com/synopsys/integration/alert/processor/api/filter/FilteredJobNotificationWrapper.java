@@ -18,12 +18,14 @@ public class FilteredJobNotificationWrapper extends Stringable {
     private final UUID jobId;
     private final ProcessingType processingType;
     private final String channelName;
+    private final String jobName;
     private final List<NotificationContentWrapper> jobNotifications;
 
-    public FilteredJobNotificationWrapper(UUID jobId, ProcessingType processingType, String channelName, List<NotificationContentWrapper> jobNotifications) {
+    public FilteredJobNotificationWrapper(UUID jobId, ProcessingType processingType, String channelName, String jobName, List<NotificationContentWrapper> jobNotifications) {
         this.jobId = jobId;
         this.processingType = processingType;
         this.channelName = channelName;
+        this.jobName = jobName;
         this.jobNotifications = jobNotifications;
     }
 
@@ -37,6 +39,10 @@ public class FilteredJobNotificationWrapper extends Stringable {
 
     public String getChannelName() {
         return channelName;
+    }
+
+    public String getJobName() {
+        return jobName;
     }
 
     public List<NotificationContentWrapper> getJobNotifications() {

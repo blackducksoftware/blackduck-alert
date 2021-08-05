@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.security.authorization.Authorizatio
 import com.synopsys.integration.alert.component.audit.AuditDescriptorKey;
 import com.synopsys.integration.alert.processor.api.JobNotificationProcessor;
 import com.synopsys.integration.alert.processor.api.NotificationProcessor;
+import com.synopsys.integration.alert.processor.api.distribute.ProcessedNotificationDetails;
 
 @Component
 @Transactional
@@ -131,7 +132,7 @@ public class AuditEntryActions {
         }
 
         Optional<AlertNotificationModel> notification = notificationAccessor
-                                                            .findById(notificationId);
+            .findById(notificationId);
         if (notification.isEmpty()) {
             return new ActionResponse<>(HttpStatus.GONE, "No notification with this id exists.");
         }
@@ -145,9 +146,9 @@ public class AuditEntryActions {
             }
             DistributionJobModel distributionJob = optionalDistributionJob.get();
             if (distributionJob.isEnabled()) {
+                ProcessedNotificationDetails processedNotificationDetails = ProcessedNotificationDetails.fromDistributionJob(distributionJob);
                 jobNotificationProcessor.processNotificationForJob(
-                    distributionJob.getJobId(),
-                    distributionJob.getChannelDescriptorName(),
+                    processedNotificationDetails,
                     distributionJob.getProcessingType(),
                     List.of(notificationContent)
                 );

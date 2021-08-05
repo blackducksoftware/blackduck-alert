@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudDistributionConfigurationValidator;
 import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
@@ -42,12 +43,37 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     public static final String JIRA_URL = "jira";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Cloud instance that Alert will send issue updates to.";
 
+    public static final String LABEL_ADD_COMMENTS = "Add Comments";
+    public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
+    public static final String LABEL_JIRA_PROJECT = "Jira Project";
+    public static final String LABEL_ISSUE_TYPE = "Issue Type";
+    public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
+    public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
+    public static final String LABEL_FIELD_MAPPING = "Field Mapping";
+
+    public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
+    public static final String DESCRIPTION_ISSUE_CREATOR = "The email of the Jira Cloud user to assign as the issue creator field of the Jira issue.";
+    public static final String DESCRIPTION_JIRA_PROJECT = "The name or key of the Jira Project for which this job creates and/or updates Jira tickets.";
+    public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Cloud.";
+    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider. "
+                                                                             + "Note: This must be in the 'Done' status category.";
+    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
+                                                                          + "Note: This must be in the 'To Do' status category.";
+    public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to provide static values to Jira fields or map them to information from the notifications.";
+
     private final JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator;
+    private final JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator;
 
     @Autowired
-    public JiraCloudDescriptor(JiraCloudGlobalUIConfig globalUIConfig, JiraCloudDistributionUIConfig distributionUIConfig, JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator) {
+    public JiraCloudDescriptor(
+        JiraCloudGlobalUIConfig globalUIConfig,
+        JiraCloudDistributionUIConfig distributionUIConfig,
+        JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator,
+        JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator
+    ) {
         super(ChannelKeys.JIRA_CLOUD, distributionUIConfig, globalUIConfig);
         this.jiraCloudGlobalValidator = jiraCloudGlobalValidator;
+        this.jiraCloudDistributionConfigurationValidator = jiraCloudDistributionConfigurationValidator;
     }
 
     @Override
@@ -57,6 +83,7 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
 
     @Override
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
-        return Optional.empty();
+        return Optional.of(jiraCloudDistributionConfigurationValidator);
     }
+
 }
