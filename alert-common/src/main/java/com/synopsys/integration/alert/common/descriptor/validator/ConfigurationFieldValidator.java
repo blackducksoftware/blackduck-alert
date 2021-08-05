@@ -64,6 +64,12 @@ public class ConfigurationFieldValidator {
         }
     }
 
+    public void validateRequiredFieldsAreNotBlank(String... fieldKeys) {
+        if (null != fieldKeys) {
+            validateRequiredFieldsAreNotBlank(Arrays.asList(fieldKeys));
+        }
+    }
+
     public void validateRequiredFieldsAreNotBlank(List<String> fieldKeys) {
         for (String fieldKey : fieldKeys) {
             validateRequiredFieldIsNotBlank(fieldKey);

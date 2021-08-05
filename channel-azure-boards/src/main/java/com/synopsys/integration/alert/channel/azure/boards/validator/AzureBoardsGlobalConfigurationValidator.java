@@ -36,9 +36,10 @@ public class AzureBoardsGlobalConfigurationValidator implements GlobalConfigurat
         configurationFieldValidator.validateRequiredFieldIsNotBlank(AzureBoardsDescriptor.KEY_CLIENT_SECRET);
 
         if (oAuthRequestValidator.hasRequests()) {
-            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AzureBoardsDescriptor.KEY_OAUTH, "Authentication in Progress cannot perform current action."));
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(AzureBoardsDescriptor.KEY_OAUTH, "Authentication in progress cannot perform current action."));
         }
 
         return configurationFieldValidator.getValidationResults();
     }
+
 }
