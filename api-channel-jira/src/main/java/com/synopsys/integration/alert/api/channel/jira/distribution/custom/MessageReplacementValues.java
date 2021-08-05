@@ -23,20 +23,8 @@ public class MessageReplacementValues {
     private final String componentVersionName;
     private final String severity;
     private final String policyCategory;
-
-    public static MessageReplacementValues trivial(String providerLabel, String projectName) {
-        return new MessageReplacementValues(
-            providerLabel,
-            projectName,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE
-        );
-    }
-
-    public MessageReplacementValues(
+    
+    protected MessageReplacementValues(
         String providerName,
         String projectName,
         @Nullable String projectVersionName,

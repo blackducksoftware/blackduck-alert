@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCr
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValuesBuilder;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueSearchPropertyStringCompatibilityUtils;
@@ -71,7 +72,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     protected final ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
         MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
                                                          .map(this::createCustomFieldReplacementValues)
-                                                         .orElse(MessageReplacementValues
+                                                         .orElse(MessageReplacementValuesBuilder
                                                                      .trivial(alertIssueCreationModel.getProvider().getLabel(), MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE));
         T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
         try {
@@ -129,15 +130,13 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         if (vulnerabilityDetails.isPresent()) {
             severity = vulnerabilityDetails.get().getHighestSeverityAddedOrUpdated();
         }
-        return new MessageReplacementValues(
-            alertIssueSource.getProvider().getLabel(),
-            alertIssueSource.getProject().getValue(),
-            alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
-            bomComponent.getComponent().getValue(),
-            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
-            severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
-            policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE)
-        );
+        return new MessageReplacementValuesBuilder(alertIssueSource.getProvider().getLabel(), alertIssueSource.getProject().getValue())
+                   .projectVersionName(alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .componentName(bomComponent.getComponent().getValue())
+                   .componentVersionName(bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .severity(severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .policyCategory(policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .build();
     }
 
     private JiraIssueSearchProperties createSearchProperties(ProjectIssueModel alertIssueSource) {
