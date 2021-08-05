@@ -74,7 +74,7 @@ public class ConfigurationFieldValidator {
         if (fieldContainsData(fieldKey)) {
             for (String requiredFieldKey : requiredRelatedFieldKeys) {
                 if (fieldContainsNoData(requiredFieldKey)) {
-                    statuses.add(AlertFieldStatus.error(fieldLabel, String.format("Must be set if %s is set", fieldLabel)));
+                    statuses.add(AlertFieldStatus.error(fieldKey, String.format("Must be set if %s is set", fieldLabel)));
                 }
             }
         }
@@ -82,8 +82,8 @@ public class ConfigurationFieldValidator {
 
     public void validateIsANumber(String fieldKey) {
         boolean isANumberOrEmpty = getStringValue(fieldKey)
-                                       .map(NumberUtils::isCreatable)
-                                       .orElse(true);
+            .map(NumberUtils::isCreatable)
+            .orElse(true);
 
         if (!isANumberOrEmpty) {
             statuses.add(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
@@ -103,10 +103,10 @@ public class ConfigurationFieldValidator {
 
     public void validateIsAValidOption(String fieldKey, Set<String> validOptions) {
         boolean allValuesInValidOptions = getCollectionOfValues(fieldKey)
-                                       .orElse(Collections.emptySet())
-                                       .stream()
-                                       .map(StringUtils::trimToEmpty)
-                                       .allMatch(option -> validOptions.stream().anyMatch(validOption -> StringUtils.equalsIgnoreCase(option, validOption)));
+            .orElse(Collections.emptySet())
+            .stream()
+            .map(StringUtils::trimToEmpty)
+            .allMatch(option -> validOptions.stream().anyMatch(validOption -> StringUtils.equalsIgnoreCase(option, validOption)));
 
         if (!allValuesInValidOptions) {
             statuses.add(AlertFieldStatus.error(fieldKey, INVALID_OPTION_MESSAGE));
@@ -123,8 +123,8 @@ public class ConfigurationFieldValidator {
 
     public boolean fieldContainsNoData(String fieldKey) {
         return getFieldValues(fieldKey)
-                   .map(FieldValueModel::containsNoData)
-                   .orElse(true);
+            .map(FieldValueModel::containsNoData)
+            .orElse(true);
     }
 
     public boolean fieldHasNoReadableValue(String fieldKey) {
@@ -133,8 +133,8 @@ public class ConfigurationFieldValidator {
 
     public boolean fieldHasReadableValue(String fieldKey) {
         return getFieldValues(fieldKey)
-                  .map(FieldValueModel::hasValues)
-                  .orElse(false);
+            .map(FieldValueModel::hasValues)
+            .orElse(false);
     }
 
     public Optional<FieldValueModel> getFieldValues(String fieldKey) {
@@ -151,10 +151,11 @@ public class ConfigurationFieldValidator {
 
     public Optional<Collection<String>> getCollectionOfValues(String fieldKey) {
         return getFieldValues(fieldKey)
-                   .map(FieldValueModel::getValues);
+            .map(FieldValueModel::getValues);
     }
 
     public Optional<Long> getLongValue(String fieldKey) {
         return getFieldValues(fieldKey).flatMap(FieldValueModel::getValue).map(Long::valueOf);
     }
+
 }
