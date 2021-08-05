@@ -42,9 +42,9 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
     @Override
     public AlertPagedModel<FilteredDistributionJobResponseModel> getMatchingEnabledJobsByFilteredNotifications(FilteredDistributionJobRequestModel filteredDistributionJobRequestModel, int pageNumber, int pageLimit) {
         List<String> frequencyTypes = filteredDistributionJobRequestModel.getFrequencyTypes()
-                                          .stream()
-                                          .map(Enum::name)
-                                          .collect(Collectors.toList());
+            .stream()
+            .map(Enum::name)
+            .collect(Collectors.toList());
 
         Set<String> projectNames = filteredDistributionJobRequestModel.getProjectName();
         Set<String> notificationTypes = filteredDistributionJobRequestModel.getNotificationTypes();
@@ -65,9 +65,9 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
         );
 
         List<FilteredDistributionJobResponseModel> distributionJobResponseModels = pageOfDistributionJobEntities.getContent()
-                                                                                       .stream()
-                                                                                       .map(this::convertToFilteredDistributionJobResponseModel)
-                                                                                       .collect(Collectors.toList());
+            .stream()
+            .map(this::convertToFilteredDistributionJobResponseModel)
+            .collect(Collectors.toList());
         return new AlertPagedModel<>(pageOfDistributionJobEntities.getTotalPages(), pageNumber, pageLimit, distributionJobResponseModels);
 
     }
@@ -76,6 +76,7 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
         UUID jobId = jobEntity.getJobId();
         ProcessingType processingType = Enum.valueOf(ProcessingType.class, jobEntity.getProcessingType());
         String channelName = jobEntity.getChannelDescriptorName();
+        String jobName = jobEntity.getName();
 
         BlackDuckJobDetailsEntity blackDuckJobDetails = jobEntity.getBlackDuckJobDetails();
         List<String> notificationTypes = blackDuckJobDetailsAccessor.retrieveNotificationTypesForJob(jobId);
@@ -90,6 +91,7 @@ public class DefaultProcessingJobAccessor implements ProcessingJobAccessor {
             jobId,
             processingType,
             channelName,
+            jobName,
             notificationTypes,
             projectDetails,
             policyNames,

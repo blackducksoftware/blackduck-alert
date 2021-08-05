@@ -17,6 +17,7 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
     private final UUID id;
     private final ProcessingType processingType;
     private final String channelName;
+    private final String jobName;
     private final List<String> notificationTypes;
     private final List<BlackDuckProjectDetailsModel> projectDetails;
     private final List<String> policyNames;
@@ -28,6 +29,7 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
         UUID id,
         ProcessingType processingType,
         String channelName,
+        String jobName,
         List<String> notificationTypes,
         List<BlackDuckProjectDetailsModel> projectDetails,
         List<String> policyNames,
@@ -38,6 +40,7 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
         this.processingType = processingType;
         this.id = id;
         this.channelName = channelName;
+        this.jobName = jobName;
         this.notificationTypes = notificationTypes;
         this.projectDetails = projectDetails;
         this.policyNames = policyNames;
@@ -56,6 +59,10 @@ public class FilteredDistributionJobResponseModel extends AlertSerializableModel
 
     public String getChannelName() {
         return channelName;
+    }
+
+    public String getJobName() {
+        return jobName;
     }
 
     public List<String> getNotificationTypes() {

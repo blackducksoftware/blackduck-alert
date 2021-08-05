@@ -64,10 +64,10 @@ public final class NotificationProcessor {
 
     private void processAndDistribute(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
-                                                                        .stream()
-                                                                        .map(notificationDetailExtractionDelegator::wrapNotification)
-                                                                        .flatMap(List::stream)
-                                                                        .collect(Collectors.toList());
+            .stream()
+            .map(notificationDetailExtractionDelegator::wrapNotification)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
         while (!statefulAlertPage.isEmpty()) {
             for (FilteredJobNotificationWrapper jobNotificationWrapper : statefulAlertPage.getCurrentModels()) {
@@ -79,7 +79,7 @@ public final class NotificationProcessor {
 
     private void processAndDistribute(FilteredJobNotificationWrapper jobNotificationWrapper) {
         List<NotificationContentWrapper> filteredNotifications = jobNotificationWrapper.getJobNotifications();
-        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName());
+        ProcessedNotificationDetails processedNotificationDetails = new ProcessedNotificationDetails(jobNotificationWrapper.getJobId(), jobNotificationWrapper.getChannelName(), jobNotificationWrapper.getJobName());
         ProcessedProviderMessageHolder processedMessageHolder = notificationContentProcessor.processNotificationContent(jobNotificationWrapper.getProcessingType(), filteredNotifications);
 
         providerMessageDistributor.distribute(processedNotificationDetails, processedMessageHolder);
