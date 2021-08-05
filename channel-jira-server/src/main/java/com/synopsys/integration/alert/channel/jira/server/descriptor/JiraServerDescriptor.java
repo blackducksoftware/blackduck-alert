@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerDistributionConfigurationValidator;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
@@ -42,12 +43,37 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String JIRA_URL = "jira_server";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Server instance that Alert will send issue updates to.";
 
+    public static final String LABEL_FIELD_MAPPING = "Field Mapping";
+    public static final String LABEL_ADD_COMMENTS = "Add comments";
+    public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
+    public static final String LABEL_JIRA_PROJECT = "Jira Project";
+    public static final String LABEL_ISSUE_TYPE = "Issue Type";
+    public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
+    public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
+
+    public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to provide static values to Jira fields or map them to information from the notifications.";
+    public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
+    public static final String DESCRIPTION_ISSUE_CREATOR = "The username of the Jira Server user to assign as the issue creator field of the Jira issue.";
+    public static final String DESCRIPTION_JIRA_PROJECT = "The name or key of the Jira Project for which this job creates and/or updates Jira tickets.";
+    public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Server.";
+    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider. "
+                                                                             + "Note: This must be in the 'Done' status category.";
+    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
+                                                                          + "Note: This must be in the 'To Do' status category.";
+
     private final JiraServerGlobalConfigurationValidator jiraServerGlobalValidator;
+    private final JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator;
 
     @Autowired
-    public JiraServerDescriptor(JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig, JiraServerGlobalConfigurationValidator jiraServerGlobalValidator) {
+    public JiraServerDescriptor(
+        JiraServerDistributionUIConfig jiraServerDistributionUIConfig,
+        JiraServerGlobalUIConfig jiraServerGlobalUIConfig,
+        JiraServerGlobalConfigurationValidator jiraServerGlobalValidator,
+        JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator
+    ) {
         super(ChannelKeys.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
         this.jiraServerGlobalValidator = jiraServerGlobalValidator;
+        this.jiraServerDistributionConfigurationValidator = jiraServerDistributionConfigurationValidator;
     }
 
     @Override
@@ -57,6 +83,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
 
     @Override
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
-        return Optional.empty();
+        return Optional.of(jiraServerDistributionConfigurationValidator);
     }
+
 }
