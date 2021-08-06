@@ -14,11 +14,9 @@ import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class Provider {
     private final ProviderKey key;
-    private final ProviderContent providerContent;
 
-    public Provider(ProviderKey key, ProviderContent providerContent) {
+    public Provider(ProviderKey key) {
         this.key = key;
-        this.providerContent = providerContent;
     }
 
     public ProviderKey getKey() {
@@ -28,9 +26,5 @@ public abstract class Provider {
     public abstract boolean validate(ConfigurationModel configurationModel);
 
     public abstract StatefulProvider createStatefulProvider(ConfigurationModel configurationModel) throws AlertException;
-
-    public ProviderContent getProviderContent() {
-        return providerContent;
-    }
 
 }

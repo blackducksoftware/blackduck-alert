@@ -22,10 +22,9 @@ public abstract class ProviderDescriptor extends Descriptor {
         "If selected, this provider configuration will be able to pull data into Alert and available to configure with distribution jobs, otherwise, it will not be available for those usages.";
     public static final String DESCRIPTION_PROVIDER_CONFIG_NAME = "The name of this provider configuration. Must be unique.";
 
-    public ProviderDescriptor(ProviderKey providerKey, ProviderGlobalUIConfig providerUiConfig, ProviderDistributionUIConfig distributionUIConfig) {
+    public ProviderDescriptor(ProviderKey providerKey, ProviderGlobalUIConfig providerUiConfig) {
         super(providerKey, DescriptorType.PROVIDER);
         addGlobalUiConfig(providerUiConfig);
-        addDistributionUiConfig(distributionUIConfig);
     }
 
 }

@@ -24,15 +24,12 @@ public class BlackDuckDescriptorTest {
         ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.success());
         BlackDuckProviderKey blackDuckProviderKey = new BlackDuckProviderKey();
-        BlackDuckContent blackDuckContent = new BlackDuckContent();
-        BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(blackDuckContent, configurationAccessor);
-        blackDuckDistributionUIConfig.setConfigFields();
         BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig(blackDuckProviderKey, encryptionValidator, configurationAccessor);
         blackDuckProviderUIConfig.setConfigFields();
         BlackDuckGlobalConfigurationValidator blackDuckGlobalConfigurationValidator = new BlackDuckGlobalConfigurationValidator(configurationAccessor);
         CommonProviderDistributionValidator commonProviderDistributionValidator = new CommonProviderDistributionValidator(configurationAccessor);
         BlackDuckDistributionConfigurationValidator blackDuckDistributionConfigurationValidator = new BlackDuckDistributionConfigurationValidator(commonProviderDistributionValidator);
-        BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig, blackDuckGlobalConfigurationValidator, blackDuckDistributionConfigurationValidator);
+        BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckGlobalConfigurationValidator, blackDuckDistributionConfigurationValidator);
         Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
         assertEquals(5, fields.size());
 
