@@ -26,7 +26,9 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
+import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -34,25 +36,28 @@ import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
+import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
-
 
 @Component
 public class EmailGlobalConfigActions {
     private final Logger logger = LoggerFactory.getLogger(EmailGlobalConfigActions.class);
-    private final AuthorizationManager authorizationManager; // Perform checks
-    private final ConfigurationAccessor configurationAccessor; // Create configuration
-    private final ConfigurationFieldModelConverter modelConverter; // Convert from FieldModel to ConfigurationFieldModelMap
-    private final EmailDescriptor emailDescriptor; // Get the stuff we need!
+    private final AuthorizationManager authorizationManager;
+    private final ConfigurationAccessor configurationAccessor;
+    private final ConfigurationFieldModelConverter modelConverter;
+    private final EmailDescriptor emailDescriptor;
     private final EmailGlobalTestAction testAction;
+    private final PKIXErrorResponseFactory pkixErrorResponseFactory;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailDescriptor emailDescriptor, EmailGlobalTestAction testAction) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailDescriptor emailDescriptor, EmailGlobalTestAction testAction,
+        PKIXErrorResponseFactory pkixErrorResponseFactory) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
         this.emailDescriptor = emailDescriptor;
         this.testAction = testAction;
+        this.pkixErrorResponseFactory = pkixErrorResponseFactory;
     }
 
     public ActionResponse<EmailGlobalConfigResponse> getOne(Long id) {
@@ -183,7 +188,16 @@ public class EmailGlobalConfigActions {
     }
 
     public ActionResponse<ValidationResponseModel> testWithoutChecks(EmailGlobalConfigResponse resource) {
-        return new ActionResponse<>(HttpStatus.NOT_IMPLEMENTED);
+        try {
+            FieldModel resourceAsFieldModel = toFieldModel(resource);
+            FieldUtility fieldUtility = modelConverter.convertToFieldAccessor(resourceAsFieldModel);
+            MessageResult messageResult = testAction.testConfig(/* not used by EmailGlobalTestAction::testConfig */ null, resourceAsFieldModel, fieldUtility);
+            return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success(messageResult.getStatusMessage()));
+        } catch (AlertException e) {
+            ValidationResponseModel responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
+                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
+            return new ValidationActionResponse(HttpStatus.OK, responseModel);
+        }
     }
 
     private Optional<EmailGlobalConfigResponse> getEmailGlobalConfigResponse(Long id) {
@@ -196,12 +210,6 @@ public class EmailGlobalConfigActions {
         HashMap<String, FieldValueModel> responseAsMap = new HashMap<>();
 
         // TBI
-        // There must be some way better than just:
-        //
-        // responseAsMap.put(
-        //     EmailPropertyKeys.JAVAMAIL_WHATEVER_PROPERTY.getPropertyKey(),
-        //     FieldValueModelConverter.convert(response.getWhateverProperty())
-        // )
 
         return new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), responseAsMap);
     }

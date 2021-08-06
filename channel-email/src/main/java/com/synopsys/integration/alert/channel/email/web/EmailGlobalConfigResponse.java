@@ -65,7 +65,7 @@ public class EmailGlobalConfigResponse extends AlertSerializableModel {
     private Integer socksPort;
     private String mailExtension;
     private Boolean userSet;
-    private Boolean nmoopStrict;
+    private Boolean noopStrict;
 
     public Optional<String> getHost() {
         return Optional.ofNullable(host);
@@ -435,11 +435,11 @@ public class EmailGlobalConfigResponse extends AlertSerializableModel {
         this.userSet = userSet;
     }
 
-    public Optional<Boolean> getNmoopStrict() {
-        return Optional.ofNullable(nmoopStrict);
+    public Optional<Boolean> getNoopStrict() {
+        return Optional.ofNullable(noopStrict);
     }
 
-    public void setNmoopStrict(Boolean nmoopStrict) {
-        this.nmoopStrict = nmoopStrict;
+    public void setNoopStrict(Boolean nmoopStrict) {
+        this.noopStrict = nmoopStrict;
     }
 }
