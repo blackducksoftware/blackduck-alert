@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
@@ -47,10 +46,10 @@ public final class JobFieldModelPopulationUtils {
 
     public static List<JobProviderProjectFieldModel> createJobProviderProjects(DistributionJobModel jobModel) {
         return Optional.ofNullable(jobModel.getProjectFilterDetails())
-                   .stream()
-                   .flatMap(List::stream)
-                   .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref(), false))
-                   .collect(Collectors.toList());
+            .stream()
+            .flatMap(List::stream)
+            .map(projectDetails -> new JobProviderProjectFieldModel(projectDetails.getName(), projectDetails.getHref(), false))
+            .collect(Collectors.toList());
     }
 
     public static JobFieldModel createJobFieldModelWithDefaultProviderProjectState(DistributionJobModel jobModel) {
@@ -66,28 +65,28 @@ public final class JobFieldModelPopulationUtils {
         populateChannelFields(channelFieldModel, jobModel);
 
         String jobIdString = Optional.ofNullable(jobModel.getJobId())
-                                 .map(UUID::toString)
-                                 .orElse(null);
+            .map(UUID::toString)
+            .orElse(null);
         return new JobFieldModel(jobIdString, Set.of(providerFieldModel, channelFieldModel), jobProviderProjects);
     }
 
     public static void populateProviderFields(FieldModel providerFieldModel, DistributionJobModel jobModel, List<JobProviderProjectFieldModel> jobProviderProjects) {
         String providerCommonConfigId = Optional.ofNullable(jobModel.getBlackDuckGlobalConfigId())
-                                            .map(String::valueOf)
-                                            .orElse(null);
+            .map(String::valueOf)
+            .orElse(null);
         putField(providerFieldModel, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, providerCommonConfigId);
-        putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, jobModel.getProcessingType().toString());
-        putField(providerFieldModel, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, jobModel.getNotificationTypes());
+        putField(providerFieldModel, ProviderDescriptor.KEY_PROCESSING_TYPE, jobModel.getProcessingType().toString());
+        putField(providerFieldModel, ProviderDescriptor.KEY_NOTIFICATION_TYPES, jobModel.getNotificationTypes());
 
         boolean filterByProject = jobModel.isFilterByProject();
-        putField(providerFieldModel, ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, Boolean.toString(filterByProject));
+        putField(providerFieldModel, ProviderDescriptor.KEY_FILTER_BY_PROJECT, Boolean.toString(filterByProject));
 
         if (filterByProject) {
             jobModel.getProjectNamePattern()
                 .filter(StringUtils::isNotBlank)
-                .ifPresent(pattern -> putField(providerFieldModel, ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, pattern));
+                .ifPresent(pattern -> putField(providerFieldModel, ProviderDescriptor.KEY_PROJECT_NAME_PATTERN, pattern));
 
-            putJsonField(providerFieldModel, ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, jobProviderProjects);
+            putJsonField(providerFieldModel, ProviderDescriptor.KEY_CONFIGURED_PROJECT, jobProviderProjects);
         }
 
         List<String> blackDuckPolicyNames = jobModel.getPolicyFilterPolicyNames();
@@ -108,7 +107,7 @@ public final class JobFieldModelPopulationUtils {
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, DEFAULT_PROVIDER_NAME);
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_FREQUENCY, jobModel.getDistributionFrequency().name());
-        putField(channelFieldModel, ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
+        putField(channelFieldModel, ProviderDescriptor.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
 
         DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();
         if (jobDetails.isA(ChannelKeys.AZURE_BOARDS)) {
@@ -204,9 +203,9 @@ public final class JobFieldModelPopulationUtils {
     private static <T extends AlertSerializableModel> void putJsonField(FieldModel fieldModel, String fieldName, List<T> fields) {
         // Convert to JSON for 6.4.0 while the dynamic ui still uses these as initial values on edit/copy
         List<String> fieldJson = fields
-                                     .stream()
-                                     .map(AlertSerializableModel::toString)
-                                     .collect(Collectors.toList());
+            .stream()
+            .map(AlertSerializableModel::toString)
+            .collect(Collectors.toList());
         if (!fieldJson.isEmpty()) {
             putField(fieldModel, fieldName, fieldJson);
         }

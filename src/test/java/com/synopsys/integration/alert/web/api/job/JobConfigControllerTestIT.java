@@ -27,7 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -78,10 +77,10 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of(distributionJobModel.getJobId()));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(gson.toJson(jobIdsRequestModel))
-                                                    .contentType(MEDIA_TYPE);
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .content(gson.toJson(jobIdsRequestModel))
+            .contentType(MEDIA_TYPE);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -96,10 +95,10 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                                    .content(blackDuckProviderKey.getUniversalKey())
-                                                    .contentType(MEDIA_TYPE);
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .content(blackDuckProviderKey.getUniversalKey())
+            .contentType(MEDIA_TYPE);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
@@ -113,8 +112,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
         String urlPath = REQUEST_URL + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -126,8 +125,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
         String urlPath = REQUEST_URL + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -142,8 +141,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
         String urlPath = REQUEST_URL + "/" + jobId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
@@ -152,9 +151,9 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testUpdateConfig() throws Exception {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
-            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
-            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getBlackDuckURL()),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
+                ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
+                BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getBlackDuckURL()),
+                BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
             )
         );
 
@@ -170,8 +169,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         String configId = String.valueOf(distributionJobModel.getJobId());
         String urlPath = REQUEST_URL + "/" + configId;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         fieldModel.setJobId(configId);
 
@@ -185,14 +184,14 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = AlertIntegrationTestConstants.ROLE_ALERT_ADMIN)
     public void testSaveConfig() throws Exception {
         ConfigurationModel providerGlobalConfig = addGlobalConfiguration(blackDuckProviderKey, Map.of(
-            ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
-            BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getBlackDuckURL()),
-            BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
+                ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, List.of(DEFAULT_BLACK_DUCK_CONFIG),
+                BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of(testProperties.getBlackDuckURL()),
+                BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of(testProperties.getBlackDuckAPIToken())
             )
         );
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(REQUEST_URL)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
@@ -211,8 +210,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
@@ -231,8 +230,8 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             BlackDuckDescriptor.KEY_BLACKDUCK_URL, List.of("BLACKDUCK_URL"),
             BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, List.of("BLACKDUCK_API")));
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
-                                                    .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
-                                                    .with(SecurityMockMvcRequestPostProcessors.csrf());
+            .with(SecurityMockMvcRequestPostProcessors.user("admin").roles(AlertIntegrationTestConstants.ROLE_ALERT_ADMIN))
+            .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         JobFieldModel fieldModel = createTestJobFieldModel(null, null, providerGlobalConfig);
 
@@ -295,11 +294,11 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         FieldValueModel filterByProject = new FieldValueModel(List.of("false"), true);
         FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 
-        Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType,
+        Map<String, FieldValueModel> bdFields = Map.of(ProviderDescriptor.KEY_NOTIFICATION_TYPES, notificationType,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, providerConfigField,
-            ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, formatType,
-            ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject,
-            ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, projectNames
+            ProviderDescriptor.KEY_PROCESSING_TYPE, formatType,
+            ProviderDescriptor.KEY_FILTER_BY_PROJECT, filterByProject,
+            ProviderDescriptor.KEY_CONFIGURED_PROJECT, projectNames
         );
         FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
         if (StringUtils.isNotBlank(providerId)) {

@@ -71,8 +71,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     protected final ExistingIssueDetails<String> createIssueAndExtractDetails(IssueCreationModel alertIssueCreationModel) throws AlertException {
         MessageReplacementValues replacementValues = alertIssueCreationModel.getSource()
                                                          .map(this::createCustomFieldReplacementValues)
-                                                         .orElse(MessageReplacementValues
-                                                                     .trivial(alertIssueCreationModel.getProvider().getLabel(), MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE));
+                                                         .orElse(new MessageReplacementValues.Builder(alertIssueCreationModel.getProvider().getLabel(), MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE).build());
         T creationRequest = createIssueCreationRequest(alertIssueCreationModel, replacementValues);
         try {
             IssueCreationResponseModel issueCreationResponseModel = createIssue(creationRequest);
@@ -129,15 +128,13 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         if (vulnerabilityDetails.isPresent()) {
             severity = vulnerabilityDetails.get().getHighestSeverityAddedOrUpdated();
         }
-        return new MessageReplacementValues(
-            alertIssueSource.getProvider().getLabel(),
-            alertIssueSource.getProject().getValue(),
-            alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
-            bomComponent.getComponent().getValue(),
-            bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
-            severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE),
-            policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE)
-        );
+        return new MessageReplacementValues.Builder(alertIssueSource.getProvider().getLabel(), alertIssueSource.getProject().getValue())
+                   .projectVersionName(alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .componentName(bomComponent.getComponent().getValue())
+                   .componentVersionName(bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .severity(severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .policyCategory(policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .build();
     }
 
     private JiraIssueSearchProperties createSearchProperties(ProjectIssueModel alertIssueSource) {

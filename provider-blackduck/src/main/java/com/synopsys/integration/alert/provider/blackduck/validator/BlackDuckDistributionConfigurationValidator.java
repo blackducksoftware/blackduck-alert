@@ -14,14 +14,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.CommonProviderDistributionValidator;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 
 @Component
 public class BlackDuckDistributionConfigurationValidator implements DistributionConfigurationValidator {
@@ -39,14 +37,14 @@ public class BlackDuckDistributionConfigurationValidator implements Distribution
         commonProviderDistributionValidator.validate(configurationFieldValidator);
 
         configurationFieldValidator.validateRequiredRelatedSet(
-            BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, BlackDuckDistributionUIConfig.LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
-            ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES,
+            BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, BlackDuckDescriptor.LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
+            ProviderDescriptor.KEY_NOTIFICATION_TYPES,
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
         configurationFieldValidator.validateRequiredRelatedSet(
-            BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, BlackDuckDistributionUIConfig.LABEL_BALCKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
-            ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
+            BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, BlackDuckDescriptor.LABEL_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
+            ProviderDescriptor.KEY_NOTIFICATION_TYPES);
 
         return configurationFieldValidator.getValidationResults();
     }

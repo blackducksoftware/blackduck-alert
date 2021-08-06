@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -68,7 +67,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
 
     @Override
     public ActionResponse<NotificationFilterModelOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
-        Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
+        Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDescriptor.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
 
         int totalPages = 1;
@@ -106,19 +105,19 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         BlackDuckMultipleRequest<PolicyRuleView> spec = new BlackDuckRequestBuilder()
-                                                            .commonGet()
-                                                            .setLimitAndOffset(pageSize, pageNumber * pageSize)
-                                                            .addBlackDuckQuery(new BlackDuckQuery("name", searchTerm))
-                                                            .addBlackDuckFilter(BlackDuckRequestFilter.createFilterWithSingleValue("policyRuleEnabled", "true"))
-                                                            .buildBlackDuckRequest(apiDiscovery.metaPolicyRulesLink());
+            .commonGet()
+            .setLimitAndOffset(pageSize, pageNumber * pageSize)
+            .addBlackDuckQuery(new BlackDuckQuery("name", searchTerm))
+            .addBlackDuckFilter(BlackDuckRequestFilter.createFilterWithSingleValue("policyRuleEnabled", "true"))
+            .buildBlackDuckRequest(apiDiscovery.metaPolicyRulesLink());
         return blackDuckApiClient.getPageResponse(spec);
     }
 
     private List<NotificationFilterModel> convertToNotificationFilterModel(List<PolicyRuleView> policyRules) {
         return policyRules.stream()
-                   .map(PolicyRuleView::getName)
-                   .map(NotificationFilterModel::new)
-                   .collect(Collectors.toList());
+            .map(PolicyRuleView::getName)
+            .map(NotificationFilterModel::new)
+            .collect(Collectors.toList());
     }
 
     private Optional<BlackDuckServicesFactory> createBlackDuckServicesFactory(FieldModel fieldModel) throws IntegrationException {
@@ -140,7 +139,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         }
 
         return configurationAccessor.getConfigurationById(providerConfigId)
-                   .map(blackDuckPropertiesFactory::createProperties);
+            .map(blackDuckPropertiesFactory::createProperties);
     }
 
 }

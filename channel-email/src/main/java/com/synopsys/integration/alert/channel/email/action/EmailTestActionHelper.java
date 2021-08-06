@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
@@ -65,14 +65,14 @@ public class EmailTestActionHelper {
         List<ProviderProject> providerProjects = providerDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         if (distributionJobModel.isFilterByProject()) {
             Set<String> configuredProjects = distributionJobModel.getProjectFilterDetails()
-                                                 .stream()
-                                                 .map(BlackDuckProjectDetailsModel::getName)
-                                                 .collect(Collectors.toSet());
+                .stream()
+                .map(BlackDuckProjectDetailsModel::getName)
+                .collect(Collectors.toSet());
             String projectNamePattern = distributionJobModel.getProjectNamePattern().orElse("");
             return providerProjects
-                       .stream()
-                       .filter(providerProject -> doesProjectMatchConfiguration(providerProject.getName(), projectNamePattern, configuredProjects))
-                       .collect(Collectors.toSet());
+                .stream()
+                .filter(providerProject -> doesProjectMatchConfiguration(providerProject.getName(), projectNamePattern, configuredProjects))
+                .collect(Collectors.toSet());
         }
         return new HashSet<>(providerProjects);
     }
@@ -97,10 +97,10 @@ public class EmailTestActionHelper {
             } else {
                 errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
             }
-            String errorField = ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT;
+            String errorField = ProviderDescriptor.KEY_CONFIGURED_PROJECT;
             boolean filterByProject = distributionJobModel.isFilterByProject();
             if (!filterByProject) {
-                errorField = ProviderDistributionUIConfig.KEY_FILTER_BY_PROJECT;
+                errorField = ProviderDescriptor.KEY_FILTER_BY_PROJECT;
             }
             throw AlertFieldException.singleFieldError(errorField, errorMessage);
         }
