@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -24,8 +22,8 @@ import com.synopsys.integration.alert.common.util.PagingParamValidationUtils;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class PagedCustomFunctionAction<T extends AlertPagedModel<?>> extends CustomFunctionAction<T> {
-    public PagedCustomFunctionAction(String fieldKey, AuthorizationManager authorizationManager, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
-        super(fieldKey, authorizationManager, descriptorMap, fieldValidationUtility);
+    public PagedCustomFunctionAction(AuthorizationManager authorizationManager) {
+        super(authorizationManager);
     }
 
     @Override
@@ -48,15 +46,15 @@ public abstract class PagedCustomFunctionAction<T extends AlertPagedModel<?>> ex
 
     protected final Optional<String> extractFirstParam(Map<String, String[]> parameterMap, String paramName) {
         return Optional.ofNullable(parameterMap.get(paramName))
-                   .filter(paramValues -> paramValues.length > 0)
-                   .map(paramValues -> paramValues[0]);
+            .filter(paramValues -> paramValues.length > 0)
+            .map(paramValues -> paramValues[0]);
     }
 
     protected int extractIntParam(Map<String, String[]> parameterMap, String paramName, int defaultValue) {
         return extractFirstParam(parameterMap, paramName)
-                   .filter(NumberUtils::isDigits)
-                   .map(NumberUtils::toInt)
-                   .orElse(defaultValue);
+            .filter(NumberUtils::isDigits)
+            .map(NumberUtils::toInt)
+            .orElse(defaultValue);
     }
 
 }

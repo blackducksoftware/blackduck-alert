@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.channel.azure.boards.web;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,12 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreat
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.action.api.ConfigResourceActions;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.oauth.OAuthEndpointResponse;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -54,6 +55,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
 
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
+    private final AzureBoardsGlobalConfigurationValidator globalConfigurationValidator;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final ProxyManager proxyManager;
@@ -65,17 +67,18 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     public AzureBoardsCustomFunctionAction(
         ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter,
+        AzureBoardsGlobalConfigurationValidator globalConfigurationValidator,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator,
         ConfigResourceActions configActions,
         AuthorizationManager authorizationManager,
-        DescriptorMap descriptorMap,
-        FieldValidationUtility fieldValidationUtility,
-        AlertWebServerUrlManager alertWebServerUrlManager) {
-        super(AzureBoardsDescriptor.KEY_OAUTH, authorizationManager, descriptorMap, fieldValidationUtility);
+        AlertWebServerUrlManager alertWebServerUrlManager
+    ) {
+        super(authorizationManager);
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
+        this.globalConfigurationValidator = globalConfigurationValidator;
         this.azureBoardsCredentialDataStoreFactory = azureBoardsCredentialDataStoreFactory;
         this.azureRedirectUrlCreator = azureRedirectUrlCreator;
         this.proxyManager = proxyManager;
@@ -118,6 +121,11 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
             logger.error("Error activating Azure Boards", ex);
             return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error activating azure oauth.");
         }
+    }
+
+    @Override
+    protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
+        return globalConfigurationValidator.validate(fieldModel);
     }
 
     private ActionResponse<OAuthEndpointResponse> createErrorResponse(String errorMessage) {
