@@ -58,10 +58,14 @@ public class ProjectIssueModelConverter {
         this.linkableItemConverter = new LinkableItemConverter(formatter);
     }
 
-    public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel) {
+    public IssueCreationModel toIssueCreationModel(ProjectIssueModel projectIssueModel, String jobName) {
         String title = createTruncatedTitle(projectIssueModel);
 
         ChunkedStringBuilder descriptionBuilder = new ChunkedStringBuilder(formatter.getMaxDescriptionLength());
+
+        String nonBreakingSpace = formatter.getNonBreakingSpace();
+        descriptionBuilder.append(String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName));
+        descriptionBuilder.append(formatter.getLineSeparator());
 
         String projectString = linkableItemConverter.convertToString(projectIssueModel.getProject(), true);
         descriptionBuilder.append(projectString);
@@ -88,9 +92,9 @@ public class ProjectIssueModelConverter {
         RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionBuilder, "No description", newChunkSize);
 
         List<String> postCreateComments = rechunkedDescription.getRemainingChunks()
-                                              .stream()
-                                              .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
-                                              .collect(Collectors.toList());
+            .stream()
+            .map(comment -> String.format("%s%s%s", DESCRIPTION_CONTINUED_TEXT, formatter.getLineSeparator(), comment))
+            .collect(Collectors.toList());
 
         return IssueCreationModel.project(title, rechunkedDescription.getFirstChunk(), postCreateComments, projectIssueModel);
     }

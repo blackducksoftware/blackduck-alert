@@ -49,23 +49,23 @@ public class IssueTrackerModelExtractor<T extends Serializable> {
         return new IssueTrackerModelHolder<>(simpleMessageIssueCreationModels, List.of(), List.of());
     }
 
-    public final IssueTrackerModelHolder<T> extractProjectMessageIssueModels(ProjectMessage projectMessage) throws AlertException {
+    public final IssueTrackerModelHolder<T> extractProjectMessageIssueModels(ProjectMessage projectMessage, String jobName) throws AlertException {
         IssueTrackerModelHolder<T> combinedResults = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
         List<ActionableIssueSearchResult<T>> searchResults = issueTrackerSearcher.findIssues(projectMessage);
         for (ActionableIssueSearchResult<T> searchResult : searchResults) {
-            IssueTrackerModelHolder<T> searchResultMessages = convertSearchResult(searchResult);
+            IssueTrackerModelHolder<T> searchResultMessages = convertSearchResult(searchResult, jobName);
             combinedResults = IssueTrackerModelHolder.reduce(combinedResults, searchResultMessages);
         }
         return combinedResults;
     }
 
-    private IssueTrackerModelHolder<T> convertSearchResult(ActionableIssueSearchResult<T> searchResult) {
+    private IssueTrackerModelHolder<T> convertSearchResult(ActionableIssueSearchResult<T> searchResult, String jobName) {
         Optional<ExistingIssueDetails<T>> existingIssueDetails = searchResult.getExistingIssueDetails();
         ProjectIssueModel projectIssueModel = searchResult.getProjectIssueModel();
         if (existingIssueDetails.isPresent()) {
             return convertExistingIssue(existingIssueDetails.get(), projectIssueModel, searchResult.getRequiredOperation());
         } else {
-            IssueCreationModel issueCreationModel = projectIssueModelConverter.toIssueCreationModel(projectIssueModel);
+            IssueCreationModel issueCreationModel = projectIssueModelConverter.toIssueCreationModel(projectIssueModel, jobName);
             return new IssueTrackerModelHolder<>(List.of(issueCreationModel), List.of(), List.of());
         }
     }
