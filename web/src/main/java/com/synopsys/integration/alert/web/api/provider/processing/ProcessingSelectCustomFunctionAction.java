@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -35,19 +35,19 @@ public class ProcessingSelectCustomFunctionAction extends CustomFunctionAction<L
 
     @Autowired
     public ProcessingSelectCustomFunctionAction(AuthorizationManager authorizationManager, List<IssueTrackerChannelKey> issueTrackerChannelKeys, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
-        super(ProviderDistributionUIConfig.KEY_PROCESSING_TYPE, authorizationManager, descriptorMap, fieldValidationUtility);
+        super(ProviderDescriptor.KEY_PROCESSING_TYPE, authorizationManager, descriptorMap, fieldValidationUtility);
         this.issueTrackerChannelKeys = issueTrackerChannelKeys.stream()
-                                           .map(IssueTrackerChannelKey::getUniversalKey)
-                                           .collect(Collectors.toList());
+            .map(IssueTrackerChannelKey::getUniversalKey)
+            .collect(Collectors.toList());
     }
 
     @Override
     public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
         String channelName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
         List<LabelValueSelectOption> options = Arrays.stream(ProcessingType.values())
-                                                   .filter(processingType -> this.shouldInclude(processingType, channelName))
-                                                   .map(processingType -> new LabelValueSelectOption(processingType.getLabel(), processingType.name()))
-                                                   .collect(Collectors.toList());
+            .filter(processingType -> this.shouldInclude(processingType, channelName))
+            .map(processingType -> new LabelValueSelectOption(processingType.getLabel(), processingType.name()))
+            .collect(Collectors.toList());
 
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
         return new ActionResponse<>(HttpStatus.OK, optionList);
