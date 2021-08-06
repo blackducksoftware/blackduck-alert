@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.CommonProviderDistributionValidator;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
@@ -39,13 +38,13 @@ public class BlackDuckDistributionConfigurationValidator implements Distribution
 
         configurationFieldValidator.validateRequiredRelatedSet(
             BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, BlackDuckDescriptor.LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
-            ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES,
+            ProviderDescriptor.KEY_NOTIFICATION_TYPES,
             ChannelDistributionUIConfig.KEY_PROVIDER_NAME,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
         configurationFieldValidator.validateRequiredRelatedSet(
             BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, BlackDuckDescriptor.LABEL_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
-            ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
+            ProviderDescriptor.KEY_NOTIFICATION_TYPES);
 
         return configurationFieldValidator.getValidationResults();
     }

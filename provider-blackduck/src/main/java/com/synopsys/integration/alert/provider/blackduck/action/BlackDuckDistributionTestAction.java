@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -52,7 +51,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
         Optional<Long> optionalProviderConfigId = registeredFieldValues.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         if (optionalProviderConfigId.isPresent()) {
             Long providerConfigId = optionalProviderConfigId.get();
-            registeredFieldValues.getString(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN)
+            registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN)
                 .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
                 .ifPresent(fieldStatuses::add);
 
@@ -84,7 +83,7 @@ public class BlackDuckDistributionTestAction extends TestAction {
         List<ProviderProject> blackDuckProjects = blackDuckDataAccessor.getProjectsByProviderConfigId(providerConfigId);
         boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
         if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
-            return Optional.of(AlertFieldStatus.warning(ProviderDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects."));
+            return Optional.of(AlertFieldStatus.warning(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects."));
         }
         return Optional.empty();
     }

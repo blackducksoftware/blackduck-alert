@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -50,7 +49,7 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
         ProviderDataAccessor providerDataAccessor,
         BlackDuckPropertiesFactory blackDuckPropertiesFactory
     ) {
-        super(ProviderDistributionUIConfig.KEY_CONFIGURED_PROJECT, authorizationManager, descriptorMap, fieldValidationUtility);
+        super(ProviderDescriptor.KEY_CONFIGURED_PROJECT, authorizationManager, descriptorMap, fieldValidationUtility);
         this.providerDataAccessor = providerDataAccessor;
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
     }
@@ -63,8 +62,8 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
         }
 
         Long blackDuckConfigId = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID)
-                                     .map(Long::parseLong)
-                                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR));
+            .map(Long::parseLong)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR));
 
         validateBlackDuckConfiguration(blackDuckConfigId);
 
@@ -73,7 +72,7 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
 
     private void validateBlackDuckConfiguration(Long blackDuckConfigId) {
         BlackDuckProperties blackDuckProperties = blackDuckPropertiesFactory.createProperties(blackDuckConfigId)
-                                                      .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The BlackDuck configuration used in this Job does not exist"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The BlackDuck configuration used in this Job does not exist"));
 
         BlackDuckApiTokenValidator blackDuckAPITokenValidator = new BlackDuckApiTokenValidator(blackDuckProperties);
         if (!blackDuckAPITokenValidator.isApiTokenValid()) {
@@ -84,9 +83,9 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
     private ActionResponse<ProviderProjectOptions> getBlackDuckProjectsActionResponse(Long blackDuckGlobalConfigId, int pageNumber, int pageSize, String searchTerm) {
         AlertPagedModel<ProviderProject> providerProjectsPage = providerDataAccessor.getProjectsByProviderConfigId(blackDuckGlobalConfigId, pageNumber, pageSize, searchTerm);
         List<ProviderProjectSelectOption> options = providerProjectsPage.getModels()
-                                                        .stream()
-                                                        .map(project -> new ProviderProjectSelectOption(project.getName(), project.getHref(), project.getDescription()))
-                                                        .collect(Collectors.toList());
+            .stream()
+            .map(project -> new ProviderProjectSelectOption(project.getName(), project.getHref(), project.getDescription()))
+            .collect(Collectors.toList());
         return new ActionResponse<>(HttpStatus.OK, new ProviderProjectOptions(providerProjectsPage.getTotalPages(), providerProjectsPage.getCurrentPage(), providerProjectsPage.getPageSize(), options));
     }
 
