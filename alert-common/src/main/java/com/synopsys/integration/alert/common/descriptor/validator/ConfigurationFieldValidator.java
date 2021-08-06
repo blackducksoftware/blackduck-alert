@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +33,6 @@ public class ConfigurationFieldValidator {
     public static final String INVALID_OPTION_MESSAGE = "Invalid option selected";
 
     private final Map<String, FieldValueModel> fieldMap;
-    private final Set<AlertFieldStatus> statuses;
 
     public static ConfigurationFieldValidator fromFieldModel(FieldModel fieldModel) {
         return new ConfigurationFieldValidator(fieldModel.getKeyToValues());
@@ -51,63 +50,71 @@ public class ConfigurationFieldValidator {
 
     public ConfigurationFieldValidator(Map<String, FieldValueModel> mapToValidate) {
         this.fieldMap = mapToValidate;
-        statuses = new HashSet<>();
     }
 
-    public Set<AlertFieldStatus> getValidationResults() {
-        return statuses;
-    }
-
-    public void validateRequiredFieldIsNotBlank(String fieldKey) {
+    public Optional<AlertFieldStatus> validateRequiredFieldIsNotBlank(String fieldKey) {
         if (fieldContainsNoData(fieldKey)) {
-            statuses.add(AlertFieldStatus.error(fieldKey, REQUIRED_FIELD_MISSING_MESSAGE));
+            AlertFieldStatus error = AlertFieldStatus.error(fieldKey, REQUIRED_FIELD_MISSING_MESSAGE);
+            return Optional.of(error);
         }
+        return Optional.empty();
     }
 
-    public void validateRequiredFieldsAreNotBlank(String... fieldKeys) {
+    public List<AlertFieldStatus> validateRequiredFieldsAreNotBlank(String... fieldKeys) {
         if (null != fieldKeys) {
-            validateRequiredFieldsAreNotBlank(Arrays.asList(fieldKeys));
+            return validateRequiredFieldsAreNotBlank(Arrays.asList(fieldKeys));
         }
+        return List.of();
     }
 
-    public void validateRequiredFieldsAreNotBlank(List<String> fieldKeys) {
+    public List<AlertFieldStatus> validateRequiredFieldsAreNotBlank(List<String> fieldKeys) {
+        List<AlertFieldStatus> errors = new LinkedList<>();
         for (String fieldKey : fieldKeys) {
-            validateRequiredFieldIsNotBlank(fieldKey);
+            validateRequiredFieldIsNotBlank(fieldKey)
+                .ifPresent(errors::add);
         }
+        return errors;
     }
 
-    public void validateRequiredRelatedSet(String fieldKey, String fieldLabel, String... requiredRelatedFieldKeys) {
+    public List<AlertFieldStatus> validateRequiredRelatedSet(String fieldKey, String fieldLabel, String... requiredRelatedFieldKeys) {
+        List<AlertFieldStatus> errors = new LinkedList<>();
         if (fieldContainsData(fieldKey)) {
             for (String requiredFieldKey : requiredRelatedFieldKeys) {
                 if (fieldContainsNoData(requiredFieldKey)) {
-                    statuses.add(AlertFieldStatus.error(requiredFieldKey, String.format("Must be set if %s is set", fieldLabel)));
+                    AlertFieldStatus error = AlertFieldStatus.error(requiredFieldKey, String.format("Must be set if %s is set", fieldLabel));
+                    errors.add(error);
                 }
             }
         }
+        return errors;
     }
 
-    public void validateIsANumber(String fieldKey) {
+    public Optional<AlertFieldStatus> validateIsANumber(String fieldKey) {
         boolean isANumberOrEmpty = getStringValue(fieldKey)
             .map(NumberUtils::isCreatable)
             .orElse(true);
 
         if (!isANumberOrEmpty) {
-            statuses.add(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
+            AlertFieldStatus error = AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE);
+            return Optional.of(error);
         }
+        return Optional.empty();
     }
 
-    public void validateIsAURL(String fieldKey) {
+    public Optional<AlertFieldStatus> validateIsAURL(String fieldKey) {
         String url = getStringValue(fieldKey).orElse("");
         if (StringUtils.isNotBlank(url)) {
             try {
                 new URL(url);
             } catch (MalformedURLException e) {
-                statuses.add(AlertFieldStatus.error(fieldKey, e.getMessage()));
+                AlertFieldStatus error = AlertFieldStatus.error(fieldKey, e.getMessage());
+                return Optional.of(error);
             }
         }
+        return Optional.empty();
     }
 
-    public void validateIsAValidOption(String fieldKey, Set<String> validOptions) {
+    public Optional<AlertFieldStatus> validateIsAValidOption(String fieldKey, Set<String> validOptions) {
         boolean allValuesInValidOptions = getCollectionOfValues(fieldKey)
             .orElse(Collections.emptySet())
             .stream()
@@ -115,12 +122,10 @@ public class ConfigurationFieldValidator {
             .allMatch(option -> validOptions.stream().anyMatch(validOption -> StringUtils.equalsIgnoreCase(option, validOption)));
 
         if (!allValuesInValidOptions) {
-            statuses.add(AlertFieldStatus.error(fieldKey, INVALID_OPTION_MESSAGE));
+            AlertFieldStatus error = AlertFieldStatus.error(fieldKey, INVALID_OPTION_MESSAGE);
+            return Optional.of(error);
         }
-    }
-
-    public void addValidationResults(AlertFieldStatus... alertFieldStatuses) {
-        statuses.addAll(Arrays.asList(alertFieldStatuses));
+        return Optional.empty();
     }
 
     public boolean fieldContainsData(String fieldKey) {
