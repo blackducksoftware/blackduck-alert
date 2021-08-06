@@ -31,13 +31,16 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String BLACKDUCK_URL = "blackduck";
     public static final String BLACKDUCK_DESCRIPTION = "This is the configuration to connect to the Black Duck server. Configuring this will cause Alert to start pulling data from Black Duck.";
 
+    public static final String LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER = "Policy Notification Type Filter";
+    public static final String LABEL_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER = "Vulnerability Notification Type Filter";
+
     private final BlackDuckGlobalConfigurationValidator globalValidator;
     private final DistributionConfigurationValidator distributionValidator;
 
     @Autowired
-    public BlackDuckDescriptor(BlackDuckProviderKey blackDuckProviderKey, BlackDuckProviderUIConfig blackDuckProviderUIConfig, BlackDuckDistributionUIConfig blackDuckDistributionUIConfig,
+    public BlackDuckDescriptor(BlackDuckProviderKey blackDuckProviderKey, BlackDuckProviderUIConfig blackDuckProviderUIConfig,
         BlackDuckGlobalConfigurationValidator globalValidator, BlackDuckDistributionConfigurationValidator distributionValidator) {
-        super(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckDistributionUIConfig);
+        super(blackDuckProviderKey, blackDuckProviderUIConfig);
         this.globalValidator = globalValidator;
         this.distributionValidator = distributionValidator;
     }
@@ -51,4 +54,5 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
         return Optional.of(distributionValidator);
     }
+
 }
