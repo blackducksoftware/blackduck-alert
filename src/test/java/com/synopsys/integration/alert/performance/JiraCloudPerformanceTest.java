@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.web.JiraCloudCustomFunctionAction;
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -88,11 +88,11 @@ public class JiraCloudPerformanceTest {
 
     private Map<String, FieldValueModel> createChannelFieldsMap(TestProperties testProperties) {
         Map<String, FieldValueModel> channelFieldsMap = new HashMap<>();
-        channelFieldsMap.put(ChannelDistributionUIConfig.KEY_ENABLED, createFieldValueModel("true"));
-        channelFieldsMap.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, createFieldValueModel(CHANNEL_KEY.getUniversalKey()));
-        channelFieldsMap.put(ChannelDistributionUIConfig.KEY_NAME, createFieldValueModel(JIRA_CLOUD_PERFORMANCE_JOB_NAME));
-        channelFieldsMap.put(ChannelDistributionUIConfig.KEY_FREQUENCY, createFieldValueModel(FrequencyType.REAL_TIME.name()));
-        channelFieldsMap.put(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, createFieldValueModel(PROVIDER_KEY.getUniversalKey()));
+        channelFieldsMap.put(ChannelDescriptor.KEY_ENABLED, createFieldValueModel("true"));
+        channelFieldsMap.put(ChannelDescriptor.KEY_CHANNEL_NAME, createFieldValueModel(CHANNEL_KEY.getUniversalKey()));
+        channelFieldsMap.put(ChannelDescriptor.KEY_NAME, createFieldValueModel(JIRA_CLOUD_PERFORMANCE_JOB_NAME));
+        channelFieldsMap.put(ChannelDescriptor.KEY_FREQUENCY, createFieldValueModel(FrequencyType.REAL_TIME.name()));
+        channelFieldsMap.put(ChannelDescriptor.KEY_PROVIDER_TYPE, createFieldValueModel(PROVIDER_KEY.getUniversalKey()));
 
         channelFieldsMap.put(JiraCloudDescriptor.KEY_ADD_COMMENTS, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_CLOUD_ADD_COMMENTS).orElse("true")));
         channelFieldsMap.put(JiraCloudDescriptor.KEY_ISSUE_CREATOR, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_CLOUD_ISSUE_CREATOR).orElse("")));

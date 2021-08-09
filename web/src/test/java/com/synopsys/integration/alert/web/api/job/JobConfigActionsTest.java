@@ -27,13 +27,13 @@ import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
@@ -302,7 +302,7 @@ public class JobConfigActionsTest {
         Mockito.when(mockedFieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(mockedDescriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        Mockito.when(mockedConfigurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, configurationFieldModel));
+        Mockito.when(mockedConfigurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDescriptor.KEY_PROVIDER_TYPE, configurationFieldModel));
         Mockito.when(mockedDescriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
 
         ValidationActionResponse validationActionResponse = defaultJobConfigActions.test(jobFieldModel);
@@ -369,7 +369,7 @@ public class JobConfigActionsTest {
         Mockito.when(mockedFieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
         Mockito.when(mockedDescriptorProcessor.retrieveTestAction(Mockito.any())).thenReturn(Optional.of(createTestActionWithErrors()));
-        Mockito.when(mockedConfigurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, configurationFieldModel));
+        Mockito.when(mockedConfigurationFieldModelConverter.convertToConfigurationFieldModelMap(Mockito.any())).thenReturn(Map.of(ChannelDescriptor.KEY_PROVIDER_TYPE, configurationFieldModel));
         Mockito.when(mockedDescriptorProcessor.retrieveTestAction(Mockito.any(), Mockito.any())).thenReturn(Optional.of(createTestActionWithIntegrationRestException()));
 
         ValidationActionResponse validationActionResponse = defaultJobConfigActions.test(jobFieldModel);
@@ -589,7 +589,7 @@ public class JobConfigActionsTest {
         String value = "testValue";
         Map<String, FieldValueModel> keyToValues = new HashMap<>();
         keyToValues.put(TestAction.KEY_CUSTOM_TOPIC, new FieldValueModel(List.of(value), false));
-        keyToValues.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(value), false));
+        keyToValues.put(ChannelDescriptor.KEY_NAME, new FieldValueModel(List.of(value), false));
         return new FieldModel(descriptorKey.getUniversalKey(), ConfigContextEnum.DISTRIBUTION.name(), keyToValues);
     }
 

@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -86,11 +86,11 @@ public class EmailPerformanceTest {
         FieldModel emailGlobalConfig = new FieldModel(EMAIL_CHANNEL_KEY, ConfigContextEnum.GLOBAL.name(), emailGlobalConfigFields);
 
         Map<String, FieldValueModel> emailJobFields = new HashMap<>();
-        emailJobFields.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        emailJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(EMAIL_CHANNEL_KEY), true));
-        emailJobFields.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(EMAIL_PERFORMANCE_JOB_NAME), true));
-        emailJobFields.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        emailJobFields.put(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
+        emailJobFields.put(ChannelDescriptor.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
+        emailJobFields.put(ChannelDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(EMAIL_CHANNEL_KEY), true));
+        emailJobFields.put(ChannelDescriptor.KEY_NAME, new FieldValueModel(List.of(EMAIL_PERFORMANCE_JOB_NAME), true));
+        emailJobFields.put(ChannelDescriptor.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
+        emailJobFields.put(ChannelDescriptor.KEY_PROVIDER_TYPE, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
 
         emailJobFields.put(EmailDescriptor.KEY_SUBJECT_LINE, new FieldValueModel(List.of(EMAIL_PERFORMANCE_JOB_NAME), true));
         emailJobFields.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, new FieldValueModel(List.of("true"), true));

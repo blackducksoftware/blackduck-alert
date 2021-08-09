@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDes
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
@@ -102,11 +102,11 @@ public final class JobFieldModelPopulationUtils {
 
     public static void populateChannelFields(FieldModel channelFieldModel, DistributionJobModel jobModel) {
         String channelDescriptorName = jobModel.getChannelDescriptorName();
-        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_ENABLED, Boolean.toString(jobModel.isEnabled()));
-        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_NAME, jobModel.getName());
-        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
-        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, DEFAULT_PROVIDER_NAME);
-        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_FREQUENCY, jobModel.getDistributionFrequency().name());
+        putField(channelFieldModel, ChannelDescriptor.KEY_ENABLED, Boolean.toString(jobModel.isEnabled()));
+        putField(channelFieldModel, ChannelDescriptor.KEY_NAME, jobModel.getName());
+        putField(channelFieldModel, ChannelDescriptor.KEY_CHANNEL_NAME, channelDescriptorName);
+        putField(channelFieldModel, ChannelDescriptor.KEY_PROVIDER_TYPE, DEFAULT_PROVIDER_NAME);
+        putField(channelFieldModel, ChannelDescriptor.KEY_FREQUENCY, jobModel.getDistributionFrequency().name());
         putField(channelFieldModel, ProviderDescriptor.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
 
         DistributionJobDetailsModel jobDetails = jobModel.getDistributionJobDetails();

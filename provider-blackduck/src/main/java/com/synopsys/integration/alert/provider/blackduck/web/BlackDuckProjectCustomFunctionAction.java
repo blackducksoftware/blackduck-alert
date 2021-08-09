@@ -23,10 +23,10 @@ import org.springframework.web.server.ResponseStatusException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.endpoint.table.model.ProviderProjectSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderDataAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ProviderProject;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
@@ -57,7 +57,7 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
 
     @Override
     public ActionResponse<ProviderProjectOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) {
-        String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE).orElse("");
+        String providerName = fieldModel.getFieldValue(ChannelDescriptor.KEY_PROVIDER_TYPE).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
@@ -73,12 +73,12 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
 
     @Override
     protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
-        Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
+        Optional<String> providerName = fieldModel.getFieldValue(ChannelDescriptor.KEY_PROVIDER_TYPE);
         Optional<String> providerConfigId = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
         Set<AlertFieldStatus> errors = new HashSet<>();
         if (providerName.isEmpty()) {
-            AlertFieldStatus missingProviderName = AlertFieldStatus.error(ProviderDescriptor.KEY_CONFIGURED_PROJECT, String.format("Missing %s", ChannelDistributionUIConfig.KEY_PROVIDER_TYPE));
+            AlertFieldStatus missingProviderName = AlertFieldStatus.error(ProviderDescriptor.KEY_CONFIGURED_PROJECT, String.format("Missing %s", ChannelDescriptor.KEY_PROVIDER_TYPE));
             errors.add(missingProviderName);
         }
 

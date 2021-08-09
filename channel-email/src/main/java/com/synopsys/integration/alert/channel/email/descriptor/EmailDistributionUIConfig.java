@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.attachment.EmailAttachmentFormat;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
@@ -54,7 +55,7 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
             .applyColumn(TableSelectColumn.visible("emailAddress", "Email Address", true, true))
             .applySearchable(true)
             .applyPaged(true)
-            .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE)
+            .applyRequiredRelatedField(ChannelDescriptor.KEY_PROVIDER_TYPE)
             .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)

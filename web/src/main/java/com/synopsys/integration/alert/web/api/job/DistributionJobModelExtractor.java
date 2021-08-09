@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionMap;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.job.BlackDuckProjectDetailsModel;
 import com.synopsys.integration.alert.common.persistence.model.job.DistributionJobModel;
@@ -45,12 +45,12 @@ public final class DistributionJobModelExtractor {
         @Nullable OffsetDateTime lastUpdated,
         List<BlackDuckProjectDetailsModel> projectFilterDetails
     ) {
-        String channelDescriptorName = distributionJobFieldExtractor.extractFieldValueOrEmptyString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, configuredFieldsMap);
+        String channelDescriptorName = distributionJobFieldExtractor.extractFieldValueOrEmptyString(ChannelDescriptor.KEY_CHANNEL_NAME, configuredFieldsMap);
         DistributionJobModelBuilder builder = DistributionJobModel.builder()
             .jobId(jobId)
-            .enabled(distributionJobFieldExtractor.extractFieldValue(ChannelDistributionUIConfig.KEY_ENABLED, configuredFieldsMap).map(Boolean::valueOf).orElse(true))
-            .name(distributionJobFieldExtractor.extractFieldValueOrEmptyString(ChannelDistributionUIConfig.KEY_NAME, configuredFieldsMap))
-            .distributionFrequency(distributionJobFieldExtractor.extractFieldValueOrEmptyString(ChannelDistributionUIConfig.KEY_FREQUENCY, configuredFieldsMap))
+            .enabled(distributionJobFieldExtractor.extractFieldValue(ChannelDescriptor.KEY_ENABLED, configuredFieldsMap).map(Boolean::valueOf).orElse(true))
+            .name(distributionJobFieldExtractor.extractFieldValueOrEmptyString(ChannelDescriptor.KEY_NAME, configuredFieldsMap))
+            .distributionFrequency(distributionJobFieldExtractor.extractFieldValueOrEmptyString(ChannelDescriptor.KEY_FREQUENCY, configuredFieldsMap))
             .processingType(distributionJobFieldExtractor.extractFieldValueOrEmptyString(ProviderDescriptor.KEY_PROCESSING_TYPE, configuredFieldsMap))
             .channelDescriptorName(channelDescriptorName)
             .createdAt(createdAt)
