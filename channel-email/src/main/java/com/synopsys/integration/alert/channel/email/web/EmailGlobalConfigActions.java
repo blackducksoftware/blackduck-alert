@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.channel.email.web;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +32,6 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
@@ -48,6 +46,7 @@ public class EmailGlobalConfigActions {
     private final EmailDescriptor emailDescriptor;
     private final EmailGlobalTestAction testAction;
     private final PKIXErrorResponseFactory pkixErrorResponseFactory;
+    private final EmailGlobalConfigResponseTransformer responseTransformer;
 
     @Autowired
     public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailDescriptor emailDescriptor, EmailGlobalTestAction testAction,
@@ -58,6 +57,7 @@ public class EmailGlobalConfigActions {
         this.emailDescriptor = emailDescriptor;
         this.testAction = testAction;
         this.pkixErrorResponseFactory = pkixErrorResponseFactory;
+        this.responseTransformer = new EmailGlobalConfigResponseTransformer();
     }
 
     public ActionResponse<EmailGlobalConfigResponse> getOne(Long id) {
@@ -87,15 +87,15 @@ public class EmailGlobalConfigActions {
         return createWithoutChecks(resource);
     }
 
-    public ActionResponse<EmailGlobalConfigResponse> createWithoutChecks(EmailGlobalConfigResponse resource) {
-        FieldModel requestAsFieldModel = toFieldModel(resource);
+    public ActionResponse<EmailGlobalConfigResponse> createWithoutChecks(EmailGlobalConfigResponse response) {
+        FieldModel requestAsFieldModel = responseTransformer.toFieldModel(response);
         Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(requestAsFieldModel);
         ConfigurationModel configuration = configurationAccessor.createConfiguration(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL, configurationFieldModelMap.values());
-        EmailGlobalConfigResponse response = fromConfigurationModel(configuration);
+        EmailGlobalConfigResponse createdResponse = responseTransformer.fromConfigurationModel(configuration);
         return new ActionResponse<>(HttpStatus.OK, response);
     }
 
-    public ActionResponse<EmailGlobalConfigResponse> update(Long id, EmailGlobalConfigResponse resource) {
+    public ActionResponse<EmailGlobalConfigResponse> update(Long id, EmailGlobalConfigResponse response) {
         if (!authorizationManager.hasWritePermission(ConfigContextEnum.GLOBAL, ChannelKeys.EMAIL)) {
             return ActionResponse.createForbiddenResponse();
         }
@@ -105,16 +105,16 @@ public class EmailGlobalConfigActions {
             return new ActionResponse<>(HttpStatus.NOT_FOUND);
         }
 
-        ValidationActionResponse validationResponse = validateWithoutChecks(resource);
+        ValidationActionResponse validationResponse = validateWithoutChecks(response);
         if (validationResponse.isError()) {
             return new ActionResponse<>(validationResponse.getHttpStatus(), validationResponse.getMessage().orElse(null));
         }
-        return updateWithoutChecks(id, resource);
+        return updateWithoutChecks(id, response);
     }
 
-    public ActionResponse<EmailGlobalConfigResponse> updateWithoutChecks(Long id, EmailGlobalConfigResponse resource) {
+    public ActionResponse<EmailGlobalConfigResponse> updateWithoutChecks(Long id, EmailGlobalConfigResponse response) {
         try {
-            FieldModel resourceAsFieldModel = toFieldModel(resource);
+            FieldModel resourceAsFieldModel = responseTransformer.toFieldModel(response);
 
             configurationAccessor.getConfigurationById(id)
                 .map(modelConverter::convertToFieldModel)
@@ -122,8 +122,8 @@ public class EmailGlobalConfigActions {
 
             Collection<ConfigurationFieldModel> updatedFields = modelConverter.convertToConfigurationFieldModelMap(resourceAsFieldModel).values();
             ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
-            EmailGlobalConfigResponse response = fromConfigurationModel(configurationModel);
-            return new ActionResponse<>(HttpStatus.OK, response);
+            EmailGlobalConfigResponse updatedResponse = responseTransformer.fromConfigurationModel(configurationModel);
+            return new ActionResponse<>(HttpStatus.OK, updatedResponse);
         } catch (AlertException ex) {
             logger.error("Error creating configuration", ex);
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error creating config: %s", ex.getMessage()));
@@ -142,7 +142,7 @@ public class EmailGlobalConfigActions {
     public ValidationActionResponse validateWithoutChecks(EmailGlobalConfigResponse resource) {
         Set<AlertFieldStatus> fieldStatuses = emailDescriptor
                   .getGlobalValidator()
-                  .map(validator -> validator.validate(toFieldModel(resource)))
+                  .map(validator -> validator.validate(responseTransformer.toFieldModel(resource)))
                   .orElseGet(Set::of);
 
         if (fieldStatuses.isEmpty()) {
@@ -189,7 +189,7 @@ public class EmailGlobalConfigActions {
 
     public ActionResponse<ValidationResponseModel> testWithoutChecks(EmailGlobalConfigResponse resource) {
         try {
-            FieldModel resourceAsFieldModel = toFieldModel(resource);
+            FieldModel resourceAsFieldModel = responseTransformer.toFieldModel(resource);
             FieldUtility fieldUtility = modelConverter.convertToFieldAccessor(resourceAsFieldModel);
             MessageResult messageResult = testAction.testConfig(/* not used by EmailGlobalTestAction::testConfig */ null, resourceAsFieldModel, fieldUtility);
             return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success(messageResult.getStatusMessage()));
@@ -203,22 +203,7 @@ public class EmailGlobalConfigActions {
     private Optional<EmailGlobalConfigResponse> getEmailGlobalConfigResponse(Long id) {
         return configurationAccessor
                    .getConfigurationById(id)
-                   .map(this::fromConfigurationModel);
-    }
-
-    private FieldModel toFieldModel(EmailGlobalConfigResponse resource) {
-        HashMap<String, FieldValueModel> responseAsMap = new HashMap<>();
-
-        // TBI
-
-        return new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), responseAsMap);
-    }
-
-    private EmailGlobalConfigResponse fromConfigurationModel(ConfigurationModel configurationModel){
-
-        // TBI
-
-        return new EmailGlobalConfigResponse();
+                   .map(responseTransformer::fromConfigurationModel);
     }
 
 }
