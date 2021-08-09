@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 
+// TODO: Remove this when we no longer support FieldModels.
 public class EmailGlobalConfigResponseTransformer {
     public FieldModel toFieldModel(EmailGlobalConfigResponse resource) {
         HashMap<String, FieldValueModel> responseAsMap = new HashMap<>();
