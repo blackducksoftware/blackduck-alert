@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
@@ -33,9 +32,8 @@ public abstract class ChannelDescriptor extends Descriptor {
     public static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
     public static final String DESCRIPTION_PROVIDER_TYPE = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
-    public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig) {
+    public ChannelDescriptor(ChannelKey channelKey, UIConfig globalUIConfig) {
         super(channelKey, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
         addGlobalUiConfig(globalUIConfig);
     }
 
