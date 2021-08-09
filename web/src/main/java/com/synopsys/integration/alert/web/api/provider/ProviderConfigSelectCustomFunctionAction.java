@@ -20,11 +20,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -64,9 +64,9 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
 
     @Override
     protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
-        Optional<String> fieldValue = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
+        Optional<String> fieldValue = fieldModel.getFieldValue(ChannelDescriptor.KEY_PROVIDER_TYPE);
         if (fieldValue.isEmpty()) {
-            AlertFieldStatus error = AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, String.format("Missing %s", ChannelDistributionUIConfig.LABEL_PROVIDER_TYPE));
+            AlertFieldStatus error = AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, String.format("Missing %s", ChannelDescriptor.LABEL_PROVIDER_TYPE));
             return Set.of(error);
         }
         return Set.of();

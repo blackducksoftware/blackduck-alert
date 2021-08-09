@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -45,12 +45,12 @@ public class CommonProviderDistributionValidator {
         // TODO the processing type field should be moved to the ChannelDistributionUIConfig
         // TODO add validation for this field, should add a warning if the User has chosen the Summary processing type with an issue tracker channel
         configurationFieldValidator.validateRequiredFieldIsNotBlank(ProviderDescriptor.KEY_PROCESSING_TYPE);
-        configurationFieldValidator.validateRequiredRelatedSet(ProviderDescriptor.KEY_PROCESSING_TYPE, ProviderDescriptor.LABEL_PROCESSING, ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
+        configurationFieldValidator.validateRequiredRelatedSet(ProviderDescriptor.KEY_PROCESSING_TYPE, ProviderDescriptor.LABEL_PROCESSING, ChannelDescriptor.KEY_CHANNEL_NAME);
 
         this.validateFilterByProject(configurationFieldValidator);
         this.validateProjectNamePattern(configurationFieldValidator);
 
-        configurationFieldValidator.validateRequiredRelatedSet(ProviderDescriptor.KEY_CONFIGURED_PROJECT, ProviderDescriptor.LABEL_PROJECTS, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+        configurationFieldValidator.validateRequiredRelatedSet(ProviderDescriptor.KEY_CONFIGURED_PROJECT, ProviderDescriptor.LABEL_PROJECTS, ChannelDescriptor.KEY_PROVIDER_TYPE, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         this.validateConfiguredProject(configurationFieldValidator);
     }
 

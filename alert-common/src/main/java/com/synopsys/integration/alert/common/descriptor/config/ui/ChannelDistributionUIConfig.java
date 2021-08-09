@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
@@ -24,26 +25,6 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
 public abstract class ChannelDistributionUIConfig extends UIConfig {
-    public static final String KEY_COMMON_CHANNEL_PREFIX = "channel.common.";
-
-    public static final String KEY_ENABLED = KEY_COMMON_CHANNEL_PREFIX + "enabled";
-    public static final String KEY_NAME = KEY_COMMON_CHANNEL_PREFIX + "name";
-    public static final String KEY_CHANNEL_NAME = KEY_COMMON_CHANNEL_PREFIX + "channel.name";
-    public static final String KEY_PROVIDER_TYPE = KEY_COMMON_CHANNEL_PREFIX + "provider.name";
-    public static final String KEY_FREQUENCY = KEY_COMMON_CHANNEL_PREFIX + "frequency";
-
-    public static final String LABEL_ENABLED = "Enabled";
-    public static final String LABEL_NAME = "Name";
-    public static final String LABEL_FREQUENCY = "Frequency";
-    public static final String LABEL_CHANNEL_NAME = "Channel Type";
-    public static final String LABEL_PROVIDER_TYPE = "Provider Type";
-
-    public static final String DESCRIPTION_ENABLED = "If selected, this job will be used for processing provider notifications, otherwise, this job will not be used.";
-    public static final String DESCRIPTION_NAME = "The name of the distribution job. Must be unique.";
-    public static final String DESCRIPTION_FREQUENCY = "Select how frequently this job should check for notifications to send.";
-    public static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
-    public static final String DESCRIPTION_PROVIDER_TYPE = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
-
     private final ChannelKey channelKey;
     private final ProviderKey defaultProviderKey;
 
@@ -55,18 +36,18 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        ConfigField enabled = new CheckboxConfigField(KEY_ENABLED, LABEL_ENABLED, DESCRIPTION_ENABLED).applyDefaultValue(Boolean.TRUE.toString());
-        ConfigField channelNameField = new EndpointSelectField(KEY_CHANNEL_NAME, LABEL_CHANNEL_NAME, DESCRIPTION_CHANNEL_NAME)
+        ConfigField enabled = new CheckboxConfigField(ChannelDescriptor.KEY_ENABLED, ChannelDescriptor.LABEL_ENABLED, ChannelDescriptor.DESCRIPTION_ENABLED).applyDefaultValue(Boolean.TRUE.toString());
+        ConfigField channelNameField = new EndpointSelectField(ChannelDescriptor.KEY_CHANNEL_NAME, ChannelDescriptor.LABEL_CHANNEL_NAME, ChannelDescriptor.DESCRIPTION_CHANNEL_NAME)
             .applyClearable(false)
             .applyRequired(true);
-        ConfigField name = new TextInputConfigField(KEY_NAME, LABEL_NAME, DESCRIPTION_NAME).applyRequired(true);
+        ConfigField name = new TextInputConfigField(ChannelDescriptor.KEY_NAME, ChannelDescriptor.LABEL_NAME, ChannelDescriptor.DESCRIPTION_NAME).applyRequired(true);
 
         List<LabelValueSelectOption> frequencyOptions = Arrays.stream(FrequencyType.values())
             .map(frequencyType -> new LabelValueSelectOption(frequencyType.getDisplayName(), frequencyType.name()))
             .sorted()
             .collect(Collectors.toList());
-        ConfigField frequency = new SelectConfigField(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, frequencyOptions).applyRequired(true);
-        ConfigField providerName = new EndpointSelectField(KEY_PROVIDER_TYPE, LABEL_PROVIDER_TYPE, DESCRIPTION_PROVIDER_TYPE)
+        ConfigField frequency = new SelectConfigField(ChannelDescriptor.KEY_FREQUENCY, ChannelDescriptor.LABEL_FREQUENCY, ChannelDescriptor.DESCRIPTION_FREQUENCY, frequencyOptions).applyRequired(true);
+        ConfigField providerName = new EndpointSelectField(ChannelDescriptor.KEY_PROVIDER_TYPE, ChannelDescriptor.LABEL_PROVIDER_TYPE, ChannelDescriptor.DESCRIPTION_PROVIDER_TYPE)
             .applyClearable(false)
             .applyRequired(true)
             .applyDefaultValue(defaultProviderKey.getUniversalKey());

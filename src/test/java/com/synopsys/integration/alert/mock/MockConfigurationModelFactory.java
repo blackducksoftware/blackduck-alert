@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -92,10 +92,10 @@ public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createCommonDistributionFields(String jobName, String channelDescriptorName) {
         List<ConfigurationFieldModel> fields = new ArrayList<>();
 
-        ConfigurationFieldModel name = createFieldModel(ChannelDistributionUIConfig.KEY_NAME, jobName);
-        ConfigurationFieldModel channelName = createFieldModel(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
-        ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, new BlackDuckProviderKey().getUniversalKey());
-        ConfigurationFieldModel frequencyType = createFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
+        ConfigurationFieldModel name = createFieldModel(ChannelDescriptor.KEY_NAME, jobName);
+        ConfigurationFieldModel channelName = createFieldModel(ChannelDescriptor.KEY_CHANNEL_NAME, channelDescriptorName);
+        ConfigurationFieldModel providerName = createFieldModel(ChannelDescriptor.KEY_PROVIDER_TYPE, new BlackDuckProviderKey().getUniversalKey());
+        ConfigurationFieldModel frequencyType = createFieldModel(ChannelDescriptor.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
 
         ConfigurationFieldModel providerNotificationType = createFieldModel(ProviderDescriptor.KEY_NOTIFICATION_TYPES, NotificationType.POLICY_OVERRIDE.name());
         ConfigurationFieldModel processingType = createFieldModel(ProviderDescriptor.KEY_PROCESSING_TYPE, ProcessingType.DEFAULT.name());
@@ -118,10 +118,10 @@ public class MockConfigurationModelFactory {
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);
 
         List<ConfigurationFieldModel> fieldList = new ArrayList<>();
-        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_NAME, name);
-        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
-        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, providerName);
-        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, distributionType);
+        mockField(fieldList, configurationModel, ChannelDescriptor.KEY_NAME, name);
+        mockField(fieldList, configurationModel, ChannelDescriptor.KEY_FREQUENCY, frequency);
+        mockField(fieldList, configurationModel, ChannelDescriptor.KEY_PROVIDER_TYPE, providerName);
+        mockField(fieldList, configurationModel, ChannelDescriptor.KEY_CHANNEL_NAME, distributionType);
 
         mockField(fieldList, configurationModel, ProviderDescriptor.KEY_NOTIFICATION_TYPES, notificationTypes);
         mockField(fieldList, configurationModel, ProviderDescriptor.KEY_PROCESSING_TYPE, formatType);

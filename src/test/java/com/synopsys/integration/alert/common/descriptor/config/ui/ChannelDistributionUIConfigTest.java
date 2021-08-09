@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 
 public class ChannelDistributionUIConfigTest {
@@ -16,10 +17,10 @@ public class ChannelDistributionUIConfigTest {
         channelDistributionUIConfig.setConfigFields();
 
         List<ConfigField> commonConfigFields = channelDistributionUIConfig.getFields();
-        assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_NAME);
-        assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
-        assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_FREQUENCY);
+        assertContains(commonConfigFields, ChannelDescriptor.KEY_NAME);
+        assertContains(commonConfigFields, ChannelDescriptor.KEY_CHANNEL_NAME);
+        assertContains(commonConfigFields, ChannelDescriptor.KEY_PROVIDER_TYPE);
+        assertContains(commonConfigFields, ChannelDescriptor.KEY_FREQUENCY);
     }
 
     private void assertContains(List<ConfigField> commonConfigFields, String expectedKey) {

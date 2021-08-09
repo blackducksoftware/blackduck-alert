@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
@@ -43,7 +43,7 @@ public class ProcessingSelectCustomFunctionAction extends CustomFunctionAction<L
 
     @Override
     public ActionResponse<LabelValueSelectOptions> createActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper) {
-        String channelName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
+        String channelName = fieldModel.getFieldValue(ChannelDescriptor.KEY_CHANNEL_NAME).orElse("");
         List<LabelValueSelectOption> options = Arrays.stream(ProcessingType.values())
             .filter(processingType -> this.shouldInclude(processingType, channelName))
             .map(processingType -> new LabelValueSelectOption(processingType.getLabel(), processingType.name()))

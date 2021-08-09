@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.msteams.descriptor.MsTeamsDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
@@ -67,11 +67,11 @@ public class MsTeamsPerformanceTest {
         IntegrationPerformanceTestRunner integrationPerformanceTestRunner = new IntegrationPerformanceTestRunner(gson, dateTimeFormatter, alertRequestUtility, blackDuckProviderService, configurationManager);
 
         Map<String, FieldValueModel> msTeamsJobFields = new HashMap<>();
-        msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
-        msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(ChannelKeys.MS_TEAMS.getUniversalKey()), true));
-        msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(MS_TEAMS_PERFORMANCE_JOB_NAME), true));
-        msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        msTeamsJobFields.put(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
+        msTeamsJobFields.put(ChannelDescriptor.KEY_ENABLED, new FieldValueModel(List.of("true"), true));
+        msTeamsJobFields.put(ChannelDescriptor.KEY_CHANNEL_NAME, new FieldValueModel(List.of(ChannelKeys.MS_TEAMS.getUniversalKey()), true));
+        msTeamsJobFields.put(ChannelDescriptor.KEY_NAME, new FieldValueModel(List.of(MS_TEAMS_PERFORMANCE_JOB_NAME), true));
+        msTeamsJobFields.put(ChannelDescriptor.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
+        msTeamsJobFields.put(ChannelDescriptor.KEY_PROVIDER_TYPE, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
         msTeamsJobFields.put(MsTeamsDescriptor.KEY_WEBHOOK, new FieldValueModel(List.of(MSTEAMS_CHANNEL_WEBHOOK), true));
 
         integrationPerformanceTestRunner.runTest(msTeamsJobFields, MS_TEAMS_PERFORMANCE_JOB_NAME);

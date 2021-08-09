@@ -36,13 +36,13 @@ import com.synopsys.integration.alert.common.action.TestAction;
 import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.action.api.AbstractJobResourceActions;
 import com.synopsys.integration.alert.common.channel.DistributionChannelTestAction;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.action.DescriptorActionMap;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
@@ -249,9 +249,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
         return jobFieldModel.getFieldModels().stream()
-            .filter(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).isPresent())
+            .filter(fieldModel -> fieldModel.getFieldValueModel(ChannelDescriptor.KEY_NAME).isPresent())
             .findFirst()
-            .flatMap(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME))
+            .flatMap(fieldModel -> fieldModel.getFieldValueModel(ChannelDescriptor.KEY_NAME))
             .flatMap(fieldValueModel -> validateJobNameUnique(currentJobId, fieldValueModel));
     }
 
@@ -265,7 +265,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 .filter(job -> !job.getJobId().equals(currentJobId))
                 .isPresent();
             if (foundDuplicateName) {
-                return Optional.of(AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, "A distribution configuration with this name already exists."));
+                return Optional.of(AlertFieldStatus.error(ChannelDescriptor.KEY_NAME, "A distribution configuration with this name already exists."));
             }
         }
         return Optional.empty();
@@ -491,7 +491,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private MessageResult testProviderConfig(FieldUtility fieldUtility, String jobId, FieldModel fieldModel) throws IntegrationException {
-        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE)
+        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDescriptor.KEY_PROVIDER_TYPE)
             .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
             MessageResult providerConfigTestResult = providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);

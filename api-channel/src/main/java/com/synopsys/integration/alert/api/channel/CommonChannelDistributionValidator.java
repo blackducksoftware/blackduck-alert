@@ -13,23 +13,23 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 @Component
 public class CommonChannelDistributionValidator {
     public void validate(ConfigurationFieldValidator configurationFieldValidator) {
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_NAME);
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_FREQUENCY);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDescriptor.KEY_CHANNEL_NAME);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDescriptor.KEY_NAME);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDescriptor.KEY_FREQUENCY);
 
         Set<String> validValues = Arrays.stream(FrequencyType.values())
             .map(FrequencyType::name)
             .collect(Collectors.toSet());
-        configurationFieldValidator.validateIsAValidOption(ChannelDistributionUIConfig.KEY_FREQUENCY, validValues);
+        configurationFieldValidator.validateIsAValidOption(ChannelDescriptor.KEY_FREQUENCY, validValues);
 
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDescriptor.KEY_PROVIDER_TYPE);
     }
 
 }

@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.ProcessingType;
@@ -275,11 +275,11 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         Map<String, FieldValueModel> fields = Map.of(
             SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
             SlackDescriptor.KEY_WEBHOOK, webhook,
-            ChannelDistributionUIConfig.KEY_NAME, name,
-            ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, provider,
+            ChannelDescriptor.KEY_NAME, name,
+            ChannelDescriptor.KEY_PROVIDER_TYPE, provider,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, providerConfigField,
-            ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
-            ChannelDistributionUIConfig.KEY_FREQUENCY, frequency
+            ChannelDescriptor.KEY_CHANNEL_NAME, channel,
+            ChannelDescriptor.KEY_FREQUENCY, frequency
         );
         FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
         if (StringUtils.isNotBlank(channelId)) {

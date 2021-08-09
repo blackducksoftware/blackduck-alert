@@ -16,8 +16,8 @@ import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValid
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
@@ -38,7 +38,7 @@ public class EmailDistributionConfigurationValidator implements DistributionConf
         commonChannelDistributionValidator.validate(configurationFieldValidator);
 
         configurationFieldValidator.validateRequiredRelatedSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES,
-            ChannelDistributionUIConfig.KEY_PROVIDER_TYPE,
+            ChannelDescriptor.KEY_PROVIDER_TYPE,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID
         );
 
