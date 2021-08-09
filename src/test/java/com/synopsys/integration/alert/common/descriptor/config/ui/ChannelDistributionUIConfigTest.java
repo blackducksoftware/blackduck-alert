@@ -18,15 +18,15 @@ public class ChannelDistributionUIConfigTest {
         List<ConfigField> commonConfigFields = channelDistributionUIConfig.getFields();
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_NAME);
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
-        assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_FREQUENCY);
     }
 
     private void assertContains(List<ConfigField> commonConfigFields, String expectedKey) {
         assertTrue(commonConfigFields
-                       .stream()
-                       .map(ConfigField::getKey)
-                       .anyMatch(expectedKey::equals)
+            .stream()
+            .map(ConfigField::getKey)
+            .anyMatch(expectedKey::equals)
         );
     }
 

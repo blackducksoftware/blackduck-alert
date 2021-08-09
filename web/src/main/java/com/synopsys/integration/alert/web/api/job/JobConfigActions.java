@@ -249,10 +249,10 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
     private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, JobFieldModel jobFieldModel) {
         return jobFieldModel.getFieldModels().stream()
-                   .filter(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).isPresent())
-                   .findFirst()
-                   .flatMap(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME))
-                   .flatMap(fieldValueModel -> validateJobNameUnique(currentJobId, fieldValueModel));
+            .filter(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME).isPresent())
+            .findFirst()
+            .flatMap(fieldModel -> fieldModel.getFieldValueModel(ChannelDistributionUIConfig.KEY_NAME))
+            .flatMap(fieldValueModel -> validateJobNameUnique(currentJobId, fieldValueModel));
     }
 
     private Optional<AlertFieldStatus> validateJobNameUnique(@Nullable UUID currentJobId, FieldValueModel fieldValueModel) {
@@ -262,27 +262,13 @@ public class JobConfigActions extends AbstractJobResourceActions {
             // Because of FieldValueModel empty values aren't saved, therefore we don't need to check for empty values
             // Find an existing job with the name that does not have the same id as currentJobId.
             boolean foundDuplicateName = jobAccessor.getJobByName(jobName)
-                                             .filter(job -> !job.getJobId().equals(currentJobId))
-                                             .isPresent();
+                .filter(job -> !job.getJobId().equals(currentJobId))
+                .isPresent();
             if (foundDuplicateName) {
                 return Optional.of(AlertFieldStatus.error(ChannelDistributionUIConfig.KEY_NAME, "A distribution configuration with this name already exists."));
             }
         }
         return Optional.empty();
-    }
-
-    private boolean shouldValidateWithDescriptorValidators(JobFieldModel resource) {
-        for (FieldModel fieldModel : resource.getFieldModels()) {
-            boolean descriptorOrValidatorDoNotExist = descriptorMap.getDescriptorKey(fieldModel.getDescriptorName())
-                                                          .flatMap(descriptorMap::getDescriptor)
-                                                          .flatMap(Descriptor::getDistributionValidator)
-                                                          .isEmpty();
-
-            if (descriptorOrValidatorDoNotExist) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
@@ -295,13 +281,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
 
         validateJobNameUnique(jobId, resource).ifPresent(fieldStatuses::add);
 
-        boolean validateWithDescriptorValidators = shouldValidateWithDescriptorValidators(resource);
-
-        if (validateWithDescriptorValidators) {
-            fieldStatuses.addAll(validateWithDescriptorValidators(resource));
-        } else {
-            fieldStatuses.addAll(fieldModelProcessor.validateJobFieldModel(resource));
-        }
+        List<AlertFieldStatus> descriptorValidationResults = validateDescriptorFields(resource);
+        fieldStatuses.addAll(descriptorValidationResults);
 
         if (!fieldStatuses.isEmpty()) {
             ValidationResponseModel responseModel = ValidationResponseModel.fromStatusCollection("Invalid Configuration", fieldStatuses);
@@ -348,13 +329,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     private ActionResponse<List<JobFieldStatuses>> validateJobFieldModels(List<JobFieldModel> jobFieldModels) {
         List<JobFieldStatuses> errorsList = new LinkedList<>();
         for (JobFieldModel jobFieldModel : jobFieldModels) {
-            List<AlertFieldStatus> fieldErrors;
-            if (shouldValidateWithDescriptorValidators(jobFieldModel)) {
-                fieldErrors = validateWithDescriptorValidators(jobFieldModel);
-            } else {
-                fieldErrors = fieldModelProcessor.validateJobFieldModel(jobFieldModel);
-            }
-
+            List<AlertFieldStatus> fieldErrors = validateDescriptorFields(jobFieldModel);
             if (!fieldErrors.isEmpty()) {
                 errorsList.add(new JobFieldStatuses(jobFieldModel.getJobId(), fieldErrors));
             }
@@ -362,20 +337,20 @@ public class JobConfigActions extends AbstractJobResourceActions {
         return new ActionResponse<>(HttpStatus.OK, errorsList);
     }
 
-    private List<AlertFieldStatus> validateWithDescriptorValidators(JobFieldModel jobFieldModel) {
+    private List<AlertFieldStatus> validateDescriptorFields(JobFieldModel jobFieldModel) {
         List<AlertFieldStatus> fieldErrors;
         fieldErrors = jobFieldModel.getFieldModels()
-                          .stream()
-                          .map(FieldModel::getDescriptorName)
-                          .map(descriptorMap::getDescriptorKey)
-                          .flatMap(Optional::stream)
-                          .map(descriptorMap::getDescriptor)
-                          .flatMap(Optional::stream)
-                          .map(Descriptor::getDistributionValidator)
-                          .flatMap(Optional::stream)
-                          .map(validator -> validator.validate(jobFieldModel))
-                          .flatMap(Collection::stream)
-                          .collect(Collectors.toList());
+            .stream()
+            .map(FieldModel::getDescriptorName)
+            .map(descriptorMap::getDescriptorKey)
+            .flatMap(Optional::stream)
+            .map(descriptorMap::getDescriptor)
+            .flatMap(Optional::stream)
+            .map(Descriptor::getDistributionValidator)
+            .flatMap(Optional::stream)
+            .map(validator -> validator.validate(jobFieldModel))
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
         return fieldErrors;
     }
 
@@ -384,9 +359,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
         ValidationResponseModel responseModel;
         String jobIdString = resource.getJobId();
         UUID jobId = Optional.ofNullable(jobIdString)
-                         .filter(StringUtils::isNotBlank)
-                         .map(UUID::fromString)
-                         .orElse(null);
+            .filter(StringUtils::isNotBlank)
+            .map(UUID::fromString)
+            .orElse(null);
 
         try {
             Collection<FieldModel> otherJobModels = new LinkedList<>();
@@ -410,10 +385,10 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 }
 
                 List<BlackDuckProjectDetailsModel> projectFilterDetails = Optional.ofNullable(resource.getConfiguredProviderProjects())
-                                                                              .orElse(List.of())
-                                                                              .stream()
-                                                                              .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
-                                                                              .collect(Collectors.toList());
+                    .orElse(List.of())
+                    .stream()
+                    .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
+                    .collect(Collectors.toList());
 
                 DistributionJobModel testJobModel = distributionJobModelExtractor.convertToJobModel(jobId, fields, DateUtils.createCurrentDateTimestamp(), null, projectFilterDetails);
                 DistributionChannelTestAction distributionChannelTestAction = channelTestActionMap.findRequiredAction(channelDescriptorName);
@@ -438,12 +413,12 @@ public class JobConfigActions extends AbstractJobResourceActions {
         } catch (IntegrationException e) {
             // TODO this is not necessarily a PKIX
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
-                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
+                .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
-                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
+                .orElse(ValidationResponseModel.generalError(e.getMessage()));
             return new ValidationActionResponse(HttpStatus.OK, responseModel);
         }
     }
@@ -455,9 +430,9 @@ public class JobConfigActions extends AbstractJobResourceActions {
         @Nullable OffsetDateTime lastUpdated
     ) throws AlertException {
         List<BlackDuckProjectDetailsModel> projectFilterDetails = jobProjects
-                                                                      .stream()
-                                                                      .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
-                                                                      .collect(Collectors.toList());
+            .stream()
+            .map(jobProject -> new BlackDuckProjectDetailsModel(jobProject.getName(), jobProject.getHref()))
+            .collect(Collectors.toList());
         Map<String, ConfigurationFieldModel> configuredFieldsMap = DataStructureUtils.mapToValues(configFieldModels, ConfigurationFieldModel::getFieldKey);
         DistributionJobModel fromResource = distributionJobModelExtractor.convertToJobModel(null, configuredFieldsMap, createdAt, lastUpdated, projectFilterDetails);
 
@@ -516,17 +491,17 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private MessageResult testProviderConfig(FieldUtility fieldUtility, String jobId, FieldModel fieldModel) throws IntegrationException {
-        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                      .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
+        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE)
+            .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
             MessageResult providerConfigTestResult = providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);
             if (!providerConfigTestResult.hasErrors()) {
                 return providerConfigTestResult;
             } else {
                 List<AlertFieldStatus> deescalatedErrors = providerConfigTestResult.fieldErrors()
-                                                               .stream()
-                                                               .map(fieldStatus -> AlertFieldStatus.warning(fieldStatus.getFieldName(), fieldStatus.getFieldMessage()))
-                                                               .collect(Collectors.toList());
+                    .stream()
+                    .map(fieldStatus -> AlertFieldStatus.warning(fieldStatus.getFieldName(), fieldStatus.getFieldMessage()))
+                    .collect(Collectors.toList());
                 List<AlertFieldStatus> allWarnings = ListUtils.union(providerConfigTestResult.fieldWarnings(), deescalatedErrors);
                 return new MessageResult("Provider Config Invalid", allWarnings);
             }

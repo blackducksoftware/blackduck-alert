@@ -276,7 +276,7 @@ public class JobConfigControllerTestIT extends DatabaseConfiguredFieldTest {
             SlackDescriptor.KEY_CHANNEL_NAME, slackChannelName,
             SlackDescriptor.KEY_WEBHOOK, webhook,
             ChannelDistributionUIConfig.KEY_NAME, name,
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
+            ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, provider,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, providerConfigField,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel,
             ChannelDistributionUIConfig.KEY_FREQUENCY, frequency

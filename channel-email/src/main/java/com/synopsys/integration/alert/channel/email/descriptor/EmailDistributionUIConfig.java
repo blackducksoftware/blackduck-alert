@@ -51,27 +51,27 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         ConfigField subjectLine = new TextInputConfigField(EmailDescriptor.KEY_SUBJECT_LINE, LABEL_SUBJECT_LINE, DESCRIPTION_EMAIL_SUBJECT_LINE);
 
         ConfigField additionalEmailAddresses = new EndpointTableSelectField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, LABEL_ADDITIONAL_ADDRESSES, DESCRIPTION_ADDITIONAL_ADDRESSES)
-                                                   .applyColumn(TableSelectColumn.visible("emailAddress", "Email Address", true, true))
-                                                   .applySearchable(true)
-                                                   .applyPaged(true)
-                                                   .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                                   .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+            .applyColumn(TableSelectColumn.visible("emailAddress", "Email Address", true, true))
+            .applySearchable(true)
+            .applyPaged(true)
+            .applyRequiredRelatedField(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE)
+            .applyRequiredRelatedField(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
         ConfigField additionalEmailAddressesOnly = new CheckboxConfigField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, LABEL_ADDITIONAL_ADDRESSES_ONLY, DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY)
-                                                       .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
-                                                       .applyDisallowedRelatedField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
+            .applyValidationFunctions(this::validateAdditionalEmailAddressesOnly)
+            .applyDisallowedRelatedField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
         ConfigField projectOwnerOnly = new CheckboxConfigField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, LABEL_PROJECT_OWNER_ONLY, DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY)
-                                           .applyDisallowedRelatedField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
+            .applyDisallowedRelatedField(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY);
 
         List<LabelValueSelectOption> attachmentFormats = Stream
-                                                             .of(EmailAttachmentFormat.values())
-                                                             .map(EmailAttachmentFormat::name)
-                                                             .map(LabelValueSelectOption::new)
-                                                             .collect(Collectors.toList());
+            .of(EmailAttachmentFormat.values())
+            .map(EmailAttachmentFormat::name)
+            .map(LabelValueSelectOption::new)
+            .collect(Collectors.toList());
         ConfigField attachmentFormat = new SelectConfigField(EmailDescriptor.KEY_EMAIL_ATTACHMENT_FORMAT, LABEL_ATTACHMENT_FORMAT, DESCRIPTION_ATTACHMENT_FORMAT, attachmentFormats)
-                                           .applyClearable(false)
-                                           .applyRemoveSelected(true)
-                                           .applyDefaultValue(EmailAttachmentFormat.NONE.name());
+            .applyClearable(false)
+            .applyRemoveSelected(true)
+            .applyDefaultValue(EmailAttachmentFormat.NONE.name());
 
         return List.of(subjectLine, additionalEmailAddresses, additionalEmailAddressesOnly, projectOwnerOnly, attachmentFormat);
     }
@@ -80,10 +80,10 @@ public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
         boolean useOnlyAdditionalEmailAddresses = fieldToValidate.getValue().map(Boolean::parseBoolean).orElse(false);
         if (useOnlyAdditionalEmailAddresses) {
             boolean hasAdditionalAddresses = fieldModel
-                                                 .getFieldValueModel(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES)
-                                                 .map(FieldValueModel::getValues)
-                                                 .filter(additionalEmailAddresses -> !additionalEmailAddresses.isEmpty())
-                                                 .isPresent();
+                .getFieldValueModel(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES)
+                .map(FieldValueModel::getValues)
+                .filter(additionalEmailAddresses -> !additionalEmailAddresses.isEmpty())
+                .isPresent();
             if (!hasAdditionalAddresses) {
                 return ValidationResult.errors("No additional email addresses were provided.");
             }

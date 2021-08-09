@@ -94,7 +94,7 @@ public class MockConfigurationModelFactory {
 
         ConfigurationFieldModel name = createFieldModel(ChannelDistributionUIConfig.KEY_NAME, jobName);
         ConfigurationFieldModel channelName = createFieldModel(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
-        ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new BlackDuckProviderKey().getUniversalKey());
+        ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, new BlackDuckProviderKey().getUniversalKey());
         ConfigurationFieldModel frequencyType = createFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
 
         ConfigurationFieldModel providerNotificationType = createFieldModel(ProviderDescriptor.KEY_NOTIFICATION_TYPES, NotificationType.POLICY_OVERRIDE.name());
@@ -120,7 +120,7 @@ public class MockConfigurationModelFactory {
         List<ConfigurationFieldModel> fieldList = new ArrayList<>();
         mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_NAME, name);
         mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
-        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, providerName);
+        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, providerName);
         mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, distributionType);
 
         mockField(fieldList, configurationModel, ProviderDescriptor.KEY_NOTIFICATION_TYPES, notificationTypes);

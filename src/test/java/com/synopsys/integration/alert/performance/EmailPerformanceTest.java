@@ -90,7 +90,7 @@ public class EmailPerformanceTest {
         emailJobFields.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, new FieldValueModel(List.of(EMAIL_CHANNEL_KEY), true));
         emailJobFields.put(ChannelDistributionUIConfig.KEY_NAME, new FieldValueModel(List.of(EMAIL_PERFORMANCE_JOB_NAME), true));
         emailJobFields.put(ChannelDistributionUIConfig.KEY_FREQUENCY, new FieldValueModel(List.of(FrequencyType.REAL_TIME.name()), true));
-        emailJobFields.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
+        emailJobFields.put(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, new FieldValueModel(List.of(blackDuckProviderService.getBlackDuckProviderKey()), true));
 
         emailJobFields.put(EmailDescriptor.KEY_SUBJECT_LINE, new FieldValueModel(List.of(EMAIL_PERFORMANCE_JOB_NAME), true));
         emailJobFields.put(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, new FieldValueModel(List.of("true"), true));

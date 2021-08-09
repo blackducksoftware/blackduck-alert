@@ -19,7 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.channel.jira.cloud.web.JiraCloudCustomFunctionAction;
 import com.synopsys.integration.alert.common.action.ActionResponse;
@@ -28,6 +27,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
+import com.synopsys.integration.alert.configuration.ApplicationConfiguration;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.descriptor.api.JiraCloudChannelKey;
@@ -92,7 +92,7 @@ public class JiraCloudPerformanceTest {
         channelFieldsMap.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, createFieldValueModel(CHANNEL_KEY.getUniversalKey()));
         channelFieldsMap.put(ChannelDistributionUIConfig.KEY_NAME, createFieldValueModel(JIRA_CLOUD_PERFORMANCE_JOB_NAME));
         channelFieldsMap.put(ChannelDistributionUIConfig.KEY_FREQUENCY, createFieldValueModel(FrequencyType.REAL_TIME.name()));
-        channelFieldsMap.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, createFieldValueModel(PROVIDER_KEY.getUniversalKey()));
+        channelFieldsMap.put(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, createFieldValueModel(PROVIDER_KEY.getUniversalKey()));
 
         channelFieldsMap.put(JiraCloudDescriptor.KEY_ADD_COMMENTS, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_CLOUD_ADD_COMMENTS).orElse("true")));
         channelFieldsMap.put(JiraCloudDescriptor.KEY_ISSUE_CREATOR, createFieldValueModel(testProperties.getOptionalProperty(TestPropertyKey.TEST_JIRA_CLOUD_ISSUE_CREATOR).orElse("")));

@@ -7,8 +7,10 @@
  */
 package com.synopsys.integration.alert.web.api.provider;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,8 @@ import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
@@ -37,9 +40,8 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap,
-        FieldValidationUtility fieldValidationUtility) {
-        super(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, authorizationManager, descriptorMap, fieldValidationUtility);
+    public ProviderConfigSelectCustomFunctionAction(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap) {
+        super(authorizationManager);
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
     }
@@ -52,18 +54,28 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
         if (descriptorKey.isPresent()) {
             List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(descriptorKey.get(), ConfigContextEnum.GLOBAL);
             options = configurationModels.stream()
-                          .map(this::createNameToIdOption)
-                          .flatMap(Optional::stream)
-                          .collect(Collectors.toList());
+                .map(this::createNameToIdOption)
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
         }
         LabelValueSelectOptions optionList = new LabelValueSelectOptions(options);
         return new ActionResponse<>(HttpStatus.OK, optionList);
     }
 
+    @Override
+    protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
+        Optional<String> fieldValue = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
+        if (fieldValue.isEmpty()) {
+            AlertFieldStatus error = AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, String.format("Missing %s", ChannelDistributionUIConfig.LABEL_PROVIDER_TYPE));
+            return Set.of(error);
+        }
+        return Set.of();
+    }
+
     private Optional<LabelValueSelectOption> createNameToIdOption(ConfigurationModel configurationModel) {
         return configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                   .flatMap(ConfigurationFieldModel::getFieldValue)
-                   .map(providerConfigName -> new LabelValueSelectOption(providerConfigName, configurationModel.getConfigurationId().toString()));
+            .flatMap(ConfigurationFieldModel::getFieldValue)
+            .map(providerConfigName -> new LabelValueSelectOption(providerConfigName, configurationModel.getConfigurationId().toString()));
     }
 
 }

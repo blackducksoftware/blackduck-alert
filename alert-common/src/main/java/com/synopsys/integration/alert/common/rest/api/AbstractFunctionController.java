@@ -34,4 +34,5 @@ public abstract class AbstractFunctionController<T> extends BaseController {
         ActionResponse<T> result = functionAction.createResponse(restModel, servletContentWrapper);
         return ResponseFactory.createContentResponseFromAction(result);
     }
+
 }
