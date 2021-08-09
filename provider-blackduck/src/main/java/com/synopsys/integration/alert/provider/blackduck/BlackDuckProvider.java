@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.api.provider.lifecycle.ProviderTask;
 import com.synopsys.integration.alert.api.provider.state.StatefulProvider;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckContent;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckPropertiesFactory;
 import com.synopsys.integration.alert.provider.blackduck.factory.BlackDuckTaskFactory;
 import com.synopsys.integration.alert.provider.blackduck.validator.BlackDuckSystemValidator;
@@ -30,9 +29,8 @@ public class BlackDuckProvider extends Provider {
     private final BlackDuckTaskFactory taskFactory;
 
     @Autowired
-    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckContent blackDuckContent,
-        BlackDuckPropertiesFactory propertiesFactory, BlackDuckSystemValidator validator, BlackDuckTaskFactory taskFactory) {
-        super(blackDuckProviderKey, blackDuckContent);
+    public BlackDuckProvider(BlackDuckProviderKey blackDuckProviderKey, BlackDuckPropertiesFactory propertiesFactory, BlackDuckSystemValidator validator, BlackDuckTaskFactory taskFactory) {
+        super(blackDuckProviderKey);
         this.propertiesFactory = propertiesFactory;
         this.validator = validator;
         this.taskFactory = taskFactory;

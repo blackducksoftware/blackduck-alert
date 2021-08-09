@@ -31,11 +31,15 @@ public class SlackDescriptor extends ChannelDescriptor {
     public static final String SLACK_URL = "slack";
     public static final String SLACK_DESCRIPTION = "Configure Slack for Alert.";
 
+    public static final String LABEL_WEBHOOK = "Webhook";
+    public static final String LABEL_SLACK_CHANNEL_NAME = "Channel Name";
+    public static final String LABEL_CHANNEL_USERNAME = "Channel Username";
+
     private final SlackDistributionConfigurationValidator distributionValidator;
 
     @Autowired
-    public SlackDescriptor(SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig, SlackDistributionConfigurationValidator distributionValidator) {
-        super(ChannelKeys.SLACK, slackUIConfig, slackGlobalUIConfig);
+    public SlackDescriptor(SlackGlobalUIConfig slackGlobalUIConfig, SlackDistributionConfigurationValidator distributionValidator) {
+        super(ChannelKeys.SLACK, slackGlobalUIConfig);
         this.distributionValidator = distributionValidator;
     }
 
@@ -48,4 +52,5 @@ public class SlackDescriptor extends ChannelDescriptor {
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
         return Optional.of(distributionValidator);
     }
+
 }

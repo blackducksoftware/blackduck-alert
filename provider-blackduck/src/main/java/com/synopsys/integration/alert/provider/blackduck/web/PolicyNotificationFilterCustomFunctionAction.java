@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.web;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,11 +21,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.api.provider.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.PagedCustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
@@ -58,9 +57,13 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    protected PolicyNotificationFilterCustomFunctionAction(AuthorizationManager authorizationManager, BlackDuckPropertiesFactory blackDuckPropertiesFactory, ConfigurationFieldModelConverter fieldModelConverter,
-        ConfigurationAccessor configurationAccessor, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
-        super(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, authorizationManager, descriptorMap, fieldValidationUtility);
+    protected PolicyNotificationFilterCustomFunctionAction(
+        AuthorizationManager authorizationManager,
+        BlackDuckPropertiesFactory blackDuckPropertiesFactory,
+        ConfigurationFieldModelConverter fieldModelConverter,
+        ConfigurationAccessor configurationAccessor
+    ) {
+        super(authorizationManager);
         this.blackDuckPropertiesFactory = blackDuckPropertiesFactory;
         this.fieldModelConverter = fieldModelConverter;
         this.configurationAccessor = configurationAccessor;
@@ -68,7 +71,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
 
     @Override
     public ActionResponse<NotificationFilterModelOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) throws IntegrationException {
-        Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
+        Optional<FieldValueModel> fieldValueModel = fieldModel.getFieldValueModel(ProviderDescriptor.KEY_NOTIFICATION_TYPES);
         Collection<String> selectedNotificationTypes = fieldValueModel.map(FieldValueModel::getValues).orElse(List.of());
 
         int totalPages = 1;
@@ -92,6 +95,25 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         return new ActionResponse<>(HttpStatus.OK, notificationFilterModelOptions);
     }
 
+    @Override
+    protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
+        Optional<String> providerConfigId = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+        Optional<String> notificationTypes = fieldModel.getFieldValue(ProviderDescriptor.KEY_NOTIFICATION_TYPES);
+
+        Set<AlertFieldStatus> errors = new HashSet<>();
+        if (providerConfigId.isEmpty()) {
+            AlertFieldStatus missingProviderConfig = AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, String.format("Missing %s", ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME));
+            errors.add(missingProviderConfig);
+        }
+
+        if (notificationTypes.isEmpty()) {
+            AlertFieldStatus missingNotificationTypes = AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, String.format("Missing %s", ProviderDescriptor.KEY_NOTIFICATION_TYPES));
+            errors.add(missingNotificationTypes);
+        }
+
+        return errors;
+    }
+
     private boolean isJobFilterableByPolicy(Collection<String> notificationTypes) {
         Set<String> filterableNotificationType = Set.of(
             NotificationType.POLICY_OVERRIDE,
@@ -106,19 +128,19 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
 
         BlackDuckMultipleRequest<PolicyRuleView> spec = new BlackDuckRequestBuilder()
-                                                            .commonGet()
-                                                            .setLimitAndOffset(pageSize, pageNumber * pageSize)
-                                                            .addBlackDuckQuery(new BlackDuckQuery("name", searchTerm))
-                                                            .addBlackDuckFilter(BlackDuckRequestFilter.createFilterWithSingleValue("policyRuleEnabled", "true"))
-                                                            .buildBlackDuckRequest(apiDiscovery.metaPolicyRulesLink());
+            .commonGet()
+            .setLimitAndOffset(pageSize, pageNumber * pageSize)
+            .addBlackDuckQuery(new BlackDuckQuery("name", searchTerm))
+            .addBlackDuckFilter(BlackDuckRequestFilter.createFilterWithSingleValue("policyRuleEnabled", "true"))
+            .buildBlackDuckRequest(apiDiscovery.metaPolicyRulesLink());
         return blackDuckApiClient.getPageResponse(spec);
     }
 
     private List<NotificationFilterModel> convertToNotificationFilterModel(List<PolicyRuleView> policyRules) {
         return policyRules.stream()
-                   .map(PolicyRuleView::getName)
-                   .map(NotificationFilterModel::new)
-                   .collect(Collectors.toList());
+            .map(PolicyRuleView::getName)
+            .map(NotificationFilterModel::new)
+            .collect(Collectors.toList());
     }
 
     private Optional<BlackDuckServicesFactory> createBlackDuckServicesFactory(FieldModel fieldModel) throws IntegrationException {
@@ -140,7 +162,7 @@ public class PolicyNotificationFilterCustomFunctionAction extends PagedCustomFun
         }
 
         return configurationAccessor.getConfigurationById(providerConfigId)
-                   .map(blackDuckPropertiesFactory::createProperties);
+            .map(blackDuckPropertiesFactory::createProperties);
     }
 
 }

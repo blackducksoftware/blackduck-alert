@@ -77,7 +77,7 @@ public class JobNotificationMapper {
         List<FilteredJobNotificationWrapper> filterableJobNotifications = new LinkedList<>();
         for (Map.Entry<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
             FilteredDistributionJobResponseModel filteredJob = groupedEntry.getKey();
-            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), groupedEntry.getValue());
+            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), filteredJob.getJobName(), groupedEntry.getValue());
             filterableJobNotifications.add(wrappedJobNotifications);
         }
 
@@ -107,10 +107,10 @@ public class JobNotificationMapper {
 
     private FilteredDistributionJobRequestModel createRequestModelFromNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
         Long commonProviderConfigId = detailedContents
-                                          .stream()
-                                          .map(DetailedNotificationContent::getProviderConfigId)
-                                          .findAny()
-                                          .orElseThrow(() -> new AlertRuntimeException("Notification(s) missing provider configuration id"));
+            .stream()
+            .map(DetailedNotificationContent::getProviderConfigId)
+            .findAny()
+            .orElseThrow(() -> new AlertRuntimeException("Notification(s) missing provider configuration id"));
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(commonProviderConfigId, frequencies);
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
             detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);

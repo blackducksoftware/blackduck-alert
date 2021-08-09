@@ -25,11 +25,15 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     public static final String MSTEAMS_LABEL = "MS Teams";
     public static final String MSTEAMS_URL = "msteams";
     public static final String MSTEAMS_DESCRIPTION = "Configure MS Teams for Alert.";
+
+    public static final String LABEL_WEBHOOK = "Webhook";
+    public static final String MSTEAMS_WEBHOOK_DESCRIPTION = "The MS Teams URL to receive alerts.";
+
     private final MsTeamsDistributionConfigurationValidator distributionValidator;
 
     @Autowired
-    public MsTeamsDescriptor(MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig, MsTeamsDistributionConfigurationValidator distributionValidator) {
-        super(ChannelKeys.MS_TEAMS, msTeamsUIConfig, msTeamsGlobalUIConfig);
+    public MsTeamsDescriptor(MsTeamsGlobalUIConfig msTeamsGlobalUIConfig, MsTeamsDistributionConfigurationValidator distributionValidator) {
+        super(ChannelKeys.MS_TEAMS, msTeamsGlobalUIConfig);
         this.distributionValidator = distributionValidator;
     }
 
@@ -42,4 +46,5 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
         return Optional.of(distributionValidator);
     }
+
 }

@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueBomComponentDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.IssuePolicyDetails;
 import com.synopsys.integration.alert.api.channel.issue.model.ProjectIssueModel;
@@ -29,17 +28,16 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.Compon
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
 
-public class AzureBoardsSearcherTest {
+public class AzureBoardsComponentIssueFinderTest {
     private static final ProviderDetails PROVIDER_DETAILS = new ProviderDetails(15L, new LinkableItem("Provider", "A provider", "https://provider-url"));
     private static final LinkableItem PROJECT_ITEM = new LinkableItem("Project", "A project", "https://project-url");
     private static final LinkableItem PROJECT_VERSION_ITEM = new LinkableItem("Project Version", "2.3.4-RC", "https://project-version-url");
     private static final LinkableItem COMPONENT_ITEM = new LinkableItem("Component", "A BOM component");
     private static final LinkableItem COMPONENT_VERSION_ITEM = new LinkableItem("Component Version", "1.0.0-SNAPSHOT");
-    private static final ComponentPolicy COMPONENT_POLICY = new ComponentPolicy("A policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, false, null);
+    private static final ComponentPolicy COMPONENT_POLICY = new ComponentPolicy("A policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, false, null, "Uncategorized");
     private static final ComponentVulnerabilities COMPONENT_VULNERABILITIES = new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of(new LinkableItem("Vulnerability", "CVE-007")));
     private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = createBomComponentDetailsWithComponentVulnerabilities(COMPONENT_VULNERABILITIES);
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
-    private static final ExistingIssueDetails<String> EXISTING_ISSUE_DETAILS = new ExistingIssueDetails<>("issue-id", "issue-key", "a summary", "https://ui-link", IssueStatus.UNKNOWN, IssueCategory.BOM);
 
     private final String workItemCompletedState = "Done";
     private final String workItemReopenState = "Reopen";
@@ -49,18 +47,20 @@ public class AzureBoardsSearcherTest {
     public void findExistingIssuesByProjectIssueModelTest() throws AlertException {
         Gson gson = new Gson();
         String organizationName = "orgName";
-        ProjectMessageToIssueModelTransformer modelTransformer = Mockito.mock(ProjectMessageToIssueModelTransformer.class);
-        AzureBoardsIssueTrackerQueryManager azureBoardsIssueTrackerQueryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
+        AzureBoardsIssueTrackerQueryManager queryManager = Mockito.mock(AzureBoardsIssueTrackerQueryManager.class);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
-        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, azureBoardsIssueTrackerQueryManager, modelTransformer, azureBoardsIssueStatusResolver, issueCategoryRetriever);
+
+        AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(organizationName, issueCategoryRetriever, azureBoardsIssueStatusResolver);
+        AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager);
+        AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
 
         IssuePolicyDetails testPolicy = new IssuePolicyDetails("Test Policy", ItemOperation.ADD, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN);
         ProjectIssueModel projectIssueModel = ProjectIssueModel.policy(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, ISSUE_BOM_COMPONENT_DETAILS, testPolicy);
 
         WorkItemResponseModel workItemResponseModel = createWorkItemResponseModel(workItemReopenState);
-        Mockito.when(azureBoardsIssueTrackerQueryManager.executeQueryAndRetrieveWorkItems(Mockito.any())).thenReturn(List.of(workItemResponseModel));
+        Mockito.when(queryManager.executeQueryAndRetrieveWorkItems(Mockito.any())).thenReturn(List.of(workItemResponseModel));
 
-        List<ExistingIssueDetails<Integer>> existingIssueDetailsList = azureBoardsSearcher.findExistingIssuesByProjectIssueModel(projectIssueModel);
+        List<ExistingIssueDetails<Integer>> existingIssueDetailsList = componentIssueFinder.findExistingIssuesByProjectIssueModel(projectIssueModel);
 
         assertEquals(1, existingIssueDetailsList.size());
         ExistingIssueDetails<Integer> existingIssueDetails = existingIssueDetailsList.get(0);
@@ -88,4 +88,5 @@ public class AzureBoardsSearcherTest {
             "https://issues-url"
         ) {};
     }
+
 }

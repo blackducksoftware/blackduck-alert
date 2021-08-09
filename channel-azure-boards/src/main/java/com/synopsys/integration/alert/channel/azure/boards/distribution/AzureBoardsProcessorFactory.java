@@ -19,12 +19,16 @@ import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessor;
 import com.synopsys.integration.alert.api.channel.issue.IssueTrackerProcessorFactory;
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
+import com.synopsys.integration.alert.api.channel.issue.search.IssueTrackerSearcher;
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerMessageSender;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsProperties;
 import com.synopsys.integration.alert.channel.azure.boards.AzureBoardsPropertiesFactory;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsComponentIssueFinder;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsExistingIssueDetailsCreator;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsIssueStatusResolver;
-import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsSearcher;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsProjectAndVersionIssueFinder;
+import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureBoardsWorkItemFinder;
 import com.synopsys.integration.alert.channel.azure.boards.distribution.search.AzureCustomFieldManager;
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
@@ -91,10 +95,16 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
             new AzureProcessService(azureHttpService, apiVersionAppender)
         );
 
-        // Extractor Requirements
+        // Searcher Requirements
         AzureBoardsIssueStatusResolver azureBoardsIssueStatusResolver = new AzureBoardsIssueStatusResolver(distributionDetails.getWorkItemCompletedState(), distributionDetails.getWorkItemReopenState());
         AzureBoardsIssueTrackerQueryManager queryManager = new AzureBoardsIssueTrackerQueryManager(organizationName, distributionDetails, workItemService, workItemQueryService);
-        AzureBoardsSearcher azureBoardsSearcher = new AzureBoardsSearcher(gson, organizationName, queryManager, modelTransformer, azureBoardsIssueStatusResolver, issueCategoryRetriever);
+
+        // Extractor Requirements
+        AzureBoardsExistingIssueDetailsCreator issueDetailsCreator = new AzureBoardsExistingIssueDetailsCreator(organizationName, issueCategoryRetriever, azureBoardsIssueStatusResolver);
+        AzureBoardsWorkItemFinder workItemFinder = new AzureBoardsWorkItemFinder(queryManager);
+        AzureBoardsProjectAndVersionIssueFinder projectAndVersionIssueFinder = new AzureBoardsProjectAndVersionIssueFinder(gson, issueDetailsCreator, workItemFinder);
+        AzureBoardsComponentIssueFinder componentIssueFinder = new AzureBoardsComponentIssueFinder(gson, workItemFinder, issueDetailsCreator);
+        IssueTrackerSearcher<Integer> azureBoardsSearcher = new IssueTrackerSearcher<>(projectAndVersionIssueFinder, projectAndVersionIssueFinder, componentIssueFinder, componentIssueFinder, modelTransformer);
 
         IssueTrackerModelExtractor<Integer> extractor = new IssueTrackerModelExtractor<>(formatter, azureBoardsSearcher);
 

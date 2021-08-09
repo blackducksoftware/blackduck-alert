@@ -11,24 +11,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
+import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreatorFactory;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
 
 @Component
 public class BlackDuckMessageBomComponentDetailsCreatorFactory {
     private final BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator;
-    private final BlackDuckComponentPolicyDetailsCreator policyDetailsCreator;
+    private final BlackDuckComponentPolicyDetailsCreatorFactory blackDuckComponentPolicyDetailsCreatorFactory;
 
     @Autowired
     public BlackDuckMessageBomComponentDetailsCreatorFactory(
         BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator,
-        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator
+        BlackDuckComponentPolicyDetailsCreatorFactory blackDuckComponentPolicyDetailsCreatorFactory
     ) {
         this.vulnerabilityDetailsCreator = vulnerabilityDetailsCreator;
-        this.policyDetailsCreator = policyDetailsCreator;
+        this.blackDuckComponentPolicyDetailsCreatorFactory = blackDuckComponentPolicyDetailsCreatorFactory;
     }
 
-    public BlackDuckMessageBomComponentDetailsCreator createBomComponentDetailsCreator(BlackDuckApiClient blackDuckApiClient) {
+    public BlackDuckMessageBomComponentDetailsCreator createBomComponentDetailsCreator(BlackDuckServicesFactory blackDuckServicesFactory) {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
+        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = blackDuckComponentPolicyDetailsCreatorFactory.createBlackDuckComponentPolicyDetailsCreator(policyRuleService);
         return new BlackDuckMessageBomComponentDetailsCreator(blackDuckApiClient, vulnerabilityDetailsCreator, policyDetailsCreator);
     }
-
 }

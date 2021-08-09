@@ -7,6 +7,8 @@
  */
 package com.synopsys.integration.alert.channel.jira.server.web;
 
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,10 @@ import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerProperties;
 import com.synopsys.integration.alert.channel.jira.server.JiraServerPropertiesFactory;
-import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
+import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.HttpServletContentWrapper;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
@@ -36,12 +37,14 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 public class JiraServerCustomFunctionAction extends CustomFunctionAction<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraServerCustomFunctionAction.class);
 
+    private final JiraServerGlobalConfigurationValidator globalConfigurationValidator;
     private final JiraServerPropertiesFactory jiraServerPropertiesFactory;
     private final Gson gson;
 
     @Autowired
-    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson, DescriptorMap descriptorMap, FieldValidationUtility fieldValidationUtility) {
-        super(JiraServerDescriptor.KEY_JIRA_SERVER_CONFIGURE_PLUGIN, authorizationManager, descriptorMap, fieldValidationUtility);
+    public JiraServerCustomFunctionAction(AuthorizationManager authorizationManager, JiraServerGlobalConfigurationValidator globalConfigurationValidator, JiraServerPropertiesFactory jiraServerPropertiesFactory, Gson gson) {
+        super(authorizationManager);
+        this.globalConfigurationValidator = globalConfigurationValidator;
         this.jiraServerPropertiesFactory = jiraServerPropertiesFactory;
         this.gson = gson;
     }
@@ -73,6 +76,11 @@ public class JiraServerCustomFunctionAction extends CustomFunctionAction<String>
             Thread.currentThread().interrupt();
             return new ActionResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Thread was interrupted while validating Jira '%s' plugin installation: %s", JiraConstants.JIRA_ALERT_APP_NAME, e.getMessage()));
         }
+    }
+
+    @Override
+    protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
+        return globalConfigurationValidator.validate(fieldModel);
     }
 
     private ActionResponse<String> createBadRequestIntegrationException(IntegrationException error) {

@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerDistributionConfigurationValidator;
 import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
@@ -42,12 +43,26 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String JIRA_URL = "jira_server";
     public static final String JIRA_DESCRIPTION = "Configure the Jira Server instance that Alert will send issue updates to.";
 
+    public static final String LABEL_FIELD_MAPPING = "Field Mapping";
+    public static final String LABEL_ADD_COMMENTS = "Add comments";
+    public static final String LABEL_ISSUE_CREATOR = "Issue Creator";
+    public static final String LABEL_JIRA_PROJECT = "Jira Project";
+    public static final String LABEL_ISSUE_TYPE = "Issue Type";
+    public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
+    public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
+
     private final JiraServerGlobalConfigurationValidator jiraServerGlobalValidator;
+    private final JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator;
 
     @Autowired
-    public JiraServerDescriptor(JiraServerDistributionUIConfig jiraServerDistributionUIConfig, JiraServerGlobalUIConfig jiraServerGlobalUIConfig, JiraServerGlobalConfigurationValidator jiraServerGlobalValidator) {
-        super(ChannelKeys.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
+    public JiraServerDescriptor(
+        JiraServerGlobalUIConfig jiraServerGlobalUIConfig,
+        JiraServerGlobalConfigurationValidator jiraServerGlobalValidator,
+        JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator
+    ) {
+        super(ChannelKeys.JIRA_SERVER, jiraServerGlobalUIConfig);
         this.jiraServerGlobalValidator = jiraServerGlobalValidator;
+        this.jiraServerDistributionConfigurationValidator = jiraServerDistributionConfigurationValidator;
     }
 
     @Override
@@ -57,6 +72,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
 
     @Override
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
-        return Optional.empty();
+        return Optional.of(jiraServerDistributionConfigurationValidator);
     }
+
 }
