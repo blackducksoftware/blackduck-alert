@@ -38,8 +38,9 @@ public class EmailDescriptor extends ChannelDescriptor {
     private final EmailDistributionConfigurationValidator emailDistributionValidator;
 
     @Autowired
-    public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig, EmailGlobalConfigurationValidator emailGlobalValidator, EmailDistributionConfigurationValidator emailDistributionValidator) {
-        super(ChannelKeys.EMAIL, emailDistributionUIConfig, emailGlobalUIConfig);
+    public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailDistributionUIConfig emailDistributionUIConfig, EmailGlobalConfigurationValidator emailGlobalValidator,
+        EmailDistributionConfigurationValidator emailDistributionValidator) {
+        super(ChannelKeys.EMAIL, emailGlobalUIConfig);
         this.emailGlobalValidator = emailGlobalValidator;
         this.emailDistributionValidator = emailDistributionValidator;
     }
@@ -53,4 +54,5 @@ public class EmailDescriptor extends ChannelDescriptor {
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
         return Optional.of(emailDistributionValidator);
     }
+
 }

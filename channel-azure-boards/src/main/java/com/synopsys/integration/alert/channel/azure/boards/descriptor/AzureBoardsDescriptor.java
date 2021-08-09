@@ -68,7 +68,7 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
         AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator,
         AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator
     ) {
-        super(ChannelKeys.AZURE_BOARDS, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig);
+        super(ChannelKeys.AZURE_BOARDS, azureBoardsGlobalUIConfig);
         this.azureBoardsGlobalConfigurationValidator = azureBoardsGlobalValidator;
         this.azureBoardsDistributionConfigurationValidator = azureBoardsDistributionConfigurationValidator;
     }
