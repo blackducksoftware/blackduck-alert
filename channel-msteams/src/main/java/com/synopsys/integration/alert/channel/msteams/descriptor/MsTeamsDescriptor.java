@@ -29,7 +29,7 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
 
     @Autowired
     public MsTeamsDescriptor(MsTeamsUIConfig msTeamsUIConfig, MsTeamsGlobalUIConfig msTeamsGlobalUIConfig, MsTeamsDistributionConfigurationValidator distributionValidator) {
-        super(ChannelKeys.MS_TEAMS, msTeamsUIConfig, msTeamsGlobalUIConfig);
+        super(ChannelKeys.MS_TEAMS, msTeamsGlobalUIConfig);
         this.distributionValidator = distributionValidator;
     }
 
@@ -42,4 +42,5 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
         return Optional.of(distributionValidator);
     }
+
 }

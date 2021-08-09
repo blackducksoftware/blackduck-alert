@@ -35,7 +35,7 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     @Autowired
     public SlackDescriptor(SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig, SlackDistributionConfigurationValidator distributionValidator) {
-        super(ChannelKeys.SLACK, slackUIConfig, slackGlobalUIConfig);
+        super(ChannelKeys.SLACK, slackGlobalUIConfig);
         this.distributionValidator = distributionValidator;
     }
 
@@ -48,4 +48,5 @@ public class SlackDescriptor extends ChannelDescriptor {
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
         return Optional.of(distributionValidator);
     }
+
 }

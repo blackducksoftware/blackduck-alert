@@ -71,7 +71,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
         JiraServerGlobalConfigurationValidator jiraServerGlobalValidator,
         JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator
     ) {
-        super(ChannelKeys.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
+        super(ChannelKeys.JIRA_SERVER, jiraServerGlobalUIConfig);
         this.jiraServerGlobalValidator = jiraServerGlobalValidator;
         this.jiraServerDistributionConfigurationValidator = jiraServerDistributionConfigurationValidator;
     }
