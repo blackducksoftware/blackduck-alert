@@ -25,11 +25,11 @@ public class CommonChannelDistributionValidator {
         configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_FREQUENCY);
 
         Set<String> validValues = Arrays.stream(FrequencyType.values())
-                                           .map(FrequencyType::name)
-                                            .collect(Collectors.toSet());
+            .map(FrequencyType::name)
+            .collect(Collectors.toSet());
         configurationFieldValidator.validateIsAValidOption(ChannelDistributionUIConfig.KEY_FREQUENCY, validValues);
 
-        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        configurationFieldValidator.validateRequiredFieldIsNotBlank(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
     }
 
 }

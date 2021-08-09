@@ -38,13 +38,14 @@ public class EmailDistributionConfigurationValidator implements DistributionConf
         commonChannelDistributionValidator.validate(configurationFieldValidator);
 
         configurationFieldValidator.validateRequiredRelatedSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES,
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME,
-            ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+            ChannelDistributionUIConfig.KEY_PROVIDER_TYPE,
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_ID
+        );
 
         boolean additionalEmailsOnly = configurationFieldValidator.getBooleanValue(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY)
-                                           .orElse(false);
+            .orElse(false);
         boolean projectOwnerOnly = configurationFieldValidator.getBooleanValue(EmailDescriptor.KEY_PROJECT_OWNER_ONLY)
-                                           .orElse(false);
+            .orElse(false);
 
         if (additionalEmailsOnly && projectOwnerOnly) {
             configurationFieldValidator.addValidationResults(

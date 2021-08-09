@@ -32,9 +32,6 @@ public class BlackDuckDescriptorTest {
         BlackDuckDescriptor descriptor = new BlackDuckDescriptor(blackDuckProviderKey, blackDuckProviderUIConfig, blackDuckGlobalConfigurationValidator, blackDuckDistributionConfigurationValidator);
         Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
         assertEquals(5, fields.size());
-
-        fields = descriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION);
-        assertEquals(8, fields.size());
     }
 
 }

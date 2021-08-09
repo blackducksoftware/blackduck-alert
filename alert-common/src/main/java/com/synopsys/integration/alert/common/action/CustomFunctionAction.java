@@ -71,6 +71,7 @@ public abstract class CustomFunctionAction<T> {
                 .stream()
                 .filter(hasErrorSeverity)
                 .map(AlertFieldStatus::getFieldMessage)
+                .distinct()
                 .collect(Collectors.joining(", "));
             ActionResponse<T> errorActionResponse = new ActionResponse<>(HttpStatus.BAD_REQUEST, String.format("There were errors with the fields related to this action: %s", errorMessages));
             return Optional.of(errorActionResponse);

@@ -50,7 +50,7 @@ public class CommonProviderDistributionValidator {
         this.validateFilterByProject(configurationFieldValidator);
         this.validateProjectNamePattern(configurationFieldValidator);
 
-        configurationFieldValidator.validateRequiredRelatedSet(ProviderDescriptor.KEY_CONFIGURED_PROJECT, ProviderDescriptor.LABEL_PROJECTS, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+        configurationFieldValidator.validateRequiredRelatedSet(ProviderDescriptor.KEY_CONFIGURED_PROJECT, ProviderDescriptor.LABEL_PROJECTS, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         this.validateConfiguredProject(configurationFieldValidator);
     }
 

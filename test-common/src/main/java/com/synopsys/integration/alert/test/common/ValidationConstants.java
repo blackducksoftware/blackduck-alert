@@ -17,6 +17,7 @@ public class ValidationConstants {
     public static final Map<String, FieldValueModel> COMMON_CHANNEL_FIELDS = Map.of(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, FieldModelUtils.createFieldValue("Channel Name"),
         ChannelDistributionUIConfig.KEY_NAME, FieldModelUtils.createFieldValue("Name"),
         ChannelDistributionUIConfig.KEY_FREQUENCY, FieldModelUtils.createFieldValue(FrequencyType.REAL_TIME.toString()),
-        ChannelDistributionUIConfig.KEY_PROVIDER_NAME, FieldModelUtils.createFieldValue("Provider Name")
+        ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, FieldModelUtils.createFieldValue("Provider Name")
     );
+
 }

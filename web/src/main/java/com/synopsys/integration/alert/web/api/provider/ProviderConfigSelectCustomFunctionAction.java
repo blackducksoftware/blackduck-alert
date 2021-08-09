@@ -64,9 +64,9 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
 
     @Override
     protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
-        Optional<String> fieldValue = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        Optional<String> fieldValue = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
         if (fieldValue.isEmpty()) {
-            AlertFieldStatus error = AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, String.format("Missing %s", ProviderDescriptor.LABEL_PROVIDER_CONFIG_NAME));
+            AlertFieldStatus error = AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, String.format("Missing %s", ChannelDistributionUIConfig.LABEL_PROVIDER_TYPE));
             return Set.of(error);
         }
         return Set.of();

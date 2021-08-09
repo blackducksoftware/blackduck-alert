@@ -105,7 +105,7 @@ public final class JobFieldModelPopulationUtils {
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_ENABLED, Boolean.toString(jobModel.isEnabled()));
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_NAME, jobModel.getName());
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
-        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, DEFAULT_PROVIDER_NAME);
+        putField(channelFieldModel, ChannelDistributionUIConfig.KEY_PROVIDER_TYPE, DEFAULT_PROVIDER_NAME);
         putField(channelFieldModel, ChannelDistributionUIConfig.KEY_FREQUENCY, jobModel.getDistributionFrequency().name());
         putField(channelFieldModel, ProviderDescriptor.KEY_PROCESSING_TYPE, jobModel.getProcessingType().name());
 

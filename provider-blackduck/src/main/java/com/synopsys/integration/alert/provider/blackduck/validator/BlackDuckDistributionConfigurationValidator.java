@@ -39,12 +39,14 @@ public class BlackDuckDistributionConfigurationValidator implements Distribution
         configurationFieldValidator.validateRequiredRelatedSet(
             BlackDuckDescriptor.KEY_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER, BlackDuckDescriptor.LABEL_BLACKDUCK_POLICY_NOTIFICATION_TYPE_FILTER,
             ProviderDescriptor.KEY_NOTIFICATION_TYPES,
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME,
-            ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
+            ChannelDistributionUIConfig.KEY_PROVIDER_TYPE,
+            ProviderDescriptor.KEY_PROVIDER_CONFIG_ID
+        );
 
         configurationFieldValidator.validateRequiredRelatedSet(
             BlackDuckDescriptor.KEY_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER, BlackDuckDescriptor.LABEL_BLACKDUCK_VULNERABILITY_NOTIFICATION_TYPE_FILTER,
-            ProviderDescriptor.KEY_NOTIFICATION_TYPES);
+            ProviderDescriptor.KEY_NOTIFICATION_TYPES
+        );
 
         return configurationFieldValidator.getValidationResults();
     }

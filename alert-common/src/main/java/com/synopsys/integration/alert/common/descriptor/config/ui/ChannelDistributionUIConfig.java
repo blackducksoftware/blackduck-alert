@@ -29,20 +29,20 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_ENABLED = KEY_COMMON_CHANNEL_PREFIX + "enabled";
     public static final String KEY_NAME = KEY_COMMON_CHANNEL_PREFIX + "name";
     public static final String KEY_CHANNEL_NAME = KEY_COMMON_CHANNEL_PREFIX + "channel.name";
-    public static final String KEY_PROVIDER_NAME = KEY_COMMON_CHANNEL_PREFIX + "provider.name";
+    public static final String KEY_PROVIDER_TYPE = KEY_COMMON_CHANNEL_PREFIX + "provider.name";
     public static final String KEY_FREQUENCY = KEY_COMMON_CHANNEL_PREFIX + "frequency";
 
     public static final String LABEL_ENABLED = "Enabled";
     public static final String LABEL_NAME = "Name";
     public static final String LABEL_FREQUENCY = "Frequency";
     public static final String LABEL_CHANNEL_NAME = "Channel Type";
-    public static final String LABEL_PROVIDER_NAME = "Provider Type";
+    public static final String LABEL_PROVIDER_TYPE = "Provider Type";
 
     public static final String DESCRIPTION_ENABLED = "If selected, this job will be used for processing provider notifications, otherwise, this job will not be used.";
     public static final String DESCRIPTION_NAME = "The name of the distribution job. Must be unique.";
     public static final String DESCRIPTION_FREQUENCY = "Select how frequently this job should check for notifications to send.";
     public static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
-    public static final String DESCRIPTION_PROVIDER_NAME = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
+    public static final String DESCRIPTION_PROVIDER_TYPE = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
 
     private final ChannelKey channelKey;
     private final ProviderKey defaultProviderKey;
@@ -66,7 +66,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
             .sorted()
             .collect(Collectors.toList());
         ConfigField frequency = new SelectConfigField(KEY_FREQUENCY, LABEL_FREQUENCY, DESCRIPTION_FREQUENCY, frequencyOptions).applyRequired(true);
-        ConfigField providerName = new EndpointSelectField(KEY_PROVIDER_NAME, LABEL_PROVIDER_NAME, DESCRIPTION_PROVIDER_NAME)
+        ConfigField providerName = new EndpointSelectField(KEY_PROVIDER_TYPE, LABEL_PROVIDER_TYPE, DESCRIPTION_PROVIDER_TYPE)
             .applyClearable(false)
             .applyRequired(true)
             .applyDefaultValue(defaultProviderKey.getUniversalKey());

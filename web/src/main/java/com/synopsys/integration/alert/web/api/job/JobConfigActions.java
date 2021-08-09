@@ -491,7 +491,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
     }
 
     private MessageResult testProviderConfig(FieldUtility fieldUtility, String jobId, FieldModel fieldModel) throws IntegrationException {
-        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
+        Optional<TestAction> providerTestAction = fieldUtility.getString(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE)
             .flatMap(providerName -> descriptorProcessor.retrieveTestAction(providerName, ConfigContextEnum.DISTRIBUTION));
         if (providerTestAction.isPresent()) {
             MessageResult providerConfigTestResult = providerTestAction.get().testConfig(jobId, fieldModel, fieldUtility);

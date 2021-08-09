@@ -57,7 +57,7 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
 
     @Override
     public ActionResponse<ProviderProjectOptions> createPagedActionResponse(FieldModel fieldModel, HttpServletContentWrapper servletContentWrapper, int pageNumber, int pageSize, String searchTerm) {
-        String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
+        String providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE).orElse("");
         if (StringUtils.isBlank(providerName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MISSING_PROVIDER_ERROR);
         }
@@ -73,12 +73,12 @@ public class BlackDuckProjectCustomFunctionAction extends PagedCustomFunctionAct
 
     @Override
     protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
-        Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_TYPE);
         Optional<String> providerConfigId = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
 
         Set<AlertFieldStatus> errors = new HashSet<>();
         if (providerName.isEmpty()) {
-            AlertFieldStatus missingProviderName = AlertFieldStatus.error(ProviderDescriptor.KEY_CONFIGURED_PROJECT, String.format("Missing %s", ChannelDistributionUIConfig.LABEL_PROVIDER_NAME));
+            AlertFieldStatus missingProviderName = AlertFieldStatus.error(ProviderDescriptor.KEY_CONFIGURED_PROJECT, String.format("Missing %s", ChannelDistributionUIConfig.KEY_PROVIDER_TYPE));
             errors.add(missingProviderName);
         }
 
