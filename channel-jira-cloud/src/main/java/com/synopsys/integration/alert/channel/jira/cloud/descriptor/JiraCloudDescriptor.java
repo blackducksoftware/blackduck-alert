@@ -67,7 +67,6 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
     @Autowired
     public JiraCloudDescriptor(
         JiraCloudGlobalUIConfig globalUIConfig,
-        JiraCloudDistributionUIConfig distributionUIConfig,
         JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator,
         JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator
     ) {
