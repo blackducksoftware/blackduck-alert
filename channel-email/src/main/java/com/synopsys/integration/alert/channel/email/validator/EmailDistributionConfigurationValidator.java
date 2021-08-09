@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.channel.CommonChannelDistributionValidator;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
@@ -37,7 +36,7 @@ public class EmailDistributionConfigurationValidator implements DistributionConf
 
         commonChannelDistributionValidator.validate(configurationFieldValidator);
 
-        configurationFieldValidator.validateRequiredRelatedSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES,
+        configurationFieldValidator.validateRequiredRelatedSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES, EmailDescriptor.LABEL_ADDITIONAL_ADDRESSES,
             ChannelDescriptor.KEY_PROVIDER_TYPE,
             ProviderDescriptor.KEY_PROVIDER_CONFIG_ID
         );
@@ -49,13 +48,13 @@ public class EmailDistributionConfigurationValidator implements DistributionConf
 
         if (additionalEmailsOnly && projectOwnerOnly) {
             configurationFieldValidator.addValidationResults(
-                AlertFieldStatus.error(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, String.format("Cannot be set if %s is already set", EmailDistributionUIConfig.LABEL_PROJECT_OWNER_ONLY)),
-                AlertFieldStatus.error(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, String.format("Cannot be set if %s is already set", EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES_ONLY))
+                AlertFieldStatus.error(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, String.format("Cannot be set if %s is already set", EmailDescriptor.LABEL_PROJECT_OWNER_ONLY)),
+                AlertFieldStatus.error(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, String.format("Cannot be set if %s is already set", EmailDescriptor.LABEL_ADDITIONAL_ADDRESSES_ONLY))
             );
         }
 
         if (additionalEmailsOnly) {
-            configurationFieldValidator.validateRequiredRelatedSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, EmailDistributionUIConfig.LABEL_ADDITIONAL_ADDRESSES,
+            configurationFieldValidator.validateRequiredRelatedSet(EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES_ONLY, EmailDescriptor.LABEL_ADDITIONAL_ADDRESSES,
                 EmailDescriptor.KEY_EMAIL_ADDITIONAL_ADDRESSES);
         }
 
