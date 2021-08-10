@@ -38,9 +38,8 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     private final DistributionConfigurationValidator distributionValidator;
 
     @Autowired
-    public BlackDuckDescriptor(BlackDuckProviderKey blackDuckProviderKey, BlackDuckProviderUIConfig blackDuckProviderUIConfig,
-        BlackDuckGlobalConfigurationValidator globalValidator, BlackDuckDistributionConfigurationValidator distributionValidator) {
-        super(blackDuckProviderKey, blackDuckProviderUIConfig);
+    public BlackDuckDescriptor(BlackDuckProviderKey blackDuckProviderKey, BlackDuckGlobalConfigurationValidator globalValidator, BlackDuckDistributionConfigurationValidator distributionValidator) {
+        super(blackDuckProviderKey);
         this.globalValidator = globalValidator;
         this.distributionValidator = distributionValidator;
     }
