@@ -7,7 +7,9 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import java.util.Set;
+
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
@@ -26,15 +28,8 @@ public abstract class ChannelDescriptor extends Descriptor {
     public static final String LABEL_CHANNEL_NAME = "Channel Type";
     public static final String LABEL_PROVIDER_TYPE = "Provider Type";
 
-    public static final String DESCRIPTION_ENABLED = "If selected, this job will be used for processing provider notifications, otherwise, this job will not be used.";
-    public static final String DESCRIPTION_NAME = "The name of the distribution job. Must be unique.";
-    public static final String DESCRIPTION_FREQUENCY = "Select how frequently this job should check for notifications to send.";
-    public static final String DESCRIPTION_CHANNEL_NAME = "Select the channel. Notifications generated through Alert will be sent through this channel.";
-    public static final String DESCRIPTION_PROVIDER_TYPE = "Select the provider. Only notifications for that provider will be processed in this distribution job.";
-
-    public ChannelDescriptor(ChannelKey channelKey, UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
-        addGlobalUiConfig(globalUIConfig);
+    public ChannelDescriptor(ChannelKey channelKey, Set<ConfigContextEnum> configContexts) {
+        super(channelKey, DescriptorType.CHANNEL, configContexts);
     }
 
 }

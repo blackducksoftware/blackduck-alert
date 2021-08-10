@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.azure.boards.descriptor;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoards
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -56,12 +58,8 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     private final AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator;
 
     @Autowired
-    public AzureBoardsDescriptor(
-        AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig,
-        AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator,
-        AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator
-    ) {
-        super(ChannelKeys.AZURE_BOARDS, azureBoardsGlobalUIConfig);
+    public AzureBoardsDescriptor(AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator, AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator) {
+        super(ChannelKeys.AZURE_BOARDS, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.azureBoardsGlobalConfigurationValidator = azureBoardsGlobalValidator;
         this.azureBoardsDistributionConfigurationValidator = azureBoardsDistributionConfigurationValidator;
     }

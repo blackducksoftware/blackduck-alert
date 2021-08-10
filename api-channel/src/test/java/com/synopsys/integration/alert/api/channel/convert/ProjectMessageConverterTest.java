@@ -52,7 +52,7 @@ public class ProjectMessageConverterTest {
         MockChannelMessageFormatter formatter = new MockChannelMessageFormatter(Integer.MAX_VALUE);
         ProjectMessageConverter projectMessageConverter = new ProjectMessageConverter(formatter);
 
-        return projectMessageConverter.convertToFormattedMessageChunks(projectMessage);
+        return projectMessageConverter.convertToFormattedMessageChunks(projectMessage, "jobName");
     }
 
     private void printMessageChunks(List<String> messageChunks) {

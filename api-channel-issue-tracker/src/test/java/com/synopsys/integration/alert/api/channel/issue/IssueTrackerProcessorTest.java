@@ -20,7 +20,7 @@ public class IssueTrackerProcessorTest {
     public void processMessagesTest() throws AlertException {
         IssueTrackerModelExtractor<String> extractor = Mockito.mock(IssueTrackerModelExtractor.class);
         IssueTrackerModelHolder<String> simpleMessageResponses = new IssueTrackerModelHolder<>(List.of(), List.of(), List.of());
-        Mockito.when(extractor.extractSimpleMessageIssueModels(Mockito.anyList())).thenReturn(simpleMessageResponses);
+        Mockito.when(extractor.extractSimpleMessageIssueModels(Mockito.anyList(), Mockito.any())).thenReturn(simpleMessageResponses);
 
         IssueTrackerIssueResponseModel<String> response1 = Mockito.mock(IssueTrackerIssueResponseModel.class);
         IssueTrackerIssueResponseModel<String> response2 = Mockito.mock(IssueTrackerIssueResponseModel.class);
@@ -41,7 +41,7 @@ public class IssueTrackerProcessorTest {
 
         ProjectMessage projectMessage = Mockito.mock(ProjectMessage.class);
         ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(List.of(projectMessage), List.of());
-        IssueTrackerResponse<String> issueTrackerResponse = processor.processMessages(providerMessageHolder);
+        IssueTrackerResponse<String> issueTrackerResponse = processor.processMessages(providerMessageHolder, "jobName");
         assertEquals(
             simpleMessageResponse.size() + projectMessageResponses.size(),
             issueTrackerResponse.getUpdatedIssues().size()

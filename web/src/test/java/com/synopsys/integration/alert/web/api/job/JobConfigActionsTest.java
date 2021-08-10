@@ -545,7 +545,7 @@ public class JobConfigActionsTest {
     }
 
     private Descriptor createDescriptor(Supplier<Optional<GlobalConfigurationValidator>> globalValidator, Supplier<Optional<DistributionConfigurationValidator>> distributionValidator) {
-        Descriptor descriptor = new Descriptor(descriptorKey, DESCRIPTOR_TYPE) {
+        Descriptor descriptor = new Descriptor(descriptorKey, DESCRIPTOR_TYPE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION)) {
             @Override
             public Optional<GlobalConfigurationValidator> getGlobalValidator() {
                 return globalValidator.get();
@@ -596,7 +596,7 @@ public class JobConfigActionsTest {
     private DistributionChannelTestAction createChannelDistributionTestAction() {
         return new DistributionChannelTestAction(descriptorKey) {
             @Override
-            public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) {
+            public MessageResult testConfig(DistributionJobModel distributionJobModel, String jobName, @Nullable String customTopic, @Nullable String customMessage) {
                 return new MessageResult("Test Status Message");
             }
         };
