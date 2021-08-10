@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.jira.cloud.descriptor;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlob
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -70,7 +72,7 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
         JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator,
         JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator
     ) {
-        super(ChannelKeys.JIRA_CLOUD, globalUIConfig);
+        super(ChannelKeys.JIRA_CLOUD, globalUIConfig, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.jiraCloudGlobalValidator = jiraCloudGlobalValidator;
         this.jiraCloudDistributionConfigurationValidator = jiraCloudDistributionConfigurationValidator;
     }

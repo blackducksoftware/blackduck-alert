@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigu
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -51,7 +53,7 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Autowired
     public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailGlobalConfigurationValidator emailGlobalValidator, EmailDistributionConfigurationValidator emailDistributionValidator) {
-        super(ChannelKeys.EMAIL, emailGlobalUIConfig);
+        super(ChannelKeys.EMAIL, emailGlobalUIConfig, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.emailGlobalValidator = emailGlobalValidator;
         this.emailDistributionValidator = emailDistributionValidator;
     }

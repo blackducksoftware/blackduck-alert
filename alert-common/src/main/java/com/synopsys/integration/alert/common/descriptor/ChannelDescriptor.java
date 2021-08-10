@@ -7,7 +7,10 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
+import java.util.Set;
+
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
@@ -26,8 +29,8 @@ public abstract class ChannelDescriptor extends Descriptor {
     public static final String LABEL_CHANNEL_NAME = "Channel Type";
     public static final String LABEL_PROVIDER_TYPE = "Provider Type";
 
-    public ChannelDescriptor(ChannelKey channelKey, UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
+    public ChannelDescriptor(ChannelKey channelKey, UIConfig globalUIConfig, Set<ConfigContextEnum> configContexts) {
+        super(channelKey, DescriptorType.CHANNEL, configContexts);
         addGlobalUiConfig(globalUIConfig);
     }
 
