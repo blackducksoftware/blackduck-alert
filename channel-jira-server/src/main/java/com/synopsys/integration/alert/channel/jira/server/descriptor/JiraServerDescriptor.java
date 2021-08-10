@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.jira.server.descriptor;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import com.synopsys.integration.alert.channel.jira.server.validator.JiraServerGl
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -60,7 +62,7 @@ public class JiraServerDescriptor extends ChannelDescriptor {
         JiraServerGlobalConfigurationValidator jiraServerGlobalValidator,
         JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator
     ) {
-        super(ChannelKeys.JIRA_SERVER, jiraServerGlobalUIConfig);
+        super(ChannelKeys.JIRA_SERVER, jiraServerGlobalUIConfig, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.jiraServerGlobalValidator = jiraServerGlobalValidator;
         this.jiraServerDistributionConfigurationValidator = jiraServerDistributionConfigurationValidator;
     }
