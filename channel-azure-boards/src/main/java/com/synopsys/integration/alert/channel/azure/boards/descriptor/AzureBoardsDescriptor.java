@@ -58,12 +58,8 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     private final AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator;
 
     @Autowired
-    public AzureBoardsDescriptor(
-        AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig,
-        AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator,
-        AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator
-    ) {
-        super(ChannelKeys.AZURE_BOARDS, azureBoardsGlobalUIConfig, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
+    public AzureBoardsDescriptor(AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator, AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator) {
+        super(ChannelKeys.AZURE_BOARDS, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.azureBoardsGlobalConfigurationValidator = azureBoardsGlobalValidator;
         this.azureBoardsDistributionConfigurationValidator = azureBoardsDistributionConfigurationValidator;
     }
