@@ -596,7 +596,7 @@ public class JobConfigActionsTest {
     private DistributionChannelTestAction createChannelDistributionTestAction() {
         return new DistributionChannelTestAction(descriptorKey) {
             @Override
-            public MessageResult testConfig(DistributionJobModel distributionJobModel, @Nullable String customTopic, @Nullable String customMessage) {
+            public MessageResult testConfig(DistributionJobModel distributionJobModel, String jobName, @Nullable String customTopic, @Nullable String customMessage) {
                 return new MessageResult("Test Status Message");
             }
         };

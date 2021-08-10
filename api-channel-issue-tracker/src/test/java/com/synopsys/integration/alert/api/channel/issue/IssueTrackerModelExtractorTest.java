@@ -57,7 +57,7 @@ public class IssueTrackerModelExtractorTest {
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, null);
 
         SimpleMessage simpleMessage = SimpleMessage.original(PROVIDER_DETAILS, testSummary, testDescription, List.of(additionalDetail));
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractSimpleMessageIssueModels(List.of(simpleMessage));
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractSimpleMessageIssueModels(List.of(simpleMessage), "jobName");
         List<IssueCreationModel> issueCreationModels = modelHolder.getIssueCreationModels();
         assertEquals(1, issueCreationModels.size());
         assertEquals(0, modelHolder.getIssueTransitionModels().size());
@@ -84,7 +84,7 @@ public class IssueTrackerModelExtractorTest {
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage);
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage, "jobName");
         List<IssueCreationModel> issueCreationModels = modelHolder.getIssueCreationModels();
         assertEquals(1, issueCreationModels.size());
         assertEquals(0, modelHolder.getIssueTransitionModels().size());
@@ -109,7 +109,7 @@ public class IssueTrackerModelExtractorTest {
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage);
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage, "jobName");
         assertEquals(0, modelHolder.getIssueCreationModels().size());
         assertEquals(0, modelHolder.getIssueTransitionModels().size());
         assertEquals(1, modelHolder.getIssueCommentModels().size());
@@ -132,7 +132,7 @@ public class IssueTrackerModelExtractorTest {
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage);
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage, "jobName");
         List<IssueTransitionModel<String>> issueTransitionModels = modelHolder.getIssueTransitionModels();
         assertEquals(0, modelHolder.getIssueCreationModels().size());
         assertEquals(1, issueTransitionModels.size());

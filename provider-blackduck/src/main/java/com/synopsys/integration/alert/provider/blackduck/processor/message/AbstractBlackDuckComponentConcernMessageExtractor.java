@@ -74,6 +74,7 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
         LinkableItem project = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT, notificationContent.getProjectName(), projectUrl.orElse(null));
         LinkableItem projectVersion = new LinkableItem(BlackDuckMessageLabels.LABEL_PROJECT_VERSION, notificationContent.getProjectVersionName(), notificationContent.getProjectVersionUrl());
 
+        // FIXME this is where I should put the additional info
         ProjectMessage projectMessage = createProjectMessage(providerDetails, project, projectVersion, bomComponentDetails);
         return new ProviderMessageHolder(List.of(projectMessage), List.of());
     }
@@ -86,8 +87,8 @@ public abstract class AbstractBlackDuckComponentConcernMessageExtractor<T extend
 
     private Optional<String> extractProjectUrl(String projectVersionUrl) {
         return Optional.ofNullable(projectVersionUrl)
-                   .filter(StringUtils::isNotBlank)
-                   .map(url -> StringUtils.substringBefore(url, "/versions"));
+            .filter(StringUtils::isNotBlank)
+            .map(url -> StringUtils.substringBefore(url, "/versions"));
     }
 
 }

@@ -394,6 +394,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 DistributionChannelTestAction distributionChannelTestAction = channelTestActionMap.findRequiredAction(channelDescriptorName);
                 MessageResult testActionResult = distributionChannelTestAction.testConfig(
                     testJobModel,
+                    testJobModel.getName(),
                     topicField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null),
                     messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
                 );

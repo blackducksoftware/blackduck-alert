@@ -22,6 +22,7 @@ public abstract class DistributionChannelTestAction extends DescriptorAction {
 
     public abstract MessageResult testConfig(
         DistributionJobModel distributionJobModel,
+        String jobName,
         @Nullable String customTopic,
         @Nullable String customMessage
     ) throws AlertException;
