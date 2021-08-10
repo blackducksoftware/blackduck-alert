@@ -21,6 +21,8 @@ public class MessageReplacementValues {
     private final String projectVersionName;
     private final String componentName;
     private final String componentVersionName;
+    private final String componentUsage;
+    private final String componentLicense;
     private final String severity;
     private final String policyCategory;
 
@@ -30,6 +32,8 @@ public class MessageReplacementValues {
         @Nullable String projectVersionName,
         @Nullable String componentName,
         @Nullable String componentVersionName,
+        @Nullable String componentUsage,
+        @Nullable String componentLicense,
         @Nullable String severity,
         @Nullable String policyCategory
     ) {
@@ -38,6 +42,8 @@ public class MessageReplacementValues {
         this.projectVersionName = StringUtils.trimToNull(projectVersionName);
         this.componentName = StringUtils.trimToNull(componentName);
         this.componentVersionName = StringUtils.trimToNull(componentVersionName);
+        this.componentUsage = StringUtils.trimToNull(componentUsage);
+        this.componentLicense = StringUtils.trimToNull(componentLicense);
         this.severity = StringUtils.trimToNull(severity);
         this.policyCategory = StringUtils.trimToNull(policyCategory);
     }
@@ -62,6 +68,14 @@ public class MessageReplacementValues {
         return Optional.ofNullable(componentVersionName);
     }
 
+    public Optional<String> getComponentUsage() {
+        return Optional.ofNullable(componentUsage);
+    }
+
+    public Optional<String> getComponentLicense() {
+        return Optional.ofNullable(componentLicense);
+    }
+
     public Optional<String> getSeverity() {
         return Optional.ofNullable(severity);
     }
@@ -76,6 +90,8 @@ public class MessageReplacementValues {
         private String projectVersionName;
         private String componentName;
         private String componentVersionName;
+        private String componentUsage;
+        private String componentLicense;
         private String severity;
         private String policyCategory;
 
@@ -91,6 +107,8 @@ public class MessageReplacementValues {
                 defaultIfBlank(projectVersionName),
                 defaultIfBlank(componentName),
                 defaultIfBlank(componentVersionName),
+                defaultIfBlank(componentUsage),
+                defaultIfBlank(componentLicense),
                 defaultIfBlank(severity),
                 defaultIfBlank(policyCategory)
             );
@@ -118,6 +136,16 @@ public class MessageReplacementValues {
 
         public Builder componentVersionName(String componentVersionName) {
             this.componentVersionName = componentVersionName;
+            return this;
+        }
+
+        public Builder componentUsage(String componentUsage) {
+            this.componentUsage = componentUsage;
+            return this;
+        }
+
+        public Builder componentLicense(String componentLicense) {
+            this.componentLicense = componentLicense;
             return this;
         }
 
