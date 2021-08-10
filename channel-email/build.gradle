@@ -8,7 +8,6 @@ dependencies {
     implementation project(':api-processor')
     implementation project(':api-descriptor')
     implementation project(':service-email')
-    implementation project(':component')
 
     implementation project(':alert-common')
     implementation project(':api-provider')

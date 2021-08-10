@@ -7,9 +7,9 @@
  */
 package com.synopsys.integration.alert.channel.email.web;
 
-import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.rest.model.Config;
 
-public class EmailGlobalConfigResponse extends AlertSerializableModel {
+public class EmailGlobalConfigResponse extends Config {
     private static final long serialVersionUID = -3469352637107648653L;
 
     public String host;

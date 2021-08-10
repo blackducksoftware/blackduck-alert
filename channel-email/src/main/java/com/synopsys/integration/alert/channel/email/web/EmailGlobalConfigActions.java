@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.common.persistence.util.ConfigurationField
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
-import com.synopsys.integration.alert.component.certificates.web.PKIXErrorResponseFactory;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -45,18 +44,15 @@ public class EmailGlobalConfigActions {
     private final ConfigurationFieldModelConverter modelConverter;
     private final EmailDescriptor emailDescriptor;
     private final EmailGlobalTestAction testAction;
-    private final PKIXErrorResponseFactory pkixErrorResponseFactory;
     private final EmailGlobalConfigResponseTransformer responseTransformer;
 
     @Autowired
-    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailDescriptor emailDescriptor, EmailGlobalTestAction testAction,
-        PKIXErrorResponseFactory pkixErrorResponseFactory) {
+    public EmailGlobalConfigActions(AuthorizationManager authorizationManager, ConfigurationAccessor configurationAccessor, ConfigurationFieldModelConverter modelConverter, EmailDescriptor emailDescriptor, EmailGlobalTestAction testAction) {
         this.authorizationManager = authorizationManager;
         this.configurationAccessor = configurationAccessor;
         this.modelConverter = modelConverter;
         this.emailDescriptor = emailDescriptor;
         this.testAction = testAction;
-        this.pkixErrorResponseFactory = pkixErrorResponseFactory;
         this.responseTransformer = new EmailGlobalConfigResponseTransformer();
     }
 
@@ -92,7 +88,7 @@ public class EmailGlobalConfigActions {
         Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertToConfigurationFieldModelMap(requestAsFieldModel);
         ConfigurationModel configuration = configurationAccessor.createConfiguration(ChannelKeys.EMAIL, ConfigContextEnum.GLOBAL, configurationFieldModelMap.values());
         EmailGlobalConfigResponse createdResponse = responseTransformer.fromConfigurationModel(configuration);
-        return new ActionResponse<>(HttpStatus.OK, response);
+        return new ActionResponse<>(HttpStatus.OK, createdResponse);
     }
 
     public ActionResponse<EmailGlobalConfigResponse> update(Long id, EmailGlobalConfigResponse response) {
@@ -194,9 +190,7 @@ public class EmailGlobalConfigActions {
             MessageResult messageResult = testAction.testConfig(/* not used by EmailGlobalTestAction::testConfig */ null, resourceAsFieldModel, fieldUtility);
             return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success(messageResult.getStatusMessage()));
         } catch (AlertException e) {
-            ValidationResponseModel responseModel = pkixErrorResponseFactory.createSSLExceptionResponse(e)
-                                .orElse(ValidationResponseModel.generalError(e.getMessage()));
-            return new ValidationActionResponse(HttpStatus.OK, responseModel);
+            return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.generalError(e.getMessage()));
         }
     }
 
