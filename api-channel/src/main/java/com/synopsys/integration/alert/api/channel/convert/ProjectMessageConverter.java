@@ -47,7 +47,9 @@ public class ProjectMessageConverter implements ProviderMessageConverter<Project
 
         String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
 
-        chunkedStringBuilder.append(String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName));
+        String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
+        String boldJobName = messageFormatter.emphasize(jobLine);
+        chunkedStringBuilder.append(boldJobName);
         chunkedStringBuilder.append(messageFormatter.getLineSeparator());
 
         chunkedStringBuilder.append(projectString);

@@ -27,7 +27,9 @@ public class SimpleMessageConverter implements ProviderMessageConverter<SimpleMe
         ChunkedStringBuilder chunkedStringBuilder = new ChunkedStringBuilder(messageFormatter.getMaxMessageLength());
 
         String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
-        appendSection(chunkedStringBuilder, String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName));
+        String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
+        String formattedJob = messageFormatter.emphasize(jobLine);
+        appendSection(chunkedStringBuilder, formattedJob);
         appendSection(chunkedStringBuilder, simpleMessage.getSummary());
         appendSection(chunkedStringBuilder, simpleMessage.getDescription());
 

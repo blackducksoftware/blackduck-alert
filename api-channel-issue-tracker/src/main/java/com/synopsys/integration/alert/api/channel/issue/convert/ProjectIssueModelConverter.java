@@ -64,7 +64,9 @@ public class ProjectIssueModelConverter {
         ChunkedStringBuilder descriptionBuilder = new ChunkedStringBuilder(formatter.getMaxDescriptionLength());
 
         String nonBreakingSpace = formatter.getNonBreakingSpace();
-        descriptionBuilder.append(String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName));
+        String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
+        String formattedJobName = formatter.emphasize(jobLine);
+        descriptionBuilder.append(formattedJobName);
         descriptionBuilder.append(formatter.getLineSeparator());
 
         String projectString = linkableItemConverter.convertToString(projectIssueModel.getProject(), true);
