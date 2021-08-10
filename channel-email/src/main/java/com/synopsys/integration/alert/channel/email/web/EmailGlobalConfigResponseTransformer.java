@@ -79,7 +79,7 @@ public class EmailGlobalConfigResponseTransformer {
         responseAsMap.put(EmailPropertyKeys.JAVAMAIL_USERSET_KEY.getPropertyKey(), toFieldValueModel(resource.userSet));
         responseAsMap.put(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY.getPropertyKey(), toFieldValueModel(resource.noopStrict));
 
-        return new FieldModel(ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), responseAsMap);
+        return new FieldModel(resource.getId(), ChannelKeys.EMAIL.getUniversalKey(), ConfigContextEnum.GLOBAL.name(), responseAsMap);
     }
 
     public FieldValueModel toFieldValueModel(Integer value) {
@@ -109,6 +109,8 @@ public class EmailGlobalConfigResponseTransformer {
 
     public EmailGlobalConfigResponse fromConfigurationModel(ConfigurationModel configurationModel){
         EmailGlobalConfigResponse configResponse = new EmailGlobalConfigResponse();
+
+        configResponse.setId(String.valueOf(configurationModel.getConfigurationId()));
 
         configResponse.host = getStringFromModel(configurationModel, EmailPropertyKeys.JAVAMAIL_HOST_KEY);
         configResponse.from = getStringFromModel(configurationModel, EmailPropertyKeys.JAVAMAIL_FROM_KEY);
@@ -165,7 +167,7 @@ public class EmailGlobalConfigResponseTransformer {
         configResponse.userSet = getBooleanFromModel(configurationModel, EmailPropertyKeys.JAVAMAIL_USERSET_KEY);
         configResponse.noopStrict = getBooleanFromModel(configurationModel, EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY);
 
-        return new EmailGlobalConfigResponse();
+        return configResponse;
     }
 
     public Boolean getBooleanFromModel(ConfigurationModel configurationModel, EmailPropertyKeys emailPropertyKey) {
