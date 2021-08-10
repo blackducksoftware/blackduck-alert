@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,6 +20,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMeta
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
@@ -40,8 +42,14 @@ public class DescriptorMetadataActionsTest {
         ActionResponse<DescriptorsResponseModel> response = actions.getDescriptorsByPermissions(null, null, null);
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
-        Set<DescriptorMetadata> descriptorMetadata = response.getContent().get().getDescriptors();
-        assertEquals(0, descriptorMetadata.size());
+        List<AccessOperation> allAccessOperations = response.getContent()
+            .stream()
+            .map(DescriptorsResponseModel::getDescriptors)
+            .flatMap(Set::stream)
+            .map(DescriptorMetadata::getOperations)
+            .flatMap(Set::stream)
+            .collect(Collectors.toList());
+        assertEquals(0, allAccessOperations.size());
     }
 
     @Test
@@ -307,11 +315,6 @@ public class DescriptorMetadataActionsTest {
         @Override
         public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
             return contexts.contains(actionApiType);
-        }
-
-        @Override
-        public boolean hasUIConfigs() {
-            return true;
         }
 
         @Override

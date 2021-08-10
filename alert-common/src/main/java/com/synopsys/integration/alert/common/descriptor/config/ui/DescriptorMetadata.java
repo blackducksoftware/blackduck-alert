@@ -16,21 +16,20 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DescriptorMetadata extends AlertSerializableModel {
-    private static final long serialVersionUID = -6213193510077419010L;
-
     private final String name;
     private final String label;
     private final DescriptorType type;
     private final ConfigContextEnum context;
-    private Set<AccessOperation> operations;
-    private boolean readOnly;
+    private final Set<AccessOperation> operations;
+    private final boolean readOnly;
 
-    public DescriptorMetadata(DescriptorKey descriptorKey, DescriptorType type, ConfigContextEnum context) {
+    public DescriptorMetadata(DescriptorKey descriptorKey, DescriptorType type, ConfigContextEnum context, Set<AccessOperation> operations, boolean readOnly) {
         this.name = descriptorKey.getUniversalKey();
         this.label = descriptorKey.getDisplayName();
         this.type = type;
         this.context = context;
-        this.operations = Set.of();
+        this.operations = operations;
+        this.readOnly = readOnly;
     }
 
     public String getName() {
@@ -53,16 +52,8 @@ public class DescriptorMetadata extends AlertSerializableModel {
         return operations;
     }
 
-    public void setOperations(Set<AccessOperation> operations) {
-        this.operations = operations;
-    }
-
     public boolean isReadOnly() {
         return readOnly;
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
     }
 
 }

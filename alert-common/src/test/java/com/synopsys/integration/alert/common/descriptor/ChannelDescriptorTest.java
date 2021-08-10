@@ -14,12 +14,11 @@ import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public class ChannelDescriptorTest {
-
     @Test
     public void getterTest() {
         String name = "channel";
         ChannelKey channelKey = new ChannelKey(name, name) {};
-        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null, ) {
+        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null, Set.of(ConfigContextEnum.DISTRIBUTION)) {
             @Override
             public Optional<GlobalConfigurationValidator> getGlobalValidator() {
                 return Optional.empty();

@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
@@ -81,10 +80,6 @@ public abstract class Descriptor extends Stringable {
 
     public abstract Optional<DistributionConfigurationValidator> getDistributionValidator();
 
-    public Optional<DescriptorMetadata> createMetaData(ConfigContextEnum context) {
-        return getUIConfig(context).map(uiConfig -> new DescriptorMetadata(descriptorKey, getType(), context));
-    }
-
     public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
         return getUIConfig(context)
             .map(UIConfig::getFields)
@@ -92,10 +87,6 @@ public abstract class Descriptor extends Stringable {
             .stream()
             .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
             .collect(Collectors.toSet());
-    }
-
-    public boolean hasUIConfigs() {
-        return uiConfigs.size() > 0;
     }
 
     public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
