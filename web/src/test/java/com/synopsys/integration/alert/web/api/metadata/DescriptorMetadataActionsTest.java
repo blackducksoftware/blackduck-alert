@@ -15,9 +15,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
@@ -315,22 +313,6 @@ public class DescriptorMetadataActionsTest {
         @Override
         public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
             return contexts.contains(actionApiType);
-        }
-
-        @Override
-        public Optional<UIConfig> getUIConfig(ConfigContextEnum context) {
-            if (!contexts.contains(context)) {
-                return Optional.empty();
-            }
-
-            return Optional.of(new UIConfig("Label", "description", "urlName") {
-
-                @Override
-                public List<ConfigField> createFields() {
-                    return List.of();
-                }
-
-            });
         }
 
         @Override
