@@ -18,6 +18,8 @@ public final class MessageValueReplacementResolver {
     public static final String REPLACEMENT_PROJECT_VERSION = "{{projectVersion}}";
     public static final String REPLACEMENT_COMPONENT_NAME = "{{componentName}}";
     public static final String REPLACEMENT_COMPONENT_VERSION = "{{componentVersion}}";
+    public static final String REPLACEMENT_COMPONENT_USAGE = "{{componentUsage}}";
+    public static final String REPLACEMENT_COMPONENT_LICENSE = "{{componentLicense}}";
     public static final String REPLACEMENT_SEVERITY = "{{severity}}";
     public static final String REPLACEMENT_POLICY_CATEGORY = "{{policyCategory}}";
 
@@ -34,6 +36,8 @@ public final class MessageValueReplacementResolver {
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_PROJECT_VERSION, replacementValues::getProjectVersionName);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_NAME, replacementValues::getComponentName);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_VERSION, replacementValues::getComponentVersionName);
+        modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_USAGE, replacementValues::getComponentUsage);
+        modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_LICENSE, replacementValues::getComponentLicense);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_SEVERITY, replacementValues::getSeverity);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_POLICY_CATEGORY, replacementValues::getPolicyCategory);
 

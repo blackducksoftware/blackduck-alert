@@ -132,6 +132,8 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
                    .projectVersionName(alertIssueSource.getProjectVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
                    .componentName(bomComponent.getComponent().getValue())
                    .componentVersionName(bomComponent.getComponentVersion().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .componentUsage(bomComponent.getUsage())
+                   .componentLicense(bomComponent.getLicense().getValue())
                    .severity(severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
                    .policyCategory(policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
                    .build();
