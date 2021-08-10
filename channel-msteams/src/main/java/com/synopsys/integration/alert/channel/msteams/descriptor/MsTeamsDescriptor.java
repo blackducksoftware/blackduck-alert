@@ -36,7 +36,7 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     @Autowired
     public MsTeamsDescriptor(MsTeamsGlobalUIConfig msTeamsGlobalUIConfig, MsTeamsDistributionConfigurationValidator distributionValidator) {
         // GLOBAL is needed for UI permissions (for now)
-        super(ChannelKeys.MS_TEAMS, msTeamsGlobalUIConfig, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
+        super(ChannelKeys.MS_TEAMS, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.distributionValidator = distributionValidator;
     }
 

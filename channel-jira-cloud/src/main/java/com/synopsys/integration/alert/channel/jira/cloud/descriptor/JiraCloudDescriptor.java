@@ -72,7 +72,7 @@ public class JiraCloudDescriptor extends ChannelDescriptor {
         JiraCloudGlobalConfigurationValidator jiraCloudGlobalValidator,
         JiraCloudDistributionConfigurationValidator jiraCloudDistributionConfigurationValidator
     ) {
-        super(ChannelKeys.JIRA_CLOUD, globalUIConfig, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
+        super(ChannelKeys.JIRA_CLOUD, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.jiraCloudGlobalValidator = jiraCloudGlobalValidator;
         this.jiraCloudDistributionConfigurationValidator = jiraCloudDistributionConfigurationValidator;
     }

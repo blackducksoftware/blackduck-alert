@@ -18,7 +18,7 @@ public class ChannelDescriptorTest {
     public void getterTest() {
         String name = "channel";
         ChannelKey channelKey = new ChannelKey(name, name) {};
-        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null, Set.of(ConfigContextEnum.DISTRIBUTION)) {
+        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, Set.of(ConfigContextEnum.DISTRIBUTION)) {
             @Override
             public Optional<GlobalConfigurationValidator> getGlobalValidator() {
                 return Optional.empty();

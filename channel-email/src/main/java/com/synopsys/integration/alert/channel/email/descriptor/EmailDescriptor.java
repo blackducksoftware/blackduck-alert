@@ -53,7 +53,7 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Autowired
     public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailGlobalConfigurationValidator emailGlobalValidator, EmailDistributionConfigurationValidator emailDistributionValidator) {
-        super(ChannelKeys.EMAIL, emailGlobalUIConfig, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
+        super(ChannelKeys.EMAIL, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.emailGlobalValidator = emailGlobalValidator;
         this.emailDistributionValidator = emailDistributionValidator;
     }
