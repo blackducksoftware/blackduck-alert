@@ -51,27 +51,16 @@ public class JiraServerDescriptor extends ChannelDescriptor {
     public static final String LABEL_RESOLVE_WORKFLOW_TRANSITION = "Resolve Transition";
     public static final String LABEL_OPEN_WORKFLOW_TRANSITION = "Re-open Transition";
 
-    public static final String DESCRIPTION_FIELD_MAPPING = "Use this field to provide static values to Jira fields or map them to information from the notifications.";
-    public static final String DESCRIPTION_ADD_COMMENTS = "If true, this will add comments to the Jira ticket with data describing the latest change.";
-    public static final String DESCRIPTION_ISSUE_CREATOR = "The username of the Jira Server user to assign as the issue creator field of the Jira issue.";
-    public static final String DESCRIPTION_JIRA_PROJECT = "The name or key of the Jira Project for which this job creates and/or updates Jira tickets.";
-    public static final String DESCRIPTION_ISSUE_TYPE = "The issue type to open when creating an issue in Jira Server.";
-    public static final String DESCRIPTION_RESOLVE_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when resolving an issue. This will happen when Alert receives a DELETE operation from a provider. "
-                                                                             + "Note: This must be in the 'Done' status category.";
-    public static final String DESCRIPTION_OPEN_WORKFLOW_TRANSITION = "If a transition is listed (case sensitive), it will be used when re-opening an issue. This will happen when Alert receives an ADD/UPDATE operation from a provider. "
-                                                                          + "Note: This must be in the 'To Do' status category.";
-
     private final JiraServerGlobalConfigurationValidator jiraServerGlobalValidator;
     private final JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator;
 
     @Autowired
     public JiraServerDescriptor(
-        JiraServerDistributionUIConfig jiraServerDistributionUIConfig,
         JiraServerGlobalUIConfig jiraServerGlobalUIConfig,
         JiraServerGlobalConfigurationValidator jiraServerGlobalValidator,
         JiraServerDistributionConfigurationValidator jiraServerDistributionConfigurationValidator
     ) {
-        super(ChannelKeys.JIRA_SERVER, jiraServerDistributionUIConfig, jiraServerGlobalUIConfig);
+        super(ChannelKeys.JIRA_SERVER, jiraServerGlobalUIConfig);
         this.jiraServerGlobalValidator = jiraServerGlobalValidator;
         this.jiraServerDistributionConfigurationValidator = jiraServerDistributionConfigurationValidator;
     }

@@ -7,8 +7,8 @@
  */
 package com.synopsys.integration.alert.api.provider;
 
+import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.ProviderKey;
 
@@ -29,9 +29,9 @@ public abstract class ProviderDescriptor extends Descriptor {
     public static final String KEY_COMMON_CONFIG_ID = "provider.common.config.id";
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
     public static final String KEY_PROCESSING_TYPE = "provider.distribution.processing.type";
-    public static final String KEY_FILTER_BY_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "filter.by.project";
-    public static final String KEY_PROJECT_NAME_PATTERN = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "project.name.pattern";
-    public static final String KEY_CONFIGURED_PROJECT = ChannelDistributionUIConfig.KEY_COMMON_CHANNEL_PREFIX + "configured.project";
+    public static final String KEY_FILTER_BY_PROJECT = ChannelDescriptor.KEY_COMMON_CHANNEL_PREFIX + "filter.by.project";
+    public static final String KEY_PROJECT_NAME_PATTERN = ChannelDescriptor.KEY_COMMON_CHANNEL_PREFIX + "project.name.pattern";
+    public static final String KEY_CONFIGURED_PROJECT = ChannelDescriptor.KEY_COMMON_CHANNEL_PREFIX + "configured.project";
 
     public static final String LABEL_PROJECTS = "Projects";
     public static final String LABEL_PROCESSING = "Processing";

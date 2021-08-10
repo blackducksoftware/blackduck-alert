@@ -52,23 +52,16 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String LABEL_WORK_ITEM_COMPLETED_STATE = "Work Item Completed State";
     public static final String LABEL_WORK_ITEM_REOPEN_STATE = "Work Item Reopen State";
 
-    public static final String DESCRIPTION_WORK_ITEM_COMMENT = "If selected, Alert will comment on Work Items it created when updates occur.";
-    public static final String DESCRIPTION_AZURE_PROJECT = "The project name or id in Azure Boards.";
-    public static final String DESCRIPTION_WORK_ITEM_TYPE = "The work item type in Azure Boards.";
-    public static final String DESCRIPTION_WORK_ITEM_COMPLETED_STATE = "The state a work item should result in if Alert receives a DELETE operation for it.";
-    public static final String DESCRIPTION_WORK_ITEM_REOPEN_STATE = "The state a work item should result in if Alert receives an ADD operation and the work item is in a completed state.";
-
     private final AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
     private final AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator;
 
     @Autowired
     public AzureBoardsDescriptor(
-        AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig,
         AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig,
         AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator,
         AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator
     ) {
-        super(ChannelKeys.AZURE_BOARDS, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig);
+        super(ChannelKeys.AZURE_BOARDS, azureBoardsGlobalUIConfig);
         this.azureBoardsGlobalConfigurationValidator = azureBoardsGlobalValidator;
         this.azureBoardsDistributionConfigurationValidator = azureBoardsDistributionConfigurationValidator;
     }
