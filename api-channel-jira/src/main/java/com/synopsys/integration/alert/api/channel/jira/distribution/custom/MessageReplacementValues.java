@@ -114,16 +114,6 @@ public class MessageReplacementValues {
             );
         }
 
-        public Builder providerName(String providerName) {
-            this.providerName = providerName;
-            return this;
-        }
-
-        public Builder projectName(String projectName) {
-            this.projectName = projectName;
-            return this;
-        }
-
         public Builder projectVersionName(String projectVersionName) {
             this.projectVersionName = projectVersionName;
             return this;
