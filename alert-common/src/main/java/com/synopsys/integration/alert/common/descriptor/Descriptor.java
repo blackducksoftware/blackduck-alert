@@ -46,12 +46,12 @@ public abstract class Descriptor extends Stringable {
     private final DescriptorKey descriptorKey;
     private final DescriptorType type;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;
-    private final Set<ConfigContextEnum> configurationScopes;
+    private final Set<ConfigContextEnum> configContexts;
 
-    public Descriptor(DescriptorKey descriptorKey, DescriptorType type, Set<ConfigContextEnum> configurationScopes) {
+    public Descriptor(DescriptorKey descriptorKey, DescriptorType type, Set<ConfigContextEnum> configContexts) {
         this.descriptorKey = descriptorKey;
         this.type = type;
-        this.configurationScopes = configurationScopes;
+        this.configContexts = configContexts;
         uiConfigs = new EnumMap<>(ConfigContextEnum.class);
     }
 
@@ -63,8 +63,8 @@ public abstract class Descriptor extends Stringable {
         return type;
     }
 
-    public Set<ConfigContextEnum> getConfigurationScopes() {
-        return configurationScopes;
+    public Set<ConfigContextEnum> getConfigContexts() {
+        return configContexts;
     }
 
     public void addGlobalUiConfig(UIConfig uiConfig) {

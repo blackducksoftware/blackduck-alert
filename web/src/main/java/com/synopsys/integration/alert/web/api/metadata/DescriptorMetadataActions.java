@@ -61,7 +61,7 @@ public class DescriptorMetadataActions {
 
         if (StringUtils.isNotBlank(context)) {
             descriptorFilter = descriptorFilter.and(descriptor ->
-                                                        descriptor.getConfigurationScopes()
+                                                        descriptor.getConfigContexts()
                                                             .stream()
                                                             .map(Enum::name)
                                                             .anyMatch(context::equals)
@@ -88,7 +88,7 @@ public class DescriptorMetadataActions {
 
     private Set<DescriptorMetadata> createDescriptorMetadata(Descriptor requestedDescriptor, Set<ConfigContextEnum> requestedContexts) {
         Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
-        for (ConfigContextEnum context : requestedDescriptor.getConfigurationScopes()) {
+        for (ConfigContextEnum context : requestedDescriptor.getConfigContexts()) {
             if (requestedContexts.contains(context)) {
                 createDescriptorMetadata(requestedDescriptor.getDescriptorKey(), context, requestedDescriptor.getType())
                     .ifPresent(descriptorMetadata::add);
