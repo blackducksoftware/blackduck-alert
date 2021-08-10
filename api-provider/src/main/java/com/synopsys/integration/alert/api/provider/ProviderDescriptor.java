@@ -39,9 +39,8 @@ public abstract class ProviderDescriptor extends Descriptor {
     public static final String LABEL_PROJECTS = "Projects";
     public static final String LABEL_PROCESSING = "Processing";
 
-    public ProviderDescriptor(ProviderKey providerKey, ProviderGlobalUIConfig providerUiConfig) {
+    public ProviderDescriptor(ProviderKey providerKey) {
         super(providerKey, DescriptorType.PROVIDER, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
-        addGlobalUiConfig(providerUiConfig);
     }
 
 }
