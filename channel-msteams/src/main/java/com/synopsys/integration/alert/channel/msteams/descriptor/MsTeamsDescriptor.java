@@ -29,12 +29,11 @@ public class MsTeamsDescriptor extends ChannelDescriptor {
     public static final String MSTEAMS_DESCRIPTION = "Configure MS Teams for Alert.";
 
     public static final String LABEL_WEBHOOK = "Webhook";
-    public static final String MSTEAMS_WEBHOOK_DESCRIPTION = "The MS Teams URL to receive alerts.";
 
     private final MsTeamsDistributionConfigurationValidator distributionValidator;
 
     @Autowired
-    public MsTeamsDescriptor(MsTeamsGlobalUIConfig msTeamsGlobalUIConfig, MsTeamsDistributionConfigurationValidator distributionValidator) {
+    public MsTeamsDescriptor(MsTeamsDistributionConfigurationValidator distributionValidator) {
         // GLOBAL is needed for UI permissions (for now)
         super(ChannelKeys.MS_TEAMS, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.distributionValidator = distributionValidator;
