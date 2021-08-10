@@ -545,7 +545,7 @@ public class JobConfigActionsTest {
     }
 
     private Descriptor createDescriptor(Supplier<Optional<GlobalConfigurationValidator>> globalValidator, Supplier<Optional<DistributionConfigurationValidator>> distributionValidator) {
-        Descriptor descriptor = new Descriptor(descriptorKey, DESCRIPTOR_TYPE) {
+        Descriptor descriptor = new Descriptor(descriptorKey, DESCRIPTOR_TYPE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION)) {
             @Override
             public Optional<GlobalConfigurationValidator> getGlobalValidator() {
                 return globalValidator.get();

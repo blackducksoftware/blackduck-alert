@@ -19,7 +19,7 @@ public class ChannelDescriptorTest {
     public void getterTest() {
         String name = "channel";
         ChannelKey channelKey = new ChannelKey(name, name) {};
-        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null) {
+        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null, ) {
             @Override
             public Optional<GlobalConfigurationValidator> getGlobalValidator() {
                 return Optional.empty();

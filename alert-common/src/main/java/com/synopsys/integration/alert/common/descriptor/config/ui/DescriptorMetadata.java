@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 
 public class DescriptorMetadata extends AlertSerializableModel {
     private static final long serialVersionUID = -6213193510077419010L;
+
     private final String name;
     private final String label;
     private final DescriptorType type;

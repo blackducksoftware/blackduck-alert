@@ -291,7 +291,7 @@ public class DescriptorMetadataActionsTest {
         private final List<ConfigContextEnum> contexts;
 
         public TestDescriptor(String descriptorName, DescriptorType type, ConfigContextEnum... contexts) {
-            super(new DescriptorKey(descriptorName, descriptorName) {}, type);
+            super(new DescriptorKey(descriptorName, descriptorName) {}, type, null != contexts ? Set.of(contexts) : Set.of());
             if (contexts != null) {
                 this.contexts = Arrays.asList(contexts);
             } else {

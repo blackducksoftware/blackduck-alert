@@ -47,10 +47,12 @@ public abstract class Descriptor extends Stringable {
     private final DescriptorKey descriptorKey;
     private final DescriptorType type;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;
+    private final Set<ConfigContextEnum> configurationScopes;
 
-    public Descriptor(DescriptorKey descriptorKey, DescriptorType type) {
+    public Descriptor(DescriptorKey descriptorKey, DescriptorType type, Set<ConfigContextEnum> configurationScopes) {
         this.descriptorKey = descriptorKey;
         this.type = type;
+        this.configurationScopes = configurationScopes;
         uiConfigs = new EnumMap<>(ConfigContextEnum.class);
     }
 
@@ -62,18 +64,19 @@ public abstract class Descriptor extends Stringable {
         return type;
     }
 
-    public void addGlobalUiConfig(UIConfig uiConfig) {
-        uiConfigs.put(ConfigContextEnum.GLOBAL, uiConfig);
+    public Set<ConfigContextEnum> getConfigurationScopes() {
+        return configurationScopes;
     }
 
-    public void addDistributionUiConfig(UIConfig uiConfig) {
-        uiConfigs.put(ConfigContextEnum.DISTRIBUTION, uiConfig);
+    public void addGlobalUiConfig(UIConfig uiConfig) {
+        uiConfigs.put(ConfigContextEnum.GLOBAL, uiConfig);
     }
 
     public Optional<UIConfig> getUIConfig(ConfigContextEnum actionApiType) {
         return Optional.ofNullable(uiConfigs.get(actionApiType));
     }
 
+    // TODO these should be concrete methods based on optional constructor params
     public abstract Optional<GlobalConfigurationValidator> getGlobalValidator();
 
     public abstract Optional<DistributionConfigurationValidator> getDistributionValidator();
@@ -84,11 +87,11 @@ public abstract class Descriptor extends Stringable {
 
     public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
         return getUIConfig(context)
-                   .map(UIConfig::getFields)
-                   .orElse(List.of())
-                   .stream()
-                   .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
-                   .collect(Collectors.toSet());
+            .map(UIConfig::getFields)
+            .orElse(List.of())
+            .stream()
+            .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
+            .collect(Collectors.toSet());
     }
 
     public boolean hasUIConfigs() {
