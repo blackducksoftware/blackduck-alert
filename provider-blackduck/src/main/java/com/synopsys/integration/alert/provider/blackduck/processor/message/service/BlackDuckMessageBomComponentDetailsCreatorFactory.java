@@ -14,7 +14,6 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.servi
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreatorFactory;
 import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
 
 @Component
 public class BlackDuckMessageBomComponentDetailsCreatorFactory {
@@ -32,8 +31,7 @@ public class BlackDuckMessageBomComponentDetailsCreatorFactory {
 
     public BlackDuckMessageBomComponentDetailsCreator createBomComponentDetailsCreator(BlackDuckServicesFactory blackDuckServicesFactory) {
         BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-        PolicyRuleService policyRuleService = blackDuckServicesFactory.createPolicyRuleService();
-        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = blackDuckComponentPolicyDetailsCreatorFactory.createBlackDuckComponentPolicyDetailsCreator(policyRuleService);
+        BlackDuckComponentPolicyDetailsCreator policyDetailsCreator = blackDuckComponentPolicyDetailsCreatorFactory.createBlackDuckComponentPolicyDetailsCreator(blackDuckApiClient);
         return new BlackDuckMessageBomComponentDetailsCreator(blackDuckApiClient, vulnerabilityDetailsCreator, policyDetailsCreator);
     }
 }

@@ -10,6 +10,9 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.blackduck.api.generated.component.PolicyRuleExpressionExpressionsView;
@@ -18,18 +21,21 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.PolicyRuleCa
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
 import com.synopsys.integration.blackduck.api.generated.view.PolicyRuleView;
-import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class BlackDuckComponentPolicyDetailsCreator {
     private static final String VULNERABILITY_POLICY_EXPRESSION_NAME = "vuln";
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final BlackDuckPolicySeverityConverter policySeverityConverter;
-    private final PolicyRuleService policyRuleService;
-    
-    public BlackDuckComponentPolicyDetailsCreator(BlackDuckPolicySeverityConverter policySeverityConverter, PolicyRuleService policyRuleService) {
+    private final BlackDuckApiClient blackDuckApiClient;
+
+    public BlackDuckComponentPolicyDetailsCreator(BlackDuckPolicySeverityConverter policySeverityConverter, BlackDuckApiClient blackDuckApiClient) {
         this.policySeverityConverter = policySeverityConverter;
-        this.policyRuleService = policyRuleService;
+        this.blackDuckApiClient = blackDuckApiClient;
     }
 
     public ComponentPolicy toComponentPolicy(ComponentPolicyRulesView componentPolicyRulesView) {
@@ -37,18 +43,19 @@ public class BlackDuckComponentPolicyDetailsCreator {
         boolean overridden = ProjectVersionComponentPolicyStatusType.IN_VIOLATION_OVERRIDDEN.equals(componentPolicyRulesView.getPolicyApprovalStatus());
         boolean vulnerabilityPolicy = isVulnerabilityPolicy(componentPolicyRulesView);
 
-        Optional<PolicyRuleView> policyRuleView = retrievePolicyRuleView(componentPolicyRulesView.getName());
+        Optional<PolicyRuleView> policyRuleView = retrievePolicyRuleView(componentPolicyRulesView.getHref());
         String category = policyRuleView.map(PolicyRuleView::getCategory)
                               .map(PolicyRuleCategoryType::name)
                               .orElse(null);
-
         return new ComponentPolicy(componentPolicyRulesView.getName(), componentConcernSeverity, overridden, vulnerabilityPolicy, componentPolicyRulesView.getDescription(), category);
     }
 
-    private Optional<PolicyRuleView> retrievePolicyRuleView(String policyName) {
+    private Optional<PolicyRuleView> retrievePolicyRuleView(HttpUrl policyUrl) {
         try {
-            return policyRuleService.getPolicyRuleViewByName(policyName);
+            PolicyRuleView policyRuleView = blackDuckApiClient.getResponse(policyUrl, PolicyRuleView.class);
+            return Optional.of(policyRuleView);
         } catch (IntegrationException e) {
+            logger.debug("Could not retrieve policy rule from component policy.");
             return Optional.empty();
         }
     }
