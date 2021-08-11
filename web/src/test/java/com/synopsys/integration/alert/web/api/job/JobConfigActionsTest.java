@@ -32,9 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -556,14 +554,6 @@ public class JobConfigActionsTest {
                 return distributionValidator.get();
             }
         };
-
-        UIConfig uiConfig = new UIConfig("label", "description", "url", "componentNamespace") {
-            @Override
-            protected List<ConfigField> createFields() {
-                return List.of();
-            }
-        };
-        descriptor.addGlobalUiConfig(uiConfig);
 
         return descriptor;
     }
