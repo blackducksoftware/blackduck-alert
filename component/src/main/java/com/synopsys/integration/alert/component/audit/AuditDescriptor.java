@@ -25,12 +25,13 @@ public class AuditDescriptor extends ComponentDescriptor {
     public static final String AUDIT_COMPONENT_NAMESPACE = "audit.AuditPage";
 
     @Autowired
-    public AuditDescriptor(AuditDescriptorKey auditDescriptorKey, AuditUIConfig auditUIConfig) {
-        super(auditDescriptorKey, auditUIConfig);
+    public AuditDescriptor(AuditDescriptorKey auditDescriptorKey) {
+        super(auditDescriptorKey);
     }
 
     @Override
     public Optional<GlobalConfigurationValidator> getGlobalValidator() {
         return Optional.empty();
     }
+
 }

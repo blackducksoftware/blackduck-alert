@@ -23,12 +23,13 @@ public class UserManagementDescriptor extends ComponentDescriptor {
     public static final String USERS_COMPONENT_NAMESPACE = "users.UserManagement";
 
     @Autowired
-    public UserManagementDescriptor(UserManagementDescriptorKey descriptorKey, UserManagementUIConfig componentUIConfig) {
-        super(descriptorKey, componentUIConfig);
+    public UserManagementDescriptor(UserManagementDescriptorKey descriptorKey) {
+        super(descriptorKey);
     }
 
     @Override
     public Optional<GlobalConfigurationValidator> getGlobalValidator() {
         return Optional.empty();
     }
+
 }

@@ -27,12 +27,13 @@ public class CertificatesDescriptor extends ComponentDescriptor {
     public static final String KEY_CERTIFICATE_CONTENT = "certificateContent";
 
     @Autowired
-    public CertificatesDescriptor(CertificatesDescriptorKey descriptorKey, CertificatesUIConfig componentUIConfig) {
-        super(descriptorKey, componentUIConfig);
+    public CertificatesDescriptor(CertificatesDescriptorKey descriptorKey) {
+        super(descriptorKey);
     }
 
     @Override
     public Optional<GlobalConfigurationValidator> getGlobalValidator() {
         return Optional.empty();
     }
+
 }
