@@ -32,8 +32,8 @@ public class SettingsDescriptor extends ComponentDescriptor {
     private final SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator;
 
     @Autowired
-    public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsUIConfig uiConfig, SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator) {
-        super(settingsDescriptorKey, uiConfig);
+    public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator) {
+        super(settingsDescriptorKey);
         this.settingsGlobalConfigurationValidator = settingsGlobalConfigurationValidator;
     }
 
@@ -41,4 +41,5 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public Optional<GlobalConfigurationValidator> getGlobalValidator() {
         return Optional.of(settingsGlobalConfigurationValidator);
     }
+
 }
