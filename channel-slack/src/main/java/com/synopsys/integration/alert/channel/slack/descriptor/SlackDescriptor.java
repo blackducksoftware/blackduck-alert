@@ -41,8 +41,7 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     @Autowired
     public SlackDescriptor(SlackDistributionConfigurationValidator distributionValidator) {
-        // GLOBAL is needed for UI permissions (for now)
-        super(ChannelKeys.SLACK, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
+        super(ChannelKeys.SLACK, Set.of(ConfigContextEnum.DISTRIBUTION));
         this.distributionValidator = distributionValidator;
     }
 
