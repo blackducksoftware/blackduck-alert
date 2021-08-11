@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigu
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -40,18 +42,12 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String LABEL_PROJECT_OWNER_ONLY = "Project Owner Only";
     public static final String LABEL_ATTACHMENT_FORMAT = "Attachment File Type";
 
-    public static final String DESCRIPTION_EMAIL_SUBJECT_LINE = "The subject line to use in the emails sent for this distribution job.";
-    public static final String DESCRIPTION_ADDITIONAL_ADDRESSES = "Any additional email addresses (for valid users of the provider) that notifications from this job should be sent to.";
-    public static final String DESCRIPTION_ADDITIONAL_ADDRESSES_ONLY = "Rather than sending emails to users assigned to the configured projects, send emails to only the users selected in 'Additional Email Addresses'.";
-    public static final String DESCRIPTION_EMAIL_PROJECT_OWNER_ONLY = "If true, emails will only be sent to the administrator(s) of the project. Otherwise, all users assigned to the project will get an email.";
-    public static final String DESCRIPTION_ATTACHMENT_FORMAT = "If a file type is selected, a file of that type, representing the message content, will be attached to the email.";
-
     private final EmailGlobalConfigurationValidator emailGlobalValidator;
     private final EmailDistributionConfigurationValidator emailDistributionValidator;
 
     @Autowired
-    public EmailDescriptor(EmailGlobalUIConfig emailGlobalUIConfig, EmailGlobalConfigurationValidator emailGlobalValidator, EmailDistributionConfigurationValidator emailDistributionValidator) {
-        super(ChannelKeys.EMAIL, emailGlobalUIConfig);
+    public EmailDescriptor(EmailGlobalConfigurationValidator emailGlobalValidator, EmailDistributionConfigurationValidator emailDistributionValidator) {
+        super(ChannelKeys.EMAIL, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.emailGlobalValidator = emailGlobalValidator;
         this.emailDistributionValidator = emailDistributionValidator;
     }

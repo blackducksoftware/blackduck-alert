@@ -27,12 +27,12 @@ public class IssueTrackerSimpleMessageConverter {
         this.simpleMessageConverter = new SimpleMessageConverter(formatter);
     }
 
-    public IssueCreationModel convertToIssueCreationModel(SimpleMessage simpleMessage) {
+    public IssueCreationModel convertToIssueCreationModel(SimpleMessage simpleMessage, String jobName) {
         LinkableItem provider = simpleMessage.getProvider();
         String rawTitle = String.format("%s[%s] | %s", provider.getLabel(), provider.getValue(), simpleMessage.getSummary());
         String truncatedTitle = StringUtils.truncate(rawTitle, formatter.getMaxTitleLength());
 
-        List<String> descriptionChunks = simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage);
+        List<String> descriptionChunks = simpleMessageConverter.convertToFormattedMessageChunks(simpleMessage, jobName);
         RechunkedModel rechunkedDescription = ChunkedStringBuilderRechunker.rechunk(descriptionChunks, "No description", formatter.getMaxDescriptionLength(), formatter.getMaxCommentLength());
 
         return IssueCreationModel.simple(truncatedTitle, rechunkedDescription.getFirstChunk(), rechunkedDescription.getRemainingChunks(), simpleMessage.getProvider());

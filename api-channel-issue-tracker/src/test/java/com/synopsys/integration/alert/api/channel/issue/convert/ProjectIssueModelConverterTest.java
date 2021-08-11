@@ -89,7 +89,7 @@ public class ProjectIssueModelConverterTest {
         IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(vulnerableBomComponentDetails);
 
         ProjectIssueModel projectIssueModel = ProjectIssueModel.vulnerability(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, issueBomComponentDetails, vulnerabilityDetails);
-        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel);
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName");
 
         assertTrue(issueCreationModel.getDescription().contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability severity in the description to be CRITICAL");
     }
@@ -165,7 +165,7 @@ public class ProjectIssueModelConverterTest {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         ProjectIssueModelConverter converter = new ProjectIssueModelConverter(formatter);
 
-        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel);
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName");
         assertEquals(projectIssueModel, issueCreationModel.getSource().orElse(null));
 
         String issueCreationModelTitle = issueCreationModel.getTitle();

@@ -1,4 +1,4 @@
-package com.synopsys.integration.distribution.search;
+package com.synopsys.integration.alert.api.channel.jira.distribution.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,8 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.api.channel.issue.search.enumeration.IssueStatus;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueStatusCreator;
-import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraSearcherResponseModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.model.components.TransitionComponent;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
@@ -48,7 +46,7 @@ public class JiraIssueStatusCreatorTest {
     public void createIssueStatusExceptionTest() {
         JiraSearcherResponseModel jiraSearcherResponseModel = new JiraSearcherResponseModel(null, "unknown", null, null);
         IssueStatus issueStatus = jiraIssueStatusCreator.createIssueStatus(jiraSearcherResponseModel, this::fetchIssueTransitionsException);
-        
+
         assertEquals(IssueStatus.UNKNOWN, issueStatus);
     }
 

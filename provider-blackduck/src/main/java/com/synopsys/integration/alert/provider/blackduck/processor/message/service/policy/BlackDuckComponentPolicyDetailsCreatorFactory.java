@@ -10,7 +10,7 @@ package com.synopsys.integration.alert.provider.blackduck.processor.message.serv
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.blackduck.service.dataservice.PolicyRuleService;
+import com.synopsys.integration.blackduck.service.BlackDuckApiClient;
 
 @Component
 public class BlackDuckComponentPolicyDetailsCreatorFactory {
@@ -21,7 +21,7 @@ public class BlackDuckComponentPolicyDetailsCreatorFactory {
         this.policySeverityConverter = policySeverityConverter;
     }
 
-    public BlackDuckComponentPolicyDetailsCreator createBlackDuckComponentPolicyDetailsCreator(PolicyRuleService policyRuleService) {
-        return new BlackDuckComponentPolicyDetailsCreator(policySeverityConverter, policyRuleService);
+    public BlackDuckComponentPolicyDetailsCreator createBlackDuckComponentPolicyDetailsCreator(BlackDuckApiClient blackDuckApiClient) {
+        return new BlackDuckComponentPolicyDetailsCreator(policySeverityConverter, blackDuckApiClient);
     }
 }

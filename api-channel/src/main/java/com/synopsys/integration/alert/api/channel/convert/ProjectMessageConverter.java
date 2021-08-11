@@ -31,7 +31,7 @@ public class ProjectMessageConverter implements ProviderMessageConverter<Project
     }
 
     @Override
-    public List<String> convertToFormattedMessageChunks(ProjectMessage projectMessage) {
+    public List<String> convertToFormattedMessageChunks(ProjectMessage projectMessage, String jobName) {
         ChunkedStringBuilder chunkedStringBuilder = new ChunkedStringBuilder(messageFormatter.getMaxMessageLength());
 
         String projectString;
@@ -45,6 +45,13 @@ public class ProjectMessageConverter implements ProviderMessageConverter<Project
             optionalProjectVersionString = Optional.empty();
         }
 
+        String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
+
+        String jobLine = String.format("Job%sname:%s%s", nonBreakingSpace, nonBreakingSpace, jobName);
+        String boldJobName = messageFormatter.emphasize(jobLine);
+        chunkedStringBuilder.append(boldJobName);
+        chunkedStringBuilder.append(messageFormatter.getLineSeparator());
+
         chunkedStringBuilder.append(projectString);
         chunkedStringBuilder.append(messageFormatter.getLineSeparator());
 
@@ -53,8 +60,6 @@ public class ProjectMessageConverter implements ProviderMessageConverter<Project
                 chunkedStringBuilder.append(projectVersionString);
                 chunkedStringBuilder.append(messageFormatter.getLineSeparator());
             });
-
-        String nonBreakingSpace = messageFormatter.getNonBreakingSpace();
 
         MessageReason messageReason = projectMessage.getMessageReason();
         if (MessageReason.PROJECT_STATUS.equals(messageReason) || MessageReason.PROJECT_VERSION_STATUS.equals(messageReason)) {
