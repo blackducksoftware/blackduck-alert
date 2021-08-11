@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOption;
 import com.synopsys.integration.alert.common.descriptor.config.field.LabelValueSelectOptions;
@@ -64,11 +63,6 @@ public class ProviderConfigSelectCustomFunctionAction extends CustomFunctionActi
 
     @Override
     protected Collection<AlertFieldStatus> validateRelatedFields(FieldModel fieldModel) {
-        Optional<String> fieldValue = fieldModel.getFieldValue(ChannelDescriptor.KEY_PROVIDER_TYPE);
-        if (fieldValue.isEmpty()) {
-            AlertFieldStatus error = AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID, String.format("Missing %s", ChannelDescriptor.LABEL_PROVIDER_TYPE));
-            return Set.of(error);
-        }
         return Set.of();
     }
 
