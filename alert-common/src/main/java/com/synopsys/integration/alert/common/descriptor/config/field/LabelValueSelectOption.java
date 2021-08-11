@@ -13,10 +13,6 @@ public class LabelValueSelectOption extends AlertSerializableModel implements Co
     private final String label;
     private final String value;
 
-    public LabelValueSelectOption(String labelAndValue) {
-        this(labelAndValue, labelAndValue);
-    }
-
     public LabelValueSelectOption(String label, String value) {
         this.label = label;
         this.value = value;

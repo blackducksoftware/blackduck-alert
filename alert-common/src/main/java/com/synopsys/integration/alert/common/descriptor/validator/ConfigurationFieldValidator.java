@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
@@ -31,6 +30,8 @@ import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
 public class ConfigurationFieldValidator {
     public static final String REQUIRED_FIELD_MISSING_MESSAGE = "Required field missing";
     public static final String INVALID_OPTION_MESSAGE = "Invalid option selected";
+    public static final String NOT_AN_INTEGER_VALUE = "Not an integer value";
+    public static final String ENCRYPTION_MISSING = "Encryption configuration missing.";
 
     private final Map<String, FieldValueModel> fieldMap;
     private final Set<AlertFieldStatus> statuses;
@@ -92,7 +93,7 @@ public class ConfigurationFieldValidator {
             .orElse(true);
 
         if (!isANumberOrEmpty) {
-            statuses.add(AlertFieldStatus.error(fieldKey, NumberConfigField.NOT_AN_INTEGER_VALUE));
+            statuses.add(AlertFieldStatus.error(fieldKey, NOT_AN_INTEGER_VALUE));
         }
     }
 
