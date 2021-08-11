@@ -32,10 +32,6 @@ public abstract class UIConfig extends Stringable {
         this.componentNamespace = componentNamespace;
     }
 
-    public UIConfig(String label, String description, String urlName) {
-        this(label, description, urlName, "");
-    }
-
     @PostConstruct
     public void setConfigFields() {
         configFields = createFields();

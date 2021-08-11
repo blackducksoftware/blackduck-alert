@@ -55,11 +55,16 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_SAML_METADATA_FILE_MISSING = "SAML Metadata file has not been uploaded and a Metadata URL has not been specified.";
 
     public static final String SAML_METADATA_FILE = "saml_metadata.xml";
+
+    // Test fields
+    public static final String TEST_FIELD_KEY_USERNAME = "test.field.user.name";
+    public static final String TEST_FIELD_KEY_PASSWORD = "test.field.user.password";
+
     private final AuthenticationConfigurationValidator authenticationValidator;
 
     @Autowired
-    public AuthenticationDescriptor(AuthenticationDescriptorKey descriptorKey, AuthenticationUIConfig componentUIConfig, AuthenticationConfigurationValidator authenticationValidator) {
-        super(descriptorKey, componentUIConfig);
+    public AuthenticationDescriptor(AuthenticationDescriptorKey descriptorKey, AuthenticationConfigurationValidator authenticationValidator) {
+        super(descriptorKey);
         this.authenticationValidator = authenticationValidator;
     }
 
