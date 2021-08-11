@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,15 +133,17 @@ public class EmailGlobalConfigActions {
             return new ValidationActionResponse(HttpStatus.FORBIDDEN, responseModel);
         }
 
-        return validateWithoutChecks(resource);
+        return ValidationActionResponse.createOKResponseWithContent(validateWithoutChecks(resource));
     }
 
     public ValidationActionResponse validateWithoutChecks(EmailGlobalConfigResponse resource) {
         Set<AlertFieldStatus> fieldStatuses = emailDescriptor
                   .getGlobalValidator()
                   .map(validator -> validator.validate(responseTransformer.toFieldModel(resource)))
-                  .orElseGet(Set::of);
-
+                  .stream()
+                  .flatMap(Set::stream)
+                                                  .map(responseTransformer::toResponseFieldStatus)
+                  .collect(Collectors.toSet());
         if (fieldStatuses.isEmpty()) {
             return new ValidationActionResponse(HttpStatus.OK, ValidationResponseModel.success());
         } else {
