@@ -27,65 +27,6 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 public class FieldValidationUtility {
     private final Logger logger = LoggerFactory.getLogger(FieldValidationUtility.class);
 
-    public List<AlertFieldStatus> validateConfig(Map<String, ConfigField> fieldKeyToConfigField, FieldModel fieldModel) {
-        return validateConfig(fieldKeyToConfigField, List.of(fieldModel));
-    }
-
-    public List<AlertFieldStatus> validateConfig(Map<String, ConfigField> fieldKeyToConfigField, Collection<FieldModel> fieldModels) {
-        logger.trace("Begin validating fields in configuration field model.");
-        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
-        for (ConfigField field : fieldKeyToConfigField.values()) {
-            List<AlertFieldStatus> fieldValidationResults = validateConfigField(field, fieldModels, fieldKeyToConfigField);
-            fieldStatuses.addAll(fieldValidationResults);
-        }
-        logger.trace("Finished validating fields in configuration field model.");
-        return fieldStatuses;
-    }
-
-    public List<AlertFieldStatus> validateConfigField(ConfigField fieldToValidate, Collection<FieldModel> fieldModels, Map<String, ConfigField> fieldKeyToConfigField) {
-        List<AlertFieldStatus> fieldStatuses = new ArrayList<>();
-        String key = fieldToValidate.getKey();
-        logger.trace("Validating descriptor field: {}", key);
-
-        Optional<FieldValueModel> optionalFieldValue = getFieldValue(key, fieldModels);
-        if (fieldToValidate.isRequired() && optionalFieldValue.isEmpty()) {
-            logger.debug("Descriptor field {} is required and missing.", key);
-            fieldStatuses.add(AlertFieldStatus.error(key, ConfigField.REQUIRED_FIELD_MISSING));
-            return fieldStatuses;
-        }
-
-        ValidationResult validationResult = ValidationResult.success();
-        if (optionalFieldValue.isPresent()) {
-            // field is present now validate the field
-            logger.trace("FieldModel contains '{}'", key);
-            FieldValueModel fieldValueModel = optionalFieldValue.get();
-            if (hasValueOrChecked(fieldValueModel, fieldToValidate.getType())) {
-                List<AlertFieldStatus> relatedFieldErrors = validateRelatedFields(fieldToValidate, fieldKeyToConfigField, fieldModels);
-                fieldStatuses.addAll(relatedFieldErrors);
-            }
-
-            Optional<FieldModel> sourceFieldModel = getSourceFieldModel(key, fieldModels);
-             validationResult = (sourceFieldModel.isPresent()) ? fieldToValidate.validate(fieldValueModel, sourceFieldModel.get()) : ValidationResult.success();
-
-
-        } else {
-            Optional<FieldModel> optionalFieldModel = fieldModels.stream().findFirst();
-            if (optionalFieldModel.isPresent()) {
-                validationResult = fieldToValidate.validate(new FieldValueModel(List.of(), false), optionalFieldModel.get());
-            }
-        }
-
-        if (validationResult.hasErrors()) {
-            logger.debug("Validating '{}' errors: {}", key, validationResult);
-            fieldStatuses.add(AlertFieldStatus.error(key, validationResult.combineErrorMessages()));
-        }
-        if (validationResult.hasWarnings()) {
-            fieldStatuses.add(AlertFieldStatus.warning(key, validationResult.combineWarningMessages()));
-        }
-
-        return fieldStatuses;
-    }
-
     public List<AlertFieldStatus> validateRelatedFields(ConfigField field, Map<String, ConfigField> fieldKeyToConfigField, FieldModel fieldModel) {
         return validateRelatedFields(field, fieldKeyToConfigField, List.of(fieldModel));
     }
@@ -144,17 +85,10 @@ public class FieldValidationUtility {
 
     private Optional<FieldValueModel> getFieldValue(String fieldKey, Collection<FieldModel> fieldModels) {
         return fieldModels
-                   .stream()
-                   .map(fieldModel -> fieldModel.getFieldValueModel(fieldKey))
-                   .flatMap(Optional::stream)
-                   .findFirst();
-    }
-
-    private Optional<FieldModel> getSourceFieldModel(String fieldKey, Collection<FieldModel> fieldModels) {
-        return fieldModels
-                   .stream()
-                   .filter(fieldModel -> fieldModel.getFieldValueModel(fieldKey).isPresent())
-                   .findFirst();
+            .stream()
+            .map(fieldModel -> fieldModel.getFieldValueModel(fieldKey))
+            .flatMap(Optional::stream)
+            .findFirst();
     }
 
     private boolean isCheckbox(String type) {

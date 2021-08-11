@@ -7,14 +7,11 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,15 +52,11 @@ public abstract class ConfigField extends AlertSerializableModel {
     private final String description;
     private final String type;
 
-    private boolean required;
-    private boolean sensitive;
-    private boolean readOnly;
-    private String panel;
-    private String header;
+    private final boolean required;
+    private final boolean sensitive;
 
-    private Set<String> requiredRelatedFields;
-    private Set<String> disallowedRelatedFields;
-    private Set<String> defaultValues;
+    private final Set<String> requiredRelatedFields;
+    private final Set<String> disallowedRelatedFields;
     private final transient List<ConfigValidationFunction> validationFunctions;
 
     /**
@@ -90,94 +83,9 @@ public abstract class ConfigField extends AlertSerializableModel {
         this.type = type.getFieldTypeName();
         this.required = false;
         this.sensitive = false;
-        this.readOnly = false;
-        this.panel = FIELD_PANEL_DEFAULT;
-        this.header = FIELD_HEADER_EMPTY;
         this.requiredRelatedFields = new HashSet<>();
         this.disallowedRelatedFields = new HashSet<>();
-        this.defaultValues = new HashSet<>();
         this.validationFunctions = new LinkedList<>();
-    }
-
-    public ConfigField applyRequired(boolean required) {
-        this.required = required;
-        return this;
-    }
-
-    public ConfigField applySensitive(boolean sensitive) {
-        this.sensitive = sensitive;
-        return this;
-    }
-
-    public ConfigField applyReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-        return this;
-    }
-
-    public ConfigField applyPanel(String panel) {
-        this.panel = panel;
-        return this;
-    }
-
-    public ConfigField applyHeader(String header) {
-        this.header = header;
-        return this;
-    }
-
-    public ConfigField applyRequiredRelatedFields(Set<String> requiredRelatedFields) {
-        if (null != requiredRelatedFields) {
-            this.requiredRelatedFields.addAll(requiredRelatedFields);
-        }
-        return this;
-    }
-
-    public ConfigField applyRequiredRelatedField(String requiredRelatedField) {
-        if (null != requiredRelatedField) {
-            this.requiredRelatedFields.add(requiredRelatedField);
-        }
-        return this;
-    }
-
-    public ConfigField applyDisallowedRelatedFields(Set<String> disallowedRelatedFields) {
-        if (null != disallowedRelatedFields) {
-            this.disallowedRelatedFields.addAll(disallowedRelatedFields);
-        }
-        return this;
-    }
-
-    public ConfigField applyDisallowedRelatedField(String disallowedRelatedField) {
-        if (null != disallowedRelatedField) {
-            this.disallowedRelatedFields.add(disallowedRelatedField);
-        }
-        return this;
-    }
-
-    public ConfigField applyDefaultValues(Set<String> defaultValues) {
-        if (null != defaultValues) {
-            this.defaultValues.addAll(defaultValues);
-        }
-        return this;
-    }
-
-    public ConfigField applyDefaultValue(String defaultValue) {
-        if (null != defaultValue) {
-            this.defaultValues.add(defaultValue);
-        }
-        return this;
-    }
-
-    public ConfigField applyValidationFunctions(List<ConfigValidationFunction> validationFunctions) {
-        if (null != validationFunctions) {
-            this.validationFunctions.addAll(validationFunctions);
-        }
-        return this;
-    }
-
-    public ConfigField applyValidationFunctions(ConfigValidationFunction... validationFunctions) {
-        if (null != validationFunctions) {
-            applyValidationFunctions(Arrays.stream(validationFunctions).collect(Collectors.toList()));
-        }
-        return this;
     }
 
     public ValidationResult validate(FieldValueModel fieldToValidate, FieldModel fieldModel) {
@@ -195,15 +103,6 @@ public abstract class ConfigField extends AlertSerializableModel {
             }
         }
         return errors;
-    }
-
-    protected void createValidators(List<ConfigValidationFunction> fieldDefaultValidators, ConfigValidationFunction[] validationFunctions) {
-        if (null == validationFunctions) {
-            this.applyValidationFunctions(fieldDefaultValidators);
-        } else {
-            List<ConfigValidationFunction> validators = Stream.concat(fieldDefaultValidators.stream(), Arrays.stream(validationFunctions)).collect(Collectors.toUnmodifiableList());
-            this.applyValidationFunctions(validators);
-        }
     }
 
     public String getKey() {
@@ -230,18 +129,6 @@ public abstract class ConfigField extends AlertSerializableModel {
         return sensitive;
     }
 
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-
-    public String getPanel() {
-        return panel;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
     public Set<String> getRequiredRelatedFields() {
         return requiredRelatedFields;
     }
@@ -252,22 +139,6 @@ public abstract class ConfigField extends AlertSerializableModel {
 
     public List<ConfigValidationFunction> getValidationFunctions() {
         return validationFunctions;
-    }
-
-    public Set<String> getDefaultValues() {
-        return defaultValues;
-    }
-
-    public void setRequiredRelatedFields(Set<String> requiredRelatedFields) {
-        this.requiredRelatedFields = requiredRelatedFields;
-    }
-
-    public void setDisallowedRelatedFields(Set<String> disallowedRelatedFields) {
-        this.disallowedRelatedFields = disallowedRelatedFields;
-    }
-
-    public void setDefaultValues(Set<String> defaultValues) {
-        this.defaultValues = defaultValues;
     }
 
     private ValidationResult validateRequiredField(FieldValueModel fieldToValidate) {
@@ -284,9 +155,9 @@ public abstract class ConfigField extends AlertSerializableModel {
         }
 
         boolean tooLargeFound = values
-                                    .stream()
-                                    .filter(StringUtils::isNotBlank)
-                                    .anyMatch(value -> MAX_FIELD_LENGTH < value.length());
+            .stream()
+            .filter(StringUtils::isNotBlank)
+            .anyMatch(value -> MAX_FIELD_LENGTH < value.length());
         if (tooLargeFound) {
             return ValidationResult.errors(FIELD_LENGTH_LARGE);
         }
