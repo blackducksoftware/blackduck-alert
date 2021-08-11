@@ -7,7 +7,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,8 +18,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.action.ConfigurationAction;
 import com.synopsys.integration.alert.common.action.TestAction;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
@@ -65,11 +62,6 @@ public class DescriptorProcessor {
         return retrieveApiAction(fieldModel.getDescriptorName(), fieldModel.getContext());
     }
 
-    public List<ConfigField> retrieveUIConfigFields(String context, String descriptorName) {
-        ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        return retrieveUIConfigFields(descriptorContext, descriptorName);
-    }
-
     private Optional<ApiAction> retrieveApiAction(String descriptorName, String context) {
         ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return retrieveConfigurationAction(descriptorName).map(configurationAction -> configurationAction.getApiAction(descriptorContext));
@@ -77,17 +69,6 @@ public class DescriptorProcessor {
 
     private Optional<ConfigurationAction> retrieveConfigurationAction(String descriptorName) {
         return Optional.ofNullable(allConfigurationActions.get(descriptorName));
-    }
-
-    private List<ConfigField> retrieveUIConfigFields(ConfigContextEnum context, String descriptorName) {
-        Optional<Descriptor> optionalDescriptor = retrieveDescriptor(descriptorName);
-        List<ConfigField> fieldsToReturn = new LinkedList<>();
-        if (optionalDescriptor.isPresent()) {
-            Descriptor descriptor = optionalDescriptor.get();
-            Optional<UIConfig> uiConfig = descriptor.getUIConfig(context);
-            fieldsToReturn.addAll(uiConfig.map(UIConfig::getFields).orElse(List.of()));
-        }
-        return fieldsToReturn;
     }
 
 }

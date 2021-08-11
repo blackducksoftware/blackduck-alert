@@ -206,7 +206,6 @@ public class JobConfigActionsTest {
     public void updateTest() throws Exception {
         Mockito.when(mockedJobAccessor.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
         Mockito.when(mockedJobAccessor.updateJob(Mockito.eq(distributionJobModel.getJobId()), Mockito.any())).thenReturn(distributionJobModel);
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedFieldModelProcessor.performBeforeUpdateAction(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(mockedFieldModelProcessor.fillFieldModelWithExistingData(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(configurationFieldModel));
         Mockito.when(mockedFieldModelProcessor.performAfterUpdateAction(Mockito.any(), Mockito.any())).thenReturn(fieldModel);
@@ -221,7 +220,6 @@ public class JobConfigActionsTest {
     @Test
     public void updateServerErrorTest() throws Exception {
         Mockito.when(mockedJobAccessor.getJobById(jobId)).thenReturn(Optional.of(distributionJobModel));
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.doThrow(new AlertConfigurationException("Exception for Alert test")).when(mockedFieldModelProcessor).performBeforeUpdateAction(Mockito.any());
 
         ActionResponse<JobFieldModel> jobFieldModelActionResponse = defaultJobConfigActions.update(jobId, jobFieldModel);
@@ -278,7 +276,6 @@ public class JobConfigActionsTest {
 
         fieldModel.setId("testID");
 
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(mockedFieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
@@ -295,7 +292,6 @@ public class JobConfigActionsTest {
     @Test
     public void testWithProviderErrorsTest() throws Exception {
         fieldModel.setId("testID");
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(mockedFieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
@@ -315,7 +311,6 @@ public class JobConfigActionsTest {
     @Test
     public void testBadRequestTest() {
         fieldModel.setId("testID");
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
 
         ValidationActionResponse validationActionResponse = defaultJobConfigActions.test(jobFieldModel);
 
@@ -328,7 +323,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void testAlertFieldExceptionTest() throws Exception {
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
 
         AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
@@ -345,7 +339,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void testIntegrationExceptionTest() throws Exception {
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
 
         Mockito.doThrow(new AlertException("IntegrationException for Alert test")).when(mockedFieldModelProcessor).createCustomMessageFieldModel(Mockito.any());
@@ -362,7 +355,6 @@ public class JobConfigActionsTest {
     @Test
     public void testIntegrationRestExceptionTest() throws Exception {
         fieldModel.setId("testID");
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(mockedFieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
 
@@ -381,7 +373,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void testExceptionTest() throws Exception {
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
 
         Mockito.doThrow(new NullPointerException("RuntimeException for Alert test")).when(mockedFieldModelProcessor).createCustomMessageFieldModel(Mockito.any());
@@ -397,7 +388,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void oldValidateTest() {
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
 
         ValidationActionResponse validationActionResponse = defaultJobConfigActions.validate(jobFieldModel);
 
@@ -424,7 +414,6 @@ public class JobConfigActionsTest {
 
     @Test
     public void oldValidateBadRequestTest() {
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedJobAccessor.getJobByName(Mockito.anyString())).thenReturn(Optional.of(distributionJobModel));
 
         ValidationActionResponse validationActionResponse = defaultJobConfigActions.validate(jobFieldModel);
@@ -481,9 +470,6 @@ public class JobConfigActionsTest {
         Mockito.when(mockedConfigurationFieldModelConverter.convertToFieldModel(Mockito.any())).thenReturn(fieldModel);
         Mockito.when(mockedFieldModelProcessor.performAfterReadAction(Mockito.eq(fieldModel))).thenReturn(fieldModel);
 
-        AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
-
         ActionResponse<List<JobFieldStatuses>> actionResponse = defaultJobConfigActions.validateJobsById(jobIdsRequestModel);
 
         assertTrue(actionResponse.isSuccessful());
@@ -507,9 +493,6 @@ public class JobConfigActionsTest {
     public void validateJobsByIdEmptyListTest() {
         JobIdsRequestModel jobIdsRequestModel = new JobIdsRequestModel(List.of());
         Mockito.when(mockedAuthorizationManager.anyReadPermission(Mockito.any())).thenReturn(true);
-
-        AlertFieldStatus alertFieldStatus = AlertFieldStatus.error("fieldNameTest", "Alert Error Message");
-        Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of(alertFieldStatus));
 
         ActionResponse<List<JobFieldStatuses>> actionResponse = defaultJobConfigActions.validateJobsById(jobIdsRequestModel);
 
