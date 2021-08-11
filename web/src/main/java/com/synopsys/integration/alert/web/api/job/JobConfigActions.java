@@ -318,7 +318,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
         for (Descriptor descriptor : getDescriptorMap().getDescriptorMap().values()) {
             DescriptorKey descriptorKey = descriptor.getDescriptorKey();
             for (ConfigContextEnum context : ConfigContextEnum.values()) {
-                if (descriptor.hasUIConfigForType(context)) {
+                if (descriptor.hasConfigForType(context)) {
                     keys.add(new PermissionKey(context.name(), descriptorKey.getUniversalKey()));
                 }
             }

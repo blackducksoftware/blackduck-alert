@@ -203,7 +203,7 @@ public class ConfigActions extends AbstractConfigResourceActions {
         Set<AlertFieldStatus> fieldStatuses = descriptorProcessor.retrieveDescriptor(resource.getDescriptorName())
             .flatMap(Descriptor::getGlobalValidator)
             .map(globalValidator -> globalValidator.validate(resource))
-            .orElse(Set.copyOf(fieldModelProcessor.validateFieldModel(resource)));
+            .orElse(Set.of());
 
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;

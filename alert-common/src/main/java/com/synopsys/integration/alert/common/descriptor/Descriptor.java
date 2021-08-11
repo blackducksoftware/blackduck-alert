@@ -7,19 +7,13 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.util.Stringable;
 
@@ -45,14 +39,12 @@ import com.synopsys.integration.util.Stringable;
 public abstract class Descriptor extends Stringable {
     private final DescriptorKey descriptorKey;
     private final DescriptorType type;
-    private final Map<ConfigContextEnum, UIConfig> uiConfigs;
     private final Set<ConfigContextEnum> configContexts;
 
     public Descriptor(DescriptorKey descriptorKey, DescriptorType type, Set<ConfigContextEnum> configContexts) {
         this.descriptorKey = descriptorKey;
         this.type = type;
         this.configContexts = configContexts;
-        uiConfigs = new EnumMap<>(ConfigContextEnum.class);
     }
 
     public DescriptorKey getDescriptorKey() {
@@ -67,30 +59,13 @@ public abstract class Descriptor extends Stringable {
         return configContexts;
     }
 
-    public void addGlobalUiConfig(UIConfig uiConfig) {
-        uiConfigs.put(ConfigContextEnum.GLOBAL, uiConfig);
-    }
-
-    public Optional<UIConfig> getUIConfig(ConfigContextEnum actionApiType) {
-        return Optional.ofNullable(uiConfigs.get(actionApiType));
-    }
-
     // TODO these should be concrete methods based on optional constructor params
     public abstract Optional<GlobalConfigurationValidator> getGlobalValidator();
 
     public abstract Optional<DistributionConfigurationValidator> getDistributionValidator();
 
-    public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
-        return getUIConfig(context)
-            .map(UIConfig::getFields)
-            .orElse(List.of())
-            .stream()
-            .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
-            .collect(Collectors.toSet());
-    }
-
-    public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
-        return uiConfigs.containsKey(actionApiType);
+    public boolean hasConfigForType(ConfigContextEnum actionApiType) {
+        return configContexts.contains(actionApiType);
     }
 
 }

@@ -21,7 +21,6 @@ import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigur
 import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
@@ -306,12 +305,7 @@ public class DescriptorMetadataActionsTest {
         }
 
         @Override
-        public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
-            return Set.of();
-        }
-
-        @Override
-        public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
+        public boolean hasConfigForType(ConfigContextEnum actionApiType) {
             return contexts.contains(actionApiType);
         }
 

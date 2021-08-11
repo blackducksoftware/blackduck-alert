@@ -9,10 +9,8 @@ package com.synopsys.integration.alert.common.rest;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,28 +20,21 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.action.ApiAction;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.FieldValidationUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.util.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.common.rest.model.JobFieldModel;
-import com.synopsys.integration.alert.common.util.DataStructureUtils;
 
 @Deprecated(forRemoval = true)
 @Component
 public class FieldModelProcessor {
     private final ConfigurationFieldModelConverter fieldModelConverter;
-    private final FieldValidationUtility fieldValidationAction;
     private final DescriptorProcessor descriptorProcessor;
 
     @Autowired
-    public FieldModelProcessor(ConfigurationFieldModelConverter fieldModelConverter, FieldValidationUtility fieldValidationAction, DescriptorProcessor descriptorProcessor) {
+    public FieldModelProcessor(ConfigurationFieldModelConverter fieldModelConverter, DescriptorProcessor descriptorProcessor) {
         this.fieldModelConverter = fieldModelConverter;
-        this.fieldValidationAction = fieldValidationAction;
         this.descriptorProcessor = descriptorProcessor;
     }
 
@@ -107,25 +98,6 @@ public class FieldModelProcessor {
             return apiAction.afterUpdateAction(previousFieldModel, currentFieldModel);
         }
         return currentFieldModel;
-    }
-
-    public List<AlertFieldStatus> validateFieldModel(FieldModel fieldModel) {
-        List<ConfigField> fields = descriptorProcessor.retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName());
-        Map<String, ConfigField> configFields = DataStructureUtils.mapToValues(fields, ConfigField::getKey);
-        return fieldValidationAction.validateConfig(configFields, fieldModel);
-    }
-
-    public List<AlertFieldStatus> validateJobFieldModel(JobFieldModel jobFieldModel) {
-        Map<String, ConfigField> configFields = new HashMap<>();
-        Set<FieldModel> fieldModels = jobFieldModel.getFieldModels();
-        for (FieldModel singleFieldModelFromJob : fieldModels) {
-            List<ConfigField> fieldsFromModel = descriptorProcessor.retrieveUIConfigFields(singleFieldModelFromJob.getContext(), singleFieldModelFromJob.getDescriptorName());
-            for (ConfigField fieldFromModel : fieldsFromModel) {
-                String fieldKey = fieldFromModel.getKey();
-                configFields.putIfAbsent(fieldKey, fieldFromModel);
-            }
-        }
-        return fieldValidationAction.validateConfig(configFields, fieldModels);
     }
 
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(Long id, FieldModel fieldModel) throws AlertException {
