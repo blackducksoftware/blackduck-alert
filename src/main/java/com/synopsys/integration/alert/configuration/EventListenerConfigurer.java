@@ -41,9 +41,9 @@ public class EventListenerConfigurer implements JmsListenerConfigurer {
     ) {
         this.allAlertMessageListeners = allAlertMessageListeners;
         this.distributionEventDestinationNames = distributionEventReceivers
-                                                     .stream()
-                                                     .map(AlertMessageListener::getDestinationName)
-                                                     .collect(Collectors.toSet());
+            .stream()
+            .map(AlertMessageListener::getDestinationName)
+            .collect(Collectors.toSet());
         this.cachingConnectionFactory = cachingConnectionFactory;
     }
 
