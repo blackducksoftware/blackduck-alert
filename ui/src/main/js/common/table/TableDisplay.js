@@ -335,6 +335,7 @@ const TableDisplay = ({
 
     const deleteItems = () => {
         onConfigDelete(rowsToDelete, closeDeleteModal);
+        setRowsToDelete([]);
     };
 
     const editButtonClicked = (selectedRow) => {
