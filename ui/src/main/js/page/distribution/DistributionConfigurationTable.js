@@ -212,7 +212,8 @@ const DistributionConfigurationTable = ({
             newSelectedRows.push(...selectedRowsWithData.filter((row) => !allSelectedRows.some((selectedRow) => selectedRow.id === row.id)));
             setSelectedRowsWithData(newSelectedRows);
         } else {
-            setSelectedRowsWithData([]);
+            const newSelectedRows = selectedRowsWithData.filter((row) => !allSelectedRows.some((selectedRow) => selectedRow.id === row.id));
+            setSelectedRowsWithData(newSelectedRows);
         }
     };
 
