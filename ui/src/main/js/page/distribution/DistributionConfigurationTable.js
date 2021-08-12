@@ -223,7 +223,8 @@ const DistributionConfigurationTable = ({
             return isSelect && '#e8e8e8';
         },
         onSelect: selectRowOnSelectAction,
-        onSelectAll: selectRowOnSelectAllAction
+        onSelectAll: selectRowOnSelectAllAction,
+        selected: selectedRowsWithData.map((selectedRowData) => selectedRowData.id)
     };
 
     const column = (header, value, dataFormat = assignedDataFormat, columnClassName = 'tableCell') => (
