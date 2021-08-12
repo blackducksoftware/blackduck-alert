@@ -20,7 +20,7 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
 @RestController
 @RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
-public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigResponse>, TestController<EmailGlobalConfigResponse>, ValidateController<EmailGlobalConfigResponse> {
+public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, TestController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
     private final EmailGlobalConfigActions configActions;
 
     @Autowired
@@ -29,22 +29,22 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
     }
 
     @Override
-    public EmailGlobalConfigResponse getOne(Long id) {
+    public EmailGlobalConfigModel getOne(Long id) {
         return ResponseFactory.createContentResponseFromAction(configActions.getOne(id));
     }
 
     @Override
-    public EmailGlobalConfigResponse create(EmailGlobalConfigResponse resource) {
+    public EmailGlobalConfigModel create(EmailGlobalConfigModel resource) {
         return ResponseFactory.createContentResponseFromAction(configActions.create(resource));
     }
 
     @Override
-    public void update(Long id, EmailGlobalConfigResponse resource) {
+    public void update(Long id, EmailGlobalConfigModel resource) {
         ResponseFactory.createContentResponseFromAction(configActions.update(id, resource));
     }
 
     @Override
-    public ValidationResponseModel validate(EmailGlobalConfigResponse requestBody) {
+    public ValidationResponseModel validate(EmailGlobalConfigModel requestBody) {
         return ResponseFactory.createContentResponseFromAction(configActions.validate(requestBody));
     }
 
@@ -54,7 +54,7 @@ public class EmailGlobalConfigController implements BaseResourceController<Email
     }
 
     @Override
-    public ValidationResponseModel test(EmailGlobalConfigResponse resource) {
+    public ValidationResponseModel test(EmailGlobalConfigModel resource) {
         return ResponseFactory.createContentResponseFromAction(configActions.test(resource));
     }
 

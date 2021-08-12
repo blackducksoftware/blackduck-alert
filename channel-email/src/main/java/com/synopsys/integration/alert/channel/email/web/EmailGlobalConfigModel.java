@@ -9,7 +9,7 @@ package com.synopsys.integration.alert.channel.email.web;
 
 import com.synopsys.integration.alert.common.rest.model.Config;
 
-public class EmailGlobalConfigResponse extends Config {
+public class EmailGlobalConfigModel extends Config {
     private static final long serialVersionUID = -3469352637107648653L;
 
     public String host;
