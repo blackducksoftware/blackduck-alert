@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ComponentItem;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
 @Component
@@ -58,10 +60,10 @@ public class MessageContentGroupCsvCreator {
         columnNames.add(subTopicNamesCombined);
 
         List<ComponentItem> allComponentItems = contents
-                                                    .stream()
-                                                    .map(ProviderMessageContent::getComponentItems)
-                                                    .flatMap(Set::stream)
-                                                    .collect(Collectors.toList());
+            .stream()
+            .map(ProviderMessageContent::getComponentItems)
+            .flatMap(Set::stream)
+            .collect(Collectors.toList());
 
         String componentNamesCombined = createColumnNameString(allComponentItems, ComponentItem::getComponent);
         columnNames.add(componentNamesCombined);
@@ -74,9 +76,9 @@ public class MessageContentGroupCsvCreator {
         columnNames.add("Category");
 
         Set<String> categoryNames = allComponentItems
-                                        .stream()
-                                        .map(ComponentItem::getCategory)
-                                        .collect(Collectors.toSet());
+            .stream()
+            .map(ComponentItem::getCategory)
+            .collect(Collectors.toSet());
         String categoryNamesCombined = createColumnNameString(categoryNames);
         columnNames.add(categoryNamesCombined);
 
@@ -93,12 +95,32 @@ public class MessageContentGroupCsvCreator {
         List<List<String>> rows = new ArrayList<>();
         for (ProviderMessageContent message : contents) {
             String subTopicValue = createOptionalValueString(message.getSubTopic(), LinkableItem::getValue);
-            for (ComponentItem componentItem : message.getComponentItems()) {
+            Set<ComponentItem> componentItems = extractComponentItemsOrDefault(message);
+            for (ComponentItem componentItem : componentItems) {
                 List<String> columnValues = createColumnValues(commonProvider.getLabel(), commonProvider.getValue(), commonTopic.getValue(), subTopicValue, componentItem);
                 rows.add(columnValues);
             }
         }
         return rows;
+    }
+
+    private Set<ComponentItem> extractComponentItemsOrDefault(ProviderMessageContent message) {
+        Set<ComponentItem> componentItems = message.getComponentItems();
+        if (!componentItems.isEmpty()) {
+            return componentItems;
+        } else {
+            try {
+                ComponentItem naComponentItem = new ComponentItem.Builder()
+                    .applyCategory(UNDEFINED_VALUE)
+                    .applyOperation(message.getAction().orElse(ItemOperation.INFO))
+                    .applyComponentData(UNDEFINED_VALUE, UNDEFINED_VALUE)
+                    .applyCategoryItem(UNDEFINED_VALUE, UNDEFINED_VALUE)
+                    .build();
+                return Set.of(naComponentItem);
+            } catch (AlertException e) {
+                return Set.of();
+            }
+        }
     }
 
     private List<String> createColumnValues(String providerName, String providerValue, String topicValue, String subTopicValue, ComponentItem componentItem) {
@@ -135,20 +157,20 @@ public class MessageContentGroupCsvCreator {
 
     private <T> String createOptionalColumnNameString(List<T> objects, Function<T, Optional<LinkableItem>> linkableItemMapper) {
         Set<String> columnNameCandidates = objects
-                                               .stream()
-                                               .map(linkableItemMapper)
-                                               .flatMap(Optional::stream)
-                                               .map(LinkableItem::getLabel)
-                                               .collect(Collectors.toSet());
+            .stream()
+            .map(linkableItemMapper)
+            .flatMap(Optional::stream)
+            .map(LinkableItem::getLabel)
+            .collect(Collectors.toSet());
         return createColumnNameString(columnNameCandidates);
     }
 
     private <T> String createColumnNameString(List<T> objects, Function<T, LinkableItem> linkableItemMapper) {
         Set<String> columnNameCandidates = objects
-                                               .stream()
-                                               .map(linkableItemMapper)
-                                               .map(LinkableItem::getLabel)
-                                               .collect(Collectors.toSet());
+            .stream()
+            .map(linkableItemMapper)
+            .map(LinkableItem::getLabel)
+            .collect(Collectors.toSet());
         return createColumnNameString(columnNameCandidates);
     }
 
@@ -161,16 +183,16 @@ public class MessageContentGroupCsvCreator {
 
     private String createOptionalValueString(Optional<LinkableItem> item, Function<LinkableItem, String> attributeMapper) {
         return item
-                   .map(attributeMapper)
-                   .filter(StringUtils::isNotBlank)
-                   .orElse(UNDEFINED_VALUE);
+            .map(attributeMapper)
+            .filter(StringUtils::isNotBlank)
+            .orElse(UNDEFINED_VALUE);
     }
 
     private String createFlattenedItemsString(Collection<LinkableItem> items) {
         String flattenedString = items
-                                     .stream()
-                                     .map(item -> String.format("%s: %s", item.getLabel(), item.getValue()))
-                                     .collect(Collectors.joining(MULTI_VALUE_CELL_DELIMITER));
+            .stream()
+            .map(item -> String.format("%s: %s", item.getLabel(), item.getValue()))
+            .collect(Collectors.joining(MULTI_VALUE_CELL_DELIMITER));
         if (StringUtils.isNotBlank(flattenedString)) {
             return flattenedString;
         }
