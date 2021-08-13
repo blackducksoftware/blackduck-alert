@@ -58,7 +58,7 @@ public class ProjectMessageToIssueModelTransformerTest {
 
     @Test
     public void convertToIssueModelsForPolicyTest() {
-        ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, COMPONENT_POLICY_1.getPolicyName());
+        ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, COMPONENT_POLICY_1.getPolicyName(), "https://policy");
         BomComponentDetails bomComponentDetails = createBomComponentDetails(policyConcern);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(
             PROVIDER_DETAILS,

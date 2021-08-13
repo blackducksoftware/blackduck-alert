@@ -59,16 +59,17 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
             return uncombinedDetails;
         }
 
-        return combineComponentConcerns(otherDetails.componentConcerns);
+        return combineComponentConcerns(otherDetails);
     }
 
-    private List<BomComponentDetails> combineComponentConcerns(List<ComponentConcern> otherDetailsComponentConcerns) {
-        List<ComponentConcern> combinedComponentConcerns = CombinableModel.combine(componentConcerns, otherDetailsComponentConcerns);
+    private List<BomComponentDetails> combineComponentConcerns(BomComponentDetails otherDetails) {
+        List<ComponentConcern> combinedComponentConcerns = CombinableModel.combine(getComponentConcerns(), otherDetails.getComponentConcerns());
+        List<ComponentPolicy> componentPolicies = CombinableModel.combine(getComponentPolicies(), otherDetails.getComponentPolicies());
         BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(
             getComponent(),
             getComponentVersion().orElse(null),
             getComponentVulnerabilities(),
-            getComponentPolicies(),
+            componentPolicies,
             combinedComponentConcerns,
             getLicense(),
             getUsage(),
