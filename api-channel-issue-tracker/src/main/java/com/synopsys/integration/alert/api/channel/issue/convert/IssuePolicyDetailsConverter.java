@@ -52,10 +52,10 @@ public class IssuePolicyDetailsConverter {
     }
 
     private List<String> createAdditionalPolicyDetailsSections(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails) {
-        boolean isVulnerabilityPolicy = bomComponentDetails.getComponentPolicies()
-                                            .stream()
-                                            .filter(policy -> policy.getPolicyName().equals(policyDetails.getName()))
-                                            .anyMatch(ComponentPolicy::isVulnerabilityPolicy);
+        boolean isVulnerabilityPolicy = bomComponentDetails.getRelevantPolicies()
+            .stream()
+            .filter(policy -> policy.getPolicyName().equals(policyDetails.getName()))
+            .anyMatch(ComponentPolicy::isVulnerabilityPolicy);
         if (isVulnerabilityPolicy) {
             return componentVulnerabilitiesConverter.createComponentVulnerabilitiesSectionPieces(bomComponentDetails.getComponentVulnerabilities());
         }
@@ -63,7 +63,7 @@ public class IssuePolicyDetailsConverter {
     }
 
     private List<String> createPolicyDescription(IssueBomComponentDetails bomComponentDetails, IssuePolicyDetails policyDetails) {
-        List<ComponentPolicy> policies = bomComponentDetails.getComponentPolicies();
+        List<ComponentPolicy> policies = bomComponentDetails.getRelevantPolicies();
         if (policies.isEmpty()) {
             return List.of();
         }
@@ -71,11 +71,11 @@ public class IssuePolicyDetailsConverter {
         String policyName = policyDetails.getName();
         // Blackduck does not allow duplicate policy names, we only expect one policy to ever match
         return policies.stream()
-                   .filter(policy -> policyName.equals(policy.getPolicyName()))
-                   .findAny()
-                   .flatMap(ComponentPolicy::getDescription)
-                   .map(this::addPolicyDescriptionPieces)
-                   .orElse(List.of());
+            .filter(policy -> policyName.equals(policy.getPolicyName()))
+            .findAny()
+            .flatMap(ComponentPolicy::getDescription)
+            .map(this::addPolicyDescriptionPieces)
+            .orElse(List.of());
     }
 
     private List<String> addPolicyDescriptionPieces(String description) {
@@ -85,4 +85,5 @@ public class IssuePolicyDetailsConverter {
         descriptionPieces.add(formatter.encode(description));
         return descriptionPieces;
     }
+
 }

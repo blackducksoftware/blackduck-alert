@@ -74,8 +74,8 @@ public class ProjectMessageConverterTest {
         ComponentPolicy componentPolicy1 = new ComponentPolicy("A component policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false, null, "Uncategorized");
         ComponentPolicy componentPolicy2 = new ComponentPolicy("A different policy", ComponentConcernSeverity.MAJOR_HIGH, false, true, null, "Uncategorized");
 
-        ComponentConcern policyConcern1 = ComponentConcern.policy(ItemOperation.DELETE, "A non-severe policy");
-        ComponentConcern policyConcern2 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW);
+        ComponentConcern policyConcern1 = ComponentConcern.policy(ItemOperation.DELETE, "A non-severe policy", "https://policy");
+        ComponentConcern policyConcern2 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW, "https://severe-policy");
 
         ComponentConcern vulnerabilityConcern1 = createVulnerabilityConcern(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.CRITICAL);
         ComponentConcern vulnerabilityConcern2 = createVulnerabilityConcern(ItemOperation.UPDATE, "CVE-135", ComponentConcernSeverity.TRIVIAL_LOW);

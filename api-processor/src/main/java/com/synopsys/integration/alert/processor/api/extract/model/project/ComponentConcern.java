@@ -23,12 +23,12 @@ public class ComponentConcern extends AlertSerializableModel implements Combinab
     private final ComponentConcernSeverity severity;
     private final String url;
 
-    public static ComponentConcern policy(ItemOperation operation, String policyName) {
-        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, null);
+    public static ComponentConcern policy(ItemOperation operation, String policyName, String url) {
+        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, url);
     }
 
-    public static ComponentConcern severePolicy(ItemOperation operation, String policyName, ComponentConcernSeverity severity) {
-        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, severity, null);
+    public static ComponentConcern severePolicy(ItemOperation operation, String policyName, ComponentConcernSeverity severity, String url) {
+        return new ComponentConcern(ComponentConcernType.POLICY, operation, policyName, severity, url);
     }
 
     public static ComponentConcern vulnerability(ItemOperation operation, String vulnerabilityId, ComponentConcernSeverity severity, String vulnerabilityUrl) {
