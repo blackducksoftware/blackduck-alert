@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
@@ -44,7 +45,8 @@ public class IssueTrackerModelExtractorTest {
     private static final String USAGE = "Some generic usage";
     private static final String ISSUES_URL = "https://issues-url";
 
-    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new BomComponentDetails(COMPONENT, COMPONENT_VERSION, ComponentVulnerabilities.none(), List.of(), List.of(), LICENSE, USAGE, List.of(), ISSUES_URL);
+    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new BomComponentDetails(COMPONENT, COMPONENT_VERSION, ComponentVulnerabilities.none(), List.of(), List.of(), LICENSE, USAGE, ComponentUpgradeGuidance.none(),
+        List.of(), ISSUES_URL);
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
 
     @Test
