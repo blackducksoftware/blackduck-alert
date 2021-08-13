@@ -126,7 +126,7 @@ public class ProjectMessageToIssueModelTransformerTest {
         assertEquals(COMPONENT, issueBomComponentDetails.getComponent());
         assertEquals(COMPONENT_VERSION, issueBomComponentDetails.getComponentVersion().orElse(null));
         assertEquals(COMPONENT_VULNERABILITIES, issueBomComponentDetails.getComponentVulnerabilities());
-        assertEquals(COMPONENT_POLICIES, issueBomComponentDetails.getComponentPolicies());
+        assertEquals(COMPONENT_POLICIES, issueBomComponentDetails.getRelevantPolicies());
         assertEquals(LICENSE, issueBomComponentDetails.getLicense());
         assertEquals(USAGE, issueBomComponentDetails.getUsage());
         assertEquals(ISSUES_URL, issueBomComponentDetails.getBlackDuckIssuesUrl());
