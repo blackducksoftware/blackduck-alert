@@ -58,7 +58,7 @@ public class ProjectMessageToIssueModelTransformerTest {
 
     @Test
     public void convertToIssueModelsForPolicyTest() {
-        ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, COMPONENT_POLICY_1.getPolicyName());
+        ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, COMPONENT_POLICY_1.getPolicyName(), "https://policy");
         BomComponentDetails bomComponentDetails = createBomComponentDetails(policyConcern);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(
             PROVIDER_DETAILS,
@@ -126,7 +126,7 @@ public class ProjectMessageToIssueModelTransformerTest {
         assertEquals(COMPONENT, issueBomComponentDetails.getComponent());
         assertEquals(COMPONENT_VERSION, issueBomComponentDetails.getComponentVersion().orElse(null));
         assertEquals(COMPONENT_VULNERABILITIES, issueBomComponentDetails.getComponentVulnerabilities());
-        assertEquals(COMPONENT_POLICIES, issueBomComponentDetails.getComponentPolicies());
+        assertEquals(COMPONENT_POLICIES, issueBomComponentDetails.getRelevantPolicies());
         assertEquals(LICENSE, issueBomComponentDetails.getLicense());
         assertEquals(USAGE, issueBomComponentDetails.getUsage());
         assertEquals(ISSUES_URL, issueBomComponentDetails.getBlackDuckIssuesUrl());
