@@ -13,6 +13,7 @@ alertDatabaseUser="${ALERT_DB_USERNAME:-sa}"
 alertDatabasePassword="${ALERT_DB_PASSWORD:-blackduck}"
 alertDatabaseAdminUser="${ALERT_DB_ADMIN_USERNAME:-$alertDatabaseUser}"
 alertDatabaseAdminPassword="${ALERT_DB_ADMIN_PASSWORD:-$alertDatabasePassword}"
+alertDatabaseSslMode="${ALERT_DB_SSL_MODE:allow}"
 upgradeResourcesDir=$alertHome/alert-tar/upgradeResources
 
 serverCertName=$APPLICATION_NAME-server
@@ -82,8 +83,8 @@ then
   echo "Alert Database admin password variable set to secret value."
 fi
 
-alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword"
-alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword"
+alertDatabaseAdminConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseAdminUser password=$alertDatabaseAdminPassword sslmode=$alertDatabaseSslMode"
+alertDatabaseConfig="host=$alertDatabaseHost port=$alertDatabasePort dbname=$alertDatabaseName user=$alertDatabaseUser password=$alertDatabasePassword sslmode=$alertDatabaseSslMode"
 
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
