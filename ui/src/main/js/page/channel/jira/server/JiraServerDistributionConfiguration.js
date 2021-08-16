@@ -88,7 +88,7 @@ const JiraServerDistributionConfiguration = ({
             <TextInput
                 id={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueSummary}
                 label="Issue Summary"
-                description="The summary to use for each issue created. Can use the following variables to populate data from the message content {{providerName}}, {{projectName}}, {{projectVersion}}, {{componentName}}, {{componentVersion}}, {{componentUsage}}, {{componentLicense}}, {{severity}}, {{policyCategory}}"
+                description="The summary to use for each issue created. Can use the following variables to populate data from the message content {{providerName}}, {{projectName}}, {{projectVersion}}, {{componentName}}, {{componentVersion}}, {{componentUsage}}, {{componentLicense}}, {{severity}}, {{policyCategory}}, {{shortTermUpgradeGuidance}}, {{longTermUpgradeGuidance}}"
                 name={JIRA_SERVER_DISTRIBUTION_FIELD_KEYS.issueSummary}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}
