@@ -13,11 +13,11 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ComponentItem;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.MessageContentGroup;
 import com.synopsys.integration.alert.channel.email.attachment.compatibility.ProviderMessageContent;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
@@ -94,6 +94,7 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
             componentAttributes.add(usageItem);
 
             componentAttributes.addAll(bomComponent.getAdditionalAttributes());
+            componentItemBuilder.applyAllComponentAttributes(componentAttributes);
 
             try {
                 componentItems.add(componentItemBuilder.build());
