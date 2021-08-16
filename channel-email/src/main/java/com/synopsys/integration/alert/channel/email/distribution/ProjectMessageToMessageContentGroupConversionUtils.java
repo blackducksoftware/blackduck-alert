@@ -101,8 +101,6 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
             componentAttributes.addAll(bomComponent.getAdditionalAttributes());
             componentItemBuilder.applyAllComponentAttributes(componentAttributes);
 
-            //TODO: what is componentAttributes even used for?
-
             try {
                 componentItems.add(componentItemBuilder.build());
             } catch (AlertException e) {
