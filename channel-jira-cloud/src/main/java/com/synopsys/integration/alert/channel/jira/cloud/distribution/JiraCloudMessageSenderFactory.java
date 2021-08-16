@@ -44,7 +44,6 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
     private final JiraCloudChannelKey channelKey;
     private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
     private final IssueTrackerCallbackInfoCreator callbackInfoCreator;
-    private final JiraErrorMessageUtility jiraErrorMessageUtility;
     private final IssueCategoryRetriever issueCategoryRetriever;
 
     @Autowired
@@ -53,14 +52,12 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         JiraCloudChannelKey channelKey,
         JiraCloudPropertiesFactory jiraCloudPropertiesFactory,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
-        JiraErrorMessageUtility jiraErrorMessageUtility,
         IssueCategoryRetriever issueCategoryRetriever
     ) {
         this.gson = gson;
         this.channelKey = channelKey;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;
         this.callbackInfoCreator = callbackInfoCreator;
-        this.jiraErrorMessageUtility = jiraErrorMessageUtility;
         this.issueCategoryRetriever = issueCategoryRetriever;
     }
 
@@ -76,14 +73,23 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         // Common Helpers
         JiraIssueAlertPropertiesManager issuePropertiesManager = new JiraIssueAlertPropertiesManager(gson, issuePropertyService);
 
-        return createMessageSender(issueService, distributionDetails, jiraCloudServiceFactory, issuePropertiesManager);
+        ProjectService projectService = jiraCloudServiceFactory.createProjectService();
+        FieldService fieldService = jiraCloudServiceFactory.createFieldService();
+
+        JiraCustomFieldResolver customFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
+        JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
+        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson, customFieldResolver);
+
+        return createMessageSender(issueService, distributionDetails, projectService, issueCreationRequestCreator, issuePropertiesManager, jiraErrorMessageUtility);
     }
 
     public IssueTrackerMessageSender<String> createMessageSender(
         IssueService issueService,
         JiraCloudJobDetailsModel distributionDetails,
-        JiraCloudServiceFactory jiraCloudServiceFactory,
-        JiraIssueAlertPropertiesManager issuePropertiesManager
+        ProjectService projectService,
+        JiraIssueCreationRequestCreator issueCreationRequestCreator,
+        JiraIssueAlertPropertiesManager issuePropertiesManager,
+        JiraErrorMessageUtility jiraErrorMessageUtility
     ) {
         // Jira Services
         IssueTrackerIssueResponseCreator issueResponseCreator = new IssueTrackerIssueResponseCreator(callbackInfoCreator);
@@ -91,25 +97,7 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
         // Message Sender Requirements
         JiraCloudIssueCommenter issueCommenter = new JiraCloudIssueCommenter(issueResponseCreator, issueService, distributionDetails);
         JiraCloudIssueTransitioner issueTransitioner = new JiraCloudIssueTransitioner(issueCommenter, issueResponseCreator, distributionDetails, issueService);
-        JiraCloudIssueCreator issueCreator = createIssueCreator(distributionDetails, jiraCloudServiceFactory, issuePropertiesManager, issueService, issueCommenter);
-
-        return new IssueTrackerMessageSender<>(issueCreator, issueTransitioner, issueCommenter);
-    }
-
-    private JiraCloudIssueCreator createIssueCreator(
-        JiraCloudJobDetailsModel distributionDetails,
-        JiraCloudServiceFactory jiraCloudServiceFactory,
-        JiraIssueAlertPropertiesManager issuePropertiesManager,
-        IssueService issueService,
-        JiraCloudIssueCommenter issueCommenter
-    ) {
-        ProjectService projectService = jiraCloudServiceFactory.createProjectService();
-        FieldService fieldService = jiraCloudServiceFactory.createFieldService();
-
-        JiraCustomFieldResolver customFieldResolver = new JiraCustomFieldResolver(fieldService::getUserVisibleFields);
-        JiraIssueCreationRequestCreator issueCreationRequestCreator = new JiraIssueCreationRequestCreator(customFieldResolver);
-
-        return new JiraCloudIssueCreator(
+        JiraCloudIssueCreator issueCreator = new JiraCloudIssueCreator(
             channelKey,
             issueCommenter,
             callbackInfoCreator,
@@ -118,10 +106,11 @@ public class JiraCloudMessageSenderFactory implements IssueTrackerMessageSenderF
             projectService,
             issueCreationRequestCreator,
             issuePropertiesManager,
-            customFieldResolver,
             jiraErrorMessageUtility,
             issueCategoryRetriever
         );
+
+        return new IssueTrackerMessageSender<>(issueCreator, issueTransitioner, issueCommenter);
     }
 
 }

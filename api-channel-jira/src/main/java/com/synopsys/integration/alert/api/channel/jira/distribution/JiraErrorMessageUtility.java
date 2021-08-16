@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -25,24 +23,24 @@ import com.synopsys.integration.alert.common.descriptor.config.field.errors.Aler
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-@Component
 public class JiraErrorMessageUtility {
     private final Gson gson;
+    private final JiraCustomFieldResolver customFieldResolver;
 
-    @Autowired
-    public JiraErrorMessageUtility(Gson gson) {
+    public JiraErrorMessageUtility(Gson gson, JiraCustomFieldResolver customFieldResolver) {
         this.gson = gson;
+        this.customFieldResolver = customFieldResolver;
     }
 
-    public AlertException improveRestException(IntegrationRestException restException, String issueCreatorFieldKey, String issueCreatorEmail, JiraCustomFieldResolver jiraCustomFieldResolver) {
+    public AlertException improveRestException(IntegrationRestException restException, String issueCreatorFieldKey, String issueCreatorEmail) {
         String message = restException.getMessage();
         try {
             List<String> responseErrors = extractErrorsFromResponseContent(restException.getHttpResponseContent(), issueCreatorFieldKey, issueCreatorEmail);
             if (!responseErrors.isEmpty()) {
                 String responseErrorString = StringUtils.join(responseErrors, ", ");
                 if (responseErrorString.contains("customfield_")) {
-                    for (String customFieldId : jiraCustomFieldResolver.getCustomFieldIds()) {
-                        responseErrorString = responseErrorString.replace(customFieldId, jiraCustomFieldResolver.resolveCustomFieldIdToName(customFieldId));
+                    for (String customFieldId : customFieldResolver.getCustomFieldIds()) {
+                        responseErrorString = responseErrorString.replace(customFieldId, customFieldResolver.resolveCustomFieldIdToName(customFieldId));
                     }
                 }
                 message += " | Details: " + responseErrorString;

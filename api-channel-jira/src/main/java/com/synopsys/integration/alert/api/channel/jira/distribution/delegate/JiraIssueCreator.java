@@ -25,7 +25,6 @@ import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCo
 import com.synopsys.integration.alert.api.channel.issue.send.IssueTrackerIssueCreator;
 import com.synopsys.integration.alert.api.channel.jira.JiraIssueSearchProperties;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
-import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesManager;
 import com.synopsys.integration.alert.api.channel.jira.distribution.search.JiraIssueAlertPropertiesUrlCorrector;
@@ -48,7 +47,6 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
     private static final String FAILED_TO_CREATE_ISSUE_MESSAGE = "Failed to create an issue in Jira.";
 
     private final JiraErrorMessageUtility jiraErrorMessageUtility;
-    private final JiraCustomFieldResolver jiraCustomFieldResolver;
     private final JiraIssueAlertPropertiesManager issuePropertiesManager;
     private final String issueCreatorDescriptorKey;
     private final IssueCategoryRetriever issueCategoryRetriever;
@@ -57,14 +55,12 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         IssueTrackerChannelKey channelKey,
         IssueTrackerIssueCommenter<String> commenter,
         IssueTrackerCallbackInfoCreator callbackInfoCreator,
-        JiraCustomFieldResolver jiraCustomFieldResolver,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
         String issueCreatorDescriptorKey,
         IssueCategoryRetriever issueCategoryRetriever
     ) {
         super(channelKey, commenter, callbackInfoCreator);
-        this.jiraCustomFieldResolver = jiraCustomFieldResolver;
         this.jiraErrorMessageUtility = jiraErrorMessageUtility;
         this.issuePropertiesManager = issuePropertiesManager;
         this.issueCreatorDescriptorKey = issueCreatorDescriptorKey;
@@ -90,7 +86,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
             return new ExistingIssueDetails<>(createdIssue.getId(), createdIssue.getKey(), createdIssueFields.getSummary(), issueUILink, IssueStatus.RESOLVABLE, issueCategory);
         } catch (IntegrationRestException restException) {
-            throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest), jiraCustomFieldResolver);
+            throw jiraErrorMessageUtility.improveRestException(restException, issueCreatorDescriptorKey, extractReporter(creationRequest));
         } catch (JiraPreconditionNotMetException jiraException) {
             String message = StringUtils.join(FAILED_TO_CREATE_ISSUE_MESSAGE, jiraException.getMessage(), " ");
             throw new AlertException(message, jiraException);
