@@ -19,8 +19,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -33,12 +34,18 @@ public class JiraErrorMessageUtility {
         this.gson = gson;
     }
 
-    public AlertException improveRestException(IntegrationRestException restException, String issueCreatorFieldKey, String issueCreatorEmail) {
+    public AlertException improveRestException(IntegrationRestException restException, String issueCreatorFieldKey, String issueCreatorEmail, JiraCustomFieldResolver jiraCustomFieldResolver) {
         String message = restException.getMessage();
         try {
             List<String> responseErrors = extractErrorsFromResponseContent(restException.getHttpResponseContent(), issueCreatorFieldKey, issueCreatorEmail);
             if (!responseErrors.isEmpty()) {
-                message += " | Details: " + StringUtils.join(responseErrors, ", ");
+                String responseErrorString = StringUtils.join(responseErrors, ", ");
+                if (responseErrorString.contains("customfield_")) {
+                    for (String customFieldId : jiraCustomFieldResolver.getCustomFieldIds()) {
+                        responseErrorString = responseErrorString.replace(customFieldId, jiraCustomFieldResolver.resolveCustomFieldIdToName(customFieldId));
+                    }
+                }
+                message += " | Details: " + responseErrorString;
             }
         } catch (AlertFieldException reporterException) {
             return reporterException;

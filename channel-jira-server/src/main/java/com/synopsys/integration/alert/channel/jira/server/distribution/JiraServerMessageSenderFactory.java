@@ -117,6 +117,7 @@ public class JiraServerMessageSenderFactory implements IssueTrackerMessageSender
             projectService,
             issueCreationRequestCreator,
             issuePropertiesManager,
+            customFieldResolver,
             jiraErrorMessageUtility,
             issueCategoryRetriever
         );

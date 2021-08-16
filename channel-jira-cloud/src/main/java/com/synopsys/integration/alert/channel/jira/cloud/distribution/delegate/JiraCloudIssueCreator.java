@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.api.channel.issue.model.IssueCreationModel
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraIssueCreationRequestCreator;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageReplacementValues;
 import com.synopsys.integration.alert.api.channel.jira.distribution.custom.MessageValueReplacementResolver;
 import com.synopsys.integration.alert.api.channel.jira.distribution.delegate.JiraIssueCreator;
@@ -49,6 +50,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
         ProjectService projectService,
         JiraIssueCreationRequestCreator jiraIssueCreationRequestCreator,
         JiraIssueAlertPropertiesManager issuePropertiesManager,
+        JiraCustomFieldResolver jiraCustomFieldResolver,
         JiraErrorMessageUtility jiraErrorMessageUtility,
         IssueCategoryRetriever issueCategoryRetriever
     ) {
@@ -56,6 +58,7 @@ public class JiraCloudIssueCreator extends JiraIssueCreator<IssueCreationRequest
             jiraCloudChannelKey,
             jiraCloudIssueCommenter,
             callbackInfoCreator,
+            jiraCustomFieldResolver,
             jiraErrorMessageUtility,
             issuePropertiesManager,
             JiraCloudDescriptor.KEY_ISSUE_CREATOR,
