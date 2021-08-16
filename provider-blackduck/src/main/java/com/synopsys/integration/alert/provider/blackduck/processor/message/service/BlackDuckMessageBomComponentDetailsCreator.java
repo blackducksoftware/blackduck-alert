@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.message.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
@@ -27,6 +29,7 @@ import com.synopsys.integration.alert.provider.blackduck.processor.message.util.
 import com.synopsys.integration.blackduck.api.core.response.LinkMultipleResponses;
 import com.synopsys.integration.blackduck.api.core.response.UrlMultipleResponses;
 import com.synopsys.integration.blackduck.api.generated.enumeration.ProjectVersionComponentPolicyStatusType;
+import com.synopsys.integration.blackduck.api.generated.view.ComponentPolicyRulesView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionComponentVersionView;
 import com.synopsys.integration.blackduck.api.manual.temporary.component.VersionBomOriginView;
 import com.synopsys.integration.blackduck.http.BlackDuckRequestBuilder;
@@ -76,7 +79,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         }
 
         ComponentVulnerabilities componentVulnerabilities = retrieveComponentVulnerabilities(bomComponent);
-        List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent);
+        List<ComponentPolicy> componentPolicies = retrieveComponentPolicies(bomComponent, componentConcerns);
 
         LinkableItem licenseInfo = BlackDuckMessageAttributesUtils.extractLicense(bomComponent);
         String usageInfo = BlackDuckMessageAttributesUtils.extractUsage(bomComponent);
@@ -140,22 +143,48 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         HttpUrl vulnerabilitiesUrl = createVulnerabilitiesLink(bomComponent);
         UrlMultipleResponses<BlackDuckProjectVersionComponentVulnerabilitiesView> urlMultipleResponses = new UrlMultipleResponses<>(vulnerabilitiesUrl, VULNERABILITIES_LINK.getResponseClass());
         BlackDuckMultipleRequest<BlackDuckProjectVersionComponentVulnerabilitiesView> spec = new BlackDuckRequestBuilder()
-                                                                                                 .commonGet()
-                                                                                                 .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE)
-                                                                                                 .buildBlackDuckRequest(urlMultipleResponses);
+            .commonGet()
+            .addHeader(HttpHeaders.ACCEPT, VULNERABILITIES_MEDIA_TYPE)
+            .buildBlackDuckRequest(urlMultipleResponses);
 
         List<BlackDuckProjectVersionComponentVulnerabilitiesView> vulnerabilities = blackDuckApiClient.getAllResponses(spec);
         return vulnerabilityDetailsCreator.toComponentVulnerabilities(vulnerabilities);
     }
 
-    private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {
+    private List<ComponentPolicy> retrieveComponentPolicies(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns) throws IntegrationException {
         if (ProjectVersionComponentPolicyStatusType.NOT_IN_VIOLATION.equals(bomComponent.getPolicyStatus())) {
             return List.of();
         }
+
+        List<ComponentConcern> policyConcerns = componentConcerns
+            .stream()
+            .filter(compConcern -> ComponentConcernType.POLICY.equals(compConcern.getType()))
+            .collect(Collectors.toList());
+        if (policyConcerns.isEmpty()) {
+            return List.of();
+        }
+
         return blackDuckApiClient.getAllResponses(bomComponent.metaPolicyRulesLink())
-                   .stream()
-                   .map(policyDetailsCreator::toComponentPolicy)
-                   .collect(Collectors.toList());
+            .stream()
+            .filter(policyRulesView -> hasConcernForPolicy(policyRulesView, policyConcerns))
+            .map(policyDetailsCreator::toComponentPolicy)
+            .collect(Collectors.toList());
+    }
+
+    private boolean hasConcernForPolicy(ComponentPolicyRulesView policyRulesView, List<ComponentConcern> policyConcerns) {
+        for (ComponentConcern policyConcern : policyConcerns) {
+            Optional<String> optionalUrl = policyConcern.getUrl();
+            HttpUrl policyRulesViewHref = policyRulesView.getHref();
+            if (null != policyRulesViewHref && optionalUrl.isPresent()) {
+                String componentConcernPolicyUrl = optionalUrl.get();
+                if (componentConcernPolicyUrl.equals(policyRulesViewHref.string())) {
+                    return true;
+                }
+            } else if (policyConcern.getName().equals(policyRulesView.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private HttpUrl createVulnerabilitiesLink(ProjectVersionComponentVersionView bomComponent) throws IntegrationException {

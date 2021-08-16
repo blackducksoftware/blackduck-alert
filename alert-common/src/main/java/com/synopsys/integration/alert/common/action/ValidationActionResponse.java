@@ -16,6 +16,8 @@ import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class ValidationActionResponse extends ActionResponse<ValidationResponseModel> {
+    public static final String VALIDATION_SUCCESS_MESSSAGE = "The configuration is valid";
+    public static final String VALIDATION_FAILURE_MESSAGE = "There were problems with the configuration";
 
     public static ValidationActionResponse createResponseFromIntegrationRestException(IntegrationRestException integrationRestException) {
         String exceptionMessage = integrationRestException.getMessage();

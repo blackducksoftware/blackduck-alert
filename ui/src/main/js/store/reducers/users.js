@@ -24,7 +24,8 @@ const initialState = {
     userFetchError: '',
     error: HTTPErrorUtils.createEmptyErrorObject(),
     fieldErrors: {},
-    saveStatus: ''
+    saveStatus: '',
+    deleteStatus: ''
 };
 
 const users = (state = initialState, action) => {
@@ -36,7 +37,8 @@ const users = (state = initialState, action) => {
                 deleteSuccess: false,
                 error: HTTPErrorUtils.createErrorObject(action),
                 fieldErrors: action.errors || {},
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'ERROR'
             };
         case USER_MANAGEMENT_USER_DELETED:
             return {
@@ -45,14 +47,16 @@ const users = (state = initialState, action) => {
                 deleteSuccess: true,
                 error: HTTPErrorUtils.createEmptyErrorObject(),
                 fieldErrors: {},
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'DELETED'
             };
         case USER_MANAGEMENT_USER_DELETING:
             return {
                 ...state,
                 inProgress: true,
                 deleteSuccess: false,
-                saveStatus: ''
+                saveStatus: '',
+                deleteStatus: 'DELETING'
             };
         case USER_MANAGEMENT_USER_FETCH_ERROR_ALL:
             return {

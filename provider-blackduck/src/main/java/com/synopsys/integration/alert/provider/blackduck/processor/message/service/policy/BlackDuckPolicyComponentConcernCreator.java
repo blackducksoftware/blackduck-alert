@@ -27,13 +27,14 @@ public class BlackDuckPolicyComponentConcernCreator {
 
     public ComponentConcern fromPolicyInfo(PolicyInfo policyInfo, ItemOperation itemOperation) {
         String policyName = policyInfo.getPolicyName();
+        String policyUrl = policyInfo.getPolicy();
 
         String policySeverity = policyInfo.getSeverity();
         if (StringUtils.isNotBlank(policySeverity)) {
             ComponentConcernSeverity componentConcernSeverity = policySeverityConverter.toComponentConcernSeverity(policySeverity);
-            return ComponentConcern.severePolicy(itemOperation, policyName, componentConcernSeverity);
+            return ComponentConcern.severePolicy(itemOperation, policyName, componentConcernSeverity, policyUrl);
         }
-        return ComponentConcern.policy(itemOperation, policyName);
+        return ComponentConcern.policy(itemOperation, policyName, policyUrl);
     }
 
 }

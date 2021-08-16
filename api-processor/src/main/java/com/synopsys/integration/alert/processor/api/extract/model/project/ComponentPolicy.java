@@ -7,13 +7,15 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.alert.processor.api.extract.model.CombinableModel;
 
-public class ComponentPolicy extends AlertSerializableModel {
+public class ComponentPolicy extends AlertSerializableModel implements CombinableModel<ComponentPolicy> {
     private final String policyName;
     private final ComponentConcernSeverity severity;
     private final boolean overridden;
@@ -53,4 +55,13 @@ public class ComponentPolicy extends AlertSerializableModel {
     public Optional<String> getCategory() {
         return Optional.ofNullable(category);
     }
+
+    @Override
+    public List<ComponentPolicy> combine(ComponentPolicy otherModel) {
+        if (getPolicyName().equals(otherModel.getPolicyName())) {
+            return List.of(this);
+        }
+        return List.of(this, otherModel);
+    }
+
 }

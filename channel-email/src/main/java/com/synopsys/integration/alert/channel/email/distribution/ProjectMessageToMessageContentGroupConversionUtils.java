@@ -99,6 +99,7 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
             upgradeGuidance.getShortTermUpgradeGuidance().ifPresent(componentAttributes::add);
 
             componentAttributes.addAll(bomComponent.getAdditionalAttributes());
+            componentItemBuilder.applyAllComponentAttributes(componentAttributes);
 
             //TODO: what is componentAttributes even used for?
 
