@@ -26,7 +26,8 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
     private final String value;
     private final String url;
 
-    private boolean collapsible;
+    // Included for email file-attachment compatibility
+    private final boolean collapsible;
     private boolean isNumericValue;
 
     public LinkableItem(String label, String value) {
@@ -58,10 +59,6 @@ public class LinkableItem extends AlertSerializableModel implements Comparable<L
 
     public boolean isCollapsible() {
         return collapsible;
-    }
-
-    public void setCollapsible(boolean collapsible) {
-        this.collapsible = collapsible;
     }
 
     public boolean isNumericValue() {
