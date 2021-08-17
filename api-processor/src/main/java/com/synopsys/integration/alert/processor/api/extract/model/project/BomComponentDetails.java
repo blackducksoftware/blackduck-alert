@@ -7,8 +7,12 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +70,7 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
     private List<BomComponentDetails> combineComponentConcerns(BomComponentDetails otherDetails) {
         List<ComponentConcern> combinedComponentConcerns = CombinableModel.combine(getComponentConcerns(), otherDetails.getComponentConcerns());
         List<ComponentPolicy> componentPolicies = CombinableModel.combine(getRelevantPolicies(), otherDetails.getRelevantPolicies());
+        List<LinkableItem> combineAdditionalAttributes = combineAdditionalAttributes(otherDetails, combinedComponentConcerns);
         BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(
             getComponent(),
             getComponentVersion().orElse(null),
@@ -75,10 +80,22 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
             getLicense(),
             getUsage(),
             getComponentUpgradeGuidance(),
-            getAdditionalAttributes(),
+            combineAdditionalAttributes,
             getBlackDuckIssuesUrl()
         );
         return List.of(combinedBomComponentDetails);
+    }
+
+    private List<LinkableItem> combineAdditionalAttributes(BomComponentDetails otherDetails, List<ComponentConcern> combinedComponentConcerns) {
+        if (ListUtils.isEqualList(getComponentConcerns(), combinedComponentConcerns)) {
+            return getAdditionalAttributes();
+        } else if (ListUtils.isEqualList(otherDetails.getComponentConcerns(), combinedComponentConcerns)) {
+            return otherDetails.getAdditionalAttributes();
+        }
+
+        Set<LinkableItem> combinedAdditionalAttributes = new LinkedHashSet<>(getAdditionalAttributes());
+        combinedAdditionalAttributes.addAll(otherDetails.getAdditionalAttributes());
+        return new ArrayList<>(combinedAdditionalAttributes);
     }
 
 }
