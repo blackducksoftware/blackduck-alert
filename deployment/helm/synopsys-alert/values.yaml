@@ -48,6 +48,10 @@ postgres:
   registry: "docker.io/centos" # override the docker registry at container level
   isExternal: false # false for running Postgres as a container and true for using External Postgres database
   ssl: true # If true, Alert uses SSL for external Postgres connection
+  sslUseFiles: false # If true, Alert will expect to find ssl certs for communicating with the External Postgres database
+  sslKeyFilePath: "" # If using files for ssl, specify ssl key path
+  sslCertFilePath: "" # If using files for ssl, specify ssl cert path
+  sslRootCertPath: "" # If using files for ssl, specify ssl root cert path
   host: "" # required only for external postgres, for postgres as a container, it will point to <name>-postgres
   port: 5432
   # NOTE: do not change usernames when using postgres as a container; only configure if using external database

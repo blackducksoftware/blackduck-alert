@@ -15,6 +15,9 @@ services:
 #      - ALERT_DB_PORT=5432
 #      - ALERT_DB_NAME=alertdb
 #      - ALERT_DB_SSL_MODE=require
+#      - ALERT_DB_SSL_KEY_PATH=
+#      - ALERT_DB_SSL_CERT-PATH=
+#      - ALERT_DB_SSL_ROOT_CERT_PATH=
 #
 #     # -- ALERT RESET VARIABLES
 #      - ALERT_LDAP_DISABLED=false
