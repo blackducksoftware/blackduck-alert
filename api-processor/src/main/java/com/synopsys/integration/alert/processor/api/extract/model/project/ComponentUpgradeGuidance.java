@@ -11,9 +11,10 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 
-public class ComponentUpgradeGuidance {
+public class ComponentUpgradeGuidance extends AlertSerializableModel {
     private final LinkableItem shortTermUpgradeGuidance;
     private final LinkableItem longTermUpgradeGuidance;
 
