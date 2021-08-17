@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.BomCom
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.BlackDuckMessageLabels;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.policy.BlackDuckComponentPolicyDetailsCreator;
@@ -57,11 +58,13 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         this.policyDetailsCreator = policyDetailsCreator;
     }
 
-    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, ComponentConcern componentConcern, List<LinkableItem> additionalAttributes) throws IntegrationException {
-        return createBomComponentDetails(bomComponent, List.of(componentConcern), additionalAttributes);
+    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, ComponentConcern componentConcern, ComponentUpgradeGuidance componentUpgradeGuidance, List<LinkableItem> additionalAttributes)
+        throws IntegrationException {
+        return createBomComponentDetails(bomComponent, List.of(componentConcern), componentUpgradeGuidance, additionalAttributes);
     }
 
-    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, List<LinkableItem> additionalAttributes) throws IntegrationException {
+    public BomComponentDetails createBomComponentDetails(ProjectVersionComponentVersionView bomComponent, List<ComponentConcern> componentConcerns, ComponentUpgradeGuidance componentUpgradeGuidance, List<LinkableItem> additionalAttributes)
+        throws IntegrationException {
         LinkableItem component;
         LinkableItem componentVersion = null;
 
@@ -90,6 +93,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             componentConcerns,
             licenseInfo,
             usageInfo,
+            componentUpgradeGuidance,
             additionalAttributes,
             issuesUrl
         );
@@ -101,6 +105,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
         @Nullable String componentVersionName,
         @Nullable String componentVersionUrl,
         List<ComponentConcern> componentConcerns,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes
     ) {
         LinkableItem component;
@@ -124,6 +129,7 @@ public class BlackDuckMessageBomComponentDetailsCreator {
             componentConcerns,
             licenseInfo,
             usageInfo,
+            componentUpgradeGuidance,
             additionalAttributes,
             null
         );

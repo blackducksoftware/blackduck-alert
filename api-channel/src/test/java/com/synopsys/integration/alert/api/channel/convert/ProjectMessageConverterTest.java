@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.BomCom
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
@@ -81,6 +82,10 @@ public class ProjectMessageConverterTest {
         ComponentConcern vulnerabilityConcern2 = createVulnerabilityConcern(ItemOperation.UPDATE, "CVE-135", ComponentConcernSeverity.TRIVIAL_LOW);
         ComponentConcern vulnerabilityConcern3 = createVulnerabilityConcern(ItemOperation.DELETE, "CVE-246", ComponentConcernSeverity.MINOR_MEDIUM);
 
+        LinkableItem shortTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Short Term", "1.0");
+        LinkableItem longTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
+        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidance, longTermUpgradeGuidance);
+
         LinkableItem attribute1 = new LinkableItem("Attribute", "The first attribute");
         LinkableItem attribute2 = new LinkableItem("Attribute Prime", "The second attribute");
 
@@ -92,6 +97,7 @@ public class ProjectMessageConverterTest {
             List.of(policyConcern1, policyConcern2, vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3),
             new LinkableItem("License", "The software license name", "https://license-url"),
             "The usage of the component",
+            componentUpgradeGuidance,
             List.of(attribute1, attribute2),
             "https://blackduck-issues-url"
         );

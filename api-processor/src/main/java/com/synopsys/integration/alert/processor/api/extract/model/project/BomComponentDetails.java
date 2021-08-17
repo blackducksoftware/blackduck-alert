@@ -30,10 +30,11 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
         List<ComponentConcern> componentConcerns,
         LinkableItem license,
         String usage,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes,
         @Nullable String blackDuckIssuesUrl
     ) {
-        super(component, componentVersion, componentVulnerabilities, relevantPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
+        super(component, componentVersion, componentVulnerabilities, relevantPolicies, license, usage, componentUpgradeGuidance, additionalAttributes, blackDuckIssuesUrl);
         this.componentConcerns = componentConcerns;
     }
 
@@ -78,6 +79,7 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
             combinedComponentConcerns,
             getLicense(),
             getUsage(),
+            getComponentUpgradeGuidance(),
             combineAdditionalAttributes,
             getBlackDuckIssuesUrl()
         );

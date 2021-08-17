@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
 
@@ -92,6 +93,10 @@ public final class ProjectMessageToMessageContentGroupConversionUtils {
 
             LinkableItem usageItem = new LinkableItem("Usage", bomComponent.getUsage());
             componentAttributes.add(usageItem);
+
+            ComponentUpgradeGuidance upgradeGuidance = bomComponent.getComponentUpgradeGuidance();
+            upgradeGuidance.getLongTermUpgradeGuidance().ifPresent(componentAttributes::add);
+            upgradeGuidance.getShortTermUpgradeGuidance().ifPresent(componentAttributes::add);
 
             componentAttributes.addAll(bomComponent.getAdditionalAttributes());
             componentItemBuilder.applyAllComponentAttributes(componentAttributes);
