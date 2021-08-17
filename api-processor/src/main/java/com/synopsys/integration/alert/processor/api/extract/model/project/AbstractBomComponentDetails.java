@@ -24,6 +24,7 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
 
     private final LinkableItem license;
     private final String usage;
+    private final ComponentUpgradeGuidance componentUpgradeGuidance;
     private final List<LinkableItem> additionalAttributes;
 
     private final String blackDuckIssuesUrl;
@@ -35,6 +36,7 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
         List<ComponentPolicy> relevantPolicies,
         LinkableItem license,
         String usage,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes,
         String blackDuckIssuesUrl
     ) {
@@ -44,6 +46,7 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
         this.relevantPolicies = relevantPolicies;
         this.license = license;
         this.usage = usage;
+        this.componentUpgradeGuidance = componentUpgradeGuidance;
         this.additionalAttributes = additionalAttributes;
         this.blackDuckIssuesUrl = blackDuckIssuesUrl;
     }
@@ -70,6 +73,10 @@ public abstract class AbstractBomComponentDetails extends AlertSerializableModel
 
     public String getUsage() {
         return usage;
+    }
+
+    public ComponentUpgradeGuidance getComponentUpgradeGuidance() {
+        return componentUpgradeGuidance;
     }
 
     public List<LinkableItem> getAdditionalAttributes() {

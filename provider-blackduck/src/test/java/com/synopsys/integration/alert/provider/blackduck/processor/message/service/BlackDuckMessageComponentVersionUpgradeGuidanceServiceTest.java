@@ -1,15 +1,15 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.message.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.message.model.LinkableItem;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.blackduck.api.core.response.LinkSingleResponse;
 import com.synopsys.integration.blackduck.api.core.response.UrlSingleResponse;
 import com.synopsys.integration.blackduck.api.generated.component.ComponentVersionUpgradeGuidanceLongTermView;
@@ -35,8 +35,9 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
         ProjectVersionComponentVersionView bomComponent = createBomComponent(upgradeGuidanceLink, expectedUrl);
 
         BlackDuckMessageComponentVersionUpgradeGuidanceService upgradeGuidanceService = new BlackDuckMessageComponentVersionUpgradeGuidanceService(blackDuckApiClient);
-        List<LinkableItem> upgradeGuidanceItems = upgradeGuidanceService.requestUpgradeGuidanceItems(bomComponent);
-        assertEquals(2, upgradeGuidanceItems.size());
+        ComponentUpgradeGuidance componentUpgradeGuidance = upgradeGuidanceService.requestUpgradeGuidanceItems(bomComponent);
+        assertTrue(componentUpgradeGuidance.getLongTermUpgradeGuidance().isPresent());
+        assertTrue(componentUpgradeGuidance.getShortTermUpgradeGuidance().isPresent());
     }
 
     @Test
@@ -49,8 +50,9 @@ public class BlackDuckMessageComponentVersionUpgradeGuidanceServiceTest {
         ComponentVersionView componentVersion = createComponentVersion(expectedUrl);
 
         BlackDuckMessageComponentVersionUpgradeGuidanceService upgradeGuidanceService = new BlackDuckMessageComponentVersionUpgradeGuidanceService(blackDuckApiClient);
-        List<LinkableItem> upgradeGuidanceItems = upgradeGuidanceService.requestUpgradeGuidanceItems(componentVersion);
-        assertEquals(1, upgradeGuidanceItems.size());
+        ComponentUpgradeGuidance componentUpgradeGuidance = upgradeGuidanceService.requestUpgradeGuidanceItems(componentVersion);
+        assertTrue(componentUpgradeGuidance.getLongTermUpgradeGuidance().isPresent());
+        assertFalse(componentUpgradeGuidance.getShortTermUpgradeGuidance().isPresent());
     }
 
     private ProjectVersionComponentVersionView createBomComponent(LinkSingleResponse<ComponentVersionUpgradeGuidanceView> upgradeGuidanceLink, UrlSingleResponse<ComponentVersionUpgradeGuidanceView> expectedUrl) {

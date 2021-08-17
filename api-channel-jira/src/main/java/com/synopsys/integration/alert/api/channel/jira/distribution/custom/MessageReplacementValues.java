@@ -25,6 +25,8 @@ public class MessageReplacementValues {
     private final String componentLicense;
     private final String severity;
     private final String policyCategory;
+    private final String shortTermUpgradeGuidance;
+    private final String longTermUpgradeGuidance;
 
     private MessageReplacementValues(
         String providerName,
@@ -35,7 +37,9 @@ public class MessageReplacementValues {
         @Nullable String componentUsage,
         @Nullable String componentLicense,
         @Nullable String severity,
-        @Nullable String policyCategory
+        @Nullable String policyCategory,
+        @Nullable String shortTermUpgradeGuidance,
+        @Nullable String longTermUpgradeGuidance
     ) {
         this.providerName = providerName;
         this.projectName = projectName;
@@ -46,6 +50,8 @@ public class MessageReplacementValues {
         this.componentLicense = StringUtils.trimToNull(componentLicense);
         this.severity = StringUtils.trimToNull(severity);
         this.policyCategory = StringUtils.trimToNull(policyCategory);
+        this.shortTermUpgradeGuidance = StringUtils.trimToNull(shortTermUpgradeGuidance);
+        this.longTermUpgradeGuidance = StringUtils.trimToNull(longTermUpgradeGuidance);
     }
 
     public String getProviderName() {
@@ -84,6 +90,14 @@ public class MessageReplacementValues {
         return Optional.ofNullable(policyCategory);
     }
 
+    public Optional<String> getShortTermUpgradeGuidance() {
+        return Optional.ofNullable(shortTermUpgradeGuidance);
+    }
+
+    public Optional<String> getLongTermUpgradeGuidance() {
+        return Optional.ofNullable(longTermUpgradeGuidance);
+    }
+
     public static class Builder {
         private String providerName;
         private String projectName;
@@ -94,6 +108,8 @@ public class MessageReplacementValues {
         private String componentLicense;
         private String severity;
         private String policyCategory;
+        private String shortTermUpgradeGuidance;
+        private String longTermUpgradeGuidance;
 
         public Builder(String providerName, String projectName) {
             this.providerName = providerName;
@@ -110,7 +126,9 @@ public class MessageReplacementValues {
                 defaultIfBlank(componentUsage),
                 defaultIfBlank(componentLicense),
                 defaultIfBlank(severity),
-                defaultIfBlank(policyCategory)
+                defaultIfBlank(policyCategory),
+                defaultIfBlank(shortTermUpgradeGuidance),
+                defaultIfBlank(longTermUpgradeGuidance)
             );
         }
 
@@ -146,6 +164,16 @@ public class MessageReplacementValues {
 
         public Builder policyCategory(String policyCategory) {
             this.policyCategory = policyCategory;
+            return this;
+        }
+
+        public Builder shortTermUpgradeGuidance(String shortTermUpgradeGuidance) {
+            this.shortTermUpgradeGuidance = shortTermUpgradeGuidance;
+            return this;
+        }
+
+        public Builder longTermUpgradeGuidance(String longTermUpgradeGuidance) {
+            this.longTermUpgradeGuidance = longTermUpgradeGuidance;
             return this;
         }
 
