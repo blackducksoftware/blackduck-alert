@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,13 +39,15 @@ public class JiraCustomFieldResolver {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ThrowingSupplier<List<CustomFieldCreationResponseModel>, IntegrationException> retrieveAvailableFields;
-    private final Map<String, CustomFieldCreationResponseModel> fieldCache;
-    private boolean isCachePopulated;
+    private final Map<String, CustomFieldCreationResponseModel> nameToModelCache;
+    private final Map<String, String> idToNameCache;
+    private boolean cachesHaveBeenInitialized;
 
     public JiraCustomFieldResolver(ThrowingSupplier<List<CustomFieldCreationResponseModel>, IntegrationException> retrieveAvailableFields) {
         this.retrieveAvailableFields = retrieveAvailableFields;
-        this.fieldCache = new HashMap<>();
-        this.isCachePopulated = false;
+        this.nameToModelCache = new HashMap<>();
+        this.idToNameCache = new HashMap<>();
+        this.cachesHaveBeenInitialized = false;
     }
 
     public final JiraResolvedCustomField resolveCustomField(JiraCustomFieldConfig jiraCustomFieldConfig) {
@@ -53,16 +56,24 @@ public class JiraCustomFieldResolver {
         return new JiraResolvedCustomField(fieldDefinition.getFieldId(), requestObject);
     }
 
+    public Set<String> getCustomFieldIds() {
+        return idToNameCache.keySet();
+    }
+
+    public String resolveCustomFieldIdToName(String customFieldId) {
+        return idToNameCache.get(customFieldId);
+    }
+
     protected Optional<CustomFieldCreationResponseModel> retrieveFieldDefinition(String fieldName) {
-        if (!isCachePopulated) {
+        if (!cachesHaveBeenInitialized) {
             try {
-                initializeCache();
+                initializeCaches();
             } catch (IntegrationException e) {
                 logger.warn("No Jira Cloud user-visible fields found");
                 return Optional.empty();
             }
         }
-        return Optional.ofNullable(fieldCache.get(fieldName));
+        return Optional.ofNullable(nameToModelCache.get(fieldName));
     }
 
     protected CustomFieldDefinitionModel retrieveCustomFieldDefinition(JiraCustomFieldConfig customFieldConfig) {
@@ -126,12 +137,13 @@ public class JiraCustomFieldResolver {
         return jiraCustomFieldConfig.getFieldReplacementValue().orElseGet(jiraCustomFieldConfig::getFieldOriginalValue);
     }
 
-    private void initializeCache() throws IntegrationException {
+    private void initializeCaches() throws IntegrationException {
         List<CustomFieldCreationResponseModel> userVisibleFields = retrieveAvailableFields.get();
-        for (CustomFieldCreationResponseModel fieldModel : userVisibleFields) {
-            fieldCache.put(fieldModel.getName(), fieldModel);
+        for (CustomFieldCreationResponseModel jiraField : userVisibleFields) {
+            nameToModelCache.put(jiraField.getName(), jiraField);
+            idToNameCache.put(jiraField.getId(), jiraField.getName());
         }
-        isCachePopulated = true;
+        cachesHaveBeenInitialized = true;
     }
 
     private JsonObject createJsonObject(String key, String value) {

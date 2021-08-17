@@ -12,25 +12,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
+import com.synopsys.integration.alert.api.channel.jira.distribution.custom.JiraCustomFieldResolver;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-@Component
 public class JiraErrorMessageUtility {
     private final Gson gson;
+    private final JiraCustomFieldResolver customFieldResolver;
 
-    @Autowired
-    public JiraErrorMessageUtility(Gson gson) {
+    public JiraErrorMessageUtility(Gson gson, JiraCustomFieldResolver customFieldResolver) {
         this.gson = gson;
+        this.customFieldResolver = customFieldResolver;
     }
 
     public AlertException improveRestException(IntegrationRestException restException, String issueCreatorFieldKey, String issueCreatorEmail) {
@@ -38,7 +37,13 @@ public class JiraErrorMessageUtility {
         try {
             List<String> responseErrors = extractErrorsFromResponseContent(restException.getHttpResponseContent(), issueCreatorFieldKey, issueCreatorEmail);
             if (!responseErrors.isEmpty()) {
-                message += " | Details: " + StringUtils.join(responseErrors, ", ");
+                String responseErrorString = StringUtils.join(responseErrors, ", ");
+                if (responseErrorString.contains("customfield_")) {
+                    for (String customFieldId : customFieldResolver.getCustomFieldIds()) {
+                        responseErrorString = responseErrorString.replace(String.format("'%s'", customFieldId), String.format("'%s' ('%s')", customFieldId, customFieldResolver.resolveCustomFieldIdToName(customFieldId)));
+                    }
+                }
+                message += " | Details: " + responseErrorString;
             }
         } catch (AlertFieldException reporterException) {
             return reporterException;
