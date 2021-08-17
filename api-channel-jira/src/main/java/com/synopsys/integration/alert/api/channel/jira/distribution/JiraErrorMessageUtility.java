@@ -40,7 +40,7 @@ public class JiraErrorMessageUtility {
                 String responseErrorString = StringUtils.join(responseErrors, ", ");
                 if (responseErrorString.contains("customfield_")) {
                     for (String customFieldId : customFieldResolver.getCustomFieldIds()) {
-                        responseErrorString = responseErrorString.replace(customFieldId, customFieldResolver.resolveCustomFieldIdToName(customFieldId));
+                        responseErrorString = responseErrorString.replace(String.format("'%s'", customFieldId), String.format("'%s' ('%s')", customFieldId, customFieldResolver.resolveCustomFieldIdToName(customFieldId)));
                     }
                 }
                 message += " | Details: " + responseErrorString;
