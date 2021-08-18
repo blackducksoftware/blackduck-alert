@@ -17,35 +17,34 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.gson.Gson;
 
-public class AzureHttpServiceFactory {
+public class AzureHttpRequestCreatorFactory {
     public static final String DEFAULT_BASE_URL = "https://dev.azure.com";
     // TODO consider the tradeoffs of extracting the common base url vs readability
     public static final String DEFAULT_AUTHORIZATION_URL = "https://app.vssps.visualstudio.com/oauth2/authorize?response_type=Assertion";
     public static final String DEFAULT_TOKEN_URL = "https://app.vssps.visualstudio.com/oauth2/token?client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer";
 
-    public static AzureHttpService withCredentialNoProxy(Credential oAuthCredential, Gson gson) {
+    public static AzureHttpRequestCreator withCredentialNoProxy(Credential oAuthCredential, Gson gson) {
         return withCredentialNoProxy(DEFAULT_BASE_URL, oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredentialNoProxy(String baseUrl, Credential oAuthCredential, Gson gson) {
+    public static AzureHttpRequestCreator withCredentialNoProxy(String baseUrl, Credential oAuthCredential, Gson gson) {
         return withCredentialUnauthenticatedProxy(baseUrl, Proxy.NO_PROXY, oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredentialUnauthenticatedProxy(Proxy proxy, Credential oAuthCredential, Gson gson) {
+    public static AzureHttpRequestCreator withCredentialUnauthenticatedProxy(Proxy proxy, Credential oAuthCredential, Gson gson) {
         return withCredentialUnauthenticatedProxy(DEFAULT_BASE_URL, proxy, oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredentialUnauthenticatedProxy(String baseUrl, Proxy proxy, Credential oAuthCredential, Gson gson) {
+    public static AzureHttpRequestCreator withCredentialUnauthenticatedProxy(String baseUrl, Proxy proxy, Credential oAuthCredential, Gson gson) {
         return withCredential(baseUrl, defaultHttpTransport(proxy), oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredential(HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
+    public static AzureHttpRequestCreator withCredential(HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
         return withCredential(DEFAULT_BASE_URL, httpTransport, oAuthCredential, gson);
     }
 
-    public static AzureHttpService withCredential(String baseUrl, HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
-        AzureHttpRequestCreator requestCreator = new AzureHttpRequestCreator(baseUrl, gson, httpTransport.createRequestFactory(oAuthCredential), new AzureApiVersionAppender());
-        return new AzureHttpService(gson, requestCreator);
+    public static AzureHttpRequestCreator withCredential(String baseUrl, HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
+        return new AzureHttpRequestCreator(baseUrl, gson, httpTransport.createRequestFactory(oAuthCredential), new AzureApiVersionAppender());
     }
 
     private static ApacheHttpTransport defaultHttpTransport(Proxy proxy) {
@@ -56,7 +55,7 @@ public class AzureHttpServiceFactory {
         return new ApacheHttpTransport(httpClient);
     }
 
-    private AzureHttpServiceFactory() {
+    private AzureHttpRequestCreatorFactory() {
         // This class should not be instantiated
     }
 

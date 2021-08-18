@@ -45,8 +45,9 @@ import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoard
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.oauth.AzureAuthorizationCodeFlow;
 import com.synopsys.integration.azure.boards.common.oauth.AzureOAuthScopes;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -121,9 +122,10 @@ public class AzureBoardsProperties {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = requestTokens(oAuthFlow, authorizationCode)
-                                             .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential associated with '%s'", oauthUserId)));
+                .orElseThrow(() -> new AlertException(String.format("Cannot request Azure OAuth credential associated with '%s'", oauthUserId)));
 
-            return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
+            AzureHttpRequestCreator httpRequestCreator = AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
+            return new AzureHttpService(gson, httpRequestCreator);
         } catch (IOException e) {
             throw new AlertException("Cannot request OAuth credentials", e);
         }
@@ -134,8 +136,9 @@ public class AzureBoardsProperties {
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
-                                             .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with '%s'", oauthUserId)));
-            return AzureHttpServiceFactory.withCredential(httpTransport, oAuthCredential, gson);
+                .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with '%s'", oauthUserId)));
+            AzureHttpRequestCreator httpRequestCreator = AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
+            return new AzureHttpService(gson, httpRequestCreator);
         } catch (IOException e) {
             throw new AlertException("Cannot read OAuth credentials", e);
         }
@@ -143,9 +146,9 @@ public class AzureBoardsProperties {
 
     public AuthorizationCodeFlow createOAuthFlow(HttpTransport httpTransport) throws IOException {
         return createOAuthFlowBuilder(httpTransport)
-                   .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
-                   .addRefreshListener(new DataStoreCredentialRefreshListener(oauthUserId, credentialDataStoreFactory))
-                   .build();
+            .setCredentialDataStore(StoredCredential.getDefaultDataStore(credentialDataStoreFactory))
+            .addRefreshListener(new DataStoreCredentialRefreshListener(oauthUserId, credentialDataStoreFactory))
+            .build();
     }
 
     public AuthorizationCodeFlow.Builder createOAuthFlowBuilder(HttpTransport httpTransport) {
@@ -157,10 +160,10 @@ public class AzureBoardsProperties {
             authorizationAccessMethod,
             httpTransport,
             JacksonFactory.getDefaultInstance(),
-            new GenericUrl(AzureHttpServiceFactory.DEFAULT_TOKEN_URL),
+            new GenericUrl(AzureHttpRequestCreatorFactory.DEFAULT_TOKEN_URL),
             new ClientParametersAuthentication(clientId, clientSecret),
             clientId,
-            encode(AzureHttpServiceFactory.DEFAULT_AUTHORIZATION_URL),
+            encode(AzureHttpRequestCreatorFactory.DEFAULT_AUTHORIZATION_URL),
             clientSecret,
             redirectUri
         ).setScopes(getScopes());
