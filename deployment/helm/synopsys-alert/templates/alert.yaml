@@ -76,7 +76,7 @@ spec:
         - name: ALERT_DB_SSL_KEY_PATH
           valueFrom:
             secretKeyRef:
-              key: {{ required ".Values.postgres.sslSecrets.sslKeyKey is missing." .Values.postgres.sslSecrets.sslKeyKe}}
+              key: {{ required ".Values.postgres.sslSecrets.sslKeyKey is missing." .Values.postgres.sslSecrets.sslKeyKey}}
               name: {{ .Values.postgres.sslSecrets.secretName}}
         - name: ALERT_DB_SSL_CERT_PATH
           valueFrom:
