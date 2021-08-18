@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
@@ -64,7 +65,7 @@ public class PolicyOverrideNotificationMessageExtractor extends AbstractBlackDuc
         BomComponentDetails bomComponentDetails;
         try {
             ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(notificationContent.getBomComponent()), ProjectVersionComponentVersionView.class);
-            bomComponentDetails = bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, List.of(overrider));
+            bomComponentDetails = bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, ComponentUpgradeGuidance.none(), List.of(overrider));
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, notificationContent.getComponentName(), notificationContent.getComponentVersionName());
             bomComponentDetails = bomComponentDetailsCreator.createMissingBomComponentDetails(
@@ -73,6 +74,7 @@ public class PolicyOverrideNotificationMessageExtractor extends AbstractBlackDuc
                 notificationContent.getComponentVersionName(),
                 notificationContent.getBomComponent(),
                 List.of(policyConcern),
+                ComponentUpgradeGuidance.none(),
                 List.of(overrider)
             );
         }

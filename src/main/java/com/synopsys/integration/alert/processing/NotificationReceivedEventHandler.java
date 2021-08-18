@@ -41,7 +41,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
     @Override
     public void handle(NotificationReceivedEvent event) {
         logger.debug("Event {}", event);
-        logger.info("Processing event for notifications.");
+        logger.info("Processing event {} for notifications.", event.getEventId());
 
         int numPagesProcessed = 0;
 
@@ -56,7 +56,7 @@ public class NotificationReceivedEventHandler implements AlertEventHandler<Notif
                 numPagesProcessed,
                 pageOfAlertNotificationModels.getTotalPages());
         }
-        logger.info("Finished processing event for notifications.");
+        logger.info("Finished processing event {} for notifications.", event.getEventId());
     }
 
 }

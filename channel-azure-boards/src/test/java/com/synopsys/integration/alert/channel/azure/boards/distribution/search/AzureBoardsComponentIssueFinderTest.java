@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseFields;
 import com.synopsys.integration.azure.boards.common.service.workitem.response.WorkItemResponseModel;
@@ -82,6 +83,7 @@ public class AzureBoardsComponentIssueFinderTest {
             List.of(COMPONENT_POLICY),
             new LinkableItem("License", "A software license", "https://license-url"),
             "Example Usage",
+            ComponentUpgradeGuidance.none(),
             List.of(
                 new LinkableItem("Attribute", "Example attribute")
             ),

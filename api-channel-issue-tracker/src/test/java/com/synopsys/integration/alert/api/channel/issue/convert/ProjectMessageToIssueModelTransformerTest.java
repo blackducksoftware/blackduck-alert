@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.BomCom
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
@@ -33,6 +34,9 @@ public class ProjectMessageToIssueModelTransformerTest {
     private static final LinkableItem COMPONENT_VERSION = new LinkableItem("Component Version", "0.8.7");
     private static final LinkableItem LICENSE = new LinkableItem("License", "A software license", "https://license-url");
     private static final String USAGE = "Some generic usage";
+    private static final LinkableItem SHORT_TERM_GUIDANCE = new LinkableItem("Upgrade Guidance - Short Term", "1.0");
+    private static final LinkableItem LONG_TERM_GUIDANCE = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
+    private static final ComponentUpgradeGuidance UPGRADE_GUIDANCE = new ComponentUpgradeGuidance(SHORT_TERM_GUIDANCE, LONG_TERM_GUIDANCE);
     private static final LinkableItem ADDITIONAL_ATTRIBUTE = new LinkableItem("A Label", "An attribute value");
     private static final String ISSUES_URL = "https://issues-url";
 
@@ -58,7 +62,7 @@ public class ProjectMessageToIssueModelTransformerTest {
 
     @Test
     public void convertToIssueModelsForPolicyTest() {
-        ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, COMPONENT_POLICY_1.getPolicyName());
+        ComponentConcern policyConcern = ComponentConcern.policy(ItemOperation.ADD, COMPONENT_POLICY_1.getPolicyName(), "https://policy");
         BomComponentDetails bomComponentDetails = createBomComponentDetails(policyConcern);
         ProjectMessage projectMessage = ProjectMessage.componentConcern(
             PROVIDER_DETAILS,
@@ -126,10 +130,11 @@ public class ProjectMessageToIssueModelTransformerTest {
         assertEquals(COMPONENT, issueBomComponentDetails.getComponent());
         assertEquals(COMPONENT_VERSION, issueBomComponentDetails.getComponentVersion().orElse(null));
         assertEquals(COMPONENT_VULNERABILITIES, issueBomComponentDetails.getComponentVulnerabilities());
-        assertEquals(COMPONENT_POLICIES, issueBomComponentDetails.getComponentPolicies());
+        assertEquals(COMPONENT_POLICIES, issueBomComponentDetails.getRelevantPolicies());
         assertEquals(LICENSE, issueBomComponentDetails.getLicense());
         assertEquals(USAGE, issueBomComponentDetails.getUsage());
         assertEquals(ISSUES_URL, issueBomComponentDetails.getBlackDuckIssuesUrl());
+        assertEquals(UPGRADE_GUIDANCE, issueBomComponentDetails.getComponentUpgradeGuidance());
         assertTrue(
             issueBomComponentDetails.getAdditionalAttributes().contains(ADDITIONAL_ATTRIBUTE),
             "Expected issue BOM component details to contain an additional attribute"
@@ -149,6 +154,7 @@ public class ProjectMessageToIssueModelTransformerTest {
             componentConcerns,
             LICENSE,
             USAGE,
+            UPGRADE_GUIDANCE,
             List.of(ADDITIONAL_ATTRIBUTE),
             ISSUES_URL
         );

@@ -7,8 +7,12 @@
  */
 package com.synopsys.integration.alert.processor.api.extract.model.project;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,14 +26,15 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
         LinkableItem component,
         @Nullable LinkableItem componentVersion,
         ComponentVulnerabilities componentVulnerabilities,
-        List<ComponentPolicy> componentPolicies,
+        List<ComponentPolicy> relevantPolicies,
         List<ComponentConcern> componentConcerns,
         LinkableItem license,
         String usage,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes,
         @Nullable String blackDuckIssuesUrl
     ) {
-        super(component, componentVersion, componentVulnerabilities, componentPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
+        super(component, componentVersion, componentVulnerabilities, relevantPolicies, license, usage, componentUpgradeGuidance, additionalAttributes, blackDuckIssuesUrl);
         this.componentConcerns = componentConcerns;
     }
 
@@ -59,23 +64,38 @@ public class BomComponentDetails extends AbstractBomComponentDetails implements 
             return uncombinedDetails;
         }
 
-        return combineComponentConcerns(otherDetails.componentConcerns);
+        return combineComponentConcerns(otherDetails);
     }
 
-    private List<BomComponentDetails> combineComponentConcerns(List<ComponentConcern> otherDetailsComponentConcerns) {
-        List<ComponentConcern> combinedComponentConcerns = CombinableModel.combine(componentConcerns, otherDetailsComponentConcerns);
+    private List<BomComponentDetails> combineComponentConcerns(BomComponentDetails otherDetails) {
+        List<ComponentConcern> combinedComponentConcerns = CombinableModel.combine(getComponentConcerns(), otherDetails.getComponentConcerns());
+        List<ComponentPolicy> componentPolicies = CombinableModel.combine(getRelevantPolicies(), otherDetails.getRelevantPolicies());
+        List<LinkableItem> combineAdditionalAttributes = combineAdditionalAttributes(otherDetails, combinedComponentConcerns);
         BomComponentDetails combinedBomComponentDetails = new BomComponentDetails(
             getComponent(),
             getComponentVersion().orElse(null),
             getComponentVulnerabilities(),
-            getComponentPolicies(),
+            componentPolicies,
             combinedComponentConcerns,
             getLicense(),
             getUsage(),
-            getAdditionalAttributes(),
+            getComponentUpgradeGuidance(),
+            combineAdditionalAttributes,
             getBlackDuckIssuesUrl()
         );
         return List.of(combinedBomComponentDetails);
+    }
+
+    private List<LinkableItem> combineAdditionalAttributes(BomComponentDetails otherDetails, List<ComponentConcern> combinedComponentConcerns) {
+        if (ListUtils.isEqualList(getComponentConcerns(), combinedComponentConcerns)) {
+            return getAdditionalAttributes();
+        } else if (ListUtils.isEqualList(otherDetails.getComponentConcerns(), combinedComponentConcerns)) {
+            return otherDetails.getAdditionalAttributes();
+        }
+
+        Set<LinkableItem> combinedAdditionalAttributes = new LinkedHashSet<>(getAdditionalAttributes());
+        combinedAdditionalAttributes.addAll(otherDetails.getAdditionalAttributes());
+        return new ArrayList<>(combinedAdditionalAttributes);
     }
 
 }

@@ -8,18 +8,15 @@
 package com.synopsys.integration.alert.channel.email.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.common.rest.AlertRestConstants;
 import com.synopsys.integration.alert.common.rest.ResponseFactory;
 import com.synopsys.integration.alert.common.rest.api.BaseResourceController;
 import com.synopsys.integration.alert.common.rest.api.TestController;
 import com.synopsys.integration.alert.common.rest.api.ValidateController;
 import com.synopsys.integration.alert.common.rest.model.ValidationResponseModel;
 
-@RestController
-@RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
+//@RestController
+//@RequestMapping(AlertRestConstants.EMAIL_CONFIGURATION_PATH)
 public class EmailGlobalConfigController implements BaseResourceController<EmailGlobalConfigModel>, TestController<EmailGlobalConfigModel>, ValidateController<EmailGlobalConfigModel> {
     private final EmailGlobalConfigActions configActions;
 

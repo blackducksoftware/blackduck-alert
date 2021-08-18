@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class IssueBomComponentDetails extends AbstractBomComponentDetails {
@@ -28,6 +29,7 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
             List.of(),
             UNKNOWN_LICENSE,
             UNKNOWN_USAGE,
+            ComponentUpgradeGuidance.none(),
             List.of(),
             ""
         );
@@ -38,9 +40,10 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
             bomComponentDetails.getComponent(),
             bomComponentDetails.getComponentVersion().orElse(null),
             bomComponentDetails.getComponentVulnerabilities(),
-            bomComponentDetails.getComponentPolicies(),
+            bomComponentDetails.getRelevantPolicies(),
             bomComponentDetails.getLicense(),
             bomComponentDetails.getUsage(),
+            bomComponentDetails.getComponentUpgradeGuidance(),
             bomComponentDetails.getAdditionalAttributes(),
             bomComponentDetails.getBlackDuckIssuesUrl()
         );
@@ -50,13 +53,14 @@ public class IssueBomComponentDetails extends AbstractBomComponentDetails {
         LinkableItem component,
         @Nullable LinkableItem componentVersion,
         ComponentVulnerabilities componentVulnerabilities,
-        List<ComponentPolicy> componentPolicies,
+        List<ComponentPolicy> relevantPolicies,
         LinkableItem license,
         String usage,
+        ComponentUpgradeGuidance componentUpgradeGuidance,
         List<LinkableItem> additionalAttributes,
         String blackDuckIssuesUrl
     ) {
-        super(component, componentVersion, componentVulnerabilities, componentPolicies, license, usage, additionalAttributes, blackDuckIssuesUrl);
+        super(component, componentVersion, componentVulnerabilities, relevantPolicies, license, usage, componentUpgradeGuidance, additionalAttributes, blackDuckIssuesUrl);
     }
 
 }

@@ -101,6 +101,18 @@ public class MessageValueReplacementResolverTest {
         testReplacements(messageReplacementValues, originalFieldValue, expectedFieldValue);
     }
 
+    @Test
+    public void replacementUpgradeGuidanceTest() {
+        String originalFieldValue = "Short Term Guidance: {{shortTermUpgradeGuidance}} | Long Term Guidance {{longTermUpgradeGuidance}}";
+        String expectedFieldValue = "Short Term Guidance: v1.0 | Long Term Guidance v2.0";
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("ProviderNameREPLACED", "ProjectNameREPLACED")
+                                                                .shortTermUpgradeGuidance("v1.0")
+                                                                .longTermUpgradeGuidance("v2.0")
+                                                                .build();
+
+        testReplacements(messageReplacementValues, originalFieldValue, expectedFieldValue);
+    }
+
     private void testReplacements(MessageReplacementValues messageReplacementValues, String originalValue, String expectedValue) {
         MessageValueReplacementResolver messageValueReplacementResolver = new MessageValueReplacementResolver(messageReplacementValues);
         String replacedFieldValue = messageValueReplacementResolver.createReplacedFieldValue(originalValue);

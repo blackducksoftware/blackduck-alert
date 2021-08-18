@@ -88,7 +88,7 @@ const JiraCloudDistributionConfiguration = ({
             <TextInput
                 id={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueSummary}
                 label="Issue Summary"
-                description="The summary to use for each issue created. Can use the following variables to populate data from the message content {{providerName}}, {{projectName}}, {{projectVersion}}, {{componentName}}, {{componentVersion}}, {{componentUsage}}, {{componentLicense}}, {{severity}}, {{policyCategory}}"
+                description="The summary to use for each issue created. Placeholder values can be used to populate data from the message content. See Alert documentation 'Configuring Distribution Job in Alert' for a list of supported placeholder values"
                 name={JIRA_CLOUD_DISTRIBUTION_FIELD_KEYS.issueSummary}
                 readOnly={readonly}
                 onChange={FieldModelUtilities.handleChange(data, setData)}

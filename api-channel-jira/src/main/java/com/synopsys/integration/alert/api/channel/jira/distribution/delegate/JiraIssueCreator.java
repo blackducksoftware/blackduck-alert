@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.descriptor.api.model.IssueTrackerChannelKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernType;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jira.common.exception.JiraPreconditionNotMetException;
 import com.synopsys.integration.jira.common.model.components.IssueFieldsComponent;
@@ -111,6 +112,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
 
     protected MessageReplacementValues createCustomFieldReplacementValues(ProjectIssueModel alertIssueSource) {
         IssueBomComponentDetails bomComponent = alertIssueSource.getBomComponentDetails();
+        ComponentUpgradeGuidance upgradeGuidance = bomComponent.getComponentUpgradeGuidance();
 
         Optional<String> severity = Optional.empty();
         Optional<String> policyCategory = Optional.empty();
@@ -119,7 +121,7 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
         if (issuePolicyDetails.isPresent()) {
             IssuePolicyDetails policyDetails = issuePolicyDetails.get();
             severity = Optional.ofNullable(policyDetails.getSeverity().getPolicyLabel());
-            policyCategory = bomComponent.getComponentPolicies()
+            policyCategory = bomComponent.getRelevantPolicies()
                                  .stream()
                                  .filter(policy -> policyDetails.getName().equals(policy.getPolicyName()))
                                  .findAny()
@@ -136,6 +138,8 @@ public abstract class JiraIssueCreator<T> extends IssueTrackerIssueCreator<Strin
                    .componentLicense(bomComponent.getLicense().getValue())
                    .severity(severity.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
                    .policyCategory(policyCategory.orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .shortTermUpgradeGuidance(upgradeGuidance.getShortTermUpgradeGuidance().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
+                   .longTermUpgradeGuidance(upgradeGuidance.getLongTermUpgradeGuidance().map(LinkableItem::getValue).orElse(MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE))
                    .build();
     }
 
