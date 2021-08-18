@@ -44,14 +44,15 @@ public class AzureHttpServiceFactory {
     }
 
     public static AzureHttpService withCredential(String baseUrl, HttpTransport httpTransport, Credential oAuthCredential, Gson gson) {
-        return new AzureHttpService(baseUrl, httpTransport.createRequestFactory(oAuthCredential), gson, new AzureApiVersionAppender());
+        AzureHttpRequestCreator requestCreator = new AzureHttpRequestCreator(baseUrl, gson, httpTransport.createRequestFactory(oAuthCredential), new AzureApiVersionAppender());
+        return new AzureHttpService(gson, requestCreator);
     }
 
     private static ApacheHttpTransport defaultHttpTransport(Proxy proxy) {
         HttpHost httpHost = HttpHost.create(proxy.toString());
         CloseableHttpClient httpClient = ApacheHttpTransport.newDefaultHttpClientBuilder()
-                                             .setProxy(httpHost)
-                                             .build();
+            .setProxy(httpHost)
+            .build();
         return new ApacheHttpTransport(httpClient);
     }
 

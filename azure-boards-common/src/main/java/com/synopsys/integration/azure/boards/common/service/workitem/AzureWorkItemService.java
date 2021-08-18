@@ -18,6 +18,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequest;
 import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.model.AzureArrayResponseModel;
@@ -57,7 +58,7 @@ public class AzureWorkItemService {
 
     public WorkItemResponseModel createWorkItem(String organizationName, String projectIdOrName, String workItemType, WorkItemRequest workItemRequest) throws HttpServiceException {
         String requestSpec = createWorkItemSpecWithProject(organizationName, projectIdOrName, workItemType);
-        return azureHttpService.post(requestSpec, workItemRequest.getElementOperationModels(), WorkItemResponseModel.class, AzureHttpService.CONTENT_TYPE_JSON_PATCH);
+        return azureHttpService.post(requestSpec, workItemRequest.getElementOperationModels(), WorkItemResponseModel.class, AzureHttpRequestCreator.CONTENT_TYPE_JSON_PATCH);
     }
 
     public WorkItemResponseModel updateWorkItem(String organizationName, String projectIdOrName, Integer workItemId, WorkItemRequest workItemRequest) throws HttpServiceException {
@@ -78,7 +79,7 @@ public class AzureWorkItemService {
     private HttpRequest buildWriteRequest(String httpMethod, String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
         GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
         HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(httpMethod, requestUrl, requestModel);
-        httpRequest.getHeaders().setContentType(AzureHttpService.CONTENT_TYPE_JSON_PATCH);
+        httpRequest.getHeaders().setContentType(AzureHttpRequestCreator.CONTENT_TYPE_JSON_PATCH);
         return httpRequest;
     }
 
