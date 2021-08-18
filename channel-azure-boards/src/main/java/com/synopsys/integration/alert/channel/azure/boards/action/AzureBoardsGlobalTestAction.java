@@ -26,8 +26,8 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.http.HttpServiceException;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
 import com.synopsys.integration.exception.IntegrationException;
@@ -68,7 +68,7 @@ public class AzureBoardsGlobalTestAction extends TestAction {
     }
 
     private AzureHttpService createAzureHttpService(AzureBoardsProperties azureBoardsProperties) throws IntegrationException {
-        ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpServiceFactory.DEFAULT_BASE_URL);
+        ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
         return azureBoardsProperties.createAzureHttpService(proxy, gson);
     }
 

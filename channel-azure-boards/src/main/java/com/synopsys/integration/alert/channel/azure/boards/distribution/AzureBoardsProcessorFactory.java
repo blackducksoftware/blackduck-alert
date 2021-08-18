@@ -33,8 +33,9 @@ import com.synopsys.integration.alert.channel.azure.boards.distribution.search.A
 import com.synopsys.integration.alert.common.persistence.model.job.details.AzureBoardsJobDetailsModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
-import com.synopsys.integration.azure.boards.common.http.AzureHttpServiceFactory;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
 import com.synopsys.integration.azure.boards.common.service.process.AzureProcessService;
 import com.synopsys.integration.azure.boards.common.service.project.AzureProjectService;
@@ -79,12 +80,13 @@ public class AzureBoardsProcessorFactory implements IssueTrackerProcessorFactory
         azureBoardsProperties.validateProperties();
 
         // Initialize Http Service
-        ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpServiceFactory.DEFAULT_BASE_URL);
-        AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(proxy, gson);
+        ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
+        AzureHttpRequestCreator azureHttpRequestCreator = azureBoardsProperties.createAzureHttpRequestCreator(proxy, gson);
+        AzureHttpService azureHttpService = new AzureHttpService(gson, azureHttpRequestCreator);
 
         // Common Azure Boards Services
         AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
-        AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService);
+        AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
         AzureWorkItemQueryService workItemQueryService = new AzureWorkItemQueryService(azureHttpService, apiVersionAppender);
 
         installCustomFieldsIfNecessary(
