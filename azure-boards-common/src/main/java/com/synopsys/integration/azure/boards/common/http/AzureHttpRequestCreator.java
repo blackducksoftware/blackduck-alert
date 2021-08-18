@@ -65,10 +65,9 @@ public class AzureHttpRequestCreator {
 
         if (!StringUtils.startsWith(spec, baseUrl)) {
             requestUrlBuilder.append(baseUrl);
-        }
-
-        if (!StringUtils.startsWith(spec, "/")) {
-            requestUrlBuilder.append("/");
+            if (!StringUtils.startsWith(spec, "/")) {
+                requestUrlBuilder.append("/");
+            }
         }
 
         if (!StringUtils.contains(spec, AZURE_API_VERSION_QUERY_PARAM_NAME)) {
@@ -86,9 +85,7 @@ public class AzureHttpRequestCreator {
 
     private static String sanitizeUrl(String url) {
         url = StringUtils.trim(url);
-        if (StringUtils.endsWith(url, "/")) {
-            return StringUtils.chomp(url);
-        }
+        url = StringUtils.removeEnd(url, "/");
         return url;
     }
 
