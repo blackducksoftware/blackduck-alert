@@ -59,6 +59,8 @@ const CommonDistributionConfigurationForm = ({
             if (json.hasErrors) {
                 setErrorMessage(json.message);
                 setErrors(HttpErrorUtilities.createErrorObject(json));
+            } else if (Object.keys(json.errors).length !== 0) {
+                setErrors(HttpErrorUtilities.createErrorObject(json));
             } else {
                 setActionMessage('Test Successful');
             }
