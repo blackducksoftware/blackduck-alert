@@ -38,25 +38,12 @@ Enable SSL for External Postgres
 */}}
 {{- define "enablePostgresSSL" -}}
 {{- if and (eq .Values.postgres.isExternal true) (eq .Values.postgres.ssl true) -}}
-{{- if (eq .Values.postgres.sslConfig.sslUseFiles true) -}}
+{{- if (eq .Values.postgres.sslUseFiles true) -}}
 ALERT_DB_SSL_MODE: "verify-ca"
 {{- else -}}
 ALERT_DB_SSL_MODE: "require"
 {{- end -}}
 {{- else -}}
 ALERT_DB_SSL_MODE: "disable"
-{{- end -}}
-{{- end -}}
-
-{{/*
-Use SSL Files for External Postgres
-*/}}
-{{- define "postgresSSLFiles" -}}
-{{- if and (eq .Values.postgres.isExternal true) (eq .Values.postgres.ssl true) -}}
-{{- if (eq .Values.postgres.sslConfig.sslUseFiles true) -}}
-ALERT_DB_SSL_KEY_PATH: {{ .Values.postgres.sslConfig.sslKeyFilePath }}
-ALERT_DB_SSL_CERT_PATH: {{ .Values.postgres.sslConfig.sslCertFilePath }}
-ALERT_DB_SSL_ROOT_CERT_PATH: {{ .Values.postgres.sslConfig.sslRootCertPath }}
-{{- end -}}
 {{- end -}}
 {{- end -}}

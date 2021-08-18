@@ -72,7 +72,7 @@ spec:
               key: ALERT_POSTGRES_ADMIN_PASSWORD_FILE
               name: {{ .Release.Name }}-db-creds
         {{- end }}
-        {{- if (eq .Values.postgres.sslConfig.sslUseFiles true) }}
+        {{- if (eq .Values.postgres.sslUseFiles true) }}
         - name: ALERT_DB_SSL_KEY_PATH
           valueFrom:
             secretKeyRef:

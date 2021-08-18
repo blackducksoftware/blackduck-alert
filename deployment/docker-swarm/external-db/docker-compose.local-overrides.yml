@@ -15,9 +15,6 @@ services:
 #      - ALERT_DB_PORT=5432
 #      - ALERT_DB_NAME=alertdb
 #      - ALERT_DB_SSL_MODE=require
-#      - ALERT_DB_SSL_KEY_PATH=
-#      - ALERT_DB_SSL_CERT-PATH=
-#      - ALERT_DB_SSL_ROOT_CERT_PATH=
 #
 #     # -- ALERT RESET VARIABLES
 #      - ALERT_LDAP_DISABLED=false
@@ -133,6 +130,9 @@ services:
 #      - ALERT_DB_PASSWORD
 #      - ALERT_DB_ADMIN_USERNAME
 #      - ALERT_DB_ADMIN_PASSWORD
+#      - ALERT_DB_SSL_KEY_PATH
+#      - ALERT_DB_SSL_CERT_PATH
+#      - ALERT_DB_SSL_ROOT_CERT_PATH
 #      # -- Custom Certificate Usage
 #      - source: jssecacerts
 #        target: jssecacerts
@@ -177,3 +177,12 @@ services:
 #  ALERT_DB_ADMIN_PASSWORD:
 #    external: true
 #    name: "<STACK_NAME>_ALERT_DB_ADMIN_PASSWORD"
+#  ALERT_DB_SSL_KEY_PATH:
+#    external: true
+#    name: "<STACK_NAME>_ALERT_DB_SSL_KEY_PATH"
+#  ALERT_DB_SSL_CERT_PATH:
+#    external: true
+#    name: "<STACK_NAME>_ALERT_DB_SSL_CERT_PATH"
+#  ALERT_DB_SSL_ROOT_CERT_PATH:
+#    external: true
+#    name: "<STACK_NAME>_ALERT_DB_SSL_ROOT_CERT_PATH"
