@@ -132,13 +132,17 @@ public class AzureBoardsProperties {
     }
 
     public AzureHttpService createAzureHttpService(ProxyInfo proxyInfo, Gson gson) throws AlertException {
+        AzureHttpRequestCreator httpRequestCreator = createAzureHttpRequestCreator(proxyInfo, gson);
+        return new AzureHttpService(gson, httpRequestCreator);
+    }
+
+    public AzureHttpRequestCreator createAzureHttpRequestCreator(ProxyInfo proxyInfo, Gson gson) throws AlertException {
         HttpTransport httpTransport = createHttpTransport(proxyInfo);
         try {
             AuthorizationCodeFlow oAuthFlow = createOAuthFlow(httpTransport);
             Credential oAuthCredential = getExistingOAuthCredential(oAuthFlow)
                 .orElseThrow(() -> new AlertException(String.format("No existing Azure OAuth credential associated with '%s'", oauthUserId)));
-            AzureHttpRequestCreator httpRequestCreator = AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
-            return new AzureHttpService(gson, httpRequestCreator);
+            return AzureHttpRequestCreatorFactory.withCredential(httpTransport, oAuthCredential, gson);
         } catch (IOException e) {
             throw new AlertException("Cannot read OAuth credentials", e);
         }

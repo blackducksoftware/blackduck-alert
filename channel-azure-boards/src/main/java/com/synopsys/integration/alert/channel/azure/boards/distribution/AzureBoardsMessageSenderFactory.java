@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.common.persistence.model.job.details.Azure
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.azure.boards.common.http.AzureApiVersionAppender;
+import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreator;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpRequestCreatorFactory;
 import com.synopsys.integration.azure.boards.common.http.AzureHttpService;
 import com.synopsys.integration.azure.boards.common.service.comment.AzureWorkItemCommentService;
@@ -71,11 +72,12 @@ public class AzureBoardsMessageSenderFactory implements IssueTrackerMessageSende
 
         // Initialize Http Service
         ProxyInfo proxy = proxyManager.createProxyInfoForHost(AzureHttpRequestCreatorFactory.DEFAULT_BASE_URL);
-        AzureHttpService azureHttpService = azureBoardsProperties.createAzureHttpService(proxy, gson);
+        AzureHttpRequestCreator azureHttpRequestCreator = azureBoardsProperties.createAzureHttpRequestCreator(proxy, gson);
+        AzureHttpService azureHttpService = new AzureHttpService(gson, azureHttpRequestCreator);
 
         // Azure Boards Services
         AzureApiVersionAppender apiVersionAppender = new AzureApiVersionAppender();
-        AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService);
+        AzureWorkItemService workItemService = new AzureWorkItemService(azureHttpService, azureHttpRequestCreator);
         AzureWorkItemTypeStateService workItemTypeStateService = new AzureWorkItemTypeStateService(azureHttpService, apiVersionAppender);
         AzureWorkItemCommentService workItemCommentService = new AzureWorkItemCommentService(azureHttpService, apiVersionAppender);
 

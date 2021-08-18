@@ -66,16 +66,6 @@ public class AzureHttpService {
         }
     }
 
-    // TODO remove delegate
-    public HttpRequest buildRequestWithDefaultHeaders(String httpMethod, GenericUrl url, Object requestBodyObject) throws IOException {
-        return requestCreator.createRequestWithDefaultHeaders(httpMethod, url, requestBodyObject);
-    }
-
-    // TODO remove delegate
-    public GenericUrl constructRequestUrl(String spec) {
-        return requestCreator.createRequestUrl(spec);
-    }
-
     private void disconnectResponse(HttpResponse response) throws HttpServiceException {
         if (response == null) {
             return;

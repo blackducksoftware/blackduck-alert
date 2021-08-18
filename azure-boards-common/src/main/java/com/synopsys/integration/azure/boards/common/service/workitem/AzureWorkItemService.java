@@ -34,9 +34,11 @@ import com.synopsys.integration.azure.boards.common.service.workitem.response.Wo
  */
 public class AzureWorkItemService {
     private final AzureHttpService azureHttpService;
+    private final AzureHttpRequestCreator azureHttpRequestCreator;
 
-    public AzureWorkItemService(AzureHttpService azureHttpService) {
+    public AzureWorkItemService(AzureHttpService azureHttpService, AzureHttpRequestCreator azureHttpRequestCreator) {
         this.azureHttpService = azureHttpService;
+        this.azureHttpRequestCreator = azureHttpRequestCreator;
     }
 
     public AzureArrayResponseModel<WorkItemResponseModel> getWorkItems(String organizationName, String projectIdOrName, Collection<Integer> workItemIds) throws HttpServiceException {
@@ -77,8 +79,8 @@ public class AzureWorkItemService {
     }
 
     private HttpRequest buildWriteRequest(String httpMethod, String requestSpec, List<WorkItemElementOperationModel> requestModel) throws IOException {
-        GenericUrl requestUrl = azureHttpService.constructRequestUrl(requestSpec);
-        HttpRequest httpRequest = azureHttpService.buildRequestWithDefaultHeaders(httpMethod, requestUrl, requestModel);
+        GenericUrl requestUrl = azureHttpRequestCreator.createRequestUrl(requestSpec);
+        HttpRequest httpRequest = azureHttpRequestCreator.createRequestWithDefaultHeaders(httpMethod, requestUrl, requestModel);
         httpRequest.getHeaders().setContentType(AzureHttpRequestCreator.CONTENT_TYPE_JSON_PATCH);
         return httpRequest;
     }
