@@ -295,7 +295,7 @@ public class JobConfigActionsTest {
     }
 
     @Test
-    public void testWithProviderErrorsTest() throws Exception {
+    public void testWithProviderWarningsTest() throws Exception {
         fieldModel.setId("testID");
         Mockito.when(mockedFieldModelProcessor.validateJobFieldModel(Mockito.any())).thenReturn(List.of());
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
@@ -311,7 +311,9 @@ public class JobConfigActionsTest {
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent(), "Expected response to have content");
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
-        assertTrue(validationResponseModel.hasErrors(), "Expected response to ");
+
+        // Errors are deescalated to warnings to show some provider config is invalid
+        assertFalse(validationResponseModel.hasErrors(), "Expected response to have only warnings");
     }
 
     @Test
