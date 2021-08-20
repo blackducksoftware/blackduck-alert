@@ -53,7 +53,7 @@ public final class NotificationProcessor {
         this.notificationAccessor = notificationAccessor;
     }
 
-    public final void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
+    public void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         try {
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
@@ -64,10 +64,10 @@ public final class NotificationProcessor {
 
     private void processAndDistribute(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
-                                                                        .stream()
-                                                                        .map(notificationDetailExtractionDelegator::wrapNotification)
-                                                                        .flatMap(List::stream)
-                                                                        .collect(Collectors.toList());
+            .stream()
+            .map(notificationDetailExtractionDelegator::wrapNotification)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
         while (!statefulAlertPage.isEmpty()) {
             for (FilteredJobNotificationWrapper jobNotificationWrapper : statefulAlertPage.getCurrentModels()) {
