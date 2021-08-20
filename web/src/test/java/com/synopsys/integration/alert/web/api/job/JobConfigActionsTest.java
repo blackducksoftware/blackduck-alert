@@ -306,8 +306,7 @@ public class JobConfigActionsTest {
         assertTrue(validationActionResponse.hasContent(), "Expected response to have content");
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
 
-        // Errors are deescalated to warnings to show some provider config is invalid
-        assertFalse(validationResponseModel.hasErrors(), "Expected response to have only warnings");
+        assertTrue(validationResponseModel.hasErrors(), "Expected response to have error content");
     }
 
     @Test
