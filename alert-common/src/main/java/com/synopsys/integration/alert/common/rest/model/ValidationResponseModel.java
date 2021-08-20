@@ -60,7 +60,8 @@ public class ValidationResponseModel extends AlertSerializableModel {
     public ValidationResponseModel(String message, Map<String, AlertFieldStatus> statuses) {
         this.message = message;
         this.errors = statuses;
-        this.hasErrors = statuses.values().stream().map(AlertFieldStatus::getSeverity).anyMatch(FieldStatusSeverity.ERROR::equals);
+        this.hasErrors = !errors.isEmpty();
+//    statuses.values().stream().map(AlertFieldStatus::getSeverity).anyMatch(FieldStatusSeverity.ERROR::equals);
     }
 
     public String getMessage() {
