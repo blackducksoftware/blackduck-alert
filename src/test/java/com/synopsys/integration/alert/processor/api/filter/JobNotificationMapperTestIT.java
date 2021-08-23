@@ -53,7 +53,7 @@ public class JobNotificationMapperTestIT {
         CREATED_JOBS.forEach(jobAccessor::deleteJob);
         CREATED_JOBS.clear();
     }
-    
+
     @Test
     public void test2Notifications15JobsMultiSeverity() {
         //Test the case where a job may have one or multiple types of vulnerability severities across multiple pages.
@@ -87,7 +87,7 @@ public class JobNotificationMapperTestIT {
         Set<NotificationContentWrapper> jobNotifications = new HashSet<>();
 
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mappedNotifications = jobNotificationMapper.mapJobsToNotifications(notifications, List.of(FrequencyType.REAL_TIME));
-        while (!mappedNotifications.isEmpty()) {
+        while (!mappedNotifications.isCurrentPageEmpty()) {
             notificationWrappers.addAll(mappedNotifications.getCurrentModels());
             for (FilteredJobNotificationWrapper jobNotificationWrapper : mappedNotifications.getCurrentModels()) {
                 jobNotifications.addAll(jobNotificationWrapper.getJobNotifications());
@@ -303,8 +303,8 @@ public class JobNotificationMapperTestIT {
         List<String> policies
     ) {
         List<BlackDuckProjectDetailsModel> blackDuckProjectDetailsModels = projectNames.stream()
-                                                                               .map(projectName -> new BlackDuckProjectDetailsModel(projectName, "href"))
-                                                                               .collect(Collectors.toList());
+            .map(projectName -> new BlackDuckProjectDetailsModel(projectName, "href"))
+            .collect(Collectors.toList());
         return new DistributionJobRequestModel(
             true,
             "name",

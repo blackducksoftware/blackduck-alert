@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Predicate;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
@@ -33,6 +34,10 @@ public class BlackDuckNotificationRetriever {
     public static final int DEFAULT_PAGE_SIZE = 100;
     public static final int INITIAL_PAGE_OFFSET = 0;
 
+    // (offset + limit) < total
+    // Ex: offset = 0; limit = 10; (0 + 10) < 10 == false; no next page
+    public static final Predicate<AlertPagedDetails> HAS_NEXT_PAGE = page -> (page.getCurrentPage() + page.getPageSize()) < page.getTotalPages();
+
     private final BlackDuckRequestFactory blackDuckRequestFactory;
     private final BlackDuckApiClient blackDuckApiClient;
 
@@ -45,7 +50,7 @@ public class BlackDuckNotificationRetriever {
         BlackDuckRequestBuilder requestBuilder = createNotificationRequestBuilder(dateRange, types);
         NotificationPageRetriever notificationRetriever = new NotificationPageRetriever(requestBuilder);
         AlertPagedDetails<NotificationView> firstPage = notificationRetriever.retrievePage(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE);
-        return new StatefulAlertPage<>(firstPage, notificationRetriever);
+        return new StatefulAlertPage<>(firstPage, notificationRetriever, HAS_NEXT_PAGE);
     }
 
     private BlackDuckPageResponse<NotificationView> retrievePageOfFilteredNotifications(BlackDuckRequestBuilder requestBuilder, BlackDuckPageDefinition pageDefinition) throws IntegrationException {
@@ -63,11 +68,11 @@ public class BlackDuckNotificationRetriever {
 
         BlackDuckRequestFilter notificationTypeFilter = BlackDuckRequestFilter.createFilterWithMultipleValues("notificationType", notificationTypesToInclude);
         return blackDuckRequestFactory
-                   .createCommonGetRequestBuilder()
-                   .url(requestUrl)
-                   .addQueryParameter("startDate", startDateString)
-                   .addQueryParameter("endDate", endDateString)
-                   .addBlackDuckFilter(notificationTypeFilter);
+            .createCommonGetRequestBuilder()
+            .url(requestUrl)
+            .addQueryParameter("startDate", startDateString)
+            .addQueryParameter("endDate", endDateString)
+            .addBlackDuckFilter(notificationTypeFilter);
     }
 
     private String toDateString(SimpleDateFormat sdf, OffsetDateTime offsetDateTime) {
