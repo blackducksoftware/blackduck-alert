@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.provider.blackduck.task.accumulator;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedDetails;
@@ -26,6 +27,10 @@ public class BlackDuckNotificationRetriever {
     public static final int DEFAULT_PAGE_SIZE = 100;
     public static final int INITIAL_PAGE_OFFSET = 0;
 
+    // (offset + limit) < total
+    // Ex: offset = 0; limit = 10; total = 10; (0 + 10) < 10 == false; no next page
+    public static final Predicate<AlertPagedDetails> HAS_NEXT_PAGE = page -> (page.getCurrentPage() + page.getPageSize()) < page.getTotalPages();
+
     private final BlackDuckApiClient blackDuckApiClient;
     private final ApiDiscovery apiDiscovery;
 
@@ -38,7 +43,7 @@ public class BlackDuckNotificationRetriever {
         BlackDuckMultipleRequest<NotificationView> spec = createNotificationsRequest(dateRange, types);
         NotificationPageRetriever notificationRetriever = new NotificationPageRetriever(spec);
         AlertPagedDetails<NotificationView> firstPage = notificationRetriever.retrievePage(INITIAL_PAGE_OFFSET, DEFAULT_PAGE_SIZE);
-        return new StatefulAlertPage<>(firstPage, notificationRetriever);
+        return new StatefulAlertPage<>(firstPage, notificationRetriever, HAS_NEXT_PAGE);
     }
 
     private BlackDuckPageResponse<NotificationView> retrievePageOfFilteredNotifications(BlackDuckMultipleRequest<NotificationView> spec) throws IntegrationException {
@@ -48,9 +53,9 @@ public class BlackDuckNotificationRetriever {
     private BlackDuckMultipleRequest<NotificationView> createNotificationsRequest(DateRange dateRange, List<String> notificationTypesToInclude) throws IntegrationException {
         NotificationEditor notificationEditor = new NotificationEditor(dateRange.getStart(), dateRange.getEnd(), notificationTypesToInclude);
         BlackDuckMultipleRequest<NotificationView> spec = new BlackDuckRequestBuilder()
-                                                              .commonGet()
-                                                              .apply(notificationEditor)
-                                                              .buildBlackDuckRequest(apiDiscovery.metaNotificationsLink());
+            .commonGet()
+            .apply(notificationEditor)
+            .buildBlackDuckRequest(apiDiscovery.metaNotificationsLink());
         return spec;
     }
 
@@ -70,11 +75,12 @@ public class BlackDuckNotificationRetriever {
         @Override
         public AlertPagedDetails<NotificationView> retrievePage(int currentOffset, int currentLimit) throws IntegrationException {
             BlackDuckMultipleRequest<NotificationView> pageSpec = new BlackDuckRequestBuilder(spec)
-                                                                      .setLimitAndOffset(currentLimit, currentOffset)
-                                                                      .buildBlackDuckRequest(spec.getUrlResponse());
+                .setLimitAndOffset(currentLimit, currentOffset)
+                .buildBlackDuckRequest(spec.getUrlResponse());
             BlackDuckPageResponse<NotificationView> notificationPage = retrievePageOfFilteredNotifications(pageSpec);
             return new AlertPagedDetails<>(notificationPage.getTotalCount(), currentOffset, currentLimit, notificationPage.getItems());
         }
+
     }
 
 }
