@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -66,7 +67,8 @@ public class NotificationReceiverTest {
     private NotificationProcessor mockNotificationProcessor(List<AlertNotificationModel> alertNotificationModels) {
         NotificationDetailExtractionDelegator detailExtractionDelegator = new NotificationDetailExtractionDelegator(blackDuckResponseResolver, List.of());
         JobNotificationMapper jobNotificationMapper = Mockito.mock(JobNotificationMapper.class);
-        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = new StatefulAlertPage(AlertPagedDetails.emptyPage(), Mockito.mock(PageRetriever.class));
+        Predicate<AlertPagedDetails> hasNextPage = page -> page.getCurrentPage() < (page.getTotalPages() - 1);
+        StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = new StatefulAlertPage(AlertPagedDetails.emptyPage(), Mockito.mock(PageRetriever.class), hasNextPage);
         Mockito.when(jobNotificationMapper.mapJobsToNotifications(Mockito.anyList(), Mockito.anyList())).thenReturn(statefulAlertPage);
         notificationAccessor = new MockNotificationAccessor(alertNotificationModels);
         return new NotificationProcessor(detailExtractionDelegator, jobNotificationMapper, null, null, List.of(), notificationAccessor);

@@ -117,8 +117,8 @@ public class BlackDuckAccumulatorTest {
 
     private StatefulAlertPage<NotificationView, IntegrationException> createMockNotificationPage(PageRetriever pageRetriever) throws IntegrationException {
         NotificationView notificationView = createMockNotificationView();
-        AlertPagedDetails alertPagedDetails = new AlertPagedDetails(1, 1, 1, List.of(notificationView));
-        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, pageRetriever);
+        AlertPagedDetails alertPagedDetails = new AlertPagedDetails(1, 0, 1, List.of(notificationView));
+        StatefulAlertPage<NotificationView, IntegrationException> statefulAlertPage = new StatefulAlertPage(alertPagedDetails, pageRetriever, BlackDuckNotificationRetriever.HAS_NEXT_PAGE);
         return statefulAlertPage;
     }
 

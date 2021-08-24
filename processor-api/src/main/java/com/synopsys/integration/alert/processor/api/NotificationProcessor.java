@@ -69,7 +69,8 @@ public final class NotificationProcessor {
             .flatMap(List::stream)
             .collect(Collectors.toList());
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
-        while (!statefulAlertPage.isEmpty()) {
+        // If there are elements to process in the current page or if there are more pages, keep looping.
+        while (!statefulAlertPage.isCurrentPageEmpty() || statefulAlertPage.hasNextPage()) {
             for (FilteredJobNotificationWrapper jobNotificationWrapper : statefulAlertPage.getCurrentModels()) {
                 processAndDistribute(jobNotificationWrapper);
             }
