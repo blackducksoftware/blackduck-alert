@@ -83,11 +83,6 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public void deleteNotificationList(List<AlertNotificationModel> notifications) {
-
-    }
-
-    @Override
     public void deleteNotification(AlertNotificationModel notification) {
 
     }

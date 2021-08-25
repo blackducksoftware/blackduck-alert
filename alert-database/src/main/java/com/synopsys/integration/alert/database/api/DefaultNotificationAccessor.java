@@ -32,9 +32,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationFiel
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
@@ -128,13 +126,7 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public void deleteNotificationList(List<AlertNotificationModel> notifications) {
-        notifications.forEach(this::deleteNotification);
-    }
-
-    @Override
     public void deleteNotification(AlertNotificationModel notification) {
-        deleteAuditEntries(notification.getId());
         notificationContentRepository.deleteById(notification.getId());
     }
 
@@ -186,16 +178,6 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
     @Transactional
     public void setNotificationsProcessedById(Set<Long> notificationIds) {
         notificationContentRepository.setProcessedByIds(notificationIds);
-    }
-
-    private void deleteAuditEntries(Long notificationId) {
-        List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
-        List<Long> auditIdList = foundRelations
-            .stream()
-            .map(AuditNotificationRelation::getAuditEntryId)
-            .collect(Collectors.toList());
-        List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAllById(auditIdList);
-        auditEntryRepository.deleteAll(auditEntryList);
     }
 
     private List<AlertNotificationModel> toModels(List<NotificationEntity> notificationEntities) {

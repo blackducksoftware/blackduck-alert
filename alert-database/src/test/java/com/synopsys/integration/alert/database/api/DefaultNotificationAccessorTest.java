@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,9 +25,7 @@ import com.synopsys.integration.alert.common.persistence.model.mutable.Configura
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
@@ -248,28 +245,6 @@ public class DefaultNotificationAccessorTest {
         assertEquals(1, alertNotificationModelList.size());
         AlertNotificationModel alertNotificationModel = alertNotificationModelList.get(0);
         testExpectedAlertNotificationModel(expectedAlertNotificationModel, alertNotificationModel);
-    }
-
-    @Test
-    public void deleteNotificationListTest() {
-        AlertNotificationModel alertNotificationModel = new AlertNotificationModel(null, providerConfigId, provider, providerConfigName, notificationType, content, DateUtils.createCurrentDateTimestamp(),
-            DateUtils.createCurrentDateTimestamp(), false);
-        AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(1L, 2L);
-        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(UUID.randomUUID(), DateUtils.createCurrentDateTimestamp(), DateUtils.createCurrentDateTimestamp(), "test-status", "test-errorMessage", "test-errorStackTrace");
-
-        NotificationContentRepository notificationContentRepository = Mockito.mock(NotificationContentRepository.class);
-        AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
-        ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
-
-        Mockito.when(auditNotificationRepository.findByNotificationId(Mockito.anyLong())).thenReturn(List.of(auditNotificationRelation));
-        Mockito.when(auditEntryRepository.findAllById(Mockito.any())).thenReturn(List.of(auditEntryEntity));
-
-        DefaultNotificationAccessor notificationManager = new DefaultNotificationAccessor(notificationContentRepository, auditEntryRepository, auditNotificationRepository, configurationAccessor);
-        notificationManager.deleteNotificationList(List.of(alertNotificationModel));
-
-        Mockito.verify(auditEntryRepository).deleteAll(Mockito.any());
-        Mockito.verify(notificationContentRepository).deleteById(Mockito.any());
     }
 
     @Test
