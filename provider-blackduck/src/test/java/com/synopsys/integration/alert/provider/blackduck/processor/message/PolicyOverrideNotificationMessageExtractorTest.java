@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.provider.blackduck.processor.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckComponentVulnerabilityDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
@@ -62,13 +64,13 @@ public class PolicyOverrideNotificationMessageExtractorTest {
 
         BlackDuckComponentVulnerabilityDetailsCreator vulnerabilityDetailsCreator = new BlackDuckComponentVulnerabilityDetailsCreator();
         BlackDuckComponentPolicyDetailsCreatorFactory blackDuckComponentPolicyDetailsCreatorFactory = new BlackDuckComponentPolicyDetailsCreatorFactory(blackDuckPolicySeverityConverter);
-        BlackDuckMessageBomComponentDetailsCreatorFactory newDetailsCreatorFactory = new BlackDuckMessageBomComponentDetailsCreatorFactory(vulnerabilityDetailsCreator, blackDuckComponentPolicyDetailsCreatorFactory);
+        BlackDuckMessageBomComponentDetailsCreatorFactory detailsCreatorFactory = new BlackDuckMessageBomComponentDetailsCreatorFactory(vulnerabilityDetailsCreator, blackDuckComponentPolicyDetailsCreatorFactory);
 
         extractor = new PolicyOverrideNotificationMessageExtractor(
             providerKey,
             servicesFactoryCache,
             blackDuckPolicyComponentConcernCreator,
-            newDetailsCreatorFactory,
+            detailsCreatorFactory,
             bomComponent404Handler
         );
     }
@@ -106,6 +108,10 @@ public class PolicyOverrideNotificationMessageExtractorTest {
         assertEquals(LICENSE_DISPLAY, testBomComponentDetails.getLicense().getValue());
         assertEquals(UsageType.DYNAMICALLY_LINKED.prettyPrint(), testBomComponentDetails.getUsage());
         assertEquals(1, testBomComponentDetails.getAdditionalAttributes().size());
+
+        ComponentUpgradeGuidance componentUpgradeGuidance = testBomComponentDetails.getComponentUpgradeGuidance();
+        assertFalse(componentUpgradeGuidance.getLongTermUpgradeGuidance().isPresent());
+        assertFalse(componentUpgradeGuidance.getShortTermUpgradeGuidance().isPresent());
 
         assertEquals(1, testBomComponentDetails.getRelevantPolicies().size());
         ComponentPolicy testComponentPolicy = testBomComponentDetails.getRelevantPolicies().get(0);
