@@ -122,7 +122,7 @@ public class JmsNotificationReceiverTestIT {
 
     @AfterEach
     public void cleanup() {
-        defaultNotificationAccessor.deleteNotificationList(savedModels);
+        savedModels.forEach(defaultNotificationAccessor::deleteNotification);
         staticJobAccessor.deleteJob(distributionJobModel.getJobId());
     }
 

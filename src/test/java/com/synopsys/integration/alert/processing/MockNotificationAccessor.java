@@ -83,18 +83,13 @@ public class MockNotificationAccessor implements NotificationAccessor {
     }
 
     @Override
-    public void deleteNotificationList(List<AlertNotificationModel> notifications) {
-
-    }
-
-    @Override
     public void deleteNotification(AlertNotificationModel notification) {
 
     }
 
     @Override
-    public long deleteNotificationsCreatedBefore(OffsetDateTime date) {
-        return 0L;
+    public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
+        return 0;
     }
 
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.

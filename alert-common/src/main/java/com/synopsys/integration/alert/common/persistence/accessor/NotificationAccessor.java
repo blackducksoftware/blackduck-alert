@@ -37,8 +37,6 @@ public interface NotificationAccessor {
 
     int deleteNotificationsCreatedBefore(OffsetDateTime date);
 
-    void deleteNotificationList(List<AlertNotificationModel> notifications);
-
     void deleteNotification(AlertNotificationModel notification);
 
 }
