@@ -14,12 +14,12 @@ import com.synopsys.integration.blackduck.api.manual.component.ProjectVersionNot
 import com.synopsys.integration.blackduck.api.manual.component.RuleViolationNotificationContent;
 import com.synopsys.integration.blackduck.api.manual.component.VulnerabilityNotificationContent;
 
-class DetailedNotificationContentTest {
+public class DetailedNotificationContentTest {
     private static final String EXPECTED_NO_POLICY = "Expected no policy name";
     private static final AlertNotificationModel ALERT_NOTIFICATION_MODEL = new AlertNotificationModel(25L, 123L, null, null, null, null, null, null, false);
 
     @Test
-    void vulnerabilityTest() {
+    public void vulnerabilityTest() {
         String projectName = "vuln project";
         List<String> severities = List.of("S1", "S2");
         VulnerabilityNotificationContent vulnerabilityNotificationContent = new VulnerabilityNotificationContent();
@@ -30,7 +30,7 @@ class DetailedNotificationContentTest {
     }
 
     @Test
-    void policyTest() {
+    public void policyTest() {
         String projectName = "policy project";
         String policyName = "policy name 01";
         RuleViolationNotificationContent ruleViolationNotificationContent = new RuleViolationNotificationContent();
@@ -41,7 +41,7 @@ class DetailedNotificationContentTest {
     }
 
     @Test
-    void projectTest() {
+    public void projectTest() {
         String projectName = "project with version";
         ProjectVersionNotificationContent projectVersionNotificationContent = new ProjectVersionNotificationContent();
         DetailedNotificationContent detailedContent = DetailedNotificationContent.project(ALERT_NOTIFICATION_MODEL, projectVersionNotificationContent, projectName);
@@ -51,7 +51,7 @@ class DetailedNotificationContentTest {
     }
 
     @Test
-    void projectlessTest() {
+    public void projectlessTest() {
         LicenseLimitNotificationContent licenseLimitNotificationContent = new LicenseLimitNotificationContent();
         DetailedNotificationContent detailedContent = DetailedNotificationContent.projectless(ALERT_NOTIFICATION_MODEL, licenseLimitNotificationContent);
         assertContent(detailedContent, ALERT_NOTIFICATION_MODEL.getProviderConfigId(), licenseLimitNotificationContent.getClass(), List.of());
