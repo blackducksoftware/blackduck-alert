@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageA
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
-import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.common.workflow.task.StartupScheduledTask;
 import com.synopsys.integration.alert.common.workflow.task.TaskManager;
@@ -67,11 +66,11 @@ public class PurgeTask extends StartupScheduledTask {
     @Override
     public String scheduleCronExpression() {
         String purgeSavedCronValue = configurationAccessor.getConfigurationsByDescriptorKey(schedulingDescriptorKey)
-                                         .stream()
-                                         .findFirst()
-                                         .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
-                                         .flatMap(ConfigurationFieldModel::getFieldValue)
-                                         .orElse(String.valueOf(DEFAULT_FREQUENCY));
+            .stream()
+            .findFirst()
+            .flatMap(configurationModel -> configurationModel.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))
+            .flatMap(ConfigurationFieldModel::getFieldValue)
+            .orElse(String.valueOf(DEFAULT_FREQUENCY));
         return String.format(CRON_FORMAT, purgeSavedCronValue);
     }
 
@@ -91,16 +90,9 @@ public class PurgeTask extends StartupScheduledTask {
     private void purgeNotifications() {
         try {
             OffsetDateTime date = createNotificationOlderThanSearchDate();
-            logger.info("Searching for notifications to purge earlier than {}", date);
-            List<AlertNotificationModel> notifications = notificationAccessor.findByCreatedAtBefore(date);
-
-            if (notifications == null || notifications.isEmpty()) {
-                logger.info("No notifications found to purge");
-            } else {
-                logger.info("Found {} notifications to purge", notifications.size());
-                logger.info("Purging {} notifications.", notifications.size());
-                notificationAccessor.deleteNotificationList(notifications);
-            }
+            logger.info("Purging notifications created earlier than {}...", date);
+            int deletedCount = notificationAccessor.deleteNotificationsCreatedBefore(date);
+            logger.info("Purged {} notifications", deletedCount);
         } catch (Exception ex) {
             logger.error("Error in purging notifications", ex);
         }
@@ -118,8 +110,8 @@ public class PurgeTask extends StartupScheduledTask {
 
     public OffsetDateTime createNotificationOlderThanSearchDate() {
         return DateUtils.createCurrentDateTimestamp()
-                   .minusDays(dayOffset)
-                   .withHour(0).withMinute(0).withSecond(0).withNano(0);
+            .minusDays(dayOffset)
+            .withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
     private Boolean purgeOldData() {
@@ -128,9 +120,9 @@ public class PurgeTask extends StartupScheduledTask {
             Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationsByDescriptorKeyAndContext(schedulingDescriptorKey, ConfigContextEnum.GLOBAL).stream().findFirst();
             if (configurationModel.isPresent()) {
                 Integer purgeDataFrequencyDays = configurationModel.map(SchedulingConfiguration::new)
-                                                     .map(SchedulingConfiguration::getDataFrequencyDays)
-                                                     .map(frequency -> NumberUtils.toInt(frequency, DEFAULT_FREQUENCY))
-                                                     .orElse(DEFAULT_FREQUENCY);
+                    .map(SchedulingConfiguration::getDataFrequencyDays)
+                    .map(frequency -> NumberUtils.toInt(frequency, DEFAULT_FREQUENCY))
+                    .orElse(DEFAULT_FREQUENCY);
                 setDayOffset(purgeDataFrequencyDays);
                 run();
                 resetDayOffset();

@@ -138,6 +138,11 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
         notificationContentRepository.deleteById(notification.getId());
     }
 
+    @Override
+    public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
+        return notificationContentRepository.bulkDeleteCreatedAtBefore(date);
+    }
+
     public PageRequest getPageRequestForNotifications(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
         boolean sortQuery = false;
         String sortingField = "createdAt";

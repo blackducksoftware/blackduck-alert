@@ -92,6 +92,11 @@ public class MockNotificationAccessor implements NotificationAccessor {
 
     }
 
+    @Override
+    public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
+        return 0;
+    }
+
     //AlertNotificationModel is immutable, this is a workaround for the unit test to set "processed" to true.
     private AlertNotificationModel createProcessedAlertNotificationModel(AlertNotificationModel alertNotificationModel) {
         return new AlertNotificationModel(alertNotificationModel.getId(),
@@ -104,4 +109,5 @@ public class MockNotificationAccessor implements NotificationAccessor {
             alertNotificationModel.getProviderCreationTime(),
             true);
     }
+
 }
