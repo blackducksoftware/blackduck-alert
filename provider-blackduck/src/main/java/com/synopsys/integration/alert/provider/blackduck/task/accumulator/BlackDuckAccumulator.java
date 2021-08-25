@@ -39,9 +39,9 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckAccumulator extends ProviderTask {
     private static final List<String> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())
-                                                                         .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
-                                                                         .map(Enum::name)
-                                                                         .collect(Collectors.toList());
+        .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
+        .map(Enum::name)
+        .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
@@ -107,7 +107,7 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private void retrieveAndStoreNotifications(BlackDuckNotificationRetriever notificationRetriever, DateRange dateRange) throws IntegrationException {
         StatefulAlertPage<NotificationUserView, IntegrationException> notificationPage = notificationRetriever.retrievePageOfFilteredNotifications(dateRange, SUPPORTED_NOTIFICATION_TYPES);
-        while (!notificationPage.isEmpty()) {
+        while (!notificationPage.isCurrentPageEmpty()) {
             List<NotificationUserView> currentNotifications = notificationPage.getCurrentModels();
             logger.debug("Retrieved a page of {} notifications", currentNotifications.size());
             storeNotifications(currentNotifications);
@@ -120,7 +120,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
         write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
-                                                              .map(latestNotification -> latestNotification.plusNanos(1000000));
+            .map(latestNotification -> latestNotification.plusNanos(1000000));
         if (optionalNextSearchTime.isPresent()) {
             OffsetDateTime nextSearchTime = optionalNextSearchTime.get();
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
@@ -130,10 +130,10 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private List<AlertNotificationModel> convertToAlertNotificationModels(List<NotificationUserView> notifications) {
         return notifications
-                   .stream()
-                   .sorted(Comparator.comparing(NotificationView::getCreatedAt))
-                   .map(this::convertToAlertNotificationModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .sorted(Comparator.comparing(NotificationView::getCreatedAt))
+            .map(this::convertToAlertNotificationModel)
+            .collect(Collectors.toList());
     }
 
     private void write(List<AlertNotificationModel> contentList) {

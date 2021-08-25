@@ -290,7 +290,7 @@ public class JobConfigActionsTest {
     }
 
     @Test
-    public void testWithProviderErrorsTest() throws Exception {
+    public void testWithProviderWarningsTest() throws Exception {
         fieldModel.setId("testID");
         Mockito.when(mockedDescriptorProcessor.retrieveDescriptor(Mockito.any())).thenReturn(Optional.of(descriptor));
         Mockito.when(mockedFieldModelProcessor.createCustomMessageFieldModel(Mockito.any())).thenReturn(fieldModel);
@@ -305,7 +305,8 @@ public class JobConfigActionsTest {
         assertEquals(HttpStatus.OK, validationActionResponse.getHttpStatus());
         assertTrue(validationActionResponse.hasContent(), "Expected response to have content");
         ValidationResponseModel validationResponseModel = validationActionResponse.getContent().get();
-        assertTrue(validationResponseModel.hasErrors(), "Expected response to ");
+
+        assertTrue(validationResponseModel.hasErrors(), "Expected response to have error content");
     }
 
     @Test
