@@ -35,6 +35,8 @@ public interface NotificationAccessor {
 
     void setNotificationsProcessedById(Set<Long> notificationIds);
 
+    int deleteNotificationsCreatedBefore(OffsetDateTime date);
+
     void deleteNotificationList(List<AlertNotificationModel> notifications);
 
     void deleteNotification(AlertNotificationModel notification);

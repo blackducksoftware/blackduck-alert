@@ -71,4 +71,11 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                + "WHERE entity.id IN :notificationIds"
     )
     void setProcessedByIds(@Param("notificationIds") Set<Long> notificationIds);
+
+    @Query("DELETE FROM NotificationEntity notification"
+               + " WHERE notification.createdAt < :date"
+    )
+    @Modifying
+    int bulkDeleteCreatedAtBefore(@Param("date") OffsetDateTime date);
+
 }
