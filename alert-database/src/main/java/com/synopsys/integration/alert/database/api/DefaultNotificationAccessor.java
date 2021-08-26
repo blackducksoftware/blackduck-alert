@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.common.rest.model.AlertPagedModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.notification.NotificationContentRepository;
 import com.synopsys.integration.alert.database.notification.NotificationEntity;
 
@@ -42,17 +41,16 @@ import com.synopsys.integration.alert.database.notification.NotificationEntity;
 public class DefaultNotificationAccessor implements NotificationAccessor {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
-    private final AuditNotificationRepository auditNotificationRepository;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public DefaultNotificationAccessor(NotificationContentRepository notificationContentRepository,
+    public DefaultNotificationAccessor(
+        NotificationContentRepository notificationContentRepository,
         AuditEntryRepository auditEntryRepository,
-        AuditNotificationRepository auditNotificationRepository,
-        ConfigurationAccessor configurationAccessor) {
+        ConfigurationAccessor configurationAccessor
+    ) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
-        this.auditNotificationRepository = auditNotificationRepository;
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -132,7 +130,9 @@ public class DefaultNotificationAccessor implements NotificationAccessor {
 
     @Override
     public int deleteNotificationsCreatedBefore(OffsetDateTime date) {
-        return notificationContentRepository.bulkDeleteCreatedAtBefore(date);
+        int deletedNotificationsCount = notificationContentRepository.bulkDeleteCreatedAtBefore(date);
+        auditEntryRepository.bulkDeleteOrphanedEntries();
+        return deletedNotificationsCount;
     }
 
     public PageRequest getPageRequestForNotifications(Integer pageNumber, Integer pageSize, @Nullable String sortField, @Nullable String sortOrder) {
