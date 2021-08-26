@@ -8,7 +8,6 @@
 package com.synopsys.integration.alert.component.scheduling.workflow;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -27,7 +26,6 @@ import com.synopsys.integration.alert.common.persistence.accessor.NotificationAc
 import com.synopsys.integration.alert.common.persistence.accessor.SystemMessageAccessor;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.persistence.model.ConfigurationModel;
-import com.synopsys.integration.alert.common.persistence.model.SystemMessageModel;
 import com.synopsys.integration.alert.common.util.DateUtils;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
@@ -59,8 +57,9 @@ public class PurgeTask extends StartupScheduledTask {
 
     @Override
     public void runTask() {
-        purgeNotifications();
-        purgeSystemMessages();
+        OffsetDateTime date = createNotificationOlderThanSearchDate();
+        purgeNotifications(date);
+        purgeSystemMessages(date);
     }
 
     @Override
@@ -87,9 +86,8 @@ public class PurgeTask extends StartupScheduledTask {
         setDayOffset(DEFAULT_DAY_OFFSET);
     }
 
-    private void purgeNotifications() {
+    private void purgeNotifications(OffsetDateTime date) {
         try {
-            OffsetDateTime date = createNotificationOlderThanSearchDate();
             logger.info("Purging notifications created earlier than {}...", date);
             int deletedCount = notificationAccessor.deleteNotificationsCreatedBefore(date);
             logger.info("Purged {} notifications", deletedCount);
@@ -98,11 +96,10 @@ public class PurgeTask extends StartupScheduledTask {
         }
     }
 
-    private void purgeSystemMessages() {
+    private void purgeSystemMessages(OffsetDateTime date) {
         try {
-            OffsetDateTime date = createNotificationOlderThanSearchDate();
-            List<SystemMessageModel> messages = systemMessageAccessor.getSystemMessagesBefore(date);
-            systemMessageAccessor.deleteSystemMessages(messages);
+            int deletedCount = systemMessageAccessor.deleteSystemMessagesCreatedBefore(date);
+            logger.debug("Purged {} system messages", deletedCount);
         } catch (Exception ex) {
             logger.error("Error purging system messages", ex);
         }
