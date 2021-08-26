@@ -331,32 +331,6 @@ public class NotificationAccessorTestIT {
     }
 
     @Test
-    public void testDeleteNotificationList() {
-        OffsetDateTime time = DateUtils.createCurrentDateTimestamp();
-        OffsetDateTime startDate = time.minusHours(1);
-        OffsetDateTime endDate = time.plusHours(1);
-        OffsetDateTime createdAt = time.minusHours(3);
-        AlertNotificationModel entity = createNotificationModel(createdAt);
-        notificationManager.saveAllNotifications(List.of(entity));
-        OffsetDateTime createdAtInRange = time.plusMinutes(1);
-        AlertNotificationModel entityToFind1 = createNotificationModel(createdAtInRange);
-        createdAtInRange = time.plusMinutes(5);
-        AlertNotificationModel entityToFind2 = createNotificationModel(createdAtInRange);
-        OffsetDateTime createdAtLater = time.plusHours(3);
-        entity = createNotificationModel(createdAtLater);
-        notificationManager.saveAllNotifications(List.of(entity));
-        notificationManager.saveAllNotifications(List.of(entityToFind1));
-        notificationManager.saveAllNotifications(List.of(entityToFind2));
-
-        List<AlertNotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
-        assertEquals(4, notificationContentRepository.count());
-
-        foundList.forEach(notificationManager::deleteNotification);
-
-        assertEquals(2, notificationContentRepository.count());
-    }
-
-    @Test
     public void deleteNotificationsCreatedBeforeTest() {
         OffsetDateTime currentTime = DateUtils.createCurrentDateTimestamp();
         OffsetDateTime oneHourAgo = currentTime.minusHours(1);

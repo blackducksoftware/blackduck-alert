@@ -79,11 +79,11 @@ public class PurgeTask extends StartupScheduledTask {
         CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
-    public void setDayOffset(int dayOffset) {
+    private void setDayOffset(int dayOffset) {
         this.dayOffset = dayOffset;
     }
 
-    public void resetDayOffset() {
+    private void resetDayOffset() {
         setDayOffset(DEFAULT_DAY_OFFSET);
     }
 
