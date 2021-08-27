@@ -8,7 +8,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
@@ -19,7 +19,7 @@ public class ChannelDescriptorTest {
         ChannelKey channelKey = new ChannelKey(name, name) {};
         ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, Set.of(ConfigContextEnum.DISTRIBUTION)) {
             @Override
-            public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+            public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
                 return Optional.empty();
             }
 

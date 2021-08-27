@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.channel.azure.boards.AzureRedirectUrlCreat
 import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoardsDescriptor;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.channel.azure.boards.oauth.storage.AzureBoardsCredentialDataStoreFactory;
-import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.action.api.ConfigResourceActions;
@@ -55,7 +55,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
 
     private final ConfigurationAccessor configurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
-    private final AzureBoardsGlobalConfigurationValidator globalConfigurationValidator;
+    private final AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator;
     private final AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory;
     private final AzureRedirectUrlCreator azureRedirectUrlCreator;
     private final ProxyManager proxyManager;
@@ -67,7 +67,7 @@ public class AzureBoardsCustomFunctionAction extends CustomFunctionAction<OAuthE
     public AzureBoardsCustomFunctionAction(
         ConfigurationAccessor configurationAccessor,
         ConfigurationFieldModelConverter modelConverter,
-        AzureBoardsGlobalConfigurationValidator globalConfigurationValidator,
+        AzureBoardsGlobalConfigurationFieldModelValidator globalConfigurationValidator,
         AzureBoardsCredentialDataStoreFactory azureBoardsCredentialDataStoreFactory,
         AzureRedirectUrlCreator azureRedirectUrlCreator,
         ProxyManager proxyManager, OAuthRequestValidator oAuthRequestValidator,

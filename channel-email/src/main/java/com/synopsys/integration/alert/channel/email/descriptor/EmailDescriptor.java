@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.validator.EmailDistributionConfigurationValidator;
-import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationValidator;
+import com.synopsys.integration.alert.channel.email.validator.EmailGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -42,18 +42,18 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String LABEL_PROJECT_OWNER_ONLY = "Project Owner Only";
     public static final String LABEL_ATTACHMENT_FORMAT = "Attachment File Type";
 
-    private final EmailGlobalConfigurationValidator emailGlobalValidator;
+    private final EmailGlobalConfigurationFieldModelValidator emailGlobalValidator;
     private final EmailDistributionConfigurationValidator emailDistributionValidator;
 
     @Autowired
-    public EmailDescriptor(EmailGlobalConfigurationValidator emailGlobalValidator, EmailDistributionConfigurationValidator emailDistributionValidator) {
+    public EmailDescriptor(EmailGlobalConfigurationFieldModelValidator emailGlobalValidator, EmailDistributionConfigurationValidator emailDistributionValidator) {
         super(ChannelKeys.EMAIL, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.emailGlobalValidator = emailGlobalValidator;
         this.emailDistributionValidator = emailDistributionValidator;
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.of(emailGlobalValidator);
     }
 

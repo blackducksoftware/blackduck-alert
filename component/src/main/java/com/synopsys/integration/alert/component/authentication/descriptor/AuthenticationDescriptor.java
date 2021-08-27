@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
-import com.synopsys.integration.alert.component.authentication.validator.AuthenticationConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.synopsys.integration.alert.component.authentication.validator.AuthenticationConfigurationFieldModelValidator;
 
 @Component
 public class AuthenticationDescriptor extends ComponentDescriptor {
@@ -60,16 +60,16 @@ public class AuthenticationDescriptor extends ComponentDescriptor {
     public static final String TEST_FIELD_KEY_USERNAME = "test.field.user.name";
     public static final String TEST_FIELD_KEY_PASSWORD = "test.field.user.password";
 
-    private final AuthenticationConfigurationValidator authenticationValidator;
+    private final AuthenticationConfigurationFieldModelValidator authenticationValidator;
 
     @Autowired
-    public AuthenticationDescriptor(AuthenticationDescriptorKey descriptorKey, AuthenticationConfigurationValidator authenticationValidator) {
+    public AuthenticationDescriptor(AuthenticationDescriptorKey descriptorKey, AuthenticationConfigurationFieldModelValidator authenticationValidator) {
         super(descriptorKey);
         this.authenticationValidator = authenticationValidator;
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.of(authenticationValidator);
     }
 

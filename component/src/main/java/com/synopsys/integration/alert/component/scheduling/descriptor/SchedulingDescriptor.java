@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
-import com.synopsys.integration.alert.component.scheduling.validator.SchedulingConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.synopsys.integration.alert.component.scheduling.validator.SchedulingConfigurationFieldModelValidator;
 
 @Component
 public class SchedulingDescriptor extends ComponentDescriptor {
@@ -27,16 +27,16 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String KEY_PURGE_DATA_FREQUENCY_DAYS = "scheduling.purge.data.frequency";
     public static final String KEY_PURGE_DATA_NEXT_RUN = "scheduling.purge.data.next.run";
 
-    private final SchedulingConfigurationValidator schedulingValidator;
+    private final SchedulingConfigurationFieldModelValidator schedulingValidator;
 
     @Autowired
-    public SchedulingDescriptor(SchedulingDescriptorKey schedulingDescriptorKey, SchedulingConfigurationValidator schedulingValidator) {
+    public SchedulingDescriptor(SchedulingDescriptorKey schedulingDescriptorKey, SchedulingConfigurationFieldModelValidator schedulingValidator) {
         super(schedulingDescriptorKey);
         this.schedulingValidator = schedulingValidator;
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.of(schedulingValidator);
     }
 

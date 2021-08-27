@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.AzureBoardsChannelKey;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
-public class AzureBoardsGlobalConfigurationValidatorTest {
+public class AzureBoardsGlobalConfigurationFieldModelValidatorTest {
 
     /*
      * organizationName: required
@@ -57,7 +57,7 @@ public class AzureBoardsGlobalConfigurationValidatorTest {
         OAuthRequestValidator oAuthRequestValidator = new OAuthRequestValidator();
         oAuthRequestValidator.addAuthorizationRequest("test");
 
-        AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationValidator(oAuthRequestValidator);
+        AzureBoardsGlobalConfigurationFieldModelValidator azureBoardsGlobalConfigurationValidator = new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator);
         Set<AlertFieldStatus> fieldStatuses = azureBoardsGlobalConfigurationValidator.validate(new FieldModel(new AzureBoardsChannelKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), createValidKeyToValues()));
 
         assertEquals(1, fieldStatuses.size());
@@ -73,7 +73,7 @@ public class AzureBoardsGlobalConfigurationValidatorTest {
     }
 
     private GlobalConfigurationValidatorAsserter createValidatorAsserter(OAuthRequestValidator oAuthRequestValidator) {
-        return new GlobalConfigurationValidatorAsserter(new AzureBoardsChannelKey().getUniversalKey(), new AzureBoardsGlobalConfigurationValidator(oAuthRequestValidator), createValidKeyToValues());
+        return new GlobalConfigurationValidatorAsserter(new AzureBoardsChannelKey().getUniversalKey(), new AzureBoardsGlobalConfigurationFieldModelValidator(oAuthRequestValidator), createValidKeyToValues());
     }
 
     private Map<String, FieldValueModel> createValidKeyToValues() {

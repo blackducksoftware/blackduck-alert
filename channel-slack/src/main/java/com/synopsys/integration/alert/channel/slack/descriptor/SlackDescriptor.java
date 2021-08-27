@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.slack.validator.SlackDistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -46,7 +46,7 @@ public class SlackDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.empty();
     }
 

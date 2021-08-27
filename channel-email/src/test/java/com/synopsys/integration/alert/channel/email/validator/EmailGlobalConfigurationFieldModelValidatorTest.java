@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
-public class EmailGlobalConfigurationValidatorTest {
+public class EmailGlobalConfigurationFieldModelValidatorTest {
 
     /*
      * Email host: Required
@@ -29,7 +29,7 @@ public class EmailGlobalConfigurationValidatorTest {
 
     @Test
     public void verifyValidConfig() {
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationValidator(), createDefaultKeyToValues());
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationFieldModelValidator(), createDefaultKeyToValues());
         globalConfigurationValidatorAsserter.assertValid();
     }
 
@@ -40,7 +40,7 @@ public class EmailGlobalConfigurationValidatorTest {
         defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), authFieldValueModel);
 
         FieldModel fieldModel = new FieldModel(new EmailChannelKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
-        EmailGlobalConfigurationValidator emailGlobalConfigurationValidator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigurationFieldModelValidator emailGlobalConfigurationValidator = new EmailGlobalConfigurationFieldModelValidator();
         Set<AlertFieldStatus> alertFieldStatuses = emailGlobalConfigurationValidator.validate(fieldModel);
 
         assertEquals(2, alertFieldStatuses.size());
@@ -54,7 +54,7 @@ public class EmailGlobalConfigurationValidatorTest {
         defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), authFieldValueModel);
         defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), usernameFieldValueModel);
 
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationValidator(), defaultKeyToValues);
+        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationFieldModelValidator(), defaultKeyToValues);
         globalConfigurationValidatorAsserter.assertMissingValue(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
     }
 

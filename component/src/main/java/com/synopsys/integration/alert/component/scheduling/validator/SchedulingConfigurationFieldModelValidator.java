@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.scheduling.descriptor.SchedulingDescriptor;
 
 @Component
-public class SchedulingConfigurationValidator implements GlobalConfigurationValidator {
+public class SchedulingConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {
         ConfigurationFieldValidator configurationFieldValidator = ConfigurationFieldValidator.fromFieldModel(fieldModel);

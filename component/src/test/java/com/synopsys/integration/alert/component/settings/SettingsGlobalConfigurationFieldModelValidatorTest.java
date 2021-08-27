@@ -10,10 +10,10 @@ import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.common.rest.proxy.ProxyManager;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptor;
 import com.synopsys.integration.alert.component.settings.descriptor.SettingsDescriptorKey;
-import com.synopsys.integration.alert.component.settings.validator.SettingsGlobalConfigurationValidator;
+import com.synopsys.integration.alert.component.settings.validator.SettingsGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
 
-public class SettingsGlobalConfigurationValidatorTest {
+public class SettingsGlobalConfigurationFieldModelValidatorTest {
 
     /*
      * encryption password: required, minimum encryption length
@@ -67,7 +67,7 @@ public class SettingsGlobalConfigurationValidatorTest {
     }
 
     private GlobalConfigurationValidatorAsserter createValidatorAsserter(Map<String, FieldValueModel> keyToValues) {
-        return new GlobalConfigurationValidatorAsserter(new SettingsDescriptorKey().getUniversalKey(), new SettingsGlobalConfigurationValidator(), keyToValues);
+        return new GlobalConfigurationValidatorAsserter(new SettingsDescriptorKey().getUniversalKey(), new SettingsGlobalConfigurationFieldModelValidator(), keyToValues);
     }
 
     private Map<String, FieldValueModel> createKeyToValues() {

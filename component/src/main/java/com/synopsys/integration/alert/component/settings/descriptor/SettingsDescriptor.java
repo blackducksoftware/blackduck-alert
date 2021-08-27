@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
-import com.synopsys.integration.alert.component.settings.validator.SettingsGlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
+import com.synopsys.integration.alert.component.settings.validator.SettingsGlobalConfigurationFieldModelValidator;
 
 @Component
 public class SettingsDescriptor extends ComponentDescriptor {
@@ -30,16 +30,16 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_ENCRYPTION_PWD = "Encryption password missing";
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
 
-    private final SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator;
+    private final SettingsGlobalConfigurationFieldModelValidator settingsGlobalConfigurationValidator;
 
     @Autowired
-    public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsGlobalConfigurationValidator settingsGlobalConfigurationValidator) {
+    public SettingsDescriptor(SettingsDescriptorKey settingsDescriptorKey, SettingsGlobalConfigurationFieldModelValidator settingsGlobalConfigurationValidator) {
         super(settingsDescriptorKey);
         this.settingsGlobalConfigurationValidator = settingsGlobalConfigurationValidator;
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.of(settingsGlobalConfigurationValidator);
     }
 

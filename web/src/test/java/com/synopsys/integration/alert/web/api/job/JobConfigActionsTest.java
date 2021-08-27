@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.GlobalConfigExistsValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -526,10 +526,10 @@ public class JobConfigActionsTest {
         assertFalse(actionResponse.hasContent());
     }
 
-    private Descriptor createDescriptor(Supplier<Optional<GlobalConfigurationValidator>> globalValidator, Supplier<Optional<DistributionConfigurationValidator>> distributionValidator) {
+    private Descriptor createDescriptor(Supplier<Optional<GlobalConfigurationFieldModelValidator>> globalValidator, Supplier<Optional<DistributionConfigurationValidator>> distributionValidator) {
         Descriptor descriptor = new Descriptor(descriptorKey, DESCRIPTOR_TYPE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION)) {
             @Override
-            public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+            public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
                 return globalValidator.get();
             }
 

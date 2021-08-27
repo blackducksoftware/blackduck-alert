@@ -16,15 +16,15 @@ import com.synopsys.integration.alert.channel.azure.boards.descriptor.AzureBoard
 import com.synopsys.integration.alert.channel.azure.boards.oauth.OAuthRequestValidator;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class AzureBoardsGlobalConfigurationValidator implements GlobalConfigurationValidator {
+public class AzureBoardsGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
     private final OAuthRequestValidator oAuthRequestValidator;
 
     @Autowired
-    public AzureBoardsGlobalConfigurationValidator(OAuthRequestValidator oAuthRequestValidator) {
+    public AzureBoardsGlobalConfigurationFieldModelValidator(OAuthRequestValidator oAuthRequestValidator) {
         this.oAuthRequestValidator = oAuthRequestValidator;
     }
 
