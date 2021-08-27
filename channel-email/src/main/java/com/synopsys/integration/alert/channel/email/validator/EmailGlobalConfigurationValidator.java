@@ -19,6 +19,8 @@ import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationF
 
 @Component
 public class EmailGlobalConfigurationValidator {
+    public static final String REQUIRED_BECAUSE_AUTH = "Field is required to be set because 'auth' is set to 'true'.";
+
     public Set<AlertFieldStatus> validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         if (StringUtils.isBlank(model.host)) {
@@ -30,10 +32,10 @@ public class EmailGlobalConfigurationValidator {
 
         if (Boolean.TRUE.equals(model.auth)) {
             if (StringUtils.isBlank(model.user)) {
-                statuses.add(AlertFieldStatus.error("user", ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE));
+                statuses.add(AlertFieldStatus.error("user", REQUIRED_BECAUSE_AUTH));
             }
             if (StringUtils.isBlank(model.password)) {
-                statuses.add(AlertFieldStatus.error("password", ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE));
+                statuses.add(AlertFieldStatus.error("password", REQUIRED_BECAUSE_AUTH));
             }
         }
 
