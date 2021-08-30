@@ -16,6 +16,7 @@ Helm Charts for Synopsys Alert
   - [Persistent Storage](#persistent-storage)
   - [External Postgres Database](#external-postgres-database)
     - [External Postgres Database Requirements](#external-postgres-database-requirements)
+	- [Configuring the External Postgres Database](#Configuring the External Postgres Database)
   - [Database Admin User Password](#database-admin-user-password)
   - [Installing with Black Duck](#installing-with-black-duck)
 
@@ -537,15 +538,9 @@ For the on-premise database deployment a second Persistent Volume must be create
         - DELETE
         - EXECUTE
 
-- On the external database create a user to own the Alert database
-
-  ```sql 
-  CREATE ROLE <ROLE_NAME> LOGIN PASSWORD '<PASSWORD>'
-  ```
-  - Replace <ROLE_NAME> with the user name for the database
-  - Replace <PASSWORD> with the password for the database user
-  
-- On the external database create a database owned by the user just created
+#### Configuring the External Postgres Database
+- On the external database create a database owned by the Alert Admin user
+    - This step is optional if you want to use an existing database
 
   ```sql
   CREATE DATABASE <DATABASE_NAME> WITH OWNER <ROLE_NAME>
