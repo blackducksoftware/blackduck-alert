@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.common.channel.issuetracker.message.IssueT
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class IssueTrackerCallbackInfoCreatorTest {
@@ -25,6 +26,7 @@ public class IssueTrackerCallbackInfoCreatorTest {
         List.of(),
         TEST_ITEM,
         "Example Usage",
+        ComponentUpgradeGuidance.none(),
         List.of(),
         "https://issues-url"
     ) {};

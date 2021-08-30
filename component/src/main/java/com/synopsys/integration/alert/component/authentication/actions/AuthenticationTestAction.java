@@ -28,7 +28,6 @@ import com.synopsys.integration.alert.common.message.model.MessageResult;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationDescriptor;
-import com.synopsys.integration.alert.component.authentication.descriptor.AuthenticationUIConfig;
 import com.synopsys.integration.alert.component.authentication.security.ldap.LdapManager;
 import com.synopsys.integration.alert.component.authentication.security.saml.SAMLManager;
 import com.synopsys.integration.exception.IntegrationException;
@@ -71,7 +70,7 @@ public class AuthenticationTestAction extends TestAction {
 
     private void performLdapTest(FieldModel fieldModel, FieldUtility registeredFieldValues) throws IntegrationException {
         logger.info("LDAP enabled testing LDAP authentication.");
-        String userName = fieldModel.getFieldValue(AuthenticationUIConfig.TEST_FIELD_KEY_USERNAME).orElse("");
+        String userName = fieldModel.getFieldValue(AuthenticationDescriptor.TEST_FIELD_KEY_USERNAME).orElse("");
         Optional<LdapAuthenticationProvider> ldapProvider = ldapManager.createAuthProvider(registeredFieldValues);
         String errorMessage = String.format("Ldap Authentication test failed for the test user %s.  Please check the LDAP configuration.", userName);
         List<AlertFieldStatus> errors = new ArrayList<>();
@@ -80,7 +79,7 @@ public class AuthenticationTestAction extends TestAction {
         } else {
             try {
                 Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(userName,
-                    fieldModel.getFieldValue(AuthenticationUIConfig.TEST_FIELD_KEY_PASSWORD).orElse(""));
+                    fieldModel.getFieldValue(AuthenticationDescriptor.TEST_FIELD_KEY_PASSWORD).orElse(""));
                 Authentication authentication = ldapProvider.get().authenticate(pendingAuthentication);
                 if (!authentication.isAuthenticated()) {
                     errors.add(AlertFieldStatus.error(AuthenticationDescriptor.KEY_LDAP_ENABLED, errorMessage));
@@ -135,4 +134,5 @@ public class AuthenticationTestAction extends TestAction {
             throw new AlertFieldException(errors);
         }
     }
+
 }

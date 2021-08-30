@@ -25,7 +25,7 @@ public class MessageBoardChannelTest {
         ChannelMessageSender<DistributionJobDetailsModel, Object, MessageResult> sender = (x, y) -> expectedResult;
         MessageBoardChannel<DistributionJobDetailsModel, Object> messageBoardChannel = new MessageBoardChannel<>(converter, sender) {};
 
-        MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty());
+        MessageResult testResult = messageBoardChannel.distributeMessages(testDetails, ProviderMessageHolder.empty(), "jobName");
         assertEquals(expectedResult, testResult);
     }
 

@@ -18,7 +18,12 @@ public final class MessageValueReplacementResolver {
     public static final String REPLACEMENT_PROJECT_VERSION = "{{projectVersion}}";
     public static final String REPLACEMENT_COMPONENT_NAME = "{{componentName}}";
     public static final String REPLACEMENT_COMPONENT_VERSION = "{{componentVersion}}";
+    public static final String REPLACEMENT_COMPONENT_USAGE = "{{componentUsage}}";
+    public static final String REPLACEMENT_COMPONENT_LICENSE = "{{componentLicense}}";
     public static final String REPLACEMENT_SEVERITY = "{{severity}}";
+    public static final String REPLACEMENT_POLICY_CATEGORY = "{{policyCategory}}";
+    public static final String REPLAMCENT_SHORT_TERM_UPGRADE_GUIDANCE = "{{shortTermUpgradeGuidance}}";
+    public static final String REPLAMCENT_LONG_TERM_UPGRADE_GUIDANCE = "{{longTermUpgradeGuidance}}";
 
     private final MessageReplacementValues replacementValues;
 
@@ -33,7 +38,12 @@ public final class MessageValueReplacementResolver {
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_PROJECT_VERSION, replacementValues::getProjectVersionName);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_NAME, replacementValues::getComponentName);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_VERSION, replacementValues::getComponentVersionName);
+        modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_USAGE, replacementValues::getComponentUsage);
+        modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_COMPONENT_LICENSE, replacementValues::getComponentLicense);
         modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_SEVERITY, replacementValues::getSeverity);
+        modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLACEMENT_POLICY_CATEGORY, replacementValues::getPolicyCategory);
+        modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLAMCENT_SHORT_TERM_UPGRADE_GUIDANCE, replacementValues::getShortTermUpgradeGuidance);
+        modifiedFieldValue = replaceFieldValue(modifiedFieldValue, REPLAMCENT_LONG_TERM_UPGRADE_GUIDANCE, replacementValues::getLongTermUpgradeGuidance);
 
         return modifiedFieldValue;
     }

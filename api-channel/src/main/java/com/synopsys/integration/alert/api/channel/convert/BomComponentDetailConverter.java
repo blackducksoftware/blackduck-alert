@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 
 public class BomComponentDetailConverter {
     private final ChannelMessageFormatter formatter;
@@ -46,10 +47,10 @@ public class BomComponentDetailConverter {
     }
 
     public List<String> gatherAttributeStrings(AbstractBomComponentDetails bomComponent) {
-        return gatherAttributeStrings(bomComponent.getLicense(), bomComponent.getUsage(), bomComponent.getAdditionalAttributes());
+        return gatherAttributeStrings(bomComponent.getLicense(), bomComponent.getUsage(), bomComponent.getComponentUpgradeGuidance(), bomComponent.getAdditionalAttributes());
     }
 
-    private List<String> gatherAttributeStrings(LinkableItem licenseItem, String usageText, List<LinkableItem> additionalAttributes) {
+    private List<String> gatherAttributeStrings(LinkableItem licenseItem, String usageText, ComponentUpgradeGuidance componentUpgradeGuidance, List<LinkableItem> additionalAttributes) {
         List<String> componentAttributeStrings = new ArrayList<>(additionalAttributes.size() + 2);
 
         String licenseString = linkableItemConverter.convertToString(licenseItem, false);
@@ -59,11 +60,19 @@ public class BomComponentDetailConverter {
         String usageString = linkableItemConverter.convertToString(usageItem, false);
         componentAttributeStrings.add(usageString);
 
+        componentUpgradeGuidance.getShortTermUpgradeGuidance()
+            .stream()
+            .map(attr -> linkableItemConverter.convertToString(attr, false))
+            .forEach(componentAttributeStrings::add);
+        componentUpgradeGuidance.getLongTermUpgradeGuidance()
+            .stream()
+            .map(attr -> linkableItemConverter.convertToString(attr, false))
+            .forEach(componentAttributeStrings::add);
+
         additionalAttributes
             .stream()
             .map(attr -> linkableItemConverter.convertToString(attr, false))
             .forEach(componentAttributeStrings::add);
         return componentAttributeStrings;
     }
-
 }

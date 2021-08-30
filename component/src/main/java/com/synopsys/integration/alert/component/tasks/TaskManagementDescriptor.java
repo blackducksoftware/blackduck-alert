@@ -23,12 +23,13 @@ public class TaskManagementDescriptor extends ComponentDescriptor {
     public static final String TASKS_COMPONENT_NAMESPACE = "tasks.TaskManagement";
 
     @Autowired
-    public TaskManagementDescriptor(TaskManagementDescriptorKey descriptorKey, TaskManagementUIConfig componentUIConfig) {
-        super(descriptorKey, componentUIConfig);
+    public TaskManagementDescriptor(TaskManagementDescriptorKey descriptorKey) {
+        super(descriptorKey);
     }
 
     @Override
     public Optional<GlobalConfigurationValidator> getGlobalValidator() {
         return Optional.empty();
     }
+
 }

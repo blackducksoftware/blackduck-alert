@@ -56,9 +56,15 @@ const CommonDistributionConfigurationForm = ({
         const response = await testRequest(dataToSend);
         const json = await response.json();
         if (response.ok) {
+            const errors = Object.values(json.errors);
             if (json.hasErrors) {
-                setErrorMessage(json.message);
-                setErrors(HttpErrorUtilities.createErrorObject(json));
+                if (errors.length !== 0 && errors.every((status) => status.severity === 'WARNING')) {
+                    setActionMessage('Test Successful (With Warnings)');
+                    setErrors(HttpErrorUtilities.createErrorObject(json));
+                } else {
+                    setErrorMessage(json.message);
+                    setErrors(HttpErrorUtilities.createErrorObject(json));
+                }
             } else {
                 setActionMessage('Test Successful');
             }

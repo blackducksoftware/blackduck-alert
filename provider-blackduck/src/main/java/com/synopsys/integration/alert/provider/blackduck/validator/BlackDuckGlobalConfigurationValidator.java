@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.provider.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
@@ -67,19 +66,19 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
 
     private void validateTimeout(ConfigurationFieldValidator configurationFieldValidator) {
         boolean isANumberOrEmpty = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
-                                       .map(NumberUtils::isCreatable)
-                                       .orElse(true);
+            .map(NumberUtils::isCreatable)
+            .orElse(true);
         if (isANumberOrEmpty) {
             int timeoutInt = configurationFieldValidator.getStringValue(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
-                                 .map(NumberUtils::toInt)
-                                 .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
+                .map(NumberUtils::toInt)
+                .orElse(BlackDuckProperties.DEFAULT_TIMEOUT);
             if (timeoutInt < 1) {
                 configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Invalid timeout: The timeout must be a positive integer"));
             } else if (timeoutInt > 300) {
                 configurationFieldValidator.addValidationResults(AlertFieldStatus.warning(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "The provided timeout is greater than five minutes. Please ensure this is the desired behavior."));
             }
         } else {
-            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, NumberConfigField.NOT_AN_INTEGER_VALUE));
+            configurationFieldValidator.addValidationResults(AlertFieldStatus.error(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, ConfigurationFieldValidator.NOT_AN_INTEGER_VALUE));
         }
     }
 
@@ -91,25 +90,26 @@ public class BlackDuckGlobalConfigurationValidator implements GlobalConfiguratio
 
         String configName = fieldModel.getFieldValue(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME).orElse("");
         List<ConfigurationModel> modelsWithName = configurations.stream()
-                                                      .filter(configurationModel -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
-                                                      .filter(configurationModel -> configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
-                                                                                        .flatMap(ConfigurationFieldModel::getFieldValue)
-                                                                                        .filter(existingName -> existingName.equals(configName))
-                                                                                        .isPresent())
-                                                      .collect(Collectors.toList());
+            .filter(configurationModel -> ConfigContextEnum.GLOBAL == configurationModel.getDescriptorContext())
+            .filter(configurationModel -> configurationModel.getField(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME)
+                .flatMap(ConfigurationFieldModel::getFieldValue)
+                .filter(existingName -> existingName.equals(configName))
+                .isPresent())
+            .collect(Collectors.toList());
         Optional<AlertFieldStatus> duplicateError = Optional.of(AlertFieldStatus.error(ProviderDescriptor.KEY_PROVIDER_CONFIG_NAME, "A provider configuration with this name already exists."));
         if (modelsWithName.size() > 1) {
             return duplicateError;
         } else if (modelsWithName.size() == 1) {
             boolean sameConfig = fieldModel.getId() != null && modelsWithName.stream()
-                                                                   .findFirst()
-                                                                   .map(ConfigurationModel::getConfigurationId)
-                                                                   .map(id -> id.equals(Long.valueOf(fieldModel.getId())))
-                                                                   .orElse(false);
+                .findFirst()
+                .map(ConfigurationModel::getConfigurationId)
+                .map(id -> id.equals(Long.valueOf(fieldModel.getId())))
+                .orElse(false);
             if (!sameConfig) {
                 return duplicateError;
             }
         }
         return Optional.empty();
     }
+
 }

@@ -16,6 +16,7 @@ import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.descriptor.api.BlackDuckProviderKey;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.provider.blackduck.processor.NotificationExtractorBlackDuckServicesFactoryCache;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreator;
 import com.synopsys.integration.alert.provider.blackduck.processor.message.service.BlackDuckMessageBomComponentDetailsCreatorFactory;
@@ -57,23 +58,22 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
 
     @Override
     protected List<BomComponentDetails> createBomComponentDetails(T notificationContent, BlackDuckServicesFactory blackDuckServicesFactory) throws IntegrationException {
-        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
-
         List<BomComponentDetails> bomComponentDetails = new LinkedList<>();
         for (ComponentVersionStatus componentVersionStatus : notificationContent.getComponentVersionStatuses()) {
-            BomComponentDetails componentVersionDetails = createBomComponentDetails(blackDuckApiClient, notificationContent, componentVersionStatus);
+            BomComponentDetails componentVersionDetails = createBomComponentDetails(blackDuckServicesFactory, notificationContent, componentVersionStatus);
             bomComponentDetails.add(componentVersionDetails);
         }
         return bomComponentDetails;
     }
 
-    private BomComponentDetails createBomComponentDetails(BlackDuckApiClient blackDuckApiClient, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
-        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckApiClient);
+    private BomComponentDetails createBomComponentDetails(BlackDuckServicesFactory blackDuckServicesFactory, T notificationContent, ComponentVersionStatus componentVersionStatus) throws IntegrationException {
+        BlackDuckApiClient blackDuckApiClient = blackDuckServicesFactory.getBlackDuckApiClient();
+        BlackDuckMessageBomComponentDetailsCreator bomComponentDetailsCreator = detailsCreatorFactory.createBomComponentDetailsCreator(blackDuckServicesFactory);
 
         ComponentConcern policyConcern = policyComponentConcernCreator.fromPolicyInfo(notificationContent.getPolicyInfo(), itemOperation);
         try {
             ProjectVersionComponentVersionView bomComponent = blackDuckApiClient.getResponse(new HttpUrl(componentVersionStatus.getBomComponent()), ProjectVersionComponentVersionView.class);
-            return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, List.of());
+            return bomComponentDetailsCreator.createBomComponentDetails(bomComponent, policyConcern, ComponentUpgradeGuidance.none(), List.of());
         } catch (IntegrationRestException e) {
             bomComponent404Handler.logIf404OrThrow(e, componentVersionStatus.getComponentName(), componentVersionStatus.getComponentVersionName());
             return bomComponentDetailsCreator.createMissingBomComponentDetails(
@@ -82,6 +82,7 @@ public abstract class AbstractRuleViolationNotificationMessageExtractor<T extend
                 componentVersionStatus.getComponentVersionName(),
                 createComponentVersionUrl(componentVersionStatus),
                 List.of(policyConcern),
+                ComponentUpgradeGuidance.none(),
                 List.of()
             );
         }

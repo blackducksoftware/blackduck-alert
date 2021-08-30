@@ -120,7 +120,7 @@ public class SlackDistributionEventHandlerTest {
     }
 
     private DistributionEvent createSlackDistributionEvent(Set<Long> notificationIds, ProviderMessageHolder providerMessages) {
-        return new DistributionEvent(slackChannelKey, UUID.randomUUID(), notificationIds, providerMessages);
+        return new DistributionEvent(slackChannelKey, UUID.randomUUID(), "jobName", notificationIds, providerMessages);
     }
 
 }

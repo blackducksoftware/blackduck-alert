@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationC
 public class JobNotificationMapper {
     private static final int PAGE_SIZE = 100;
     private static final int INITIAL_PAGE_NUMBER = 0;
+    private static final Predicate<AlertPagedDetails> HAS_NEXT_PAGE = page -> page.getCurrentPage() < (page.getTotalPages() - 1);
 
     private final ProcessingJobAccessor processingJobAccessor;
 
@@ -52,7 +54,7 @@ public class JobNotificationMapper {
     public StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> mapJobsToNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
         FilteredJobWrapperPageRetriever filteredJobWrapperPageRetriever = new FilteredJobWrapperPageRetriever(detailedContents, frequencies);
         AlertPagedDetails<FilteredJobNotificationWrapper> firstPage = filteredJobWrapperPageRetriever.retrievePage(INITIAL_PAGE_NUMBER, PAGE_SIZE);
-        return new StatefulAlertPage<>(firstPage, filteredJobWrapperPageRetriever);
+        return new StatefulAlertPage<>(firstPage, filteredJobWrapperPageRetriever, HAS_NEXT_PAGE);
     }
 
     private AlertPagedDetails<FilteredJobNotificationWrapper> mapPageOfJobsToNotification(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies, int pageNumber, int pageSize) {
@@ -77,7 +79,7 @@ public class JobNotificationMapper {
         List<FilteredJobNotificationWrapper> filterableJobNotifications = new LinkedList<>();
         for (Map.Entry<FilteredDistributionJobResponseModel, List<NotificationContentWrapper>> groupedEntry : groupedFilterableNotifications.entrySet()) {
             FilteredDistributionJobResponseModel filteredJob = groupedEntry.getKey();
-            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), groupedEntry.getValue());
+            FilteredJobNotificationWrapper wrappedJobNotifications = new FilteredJobNotificationWrapper(filteredJob.getId(), filteredJob.getProcessingType(), filteredJob.getChannelName(), filteredJob.getJobName(), groupedEntry.getValue());
             filterableJobNotifications.add(wrappedJobNotifications);
         }
 
@@ -107,10 +109,10 @@ public class JobNotificationMapper {
 
     private FilteredDistributionJobRequestModel createRequestModelFromNotifications(List<DetailedNotificationContent> detailedContents, List<FrequencyType> frequencies) {
         Long commonProviderConfigId = detailedContents
-                                          .stream()
-                                          .map(DetailedNotificationContent::getProviderConfigId)
-                                          .findAny()
-                                          .orElseThrow(() -> new AlertRuntimeException("Notification(s) missing provider configuration id"));
+            .stream()
+            .map(DetailedNotificationContent::getProviderConfigId)
+            .findAny()
+            .orElseThrow(() -> new AlertRuntimeException("Notification(s) missing provider configuration id"));
         FilteredDistributionJobRequestModel filteredDistributionJobRequestModel = new FilteredDistributionJobRequestModel(commonProviderConfigId, frequencies);
         for (DetailedNotificationContent detailedNotificationContent : detailedContents) {
             detailedNotificationContent.getProjectName().ifPresent(filteredDistributionJobRequestModel::addProjectName);

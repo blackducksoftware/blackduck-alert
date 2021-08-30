@@ -12,11 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.ValidationResult;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.persistence.accessor.DescriptorAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.FieldUtility;
@@ -34,8 +29,6 @@ public class ConfigurationFieldModelTest {
     public static final String KEY_FIELD_2 = "field_2";
     public static final String VALUE_FIELD_1 = "value_1";
     public static final String VALUE_FIELD_2 = "value_2";
-    public static final String DESCRIPTION_1 = "description_1";
-    public static final String DESCRIPTION_2 = "description_2";
 
     private FieldModel createFieldModel() {
         Map<String, FieldValueModel> valueModelMap = Map.of(KEY_FIELD_1, new FieldValueModel(List.of(VALUE_FIELD_1), false),
@@ -43,10 +36,11 @@ public class ConfigurationFieldModelTest {
         return new FieldModel("descriptor", "GLOBAL", valueModelMap);
     }
 
-    private List<ConfigField> createConfigFields() {
-        EncryptionSettingsValidator encryptionValidator = Mockito.mock(EncryptionSettingsValidator.class);
-        Mockito.when(encryptionValidator.apply(Mockito.any(), Mockito.any())).thenReturn(ValidationResult.success());
-        return List.of(new TextInputConfigField(KEY_FIELD_1, KEY_FIELD_1, DESCRIPTION_1), new PasswordConfigField(KEY_FIELD_2, KEY_FIELD_2, DESCRIPTION_2, encryptionValidator));
+    private List<DefinedFieldModel> createConfigFields() {
+        return List.of(
+            DefinedFieldModel.createGlobalField(KEY_FIELD_1),
+            DefinedFieldModel.createGlobalSensitiveField(KEY_FIELD_2)
+        );
     }
 
     private List<DescriptorKey> createDescriptorKeyList() throws AlertException {
@@ -57,7 +51,7 @@ public class ConfigurationFieldModelTest {
     @Test
     public void convertToFieldAccessorTest() throws Exception {
         FieldModel fieldModel = createFieldModel();
-        List<ConfigField> configFields = createConfigFields();
+        List<DefinedFieldModel> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
@@ -65,14 +59,14 @@ public class ConfigurationFieldModelTest {
         ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, descriptorKeys);
         FieldUtility accessor = modelConverter.convertToFieldAccessor(fieldModel);
 
-        assertEquals(VALUE_FIELD_1, accessor.getString(KEY_FIELD_1).orElseThrow(IllegalArgumentException::new));
-        assertEquals(VALUE_FIELD_2, accessor.getString(KEY_FIELD_2).orElseThrow(IllegalArgumentException::new));
+        assertEquals(VALUE_FIELD_1, accessor.getString(KEY_FIELD_1).orElse(null));
+        assertEquals(VALUE_FIELD_2, accessor.getString(KEY_FIELD_2).orElse(null));
     }
 
     @Test
     public void convertFromFieldModelTest() throws Exception {
         FieldModel fieldModel = createFieldModel();
-        List<ConfigField> configFields = createConfigFields();
+        List<DefinedFieldModel> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
@@ -81,8 +75,8 @@ public class ConfigurationFieldModelTest {
         Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertToConfigurationFieldModelMap(fieldModel);
         assertTrue(actualModelMap.containsKey(KEY_FIELD_1));
         assertTrue(actualModelMap.containsKey(KEY_FIELD_2));
-        assertEquals(VALUE_FIELD_1, actualModelMap.get(KEY_FIELD_1).getFieldValue().orElseThrow(IllegalArgumentException::new));
-        assertEquals(VALUE_FIELD_2, actualModelMap.get(KEY_FIELD_2).getFieldValue().orElseThrow(IllegalArgumentException::new));
+        assertEquals(VALUE_FIELD_1, actualModelMap.get(KEY_FIELD_1).getFieldValue().orElse(null));
+        assertEquals(VALUE_FIELD_2, actualModelMap.get(KEY_FIELD_2).getFieldValue().orElse(null));
     }
 
     @Test
@@ -98,7 +92,7 @@ public class ConfigurationFieldModelTest {
 
     @Test
     public void convertDefinedFieldModelTest() throws Exception {
-        List<ConfigField> configFields = createConfigFields();
+        List<DefinedFieldModel> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
@@ -123,7 +117,7 @@ public class ConfigurationFieldModelTest {
 
     @Test
     public void convertDefinedFieldModelEmptyTest() throws Exception {
-        List<ConfigField> configFields = createConfigFields();
+        List<DefinedFieldModel> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         List<DescriptorKey> descriptorKeys = createDescriptorKeyList();
@@ -134,7 +128,7 @@ public class ConfigurationFieldModelTest {
 
     @Test
     public void convertDefinedFieldModelWithValuesTest() throws Exception {
-        List<ConfigField> configFields = createConfigFields();
+        List<DefinedFieldModel> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
@@ -159,7 +153,7 @@ public class ConfigurationFieldModelTest {
 
     @Test
     public void convertDefinedFieldModelWithValuesEmptyTest() throws Exception {
-        List<ConfigField> configFields = createConfigFields();
+        List<DefinedFieldModel> configFields = createConfigFields();
         EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         DescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         List<DescriptorKey> descriptorKeys = createDescriptorKeyList();

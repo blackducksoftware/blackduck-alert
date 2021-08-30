@@ -72,7 +72,7 @@ const DistributionConfigurationForm = ({
             }));
         }
 
-        const providerConfigToSave = FieldModelUtilities.updateFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects, ['undefined']);
+        const providerConfigToSave = FieldModelUtilities.updateFieldModelValues(providerConfig, DISTRIBUTION_COMMON_FIELD_KEYS.configuredProjects, []);
         const allChannelData = FieldModelUtilities.combineFieldModels(channelModelData, specificChannelModel);
         return {
             jobId: formData.jobId,

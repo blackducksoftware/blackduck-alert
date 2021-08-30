@@ -31,7 +31,7 @@ class IssueTrackerSimpleMessageConverterTest {
         MockIssueTrackerMessageFormatter formatter = new MockIssueTrackerMessageFormatter(maxTitleLength, maxDescriptionLength, 1000);
         IssueTrackerSimpleMessageConverter converter = new IssueTrackerSimpleMessageConverter(formatter);
 
-        IssueCreationModel issueCreationModel = converter.convertToIssueCreationModel(SIMPLE_MESSAGE);
+        IssueCreationModel issueCreationModel = converter.convertToIssueCreationModel(SIMPLE_MESSAGE, "jobName");
         assertEquals(maxTitleLength, issueCreationModel.getTitle().length());
         assertTrue(maxDescriptionLength >= issueCreationModel.getDescription().length(), "Expected max description length to be greater than or equal to the created description");
         assertTrue(issueCreationModel.getPostCreateComments().size() > 0, "Expected truncated title/description to continue in comments");
@@ -42,7 +42,7 @@ class IssueTrackerSimpleMessageConverterTest {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         IssueTrackerSimpleMessageConverter converter = new IssueTrackerSimpleMessageConverter(formatter);
 
-        IssueCreationModel issueCreationModel = converter.convertToIssueCreationModel(SIMPLE_MESSAGE);
+        IssueCreationModel issueCreationModel = converter.convertToIssueCreationModel(SIMPLE_MESSAGE, "jobName");
         assertTrue(issueCreationModel.getTitle().contains(SIMPLE_MESSAGE.getSummary()), "Expected title to contain the simple message's summary");
 
         String issueCreationModelDescription = issueCreationModel.getDescription();

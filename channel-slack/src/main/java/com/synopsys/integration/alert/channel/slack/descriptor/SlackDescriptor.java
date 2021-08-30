@@ -8,6 +8,7 @@
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import com.synopsys.integration.alert.channel.slack.validator.SlackDistributionC
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -31,11 +33,15 @@ public class SlackDescriptor extends ChannelDescriptor {
     public static final String SLACK_URL = "slack";
     public static final String SLACK_DESCRIPTION = "Configure Slack for Alert.";
 
+    public static final String LABEL_WEBHOOK = "Webhook";
+    public static final String LABEL_SLACK_CHANNEL_NAME = "Channel Name";
+    public static final String LABEL_CHANNEL_USERNAME = "Channel Username";
+
     private final SlackDistributionConfigurationValidator distributionValidator;
 
     @Autowired
-    public SlackDescriptor(SlackUIConfig slackUIConfig, SlackGlobalUIConfig slackGlobalUIConfig, SlackDistributionConfigurationValidator distributionValidator) {
-        super(ChannelKeys.SLACK, slackUIConfig, slackGlobalUIConfig);
+    public SlackDescriptor(SlackDistributionConfigurationValidator distributionValidator) {
+        super(ChannelKeys.SLACK, Set.of(ConfigContextEnum.DISTRIBUTION));
         this.distributionValidator = distributionValidator;
     }
 
@@ -48,4 +54,5 @@ public class SlackDescriptor extends ChannelDescriptor {
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
         return Optional.of(distributionValidator);
     }
+
 }

@@ -8,14 +8,17 @@
 package com.synopsys.integration.alert.channel.azure.boards.descriptor;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsDistributionConfigurationValidator;
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
 @Component
@@ -45,13 +48,20 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String AZURE_BOARDS_DESCRIPTION = "Configure the Azure Boards instance that Alert will send issue updates to.";
 
     public static final String DEFAULT_WORK_ITEM_TYPE = "Task";
+    public static final String LABEL_WORK_ITEM_COMMENT = "Comment on Work Items";
+    public static final String LABEL_AZURE_PROJECT = "Azure Project";
+    public static final String LABEL_WORK_ITEM_TYPE = "Work Item Type";
+    public static final String LABEL_WORK_ITEM_COMPLETED_STATE = "Work Item Completed State";
+    public static final String LABEL_WORK_ITEM_REOPEN_STATE = "Work Item Reopen State";
 
     private final AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
+    private final AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator;
 
     @Autowired
-    public AzureBoardsDescriptor(AzureBoardsDistributionUIConfig azureBoardsDistributionUIConfig, AzureBoardsGlobalUIConfig azureBoardsGlobalUIConfig, AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator) {
-        super(ChannelKeys.AZURE_BOARDS, azureBoardsDistributionUIConfig, azureBoardsGlobalUIConfig);
+    public AzureBoardsDescriptor(AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator, AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator) {
+        super(ChannelKeys.AZURE_BOARDS, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.azureBoardsGlobalConfigurationValidator = azureBoardsGlobalValidator;
+        this.azureBoardsDistributionConfigurationValidator = azureBoardsDistributionConfigurationValidator;
     }
 
     @Override
@@ -61,8 +71,9 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
 
     @Override
     public Optional<DistributionConfigurationValidator> getDistributionValidator() {
-        return Optional.empty();
+        return Optional.of(azureBoardsDistributionConfigurationValidator);
     }
+
 }
 
 

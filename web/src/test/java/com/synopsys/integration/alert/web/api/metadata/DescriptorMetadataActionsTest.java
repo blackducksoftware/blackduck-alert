@@ -8,20 +8,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.enumeration.AccessOperation;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.security.authorization.AuthorizationManager;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
 import com.synopsys.integration.alert.web.api.metadata.model.DescriptorsResponseModel;
@@ -40,8 +39,14 @@ public class DescriptorMetadataActionsTest {
         ActionResponse<DescriptorsResponseModel> response = actions.getDescriptorsByPermissions(null, null, null);
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
-        Set<DescriptorMetadata> descriptorMetadata = response.getContent().get().getDescriptors();
-        assertEquals(0, descriptorMetadata.size());
+        List<AccessOperation> allAccessOperations = response.getContent()
+            .stream()
+            .map(DescriptorsResponseModel::getDescriptors)
+            .flatMap(Set::stream)
+            .map(DescriptorMetadata::getOperations)
+            .flatMap(Set::stream)
+            .collect(Collectors.toList());
+        assertEquals(0, allAccessOperations.size());
     }
 
     @Test
@@ -50,7 +55,7 @@ public class DescriptorMetadataActionsTest {
         assertTrue(response.isSuccessful());
         assertTrue(response.hasContent());
         Set<DescriptorMetadata> descriptorMetadata = response.getContent().get().getDescriptors();
-        assertEquals(descriptors.size(), descriptorMetadata.size());
+        assertEquals(descriptors.size() * 2, descriptorMetadata.size());
     }
 
     @Test
@@ -76,26 +81,26 @@ public class DescriptorMetadataActionsTest {
 
     @Test
     public void getDescriptorsWithNameOnlyTest() {
-        String componentName = getNamePrefix(DescriptorType.CHANNEL) + "_2";
-        ActionResponse<DescriptorsResponseModel> response1 = actions.getDescriptorsByPermissions(componentName, null, null);
+        String channelName = getNamePrefix(DescriptorType.CHANNEL) + "_2";
+        ActionResponse<DescriptorsResponseModel> response1 = actions.getDescriptorsByPermissions(channelName, null, null);
         assertTrue(response1.isSuccessful());
         assertTrue(response1.hasContent());
         Set<DescriptorMetadata> descriptorMetadata1 = response1.getContent().get().getDescriptors();
-        assertEquals(1, descriptorMetadata1.size());
+        assertEquals(2, descriptorMetadata1.size());
 
-        String channelName = getNamePrefix(DescriptorType.COMPONENT) + "_2";
-        ActionResponse<DescriptorsResponseModel> response2 = actions.getDescriptorsByPermissions(channelName, null, null);
+        String componentName = getNamePrefix(DescriptorType.COMPONENT) + "_2";
+        ActionResponse<DescriptorsResponseModel> response2 = actions.getDescriptorsByPermissions(componentName, null, null);
         assertTrue(response2.isSuccessful());
         assertTrue(response2.hasContent());
         Set<DescriptorMetadata> descriptorMetadata2 = response2.getContent().get().getDescriptors();
-        assertEquals(1, descriptorMetadata2.size());
+        assertEquals(2, descriptorMetadata2.size());
 
         String providerName = getNamePrefix(DescriptorType.PROVIDER) + "_2";
         ActionResponse<DescriptorsResponseModel> response3 = actions.getDescriptorsByPermissions(providerName, null, null);
         assertTrue(response3.isSuccessful());
         assertTrue(response3.hasContent());
         Set<DescriptorMetadata> descriptorMetadata3 = response3.getContent().get().getDescriptors();
-        assertEquals(1, descriptorMetadata3.size());
+        assertEquals(2, descriptorMetadata3.size());
     }
 
     @Test
@@ -104,19 +109,19 @@ public class DescriptorMetadataActionsTest {
         assertTrue(response1.isSuccessful());
         assertTrue(response1.hasContent());
         Set<DescriptorMetadata> descriptorMetadata1 = response1.getContent().get().getDescriptors();
-        assertEquals(descriptors.size() / 3, descriptorMetadata1.size());
+        assertEquals((descriptors.size() / 3) * 2, descriptorMetadata1.size());
 
         ActionResponse<DescriptorsResponseModel> response2 = actions.getDescriptorsByPermissions(null, DescriptorType.COMPONENT.name(), null);
         assertTrue(response2.isSuccessful());
         assertTrue(response2.hasContent());
         Set<DescriptorMetadata> descriptorMetadata2 = response2.getContent().get().getDescriptors();
-        assertEquals(descriptors.size() / 3, descriptorMetadata2.size());
+        assertEquals((descriptors.size() / 3) * 2, descriptorMetadata2.size());
 
         ActionResponse<DescriptorsResponseModel> response3 = actions.getDescriptorsByPermissions(null, DescriptorType.PROVIDER.name(), null);
         assertTrue(response3.isSuccessful());
         assertTrue(response3.hasContent());
         Set<DescriptorMetadata> descriptorMetadata3 = response3.getContent().get().getDescriptors();
-        assertEquals(descriptors.size() / 3, descriptorMetadata3.size());
+        assertEquals((descriptors.size() / 3) * 2, descriptorMetadata3.size());
     }
 
     @Test
@@ -291,7 +296,7 @@ public class DescriptorMetadataActionsTest {
         private final List<ConfigContextEnum> contexts;
 
         public TestDescriptor(String descriptorName, DescriptorType type, ConfigContextEnum... contexts) {
-            super(new DescriptorKey(descriptorName, descriptorName) {}, type);
+            super(new DescriptorKey(descriptorName, descriptorName) {}, type, null != contexts ? Set.of(contexts) : Set.of());
             if (contexts != null) {
                 this.contexts = Arrays.asList(contexts);
             } else {
@@ -300,34 +305,8 @@ public class DescriptorMetadataActionsTest {
         }
 
         @Override
-        public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
-            return Set.of();
-        }
-
-        @Override
-        public boolean hasUIConfigForType(ConfigContextEnum actionApiType) {
+        public boolean hasConfigForType(ConfigContextEnum actionApiType) {
             return contexts.contains(actionApiType);
-        }
-
-        @Override
-        public boolean hasUIConfigs() {
-            return true;
-        }
-
-        @Override
-        public Optional<UIConfig> getUIConfig(ConfigContextEnum context) {
-            if (!contexts.contains(context)) {
-                return Optional.empty();
-            }
-
-            return Optional.of(new UIConfig("Label", "description", "urlName") {
-
-                @Override
-                public List<ConfigField> createFields() {
-                    return List.of();
-                }
-
-            });
         }
 
         @Override

@@ -32,7 +32,7 @@ public class AbstractChannelMessageConverterTest {
         SimpleMessage simpleMessage = SimpleMessage.original(providerDetails, "Summary", "Description", List.of());
         ProviderMessageHolder providerMessageHolder = new ProviderMessageHolder(List.of(projectCreateMessage), List.of(simpleMessage));
 
-        List<MockOutputModel> mockOutputModels = mockChannelMessageConverter.convertToChannelMessages(jobDetails, providerMessageHolder);
+        List<MockOutputModel> mockOutputModels = mockChannelMessageConverter.convertToChannelMessages(jobDetails, providerMessageHolder, "jobName");
         assertEquals(2, mockOutputModels.size());
 
         for (MockOutputModel mockOutputModel : mockOutputModels) {

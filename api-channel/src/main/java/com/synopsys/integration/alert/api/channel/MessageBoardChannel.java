@@ -30,8 +30,8 @@ public abstract class MessageBoardChannel<D extends DistributionJobDetailsModel,
     }
 
     @Override
-    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages) throws AlertException {
-        List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages);
+    public MessageResult distributeMessages(D distributionDetails, ProviderMessageHolder messages, String jobName) throws AlertException {
+        List<T> channelMessages = channelMessageConverter.convertToChannelMessages(distributionDetails, messages, jobName);
         return channelMessageSender.sendMessages(distributionDetails, channelMessages);
     }
 

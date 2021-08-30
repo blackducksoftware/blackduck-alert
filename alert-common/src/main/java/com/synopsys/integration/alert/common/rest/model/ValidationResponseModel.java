@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synopsys.integration.alert.api.common.model.AlertSerializableModel;
+import com.synopsys.integration.alert.common.action.ValidationActionResponse;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.FieldStatusSeverity;
 
@@ -21,12 +22,20 @@ public class ValidationResponseModel extends AlertSerializableModel {
     private Boolean hasErrors;
     private Map<String, AlertFieldStatus> errors;
 
+    public static ValidationResponseModel success() {
+        return success(ValidationActionResponse.VALIDATION_SUCCESS_MESSSAGE);
+    }
+
     public static ValidationResponseModel success(String message) {
         return new ValidationResponseModel(message, Map.of());
     }
 
     public static ValidationResponseModel generalError(String message) {
         return new ValidationResponseModel(message, true);
+    }
+
+    public static ValidationResponseModel fromStatusCollection(Collection<AlertFieldStatus> fieldStatuses) {
+        return fromStatusCollection(ValidationActionResponse.VALIDATION_FAILURE_MESSAGE, fieldStatuses);
     }
 
     public static ValidationResponseModel fromStatusCollection(String message, Collection<AlertFieldStatus> fieldStatuses) {
@@ -57,9 +66,9 @@ public class ValidationResponseModel extends AlertSerializableModel {
         this.hasErrors = hasErrors;
     }
 
-    public ValidationResponseModel(String message, Map<String, AlertFieldStatus> errors) {
+    public ValidationResponseModel(String message, Map<String, AlertFieldStatus> statuses) {
         this.message = message;
-        this.errors = errors;
+        this.errors = statuses;
         this.hasErrors = !errors.isEmpty();
     }
 

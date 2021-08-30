@@ -37,7 +37,7 @@ public class DistributionEventHandler<D extends DistributionJobDetailsModel> imp
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
-                channel.distributeMessages(details.get(), event.getProviderMessages());
+                channel.distributeMessages(details.get(), event.getProviderMessages(), event.getJobName());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);

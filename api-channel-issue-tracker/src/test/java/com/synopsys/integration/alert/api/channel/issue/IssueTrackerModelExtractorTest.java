@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.SimpleMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.BomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 
@@ -44,7 +45,8 @@ public class IssueTrackerModelExtractorTest {
     private static final String USAGE = "Some generic usage";
     private static final String ISSUES_URL = "https://issues-url";
 
-    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new BomComponentDetails(COMPONENT, COMPONENT_VERSION, ComponentVulnerabilities.none(), List.of(), List.of(), LICENSE, USAGE, List.of(), ISSUES_URL);
+    private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = new BomComponentDetails(COMPONENT, COMPONENT_VERSION, ComponentVulnerabilities.none(), List.of(), List.of(), LICENSE, USAGE, ComponentUpgradeGuidance.none(),
+        List.of(), ISSUES_URL);
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
 
     @Test
@@ -57,7 +59,7 @@ public class IssueTrackerModelExtractorTest {
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, null);
 
         SimpleMessage simpleMessage = SimpleMessage.original(PROVIDER_DETAILS, testSummary, testDescription, List.of(additionalDetail));
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractSimpleMessageIssueModels(List.of(simpleMessage));
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractSimpleMessageIssueModels(List.of(simpleMessage), "jobName");
         List<IssueCreationModel> issueCreationModels = modelHolder.getIssueCreationModels();
         assertEquals(1, issueCreationModels.size());
         assertEquals(0, modelHolder.getIssueTransitionModels().size());
@@ -84,7 +86,7 @@ public class IssueTrackerModelExtractorTest {
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage);
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage, "jobName");
         List<IssueCreationModel> issueCreationModels = modelHolder.getIssueCreationModels();
         assertEquals(1, issueCreationModels.size());
         assertEquals(0, modelHolder.getIssueTransitionModels().size());
@@ -109,7 +111,7 @@ public class IssueTrackerModelExtractorTest {
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage);
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage, "jobName");
         assertEquals(0, modelHolder.getIssueCreationModels().size());
         assertEquals(0, modelHolder.getIssueTransitionModels().size());
         assertEquals(1, modelHolder.getIssueCommentModels().size());
@@ -132,7 +134,7 @@ public class IssueTrackerModelExtractorTest {
 
         IssueTrackerModelExtractor<String> extractor = new IssueTrackerModelExtractor<>(formatter, searcher);
 
-        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage);
+        IssueTrackerModelHolder<String> modelHolder = extractor.extractProjectMessageIssueModels(projectMessage, "jobName");
         List<IssueTransitionModel<String>> issueTransitionModels = modelHolder.getIssueTransitionModels();
         assertEquals(0, modelHolder.getIssueCreationModels().size());
         assertEquals(1, issueTransitionModels.size());

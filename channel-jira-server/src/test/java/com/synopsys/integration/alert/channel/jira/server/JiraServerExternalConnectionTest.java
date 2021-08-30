@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.api.channel.issue.callback.IssueTrackerCal
 import com.synopsys.integration.alert.api.channel.issue.convert.ProjectMessageToIssueModelTransformer;
 import com.synopsys.integration.alert.api.channel.issue.model.IssueTrackerResponse;
 import com.synopsys.integration.alert.api.channel.issue.search.IssueCategoryRetriever;
-import com.synopsys.integration.alert.api.channel.jira.distribution.JiraErrorMessageUtility;
 import com.synopsys.integration.alert.api.channel.jira.distribution.JiraMessageFormatter;
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.channel.jira.server.descriptor.JiraServerDescriptor;
@@ -60,16 +59,15 @@ public class JiraServerExternalConnectionTest {
         JiraServerPropertiesFactory jiraServerPropertiesFactory = new JiraServerPropertiesFactory(jiraServerChannelKey, proxyManager, configurationAccessor);
 
         IssueTrackerCallbackInfoCreator issueTrackerCallbackInfoCreator = new IssueTrackerCallbackInfoCreator();
-        JiraErrorMessageUtility jiraErrorMessageUtility = new JiraErrorMessageUtility(gson);
         IssueCategoryRetriever issueCategoryRetriever = new IssueCategoryRetriever();
-        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator, jiraErrorMessageUtility,
+        JiraServerMessageSenderFactory jiraServerMessageSenderFactory = new JiraServerMessageSenderFactory(gson, jiraServerChannelKey, jiraServerPropertiesFactory, issueTrackerCallbackInfoCreator,
             issueCategoryRetriever);
 
         ProjectMessageToIssueModelTransformer modelTransformer = new ProjectMessageToIssueModelTransformer();
         JiraServerProcessorFactory jiraServerProcessorFactory = new JiraServerProcessorFactory(gson, jiraMessageFormatter, jiraServerPropertiesFactory, jiraServerMessageSenderFactory, modelTransformer, issueCategoryRetriever);
         IssueTrackerProcessor<String> processor = jiraServerProcessorFactory.createProcessor(createDistributionDetails());
 
-        IssueTrackerResponse<String> response = processor.processMessages(createMessage());
+        IssueTrackerResponse<String> response = processor.processMessages(createMessage(), "jobName");
 
         assertEquals("Success", response.getStatusMessage());
     }

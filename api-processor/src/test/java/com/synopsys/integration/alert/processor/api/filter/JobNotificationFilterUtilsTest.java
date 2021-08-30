@@ -139,12 +139,13 @@ public class JobNotificationFilterUtilsTest {
         String projectNamePattern
     ) {
         List<BlackDuckProjectDetailsModel> blackDuckProjectDetailsModel = projectNames.stream()
-                                                                              .map(projectName -> new BlackDuckProjectDetailsModel(projectName, "href"))
-                                                                              .collect(Collectors.toList());
+            .map(projectName -> new BlackDuckProjectDetailsModel(projectName, "href"))
+            .collect(Collectors.toList());
         return new FilteredDistributionJobResponseModel(
             UUID.randomUUID(),
             ProcessingType.DEFAULT,
             "channelName",
+            "jobName",
             notificationTypes,
             blackDuckProjectDetailsModel,
             policyNames,

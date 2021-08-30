@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.DescriptorProcessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.config.field.validation.EncryptionSettingsValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.common.persistence.accessor.ConfigurationAccessor;
@@ -196,14 +196,14 @@ public class ConfigActions extends AbstractConfigResourceActions {
     @Override
     protected ValidationActionResponse validateWithoutChecks(FieldModel resource) {
         if (!encryptionUtility.isInitialized() && !settingsDescriptorKey.getUniversalKey().equals(resource.getDescriptorName())) {
-            ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(EncryptionSettingsValidator.ENCRYPTION_MISSING);
+            ValidationResponseModel validationResponseModel = ValidationResponseModel.generalError(ConfigurationFieldValidator.ENCRYPTION_MISSING);
             return new ValidationActionResponse(HttpStatus.INTERNAL_SERVER_ERROR, validationResponseModel);
         }
 
         Set<AlertFieldStatus> fieldStatuses = descriptorProcessor.retrieveDescriptor(resource.getDescriptorName())
             .flatMap(Descriptor::getGlobalValidator)
             .map(globalValidator -> globalValidator.validate(resource))
-            .orElse(Set.copyOf(fieldModelProcessor.validateFieldModel(resource)));
+            .orElse(Set.of());
 
         ValidationResponseModel responseModel;
         HttpStatus status = HttpStatus.OK;

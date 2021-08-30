@@ -47,13 +47,13 @@ public class JiraCloudIssueCreatorTest {
 
         TestJiraCloudIssueCreator jiraCloudIssueCreator = createTestJiraCloudIssueCreator(projectNameOrKey, jiraCloudJobDetailsModel);
         IssueCreationModel issueCreationModel = createIssueCreationModel();
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValues(
-            "providerName",
-            "projectName",
-            "projectVersionName",
-            "componentName",
-            "componentVersionName",
-            "severity");
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder("providerName", "projectName")
+                                                                .projectVersionName("projectVersionName")
+                                                                .componentName("componentName")
+                                                                .componentVersionName("componentVersionName")
+                                                                .severity("severity")
+                                                                .policyCategory("UNCATEGORIZED")
+                                                                .build();
         IssueCreationRequestModel issueCreationRequest = jiraCloudIssueCreator.createIssueCreationRequest(issueCreationModel, messageReplacementValues);
         String summaryText = getSummary(issueCreationRequest);
 
@@ -78,13 +78,13 @@ public class JiraCloudIssueCreatorTest {
 
         IssueCreationModel issueCreationModel = createIssueCreationModel();
         String testProviderName = "providerName";
-        MessageReplacementValues messageReplacementValues = new MessageReplacementValues(
-            testProviderName,
-            "projectName",
-            "projectVersionName",
-            "componentName",
-            "componentVersionName",
-            "severity");
+        MessageReplacementValues messageReplacementValues = new MessageReplacementValues.Builder(testProviderName, "projectName")
+                                                                .projectVersionName("projectVersionName")
+                                                                .componentName("componentName")
+                                                                .componentVersionName("componentVersionName")
+                                                                .severity("severity")
+                                                                .policyCategory("UNCATEGORIZED")
+                                                                .build();
         IssueCreationRequestModel issueCreationRequest = jiraCloudIssueCreator.createIssueCreationRequest(issueCreationModel, messageReplacementValues);
         String summaryText = getSummary(issueCreationRequest);
 

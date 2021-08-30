@@ -11,11 +11,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,90 +43,77 @@ public class DescriptorMetadataActions {
     }
 
     public ActionResponse<DescriptorsResponseModel> getDescriptorsByType(String type) {
-        return getDescriptors(null, type, null, this::generateUIComponents);
+        Predicate<Descriptor> descriptorFilter = descriptor -> descriptor.getType().name().equals(type);
+        return createDescriptorResponse(descriptorFilter, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
     }
 
     public ActionResponse<DescriptorsResponseModel> getDescriptorsByPermissions(@Nullable String name, @Nullable String type, @Nullable String context) {
-        return getDescriptors(name, type, context, this::generateUIComponentsByPermissions);
-    }
+        Predicate<Descriptor> descriptorFilter = ignored -> true;
+        Set<ConfigContextEnum> requestedContexts = Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION);
 
-    private ActionResponse<DescriptorsResponseModel> getDescriptors(@Nullable String name, @Nullable String type, @Nullable String context,
-        BiFunction<Set<Descriptor>, ConfigContextEnum, Set<DescriptorMetadata>> generatorFunction) {
-        Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
-        if (name != null) {
-            filter = filter.and(descriptor -> name.equalsIgnoreCase(descriptor.getDescriptorKey().getUniversalKey()));
+        if (StringUtils.isNotBlank(name)) {
+            descriptorFilter = descriptorFilter.and(descriptor -> name.equals(descriptor.getDescriptorKey().getUniversalKey()));
         }
 
-        DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
-        if (typeEnum != null) {
-            filter = filter.and(descriptor -> typeEnum.equals(descriptor.getType()));
-        } else if (type != null) {
-            return new ActionResponse<>(HttpStatus.OK, new DescriptorsResponseModel());
+        if (StringUtils.isNotBlank(type)) {
+            descriptorFilter = descriptorFilter.and(descriptor -> type.equals(descriptor.getType().name()));
         }
 
-        ConfigContextEnum contextEnum = EnumUtils.getEnumIgnoreCase(ConfigContextEnum.class, context);
-        if (contextEnum != null) {
-            filter = filter.and(descriptor -> descriptor.hasUIConfigForType(contextEnum));
-        } else if (context != null) {
-            return new ActionResponse<>(HttpStatus.OK, new DescriptorsResponseModel());
+        if (StringUtils.isNotBlank(context)) {
+            descriptorFilter = descriptorFilter.and(descriptor ->
+                                                        descriptor.getConfigContexts()
+                                                            .stream()
+                                                            .map(Enum::name)
+                                                            .anyMatch(context::equals)
+            );
+            ConfigContextEnum requestedContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
+            if (null != requestedContext) {
+                requestedContexts = Set.of(requestedContext);
+            }
         }
 
-        Set<Descriptor> filteredDescriptors = filter(descriptors, filter);
-        DescriptorsResponseModel content = new DescriptorsResponseModel(generatorFunction.apply(filteredDescriptors, contextEnum));
-        return new ActionResponse<>(HttpStatus.OK, content);
+        return createDescriptorResponse(descriptorFilter, requestedContexts);
     }
 
-    private Set<Descriptor> filter(Collection<Descriptor> descriptors, Predicate<Descriptor> predicate) {
-        return descriptors
-                   .stream()
-                   .filter(predicate)
-                   .collect(Collectors.toSet());
+    private ActionResponse<DescriptorsResponseModel> createDescriptorResponse(Predicate<Descriptor> descriptorFilter, Set<ConfigContextEnum> requestedContexts) {
+        Set<DescriptorMetadata> descriptorMetadata = descriptors
+            .stream()
+            .filter(descriptorFilter)
+            .map(descriptor -> createDescriptorMetadata(descriptor, requestedContexts))
+            .flatMap(Set::stream)
+            .collect(Collectors.toSet());
+        DescriptorsResponseModel responseModel = new DescriptorsResponseModel(descriptorMetadata);
+        return new ActionResponse<>(HttpStatus.OK, responseModel);
     }
 
-    private Set<DescriptorMetadata> generateUIComponents(Set<Descriptor> filteredDescriptors, ConfigContextEnum context) {
-        ConfigContextEnum[] applicableContexts = (null != context) ? new ConfigContextEnum[] { context } : ConfigContextEnum.values();
+    private Set<DescriptorMetadata> createDescriptorMetadata(Descriptor requestedDescriptor, Set<ConfigContextEnum> requestedContexts) {
         Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
-        for (ConfigContextEnum applicableContext : applicableContexts) {
-            for (Descriptor descriptor : filteredDescriptors) {
-                descriptor.createMetaData(applicableContext)
+        // Permissions can exist for contexts that do not have configuration (e.g. empty Global Channel configs)
+        for (ConfigContextEnum context : requestedContexts) {
+            if (requestedContexts.contains(context)) {
+                createDescriptorMetadata(requestedDescriptor.getDescriptorKey(), context, requestedDescriptor.getType())
                     .ifPresent(descriptorMetadata::add);
             }
         }
         return descriptorMetadata;
     }
 
-    private Set<DescriptorMetadata> generateUIComponentsByPermissions(Set<Descriptor> filteredDescriptors, ConfigContextEnum context) {
-        ConfigContextEnum[] applicableContexts = (null != context) ? new ConfigContextEnum[] { context } : ConfigContextEnum.values();
-        Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
-        for (ConfigContextEnum applicableContext : applicableContexts) {
-            for (Descriptor descriptor : filteredDescriptors) {
-                DescriptorKey descriptorKey = descriptor.getDescriptorKey();
-                if (authorizationManager.hasPermissions(applicableContext, descriptorKey)) {
-                    Optional<DescriptorMetadata> optionalMetaData = descriptor.createMetaData(applicableContext);
-                    optionalMetaData
-                        .flatMap((metadata) -> restrictMetaData(metadata, applicableContext, descriptorKey))
-                        .ifPresent(descriptorMetadata::add);
-                }
-            }
+    private Optional<DescriptorMetadata> createDescriptorMetadata(DescriptorKey descriptorKey, ConfigContextEnum context, DescriptorType descriptorType) {
+        if (authorizationManager.hasPermissions(context, descriptorKey)) {
+            Set<AccessOperation> operations = gatherDescriptorContextOperations(context, descriptorKey);
+            boolean readOnly = authorizationManager.isReadOnly(context, descriptorKey);
+            DescriptorMetadata descriptorMetadata = new DescriptorMetadata(descriptorKey, descriptorType, context, operations, readOnly);
+            return Optional.of(descriptorMetadata);
         }
-        return descriptorMetadata;
+        return Optional.empty();
     }
 
-    private Optional<DescriptorMetadata> restrictMetaData(DescriptorMetadata descriptorMetadata, ConfigContextEnum context, DescriptorKey descriptorKey) {
-        boolean hasReadPermission = authorizationManager.hasReadPermission(context, descriptorKey);
-        if (!hasReadPermission) {
-            return Optional.empty();
+    private Set<AccessOperation> gatherDescriptorContextOperations(ConfigContextEnum context, DescriptorKey descriptorKey) {
+        Set<AccessOperation> operations = new HashSet<>();
+        for (int operationBits : authorizationManager.getOperations(context, descriptorKey)) {
+            operations.addAll(AccessOperation.getAllAccessOperations(operationBits));
         }
-
-        Set<AccessOperation> operationSet = new HashSet<>();
-        for (int operations : authorizationManager.getOperations(context, descriptorKey)) {
-            operationSet.addAll(AccessOperation.getAllAccessOperations(operations));
-        }
-
-        boolean isReadOnly = authorizationManager.isReadOnly(context, descriptorKey);
-        descriptorMetadata.setOperations(operationSet);
-        descriptorMetadata.setReadOnly(isReadOnly);
-        return Optional.of(descriptorMetadata);
+        return operations;
     }
 
 }

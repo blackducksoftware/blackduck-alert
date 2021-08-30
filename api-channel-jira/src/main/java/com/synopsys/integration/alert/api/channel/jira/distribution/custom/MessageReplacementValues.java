@@ -21,33 +21,37 @@ public class MessageReplacementValues {
     private final String projectVersionName;
     private final String componentName;
     private final String componentVersionName;
+    private final String componentUsage;
+    private final String componentLicense;
     private final String severity;
+    private final String policyCategory;
+    private final String shortTermUpgradeGuidance;
+    private final String longTermUpgradeGuidance;
 
-    public static MessageReplacementValues trivial(String providerLabel, String projectName) {
-        return new MessageReplacementValues(
-            providerLabel,
-            projectName,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE,
-            MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE
-        );
-    }
-
-    public MessageReplacementValues(
+    private MessageReplacementValues(
         String providerName,
         String projectName,
         @Nullable String projectVersionName,
         @Nullable String componentName,
         @Nullable String componentVersionName,
-        @Nullable String severity
+        @Nullable String componentUsage,
+        @Nullable String componentLicense,
+        @Nullable String severity,
+        @Nullable String policyCategory,
+        @Nullable String shortTermUpgradeGuidance,
+        @Nullable String longTermUpgradeGuidance
     ) {
         this.providerName = providerName;
         this.projectName = projectName;
         this.projectVersionName = StringUtils.trimToNull(projectVersionName);
         this.componentName = StringUtils.trimToNull(componentName);
         this.componentVersionName = StringUtils.trimToNull(componentVersionName);
+        this.componentUsage = StringUtils.trimToNull(componentUsage);
+        this.componentLicense = StringUtils.trimToNull(componentLicense);
         this.severity = StringUtils.trimToNull(severity);
+        this.policyCategory = StringUtils.trimToNull(policyCategory);
+        this.shortTermUpgradeGuidance = StringUtils.trimToNull(shortTermUpgradeGuidance);
+        this.longTermUpgradeGuidance = StringUtils.trimToNull(longTermUpgradeGuidance);
     }
 
     public String getProviderName() {
@@ -70,8 +74,115 @@ public class MessageReplacementValues {
         return Optional.ofNullable(componentVersionName);
     }
 
+    public Optional<String> getComponentUsage() {
+        return Optional.ofNullable(componentUsage);
+    }
+
+    public Optional<String> getComponentLicense() {
+        return Optional.ofNullable(componentLicense);
+    }
+
     public Optional<String> getSeverity() {
         return Optional.ofNullable(severity);
     }
 
+    public Optional<String> getPolicyCategory() {
+        return Optional.ofNullable(policyCategory);
+    }
+
+    public Optional<String> getShortTermUpgradeGuidance() {
+        return Optional.ofNullable(shortTermUpgradeGuidance);
+    }
+
+    public Optional<String> getLongTermUpgradeGuidance() {
+        return Optional.ofNullable(longTermUpgradeGuidance);
+    }
+
+    public static class Builder {
+        private String providerName;
+        private String projectName;
+        private String projectVersionName;
+        private String componentName;
+        private String componentVersionName;
+        private String componentUsage;
+        private String componentLicense;
+        private String severity;
+        private String policyCategory;
+        private String shortTermUpgradeGuidance;
+        private String longTermUpgradeGuidance;
+
+        public Builder(String providerName, String projectName) {
+            this.providerName = providerName;
+            this.projectName = projectName;
+        }
+
+        public MessageReplacementValues build() {
+            return new MessageReplacementValues(
+                providerName,
+                projectName,
+                defaultIfBlank(projectVersionName),
+                defaultIfBlank(componentName),
+                defaultIfBlank(componentVersionName),
+                defaultIfBlank(componentUsage),
+                defaultIfBlank(componentLicense),
+                defaultIfBlank(severity),
+                defaultIfBlank(policyCategory),
+                defaultIfBlank(shortTermUpgradeGuidance),
+                defaultIfBlank(longTermUpgradeGuidance)
+            );
+        }
+
+        public Builder projectVersionName(String projectVersionName) {
+            this.projectVersionName = projectVersionName;
+            return this;
+        }
+
+        public Builder componentName(String componentName) {
+            this.componentName = componentName;
+            return this;
+        }
+
+        public Builder componentVersionName(String componentVersionName) {
+            this.componentVersionName = componentVersionName;
+            return this;
+        }
+
+        public Builder componentUsage(String componentUsage) {
+            this.componentUsage = componentUsage;
+            return this;
+        }
+
+        public Builder componentLicense(String componentLicense) {
+            this.componentLicense = componentLicense;
+            return this;
+        }
+
+        public Builder severity(String severity) {
+            this.severity = severity;
+            return this;
+        }
+
+        public Builder policyCategory(String policyCategory) {
+            this.policyCategory = policyCategory;
+            return this;
+        }
+
+        public Builder shortTermUpgradeGuidance(String shortTermUpgradeGuidance) {
+            this.shortTermUpgradeGuidance = shortTermUpgradeGuidance;
+            return this;
+        }
+
+        public Builder longTermUpgradeGuidance(String longTermUpgradeGuidance) {
+            this.longTermUpgradeGuidance = longTermUpgradeGuidance;
+            return this;
+        }
+
+        private String defaultIfBlank(String replacementField) {
+            if (StringUtils.isNotBlank(replacementField)) {
+                return replacementField;
+            } else {
+                return MessageReplacementValues.DEFAULT_NOTIFICATION_REPLACEMENT_VALUE;
+            }
+        }
+    }
 }

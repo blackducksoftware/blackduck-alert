@@ -7,16 +7,29 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import java.util.Set;
+
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public abstract class ChannelDescriptor extends Descriptor {
-    public ChannelDescriptor(ChannelKey channelKey, ChannelDistributionUIConfig distributionUIConfig, UIConfig globalUIConfig) {
-        super(channelKey, DescriptorType.CHANNEL);
-        addDistributionUiConfig(distributionUIConfig);
-        addGlobalUiConfig(globalUIConfig);
+    public static final String KEY_COMMON_CHANNEL_PREFIX = "channel.common.";
+
+    public static final String KEY_FREQUENCY = KEY_COMMON_CHANNEL_PREFIX + "frequency";
+    public static final String KEY_PROVIDER_TYPE = KEY_COMMON_CHANNEL_PREFIX + "provider.name";
+    public static final String KEY_CHANNEL_NAME = KEY_COMMON_CHANNEL_PREFIX + "channel.name";
+    public static final String KEY_NAME = KEY_COMMON_CHANNEL_PREFIX + "name";
+    public static final String KEY_ENABLED = KEY_COMMON_CHANNEL_PREFIX + "enabled";
+
+    public static final String LABEL_ENABLED = "Enabled";
+    public static final String LABEL_NAME = "Name";
+    public static final String LABEL_FREQUENCY = "Frequency";
+    public static final String LABEL_CHANNEL_NAME = "Channel Type";
+    public static final String LABEL_PROVIDER_TYPE = "Provider Type";
+
+    public ChannelDescriptor(ChannelKey channelKey, Set<ConfigContextEnum> configContexts) {
+        super(channelKey, DescriptorType.CHANNEL, configContexts);
     }
 
 }

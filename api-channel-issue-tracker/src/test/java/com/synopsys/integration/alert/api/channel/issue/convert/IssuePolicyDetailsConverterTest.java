@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class IssuePolicyDetailsConverterTest {
@@ -27,6 +28,7 @@ public class IssuePolicyDetailsConverterTest {
         List.of(COMPONENT_POLICY, COMPONENT_POLICY_NO_DESCRIPTION),
         new LinkableItem("License", "A software license", "https://license-url"),
         "Example Usage",
+        ComponentUpgradeGuidance.none(),
         List.of(),
         "https://issues-url"
     ) {};
@@ -87,7 +89,8 @@ public class IssuePolicyDetailsConverterTest {
             ComponentConcernSeverity.MINOR_MEDIUM,
             false,
             true,
-            description
+            description,
+            "Uncategorized"
         );
     }
 

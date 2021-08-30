@@ -11,6 +11,7 @@ import com.synopsys.integration.alert.common.message.model.LinkableItem;
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class BomComponentDetailConverterTest {
@@ -60,8 +61,12 @@ public class BomComponentDetailConverterTest {
     }
 
     private static AbstractBomComponentDetails createBomComponentDetails() {
-        ComponentPolicy componentPolicy1 = new ComponentPolicy("A Black Duck Policy", ComponentConcernSeverity.MAJOR_HIGH, true, false, null);
-        ComponentPolicy componentPolicy2 = new ComponentPolicy("A Different Black Duck Policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, true, null);
+        ComponentPolicy componentPolicy1 = new ComponentPolicy("A Black Duck Policy", ComponentConcernSeverity.MAJOR_HIGH, true, false, null, "Uncategorized");
+        ComponentPolicy componentPolicy2 = new ComponentPolicy("A Different Black Duck Policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, true, null, "Uncategorized");
+
+        LinkableItem shortTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Short Term", "1.0");
+        LinkableItem longTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
+        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidance, longTermUpgradeGuidance);
 
         LinkableItem attribute1 = new LinkableItem("Attribute", "Number 1");
         LinkableItem attribute2 = new LinkableItem("Attribute", "Number 2");
@@ -73,6 +78,7 @@ public class BomComponentDetailConverterTest {
             List.of(componentPolicy1, componentPolicy2),
             new LinkableItem("License", "A Software License"),
             "Example Usage",
+            componentUpgradeGuidance,
             List.of(attribute1, attribute2),
             "https://a-blackduck-url"
         ) {};

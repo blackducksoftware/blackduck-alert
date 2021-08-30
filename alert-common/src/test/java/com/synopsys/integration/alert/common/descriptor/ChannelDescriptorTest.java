@@ -10,16 +10,14 @@ import org.junit.jupiter.api.Test;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
 import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.persistence.model.DefinedFieldModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 
 public class ChannelDescriptorTest {
-
     @Test
     public void getterTest() {
         String name = "channel";
         ChannelKey channelKey = new ChannelKey(name, name) {};
-        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, null, null) {
+        ChannelDescriptor channelDescriptor = new ChannelDescriptor(channelKey, Set.of(ConfigContextEnum.DISTRIBUTION)) {
             @Override
             public Optional<GlobalConfigurationValidator> getGlobalValidator() {
                 return Optional.empty();
@@ -30,10 +28,6 @@ public class ChannelDescriptorTest {
                 return Optional.empty();
             }
 
-            @Override
-            public Set<DefinedFieldModel> getAllDefinedFields(ConfigContextEnum context) {
-                return null;
-            }
         };
 
         assertEquals(name, channelDescriptor.getDescriptorKey().getUniversalKey());

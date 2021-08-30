@@ -36,17 +36,17 @@ public class ComponentConcernConverterTest {
 
     private List<ComponentConcern> createALotOfComponentConcerns() {
         return List.of(
-            ComponentConcern.policy(ItemOperation.ADD, "Added Policy"),
+            ComponentConcern.policy(ItemOperation.ADD, "Added Policy", "https://policy"),
             ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln01", ComponentConcernSeverity.CRITICAL, "https://synopsys.com"),
-            ComponentConcern.policy(ItemOperation.ADD, "Added Another Policy"),
+            ComponentConcern.policy(ItemOperation.ADD, "Added Another Policy", "https://policy"),
             ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln02", ComponentConcernSeverity.CRITICAL, "https://synopsys.com"),
-            ComponentConcern.severePolicy(ItemOperation.ADD, "Added Severe Policy", ComponentConcernSeverity.TRIVIAL_LOW),
+            ComponentConcern.severePolicy(ItemOperation.ADD, "Added Severe Policy", ComponentConcernSeverity.TRIVIAL_LOW, "https://policy"),
             ComponentConcern.vulnerability(ItemOperation.ADD, "Added-Vuln03", ComponentConcernSeverity.CRITICAL, "https://synopsys.com"),
             ComponentConcern.vulnerability(ItemOperation.UPDATE, "Updated-Vuln01", ComponentConcernSeverity.MAJOR_HIGH, "https://synopsys.com"),
-            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Policy", ComponentConcernSeverity.MAJOR_HIGH),
+            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Policy", ComponentConcernSeverity.MAJOR_HIGH, "https://policy"),
             ComponentConcern.vulnerability(ItemOperation.UPDATE, "Updated-Vuln02", ComponentConcernSeverity.MAJOR_HIGH, "https://synopsys.com"),
-            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Another Policy", ComponentConcernSeverity.MAJOR_HIGH),
-            ComponentConcern.policy(ItemOperation.DELETE, "Removed Severe Policy"),
+            ComponentConcern.severePolicy(ItemOperation.DELETE, "Removed Another Policy", ComponentConcernSeverity.MAJOR_HIGH, "https://policy"),
+            ComponentConcern.policy(ItemOperation.DELETE, "Removed Severe Policy", "https://policy"),
             ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln01", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com"),
             ComponentConcern.vulnerability(ItemOperation.DELETE, "Removed-Vuln02", ComponentConcernSeverity.MINOR_MEDIUM, "https://synopsys.com")
         );

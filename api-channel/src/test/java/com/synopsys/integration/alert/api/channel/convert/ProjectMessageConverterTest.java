@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.project.BomCom
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcern;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectMessage;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ProjectOperation;
@@ -52,7 +53,7 @@ public class ProjectMessageConverterTest {
         MockChannelMessageFormatter formatter = new MockChannelMessageFormatter(Integer.MAX_VALUE);
         ProjectMessageConverter projectMessageConverter = new ProjectMessageConverter(formatter);
 
-        return projectMessageConverter.convertToFormattedMessageChunks(projectMessage);
+        return projectMessageConverter.convertToFormattedMessageChunks(projectMessage, "jobName");
     }
 
     private void printMessageChunks(List<String> messageChunks) {
@@ -71,15 +72,19 @@ public class ProjectMessageConverterTest {
     }
 
     private static BomComponentDetails createBomComponentDetails() {
-        ComponentPolicy componentPolicy1 = new ComponentPolicy("A component policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false, null);
-        ComponentPolicy componentPolicy2 = new ComponentPolicy("A different policy", ComponentConcernSeverity.MAJOR_HIGH, false, true, null);
+        ComponentPolicy componentPolicy1 = new ComponentPolicy("A component policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, true, false, null, "Uncategorized");
+        ComponentPolicy componentPolicy2 = new ComponentPolicy("A different policy", ComponentConcernSeverity.MAJOR_HIGH, false, true, null, "Uncategorized");
 
-        ComponentConcern policyConcern1 = ComponentConcern.policy(ItemOperation.DELETE, "A non-severe policy");
-        ComponentConcern policyConcern2 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW);
+        ComponentConcern policyConcern1 = ComponentConcern.policy(ItemOperation.DELETE, "A non-severe policy", "https://policy");
+        ComponentConcern policyConcern2 = ComponentConcern.severePolicy(ItemOperation.ADD, "A severe policy", ComponentConcernSeverity.TRIVIAL_LOW, "https://severe-policy");
 
         ComponentConcern vulnerabilityConcern1 = createVulnerabilityConcern(ItemOperation.ADD, "CVE-123", ComponentConcernSeverity.CRITICAL);
         ComponentConcern vulnerabilityConcern2 = createVulnerabilityConcern(ItemOperation.UPDATE, "CVE-135", ComponentConcernSeverity.TRIVIAL_LOW);
         ComponentConcern vulnerabilityConcern3 = createVulnerabilityConcern(ItemOperation.DELETE, "CVE-246", ComponentConcernSeverity.MINOR_MEDIUM);
+
+        LinkableItem shortTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Short Term", "1.0");
+        LinkableItem longTermUpgradeGuidance = new LinkableItem("Upgrade Guidance - Long Term", "2.0");
+        ComponentUpgradeGuidance componentUpgradeGuidance = new ComponentUpgradeGuidance(shortTermUpgradeGuidance, longTermUpgradeGuidance);
 
         LinkableItem attribute1 = new LinkableItem("Attribute", "The first attribute");
         LinkableItem attribute2 = new LinkableItem("Attribute Prime", "The second attribute");
@@ -92,6 +97,7 @@ public class ProjectMessageConverterTest {
             List.of(policyConcern1, policyConcern2, vulnerabilityConcern1, vulnerabilityConcern2, vulnerabilityConcern3),
             new LinkableItem("License", "The software license name", "https://license-url"),
             "The usage of the component",
+            componentUpgradeGuidance,
             List.of(attribute1, attribute2),
             "https://blackduck-issues-url"
         );

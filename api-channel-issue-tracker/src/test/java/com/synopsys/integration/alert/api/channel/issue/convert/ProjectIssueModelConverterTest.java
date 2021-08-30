@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.processor.api.extract.model.ProviderDetail
 import com.synopsys.integration.alert.processor.api.extract.model.project.AbstractBomComponentDetails;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentConcernSeverity;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentPolicy;
+import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentUpgradeGuidance;
 import com.synopsys.integration.alert.processor.api.extract.model.project.ComponentVulnerabilities;
 
 public class ProjectIssueModelConverterTest {
@@ -35,7 +36,7 @@ public class ProjectIssueModelConverterTest {
     private static final LinkableItem PROJECT_VERSION_ITEM = new LinkableItem("Project Version", "2.3.4-RC", "https://project-version-url");
     private static final LinkableItem COMPONENT_ITEM = new LinkableItem("Component", "A BOM component");
     private static final LinkableItem COMPONENT_VERSION_ITEM = new LinkableItem("Component Version", "1.0.0-SNAPSHOT");
-    private static final ComponentPolicy COMPONENT_POLICY = new ComponentPolicy("A policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, false, null);
+    private static final ComponentPolicy COMPONENT_POLICY = new ComponentPolicy("A policy", ComponentConcernSeverity.UNSPECIFIED_UNKNOWN, false, false, null, "Uncategorized");
     private static final ComponentVulnerabilities COMPONENT_VULNERABILITIES = new ComponentVulnerabilities(List.of(), List.of(), List.of(), List.of(new LinkableItem("Vulnerability", "CVE-007")));
     private static final AbstractBomComponentDetails BOM_COMPONENT_DETAILS = createBomComponentDetailsWithComponentVulnerabilities(COMPONENT_VULNERABILITIES);
     private static final IssueBomComponentDetails ISSUE_BOM_COMPONENT_DETAILS = IssueBomComponentDetails.fromBomComponentDetails(BOM_COMPONENT_DETAILS);
@@ -89,7 +90,7 @@ public class ProjectIssueModelConverterTest {
         IssueBomComponentDetails issueBomComponentDetails = IssueBomComponentDetails.fromBomComponentDetails(vulnerableBomComponentDetails);
 
         ProjectIssueModel projectIssueModel = ProjectIssueModel.vulnerability(PROVIDER_DETAILS, PROJECT_ITEM, PROJECT_VERSION_ITEM, issueBomComponentDetails, vulnerabilityDetails);
-        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel);
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName");
 
         assertTrue(issueCreationModel.getDescription().contains(ComponentConcernSeverity.CRITICAL.getVulnerabilityLabel()), "Expected highest vulnerability severity in the description to be CRITICAL");
     }
@@ -165,7 +166,7 @@ public class ProjectIssueModelConverterTest {
         MockIssueTrackerMessageFormatter formatter = MockIssueTrackerMessageFormatter.withIntegerMaxValueLength();
         ProjectIssueModelConverter converter = new ProjectIssueModelConverter(formatter);
 
-        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel);
+        IssueCreationModel issueCreationModel = converter.toIssueCreationModel(projectIssueModel, "jobName");
         assertEquals(projectIssueModel, issueCreationModel.getSource().orElse(null));
 
         String issueCreationModelTitle = issueCreationModel.getTitle();
@@ -202,6 +203,7 @@ public class ProjectIssueModelConverterTest {
             List.of(COMPONENT_POLICY),
             new LinkableItem("License", "A software license", "https://license-url"),
             "Example Usage",
+            ComponentUpgradeGuidance.none(),
             List.of(
                 new LinkableItem("Attribute", "Example attribute")
             ),
