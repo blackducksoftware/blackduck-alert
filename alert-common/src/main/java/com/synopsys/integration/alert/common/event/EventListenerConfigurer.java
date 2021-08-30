@@ -8,44 +8,64 @@
 package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.JmsListenerConfigurer;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
+import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.listener.MessageListenerContainer;
 
 @Configuration
 public class EventListenerConfigurer implements JmsListenerConfigurer {
     private final Logger logger = LoggerFactory.getLogger(EventListenerConfigurer.class);
 
-    private final List<AlertChannelEventListener> alertChannelEventListeners;
-    private final List<AlertDefaultEventListener> alertDefaultEventListeners;
-    private final DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory;
-    private final DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory;
+    private final List<AlertEventListener> allAlertMessageListeners;
+    private final Set<String> distributionEventDestinationNames;
+    private final CachingConnectionFactory cachingConnectionFactory;
 
     @Autowired
-    public EventListenerConfigurer(List<AlertChannelEventListener> alertChannelEventListeners,
-        List<AlertDefaultEventListener> alertDefaultEventListeners,
-        DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory,
-        DefaultJmsListenerContainerFactory distributionChannelJmsListenerContainerFactory) {
-        this.alertChannelEventListeners = alertChannelEventListeners;
-        this.alertDefaultEventListeners = alertDefaultEventListeners;
-        this.defaultJmsListenerContainerFactory = defaultJmsListenerContainerFactory;
-        this.distributionChannelJmsListenerContainerFactory = distributionChannelJmsListenerContainerFactory;
+    public EventListenerConfigurer(
+        List<AlertEventListener> allAlertMessageListeners,
+        List<AlertChannelEventListener> distributionEventReceivers,
+        CachingConnectionFactory cachingConnectionFactory
+    ) {
+        this.allAlertMessageListeners = allAlertMessageListeners;
+        this.distributionEventDestinationNames = distributionEventReceivers
+            .stream()
+            .map(AlertEventListener::getDestinationName)
+            .collect(Collectors.toSet());
+        this.cachingConnectionFactory = cachingConnectionFactory;
     }
 
     @Override
     public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
+        MessageListenerContainer alertDefaultMessageListenerContainer = createMessageListenerContainer();
+
         logger.info("Registering JMS Listeners");
-        alertDefaultEventListeners.forEach(listener -> registerListenerEndpoint(registrar, listener, defaultJmsListenerContainerFactory));
-        alertChannelEventListeners.forEach(listener -> registerListenerEndpoint(registrar, listener, distributionChannelJmsListenerContainerFactory));
+        for (AlertEventListener messageListener : allAlertMessageListeners) {
+            if (distributionEventDestinationNames.contains(messageListener.getDestinationName())) {
+                MessageListenerContainer distributionChannelMessageListenerContainer = createMessageListenerContainer();
+                registerListenerEndpoint(registrar, messageListener, distributionChannelMessageListenerContainer);
+            } else {
+                registerListenerEndpoint(registrar, messageListener, alertDefaultMessageListenerContainer);
+            }
+        }
     }
 
-    private void registerListenerEndpoint(JmsListenerEndpointRegistrar registrar, AlertEventListener listener, DefaultJmsListenerContainerFactory jmsListenerContainerFactory) {
+    private MessageListenerContainer createMessageListenerContainer() {
+        DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+        messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
+        return messageListenerContainer;
+    }
+
+    private void registerListenerEndpoint(JmsListenerEndpointRegistrar registrar, AlertEventListener listener, MessageListenerContainer messageListenerContainer) {
         String destinationName = listener.getDestinationName();
         String listenerId = createListenerId(destinationName);
         logger.info("Registering JMS Listener: {}", listenerId);
@@ -53,10 +73,12 @@ public class EventListenerConfigurer implements JmsListenerConfigurer {
         endpoint.setId(listenerId);
         endpoint.setDestination(destinationName);
         endpoint.setMessageListener(listener);
-        registrar.registerEndpoint(endpoint, jmsListenerContainerFactory);
+        endpoint.setupListenerContainer(messageListenerContainer);
+        registrar.registerEndpoint(endpoint);
     }
 
     private String createListenerId(String name) {
         return String.format("%sListener", name);
     }
+
 }
