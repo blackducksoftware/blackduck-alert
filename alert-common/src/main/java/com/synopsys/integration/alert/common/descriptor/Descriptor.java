@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.descriptor.api.model.DescriptorKey;
@@ -60,7 +60,7 @@ public abstract class Descriptor extends Stringable {
     }
 
     // TODO these should be concrete methods based on optional constructor params
-    public abstract Optional<GlobalConfigurationValidator> getGlobalValidator();
+    public abstract Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator();
 
     public abstract Optional<DistributionConfigurationValidator> getDistributionValidator();
 

@@ -99,7 +99,7 @@ public class AuthenticationConfigurationValidatorTest {
         FilePersistenceUtil filePersistenceUtil = Mockito.mock(FilePersistenceUtil.class);
         Mockito.when(filePersistenceUtil.uploadFileExists(Mockito.anyString())).thenReturn(true);
 
-        AuthenticationConfigurationValidator authenticationConfigurationValidator = new AuthenticationConfigurationValidator(filePersistenceUtil);
+        AuthenticationConfigurationFieldModelValidator authenticationConfigurationValidator = new AuthenticationConfigurationFieldModelValidator(filePersistenceUtil);
         Set<AlertFieldStatus> alertFieldStatuses = authenticationConfigurationValidator.validate(new FieldModel(new AuthenticationDescriptorKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), keyToValues));
 
         assertEquals(1, alertFieldStatuses.size());
@@ -108,7 +108,7 @@ public class AuthenticationConfigurationValidatorTest {
     private GlobalConfigurationValidatorAsserter createValidatorAsserter(Map<String, FieldValueModel> keyToValues) {
         AlertProperties mockAlertProperties = new MockAlertProperties();
         FilePersistenceUtil filePersistenceUtil = new FilePersistenceUtil(mockAlertProperties, new Gson());
-        return new GlobalConfigurationValidatorAsserter(new AuthenticationDescriptorKey().getUniversalKey(), new AuthenticationConfigurationValidator(filePersistenceUtil), keyToValues);
+        return new GlobalConfigurationValidatorAsserter(new AuthenticationDescriptorKey().getUniversalKey(), new AuthenticationConfigurationFieldModelValidator(filePersistenceUtil), keyToValues);
     }
 
     private Map<String, FieldValueModel> createValidLdapValues() {

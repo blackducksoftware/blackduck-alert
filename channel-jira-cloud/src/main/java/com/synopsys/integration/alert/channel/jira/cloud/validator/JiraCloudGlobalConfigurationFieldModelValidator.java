@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.jira.cloud.descriptor.JiraCloudDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
 import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 
 @Component
-public class JiraCloudGlobalConfigurationValidator implements GlobalConfigurationValidator {
+public class JiraCloudGlobalConfigurationFieldModelValidator implements GlobalConfigurationFieldModelValidator {
 
     @Override
     public Set<AlertFieldStatus> validate(FieldModel fieldModel) {

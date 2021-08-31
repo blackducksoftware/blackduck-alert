@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsDistributionConfigurationValidator;
-import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationValidator;
+import com.synopsys.integration.alert.channel.azure.boards.validator.AzureBoardsGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.validator.DistributionConfigurationValidator;
-import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationValidator;
+import com.synopsys.integration.alert.common.descriptor.validator.GlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
 
@@ -54,18 +54,18 @@ public class AzureBoardsDescriptor extends ChannelDescriptor {
     public static final String LABEL_WORK_ITEM_COMPLETED_STATE = "Work Item Completed State";
     public static final String LABEL_WORK_ITEM_REOPEN_STATE = "Work Item Reopen State";
 
-    private final AzureBoardsGlobalConfigurationValidator azureBoardsGlobalConfigurationValidator;
+    private final AzureBoardsGlobalConfigurationFieldModelValidator azureBoardsGlobalConfigurationValidator;
     private final AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator;
 
     @Autowired
-    public AzureBoardsDescriptor(AzureBoardsGlobalConfigurationValidator azureBoardsGlobalValidator, AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator) {
+    public AzureBoardsDescriptor(AzureBoardsGlobalConfigurationFieldModelValidator azureBoardsGlobalValidator, AzureBoardsDistributionConfigurationValidator azureBoardsDistributionConfigurationValidator) {
         super(ChannelKeys.AZURE_BOARDS, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION));
         this.azureBoardsGlobalConfigurationValidator = azureBoardsGlobalValidator;
         this.azureBoardsDistributionConfigurationValidator = azureBoardsDistributionConfigurationValidator;
     }
 
     @Override
-    public Optional<GlobalConfigurationValidator> getGlobalValidator() {
+    public Optional<GlobalConfigurationFieldModelValidator> getGlobalValidator() {
         return Optional.of(azureBoardsGlobalConfigurationValidator);
     }
 

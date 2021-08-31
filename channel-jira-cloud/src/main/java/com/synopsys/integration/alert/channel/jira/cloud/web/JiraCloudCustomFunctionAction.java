@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.api.channel.jira.JiraConstants;
 import com.synopsys.integration.alert.api.channel.jira.util.JiraPluginCheckUtils;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudProperties;
 import com.synopsys.integration.alert.channel.jira.cloud.JiraCloudPropertiesFactory;
-import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationValidator;
+import com.synopsys.integration.alert.channel.jira.cloud.validator.JiraCloudGlobalConfigurationFieldModelValidator;
 import com.synopsys.integration.alert.common.action.ActionResponse;
 import com.synopsys.integration.alert.common.action.CustomFunctionAction;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
@@ -36,12 +36,12 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 public class JiraCloudCustomFunctionAction extends CustomFunctionAction<String> {
     private final Logger logger = LoggerFactory.getLogger(JiraCloudCustomFunctionAction.class);
 
-    private final JiraCloudGlobalConfigurationValidator globalConfigurationValidator;
+    private final JiraCloudGlobalConfigurationFieldModelValidator globalConfigurationValidator;
     private final JiraCloudPropertiesFactory jiraCloudPropertiesFactory;
     private final Gson gson;
 
     @Autowired
-    public JiraCloudCustomFunctionAction(AuthorizationManager authorizationManager, JiraCloudGlobalConfigurationValidator globalConfigurationValidator, JiraCloudPropertiesFactory jiraCloudPropertiesFactory, Gson gson) {
+    public JiraCloudCustomFunctionAction(AuthorizationManager authorizationManager, JiraCloudGlobalConfigurationFieldModelValidator globalConfigurationValidator, JiraCloudPropertiesFactory jiraCloudPropertiesFactory, Gson gson) {
         super(authorizationManager);
         this.globalConfigurationValidator = globalConfigurationValidator;
         this.jiraCloudPropertiesFactory = jiraCloudPropertiesFactory;

@@ -2,20 +2,13 @@ package com.synopsys.integration.alert.channel.email.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.rest.model.FieldModel;
-import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
-import com.synopsys.integration.alert.descriptor.api.EmailChannelKey;
-import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.test.common.channel.GlobalConfigurationValidatorAsserter;
+import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
 
 public class EmailGlobalConfigurationValidatorTest {
 
@@ -29,42 +22,72 @@ public class EmailGlobalConfigurationValidatorTest {
 
     @Test
     public void verifyValidConfig() {
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationValidator(), createDefaultKeyToValues());
-        globalConfigurationValidatorAsserter.assertValid();
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.host = "host";
+        model.from = "from";
+        model.auth = true;
+        model.user = "user";
+        model.password = "password";
+
+        Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
+        assertEquals(0, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
+    }
+
+    @Test
+    public void verifyEmptyConfig() {
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+
+        Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
+        assertEquals(2, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
+        for (AlertFieldStatus status : alertFieldStatuses) {
+            assertEquals(ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE, status.getFieldMessage(), "Validation had unexpected field message.");
+        }
     }
 
     @Test
     public void verifyMissingAuth() {
-        Map<String, FieldValueModel> defaultKeyToValues = createDefaultKeyToValues();
-        FieldValueModel authFieldValueModel = new FieldValueModel(List.of("true"), true);
-        defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), authFieldValueModel);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.host = "host";
+        model.from = "from";
+        model.auth = true;
 
-        FieldModel fieldModel = new FieldModel(new EmailChannelKey().getUniversalKey(), ConfigContextEnum.GLOBAL.name(), defaultKeyToValues);
-        EmailGlobalConfigurationValidator emailGlobalConfigurationValidator = new EmailGlobalConfigurationValidator();
-        Set<AlertFieldStatus> alertFieldStatuses = emailGlobalConfigurationValidator.validate(fieldModel);
+        Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
+        assertEquals(2, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
+        for (AlertFieldStatus status : alertFieldStatuses) {
+            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH, status.getFieldMessage(), "Validation had unexpected field message.");
+        }
+    }
 
-        assertEquals(2, alertFieldStatuses.size());
+    @Test
+    public void verifyAuthNotProvided() {
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.host = "host";
+        model.from = "from";
+        model.user = "user";
+        model.password = "user";
+
+        Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
+        assertEquals(0, alertFieldStatuses.size(), "There were errors in the configuration when none were expected.");
     }
 
     @Test
     public void verifyMissingAuthPassword() {
-        Map<String, FieldValueModel> defaultKeyToValues = createDefaultKeyToValues();
-        FieldValueModel authFieldValueModel = new FieldValueModel(List.of("true"), true);
-        FieldValueModel usernameFieldValueModel = new FieldValueModel(List.of("username"), true);
-        defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), authFieldValueModel);
-        defaultKeyToValues.put(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), usernameFieldValueModel);
+        EmailGlobalConfigurationValidator validator = new EmailGlobalConfigurationValidator();
+        EmailGlobalConfigModel model = new EmailGlobalConfigModel();
+        model.host = "host";
+        model.from = "from";
+        model.auth = true;
+        model.user = "user";
 
-        GlobalConfigurationValidatorAsserter globalConfigurationValidatorAsserter = new GlobalConfigurationValidatorAsserter(new EmailChannelKey().getUniversalKey(), new EmailGlobalConfigurationValidator(), defaultKeyToValues);
-        globalConfigurationValidatorAsserter.assertMissingValue(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
-    }
-
-    private Map<String, FieldValueModel> createDefaultKeyToValues() {
-        Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        FieldValueModel hostFieldValueModel = new FieldValueModel(List.of("hostName"), true);
-        FieldValueModel fromFieldValueModel = new FieldValueModel(List.of("from"), true);
-        keyToValues.put(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), hostFieldValueModel);
-        keyToValues.put(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), fromFieldValueModel);
-
-        return keyToValues;
+        Set<AlertFieldStatus> alertFieldStatuses = validator.validate(model);
+        assertEquals(1, alertFieldStatuses.size(), "Validation found more or fewer errors than expected.");
+        for (AlertFieldStatus status : alertFieldStatuses) {
+            assertEquals("password", status.getFieldName(), "Validation reported an error for an unexpected field.");
+            assertEquals(EmailGlobalConfigurationValidator.REQUIRED_BECAUSE_AUTH, status.getFieldMessage(), "Validation had unexpected field message.");
+        }
     }
 }
