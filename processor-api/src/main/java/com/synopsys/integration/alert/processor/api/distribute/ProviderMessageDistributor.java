@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.processor.api.distribute;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,10 @@ public class ProviderMessageDistributor {
 
         DistributionEvent event = new DistributionEvent(destinationKey, jobId, notificationIds, processedMessageHolder.toProviderMessageHolder());
         logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
+        if (logger.isDebugEnabled()) {
+            String joinedIds = StringUtils.join(notificationIds, ", ");
+            logger.debug("Creating event: {}. Job ID: {}. For notifications: {}", event.getEventId(), jobId, joinedIds);
+        }
         eventManager.sendEvent(event);
     }
 

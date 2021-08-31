@@ -43,6 +43,9 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Destination: {} is processing event: {}", channelKey.getDisplayName(), event.getEventId());
+                }
                 channel.distributeMessages(details.get(), event.getProviderMessages());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
             } catch (AlertException alertException) {
@@ -61,12 +64,12 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
     }
 
     protected void handleAlertException(AlertException e, DistributionEvent event) {
-        logger.error("An exception occurred while handling the following event: {}", event, e);
+        logger.error("An exception occurred while handling the following event: {}. {}", event.getEventId(), e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An exception occurred during message distribution", e);
     }
 
     protected void handleUnknownException(Exception e, DistributionEvent event) {
-        logger.error("An unexpected error occurred while handling the following event: {}", event, e);
+        logger.error("An unexpected error occurred while handling the following event: {}. {}", event.getEventId(), e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An unexpected error occurred during message distribution. Please refer to the logs for more details.", null);
     }
 

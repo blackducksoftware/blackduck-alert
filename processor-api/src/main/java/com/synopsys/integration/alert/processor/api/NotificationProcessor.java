@@ -10,6 +10,9 @@ package com.synopsys.integration.alert.processor.api;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +32,7 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 @Component
 // TODO rename to WorkflowNotificationProcessor
 public final class NotificationProcessor {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
     private final NotificationContentProcessor notificationContentProcessor;
@@ -55,8 +59,22 @@ public final class NotificationProcessor {
 
     public void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         try {
+            if (logger.isDebugEnabled()) {
+                List<Long> notificationIds = notifications.stream()
+                                                 .map(AlertNotificationModel::getId)
+                                                 .collect(Collectors.toList());
+                String joinedIds = StringUtils.join(notificationIds, ", ");
+                logger.debug("Processing notifications: {}", joinedIds);
+            }
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
+            if (logger.isDebugEnabled()) {
+                List<Long> notificationIds = notifications.stream()
+                                                 .map(AlertNotificationModel::getId)
+                                                 .collect(Collectors.toList());
+                String joinedIds = StringUtils.join(notificationIds, ", ");
+                logger.debug("These notifications have been processed: {}", joinedIds);
+            }
         } finally {
             clearCaches();
         }
@@ -64,10 +82,10 @@ public final class NotificationProcessor {
 
     private void processAndDistribute(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
-            .stream()
-            .map(notificationDetailExtractionDelegator::wrapNotification)
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
+                                                                        .stream()
+                                                                        .map(notificationDetailExtractionDelegator::wrapNotification)
+                                                                        .flatMap(List::stream)
+                                                                        .collect(Collectors.toList());
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
         // If there are elements to process in the current page or if there are more pages, keep looping.
         while (!statefulAlertPage.isCurrentPageEmpty() || statefulAlertPage.hasNextPage()) {
