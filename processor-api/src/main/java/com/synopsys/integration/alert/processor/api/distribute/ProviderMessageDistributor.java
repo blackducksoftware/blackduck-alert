@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.event.EventManager;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
@@ -28,6 +29,7 @@ public class ProviderMessageDistributor {
     private static final String DESTINATION_WRAPPER_CLASS_NAME = ChannelKey.class.getSimpleName();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
 
     private final ProcessingAuditAccessor auditAccessor;
     private final EventManager eventManager;
@@ -59,7 +61,7 @@ public class ProviderMessageDistributor {
         logger.info("Sending {}. Event ID: {}. Job ID: {}. Destination: {}", EVENT_CLASS_NAME, event.getEventId(), jobId, destinationKey);
         if (logger.isDebugEnabled()) {
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            logger.debug("Creating event: {}. Job ID: {}. For notifications: {}", event.getEventId(), jobId, joinedIds);
+            notificationLogger.debug("Creating event: {}. Job ID: {}. For notifications: {}", event.getEventId(), jobId, joinedIds);
         }
         eventManager.sendEvent(event);
     }

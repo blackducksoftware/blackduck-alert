@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
@@ -33,6 +34,8 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 // TODO rename to WorkflowNotificationProcessor
 public final class NotificationProcessor {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
+
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
     private final NotificationContentProcessor notificationContentProcessor;
@@ -64,7 +67,7 @@ public final class NotificationProcessor {
                                                  .map(AlertNotificationModel::getId)
                                                  .collect(Collectors.toList());
                 String joinedIds = StringUtils.join(notificationIds, ", ");
-                logger.debug("Processing notifications: {}", joinedIds);
+                notificationLogger.debug("Processing notifications: {}", joinedIds);
             }
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
@@ -73,7 +76,7 @@ public final class NotificationProcessor {
                                                  .map(AlertNotificationModel::getId)
                                                  .collect(Collectors.toList());
                 String joinedIds = StringUtils.join(notificationIds, ", ");
-                logger.debug("These notifications have been processed: {}", joinedIds);
+                notificationLogger.debug("These notifications have been processed: {}", joinedIds);
             }
         } finally {
             clearCaches();

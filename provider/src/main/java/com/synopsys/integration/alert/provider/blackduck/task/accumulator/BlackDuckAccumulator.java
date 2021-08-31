@@ -21,6 +21,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -44,6 +45,7 @@ public class BlackDuckAccumulator extends ProviderTask {
                                                                          .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
+    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
 
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final NotificationAccessor notificationAccessor;
@@ -144,7 +146,7 @@ public class BlackDuckAccumulator extends ProviderTask {
                                              .map(AlertNotificationModel::getId)
                                              .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            logger.debug("Saving notifications: {}", joinedIds);
+            notificationLogger.debug("Saving notifications: {}", joinedIds);
         }
         eventManager.sendEvent(new NotificationReceivedEvent());
     }

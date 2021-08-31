@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertChannelEventListener;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -24,6 +25,7 @@ import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent
 
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEvent> implements AlertChannelEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
 
     private final ProcessingAuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
@@ -44,7 +46,7 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         if (details.isPresent()) {
             try {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Destination: {} is processing event: {}", channelKey.getDisplayName(), event.getEventId());
+                    notificationLogger.debug("Destination: {} is processing event: {}", channelKey.getDisplayName(), event.getEventId());
                 }
                 channel.distributeMessages(details.get(), event.getProviderMessages());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
