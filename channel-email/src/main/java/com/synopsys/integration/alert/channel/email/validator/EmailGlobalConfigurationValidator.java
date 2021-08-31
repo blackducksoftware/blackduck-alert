@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.web.EmailGlobalConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatus;
-import com.synopsys.integration.alert.common.descriptor.validator.ConfigurationFieldValidator;
+import com.synopsys.integration.alert.common.descriptor.config.field.errors.AlertFieldStatusMessages;
 
 @Component
 public class EmailGlobalConfigurationValidator {
@@ -24,10 +24,10 @@ public class EmailGlobalConfigurationValidator {
     public Set<AlertFieldStatus> validate(EmailGlobalConfigModel model) {
         Set<AlertFieldStatus> statuses = new HashSet<>();
         if (StringUtils.isBlank(model.host)) {
-            statuses.add(AlertFieldStatus.error("host", ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE));
+            statuses.add(AlertFieldStatus.error("host", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
         if (StringUtils.isBlank(model.from)) {
-            statuses.add(AlertFieldStatus.error("from", ConfigurationFieldValidator.REQUIRED_FIELD_MISSING_MESSAGE));
+            statuses.add(AlertFieldStatus.error("from", AlertFieldStatusMessages.REQUIRED_FIELD_MISSING));
         }
 
         if (Boolean.TRUE.equals(model.auth)) {
