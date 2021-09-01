@@ -62,24 +62,22 @@ public final class NotificationProcessor {
 
     public void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         try {
-            if (logger.isDebugEnabled()) {
-                List<Long> notificationIds = notifications.stream()
-                                                 .map(AlertNotificationModel::getId)
-                                                 .collect(Collectors.toList());
-                String joinedIds = StringUtils.join(notificationIds, ", ");
-                notificationLogger.debug("Processing notifications: {}", joinedIds);
-            }
+            logNotifications("Processing notifications: {}", notifications);
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
-            if (logger.isDebugEnabled()) {
-                List<Long> notificationIds = notifications.stream()
-                                                 .map(AlertNotificationModel::getId)
-                                                 .collect(Collectors.toList());
-                String joinedIds = StringUtils.join(notificationIds, ", ");
-                notificationLogger.debug("These notifications have been processed: {}", joinedIds);
-            }
+            logNotifications("These notifications have been processed: {}", notifications);
         } finally {
             clearCaches();
+        }
+    }
+
+    private void logNotifications(String messageFormat, List<AlertNotificationModel> notifications) {
+        if (logger.isDebugEnabled()) {
+            List<Long> notificationIds = notifications.stream()
+                                             .map(AlertNotificationModel::getId)
+                                             .collect(Collectors.toList());
+            String joinedIds = StringUtils.join(notificationIds, ", ");
+            notificationLogger.debug(messageFormat, joinedIds);
         }
     }
 
