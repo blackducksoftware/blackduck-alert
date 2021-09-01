@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.common.persistence.model.ConfigurationMode
 import com.synopsys.integration.alert.common.rest.model.FieldModel;
 import com.synopsys.integration.alert.common.rest.model.FieldValueModel;
 import com.synopsys.integration.alert.descriptor.api.model.ChannelKeys;
+import com.synopsys.integration.alert.service.email.EmailMessagingService;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.service.email.template.FreemarkerTemplatingService;
 import com.synopsys.integration.alert.test.common.MockAlertProperties;
@@ -70,7 +71,8 @@ public class EmailGlobalTestActionTest {
         Mockito.when(emailAddressValidator.validate(Mockito.any(), Mockito.anyCollection())).thenReturn(new ValidatedEmailAddresses(Set.of(), Set.of()));
 
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
-        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, null, emailAddressValidator, emailAddressGatherer, null, freemarkerTemplatingService, configurationAccessor);
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
+        EmailChannelMessageSender emailChannelMessageSender = new EmailChannelMessageSender(ChannelKeys.EMAIL, null, emailAddressValidator, emailAddressGatherer, null, emailMessagingService, configurationAccessor);
 
         EmailGlobalTestAction emailGlobalTestAction = new EmailGlobalTestAction(emailChannelMessageSender);
 
@@ -147,8 +149,9 @@ public class EmailGlobalTestActionTest {
         MessageContentGroupCsvCreator messageContentGroupCsvCreator = new MessageContentGroupCsvCreator();
         EmailAttachmentFileCreator emailAttachmentFileCreator = new EmailAttachmentFileCreator(testAlertProperties, messageContentGroupCsvCreator, gson);
         FreemarkerTemplatingService freemarkerTemplatingService = new FreemarkerTemplatingService();
+        EmailMessagingService emailMessagingService = new EmailMessagingService(freemarkerTemplatingService);
 
-        return new EmailChannelMessageSender(ChannelKeys.EMAIL, testAlertProperties, emailAddressValidator, emailAddressGatherer, emailAttachmentFileCreator, freemarkerTemplatingService, null);
+        return new EmailChannelMessageSender(ChannelKeys.EMAIL, testAlertProperties, emailAddressValidator, emailAddressGatherer, emailAttachmentFileCreator, emailMessagingService, null);
     }
 
     private FieldUtility createValidEmailGlobalFieldUtility(TestProperties testProperties) {

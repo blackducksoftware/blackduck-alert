@@ -29,10 +29,11 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.service.email.enumeration.EmailPropertyKeys;
@@ -43,19 +44,19 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
+@Component
 public class EmailMessagingService {
     public static final String EMAIL_SUBJECT_LINE_TEMPLATE = "subjectLineTemplate";
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
-    private final EmailProperties emailProperties;
     private final FreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(EmailProperties emailProperties, FreemarkerTemplatingService freemarkerTemplatingService) {
-        this.emailProperties = emailProperties;
+    @Autowired
+    public EmailMessagingService(FreemarkerTemplatingService freemarkerTemplatingService) {
         this.freemarkerTemplatingService = freemarkerTemplatingService;
     }
 
-    public void sendEmailMessage(EmailTarget emailTarget) throws AlertException {
+    public void sendEmailMessage(Properties javamailProperties, EmailTarget emailTarget) throws AlertException {
         try {
             String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
             Set<String> emailAddresses = emailTarget.getEmailAddresses()
@@ -70,7 +71,7 @@ public class EmailMessagingService {
             }
 
             Map<String, Object> model = emailTarget.getModel();
-            Session session = createMailSession(emailProperties);
+            Session session = Session.getInstance(javamailProperties);
             TemplateLoader templateLoader = freemarkerTemplatingService.createClassTemplateLoader("/templates/email");
             Configuration templateDirectory = freemarkerTemplatingService.createFreemarkerConfig(templateLoader);
             Template emailTemplate = templateDirectory.getTemplate(templateName);
@@ -93,8 +94,18 @@ public class EmailMessagingService {
             }
             Template subjectLineTemplate = new Template(EMAIL_SUBJECT_LINE_TEMPLATE, subjectLine, templateDirectory);
             String resolvedSubjectLine = freemarkerTemplatingService.resolveTemplate(model, subjectLineTemplate);
-            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailProperties);
-            sendMessages(emailProperties, session, messages);
+
+            String from = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+            boolean auth = Boolean.parseBoolean(javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()));
+            String host = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+            int port = Integer.parseInt(javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
+            String username = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey());
+
+            // Not technically a JavaMail prop
+            String password = javamailProperties.getProperty(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
+
+            List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, from);
+            sendMessages(auth, host, port, username, password, session, messages);
         } catch (MessagingException | IOException | IntegrationException ex) {
             String errorMessage = "Could not send the email. " + ex.getMessage();
             throw new AlertException(errorMessage, ex);
@@ -107,15 +118,7 @@ public class EmailMessagingService {
         contentIdsToFilePaths.put("<" + cid + ">", value);
     }
 
-    private Session createMailSession(EmailProperties emailProperties) {
-        Map<String, String> sessionProps = emailProperties.getJavamailConfigProperties();
-        Properties props = new Properties();
-        props.putAll(sessionProps);
-
-        return Session.getInstance(props);
-    }
-
-    private List<Message> createMessages(Collection<String> emailAddresses, String subjectLine, Session session, MimeMultipart mimeMultipart, EmailProperties emailProperties)
+    private List<Message> createMessages(Collection<String> emailAddresses, String subjectLine, Session session, MimeMultipart mimeMultipart, String fromString)
         throws AlertException, MessagingException {
         List<InternetAddress> addresses = new ArrayList<>();
         Set<String> invalidAddresses = new HashSet<>();
@@ -139,7 +142,6 @@ public class EmailMessagingService {
             throw new AlertException(noValidAddressesErrorMessage);
         }
 
-        String fromString = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY);
         InternetAddress fromAddress;
         if (StringUtils.isBlank(fromString)) {
             logger.warn("No 'from' address specified");
@@ -165,15 +167,15 @@ public class EmailMessagingService {
         return messages;
     }
 
-    public void sendMessages(EmailProperties emailProperties, Session session, List<Message> messages) throws AlertException {
+    public void sendMessages(boolean auth, String host, int port, String username, String password, Session session, List<Message> messages) throws AlertException {
         Set<String> errorMessages = new HashSet<>();
         Set<String> invalidRecipients = new HashSet<>();
         for (Message message : messages) {
             Address[] recipients = null;
             try {
                 recipients = message.getAllRecipients();
-                if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY))) {
-                    sendAuthenticated(emailProperties, message, session);
+                if (auth) {
+                    sendAuthenticated(host, port, username, password, message, session);
                 } else {
                     Transport.send(message);
                 }
@@ -197,12 +199,7 @@ public class EmailMessagingService {
         }
     }
 
-    private void sendAuthenticated(EmailProperties emailProperties, Message message, Session session) throws MessagingException {
-        String host = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY);
-        int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY));
-        String username = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY);
-        String password = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY);
-
+    private void sendAuthenticated(String host, int port, String username, String password, Message message, Session session) throws MessagingException {
         Transport transport = session.getTransport("smtp");
         try {
             transport.connect(host, port, username, password);

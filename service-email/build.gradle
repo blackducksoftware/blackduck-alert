@@ -8,6 +8,7 @@ dependencies {
     implementation platform(project(':alert-platform'))
     implementation project(':api-common-model')
     implementation project(':alert-common')
+    implementation project(':channel-email')
 
     implementation 'org.jsoup:jsoup'
     implementation 'org.springframework:spring-context'

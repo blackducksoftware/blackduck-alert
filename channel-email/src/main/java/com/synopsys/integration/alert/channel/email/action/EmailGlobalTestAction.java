@@ -48,7 +48,7 @@ public class EmailGlobalTestAction extends TestAction {
 
         EmailChannelMessageModel testMessage = EmailChannelMessageModel.simple(TEST_SUBJECT_LINE, TEST_MESSAGE_CONTENT, "", "");
 
-        return emailChannelMessageSender.sendMessages(emailProperties, distributionDetails, List.of(testMessage));
+        return emailChannelMessageSender.sendMessages(emailProperties.getJavamailProperties(), distributionDetails, List.of(testMessage));
     }
 
     private List<String> extractAndValidateDestination(FieldModel fieldModel) throws AlertException {

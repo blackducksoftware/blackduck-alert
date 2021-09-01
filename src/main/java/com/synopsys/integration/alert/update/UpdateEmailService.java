@@ -10,6 +10,7 @@ package com.synopsys.integration.alert.update;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,15 +47,15 @@ public class UpdateEmailService {
     private final SettingsKeyAccessor settingsKeyAccessor;
     private final UserAccessor userAccessor;
     private final ConfigurationAccessor configurationAccessor;
-    private final FreemarkerTemplatingService freemarkerTemplatingService;
+    private final EmailMessagingService emailMessagingService;
 
     @Autowired
-    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, FreemarkerTemplatingService freemarkerTemplatingService) {
+    public UpdateEmailService(AlertProperties alertProperties, SettingsKeyAccessor settingsKeyAccessor, UserAccessor userAccessor, ConfigurationAccessor configurationAccessor, EmailMessagingService emailMessagingService) {
         this.alertProperties = alertProperties;
         this.settingsKeyAccessor = settingsKeyAccessor;
         this.userAccessor = userAccessor;
         this.configurationAccessor = configurationAccessor;
-        this.freemarkerTemplatingService = freemarkerTemplatingService;
+        this.emailMessagingService = emailMessagingService;
     }
 
     public void sendUpdateEmail(UpdateModel updateModel) {
@@ -74,6 +75,8 @@ public class UpdateEmailService {
                                                      .findFirst()
                                                      .orElseThrow(() -> new AlertException("No global email configuration found"));
                 EmailProperties emailProperties = new EmailProperties(emailConfig);
+                Properties javamailProperties = new Properties();
+                javamailProperties.putAll(emailProperties.getJavamailProperties());
 
                 String alertServerUrl = alertProperties.getServerURL();
                 Map<String, Object> templateFields = new HashMap<>();
@@ -81,7 +84,7 @@ public class UpdateEmailService {
                 templateFields.put("newVersionName", updateVersion);
                 templateFields.put("repositoryUrl", updateModel.getRepositoryUrl());
                 templateFields.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertServerUrl);
-                handleSendAndUpdateDatabase(emailProperties, templateFields, optionalEmailAddress.get());
+                handleSendAndUpdateDatabase(javamailProperties, templateFields, optionalEmailAddress.get());
 
                 settingsKeyAccessor.saveSettingsKey(SETTINGS_KEY_VERSION_FOR_UPDATE_EMAIL, updateVersion);
             } catch (AlertException e) {
@@ -100,16 +103,15 @@ public class UpdateEmailService {
                    .isPresent();
     }
 
-    private void handleSendAndUpdateDatabase(EmailProperties emailProperties, Map<String, Object> templateFields, String emailAddress) throws AlertException {
+    private void handleSendAndUpdateDatabase(Properties javamailProperties, Map<String, Object> templateFields, String emailAddress) throws AlertException {
         try {
             String alertLogo = alertProperties.createSynopsysLogoPath();
 
             Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            EmailMessagingService emailService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
-            emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertLogo);
+            emailMessagingService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertLogo);
 
             EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
-            emailService.sendEmailMessage(passwordResetEmail);
+            emailMessagingService.sendEmailMessage(javamailProperties, passwordResetEmail);
         } catch (Exception genericException) {
             throw new AlertException("Problem sending version update email. " + StringUtils.defaultIfBlank(genericException.getMessage(), StringUtils.EMPTY), genericException);
         }

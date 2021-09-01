@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -56,7 +57,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
     private final JobEmailAddressValidator emailAddressValidator;
     private final EmailAddressGatherer emailAddressGatherer;
     private final EmailAttachmentFileCreator emailAttachmentFileCreator;
-    private final FreemarkerTemplatingService freemarkerTemplatingService;
+    private final EmailMessagingService emailMessagingService;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
@@ -66,7 +67,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         JobEmailAddressValidator emailAddressValidator,
         EmailAddressGatherer emailAddressGatherer,
         EmailAttachmentFileCreator emailAttachmentFileCreator,
-        FreemarkerTemplatingService freemarkerTemplatingService,
+        EmailMessagingService emailMessagingService,
         ConfigurationAccessor configurationAccessor
     ) {
         this.emailChannelKey = emailChannelKey;
@@ -74,18 +75,19 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         this.emailAddressValidator = emailAddressValidator;
         this.emailAddressGatherer = emailAddressGatherer;
         this.emailAttachmentFileCreator = emailAttachmentFileCreator;
-        this.freemarkerTemplatingService = freemarkerTemplatingService;
+        this.emailMessagingService = emailMessagingService;
         this.configurationAccessor = configurationAccessor;
     }
 
     @Override
     public MessageResult sendMessages(EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {
-        EmailProperties emailProperties = new EmailProperties(retrieveGlobalEmailConfig());
-        return sendMessages(emailProperties, emailJobDetails, emailMessages);
+        EmailProperties emailProperties = new EmailProperties(retrieveFieldModelGlobalEmailConfig());
+        Properties properties = new Properties();
+        properties.putAll(emailProperties.getJavamailProperties());
+        return sendMessages(properties, emailJobDetails, emailMessages);
     }
 
-    public MessageResult sendMessages(EmailProperties emailProperties, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {
-        EmailMessagingService emailMessagingService = new EmailMessagingService(emailProperties, freemarkerTemplatingService);
+    public MessageResult sendMessages(Properties javamailProperties, EmailJobDetailsModel emailJobDetails, List<EmailChannelMessageModel> emailMessages) throws AlertException {
         EmailAttachmentFormat attachmentFormat = EmailAttachmentFormat.getValueSafely(emailJobDetails.getAttachmentFileType());
 
         // Validation
@@ -113,7 +115,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
 
             Set<String> gatheredEmailAddresses = emailAddressGatherer.gatherEmailAddresses(emailJobDetails, projectHrefs);
             validateGatheredEmailAddresses(gatheredEmailAddresses, invalidEmailAddresses);
-            sendMessage(emailMessagingService, attachmentFormat, message, gatheredEmailAddresses);
+            sendMessage(javamailProperties, attachmentFormat, message, gatheredEmailAddresses);
             totalEmailsSent += gatheredEmailAddresses.size();
         }
 
@@ -127,7 +129,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         return new MessageResult(String.format("Successfully sent %d email(s)", totalEmailsSent));
     }
 
-    private ConfigurationModel retrieveGlobalEmailConfig() throws AlertException {
+    private ConfigurationModel retrieveFieldModelGlobalEmailConfig() throws AlertException {
         return configurationAccessor.getConfigurationsByDescriptorKeyAndContext(emailChannelKey, ConfigContextEnum.GLOBAL)
                    .stream()
                    .findAny()
@@ -153,7 +155,7 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         }
     }
 
-    private void sendMessage(EmailMessagingService emailService, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {
+    private void sendMessage(Properties javamailProperties, EmailAttachmentFormat attachmentFormat, EmailChannelMessageModel message, Set<String> emailAddresses) throws AlertException {
         HashMap<String, Object> model = new HashMap<>();
         model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), message.getContent());
         model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), message.getMessageFormat());
@@ -166,12 +168,12 @@ public class EmailChannelMessageSender implements ChannelMessageSender<EmailJobD
         model.put(FreemarkerTemplatingService.KEY_ALERT_SERVER_URL, alertProperties.getServerURL());
 
         Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertProperties.createSynopsysLogoPath());
+        emailMessagingService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), alertProperties.createSynopsysLogoPath());
 
         EmailTarget emailTarget = new EmailTarget(emailAddresses, FILE_NAME_MESSAGE_TEMPLATE, model, contentIdsToFilePaths);
         Optional<File> optionalAttachment = message.getSource().flatMap(projectMessage -> addAttachment(emailTarget, attachmentFormat, projectMessage));
 
-        emailService.sendEmailMessage(emailTarget);
+        emailMessagingService.sendEmailMessage(javamailProperties, emailTarget);
         optionalAttachment.ifPresent(emailAttachmentFileCreator::cleanUpAttachmentFile);
     }
 
