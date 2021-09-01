@@ -34,16 +34,16 @@ public final class AlertLoggerFactory {
 
     public static Logger getNotificationLogger(Class<?> clazz) {
         Logger logger = LoggerFactory.getLogger(clazz);
-        Logger auditLogger = LoggerFactory.getLogger(ALERT_NOTIFICATION_LOGGER);
+        Logger notificationLogger = LoggerFactory.getLogger(ALERT_NOTIFICATION_LOGGER);
 
-        return new AlertCompositeLogger(auditLogger, logger);
+        return new AlertCompositeLogger(notificationLogger, logger);
     }
 
     public static Logger getNotificationLogger(String name) {
         Logger logger = LoggerFactory.getLogger(name);
-        Logger auditLogger = LoggerFactory.getLogger(ALERT_NOTIFICATION_LOGGER);
+        Logger notificationLogger = LoggerFactory.getLogger(ALERT_NOTIFICATION_LOGGER);
 
-        return new AlertCompositeLogger(auditLogger, logger);
+        return new AlertCompositeLogger(notificationLogger, logger);
     }
 
 }

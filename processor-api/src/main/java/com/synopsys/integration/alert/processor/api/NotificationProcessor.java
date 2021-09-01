@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 // TODO rename to WorkflowNotificationProcessor
 public final class NotificationProcessor {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;

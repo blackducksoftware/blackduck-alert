@@ -25,7 +25,7 @@ import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent
 
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEvent> implements AlertChannelEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final ProcessingAuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;

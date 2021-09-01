@@ -45,7 +45,7 @@ public class BlackDuckAccumulator extends ProviderTask {
                                                                          .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
-    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final NotificationAccessor notificationAccessor;

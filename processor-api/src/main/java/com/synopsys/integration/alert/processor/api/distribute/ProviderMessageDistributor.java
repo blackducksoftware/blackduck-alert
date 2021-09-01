@@ -29,7 +29,7 @@ public class ProviderMessageDistributor {
     private static final String DESTINATION_WRAPPER_CLASS_NAME = ChannelKey.class.getSimpleName();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Logger notificationLogger = AlertLoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final ProcessingAuditAccessor auditAccessor;
     private final EventManager eventManager;
