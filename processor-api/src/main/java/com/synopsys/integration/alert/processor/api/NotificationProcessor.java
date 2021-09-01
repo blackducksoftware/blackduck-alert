@@ -74,8 +74,8 @@ public final class NotificationProcessor {
     private void logNotifications(String messageFormat, List<AlertNotificationModel> notifications) {
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = notifications.stream()
-                                             .map(AlertNotificationModel::getId)
-                                             .collect(Collectors.toList());
+                .map(AlertNotificationModel::getId)
+                .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug(messageFormat, joinedIds);
         }
@@ -83,10 +83,10 @@ public final class NotificationProcessor {
 
     private void processAndDistribute(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         List<DetailedNotificationContent> filterableNotifications = notifications
-                                                                        .stream()
-                                                                        .map(notificationDetailExtractionDelegator::wrapNotification)
-                                                                        .flatMap(List::stream)
-                                                                        .collect(Collectors.toList());
+            .stream()
+            .map(notificationDetailExtractionDelegator::wrapNotification)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
         StatefulAlertPage<FilteredJobNotificationWrapper, RuntimeException> statefulAlertPage = jobNotificationMapper.mapJobsToNotifications(filterableNotifications, frequencies);
         // If there are elements to process in the current page or if there are more pages, keep looping.
         while (!statefulAlertPage.isCurrentPageEmpty() || statefulAlertPage.hasNextPage()) {

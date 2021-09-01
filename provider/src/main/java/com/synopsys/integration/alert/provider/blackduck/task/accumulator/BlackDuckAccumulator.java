@@ -40,9 +40,9 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckAccumulator extends ProviderTask {
     private static final List<String> SUPPORTED_NOTIFICATION_TYPES = Stream.of(NotificationType.values())
-                                                                         .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
-                                                                         .map(Enum::name)
-                                                                         .collect(Collectors.toList());
+        .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED)
+        .map(Enum::name)
+        .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
     private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
@@ -122,7 +122,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         List<AlertNotificationModel> alertNotifications = convertToAlertNotificationModels(notifications);
         write(alertNotifications);
         Optional<OffsetDateTime> optionalNextSearchTime = computeLatestNotificationCreatedAtDate(alertNotifications)
-                                                              .map(latestNotification -> latestNotification.plusNanos(1000000));
+            .map(latestNotification -> latestNotification.plusNanos(1000000));
         if (optionalNextSearchTime.isPresent()) {
             OffsetDateTime nextSearchTime = optionalNextSearchTime.get();
             logger.info("Notifications found; the next search time will be: {}", nextSearchTime);
@@ -132,10 +132,10 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private List<AlertNotificationModel> convertToAlertNotificationModels(List<NotificationView> notifications) {
         return notifications
-                   .stream()
-                   .sorted(Comparator.comparing(NotificationView::getCreatedAt))
-                   .map(this::convertToAlertNotificationModel)
-                   .collect(Collectors.toList());
+            .stream()
+            .sorted(Comparator.comparing(NotificationView::getCreatedAt))
+            .map(this::convertToAlertNotificationModel)
+            .collect(Collectors.toList());
     }
 
     private void write(List<AlertNotificationModel> contentList) {
@@ -143,8 +143,8 @@ public class BlackDuckAccumulator extends ProviderTask {
         List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
         if (logger.isDebugEnabled()) {
             List<Long> notificationIds = savedNotifications.stream()
-                                             .map(AlertNotificationModel::getId)
-                                             .collect(Collectors.toList());
+                .map(AlertNotificationModel::getId)
+                .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
             notificationLogger.debug("Saving notifications: {}", joinedIds);
         }
