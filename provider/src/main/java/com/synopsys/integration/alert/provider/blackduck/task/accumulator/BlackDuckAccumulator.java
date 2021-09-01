@@ -14,12 +14,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.common.event.EventManager;
 import com.synopsys.integration.alert.common.event.NotificationReceivedEvent;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.message.model.DateRange;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProviderTaskPropertiesAccessor;
@@ -43,6 +45,7 @@ public class BlackDuckAccumulator extends ProviderTask {
         .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final BlackDuckProviderKey blackDuckProviderKey;
     private final NotificationAccessor notificationAccessor;
@@ -137,7 +140,14 @@ public class BlackDuckAccumulator extends ProviderTask {
 
     private void write(List<AlertNotificationModel> contentList) {
         logger.info("Writing {} notifications...", contentList.size());
-        notificationAccessor.saveAllNotifications(contentList);
+        List<AlertNotificationModel> savedNotifications = notificationAccessor.saveAllNotifications(contentList);
+        if (logger.isDebugEnabled()) {
+            List<Long> notificationIds = savedNotifications.stream()
+                .map(AlertNotificationModel::getId)
+                .collect(Collectors.toList());
+            String joinedIds = StringUtils.join(notificationIds, ", ");
+            notificationLogger.debug("Saved notifications: {}", joinedIds);
+        }
         eventManager.sendEvent(new NotificationReceivedEvent());
     }
 

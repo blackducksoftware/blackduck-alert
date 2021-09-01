@@ -10,10 +10,14 @@ package com.synopsys.integration.alert.processor.api;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.NotificationAccessor;
 import com.synopsys.integration.alert.common.rest.model.AlertNotificationModel;
 import com.synopsys.integration.alert.processor.api.detail.DetailedNotificationContent;
@@ -29,6 +33,9 @@ import com.synopsys.integration.alert.processor.api.filter.StatefulAlertPage;
 @Component
 // TODO rename to WorkflowNotificationProcessor
 public final class NotificationProcessor {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
+
     private final NotificationDetailExtractionDelegator notificationDetailExtractionDelegator;
     private final JobNotificationMapper jobNotificationMapper;
     private final NotificationContentProcessor notificationContentProcessor;
@@ -55,10 +62,22 @@ public final class NotificationProcessor {
 
     public void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         try {
+            logNotifications("Start processing notifications: {}", notifications);
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
+            logNotifications("Finished processing notifications: {}", notifications);
         } finally {
             clearCaches();
+        }
+    }
+
+    private void logNotifications(String messageFormat, List<AlertNotificationModel> notifications) {
+        if (logger.isDebugEnabled()) {
+            List<Long> notificationIds = notifications.stream()
+                .map(AlertNotificationModel::getId)
+                .collect(Collectors.toList());
+            String joinedIds = StringUtils.join(notificationIds, ", ");
+            notificationLogger.debug(messageFormat, joinedIds);
         }
     }
 

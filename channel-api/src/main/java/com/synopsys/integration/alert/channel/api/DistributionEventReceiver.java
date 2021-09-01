@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertChannelEventListener;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.logging.AlertLoggerFactory;
 import com.synopsys.integration.alert.common.persistence.accessor.JobDetailsAccessor;
 import com.synopsys.integration.alert.common.persistence.accessor.ProcessingAuditAccessor;
 import com.synopsys.integration.alert.common.persistence.model.job.details.DistributionJobDetailsModel;
@@ -24,6 +25,7 @@ import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent
 
 public abstract class DistributionEventReceiver<D extends DistributionJobDetailsModel> extends MessageReceiver<DistributionEvent> implements AlertChannelEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger notificationLogger = AlertLoggerFactory.getNotificationLogger(getClass());
 
     private final ProcessingAuditAccessor auditAccessor;
     private final JobDetailsAccessor<D> jobDetailsAccessor;
@@ -43,6 +45,9 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
+                if (logger.isDebugEnabled()) {
+                    notificationLogger.debug("Destination: {} is processing event: {}", channelKey.getDisplayName(), event.getEventId());
+                }
                 channel.distributeMessages(details.get(), event.getProviderMessages());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
             } catch (AlertException alertException) {
@@ -61,12 +66,12 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
     }
 
     protected void handleAlertException(AlertException e, DistributionEvent event) {
-        logger.error("An exception occurred while handling the following event: {}", event, e);
+        logger.error("An exception occurred while handling the following event: {}.", event.getEventId(), e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An exception occurred during message distribution", e);
     }
 
     protected void handleUnknownException(Exception e, DistributionEvent event) {
-        logger.error("An unexpected error occurred while handling the following event: {}", event, e);
+        logger.error("An unexpected error occurred while handling the following event: {}.", event.getEventId(), e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An unexpected error occurred during message distribution. Please refer to the logs for more details.", null);
     }
 
