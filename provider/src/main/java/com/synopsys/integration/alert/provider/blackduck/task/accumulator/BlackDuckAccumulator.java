@@ -146,7 +146,7 @@ public class BlackDuckAccumulator extends ProviderTask {
                 .map(AlertNotificationModel::getId)
                 .collect(Collectors.toList());
             String joinedIds = StringUtils.join(notificationIds, ", ");
-            notificationLogger.debug("Saving notifications: {}", joinedIds);
+            notificationLogger.debug("Saved notifications: {}", joinedIds);
         }
         eventManager.sendEvent(new NotificationReceivedEvent());
     }
