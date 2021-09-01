@@ -15,6 +15,8 @@ import com.synopsys.integration.alert.descriptor.api.model.ChannelKey;
 import com.synopsys.integration.alert.processor.api.distribute.DistributionEvent;
 
 public class DistributionEventHandlerTest {
+    private final ChannelKey channelKey = new ChannelKey("test universal key", "Test Universal Key");
+
     @Test
     public void handleEventSuccessTest() {
         ProcessingAuditAccessor auditAccessor = Mockito.mock(ProcessingAuditAccessor.class);
@@ -30,7 +32,6 @@ public class DistributionEventHandlerTest {
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
 
-        ChannelKey channelKey = new ChannelKey("test universal key", null);
         DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 
@@ -55,7 +56,6 @@ public class DistributionEventHandlerTest {
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
 
-        ChannelKey channelKey = new ChannelKey("test universal key", null);
         DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 
@@ -73,7 +73,6 @@ public class DistributionEventHandlerTest {
         UUID testJobId = UUID.randomUUID();
         Set<Long> testNotificationIds = Set.of(1L, 3L, 5L);
 
-        ChannelKey channelKey = new ChannelKey("test universal key", null);
         DistributionEvent testEvent = new DistributionEvent(channelKey, testJobId, "jobName", testNotificationIds, null);
         eventHandler.handle(testEvent);
 

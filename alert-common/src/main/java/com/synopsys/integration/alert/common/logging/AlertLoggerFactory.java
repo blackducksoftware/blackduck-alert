@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public final class AlertLoggerFactory {
     public static final String ALERT_AUDIT_LOGGER = "Alert Audit";
+    public static final String ALERT_NOTIFICATION_LOGGER = "Alert Notification";
 
     private AlertLoggerFactory() {
         // This class should not be instantiated
@@ -29,6 +30,20 @@ public final class AlertLoggerFactory {
         Logger auditLogger = LoggerFactory.getLogger(ALERT_AUDIT_LOGGER);
 
         return new AlertCompositeLogger(auditLogger, logger);
+    }
+
+    public static Logger getNotificationLogger(Class<?> clazz) {
+        Logger logger = LoggerFactory.getLogger(clazz);
+        Logger notificationLogger = LoggerFactory.getLogger(ALERT_NOTIFICATION_LOGGER);
+
+        return new AlertCompositeLogger(notificationLogger, logger);
+    }
+
+    public static Logger getNotificationLogger(String name) {
+        Logger logger = LoggerFactory.getLogger(name);
+        Logger notificationLogger = LoggerFactory.getLogger(ALERT_NOTIFICATION_LOGGER);
+
+        return new AlertCompositeLogger(notificationLogger, logger);
     }
 
 }
