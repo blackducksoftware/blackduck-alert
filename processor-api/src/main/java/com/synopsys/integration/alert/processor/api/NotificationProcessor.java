@@ -62,10 +62,10 @@ public final class NotificationProcessor {
 
     public void processNotifications(List<AlertNotificationModel> notifications, List<FrequencyType> frequencies) {
         try {
-            logNotifications("Processing notifications: {}", notifications);
+            logNotifications("Start processing notifications: {}", notifications);
             processAndDistribute(notifications, frequencies);
             notificationAccessor.setNotificationsProcessed(notifications);
-            logNotifications("These notifications have been processed: {}", notifications);
+            logNotifications("Finished processing notifications: {}", notifications);
         } finally {
             clearCaches();
         }
