@@ -45,11 +45,10 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
         Optional<D> details = jobDetailsAccessor.retrieveDetails(event.getJobId());
         if (details.isPresent()) {
             try {
-                if (logger.isDebugEnabled()) {
-                    notificationLogger.debug("Destination: {} is processing event: {}", channelKey.getDisplayName(), event.getEventId());
-                }
+                notificationLogger.debug("Destination: {} is processing event: {}", channelKey.getDisplayName(), event.getEventId());
                 channel.distributeMessages(details.get(), event.getProviderMessages());
                 auditAccessor.setAuditEntrySuccess(event.getJobId(), event.getNotificationIds());
+                notificationLogger.debug("Destination: {} successfully processed event: {}", channelKey.getDisplayName(), event.getEventId());
             } catch (AlertException alertException) {
                 handleAlertException(alertException, event);
             } catch (Exception unknownException) {
@@ -66,18 +65,18 @@ public abstract class DistributionEventReceiver<D extends DistributionJobDetails
     }
 
     protected void handleAlertException(AlertException e, DistributionEvent event) {
-        logger.error("An exception occurred while handling the following event: {}.", event.getEventId(), e);
+        notificationLogger.error("An exception occurred while handling the following event: {}.", event.getEventId(), e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An exception occurred during message distribution", e);
     }
 
     protected void handleUnknownException(Exception e, DistributionEvent event) {
-        logger.error("An unexpected error occurred while handling the following event: {}.", event.getEventId(), e);
+        notificationLogger.error("An unexpected error occurred while handling the following event: {}.", event.getEventId(), e);
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), "An unexpected error occurred during message distribution. Please refer to the logs for more details.", null);
     }
 
     protected void handleJobDetailsMissing(DistributionEvent event) {
         String failureMessage = "Received a distribution event for a Job that no longer exists";
-        logger.warn("{}. Destination: {}", failureMessage, event.getDestination());
+        notificationLogger.warn("{}. Destination: {}. Event: {}. Job: {}", failureMessage, event.getDestination(), event.getEventId(), event.getJobId());
         auditAccessor.setAuditEntryFailure(event.getJobId(), event.getNotificationIds(), failureMessage, null);
     }
 
