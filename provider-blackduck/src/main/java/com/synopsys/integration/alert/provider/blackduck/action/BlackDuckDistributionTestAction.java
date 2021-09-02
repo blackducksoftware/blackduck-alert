@@ -51,9 +51,12 @@ public class BlackDuckDistributionTestAction extends TestAction {
         Optional<Long> optionalProviderConfigId = registeredFieldValues.getLong(ProviderDescriptor.KEY_PROVIDER_CONFIG_ID);
         if (optionalProviderConfigId.isPresent()) {
             Long providerConfigId = optionalProviderConfigId.get();
-            registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN)
-                .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
-                .ifPresent(fieldStatuses::add);
+            boolean filterByProjects = registeredFieldValues.getBoolean(ProviderDescriptor.KEY_FILTER_BY_PROJECT).orElse(false);
+            if (filterByProjects) {
+                registeredFieldValues.getString(ProviderDescriptor.KEY_PROJECT_NAME_PATTERN)
+                    .flatMap(projectNamePattern -> validatePatternMatchesProject(providerConfigId, projectNamePattern))
+                    .ifPresent(fieldStatuses::add);
+            }
 
             BlackDuckProperties blackDuckProperties = null;
             Optional<ConfigurationModel> providerConfigurationOptional = configurationAccessor.getConfigurationById(providerConfigId);
