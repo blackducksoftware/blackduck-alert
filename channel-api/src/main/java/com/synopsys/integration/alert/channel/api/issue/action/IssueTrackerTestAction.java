@@ -66,7 +66,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         try {
             createdIssues = messageSender.sendMessages(creationRequestModelHolder);
         } catch (AlertException e) {
-            logger.debug("Failed to create test issue", e);
+            logger.error("Failed to create test issue", e);
             return new MessageResult("Failed to create issue: " + e.getMessage(), createAlertFieldStatusWithoutField(e.getMessage()));
         }
 
@@ -93,7 +93,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         }
 
         return transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.OPEN, existingIssueDetails, testProjectIssueModel)
-                   .orElseGet(() -> transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails)));
+            .orElseGet(() -> transitionTestIssueOrReturnFailureResult(messageSender, IssueOperation.RESOLVE, existingIssueDetails, testProjectIssueModel).orElse(createSuccessMessageResult(existingIssueDetails)));
     }
 
     protected abstract boolean hasResolveTransition(D distributionDetails);
