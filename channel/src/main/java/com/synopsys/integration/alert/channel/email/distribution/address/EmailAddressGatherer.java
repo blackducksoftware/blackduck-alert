@@ -49,7 +49,7 @@ public class EmailAddressGatherer {
         boolean additionalEmailAddressesOnly = emailJobDetails.isAdditionalEmailAddressesOnly();
         if (!additionalEmailAddressesOnly) {
             Optional<Long> optionalBlackDuckGlobalConfigId = jobAccessor.getJobById(emailJobDetails.getJobId())
-                                                                 .map(DistributionJobModel::getBlackDuckGlobalConfigId);
+                .map(DistributionJobModel::getBlackDuckGlobalConfigId);
             if (optionalBlackDuckGlobalConfigId.isPresent()) {
                 Set<String> providerEmailAddresses = gatherProviderEmailAddresses(projectOwnerOnly, projectHrefs, optionalBlackDuckGlobalConfigId.get());
                 emailAddresses.addAll(providerEmailAddresses);
