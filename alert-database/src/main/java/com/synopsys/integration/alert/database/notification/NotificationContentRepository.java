@@ -63,7 +63,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     )
     Page<NotificationEntity> findMatchingSentNotification(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    Page<NotificationEntity> findByProcessedFalse(Pageable pageable);
+    Page<NotificationEntity> findByProcessedFalseOrderByProviderCreationTimeAsc(Pageable pageable);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE NotificationEntity entity "
@@ -71,4 +71,5 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                + "WHERE entity.id IN :notificationIds"
     )
     void setProcessedByIds(@Param("notificationIds") Set<Long> notificationIds);
+
 }
