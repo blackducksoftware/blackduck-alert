@@ -31,6 +31,7 @@ import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.RestConstants;
 
 public class BlackDuckNotificationRetriever {
+    public static final String PAGE_SORT_FIELD = "createdat";
     public static final int DEFAULT_PAGE_SIZE = 100;
     public static final int INITIAL_PAGE_OFFSET = 0;
 
@@ -72,6 +73,7 @@ public class BlackDuckNotificationRetriever {
             .url(requestUrl)
             .addQueryParameter("startDate", startDateString)
             .addQueryParameter("endDate", endDateString)
+            .addQueryParameter("sort", String.format("%s asc", PAGE_SORT_FIELD))
             .addBlackDuckFilter(notificationTypeFilter);
     }
 
