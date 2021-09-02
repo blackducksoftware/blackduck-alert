@@ -72,8 +72,6 @@ public class AuthenticationActionsTestIT {
     private AlertAuthenticationProvider authenticationProvider;
     @Autowired
     private CsrfTokenRepository csrfTokenRepository;
-    @Autowired
-    private PasswordResetService passwordResetService;
 
     @BeforeEach
     public void init() throws Exception {
@@ -86,7 +84,7 @@ public class AuthenticationActionsTestIT {
     public void testAuthenticateDBUserIT() {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
 
         assertTrue(response.isSuccessful());
@@ -98,7 +96,7 @@ public class AuthenticationActionsTestIT {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
         mockLoginRestModel.setAlertUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setAlertPassword("badpassword");
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, badRestModel.createRestModel());
@@ -113,7 +111,7 @@ public class AuthenticationActionsTestIT {
         // add a user test then delete a user.
         String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setAlertUsername(userName);
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         userAccessor.addUser(userName, mockLoginRestModel.getAlertPassword(), "");
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
 
@@ -139,7 +137,7 @@ public class AuthenticationActionsTestIT {
         Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
         Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(Optional.of(ldapAuthenticationProvider));
 
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isSuccessful());
         assertFalse(response.hasContent());
@@ -166,7 +164,7 @@ public class AuthenticationActionsTestIT {
         LdapAuthenticationPerformer ldapAuthenticationPerformer = new LdapAuthenticationPerformer(authenticationEventManager, roleAccessor, mockLdapManager);
         AlertAuthenticationProvider authenticationProvider = new AlertAuthenticationProvider(List.of(ldapAuthenticationPerformer, alertDatabaseAuthenticationPerformer));
 
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isError());
         Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
@@ -174,7 +172,7 @@ public class AuthenticationActionsTestIT {
 
     @Test
     public void userLogoutWithValidSessionTest() {
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         MockHttpSession session = (MockHttpSession) servletRequest.getSession(true);
@@ -187,7 +185,7 @@ public class AuthenticationActionsTestIT {
 
     @Test
     public void userLogoutWithInvalidSessionTest() {
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ActionResponse<Void> response = authenticationActions.logout(servletRequest, servletResponse);
@@ -198,7 +196,7 @@ public class AuthenticationActionsTestIT {
     public void userLoginWithBadCredentialsTest() {
         AlertAuthenticationProvider authenticationProvider = Mockito.mock(AlertAuthenticationProvider.class);
         Mockito.when(authenticationProvider.authenticate(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
+        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, csrfTokenRepository);
 
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();
@@ -210,44 +208,6 @@ public class AuthenticationActionsTestIT {
         ActionResponse<Void> response = authenticationActions.authenticateUser(servletRequest, servletResponse, mockLoginRestModel.createRestModel());
         assertTrue(response.isError());
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
-    }
-
-    @Test
-    public void resetPasswordNullTest() {
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
-        ActionResponse<Void> response = authenticationActions.resetPassword(null);
-        assertTrue(response.isError());
-        assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
-    }
-
-    @Test
-    public void resetPasswordBlankTest() {
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
-        ActionResponse<Void> response = authenticationActions.resetPassword(StringUtils.EMPTY);
-        assertTrue(response.isError());
-        assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
-    }
-
-    @Test
-    public void resetPasswordValidTest() throws AlertException {
-        PasswordResetService passwordResetService = Mockito.mock(PasswordResetService.class);
-        Mockito.doNothing().when(passwordResetService).resetPassword(Mockito.anyString());
-
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
-        ActionResponse<Void> response = authenticationActions.resetPassword("exampleUsername");
-        assertTrue(response.isSuccessful());
-        assertEquals(HttpStatus.NO_CONTENT, response.getHttpStatus());
-    }
-
-    @Test
-    public void resetPasswordAlertExceptionTest() throws AlertException {
-        PasswordResetService passwordResetService = Mockito.mock(PasswordResetService.class);
-        Mockito.doThrow(new AlertException("Test Exception")).when(passwordResetService).resetPassword(Mockito.anyString());
-
-        AuthenticationActions authenticationActions = new AuthenticationActions(authenticationProvider, passwordResetService, csrfTokenRepository);
-        ActionResponse<Void> response = authenticationActions.resetPassword("exampleUsername");
-        assertTrue(response.isError());
-        assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatus());
     }
 
 }
