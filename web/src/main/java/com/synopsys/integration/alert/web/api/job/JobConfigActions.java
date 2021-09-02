@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -396,7 +397,7 @@ public class JobConfigActions extends AbstractJobResourceActions {
                 messageField.ifPresent(model -> fields.put(TestAction.KEY_CUSTOM_MESSAGE, model));
 
                 MessageResult providerTestResult = testProviderConfig(new FieldUtility(fields), jobIdString, channelFieldModel);
-                if (providerTestResult.hasErrors() || providerTestResult.hasWarnings()) {
+                if (providerTestResult.hasErrors()) {
                     responseModel = ValidationResponseModel.fromStatusCollection(providerTestResult.getStatusMessage(), providerTestResult.getFieldStatuses());
                     return new ValidationActionResponse(HttpStatus.OK, responseModel);
                 }
@@ -415,7 +416,8 @@ public class JobConfigActions extends AbstractJobResourceActions {
                     messageField.flatMap(ConfigurationFieldModel::getFieldValue).orElse(null)
                 );
                 List<AlertFieldStatus> resultFieldStatuses = testActionResult.getFieldStatuses();
-                responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), resultFieldStatuses);
+                List<AlertFieldStatus> allStatuses = Stream.concat(resultFieldStatuses.stream(), providerTestResult.fieldWarnings().stream()).collect(Collectors.toList());
+                responseModel = ValidationResponseModel.fromStatusCollection(testActionResult.getStatusMessage(), allStatuses);
                 return new ValidationActionResponse(HttpStatus.OK, responseModel);
             }
             responseModel = ValidationResponseModel.generalError("No field model of type channel was was sent to test.");
