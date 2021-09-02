@@ -93,7 +93,7 @@ public class AuthenticationControllerTestIT {
         AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
         Mockito.when(authenticationActions.authenticateUser(Mockito.any(HttpServletRequest.class), Mockito.any(HttpServletResponse.class), Mockito.any()))
             .thenReturn(new ActionResponse<>(HttpStatus.NO_CONTENT));
-        AuthenticationController loginController = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
+        AuthenticationController loginController = new AuthenticationController(authenticationActions);
 
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpSession session = servletRequest.getSession(true);
@@ -112,7 +112,7 @@ public class AuthenticationControllerTestIT {
         AuthenticationActions authenticationActions = Mockito.mock(AuthenticationActions.class);
         Mockito.when(authenticationActions.authenticateUser(Mockito.any(HttpServletRequest.class), Mockito.any(HttpServletResponse.class), Mockito.any()))
             .thenReturn(new ActionResponse<>(HttpStatus.UNAUTHORIZED));
-        AuthenticationController loginController = new AuthenticationController(authenticationActions, null, csrfTokenRepository);
+        AuthenticationController loginController = new AuthenticationController(authenticationActions);
 
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         HttpServletResponse servletResponse = new MockHttpServletResponse();

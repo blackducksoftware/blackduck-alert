@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +25,17 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.action.ActionResponse;
-import com.synopsys.integration.alert.api.common.model.exception.AlertException;
 import com.synopsys.integration.alert.component.authentication.security.AlertAuthenticationProvider;
 
 @Component
 public class AuthenticationActions {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationActions.class);
     private final AlertAuthenticationProvider authenticationProvider;
-    private final PasswordResetService passwordResetService;
     private final CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public AuthenticationActions(AlertAuthenticationProvider authenticationProvider, PasswordResetService passwordResetService, CsrfTokenRepository csrfTokenRepository) {
+    public AuthenticationActions(AlertAuthenticationProvider authenticationProvider, CsrfTokenRepository csrfTokenRepository) {
         this.authenticationProvider = authenticationProvider;
-        this.passwordResetService = passwordResetService;
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
@@ -71,20 +67,6 @@ public class AuthenticationActions {
         }
         SecurityContextHolder.clearContext();
         response.addHeader("Location", "/");
-        return new ActionResponse<>(HttpStatus.NO_CONTENT);
-    }
-
-    public ActionResponse<Void> resetPassword(String userName) {
-        if (StringUtils.isBlank(userName)) {
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, "Username cannot be blank");
-        }
-
-        try {
-            passwordResetService.resetPassword(userName);
-        } catch (AlertException alertException) {
-            logger.error("Error resetting user password.", alertException);
-            return new ActionResponse<>(HttpStatus.BAD_REQUEST, alertException.getMessage());
-        }
         return new ActionResponse<>(HttpStatus.NO_CONTENT);
     }
 

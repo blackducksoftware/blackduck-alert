@@ -66,7 +66,7 @@ public abstract class IssueTrackerTestAction<D extends DistributionJobDetailsMod
         try {
             createdIssues = messageSender.sendMessages(creationRequestModelHolder);
         } catch (AlertException e) {
-            logger.debug("Failed to create test issue", e);
+            logger.error("Failed to create test issue", e);
             return new MessageResult("Failed to create issue: " + e.getMessage(), fieldStatusCreator.createWithoutField(e.getMessage()));
         }
 
